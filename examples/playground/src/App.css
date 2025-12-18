@@ -1,0 +1,208 @@
+.app {
+  padding: 40px;
+  font-family: system-ui, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 32px;
+}
+
+.section {
+  margin-top: 32px;
+  padding: 24px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.section h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.description {
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.button-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.action-text {
+  margin-top: 16px;
+  color: #666;
+}
+
+.features {
+  line-height: 1.8;
+}
+
+/* @vivianacorp/ui Button styles */
+.vui-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.vui-button:focus-visible {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.vui-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Variants - Fill style */
+.vui-button--primary.vui-button--fill {
+  background: #0066cc;
+  color: white;
+}
+
+.vui-button--primary.vui-button--fill:hover:not(:disabled) {
+  background: #0052a3;
+}
+
+.vui-button--primary.vui-button--fill.is-pressed {
+  background: #003d7a;
+}
+
+.vui-button--accent.vui-button--fill {
+  background: #e91e63;
+  color: white;
+}
+
+.vui-button--accent.vui-button--fill:hover:not(:disabled) {
+  background: #c2185b;
+}
+
+.vui-button--accent.vui-button--fill.is-pressed {
+  background: #ad1457;
+}
+
+.vui-button--secondary.vui-button--fill {
+  background: #6c757d;
+  color: white;
+}
+
+.vui-button--secondary.vui-button--fill:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.vui-button--secondary.vui-button--fill.is-pressed {
+  background: #495057;
+}
+
+.vui-button--negative.vui-button--fill {
+  background: #dc3545;
+  color: white;
+}
+
+.vui-button--negative.vui-button--fill:hover:not(:disabled) {
+  background: #c82333;
+}
+
+.vui-button--negative.vui-button--fill.is-pressed {
+  background: #bd2130;
+}
+
+/* Variants - Outline style */
+.vui-button--primary.vui-button--outline {
+  background: transparent;
+  color: #0066cc;
+  border-color: #0066cc;
+}
+
+.vui-button--primary.vui-button--outline:hover:not(:disabled) {
+  background: rgba(0, 102, 204, 0.1);
+}
+
+.vui-button--primary.vui-button--outline.is-pressed {
+  background: rgba(0, 102, 204, 0.2);
+}
+
+.vui-button--accent.vui-button--outline {
+  background: transparent;
+  color: #e91e63;
+  border-color: #e91e63;
+}
+
+.vui-button--accent.vui-button--outline:hover:not(:disabled) {
+  background: rgba(233, 30, 99, 0.1);
+}
+
+.vui-button--accent.vui-button--outline.is-pressed {
+  background: rgba(233, 30, 99, 0.2);
+}
+
+.vui-button--secondary.vui-button--outline {
+  background: transparent;
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.vui-button--secondary.vui-button--outline:hover:not(:disabled) {
+  background: rgba(108, 117, 125, 0.1);
+}
+
+.vui-button--secondary.vui-button--outline.is-pressed {
+  background: rgba(108, 117, 125, 0.2);
+}
+
+.vui-button--negative.vui-button--outline {
+  background: transparent;
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.vui-button--negative.vui-button--outline:hover:not(:disabled) {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.vui-button--negative.vui-button--outline.is-pressed {
+  background: rgba(220, 53, 69, 0.2);
+}
+
+/* Custom button example */
+.custom-button {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.custom-button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.custom-button.is-pressed {
+  transform: scale(0.98);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.custom-button:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}

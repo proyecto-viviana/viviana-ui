@@ -1,0 +1,22 @@
+import { JSX, Accessor } from 'solid-js';
+import type { AriaButtonProps } from '@vivianacorp/solid-aria';
+
+export type ButtonVariant = 'accent' | 'primary' | 'secondary' | 'negative';
+export type ButtonStyle = 'fill' | 'outline';
+export type StaticColor = 'white' | 'black';
+
+export interface ButtonProps<T extends keyof JSX.IntrinsicElements = 'button'>
+  extends AriaButtonProps {
+  /** The content to display in the button. */
+  children?: JSX.Element;
+  /** The visual style of the button. */
+  variant?: ButtonVariant;
+  /** The background style of the button. */
+  style?: ButtonStyle;
+  /** The static color style to apply. Useful when the button appears over a color background. */
+  staticColor?: StaticColor;
+  /** Additional CSS class name. */
+  class?: string;
+  /** Ref to the button element. */
+  ref?: HTMLButtonElement | ((el: HTMLButtonElement) => void);
+}
