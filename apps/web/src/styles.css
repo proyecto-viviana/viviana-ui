@@ -1,0 +1,497 @@
+/* Tailwind CSS v4 */
+@import "tailwindcss";
+
+/* Scan UI package for Tailwind classes */
+@source "../../../packages/ui/src/**/*.tsx";
+
+/* Viviana UI Theme */
+@theme {
+  /* Breakpoints */
+  --breakpoint-xxs: 320px;
+  --breakpoint-xs: 475px;
+
+  /* Background - Dark blue-gray */
+  --color-bg-100: #3B5260;
+  --color-bg-200: #293E4B;
+  --color-bg-300: #24313a;
+  --color-bg-400: #1D272E;
+  --color-bg-light: #515151;
+
+  /* Accent - Pink */
+  --color-accent: #DF5C9A;
+  --color-accent-200: #FFB2D7;
+  --color-accent-300: #FF88C0;
+  --color-accent-500: #DF5C9A;
+  --color-accent-highlight: #e2a2be;
+
+  /* Primary - Cyan/Blue */
+  --color-primary-100: #D9F2FF;
+  --color-primary-200: #D0E9F5;
+  --color-primary-300: #ADCCDC;
+  --color-primary-400: #B8DFFF;
+  --color-primary-500: #75ABC7;
+  --color-primary-600: #58748B;
+  --color-primary-700: #4F6D85;
+  --color-primary-800: #4C6477;
+
+  /* Success - Green */
+  --color-success-100: #E5FFF3;
+  --color-success-400: #C2FFC8;
+  --color-success-600: #559D87;
+
+  /* Warning - Yellow */
+  --color-warning-100: #FFFBE5;
+  --color-warning-400: #FFDD87;
+  --color-warning-600: #9D8D55;
+
+  /* Danger - Red */
+  --color-danger-100: #FFE5E5;
+  --color-danger-400: #FF8787;
+  --color-danger-600: #9D5555;
+
+  /* Cards */
+  --color-cards-bg: #373737;
+  --color-cards-bg-load: #484848;
+  --color-correct: #83f1a7;
+  --color-incorrect: #e74c3c;
+
+  /* Typography */
+  --font-sen: 'Sen', sans-serif;
+  --font-jost: 'Jost', sans-serif;
+  --font-sans: 'Sen', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* ===== FONT UTILITIES ===== */
+.font-sen {
+  font-family: 'Sen', sans-serif;
+}
+
+.font-jost {
+  font-family: 'Jost', sans-serif;
+}
+
+/* ===== CUSTOM SHADOWS ===== */
+.drop-shadow-title-card {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.drop-shadow-logo {
+  filter: drop-shadow(0 0 10px rgba(223, 92, 154, 0.8));
+}
+
+.shadow-primary-chip {
+  box-shadow: 0 2px 8px rgba(79, 109, 133, 0.4);
+}
+
+/* ===== BUTTON COMPONENT ===== */
+.vui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.vui-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-bg-400), 0 0 0 4px var(--color-accent-300);
+}
+
+.vui-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vui-button.is-pressed {
+  transform: scale(0.98);
+}
+
+/* Fill variants - pokeforos style */
+/* Primary = Pink accent (main CTA) */
+.vui-button--fill.vui-button--primary {
+  background: var(--color-accent);
+  color: white;
+}
+.vui-button--fill.vui-button--primary:hover:not(:disabled) {
+  background: var(--color-accent-300);
+}
+.vui-button--fill.vui-button--primary:active:not(:disabled) {
+  background: var(--color-accent-500);
+}
+
+/* Secondary = Cyan primary */
+.vui-button--fill.vui-button--secondary {
+  background: var(--color-primary-500);
+  color: white;
+}
+.vui-button--fill.vui-button--secondary:hover:not(:disabled) {
+  background: var(--color-primary-400);
+}
+.vui-button--fill.vui-button--secondary:active:not(:disabled) {
+  background: var(--color-primary-600);
+}
+
+/* Accent = Also pink (alias for primary look) */
+.vui-button--fill.vui-button--accent {
+  background: var(--color-accent);
+  color: white;
+}
+.vui-button--fill.vui-button--accent:hover:not(:disabled) {
+  background: var(--color-accent-300);
+}
+.vui-button--fill.vui-button--accent:active:not(:disabled) {
+  background: var(--color-accent-500);
+}
+
+/* Negative = Danger red */
+.vui-button--fill.vui-button--negative {
+  background: var(--color-danger-400);
+  color: white;
+}
+.vui-button--fill.vui-button--negative:hover:not(:disabled) {
+  background: var(--color-danger-600);
+}
+.vui-button--fill.vui-button--negative:active:not(:disabled) {
+  background: var(--color-danger-400);
+}
+
+/* Outline variants */
+.vui-button--outline.vui-button--primary {
+  border: 2px solid var(--color-accent);
+  color: var(--color-accent-200);
+  background: transparent;
+}
+.vui-button--outline.vui-button--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+}
+
+.vui-button--outline.vui-button--secondary {
+  border: 2px solid var(--color-primary-500);
+  color: var(--color-primary-300);
+  background: transparent;
+}
+.vui-button--outline.vui-button--secondary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-primary-500) 15%, transparent);
+}
+
+.vui-button--outline.vui-button--accent {
+  border: 2px solid var(--color-accent);
+  color: var(--color-accent-200);
+  background: transparent;
+}
+.vui-button--outline.vui-button--accent:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+}
+
+.vui-button--outline.vui-button--negative {
+  border: 2px solid var(--color-danger-400);
+  color: var(--color-danger-100);
+  background: transparent;
+}
+.vui-button--outline.vui-button--negative:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger-400) 15%, transparent);
+}
+
+/* Ghost variant - transparent with hover effect */
+.vui-button--ghost {
+  background: transparent;
+  color: var(--color-primary-300);
+  border: none;
+}
+.vui-button--ghost:hover:not(:disabled) {
+  background: var(--color-bg-200);
+}
+.vui-button--ghost:active:not(:disabled) {
+  background: var(--color-bg-300);
+}
+
+/* Link variant - text-only with underline */
+.vui-button--link {
+  background: transparent;
+  color: var(--color-accent);
+  text-decoration: underline;
+  padding-left: 0;
+  padding-right: 0;
+  border: none;
+}
+.vui-button--link:hover:not(:disabled) {
+  color: var(--color-accent-300);
+}
+.vui-button--link:active:not(:disabled) {
+  color: var(--color-accent-500);
+}
+
+/* Size variants */
+.vui-button--sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.vui-button--md {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.vui-button--lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+/* Full width */
+.vui-button--full-width {
+  width: 100%;
+}
+
+/* ===== CHIP COMPONENT ===== */
+.vui-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.vui-chip--primary {
+  background: var(--color-primary-700);
+  color: var(--color-primary-100);
+  box-shadow: 0 2px 8px rgba(79, 109, 133, 0.4);
+}
+
+.vui-chip--accent {
+  background: var(--color-accent);
+  color: white;
+}
+
+.vui-chip--success {
+  background: var(--color-success-600);
+  color: var(--color-success-100);
+}
+
+.vui-chip--warning {
+  background: var(--color-warning-600);
+  color: var(--color-warning-100);
+}
+
+.vui-chip--danger {
+  background: var(--color-danger-600);
+  color: var(--color-danger-100);
+}
+
+/* ===== BADGE COMPONENT ===== */
+.vui-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+}
+
+.vui-badge--primary {
+  background: var(--color-primary-700);
+  color: var(--color-primary-100);
+}
+
+.vui-badge--accent {
+  background: var(--color-accent);
+  color: white;
+}
+
+.vui-badge--success {
+  background: var(--color-success-600);
+  color: var(--color-success-100);
+}
+
+.vui-badge--warning {
+  background: var(--color-warning-600);
+  color: var(--color-warning-100);
+}
+
+.vui-badge--danger {
+  background: var(--color-danger-600);
+  color: var(--color-danger-100);
+}
+
+/* ===== ALERT COMPONENT ===== */
+.vui-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+}
+
+.vui-alert--info {
+  background: color-mix(in srgb, var(--color-primary-700) 20%, transparent);
+  border-color: var(--color-primary-600);
+  color: var(--color-primary-200);
+}
+
+.vui-alert--success {
+  background: color-mix(in srgb, var(--color-success-600) 20%, transparent);
+  border-color: var(--color-success-600);
+  color: var(--color-success-100);
+}
+
+.vui-alert--warning {
+  background: color-mix(in srgb, var(--color-warning-600) 20%, transparent);
+  border-color: var(--color-warning-600);
+  color: var(--color-warning-100);
+}
+
+.vui-alert--error {
+  background: color-mix(in srgb, var(--color-danger-600) 20%, transparent);
+  border-color: var(--color-danger-400);
+  color: var(--color-danger-100);
+}
+
+/* ===== AVATAR COMPONENT ===== */
+.vui-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: var(--color-bg-300);
+  color: var(--color-primary-300);
+  font-weight: 600;
+}
+
+.vui-avatar--sm {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.75rem;
+}
+
+.vui-avatar--md {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.875rem;
+}
+
+.vui-avatar--lg {
+  width: 3rem;
+  height: 3rem;
+  font-size: 1rem;
+}
+
+.vui-avatar--xl {
+  width: 4rem;
+  height: 4rem;
+  font-size: 1.25rem;
+}
+
+/* ===== CARD COMPONENT ===== */
+.vui-card {
+  background: var(--color-bg-300);
+  border: 1px solid var(--color-primary-600);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.vui-card--accent-border {
+  border-bottom-color: var(--color-accent-500);
+}
+
+/* ===== GRADIENTS ===== */
+.hero-gradient {
+  background: linear-gradient(135deg, var(--color-bg-300) 0%, var(--color-bg-400) 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary-300), var(--color-accent-300));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== PROSE/DOCS ===== */
+.prose {
+  max-width: 65ch;
+}
+
+.prose h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-primary-100);
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-primary-200);
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary-200);
+}
+
+.prose p {
+  margin-bottom: 1rem;
+  line-height: 1.75;
+  color: var(--color-primary-300);
+}
+
+.prose code {
+  background: var(--color-bg-300);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--color-accent-200);
+}
+
+.prose pre {
+  background: var(--color-bg-400);
+  color: var(--color-primary-100);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.prose pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar-link {
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  color: var(--color-primary-300);
+  transition: all 0.15s;
+}
+
+.sidebar-link:hover {
+  background: var(--color-bg-300);
+  color: var(--color-primary-100);
+}
+
+.sidebar-link.active {
+  background: var(--color-primary-700);
+  color: var(--color-primary-100);
+  font-weight: 500;
+}

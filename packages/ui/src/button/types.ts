@@ -1,8 +1,9 @@
 import type { JSX } from 'solid-js';
 import type { AriaButtonProps } from '@proyecto-viviana/solidaria';
 
-export type ButtonVariant = 'accent' | 'primary' | 'secondary' | 'negative';
+export type ButtonVariant = 'accent' | 'primary' | 'secondary' | 'negative' | 'ghost' | 'link';
 export type ButtonStyle = 'fill' | 'outline';
+export type ButtonSize = 'sm' | 'md' | 'lg';
 export type StaticColor = 'white' | 'black';
 
 export interface ButtonProps extends AriaButtonProps {
@@ -12,6 +13,10 @@ export interface ButtonProps extends AriaButtonProps {
   variant?: ButtonVariant;
   /** The background style of the button. */
   style?: ButtonStyle;
+  /** The size of the button. */
+  size?: ButtonSize;
+  /** Whether the button should take up the full width of its container. */
+  fullWidth?: boolean;
   /** The static color style to apply. Useful when the button appears over a color background. */
   staticColor?: StaticColor;
   /** Additional CSS class name. */

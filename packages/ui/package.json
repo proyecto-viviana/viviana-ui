@@ -10,7 +10,10 @@
     ".": {
       "solid": "./src/index.ts",
       "import": "./src/index.ts"
-    }
+    },
+    "./theme.css": "./src/theme.css",
+    "./styles.css": "./src/styles.css",
+    "./components.css": "./src/components.css"
   },
   "files": [
     "src",

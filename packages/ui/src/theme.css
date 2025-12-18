@@ -1,0 +1,101 @@
+/*
+ * Viviana UI Theme - Tailwind v4
+ *
+ * IMPORTANT: Due to Tailwind v4's @theme processing, the @theme block
+ * should be COPIED into your app's CSS, not imported via @import.
+ *
+ * Usage:
+ *
+ * 1. Add fonts in HTML <head>:
+ *    <link rel="preconnect" href="https://fonts.googleapis.com">
+ *    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ *    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Sen:wght@400..800&display=swap" rel="stylesheet">
+ *
+ * 2. In your app's CSS:
+ *    @import "tailwindcss";
+ *
+ *    @theme {
+ *      // Copy the @theme block below into your CSS
+ *    }
+ *
+ *    @import "@proyecto-viviana/ui/components.css";
+ */
+
+@theme {
+  /* Breakpoints */
+  --breakpoint-xxs: 320px;
+  --breakpoint-xs: 475px;
+
+  /* Background - Dark blue-gray */
+  --color-bg-100: #3B5260;
+  --color-bg-200: #293E4B;
+  --color-bg-300: #24313a;
+  --color-bg-400: #1D272E;
+  --color-bg-light: #515151;
+
+  /* Accent - Pink */
+  --color-accent: #DF5C9A;
+  --color-accent-200: #FFB2D7;
+  --color-accent-300: #FF88C0;
+  --color-accent-500: #DF5C9A;
+  --color-accent-highlight: #e2a2be;
+
+  /* Primary - Cyan/Blue */
+  --color-primary-100: #D9F2FF;
+  --color-primary-200: #D0E9F5;
+  --color-primary-300: #ADCCDC;
+  --color-primary-400: #B8DFFF;
+  --color-primary-500: #75ABC7;
+  --color-primary-600: #58748B;
+  --color-primary-700: #4F6D85;
+  --color-primary-800: #4C6477;
+
+  /* Success - Green */
+  --color-success-100: #E5FFF3;
+  --color-success-400: #C2FFC8;
+  --color-success-600: #559D87;
+
+  /* Warning - Yellow */
+  --color-warning-100: #FFFBE5;
+  --color-warning-400: #FFDD87;
+  --color-warning-600: #9D8D55;
+
+  /* Danger - Red */
+  --color-danger-100: #FFE5E5;
+  --color-danger-400: #FF8787;
+  --color-danger-600: #9D5555;
+
+  /* Cards */
+  --color-cards-bg: #373737;
+  --color-cards-bg-load: #484848;
+  --color-correct: #83f1a7;
+  --color-incorrect: #e74c3c;
+
+  /* Typography */
+  --font-sen: 'Sen', sans-serif;
+  --font-jost: 'Jost', sans-serif;
+  --font-sans: 'Sen', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Font utility classes */
+.font-sen {
+  font-family: 'Sen', sans-serif;
+}
+
+.font-jost {
+  font-family: 'Jost', sans-serif;
+}
+
+/* Custom drop shadows */
+.drop-shadow-title-card {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.drop-shadow-logo {
+  filter: drop-shadow(0 0 10px rgba(223, 92, 154, 0.8));
+}
+
+.shadow-primary-chip {
+  box-shadow: 0 2px 8px rgba(79, 109, 133, 0.4);
+}

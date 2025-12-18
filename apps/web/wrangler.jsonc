@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "viviana-playground",
-  "compatibility_date": "2025-01-01",
+  "name": "proyecto-viviana",
+  "compatibility_date": "2024-12-18",
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/solid-start/server-entry"
 }
