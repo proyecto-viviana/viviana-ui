@@ -1,12 +1,11 @@
-import { JSX, Accessor } from 'solid-js';
-import type { AriaButtonProps } from '@vivianacorp/solid-aria';
+import type { JSX } from 'solid-js';
+import type { AriaButtonProps } from '@proyecto-viviana/solidaria';
 
 export type ButtonVariant = 'accent' | 'primary' | 'secondary' | 'negative';
 export type ButtonStyle = 'fill' | 'outline';
 export type StaticColor = 'white' | 'black';
 
-export interface ButtonProps<T extends keyof JSX.IntrinsicElements = 'button'>
-  extends AriaButtonProps {
+export interface ButtonProps extends AriaButtonProps {
   /** The content to display in the button. */
   children?: JSX.Element;
   /** The visual style of the button. */

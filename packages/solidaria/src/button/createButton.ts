@@ -19,7 +19,7 @@ function isDisabledValue(isDisabled: Accessor<boolean> | boolean | undefined): b
  *
  * @example
  * ```tsx
- * import { createButton } from '@viviana-corp/solid-aria';
+ * import { createButton } from '@proyecto-viviana/solidaria';
  *
  * function Button(props) {
  *   let ref;

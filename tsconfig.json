@@ -18,10 +18,11 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
+    "types": ["bun-types"],
     "paths": {
-      "@solid-aria/*": ["./packages/*/src"]
+      "@solidaria/*": ["./packages/*/src"]
     }
   },
-  "include": ["packages/*/src/**/*"],
+  "include": ["packages/*/src/**/*", "packages/*/build.ts"],
   "exclude": ["node_modules", "dist"]
 }

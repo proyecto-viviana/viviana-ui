@@ -1,0 +1,30 @@
+{
+  "name": "@proyecto-viviana/playground",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build && tsc --noEmit",
+    "preview": "vite preview",
+    "deploy": "bun run build && wrangler deploy"
+  },
+  "dependencies": {
+    "@tanstack/solid-router": "^1.141.6",
+    "@tanstack/solid-start": "^1.141.7",
+    "@proyecto-viviana/solidaria": "workspace:*",
+    "@proyecto-viviana/ui": "workspace:*",
+    "solid-js": "^1.9.10"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.13.7",
+    "@tailwindcss/vite": "^4.1.17",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.7.2",
+    "vite": "^7.1.7",
+    "vite-plugin-solid": "^2.11.10",
+    "vite-tsconfig-paths": "^5.1.4",
+    "wrangler": "^4.55.0"
+  }
+}

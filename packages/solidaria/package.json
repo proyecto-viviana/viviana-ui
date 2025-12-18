@@ -1,30 +1,31 @@
 {
-  "name": "@vivianacorp/solid-aria",
+  "name": "@proyecto-viviana/solidaria",
   "version": "0.0.1",
   "description": "A 1-1 SolidJS port of React Aria - accessible UI primitives",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "solid": "./src/index.ts",
+      "import": "./src/index.ts"
     }
   },
   "files": [
+    "src",
     "dist"
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch"
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "dev": "vite build --watch"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"
   },
   "devDependencies": {
-    "solid-js": "^1.9.3"
+    "solid-js": "^1.9.10"
   },
   "keywords": [
     "solid",
@@ -37,6 +38,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/viviana-corp/solid-aria"
+    "url": "https://github.com/vivianacorp/proyecto-viviana"
   }
 }

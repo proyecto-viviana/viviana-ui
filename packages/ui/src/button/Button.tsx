@@ -1,5 +1,5 @@
-import { JSX, splitProps, mergeProps as solidMergeProps, createMemo, Show } from 'solid-js';
-import { createButton } from '@vivianacorp/solid-aria';
+import { type JSX, splitProps, mergeProps as solidMergeProps, createMemo } from 'solid-js';
+import { createButton } from '@proyecto-viviana/solidaria';
 import type { ButtonProps } from './types';
 
 /**
@@ -7,9 +7,7 @@ import type { ButtonProps } from './types';
  * They have multiple styles for various needs, and are ideal for calling attention to
  * where a user needs to do something in order to move forward in a flow.
  */
-export function Button<T extends keyof JSX.IntrinsicElements = 'button'>(
-  props: ButtonProps<T>
-): JSX.Element {
+export function Button(props: ButtonProps): JSX.Element {
   const defaultProps: Partial<ButtonProps> = {
     variant: 'primary',
     style: 'fill',
