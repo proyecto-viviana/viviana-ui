@@ -1,77 +1,11 @@
-const DOMPropNames = new Set([
-  'id',
-  'role',
-  'tabIndex',
-  'style',
-  'class',
-  'className',
-  'title',
-  'lang',
-  'dir',
-  'hidden',
-  'draggable',
-  'spellcheck',
-  'translate',
-  'contentEditable',
-]);
+/**
+ * filterDOMProps for Solidaria
+ *
+ * Filters out all props that aren't valid DOM props.
+ * This is a 1:1 port of @react-aria/utils filterDOMProps.
+ */
 
-const DOMEventNames = new Set([
-  'onCopy',
-  'onCut',
-  'onPaste',
-  'onCompositionEnd',
-  'onCompositionStart',
-  'onCompositionUpdate',
-  'onKeyDown',
-  'onKeyPress',
-  'onKeyUp',
-  'onFocus',
-  'onBlur',
-  'onChange',
-  'onInput',
-  'onSubmit',
-  'onClick',
-  'onContextMenu',
-  'onDoubleClick',
-  'onDrag',
-  'onDragEnd',
-  'onDragEnter',
-  'onDragExit',
-  'onDragLeave',
-  'onDragOver',
-  'onDragStart',
-  'onDrop',
-  'onMouseDown',
-  'onMouseEnter',
-  'onMouseLeave',
-  'onMouseMove',
-  'onMouseOut',
-  'onMouseOver',
-  'onMouseUp',
-  'onPointerDown',
-  'onPointerMove',
-  'onPointerUp',
-  'onPointerCancel',
-  'onPointerEnter',
-  'onPointerLeave',
-  'onPointerOver',
-  'onPointerOut',
-  'onTouchCancel',
-  'onTouchEnd',
-  'onTouchMove',
-  'onTouchStart',
-  'onScroll',
-  'onWheel',
-  'onAnimationStart',
-  'onAnimationEnd',
-  'onAnimationIteration',
-  'onTransitionEnd',
-]);
-
-export interface FilterDOMPropsOptions {
-  labelable?: boolean;
-  propNames?: Set<string>;
-}
+const DOMPropNames = new Set(['id']);
 
 const labelablePropNames = new Set([
   'aria-label',
@@ -80,29 +14,103 @@ const labelablePropNames = new Set([
   'aria-details',
 ]);
 
+// See LinkDOMProps in dom.d.ts.
+const linkPropNames = new Set([
+  'href',
+  'hrefLang',
+  'target',
+  'rel',
+  'download',
+  'ping',
+  'referrerPolicy',
+]);
+
+const globalAttrs = new Set(['dir', 'lang', 'hidden', 'inert', 'translate']);
+
+const globalEvents = new Set([
+  'onClick',
+  'onAuxClick',
+  'onContextMenu',
+  'onDoubleClick',
+  'onMouseDown',
+  'onMouseEnter',
+  'onMouseLeave',
+  'onMouseMove',
+  'onMouseOut',
+  'onMouseOver',
+  'onMouseUp',
+  'onTouchCancel',
+  'onTouchEnd',
+  'onTouchMove',
+  'onTouchStart',
+  'onPointerDown',
+  'onPointerMove',
+  'onPointerUp',
+  'onPointerCancel',
+  'onPointerEnter',
+  'onPointerLeave',
+  'onPointerOver',
+  'onPointerOut',
+  'onGotPointerCapture',
+  'onLostPointerCapture',
+  'onScroll',
+  'onWheel',
+  'onAnimationStart',
+  'onAnimationEnd',
+  'onAnimationIteration',
+  'onTransitionCancel',
+  'onTransitionEnd',
+  'onTransitionRun',
+  'onTransitionStart',
+]);
+
+const propRe = /^(data-.*)$/;
+
+export interface FilterDOMPropsOptions {
+  /**
+   * If labelling associated aria properties should be included in the filter.
+   */
+  labelable?: boolean;
+  /** Whether the element is a link and should include DOM props for <a> elements. */
+  isLink?: boolean;
+  /** Whether to include global DOM attributes. */
+  global?: boolean;
+  /** Whether to include DOM events. */
+  events?: boolean;
+  /**
+   * A Set of other property names that should be included in the filter.
+   */
+  propNames?: Set<string>;
+}
+
 /**
- * Filters out props that are not valid DOM attributes.
- * Keeps aria-* and data-* attributes.
+ * Filters out all props that aren't valid DOM props or defined via override prop obj.
+ * @param props - The component props to be filtered.
+ * @param opts - Props to override.
  */
 export function filterDOMProps(
   props: Record<string, unknown>,
-  options: FilterDOMPropsOptions = {}
+  opts: FilterDOMPropsOptions = {}
 ): Record<string, unknown> {
-  const { labelable = false, propNames } = options;
-  const result: Record<string, unknown> = {};
+  const { labelable, isLink, global, events = global, propNames } = opts;
+  const filteredProps: Record<string, unknown> = {};
 
-  for (const key in props) {
+  for (const prop in props) {
     if (
-      DOMPropNames.has(key) ||
-      DOMEventNames.has(key) ||
-      key.startsWith('aria-') ||
-      key.startsWith('data-') ||
-      propNames?.has(key) ||
-      (labelable && labelablePropNames.has(key))
+      Object.prototype.hasOwnProperty.call(props, prop) &&
+      (DOMPropNames.has(prop) ||
+        (labelable && labelablePropNames.has(prop)) ||
+        (isLink && linkPropNames.has(prop)) ||
+        (global && globalAttrs.has(prop)) ||
+        (events &&
+          (globalEvents.has(prop) ||
+            (prop.endsWith('Capture') && globalEvents.has(prop.slice(0, -7))))) ||
+        propNames?.has(prop) ||
+        propRe.test(prop))
     ) {
-      result[key] = props[key];
+      filteredProps[prop] = props[prop];
     }
   }
 
-  return result;
+  return filteredProps;
 }

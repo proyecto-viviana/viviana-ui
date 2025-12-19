@@ -78,6 +78,9 @@ export function Button(props: ButtonProps): JSX.Element {
       {...buttonProps}
       ref={local.ref}
       class={classes()}
+      data-variant={local.variant}
+      data-style={local.style}
+      data-static-color={local.staticColor}
     >
       {local.children}
     </button>

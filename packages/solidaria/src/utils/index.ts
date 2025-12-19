@@ -1,6 +1,9 @@
 export { mergeProps } from './mergeProps';
 export { filterDOMProps, type FilterDOMPropsOptions } from './filterDOMProps';
 
+// Reactivity utilities
+export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './reactivity';
+
 // Platform detection
 export {
   isMac,

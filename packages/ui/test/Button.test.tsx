@@ -76,7 +76,7 @@ describe('Button', () => {
     expect(onPressChangeSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('keyboard press and key events', async () => {
+  it('keyboard press with Enter key', async () => {
     render(() => (
       <Button
         onPress={onPressSpy}
@@ -99,6 +99,50 @@ describe('Button', () => {
     expect(onPressEndSpy).toHaveBeenCalledTimes(1);
     expect(onPressUpSpy).toHaveBeenCalledTimes(1);
     expect(onPressChangeSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('keyboard press with Space key', async () => {
+    render(() => (
+      <Button
+        onPress={onPressSpy}
+        onPressStart={onPressStartSpy}
+        onPressEnd={onPressEndSpy}
+        onPressUp={onPressUpSpy}
+        onPressChange={onPressChangeSpy}
+      >
+        Click Me
+      </Button>
+    ));
+
+    const button = screen.getByRole('button');
+    await user.tab();
+    expect(document.activeElement).toBe(button);
+
+    await user.keyboard('{ }');
+    expect(onPressStartSpy).toHaveBeenCalledTimes(1);
+    expect(onPressSpy).toHaveBeenCalledTimes(1);
+    expect(onPressEndSpy).toHaveBeenCalledTimes(1);
+    expect(onPressUpSpy).toHaveBeenCalledTimes(1);
+    expect(onPressChangeSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('supports autoFocus', () => {
+    render(() => <Button autoFocus>Click Me</Button>);
+
+    const button = screen.getByRole('button');
+    expect(document.activeElement).toBe(button);
+  });
+
+  it('handles touch press', async () => {
+    render(() => <Button onPress={onPressSpy}>Touch Me</Button>);
+
+    const button = screen.getByRole('button');
+    await user.pointer([
+      { keys: '[TouchA>]', target: button },
+      { keys: '[/TouchA]', target: button },
+    ]);
+
+    expect(onPressSpy).toHaveBeenCalledTimes(1);
   });
 
   it('allows custom props to be passed through to the button', () => {
@@ -159,22 +203,34 @@ describe('Button', () => {
       expect(button).toHaveAttribute('data-variant', 'primary');
     });
 
-    it('renders with accent variant', () => {
-      render(() => <Button variant="accent">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-variant', 'accent');
-    });
-
     it('renders with secondary variant', () => {
       render(() => <Button variant="secondary">Click Me</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveAttribute('data-variant', 'secondary');
     });
 
-    it('renders with negative variant', () => {
-      render(() => <Button variant="negative">Click Me</Button>);
+    it('renders with danger variant', () => {
+      render(() => <Button variant="danger">Click Me</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-variant', 'negative');
+      expect(button).toHaveAttribute('data-variant', 'danger');
+    });
+
+    it('renders with success variant', () => {
+      render(() => <Button variant="success">Click Me</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('data-variant', 'success');
+    });
+
+    it('renders with ghost variant', () => {
+      render(() => <Button variant="ghost">Click Me</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('data-variant', 'ghost');
+    });
+
+    it('renders with link variant', () => {
+      render(() => <Button variant="link">Click Me</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('data-variant', 'link');
     });
   });
 

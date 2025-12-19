@@ -1,0 +1,116 @@
+/**
+ * Label hook for Solidaria
+ *
+ * Provides the accessibility implementation for labels and their associated elements.
+ * Labels provide context for user inputs.
+ *
+ * This is a 1:1 port of @react-aria/label's useLabel hook.
+ */
+
+import { JSX } from 'solid-js';
+import { createId } from '../ssr';
+import { createLabels } from './createLabels';
+import { type MaybeAccessor, access } from '../utils/reactivity';
+
+// ============================================
+// TYPES
+// ============================================
+
+export interface AriaLabelingProps {
+  /** Defines a string value that labels the current element. */
+  'aria-label'?: string;
+  /** Identifies the element (or elements) that labels the current element. */
+  'aria-labelledby'?: string;
+  /** Identifies the element (or elements) that describes the object. */
+  'aria-describedby'?: string;
+  /** Identifies the element (or elements) that provide a detailed, extended description for the object. */
+  'aria-details'?: string;
+}
+
+export interface LabelableProps {
+  /** The content to display as the label. */
+  label?: JSX.Element;
+}
+
+export interface DOMProps {
+  /** The element's unique identifier. */
+  id?: string;
+}
+
+export interface LabelAriaProps extends LabelableProps, DOMProps, AriaLabelingProps {
+  /**
+   * The HTML element used to render the label, e.g. 'label', or 'span'.
+   * @default 'label'
+   */
+  labelElementType?: 'label' | 'span' | 'div';
+}
+
+export interface LabelAria {
+  /** Props to apply to the label container element. */
+  labelProps: JSX.LabelHTMLAttributes<HTMLLabelElement> | JSX.HTMLAttributes<HTMLSpanElement>;
+  /** Props to apply to the field container element being labeled. */
+  fieldProps: AriaLabelingProps & DOMProps;
+}
+
+// ============================================
+// IMPLEMENTATION
+// ============================================
+
+/**
+ * Provides the accessibility implementation for labels and their associated elements.
+ * Labels provide context for user inputs.
+ *
+ * @param props - The props for labels and fields.
+ */
+export function createLabel(props: MaybeAccessor<LabelAriaProps>): LabelAria {
+  const getProps = () => access(props);
+
+  const id = createId(getProps().id);
+  const labelId = createId();
+
+  const getLabelProps = (): LabelAria['labelProps'] => {
+    const { label, labelElementType = 'label' } = getProps();
+
+    if (!label) {
+      return {};
+    }
+
+    return {
+      id: labelId,
+      ...(labelElementType === 'label' ? { for: id } : {}),
+    };
+  };
+
+  const getFieldProps = (): LabelAria['fieldProps'] => {
+    const {
+      label,
+      'aria-labelledby': ariaLabelledby,
+      'aria-label': ariaLabel,
+    } = getProps();
+
+    let labelledBy = ariaLabelledby;
+
+    if (label) {
+      labelledBy = ariaLabelledby ? `${labelId} ${ariaLabelledby}` : labelId;
+    } else if (!ariaLabelledby && !ariaLabel && process.env.NODE_ENV !== 'production') {
+      console.warn(
+        'If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility'
+      );
+    }
+
+    return createLabels({
+      id,
+      'aria-label': ariaLabel,
+      'aria-labelledby': labelledBy,
+    });
+  };
+
+  return {
+    get labelProps() {
+      return getLabelProps();
+    },
+    get fieldProps() {
+      return getFieldProps();
+    },
+  };
+}

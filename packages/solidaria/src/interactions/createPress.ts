@@ -20,7 +20,6 @@ import {
   getTouchById,
   disableTextSelection,
   restoreTextSelection,
-  focusWithoutScrolling,
   preventFocus,
   openLink,
   isMac,
@@ -228,16 +227,11 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     }
   };
 
-  // --- Pointer Event Handlers ---
+  // --- Pointer Event Handlers (used when PointerEvent is available) ---
 
   const onPointerDown: JSX.EventHandler<HTMLElement, PointerEvent> = (e) => {
-    // Only handle left button / primary pointer
-    if (e.button !== 0 || !e.currentTarget.contains(e.target as Node)) {
-      return;
-    }
-
-    // If already pressed, ignore
-    if (pressState.isPressed) {
+    // Only handle left clicks, and ignore events that bubbled through portals
+    if (e.button !== 0 || !nodeContains(e.currentTarget, getEventTarget(e))) {
       return;
     }
 
@@ -248,71 +242,58 @@ export function createPress(props: CreatePressProps = {}): PressResult {
       return;
     }
 
-    // Ignore events that bubbled through portals
+    pressState.pointerType = e.pointerType as PointerType;
+
+    if (!pressState.isPressed) {
+      pressState.isPressed = true;
+      pressState.isOverTarget = true;
+      pressState.activePointerId = e.pointerId;
+      pressState.target = e.currentTarget;
+
+      if (!props.allowTextSelectionOnPress) {
+        disableTextSelection(pressState.target as HTMLElement);
+      }
+
+      const shouldStopPropagation = triggerPressStart(e, pressState.pointerType);
+      if (shouldStopPropagation) {
+        e.stopPropagation();
+      }
+
+      // Set up global listeners for pointer events
+      addGlobalListener('pointerup', onPointerUp);
+      addGlobalListener('pointercancel', onPointerCancel);
+    }
+  };
+
+  // Mouse down handler when using pointer events - only prevents focus, doesn't trigger press
+  const onMouseDownPointer: JSX.EventHandler<HTMLElement, MouseEvent> = (e) => {
     if (!nodeContains(e.currentTarget, getEventTarget(e))) {
       return;
     }
 
-    if (isDisabledValue(props.isDisabled)) {
-      e.preventDefault();
-      return;
-    }
-
-    // Prevent focus if requested
-    if (props.preventFocusOnPress) {
-      preventFocus(e.currentTarget);
-    }
-
-    pressState.pointerType = e.pointerType as PointerType;
-    pressState.isPressed = true;
-    pressState.isOverTarget = true;
-    pressState.activePointerId = e.pointerId;
-    pressState.target = e.currentTarget;
-
-    if (!props.allowTextSelectionOnPress) {
-      disableTextSelection(pressState.target as HTMLElement);
-    }
-
-    const shouldStopPropagation = triggerPressStart(e, pressState.pointerType);
-    if (shouldStopPropagation) {
+    if (e.button === 0) {
+      // Prevent focus if requested
+      if (props.preventFocusOnPress) {
+        preventFocus(e.currentTarget);
+      }
       e.stopPropagation();
     }
-
-    // Set up global listeners for pointer events
-    addGlobalListener('pointerup', onPointerUp);
-    addGlobalListener('pointercancel', onPointerCancel);
   };
 
   const onPointerUp = (e: PointerEvent): void => {
-    if (e.pointerId !== pressState.activePointerId || e.button !== 0) {
+    // Only handle events for our active pointer
+    if (e.pointerId !== pressState.activePointerId || !pressState.isPressed || e.button !== 0 || !pressState.target) {
       return;
     }
 
-    const target = pressState.target!;
-    const isOverTarget = nodeContains(target, getEventTarget(e) as Element);
-
-    if (isOverTarget && pressState.pointerType != null) {
-      triggerPressUp(e, pressState.pointerType);
-    }
-
-    triggerPressEnd(e, pressState.pointerType ?? 'mouse', isOverTarget && pressState.isOverTarget);
-
-    // Ignore the click event that will follow
-    pressState.ignoreClickAfterPress = true;
-    pressState.isPressed = false;
-    pressState.isOverTarget = false;
-    pressState.activePointerId = null;
-    pressState.pointerType = null;
-
-    removeAllGlobalListeners();
-
-    if (!props.allowTextSelectionOnPress) {
-      restoreTextSelection(target as HTMLElement);
-    }
-
-    // Focus the target if needed and we're over it
-    if (!props.preventFocusOnPress && isOverTarget) {
-      focusWithoutScrolling(target as HTMLElement);
+    const isOverTarget = nodeContains(pressState.target, getEventTarget(e) as Element);
+    if (isOverTarget && pressState.pointerType != null && pressState.pointerType !== 'virtual') {
+      // Pointer released over target - wait for onClick to complete the press sequence
+      // This matches React-Aria's behavior for compatibility with DOM mutations and third-party libraries
+      pressState.isOverTarget = false;
+    } else {
+      // Pointer released outside target, or virtual - cancel the press
+      cancel(e);
     }
   };
 
@@ -323,22 +304,14 @@ export function createPress(props: CreatePressProps = {}): PressResult {
   };
 
   const onPointerEnter: JSX.EventHandler<HTMLElement, PointerEvent> = (e) => {
-    if (e.pointerId !== pressState.activePointerId) {
-      return;
-    }
-
-    if (pressState.target && pressState.isPressed && !pressState.isOverTarget && pressState.pointerType != null) {
+    if (e.pointerId === pressState.activePointerId && pressState.target && !pressState.isOverTarget && pressState.pointerType != null) {
       pressState.isOverTarget = true;
       triggerPressStart(e, pressState.pointerType);
     }
   };
 
   const onPointerLeave: JSX.EventHandler<HTMLElement, PointerEvent> = (e) => {
-    if (e.pointerId !== pressState.activePointerId) {
-      return;
-    }
-
-    if (pressState.target && pressState.isPressed && pressState.isOverTarget && pressState.pointerType != null) {
+    if (e.pointerId === pressState.activePointerId && pressState.target && pressState.isOverTarget && pressState.pointerType != null) {
       pressState.isOverTarget = false;
       triggerPressEnd(e, pressState.pointerType, false);
 
@@ -452,86 +425,62 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     }
   };
 
-  // --- Mouse Event Handlers (fallback for testing) ---
+  // --- Mouse Event Handlers (fallback when PointerEvent is not available) ---
 
-  const onMouseDown: JSX.EventHandler<HTMLElement, MouseEvent> = (e) => {
+  const onMouseDownFallback: JSX.EventHandler<HTMLElement, MouseEvent> = (e) => {
     // Only handle left button
     if (e.button !== 0) {
       return;
     }
 
-    // If already pressed via pointer/touch, ignore
-    if (pressState.isPressed) {
-      return;
-    }
-
     // Ignore emulated mouse events from touch
     if (pressState.ignoreEmulatedMouseEvents) {
-      pressState.ignoreEmulatedMouseEvents = false;
+      e.stopPropagation();
       return;
-    }
-
-    if (isDisabledValue(props.isDisabled)) {
-      return;
-    }
-
-    // Prevent focus if requested
-    if (props.preventFocusOnPress) {
-      e.preventDefault();
     }
 
     pressState.isPressed = true;
     pressState.isOverTarget = true;
     pressState.target = e.currentTarget;
-    pressState.pointerType = 'mouse';
+    pressState.pointerType = isVirtualClick(e) ? 'virtual' : 'mouse';
 
-    const shouldStopPropagation = triggerPressStart(e, 'mouse');
+    const shouldStopPropagation = triggerPressStart(e, pressState.pointerType);
     if (shouldStopPropagation) {
       e.stopPropagation();
     }
 
-    addGlobalListener('mouseup', onMouseUp);
+    addGlobalListener('mouseup', onMouseUpFallback);
   };
 
-  const onMouseUp = (e: MouseEvent): void => {
+  const onMouseUpFallback = (e: MouseEvent): void => {
     if (e.button !== 0) {
       return;
     }
 
-    pressState.isPressed = false;
-    removeAllGlobalListeners();
-
-    const target = pressState.target!;
-    const isOverTarget = nodeContains(target, getEventTarget(e) as Element);
-
-    if (isOverTarget) {
-      triggerPressUp(e, 'mouse');
+    if (!pressState.ignoreEmulatedMouseEvents && e.button === 0 && !pressState.isPressed) {
+      triggerPressUp(e, pressState.pointerType || 'mouse');
     }
-
-    triggerPressEnd(e, 'mouse', isOverTarget && pressState.isOverTarget);
-
-    pressState.isOverTarget = false;
   };
 
-  const onMouseEnter: JSX.EventHandler<HTMLElement, MouseEvent> = (e) => {
+  const onMouseEnterFallback: JSX.EventHandler<HTMLElement, MouseEvent> = (e) => {
     if (!pressState.isPressed || pressState.ignoreEmulatedMouseEvents) {
       return;
     }
 
-    if (pressState.target && !pressState.isOverTarget) {
+    if (pressState.isPressed && !pressState.ignoreEmulatedMouseEvents && pressState.pointerType != null) {
       pressState.isOverTarget = true;
-      triggerPressStart(e, 'mouse');
+      triggerPressStart(e, pressState.pointerType);
     }
   };
 
-  const onMouseLeave: JSX.EventHandler<HTMLElement, MouseEvent> = (e) => {
+  const onMouseLeaveFallback: JSX.EventHandler<HTMLElement, MouseEvent> = (e) => {
     if (!pressState.isPressed || pressState.ignoreEmulatedMouseEvents) {
       return;
     }
 
-    if (pressState.target && pressState.isOverTarget) {
+    if (pressState.isPressed && !pressState.ignoreEmulatedMouseEvents && pressState.pointerType != null) {
       pressState.isOverTarget = false;
-      triggerPressEnd(e, 'mouse', false);
+      triggerPressEnd(e, pressState.pointerType, false);
 
       if (props.shouldCancelOnPointerExit) {
         cancel(e);
@@ -652,38 +601,41 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
   const onClick: JSX.EventHandler<HTMLElement, MouseEvent> = (e) => {
     // Don't handle click if it's not on the target
-    if (e.currentTarget !== e.target && !nodeContains(e.currentTarget, e.target as Element)) {
+    if (!nodeContains(e.currentTarget, e.target as Element)) {
       return;
     }
 
-    // Ignore click if we already handled it via keyboard/pointer
-    if (pressState.ignoreClickAfterPress) {
-      pressState.ignoreClickAfterPress = false;
-      return;
-    }
-
-    // Ignore emulated mouse events from touch
-    if (pressState.ignoreEmulatedMouseEvents) {
-      pressState.ignoreEmulatedMouseEvents = false;
-      return;
-    }
-
-    // Handle virtual clicks (screen readers, element.click(), etc.)
-    // Only trigger if not already pressed (prevents double-firing after pointer/touch events)
-    if (!pressState.isPressed && (isVirtualClick(e) || pressState.pointerType === 'virtual')) {
+    // Only process left clicks that aren't from our own event triggers
+    if (e.button === 0 && !pressState.isTriggeringEvent) {
       if (isDisabledValue(props.isDisabled)) {
+        e.preventDefault();
         return;
       }
 
-      pressState.target = e.currentTarget;
-      pressState.pointerType = 'virtual';
+      // If triggered from a screen reader or by using element.click(),
+      // trigger as if it were a keyboard/virtual click.
+      if (
+        !pressState.ignoreEmulatedMouseEvents &&
+        !pressState.isPressed &&
+        (pressState.pointerType === 'virtual' || isVirtualClick(e))
+      ) {
+        pressState.target = e.currentTarget;
+        triggerPressStart(e, 'virtual');
+        triggerPressUp(e, 'virtual');
+        triggerPressEnd(e, 'virtual', true);
+      } else if (pressState.isPressed && pressState.pointerType !== 'keyboard') {
+        // Complete the press sequence for pointer/touch/mouse events
+        const pointerType =
+          pressState.pointerType ||
+          ((e as unknown as PointerEvent).pointerType as PointerType) ||
+          'virtual';
+        triggerPressUp(e, pointerType);
+        triggerPressEnd(e, pointerType, true);
+        pressState.isOverTarget = false;
+        cancel(e);
+      }
 
-      // Fire full press sequence for virtual clicks
-      triggerPressStart(e, 'virtual');
-      triggerPressUp(e, 'virtual');
-      triggerPressEnd(e, 'virtual', true);
-
-      pressState.pointerType = null;
+      pressState.ignoreEmulatedMouseEvents = false;
     }
   };
 
@@ -697,28 +649,49 @@ export function createPress(props: CreatePressProps = {}): PressResult {
   };
 
   // --- Build Props ---
+  // Conditionally use pointer events or mouse events based on browser support
+  // This matches React-Aria's approach exactly
 
-  const pressProps = {
-    onKeyDown,
-    onKeyUp,
-    onClick,
-    onDragStart,
-    // Pointer events (preferred)
-    onPointerDown,
-    onPointerEnter,
-    onPointerLeave,
-    // Touch events (fallback)
-    onTouchStart,
-    onTouchMove,
-    onTouchEnd,
-    onTouchCancel,
-    // Mouse events (fallback)
-    onMouseDown,
-    onMouseEnter,
-    onMouseLeave,
-    // Attribute for CSS touch-action
-    'data-solidaria-pressable': '',
-  } as JSX.HTMLAttributes<HTMLElement> & { 'data-solidaria-pressable': string };
+  const pressProps: JSX.HTMLAttributes<HTMLElement> & { 'data-solidaria-pressable': string } =
+    typeof PointerEvent !== 'undefined'
+      ? {
+          // Keyboard events
+          onKeyDown,
+          onKeyUp,
+          onClick,
+          onDragStart,
+          // Pointer events (preferred when available)
+          onPointerDown,
+          onPointerEnter,
+          onPointerLeave,
+          // Mouse down only for focus prevention when using pointer events
+          onMouseDown: onMouseDownPointer,
+          // Touch events (always included for ignoreEmulatedMouseEvents handling)
+          onTouchStart,
+          onTouchMove,
+          onTouchEnd,
+          onTouchCancel,
+          // Attribute for CSS touch-action
+          'data-solidaria-pressable': '',
+        }
+      : {
+          // Keyboard events
+          onKeyDown,
+          onKeyUp,
+          onClick,
+          onDragStart,
+          // Mouse events (fallback when PointerEvent not available)
+          onMouseDown: onMouseDownFallback,
+          onMouseEnter: onMouseEnterFallback,
+          onMouseLeave: onMouseLeaveFallback,
+          // Touch events (always included)
+          onTouchStart,
+          onTouchMove,
+          onTouchEnd,
+          onTouchCancel,
+          // Attribute for CSS touch-action
+          'data-solidaria-pressable': '',
+        };
 
   // Clean up on unmount
   onCleanup(() => {

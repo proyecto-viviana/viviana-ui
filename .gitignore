@@ -34,3 +34,6 @@ bun.lockb
 
 react-spectrum
 .claude
+
+# Local
+.DS_Store
