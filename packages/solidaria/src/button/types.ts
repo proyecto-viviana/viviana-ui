@@ -40,6 +40,10 @@ export interface AriaButtonProps {
   'aria-labelledby'?: string;
   /** The id of the element that describes the button. */
   'aria-describedby'?: string;
+  /** Identifies the element (or elements) whose contents or presence are controlled by the button. */
+  'aria-controls'?: string;
+  /** Indicates the current "pressed" state of toggle buttons. */
+  'aria-current'?: boolean | 'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false';
   /** Additional attributes for form buttons. */
   form?: string;
   formAction?: string;

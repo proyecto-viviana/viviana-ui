@@ -6,11 +6,11 @@ export interface EventCardProps {
   title: string
   image?: string
   date?: string
-  duration?: string
   author?: string
   authorAvatar?: string
   attendees?: { avatar?: string; name: string }[]
   attendeeCount?: number
+  decorationImage?: string
   actions?: JSX.Element
   class?: string
 }
@@ -24,7 +24,16 @@ export function EventCard(props: EventCardProps) {
   }
 
   return (
-    <div class={`bg-bg-200 rounded-xl overflow-hidden ${props.class ?? ''}`}>
+    <div class={`relative bg-bg-200 rounded-3xl overflow-hidden ${props.class ?? ''}`}>
+      {/* Decoration image (fire gif, etc) */}
+      <Show when={props.decorationImage}>
+        <div class="absolute -top-2 -right-2 z-10 flex flex-col gap-1">
+          <img src={props.decorationImage} alt="" class="w-8 h-8 object-contain" />
+          <img src={props.decorationImage} alt="" class="w-6 h-6 object-contain ml-2" />
+          <img src={props.decorationImage} alt="" class="w-5 h-5 object-contain" />
+        </div>
+      </Show>
+
       <Show when={props.image}>
         <div class="relative h-32 w-full">
           <img
@@ -32,34 +41,32 @@ export function EventCard(props: EventCardProps) {
             alt={props.title}
             class="w-full h-full object-cover"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-bg-400/80 to-transparent" />
-          <Show when={props.duration}>
-            <span class="absolute top-2 right-2 bg-accent text-white text-xs font-medium px-2 py-1 rounded-full">
-              {props.duration}
-            </span>
-          </Show>
+          <div class="absolute inset-0 bg-gradient-to-t from-bg-200 via-transparent to-transparent" />
         </div>
       </Show>
-      <div class="p-4">
-        <h3 class="font-semibold text-primary-100 text-lg line-clamp-2">
+
+      <div class="p-4 pt-2">
+        <h3 class="font-bold text-xl leading-tight bg-gradient-to-r from-accent to-accent-300 bg-clip-text text-transparent">
           {props.title}
         </h3>
+
         <Show when={props.date || props.author}>
-          <div class="flex items-center gap-2 mt-2 text-sm text-primary-300">
+          <div class="flex items-center gap-4 mt-3 text-sm text-primary-300">
             <Show when={props.author}>
               <div class="flex items-center gap-1.5">
-                <Avatar src={props.authorAvatar} alt={props.author} size="xs" />
+                <span class="text-accent">@</span>
                 <span>{props.author}</span>
               </div>
             </Show>
-            <Show when={props.date && props.author}>
-              <span>•</span>
-            </Show>
             <Show when={props.date}>
-              <span>{props.date}</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-accent">⏱</span>
+                <span>{props.date}</span>
+              </div>
             </Show>
           </div>
         </Show>
+
         <Show when={displayedAttendees().length > 0}>
           <div class="flex items-center mt-3">
             <div class="flex -space-x-2">
@@ -76,6 +83,7 @@ export function EventCard(props: EventCardProps) {
             </Show>
           </div>
         </Show>
+
         <Show when={props.actions}>
           <div class="mt-4 flex gap-2">{props.actions}</div>
         </Show>

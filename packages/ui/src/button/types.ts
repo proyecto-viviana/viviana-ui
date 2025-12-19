@@ -1,7 +1,7 @@
 import type { JSX } from 'solid-js';
 import type { AriaButtonProps } from '@proyecto-viviana/solidaria';
 
-export type ButtonVariant = 'accent' | 'primary' | 'secondary' | 'negative' | 'ghost' | 'link';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'ghost' | 'link';
 export type ButtonStyle = 'fill' | 'outline';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type StaticColor = 'white' | 'black';

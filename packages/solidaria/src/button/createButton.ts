@@ -113,6 +113,12 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
   if (props['aria-describedby']) {
     ariaProps['aria-describedby'] = props['aria-describedby'];
   }
+  if (props['aria-controls']) {
+    ariaProps['aria-controls'] = props['aria-controls'];
+  }
+  if (props['aria-current'] !== undefined) {
+    ariaProps['aria-current'] = props['aria-current'];
+  }
 
   const buttonProps = mergeProps(
     filterDOMProps(props as Record<string, unknown>, { labelable: true }),

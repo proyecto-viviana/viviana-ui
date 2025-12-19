@@ -1,4 +1,4 @@
-type Props = Record<string, unknown>;
+type Props = { [key: string]: unknown };
 
 /**
  * Merges multiple props objects together, handling event handlers specially
@@ -6,7 +6,7 @@ type Props = Record<string, unknown>;
  *
  * Based on react-aria's mergeProps but adapted for SolidJS.
  */
-export function mergeProps<T extends Props>(...args: T[]): Record<string, unknown> {
+export function mergeProps<T extends object>(...args: T[]): Record<string, unknown> {
   const result: Props = {};
 
   for (const props of args) {

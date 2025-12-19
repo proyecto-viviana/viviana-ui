@@ -11,7 +11,7 @@ export interface ChipProps {
 }
 
 const variantStyles: Record<ChipVariant, string> = {
-  primary: 'bg-primary-700 text-primary-200 shadow-sm',
+  primary: 'bg-primary-700 text-primary-200 shadow-primary-chip',
   secondary: 'bg-primary-600 text-primary-100 hover:bg-primary-500',
   accent: 'bg-accent text-white',
   outline: 'bg-transparent border border-primary-500 text-primary-300',
@@ -22,7 +22,7 @@ export function Chip(props: ChipProps) {
 
   return (
     <button
-      class={`flex items-center justify-center h-6 rounded-full px-4 py-1 text-sm font-medium tracking-wide transition-colors ${variantStyles[variant()]} ${props.class ?? ''}`}
+      class={`flex justify-center items-center h-6 w-auto rounded-full px-4 py-1 font-medium text-sm tracking-wide transition-colors ${variantStyles[variant()]} ${props.class ?? ''}`}
       onClick={props.onClick}
     >
       {props.icon && <span class="mr-1.5">{props.icon}</span>}

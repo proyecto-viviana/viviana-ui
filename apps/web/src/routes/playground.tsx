@@ -18,6 +18,8 @@ import {
   TimelineItem,
 } from '@proyecto-viviana/ui'
 import { createButton } from '@proyecto-viviana/solidaria'
+// Fire gif for event card decoration
+const fireGif = '/fire.gif'
 
 export const Route = createFileRoute('/playground')({
   component: Playground,
@@ -63,22 +65,22 @@ function Playground() {
             <div class="space-y-4">
               <div class="flex flex-wrap gap-3">
                 <Button onPress={() => setCount((c) => c + 1)}>Count: {count()}</Button>
-                <Button variant="accent" onPress={() => setLastAction('Accent clicked!')}>
-                  Accent
-                </Button>
                 <Button variant="secondary" onPress={() => setLastAction('Secondary clicked!')}>
                   Secondary
                 </Button>
-                <Button variant="negative" onPress={() => setLastAction('Negative clicked!')}>
-                  Negative
+                <Button variant="danger" onPress={() => setLastAction('Danger clicked!')}>
+                  Danger
+                </Button>
+                <Button variant="success" onPress={() => setLastAction('Success clicked!')}>
+                  Success
                 </Button>
                 <Button isDisabled>Disabled</Button>
               </div>
               <div class="flex flex-wrap gap-3">
                 <Button style="outline" variant="primary">Outline Primary</Button>
-                <Button style="outline" variant="accent">Outline Accent</Button>
                 <Button style="outline" variant="secondary">Outline Secondary</Button>
-                <Button style="outline" variant="negative">Outline Negative</Button>
+                <Button style="outline" variant="danger">Outline Danger</Button>
+                <Button style="outline" variant="success">Outline Success</Button>
               </div>
             </div>
           </Section>
@@ -201,10 +203,10 @@ function Playground() {
           {/* Event Card */}
           <Section title="EventCard" description="Event display with attendees">
             <EventCard
-              title="SolidJS Meetup: Building Accessible UIs"
-              date="Dec 25, 2024"
-              duration="2h"
-              author="Viviana Team"
+              title="Fiesta de Taylor 2021 todos invitados"
+              date="2 días"
+              author="taylorswift"
+              decorationImage={fireGif}
               attendees={[
                 { name: 'Alice' },
                 { name: 'Bob' },
@@ -212,7 +214,7 @@ function Playground() {
               ]}
               attendeeCount={42}
               actions={
-                <Button variant="accent" onPress={() => setLastAction('RSVP!')}>
+                <Button variant="primary" onPress={() => setLastAction('RSVP!')}>
                   RSVP
                 </Button>
               }

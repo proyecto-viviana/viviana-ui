@@ -1,5 +1,12 @@
 // Button
-export { createButton, type AriaButtonProps, type ButtonAria } from './button';
+export {
+  createButton,
+  createToggleButton,
+  type AriaButtonProps,
+  type ButtonAria,
+  type AriaToggleButtonProps,
+  type ToggleButtonAria,
+} from './button';
 
 // Interactions
 export {

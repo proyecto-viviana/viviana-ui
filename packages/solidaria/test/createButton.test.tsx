@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, screen, cleanup } from '@solidjs/testing-library';
 import userEvent from '@testing-library/user-event';
 import { PointerEventsCheckLevel } from '@testing-library/user-event';
 import { createSignal } from 'solid-js';
-import { createButton } from '../src/button';
+import { createButton, createToggleButton } from '../src/button';
 
 // Pointer map matching react-spectrum's test setup
 // Ensures pointer events have realistic dimensions so they aren't mistaken for virtual clicks
@@ -23,6 +23,10 @@ function setupUser() {
     pointerEventsCheck: PointerEventsCheckLevel.Never,
   });
 }
+
+afterEach(() => {
+  cleanup();
+});
 
 describe('createButton', () => {
   describe('native button element', () => {
@@ -259,6 +263,265 @@ describe('createButton', () => {
       const { buttonProps } = createButton({ elementType: 'input', isDisabled: true });
       expect(buttonProps.type).toBe('button');
       expect(buttonProps.disabled).toBe(true);
+    });
+  });
+
+  describe('additional ARIA attributes', () => {
+    it('passes through aria-controls', () => {
+      const { buttonProps } = createButton({ 'aria-controls': 'menu-1' });
+      expect(buttonProps['aria-controls']).toBe('menu-1');
+    });
+
+    it('passes through aria-current', () => {
+      const { buttonProps } = createButton({ 'aria-current': 'page' });
+      expect(buttonProps['aria-current']).toBe('page');
+    });
+
+    it('handles aria-current with boolean value', () => {
+      const { buttonProps } = createButton({ 'aria-current': true });
+      expect(buttonProps['aria-current']).toBe(true);
+    });
+  });
+
+  describe('touch interactions', () => {
+    it('handles touch press', async () => {
+      const user = setupUser();
+      const onPress = vi.fn();
+      const { buttonProps } = createButton({ onPress });
+
+      render(() => <button {...buttonProps}>Touch me</button>);
+      const button = screen.getByText('Touch me');
+
+      await user.pointer([
+        { keys: '[TouchA>]', target: button },
+        { keys: '[/TouchA]', target: button },
+      ]);
+
+      expect(onPress).toHaveBeenCalledTimes(1);
+    });
+
+    it('provides correct pointerType in event', async () => {
+      const user = setupUser();
+      const onPressStart = vi.fn();
+      const { buttonProps } = createButton({ onPressStart });
+
+      render(() => <button {...buttonProps}>Touch me</button>);
+      const button = screen.getByText('Touch me');
+
+      await user.pointer({ keys: '[TouchA>]', target: button });
+
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({ pointerType: 'touch' })
+      );
+    });
+  });
+
+  describe('press event coordinates', () => {
+    it('includes x and y coordinates in press events', async () => {
+      const user = setupUser();
+      const onPressStart = vi.fn();
+      const { buttonProps } = createButton({ onPressStart });
+
+      render(() => <button {...buttonProps}>Click me</button>);
+      const button = screen.getByText('Click me');
+
+      await user.pointer({ keys: '[MouseLeft>]', target: button });
+
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          x: expect.any(Number),
+          y: expect.any(Number),
+        })
+      );
+    });
+  });
+
+  describe('modifier keys', () => {
+    it('includes modifier key state in press events', async () => {
+      const user = setupUser();
+      const onPress = vi.fn();
+      const { buttonProps } = createButton({ onPress });
+
+      render(() => <button {...buttonProps}>Click me</button>);
+      await user.click(screen.getByText('Click me'));
+
+      expect(onPress).toHaveBeenCalledWith(
+        expect.objectContaining({
+          shiftKey: expect.any(Boolean),
+          ctrlKey: expect.any(Boolean),
+          metaKey: expect.any(Boolean),
+          altKey: expect.any(Boolean),
+        })
+      );
+    });
+  });
+
+  describe('pointer release outside target', () => {
+    it('does not fire onPress when pointer is released outside', async () => {
+      const user = setupUser();
+      const onPress = vi.fn();
+      const onPressEnd = vi.fn();
+      const { buttonProps } = createButton({ onPress, onPressEnd });
+
+      render(() => (
+        <div>
+          <button {...buttonProps}>Press me</button>
+          <div data-testid="outside">Outside</div>
+        </div>
+      ));
+
+      const button = screen.getByText('Press me');
+      const outside = screen.getByTestId('outside');
+
+      await user.pointer([
+        { keys: '[MouseLeft>]', target: button },
+        { keys: '[/MouseLeft]', target: outside },
+      ]);
+
+      expect(onPressEnd).toHaveBeenCalled();
+      expect(onPress).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('right click handling', () => {
+    it('does not trigger press on right click', async () => {
+      const user = setupUser();
+      const onPress = vi.fn();
+      const { buttonProps } = createButton({ onPress });
+
+      render(() => <button {...buttonProps}>Click me</button>);
+      const button = screen.getByText('Click me');
+
+      await user.pointer({ keys: '[MouseRight]', target: button });
+
+      expect(onPress).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('excludeFromTabOrder', () => {
+    it('sets tabIndex=-1 when excludeFromTabOrder is true', () => {
+      const { buttonProps } = createButton({ excludeFromTabOrder: true });
+      expect(buttonProps.tabIndex).toBe(-1);
+    });
+  });
+});
+
+describe('createToggleButton', () => {
+  describe('uncontrolled mode', () => {
+    it('toggles selection state on press', async () => {
+      const user = setupUser();
+      const onChange = vi.fn();
+      const { buttonProps, isSelected } = createToggleButton({ onChange });
+
+      expect(isSelected()).toBe(false);
+
+      render(() => <button {...buttonProps}>Toggle</button>);
+      await user.click(screen.getByText('Toggle'));
+
+      expect(onChange).toHaveBeenCalledWith(true);
+    });
+
+    it('respects defaultSelected', () => {
+      const { isSelected } = createToggleButton({ defaultSelected: true });
+      expect(isSelected()).toBe(true);
+    });
+
+    it('sets aria-pressed based on selection state', async () => {
+      const user = setupUser();
+      const { buttonProps } = createToggleButton();
+
+      render(() => <button {...buttonProps}>Toggle</button>);
+      const button = screen.getByText('Toggle');
+
+      expect(button).toHaveAttribute('aria-pressed', 'false');
+
+      await user.click(button);
+
+      expect(button).toHaveAttribute('aria-pressed', 'true');
+    });
+  });
+
+  describe('controlled mode', () => {
+    it('uses controlled isSelected value', () => {
+      const [isSelected] = createSignal(true);
+      const { isSelected: resultSelected } = createToggleButton({ isSelected });
+
+      expect(resultSelected()).toBe(true);
+    });
+
+    it('calls onChange but does not change internal state in controlled mode', async () => {
+      const user = setupUser();
+      const onChange = vi.fn();
+      const [isSelected] = createSignal(false);
+      const { buttonProps, isSelected: resultSelected } = createToggleButton({
+        isSelected,
+        onChange,
+      });
+
+      render(() => <button {...buttonProps}>Toggle</button>);
+      await user.click(screen.getByText('Toggle'));
+
+      expect(onChange).toHaveBeenCalledWith(true);
+      // In controlled mode, the parent controls the state
+      expect(resultSelected()).toBe(false);
+    });
+  });
+
+  describe('interaction with onPress', () => {
+    it('calls both onChange and onPress', async () => {
+      const user = setupUser();
+      const onChange = vi.fn();
+      const onPress = vi.fn();
+      const { buttonProps } = createToggleButton({ onChange, onPress });
+
+      render(() => <button {...buttonProps}>Toggle</button>);
+      await user.click(screen.getByText('Toggle'));
+
+      expect(onChange).toHaveBeenCalledWith(true);
+      expect(onPress).toHaveBeenCalled();
+    });
+  });
+
+  describe('disabled state', () => {
+    it('does not toggle when disabled', async () => {
+      const user = setupUser();
+      const onChange = vi.fn();
+      const { buttonProps } = createToggleButton({ onChange, isDisabled: true });
+
+      render(() => <button {...buttonProps}>Toggle</button>);
+      await user.click(screen.getByText('Toggle'));
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('keyboard interaction', () => {
+    it('toggles on Enter key', async () => {
+      const user = setupUser();
+      const onChange = vi.fn();
+      const { buttonProps } = createToggleButton({ onChange });
+
+      render(() => <button {...buttonProps}>Toggle</button>);
+      const button = screen.getByText('Toggle');
+      button.focus();
+
+      await user.keyboard('{Enter}');
+
+      expect(onChange).toHaveBeenCalledWith(true);
+    });
+
+    it('toggles on Space key', async () => {
+      const user = setupUser();
+      const onChange = vi.fn();
+      const { buttonProps } = createToggleButton({ onChange });
+
+      render(() => <button {...buttonProps}>Toggle</button>);
+      const button = screen.getByText('Toggle');
+      button.focus();
+
+      await user.keyboard('{ }');
+
+      expect(onChange).toHaveBeenCalledWith(true);
     });
   });
 });
