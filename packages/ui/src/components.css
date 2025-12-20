@@ -501,7 +501,7 @@
 }
 
 .vui-logo--lg {
-  font-size: 4.5rem;
+  font-size: 2.0rem;
 }
 
 .vui-logo--lg .vui-logo__second::before {
@@ -533,10 +533,10 @@
   margin-left: auto;
   margin-right: auto;
   max-width: 72rem;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
 }
 
 .vui-header__nav {
@@ -832,4 +832,120 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* ===== TOOLTIP COMPONENT ===== */
+.vui-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.vui-tooltip__trigger {
+  display: inline-flex;
+}
+
+.vui-tooltip__content {
+  position: absolute;
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  background: var(--color-primary-700);
+  color: var(--color-primary-200);
+  border: 1px solid var(--color-primary-500);
+  border-radius: 0.5rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+}
+
+.vui-tooltip__content--bottom {
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(0.25rem);
+}
+
+.vui-tooltip__content--top {
+  bottom: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-0.25rem);
+}
+
+.vui-tooltip:hover .vui-tooltip__content {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== PROJECT CARD COMPONENT ===== */
+.vui-project-card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-primary-700);
+  background: var(--color-bg-200);
+  transition: background 0.15s ease-in-out;
+  text-decoration: none;
+}
+
+.vui-project-card:hover {
+  background: var(--color-bg-300);
+}
+
+.vui-project-card--sm {
+  height: 4rem;
+}
+
+.vui-project-card--md {
+  height: 6rem;
+}
+
+.vui-project-card--lg {
+  padding: 1rem;
+}
+
+.vui-project-card--inactive {
+  filter: grayscale(1);
+  background: var(--color-bg-400);
+}
+
+.vui-project-card--inactive:hover {
+  background: var(--color-bg-400);
+}
+
+.vui-project-card__tooltip {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  background: var(--color-primary-700);
+  color: var(--color-primary-200);
+  border: 1px solid var(--color-primary-500);
+  border-radius: 0.5rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.vui-project-card:hover .vui-project-card__tooltip {
+  opacity: 1;
+}
+
+.vui-project-card__image {
+  max-height: 2rem;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.vui-project-card--lg .vui-project-card__image {
+  max-height: none;
+  max-width: 300px;
+  width: 100%;
 }

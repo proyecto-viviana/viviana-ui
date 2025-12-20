@@ -69,3 +69,11 @@ export type { CalendarCardProps } from './calendar-card';
 // Logo
 export { Logo } from './logo';
 export type { LogoProps, LogoSize } from './logo';
+
+// Tooltip
+export { Tooltip } from './tooltip';
+export type { TooltipProps } from './tooltip';
+
+// ProjectCard
+export { ProjectCard } from './project-card';
+export type { ProjectCardProps, ProjectCardSize } from './project-card';

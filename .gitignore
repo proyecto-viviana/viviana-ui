@@ -32,6 +32,9 @@ npm-debug.log*
 # Bun
 bun.lockb
 
+# TanStack
+.tanstack/
+
 react-spectrum
 .claude
 

@@ -14,14 +14,26 @@ export function Header() {
     <header class="vui-header">
       <div class="vui-header__container">
         <Link to="/" class="flex items-center">
-          <Logo size="sm" />
+          <Logo size="lg" />
         </Link>
         <nav class="vui-header__nav">
-          <Link to="/docs" class={`vui-header__link ${isActive("/docs") ? "vui-header__link--active" : ""}`}>
+          <Link
+            to="/docs"
+            class={`vui-header__link ${isActive("/docs") ? "vui-header__link--active" : ""}`}
+          >
             Docs
           </Link>
-          <Link to="/playground" class={`vui-header__link ${isActive("/playground") ? "vui-header__link--active" : ""}`}>
+          <Link
+            to="/playground"
+            class={`vui-header__link ${isActive("/playground") ? "vui-header__link--active" : ""}`}
+          >
             Playground
+          </Link>
+          <Link
+            to="/ecosystem"
+            class={`vui-header__link ${isActive("/ecosystem") ? "vui-header__link--active" : ""}`}
+          >
+            Ecosystem
           </Link>
           <a
             href="https://github.com/proyecto-viviana/proyecto-viviana"
