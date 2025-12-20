@@ -14,7 +14,7 @@ import { mergeProps } from '../utils/mergeProps';
 import { filterDOMProps } from '../utils/filterDOMProps';
 import { createId } from '../ssr';
 import { type MaybeAccessor, access } from '../utils/reactivity';
-import { type RadioGroupState } from './createRadioGroupState';
+import { type RadioGroupState } from 'solid-stately';
 
 // ============================================
 // TYPES

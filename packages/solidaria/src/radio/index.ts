@@ -1,10 +1,12 @@
-// Radio Group State
+// Re-export state from solid-stately
 export {
   createRadioGroupState,
+  radioGroupSyncVersion,
   type RadioGroupProps,
   type RadioGroupState,
-} from './createRadioGroupState';
+} from 'solid-stately';
 
+// ARIA hooks (solidaria-specific)
 // Radio Group
 export {
   createRadioGroup,

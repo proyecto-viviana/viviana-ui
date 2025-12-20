@@ -33,7 +33,7 @@ function getSelectedValue(isSelected: Accessor<boolean> | boolean | undefined): 
  *
  * @example
  * ```tsx
- * import { createToggleButton } from '@proyecto-viviana/solidaria';
+ * import { createToggleButton } from 'solidaria';
  *
  * function ToggleButton(props) {
  *   const { buttonProps, isPressed, isSelected } = createToggleButton(props);

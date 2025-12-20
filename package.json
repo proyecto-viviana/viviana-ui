@@ -9,7 +9,7 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "bun run --cwd packages/solidaria build && bun run --cwd packages/ui build",
+    "build": "bun run --cwd packages/solid-stately build && bun run --cwd packages/solidaria build && bun run --cwd packages/solidaria-components build && bun run --cwd packages/ui build",
     "build:web": "bun run --cwd apps/web build",
     "dev": "bun run --cwd apps/web dev",
     "start": "bun run --cwd apps/web start",

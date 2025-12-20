@@ -13,7 +13,7 @@ export default defineConfig({
       fileName: () => 'index.js',
     },
     rollupOptions: {
-      external: ['solid-js', 'solid-js/web', 'solid-js/store', '@proyecto-viviana/solidaria'],
+      external: ['solid-js', 'solid-js/web', 'solid-js/store', 'solidaria', 'solidaria-components'],
     },
     sourcemap: true,
     minify: false,

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/solid-router'
 import { createSignal, For, Show } from 'solid-js'
-import { Button } from '@proyecto-viviana/ui'
-import { createButton, createPress } from '@proyecto-viviana/solidaria'
+import { Button } from 'proyecto-viviana-ui'
+import { createButton, createPress } from 'solidaria'
 
 export const Route = createFileRoute('/docs')({
   component: Docs,
@@ -123,7 +123,7 @@ function GettingStartedPage() {
           <Button variant="accent">Accent</Button>
         </div>
 
-        <pre><code>{`import { Button } from '@proyecto-viviana/ui';
+        <pre><code>{`import { Button } from 'proyecto-viviana-ui';
 
 function App() {
   return (
@@ -136,8 +136,8 @@ function App() {
         <h2>Architecture</h2>
         <p>The library is split into two packages:</p>
         <ul class="list-disc pl-6 space-y-2">
-          <li><code>@proyecto-viviana/solidaria</code> - Headless accessibility primitives</li>
-          <li><code>@proyecto-viviana/ui</code> - Styled components built on solidaria</li>
+          <li><code>solidaria</code> - Headless accessibility primitives</li>
+          <li><code>proyecto-viviana-ui</code> - Styled components built on solidaria</li>
         </ul>
       </article>
     </div>
@@ -152,13 +152,13 @@ function InstallationPage() {
         <p>Install Proyecto Viviana packages using your preferred package manager.</p>
 
         <h2>Using bun</h2>
-        <pre><code>{`bun add @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code></pre>
+        <pre><code>{`bun add proyecto-viviana-ui solidaria`}</code></pre>
 
         <h2>Using npm</h2>
-        <pre><code>{`npm install @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code></pre>
+        <pre><code>{`npm install proyecto-viviana-ui solidaria`}</code></pre>
 
         <h2>Using pnpm</h2>
-        <pre><code>{`pnpm add @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code></pre>
+        <pre><code>{`pnpm add proyecto-viviana-ui solidaria`}</code></pre>
 
         <h2>Peer Dependencies</h2>
         <p>Make sure you have SolidJS installed:</p>
@@ -188,7 +188,7 @@ function ButtonPage() {
         <p>Buttons allow users to perform actions with a single click or tap.</p>
 
         <h2>Import</h2>
-        <pre><code>{`import { Button } from '@proyecto-viviana/ui';`}</code></pre>
+        <pre><code>{`import { Button } from 'proyecto-viviana-ui';`}</code></pre>
 
         <h2>Variants</h2>
         <div class="not-prose my-6 flex flex-wrap gap-3">
@@ -268,7 +268,7 @@ function CreateButtonPage() {
         </p>
 
         <h2>Import</h2>
-        <pre><code>{`import { createButton } from '@proyecto-viviana/solidaria';`}</code></pre>
+        <pre><code>{`import { createButton } from 'solidaria';`}</code></pre>
 
         <h2>Usage</h2>
         <pre><code>{`function CustomButton(props) {
@@ -361,7 +361,7 @@ function CreatePressPage() {
         </p>
 
         <h2>Import</h2>
-        <pre><code>{`import { createPress } from '@proyecto-viviana/solidaria';`}</code></pre>
+        <pre><code>{`import { createPress } from 'solidaria';`}</code></pre>
 
         <h2>Usage</h2>
         <pre><code>{`function PressableCard(props) {

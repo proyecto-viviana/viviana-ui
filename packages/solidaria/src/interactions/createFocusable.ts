@@ -86,7 +86,7 @@ function isDisabledValue(isDisabled: Accessor<boolean> | boolean | undefined): b
  *
  * @example
  * ```tsx
- * import { createFocusable } from '@proyecto-viviana/solidaria';
+ * import { createFocusable } from 'solidaria';
  *
  * function FocusableInput(props) {
  *   let ref;

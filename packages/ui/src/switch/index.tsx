@@ -1,5 +1,8 @@
 import { type JSX, createSignal, createEffect, splitProps, mergeProps as solidMergeProps, createMemo } from 'solid-js'
-import { createSwitch, createToggleState, type AriaSwitchProps } from '@proyecto-viviana/solidaria'
+import { createSwitch, createToggleState, type AriaSwitchProps } from 'solidaria'
+
+// Re-export the new solidaria-components based Switch
+export { Switch, type SwitchProps, type SwitchSize } from './Switch'
 
 // ============================================
 // TAB SWITCH (Two-option selector)

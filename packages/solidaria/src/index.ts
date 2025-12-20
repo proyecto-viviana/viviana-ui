@@ -42,11 +42,19 @@ export {
 export {
   createPress,
   createFocusable,
+  createFocusRing,
+  createHover,
   type CreatePressProps,
   type PressResult,
   type PressEvent,
   type CreateFocusableProps,
   type FocusableResult,
+  type FocusRingProps,
+  type FocusRingResult,
+  type CreateHoverProps,
+  type HoverResult,
+  type HoverEvent,
+  type HoverEvents,
 } from './interactions';
 
 // Label

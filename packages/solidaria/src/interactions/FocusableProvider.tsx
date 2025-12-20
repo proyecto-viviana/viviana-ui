@@ -13,7 +13,7 @@ import { FocusableContext, FocusableContextValue, FocusableProviderProps } from 
  *
  * @example
  * ```tsx
- * import { FocusableProvider } from '@proyecto-viviana/solidaria';
+ * import { FocusableProvider } from 'solidaria';
  *
  * function MyComponent() {
  *   return (

@@ -9,6 +9,9 @@ import {
   AvatarGroup,
   TabSwitch,
   ToggleSwitch,
+  Checkbox,
+  RadioGroup,
+  Radio,
   Dialog,
   ProfileCard,
   EventCard,
@@ -16,7 +19,7 @@ import {
   ConversationPreview,
   ConversationBubble,
   TimelineItem,
-} from '@proyecto-viviana/ui'
+} from 'proyecto-viviana-ui'
 import {
   createButton,
   createCheckboxGroup,
@@ -24,7 +27,7 @@ import {
   createCheckboxGroupState,
   type CheckboxGroupState,
   type AriaCheckboxGroupItemProps,
-} from '@proyecto-viviana/solidaria'
+} from 'solidaria'
 // Fire gif for event card decoration
 const fireGif = '/fire.gif'
 
@@ -37,6 +40,8 @@ function Playground() {
   const [lastAction, setLastAction] = createSignal('None')
   const [switchValue, setSwitchValue] = createSignal('trending')
   const [toggleOn, setToggleOn] = createSignal(false)
+  const [checkboxChecked, setCheckboxChecked] = createSignal(false)
+  const [radioValue, setRadioValue] = createSignal<string | null>(null)
 
   return (
     <div class="min-h-screen bg-bg-400">
@@ -61,7 +66,7 @@ function Playground() {
         <header class="mb-12">
           <h1 class="text-4xl font-bold text-primary-100">Component Playground</h1>
           <p class="mt-2 text-lg text-primary-300">
-            Interactive showcase of @proyecto-viviana/ui components
+            Interactive showcase of proyecto-viviana-ui components
           </p>
           <p class="mt-1 text-sm text-primary-400">Last action: {lastAction()}</p>
         </header>
@@ -187,6 +192,95 @@ function Playground() {
                   onChange={setSwitchValue}
                 />
                 <p class="text-sm text-primary-300 mt-2">Selected: {switchValue()}</p>
+              </div>
+            </div>
+          </Section>
+
+          {/* Checkbox Component */}
+          <Section title="Checkbox" description="Toggle selection with accessible checkbox">
+            <div class="space-y-4">
+              <div class="space-y-3">
+                <Checkbox
+                  checked={checkboxChecked()}
+                  onChange={(checked) => {
+                    setCheckboxChecked(checked)
+                    setLastAction(`Checkbox: ${checked ? 'checked' : 'unchecked'}`)
+                  }}
+                >
+                  Accept terms and conditions
+                </Checkbox>
+                <Checkbox defaultChecked>
+                  Newsletter subscription
+                </Checkbox>
+                <Checkbox isDisabled>
+                  Disabled option
+                </Checkbox>
+                <Checkbox isIndeterminate>
+                  Indeterminate state
+                </Checkbox>
+              </div>
+              <div class="flex items-center gap-4 pt-2">
+                <span class="text-sm text-primary-300">Sizes:</span>
+                <Checkbox size="sm" aria-label="Small checkbox" />
+                <Checkbox size="md" aria-label="Medium checkbox" />
+                <Checkbox size="lg" aria-label="Large checkbox" />
+              </div>
+            </div>
+          </Section>
+
+          {/* Radio Group Component */}
+          <Section title="RadioGroup" description="Single selection from multiple options">
+            <div class="space-y-6">
+              <RadioGroup
+                label="Choose your plan"
+                value={radioValue()}
+                onChange={(value) => {
+                  setRadioValue(value)
+                  setLastAction(`Radio selected: ${value}`)
+                }}
+              >
+                <Radio value="free">Free Plan</Radio>
+                <Radio value="pro">Pro Plan</Radio>
+                <Radio value="enterprise">Enterprise Plan</Radio>
+              </RadioGroup>
+
+              <div class="border-t border-bg-100 pt-4">
+                <RadioGroup
+                  label="Horizontal layout"
+                  orientation="horizontal"
+                  defaultValue="option2"
+                >
+                  <Radio value="option1">Option 1</Radio>
+                  <Radio value="option2">Option 2</Radio>
+                  <Radio value="option3">Option 3</Radio>
+                </RadioGroup>
+              </div>
+
+              <div class="border-t border-bg-100 pt-4">
+                <span class="text-sm text-primary-300 block mb-2">Sizes:</span>
+                <div class="flex gap-8">
+                  <RadioGroup aria-label="Small size" size="sm" defaultValue="a">
+                    <Radio value="a">Small</Radio>
+                  </RadioGroup>
+                  <RadioGroup aria-label="Medium size" size="md" defaultValue="a">
+                    <Radio value="a">Medium</Radio>
+                  </RadioGroup>
+                  <RadioGroup aria-label="Large size" size="lg" defaultValue="a">
+                    <Radio value="a">Large</Radio>
+                  </RadioGroup>
+                </div>
+              </div>
+
+              <div class="border-t border-bg-100 pt-4">
+                <RadioGroup
+                  label="With validation"
+                  isInvalid
+                  errorMessage="Please select an option"
+                  description="This field is required"
+                >
+                  <Radio value="a">Option A</Radio>
+                  <Radio value="b">Option B</Radio>
+                </RadioGroup>
               </div>
             </div>
           </Section>

@@ -12,7 +12,7 @@ import { createFocusable } from '../interactions/createFocusable';
 import { mergeProps } from '../utils/mergeProps';
 import { filterDOMProps } from '../utils/filterDOMProps';
 import { type MaybeAccessor, access } from '../utils/reactivity';
-import { type ToggleState } from './createToggleState';
+import { type ToggleState } from 'solid-stately';
 import { type PressEvent } from '../interactions/PressEvent';
 
 // ============================================

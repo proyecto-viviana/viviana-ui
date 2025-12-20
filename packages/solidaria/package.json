@@ -1,5 +1,5 @@
 {
-  "name": "@proyecto-viviana/solidaria",
+  "name": "solidaria",
   "version": "0.0.1",
   "description": "A 1-1 SolidJS port of React Aria - accessible UI primitives",
   "type": "module",
@@ -20,6 +20,9 @@
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json",
     "dev": "vite build --watch"
+  },
+  "dependencies": {
+    "solid-stately": "workspace:*"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"

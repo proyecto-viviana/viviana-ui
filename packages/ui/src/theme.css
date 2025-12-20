@@ -18,7 +18,7 @@
  *      // Copy the @theme block below into your CSS
  *    }
  *
- *    @import "@proyecto-viviana/ui/components.css";
+ *    @import "proyecto-viviana-ui/components.css";
  */
 
 @theme {

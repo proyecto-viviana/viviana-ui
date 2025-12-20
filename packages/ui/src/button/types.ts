@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js';
-import type { AriaButtonProps } from '@proyecto-viviana/solidaria';
+import type { AriaButtonProps } from 'solidaria';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'ghost' | 'link';
 export type ButtonStyle = 'fill' | 'outline';

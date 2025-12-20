@@ -20,6 +20,20 @@ export {
   type FocusableDOMProps,
 } from './createFocusable';
 export { FocusableProvider } from './FocusableProvider';
+export {
+  createFocusRing,
+  type FocusRingProps,
+  type FocusRingResult,
+} from './createFocusRing';
+
+// Hover interactions
+export {
+  createHover,
+  type CreateHoverProps,
+  type HoverResult,
+  type HoverEvent,
+  type HoverEvents,
+} from './createHover';
 
 // Keyboard interactions
 export {

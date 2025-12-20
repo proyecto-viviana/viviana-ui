@@ -1,0 +1,42 @@
+{
+  "name": "solidaria-components",
+  "version": "0.0.1",
+  "description": "Pre-wired headless components for SolidJS - port of react-aria-components",
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "solid": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "dev": "vite build --watch"
+  },
+  "dependencies": {
+    "solidaria": "workspace:*",
+    "solid-stately": "workspace:*"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.9.0"
+  },
+  "devDependencies": {
+    "solid-js": "^1.9.10"
+  },
+  "keywords": [
+    "solid",
+    "solidjs",
+    "accessibility",
+    "aria",
+    "headless",
+    "components"
+  ],
+  "license": "MIT"
+}

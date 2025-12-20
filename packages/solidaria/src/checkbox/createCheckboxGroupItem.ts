@@ -9,9 +9,8 @@
 
 import { JSX } from 'solid-js';
 import { createCheckbox, type AriaCheckboxProps, type CheckboxAria } from './createCheckbox';
-import { type ToggleState } from '../toggle/createToggleState';
+import { type ToggleState, type CheckboxGroupState } from 'solid-stately';
 import { checkboxGroupData } from './createCheckboxGroup';
-import { type CheckboxGroupState } from './createCheckboxGroupState';
 import { type MaybeAccessor, access } from '../utils/reactivity';
 
 // ============================================
