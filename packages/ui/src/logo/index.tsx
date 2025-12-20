@@ -3,6 +3,10 @@ import { JSX } from "solid-js";
 export type LogoSize = "sm" | "md" | "lg" | "xl";
 
 export interface LogoProps {
+  /** First word (light weight, muted color) */
+  firstWord?: string;
+  /** Second word (bold, with 3D effect) */
+  secondWord?: string;
   /** Size variant of the logo */
   size?: LogoSize;
   /** Additional CSS classes */
@@ -10,33 +14,41 @@ export interface LogoProps {
 }
 
 /**
- * Proyecto Viviana Logo with retro synthwave 3D effect.
- * Features cyan text with pink/magenta 3D shadow offset.
+ * Two-word logo with retro synthwave 3D effect.
+ * First word is light/muted, second word has bold styling with pink 3D shadow.
+ *
+ * @example
+ * // Default usage
+ * <Logo />
+ *
+ * @example
+ * // Custom text
+ * <Logo firstWord="My" secondWord="Brand" size="lg" />
  */
 export function Logo(props: LogoProps): JSX.Element {
   const sizeClass = () => {
     switch (props.size) {
       case "sm":
-        return "logo-sm";
+        return "vui-logo--sm";
       case "lg":
-        return "logo-lg";
+        return "vui-logo--lg";
       case "xl":
-        return "logo-xl";
+        return "vui-logo--xl";
       case "md":
       default:
-        return "logo-md";
+        return "vui-logo--md";
     }
   };
 
+  const firstWord = () => props.firstWord ?? "Proyecto";
+  const secondWord = () => props.secondWord ?? "Viviana";
+
   return (
-    <span
-      class={`logo-3d ${sizeClass()} ${props.class ?? ""}`}
-      style={{
-        "font-family": "'Jost', system-ui, sans-serif",
-      }}
-    >
-      <span class="logo-proyecto">Proyecto</span>
-      <span class="logo-viviana">Viviana</span>
+    <span class={`vui-logo ${sizeClass()} ${props.class ?? ""}`}>
+      <span class="vui-logo__first">{firstWord()}</span>
+      <span class="vui-logo__second" data-text={secondWord()}>
+        {secondWord()}
+      </span>
     </span>
   );
 }

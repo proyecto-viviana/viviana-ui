@@ -43,8 +43,8 @@ export { LateralNav, NavItem, NavLink, NavSection } from './lateral-nav';
 export type { LateralNavProps, NavItemProps, NavLinkProps, NavSectionProps } from './lateral-nav';
 
 // Icon
-export { Icon } from './icon';
-export type { IconProps, IconVariant } from './icon';
+export { Icon, GitHubIcon } from './icon';
+export type { IconProps, GitHubIconProps } from './icon';
 
 // TimelineItem
 export { TimelineItem } from './timeline-item';

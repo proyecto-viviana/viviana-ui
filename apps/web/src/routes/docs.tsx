@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/solid-router";
+import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
 import { Button } from "@proyecto-viviana/ui";
 import { createButton, createPress } from "@proyecto-viviana/solidaria";
+import { Header } from "@/components";
 
 export const Route = createFileRoute("/docs")({
   component: Docs,
@@ -29,23 +30,21 @@ function Docs() {
   ];
 
   return (
-    <div class="flex min-h-screen">
-      <aside class="w-64 shrink-0 border-r border-bg-200 bg-white">
-        <div class="sticky top-0 p-6">
-          <Link to="/" class="flex items-center gap-2 text-xl font-bold text-bg-900">
-            <span class="text-2xl gradient-text">V</span>
-            <span>Proyecto Viviana</span>
-          </Link>
-          <p class="mt-1 text-sm text-bg-500">Documentation</p>
-        </div>
+    <div class="min-h-screen bg-bg-400">
+      <Header />
+      <div class="flex">
+        <aside class="w-64 shrink-0 border-r border-bg-300 bg-bg-300">
+          <div class="sticky top-0 p-6">
+            <p class="text-sm text-primary-300">Documentation</p>
+          </div>
 
-        <nav class="px-4 pb-6">
+          <nav class="px-4 pb-6">
           <For each={navItems}>
             {(item) => {
               if ("section" in item) {
                 return (
                   <div class="mt-6">
-                    <h3 class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-bg-400">
+                    <h3 class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-primary-400">
                       {item.section}
                     </h3>
                     <For each={item.items}>
@@ -74,7 +73,7 @@ function Docs() {
         </nav>
       </aside>
 
-      <main class="flex-1 overflow-auto">
+      <main class="flex-1 overflow-auto bg-bg-400">
         <Show when={currentPage() === "getting-started"}>
           <GettingStartedPage />
         </Show>
@@ -91,6 +90,7 @@ function Docs() {
           <CreatePressPage />
         </Show>
       </main>
+      </div>
     </div>
   );
 }

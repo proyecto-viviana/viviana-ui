@@ -5,12 +5,25 @@
  * These styles work with any theme that defines the required variables.
  */
 
-/* ===== FONT UTILITIES ===== */
+/* ===== BASE TYPOGRAPHY ===== */
+/* Sen = body text, paragraphs, descriptions */
+/* Jost = titles, headings, labels, buttons */
+
 .font-sen {
   font-family: 'Sen', sans-serif;
 }
 
 .font-jost {
+  font-family: 'Jost', sans-serif;
+}
+
+/* Base body font */
+.vui-body {
+  font-family: 'Sen', sans-serif;
+}
+
+/* Titles and headings */
+.vui-title {
   font-family: 'Jost', sans-serif;
 }
 
@@ -29,13 +42,14 @@
 
 /* ===== BUTTON COMPONENT ===== */
 .vui-button {
+  font-family: 'Jost', sans-serif;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
   font-weight: 500;
+  text-transform: uppercase;
   border-radius: 0.5rem;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -57,121 +71,6 @@
   transform: scale(0.98);
 }
 
-/* Fill variants - pokeforos style */
-/* Primary = Pink accent (main CTA) */
-.vui-button--fill.vui-button--primary {
-  background: var(--color-accent);
-  color: white;
-}
-.vui-button--fill.vui-button--primary:hover:not(:disabled) {
-  background: var(--color-accent-300);
-}
-.vui-button--fill.vui-button--primary:active:not(:disabled) {
-  background: var(--color-accent-500);
-}
-
-/* Secondary = Cyan primary */
-.vui-button--fill.vui-button--secondary {
-  background: var(--color-primary-500);
-  color: white;
-}
-.vui-button--fill.vui-button--secondary:hover:not(:disabled) {
-  background: var(--color-primary-400);
-}
-.vui-button--fill.vui-button--secondary:active:not(:disabled) {
-  background: var(--color-primary-600);
-}
-
-/* Accent = Also pink (alias for primary look) */
-.vui-button--fill.vui-button--accent {
-  background: var(--color-accent);
-  color: white;
-}
-.vui-button--fill.vui-button--accent:hover:not(:disabled) {
-  background: var(--color-accent-300);
-}
-.vui-button--fill.vui-button--accent:active:not(:disabled) {
-  background: var(--color-accent-500);
-}
-
-/* Negative = Danger red */
-.vui-button--fill.vui-button--negative {
-  background: var(--color-danger-400);
-  color: white;
-}
-.vui-button--fill.vui-button--negative:hover:not(:disabled) {
-  background: var(--color-danger-600);
-}
-.vui-button--fill.vui-button--negative:active:not(:disabled) {
-  background: var(--color-danger-400);
-}
-
-/* Outline variants */
-.vui-button--outline.vui-button--primary {
-  border: 2px solid var(--color-accent);
-  color: var(--color-accent-200);
-  background: transparent;
-}
-.vui-button--outline.vui-button--primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-accent) 15%, transparent);
-}
-
-.vui-button--outline.vui-button--secondary {
-  border: 2px solid var(--color-primary-500);
-  color: var(--color-primary-300);
-  background: transparent;
-}
-.vui-button--outline.vui-button--secondary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-primary-500) 15%, transparent);
-}
-
-.vui-button--outline.vui-button--accent {
-  border: 2px solid var(--color-accent);
-  color: var(--color-accent-200);
-  background: transparent;
-}
-.vui-button--outline.vui-button--accent:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-accent) 15%, transparent);
-}
-
-.vui-button--outline.vui-button--negative {
-  border: 2px solid var(--color-danger-400);
-  color: var(--color-danger-100);
-  background: transparent;
-}
-.vui-button--outline.vui-button--negative:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-danger-400) 15%, transparent);
-}
-
-/* Ghost variant - transparent with hover effect */
-.vui-button--ghost {
-  background: transparent;
-  color: var(--color-primary-300);
-  border: none;
-}
-.vui-button--ghost:hover:not(:disabled) {
-  background: var(--color-bg-200);
-}
-.vui-button--ghost:active:not(:disabled) {
-  background: var(--color-bg-300);
-}
-
-/* Link variant - text-only with underline */
-.vui-button--link {
-  background: transparent;
-  color: var(--color-accent);
-  text-decoration: underline;
-  padding-left: 0;
-  padding-right: 0;
-  border: none;
-}
-.vui-button--link:hover:not(:disabled) {
-  color: var(--color-accent-300);
-}
-.vui-button--link:active:not(:disabled) {
-  color: var(--color-accent-500);
-}
-
 /* Size variants */
 .vui-button--sm {
   padding: 0.375rem 0.75rem;
@@ -191,6 +90,126 @@
 /* Full width */
 .vui-button--full-width {
   width: 100%;
+}
+
+/* ===== FILL VARIANTS ===== */
+
+/* Primary = bg-primary-700, text-primary-200, with chip shadow */
+.vui-button--fill.vui-button--primary {
+  background: var(--color-primary-700);
+  color: var(--color-primary-200);
+  box-shadow: 0 2px 8px rgba(79, 109, 133, 0.4);
+}
+
+/* Secondary = bg-primary-600, text-primary-100 */
+.vui-button--fill.vui-button--secondary {
+  background: var(--color-primary-600);
+  color: var(--color-primary-100);
+}
+
+/* Accent = bg-accent, text-white */
+.vui-button--fill.vui-button--accent {
+  background: var(--color-accent);
+  color: white;
+}
+
+/* Positive = bg-success-600, text-success-100, border-success-400 */
+.vui-button--fill.vui-button--positive {
+  background: var(--color-success-600);
+  color: var(--color-success-100);
+  border: 1px solid var(--color-success-400);
+}
+
+/* Negative = bg-danger-400, text-white */
+.vui-button--fill.vui-button--negative {
+  background: var(--color-danger-400);
+  color: white;
+}
+
+/* Ghost = transparent, text-primary-300, hover:bg-bg-200 */
+.vui-button--fill.vui-button--ghost,
+.vui-button--outline.vui-button--ghost {
+  background: transparent;
+  color: var(--color-primary-300);
+}
+.vui-button--fill.vui-button--ghost:hover:not(:disabled),
+.vui-button--outline.vui-button--ghost:hover:not(:disabled) {
+  background: var(--color-bg-200);
+}
+
+/* Link = transparent, text-accent-200, hover:text-accent-300 */
+.vui-button--fill.vui-button--link,
+.vui-button--outline.vui-button--link {
+  background: transparent;
+  color: var(--color-accent-200);
+}
+.vui-button--fill.vui-button--link:hover:not(:disabled),
+.vui-button--outline.vui-button--link:hover:not(:disabled) {
+  color: var(--color-accent-300);
+}
+
+/* ===== OUTLINE VARIANTS ===== */
+
+/* Primary outline = bg-bg-400, text-primary-500, border-primary-500 */
+.vui-button--outline.vui-button--primary {
+  background: var(--color-bg-400);
+  color: var(--color-primary-500);
+  border: 1px solid var(--color-primary-500);
+}
+
+/* Secondary outline = transparent, text-primary-300, border-primary-600 */
+.vui-button--outline.vui-button--secondary {
+  background: transparent;
+  color: var(--color-primary-300);
+  border: 1px solid var(--color-primary-600);
+}
+
+/* Accent outline = transparent, text-accent-200, border-accent */
+.vui-button--outline.vui-button--accent {
+  background: transparent;
+  color: var(--color-accent-200);
+  border: 1px solid var(--color-accent);
+}
+
+/* Positive outline = transparent, text-success-400, border-success-400 */
+.vui-button--outline.vui-button--positive {
+  background: transparent;
+  color: var(--color-success-400);
+  border: 1px solid var(--color-success-400);
+}
+
+/* Negative outline = transparent, text-danger-400, border-danger-400 */
+.vui-button--outline.vui-button--negative {
+  background: transparent;
+  color: var(--color-danger-400);
+  border: 1px solid var(--color-danger-400);
+}
+
+/* ===== ICON COMPONENT ===== */
+.vui-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vui-icon__main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vui-icon__shadow {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
 }
 
 /* ===== CHIP COMPONENT ===== */
@@ -437,4 +456,380 @@
   background: var(--color-primary-700);
   color: var(--color-primary-100);
   font-weight: 500;
+}
+
+/* ===== LOGO COMPONENT ===== */
+.vui-logo {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: 'Jost', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.vui-logo__first {
+  color: var(--color-primary-800);
+  font-weight: 300;
+}
+
+.vui-logo__second {
+  position: relative;
+  color: var(--color-primary-500);
+  font-weight: 900;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+  paint-order: stroke fill;
+}
+
+.vui-logo__second::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  color: transparent;
+  -webkit-text-stroke: 0;
+  text-shadow: 4px 3px 0 var(--color-accent);
+}
+
+/* Logo size variants */
+.vui-logo--sm {
+  font-size: 2.5rem;
+}
+
+.vui-logo--md {
+  font-size: 3.5rem;
+}
+
+.vui-logo--lg {
+  font-size: 4.5rem;
+}
+
+.vui-logo--lg .vui-logo__second::before {
+  text-shadow: 5px 4px 0 var(--color-accent);
+}
+
+.vui-logo--xl {
+  font-size: 6rem;
+}
+
+.vui-logo--xl .vui-logo__second::before {
+  text-shadow: 6px 5px 0 var(--color-accent);
+}
+
+/* ===== HEADER COMPONENT ===== */
+.vui-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-bottom: 3px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-bg-400) 80%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.vui-header__container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 72rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+}
+
+.vui-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.vui-header__link {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary-300);
+  transition: color 0.15s;
+}
+
+.vui-header__link:hover {
+  color: var(--color-primary-100);
+}
+
+.vui-header__link--active {
+  color: var(--color-accent);
+}
+
+.vui-header__link--active:hover {
+  color: var(--color-accent-300);
+}
+
+/* ===== LANDING PAGE LAYOUT ===== */
+.vui-landing {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg-100);
+  font-family: 'Sen', sans-serif;
+}
+
+/* Hero Section */
+.vui-hero {
+  min-height: 50vh;
+  padding-top: 7.5rem;
+  padding-bottom: 2rem;
+  background: var(--color-bg-200);
+  border-bottom: 1px solid var(--color-primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vui-hero__container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 56rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+.vui-hero__title {
+  font-family: 'Jost', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--color-primary-100);
+  line-height: 1.1;
+}
+
+@media (min-width: 640px) {
+  .vui-hero__title {
+    font-size: 3.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .vui-hero__title {
+    font-size: 4.5rem;
+  }
+}
+
+.vui-hero__subtitle {
+  margin-top: 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 42rem;
+  font-size: 1.25rem;
+  color: var(--color-primary-300);
+  line-height: 1.75;
+}
+
+.vui-hero__actions {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Section */
+.vui-section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.vui-section--alt {
+  background: var(--color-bg-200);
+}
+
+.vui-section__container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 72rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.vui-section__container--narrow {
+  max-width: 56rem;
+}
+
+.vui-section__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.vui-section__title {
+  font-family: 'Jost', sans-serif;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-primary-100);
+}
+
+.vui-section__description {
+  margin-top: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 42rem;
+  font-size: 1.125rem;
+  color: var(--color-primary-300);
+}
+
+/* Feature Grid */
+.vui-feature-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 640px) {
+  .vui-feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .vui-feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Feature Card */
+.vui-feature-card {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-bg-300);
+  background: var(--color-bg-300);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.vui-feature-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-primary-600);
+}
+
+.vui-feature-card__icon {
+  font-size: 1.875rem;
+  margin-bottom: 1rem;
+}
+
+.vui-feature-card__title {
+  font-family: 'Jost', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-primary-100);
+}
+
+.vui-feature-card__description {
+  margin-top: 0.5rem;
+  color: var(--color-primary-300);
+  line-height: 1.625;
+}
+
+/* Code Block */
+.vui-code-block {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-bg-300);
+  background: var(--color-bg-400);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.vui-code-block__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-bg-300);
+  background: var(--color-bg-300);
+}
+
+.vui-code-block__dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+}
+
+.vui-code-block__dot--red {
+  background: var(--color-danger-400);
+}
+
+.vui-code-block__dot--yellow {
+  background: var(--color-warning-400);
+}
+
+.vui-code-block__dot--green {
+  background: var(--color-success-400);
+}
+
+.vui-code-block__filename {
+  margin-left: 1rem;
+  font-size: 0.875rem;
+  color: var(--color-primary-400);
+}
+
+.vui-code-block__content {
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+.vui-code-block__code {
+  font-size: 0.875rem;
+  line-height: 1.625;
+  color: var(--color-primary-200);
+  font-family: var(--font-mono);
+}
+
+/* Footer */
+.vui-footer {
+  border-top: 1px solid var(--color-bg-300);
+  background: var(--color-bg-300);
+}
+
+.vui-footer__container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 72rem;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .vui-footer__container {
+    flex-direction: row;
+  }
+}
+
+.vui-footer__text {
+  font-size: 0.875rem;
+  color: var(--color-primary-400);
+}
+
+.vui-footer__links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.vui-footer__link {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.875rem;
+  color: var(--color-primary-300);
+  transition: color 0.15s;
+}
+
+.vui-footer__link:hover {
+  color: var(--color-primary-100);
+}
+
+/* Gradient Text Utility */
+.vui-gradient-text {
+  background: linear-gradient(135deg, var(--color-primary-300), var(--color-accent-300));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

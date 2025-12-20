@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/solid-router'
+import { createFileRoute } from '@tanstack/solid-router'
 import { createSignal, JSX } from 'solid-js'
 import {
   Button,
@@ -28,6 +28,7 @@ import {
   type CheckboxGroupState,
   type AriaCheckboxGroupItemProps,
 } from '@proyecto-viviana/solidaria'
+import { Header } from '@/components'
 // Fire gif for event card decoration
 const fireGif = '/fire.gif'
 
@@ -45,22 +46,7 @@ function Playground() {
 
   return (
     <div class="min-h-screen bg-bg-400">
-      <header class="border-b border-bg-300 bg-bg-400/80 backdrop-blur-sm">
-        <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/" class="flex items-center gap-2 text-xl font-bold text-primary-100">
-            <span class="text-2xl gradient-text">V</span>
-            <span>Viviana</span>
-          </Link>
-          <nav class="flex items-center gap-6">
-            <Link to="/docs" class="text-sm font-medium text-primary-300 hover:text-primary-100">
-              Docs
-            </Link>
-            <Link to="/playground" class="text-sm font-medium text-accent">
-              Playground
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <div class="mx-auto max-w-6xl px-6 py-12">
         <header class="mb-12">
