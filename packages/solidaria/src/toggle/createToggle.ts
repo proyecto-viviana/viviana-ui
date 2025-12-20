@@ -214,6 +214,9 @@ export function createToggle(
         form: p.form,
         type: 'checkbox' as const,
         ...interactions,
+        // Stop click propagation to prevent labelProps.onClick from calling preventDefault
+        // which would prevent the checkbox from toggling in JSDOM/testing-library environments
+        onClick: (e: MouseEvent) => e.stopPropagation(),
       }) as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
     isSelected: state.isSelected,

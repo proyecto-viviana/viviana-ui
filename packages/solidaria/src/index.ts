@@ -24,6 +24,20 @@ export {
   type CheckboxGroupState,
 } from './checkbox';
 
+// Radio
+export {
+  createRadio,
+  createRadioGroup,
+  createRadioGroupState,
+  radioGroupData,
+  type AriaRadioProps,
+  type RadioAria,
+  type AriaRadioGroupProps,
+  type RadioGroupAria,
+  type RadioGroupProps,
+  type RadioGroupState,
+} from './radio';
+
 // Interactions
 export {
   createPress,
@@ -64,6 +78,13 @@ export {
   type ToggleStateOptions,
   type ToggleState,
 } from './toggle';
+
+// Switch
+export {
+  createSwitch,
+  type AriaSwitchProps,
+  type SwitchAria,
+} from './switch';
 
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';

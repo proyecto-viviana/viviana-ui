@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/solid-router'
-import { createSignal } from 'solid-js'
+import { createSignal, JSX } from 'solid-js'
 import {
   Button,
   Badge,
@@ -17,7 +17,14 @@ import {
   ConversationBubble,
   TimelineItem,
 } from '@proyecto-viviana/ui'
-import { createButton } from '@proyecto-viviana/solidaria'
+import {
+  createButton,
+  createCheckboxGroup,
+  createCheckboxGroupItem,
+  createCheckboxGroupState,
+  type CheckboxGroupState,
+  type AriaCheckboxGroupItemProps,
+} from '@proyecto-viviana/solidaria'
 // Fire gif for event card decoration
 const fireGif = '/fire.gif'
 
@@ -303,6 +310,11 @@ function Playground() {
               </CustomOutlineButton>
             </div>
           </Section>
+
+          {/* Checkbox Group Hook */}
+          <Section title="createCheckboxGroup Hook" description="Accessible checkbox group with ARIA support" class="lg:col-span-2">
+            <CheckboxGroupDemo onSelectionChange={(values) => setLastAction(`Selected: ${values.join(', ') || 'none'}`)} />
+          </Section>
         </div>
       </div>
     </div>
@@ -350,5 +362,166 @@ function CustomOutlineButton(props: { onPress?: () => void; children: string }) 
     >
       {props.children}
     </button>
+  )
+}
+
+// ============================================
+// Checkbox Group Demo Components
+// ============================================
+
+function CheckboxGroupDemo(props: { onSelectionChange?: (values: string[]) => void }) {
+  const state = createCheckboxGroupState(() => ({
+    defaultValue: ['notifications'],
+    onChange: props.onSelectionChange,
+  }))
+
+  const { groupProps, labelProps } = createCheckboxGroup(
+    () => ({ label: 'Preferences' }),
+    state
+  )
+
+  return (
+    <div class="space-y-6">
+      {/* Basic Checkbox Group */}
+      <div>
+        <h3 class="text-sm font-medium text-primary-200 mb-3">Basic Group</h3>
+        <div {...groupProps} class="space-y-2">
+          <span {...labelProps} class="text-sm font-medium text-primary-100 block mb-2">
+            Notification Settings
+          </span>
+          <CustomCheckbox value="notifications" state={state}>
+            Enable notifications
+          </CustomCheckbox>
+          <CustomCheckbox value="emails" state={state}>
+            Email updates
+          </CustomCheckbox>
+          <CustomCheckbox value="marketing" state={state}>
+            Marketing communications
+          </CustomCheckbox>
+        </div>
+        <p class="mt-2 text-xs text-primary-400">
+          Selected: {state.value().join(', ') || 'none'}
+        </p>
+      </div>
+
+      {/* Disabled & Read-only Examples */}
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <h3 class="text-sm font-medium text-primary-200 mb-3">Disabled Checkbox</h3>
+          <DisabledCheckboxDemo />
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-primary-200 mb-3">Read-only Checkbox</h3>
+          <ReadonlyCheckboxDemo />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CustomCheckbox(props: {
+  value: string
+  state: CheckboxGroupState
+  children: JSX.Element
+  isDisabled?: boolean
+  isReadOnly?: boolean
+}) {
+  let inputRef: HTMLInputElement | null = null
+
+  const result = createCheckboxGroupItem(
+    () => ({
+      value: props.value,
+      isDisabled: props.isDisabled,
+      isReadOnly: props.isReadOnly,
+      children: props.children,
+    }),
+    props.state,
+    () => inputRef
+  )
+
+  const isChecked = () => props.state.value().includes(props.value)
+  const getInputProps = () => result.inputProps
+
+  return (
+    <label
+      class={`flex items-center gap-3 cursor-pointer group ${
+        props.isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+      }`}
+    >
+      <div class="relative">
+        <input
+          ref={(el) => (inputRef = el)}
+          type="checkbox"
+          value={props.value}
+          checked={isChecked()}
+          disabled={getInputProps().disabled}
+          aria-readonly={getInputProps()['aria-readonly']}
+          onChange={getInputProps().onChange}
+          class="peer sr-only"
+        />
+        <div
+          class={`w-5 h-5 rounded border-2 transition-all flex items-center justify-center
+            ${isChecked()
+              ? 'bg-accent border-accent'
+              : 'border-primary-400 group-hover:border-primary-200'
+            }
+            ${props.isDisabled ? '' : 'peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-bg-200'}
+          `}
+        >
+          {isChecked() && (
+            <svg class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+              <path
+                d="M2 6L5 9L10 3"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          )}
+        </div>
+      </div>
+      <span class="text-sm text-primary-200">{props.children}</span>
+    </label>
+  )
+}
+
+function DisabledCheckboxDemo() {
+  const state = createCheckboxGroupState(() => ({
+    defaultValue: ['option1'],
+    isDisabled: true,
+  }))
+
+  const { groupProps } = createCheckboxGroup(() => ({}), state)
+
+  return (
+    <div {...groupProps} class="space-y-2">
+      <CustomCheckbox value="option1" state={state} isDisabled>
+        Disabled (checked)
+      </CustomCheckbox>
+      <CustomCheckbox value="option2" state={state} isDisabled>
+        Disabled (unchecked)
+      </CustomCheckbox>
+    </div>
+  )
+}
+
+function ReadonlyCheckboxDemo() {
+  const state = createCheckboxGroupState(() => ({
+    defaultValue: ['readonly1'],
+    isReadOnly: true,
+  }))
+
+  const { groupProps } = createCheckboxGroup(() => ({}), state)
+
+  return (
+    <div {...groupProps} class="space-y-2">
+      <CustomCheckbox value="readonly1" state={state} isReadOnly>
+        Read-only (checked)
+      </CustomCheckbox>
+      <CustomCheckbox value="readonly2" state={state} isReadOnly>
+        Read-only (unchecked)
+      </CustomCheckbox>
+    </div>
   )
 }
