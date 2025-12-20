@@ -1,11 +1,11 @@
-import { createFileRoute, Link } from '@tanstack/solid-router'
-import { createSignal, For } from 'solid-js'
-import { Button } from '@proyecto-viviana/ui'
-import { createButton } from '@proyecto-viviana/solidaria'
+import { createFileRoute, Link } from "@tanstack/solid-router";
+import { createSignal, For } from "solid-js";
+import { Button, Logo } from "@proyecto-viviana/ui";
+import { createButton } from "@proyecto-viviana/solidaria";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: Landing,
-})
+});
 
 function Landing() {
   return (
@@ -17,22 +17,24 @@ function Landing() {
       <CodeExample />
       <Footer />
     </div>
-  )
+  );
 }
 
 function Header() {
   return (
-    <header class="fixed top-0 left-0 right-0 z-50 border-b border-bg-300 bg-bg-400/80 backdrop-blur-sm">
+    <header class="fixed top-0 left-0 right-0 z-50 border-b-2 border-accent bg-bg-400/80 backdrop-blur-sm">
       <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link to="/" class="flex items-center gap-2 text-xl font-bold text-primary-100">
-          <span class="text-2xl gradient-text">V</span>
-          <span>Viviana</span>
+        <Link to="/" class="flex items-center">
+          <Logo size="sm" />
         </Link>
         <nav class="flex items-center gap-6">
           <Link to="/docs" class="text-sm font-medium text-primary-300 hover:text-primary-100">
             Docs
           </Link>
-          <Link to="/playground" class="text-sm font-medium text-primary-300 hover:text-primary-100">
+          <Link
+            to="/playground"
+            class="text-sm font-medium text-primary-300 hover:text-primary-100"
+          >
             Playground
           </Link>
           <a
@@ -51,7 +53,7 @@ function Header() {
         </nav>
       </div>
     </header>
-  )
+  );
 }
 
 function Hero() {
@@ -71,47 +73,51 @@ function Hero() {
             <Button variant="primary">Read the Docs</Button>
           </Link>
           <Link to="/playground">
-            <Button variant="secondary" style="outline">Try the Playground</Button>
+            <Button variant="secondary" style="outline">
+              Try the Playground
+            </Button>
           </Link>
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 function Features() {
   const features = [
     {
-      title: 'Accessible by Default',
-      description: 'Built on WAI-ARIA patterns from React Aria. Screen reader friendly, keyboard navigable.',
-      icon: '♿',
+      title: "Accessible by Default",
+      description:
+        "Built on WAI-ARIA patterns from React Aria. Screen reader friendly, keyboard navigable.",
+      icon: "♿",
     },
     {
-      title: 'SolidJS Native',
-      description: 'Fine-grained reactivity with signals. No React overhead, pure SolidJS primitives.',
-      icon: '⚡',
+      title: "SolidJS Native",
+      description:
+        "Fine-grained reactivity with signals. No React overhead, pure SolidJS primitives.",
+      icon: "⚡",
     },
     {
-      title: 'SSR Ready',
-      description: 'Works seamlessly with TanStack Start, Astro, and other SSR frameworks.',
-      icon: '🌐',
+      title: "SSR Ready",
+      description: "Works seamlessly with TanStack Start, Astro, and other SSR frameworks.",
+      icon: "🌐",
     },
     {
-      title: 'Tailwind v4',
-      description: 'Modern CSS with the new @theme syntax. Easily customize with CSS variables.',
-      icon: '🎨',
+      title: "Tailwind v4",
+      description: "Modern CSS with the new @theme syntax. Easily customize with CSS variables.",
+      icon: "🎨",
     },
     {
-      title: 'TypeScript First',
-      description: 'Full type safety with comprehensive TypeScript definitions out of the box.',
-      icon: '📝',
+      title: "TypeScript First",
+      description: "Full type safety with comprehensive TypeScript definitions out of the box.",
+      icon: "📝",
     },
     {
-      title: 'Two-Layer Architecture',
-      description: 'Use styled components or headless hooks. Your choice, maximum flexibility.',
-      icon: '🏗️',
+      title: "Two-Layer Architecture",
+      description: "Use styled components or headless hooks. Your choice, maximum flexibility.",
+      icon: "🏗️",
     },
-  ]
+  ];
 
   return (
     <section class="py-20 bg-bg-400">
@@ -134,11 +140,11 @@ function Features() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 function ComponentShowcase() {
-  const [count, setCount] = createSignal(0)
+  const [count, setCount] = createSignal(0);
 
   return (
     <section class="bg-bg-300 py-20">
@@ -155,7 +161,7 @@ function ComponentShowcase() {
             <div>
               <p class="mb-3 text-sm font-medium text-primary-400">Filled Buttons</p>
               <div class="flex flex-wrap gap-3">
-                <Button variant="primary" onPress={() => setCount(c => c + 1)}>
+                <Button variant="primary" onPress={() => setCount((c) => c + 1)}>
                   Count: {count()}
                 </Button>
                 <Button variant="secondary">Secondary</Button>
@@ -168,16 +174,24 @@ function ComponentShowcase() {
             <div>
               <p class="mb-3 text-sm font-medium text-primary-400">Outline Buttons</p>
               <div class="flex flex-wrap gap-3">
-                <Button variant="primary" style="outline">Primary</Button>
-                <Button variant="secondary" style="outline">Secondary</Button>
-                <Button variant="accent" style="outline">Accent</Button>
-                <Button variant="negative" style="outline">Negative</Button>
+                <Button variant="primary" style="outline">
+                  Primary
+                </Button>
+                <Button variant="secondary" style="outline">
+                  Secondary
+                </Button>
+                <Button variant="accent" style="outline">
+                  Accent
+                </Button>
+                <Button variant="negative" style="outline">
+                  Negative
+                </Button>
               </div>
             </div>
 
             <div>
               <p class="mb-3 text-sm font-medium text-primary-400">Custom with createButton Hook</p>
-              <CustomGradientButton onPress={() => alert('Custom button works!')}>
+              <CustomGradientButton onPress={() => alert("Custom button works!")}>
                 Gradient Button
               </CustomGradientButton>
             </div>
@@ -185,24 +199,24 @@ function ComponentShowcase() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 function CustomGradientButton(props: { onPress?: () => void; children: string }) {
   const { buttonProps, isPressed } = createButton({
     onPress: props.onPress,
-  })
+  });
 
   return (
     <button
       {...buttonProps}
       class={`rounded-lg bg-gradient-to-r from-primary-500 to-accent px-6 py-3 font-medium text-white shadow-md transition-all hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
-        isPressed() ? 'scale-[0.98] shadow-sm' : ''
+        isPressed() ? "scale-[0.98] shadow-sm" : ""
       }`}
     >
       {props.children}
     </button>
-  )
+  );
 }
 
 function CodeExample() {
@@ -229,7 +243,7 @@ function CustomButton(props) {
       {props.children}
     </button>
   );
-}`
+}`;
 
   return (
     <section class="py-20 bg-bg-400">
@@ -252,7 +266,7 @@ function CustomButton(props) {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 function Footer() {
@@ -260,13 +274,14 @@ function Footer() {
     <footer class="border-t border-bg-300 bg-bg-400 py-12">
       <div class="mx-auto max-w-6xl px-6">
         <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <div class="flex items-center gap-2 text-lg font-bold text-primary-100">
-            <span class="text-xl gradient-text">V</span>
-            <span>Proyecto Viviana</span>
-          </div>
+          <Logo size="sm" />
           <div class="flex gap-6 text-sm text-primary-300">
-            <Link to="/docs" class="hover:text-primary-100">Documentation</Link>
-            <Link to="/playground" class="hover:text-primary-100">Playground</Link>
+            <Link to="/docs" class="hover:text-primary-100">
+              Documentation
+            </Link>
+            <Link to="/playground" class="hover:text-primary-100">
+              Playground
+            </Link>
             <a
               href="https://github.com/proyecto-viviana/proyecto-viviana"
               class="hover:text-primary-100"
@@ -282,5 +297,5 @@ function Footer() {
         </p>
       </div>
     </footer>
-  )
+  );
 }

@@ -495,3 +495,68 @@
   color: var(--color-primary-100);
   font-weight: 500;
 }
+
+/* ===== LOGO 3D EFFECT ===== */
+.logo-3d {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: 'Jost', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  font-size: 0.85em;
+}
+
+.logo-proyecto {
+  color: var(--color-primary-600);
+  font-weight: 300;
+}
+
+.logo-viviana {
+  position: relative;
+  color: var(--color-primary-500);
+  font-weight: 900;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+  paint-order: stroke fill;
+}
+
+.logo-viviana::before {
+  content: "Viviana";
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  color: transparent;
+  -webkit-text-stroke: 0;
+  text-shadow: 4px 3px 0 var(--color-accent);
+}
+
+/* Size variants */
+.logo-3d.logo-sm {
+  font-size: 2.5rem;
+}
+
+.logo-3d.logo-md {
+  font-size: 3.5rem;
+}
+
+.logo-3d.logo-lg {
+  font-size: 2rem;
+}
+
+.logo-3d.logo-lg .logo-viviana {
+  text-shadow:
+    2px 2px 0 #d64d80,
+    3px 3px 0 #c43d70,
+    4px 4px 0 #b32d60;
+}
+
+.logo-3d.logo-xl {
+  font-size: 3rem;
+}
+
+.logo-3d.logo-xl .logo-viviana {
+  text-shadow:
+    2px 2px 0 #d64d80,
+    4px 4px 0 #c43d70,
+    6px 6px 0 #b32d60;
+}

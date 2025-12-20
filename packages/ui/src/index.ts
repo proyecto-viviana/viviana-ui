@@ -65,3 +65,7 @@ export type { EventCardProps, EventListItemProps } from './event-card';
 // CalendarCard
 export { CalendarCard } from './calendar-card';
 export type { CalendarCardProps } from './calendar-card';
+
+// Logo
+export { Logo } from './logo';
+export type { LogoProps, LogoSize } from './logo';

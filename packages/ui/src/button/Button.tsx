@@ -11,6 +11,10 @@ const variantStyles: Record<ButtonVariant, Record<ButtonStyle, string>> = {
     fill: 'bg-primary-600 text-primary-100',
     outline: 'bg-transparent text-primary-300 border border-primary-600',
   },
+  accent: {
+    fill: 'bg-accent text-white',
+    outline: 'bg-transparent text-accent-200 border border-accent',
+  },
   danger: {
     fill: 'bg-danger-600 text-danger-100 border border-danger-400',
     outline: 'bg-transparent text-danger-400 border border-danger-400',
@@ -26,6 +30,10 @@ const variantStyles: Record<ButtonVariant, Record<ButtonStyle, string>> = {
   link: {
     fill: 'bg-transparent text-accent-200 hover:text-accent-300',
     outline: 'bg-transparent text-accent-200 hover:text-accent-300',
+  },
+  negative: {
+    fill: 'bg-danger-400 text-white',
+    outline: 'bg-transparent text-danger-400 border border-danger-400',
   },
 };
 
