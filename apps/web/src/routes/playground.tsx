@@ -19,7 +19,7 @@ import {
   ConversationPreview,
   ConversationBubble,
   TimelineItem,
-} from 'proyecto-viviana-ui'
+} from '@proyecto-viviana/ui'
 import {
   createButton,
   createCheckboxGroup,
@@ -27,7 +27,7 @@ import {
   createCheckboxGroupState,
   type CheckboxGroupState,
   type AriaCheckboxGroupItemProps,
-} from 'solidaria'
+} from '@proyecto-viviana/solidaria'
 // Fire gif for event card decoration
 const fireGif = '/fire.gif'
 

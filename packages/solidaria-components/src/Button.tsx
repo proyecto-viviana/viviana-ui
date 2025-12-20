@@ -18,7 +18,7 @@ import {
   createFocusRing,
   createHover,
   type AriaButtonProps,
-} from 'solidaria';
+} from '@proyecto-viviana/solidaria';
 import {
   type RenderChildren,
   type ClassNameOrFunction,

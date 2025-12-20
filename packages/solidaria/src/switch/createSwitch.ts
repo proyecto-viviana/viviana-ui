@@ -9,7 +9,7 @@
 
 import { JSX, Accessor } from 'solid-js';
 import { createToggle, type AriaToggleProps } from '../toggle/createToggle';
-import { type ToggleState } from 'solid-stately';
+import { type ToggleState } from '@proyecto-viviana/solid-stately';
 import { type MaybeAccessor } from '../utils/reactivity';
 
 // ============================================

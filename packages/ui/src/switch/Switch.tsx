@@ -7,7 +7,7 @@
  */
 
 import { type JSX, splitProps, mergeProps as solidMergeProps } from 'solid-js';
-import { Switch as HeadlessSwitch, type SwitchProps as HeadlessSwitchProps, type SwitchRenderProps } from 'solidaria-components';
+import { Switch as HeadlessSwitch, type SwitchProps as HeadlessSwitchProps, type SwitchRenderProps } from '@proyecto-viviana/solidaria-components';
 
 // ============================================
 // TYPES

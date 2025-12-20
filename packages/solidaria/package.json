@@ -1,5 +1,5 @@
 {
-  "name": "solidaria",
+  "name": "@proyecto-viviana/solidaria",
   "version": "0.0.1",
   "description": "A 1-1 SolidJS port of React Aria - accessible UI primitives",
   "type": "module",
@@ -22,7 +22,7 @@
     "dev": "vite build --watch"
   },
   "dependencies": {
-    "solid-stately": "workspace:*"
+    "@proyecto-viviana/solid-stately": "workspace:*"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"
@@ -41,6 +41,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vivianacorp/proyecto-viviana"
+    "url": "https://github.com/proyecto-viviana/proyecto-viviana"
   }
 }

@@ -9,8 +9,8 @@
     "start": "vite preview"
   },
   "dependencies": {
-    "solidaria": "workspace:*",
-    "proyecto-viviana-ui": "workspace:*",
+    "@proyecto-viviana/solidaria": "workspace:*",
+    "@proyecto-viviana/ui": "workspace:*",
     "@tanstack/solid-start": "^1.93.1",
     "@tanstack/solid-router": "^1.93.1",
     "solid-js": "^1.9.10",

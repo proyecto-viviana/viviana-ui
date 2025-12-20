@@ -22,13 +22,13 @@ import {
   createHover,
   type AriaCheckboxProps,
   type AriaCheckboxGroupProps,
-} from 'solidaria';
+} from '@proyecto-viviana/solidaria';
 import {
   createToggleState,
   createCheckboxGroupState,
   type ToggleState,
   type CheckboxGroupState,
-} from 'solid-stately';
+} from '@proyecto-viviana/solid-stately';
 import { VisuallyHidden } from './VisuallyHidden';
 import {
   type RenderChildren,

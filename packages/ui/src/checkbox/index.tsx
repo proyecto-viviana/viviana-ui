@@ -1,5 +1,5 @@
 import { type JSX, splitProps, mergeProps as solidMergeProps, createMemo, Show } from 'solid-js'
-import { createCheckbox, createToggleState, type AriaCheckboxProps } from 'solidaria'
+import { createCheckbox, createToggleState, type AriaCheckboxProps } from '@proyecto-viviana/solidaria'
 
 // ============================================
 // CHECKBOX COMPONENT

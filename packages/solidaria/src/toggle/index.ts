@@ -1,6 +1,6 @@
 // Re-export state from solid-stately
-export { createToggleState } from 'solid-stately';
-export type { ToggleStateOptions, ToggleState } from 'solid-stately';
+export { createToggleState } from '@proyecto-viviana/solid-stately';
+export type { ToggleStateOptions, ToggleState } from '@proyecto-viviana/solid-stately';
 
 // ARIA hook (solidaria-specific)
 export { createToggle } from './createToggle';

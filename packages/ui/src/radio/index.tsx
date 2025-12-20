@@ -6,7 +6,7 @@ import {
   type AriaRadioProps,
   type AriaRadioGroupProps,
   type RadioGroupState,
-} from 'solidaria'
+} from '@proyecto-viviana/solidaria'
 
 // ============================================
 // CONTEXT

@@ -4,7 +4,7 @@ export {
   radioGroupSyncVersion,
   type RadioGroupProps,
   type RadioGroupState,
-} from 'solid-stately';
+} from '@proyecto-viviana/solid-stately';
 
 // ARIA hooks (solidaria-specific)
 // Radio Group

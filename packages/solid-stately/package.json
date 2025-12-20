@@ -1,5 +1,5 @@
 {
-  "name": "solid-stately",
+  "name": "@proyecto-viviana/solid-stately",
   "version": "0.0.1",
   "description": "A 1-1 SolidJS port of React Stately - headless state management for UI components",
   "type": "module",
@@ -38,6 +38,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vivianacorp/proyecto-viviana"
+    "url": "https://github.com/proyecto-viviana/proyecto-viviana"
   }
 }

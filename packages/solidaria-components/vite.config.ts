@@ -11,7 +11,7 @@ export default defineConfig({
       fileName: 'index',
     },
     rollupOptions: {
-      external: ['solid-js', 'solid-js/web', 'solid-js/store', 'solidaria', 'solid-stately'],
+      external: ['solid-js', 'solid-js/web', 'solid-js/store', '@proyecto-viviana/solidaria', '@proyecto-viviana/solid-stately'],
     },
     target: 'esnext',
     minify: false,

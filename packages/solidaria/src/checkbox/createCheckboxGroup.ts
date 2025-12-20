@@ -13,7 +13,7 @@ import { createFocusWithin } from '../interactions/createFocusWithin';
 import { filterDOMProps } from '../utils/filterDOMProps';
 import { mergeProps } from '../utils/mergeProps';
 import { type MaybeAccessor, access } from '../utils/reactivity';
-import { type CheckboxGroupState, type CheckboxGroupProps } from 'solid-stately';
+import { type CheckboxGroupState, type CheckboxGroupProps } from '@proyecto-viviana/solid-stately';
 
 // ============================================
 // TYPES

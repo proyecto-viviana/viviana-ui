@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/solid-router'
 import { createSignal, For, Show } from 'solid-js'
-import { Button } from 'proyecto-viviana-ui'
-import { createButton, createPress } from 'solidaria'
+import { Button } from '@proyecto-viviana/ui'
+import { createButton, createPress } from '@proyecto-viviana/solidaria'
 
 export const Route = createFileRoute('/docs')({
   component: Docs,

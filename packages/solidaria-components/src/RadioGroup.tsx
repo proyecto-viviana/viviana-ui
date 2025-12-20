@@ -21,11 +21,11 @@ import {
   createHover,
   type AriaRadioProps,
   type AriaRadioGroupProps,
-} from 'solidaria';
+} from '@proyecto-viviana/solidaria';
 import {
   createRadioGroupState,
   type RadioGroupState,
-} from 'solid-stately';
+} from '@proyecto-viviana/solid-stately';
 import { VisuallyHidden } from './VisuallyHidden';
 import {
   type RenderChildren,

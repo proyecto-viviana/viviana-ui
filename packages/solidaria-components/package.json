@@ -1,5 +1,5 @@
 {
-  "name": "solidaria-components",
+  "name": "@proyecto-viviana/solidaria-components",
   "version": "0.0.1",
   "description": "Pre-wired headless components for SolidJS - port of react-aria-components",
   "type": "module",
@@ -21,8 +21,8 @@
     "dev": "vite build --watch"
   },
   "dependencies": {
-    "solidaria": "workspace:*",
-    "solid-stately": "workspace:*"
+    "@proyecto-viviana/solidaria": "workspace:*",
+    "@proyecto-viviana/solid-stately": "workspace:*"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"

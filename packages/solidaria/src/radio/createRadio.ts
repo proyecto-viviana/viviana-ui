@@ -13,7 +13,7 @@ import { createFocusable } from '../interactions/createFocusable';
 import { mergeProps } from '../utils/mergeProps';
 import { filterDOMProps } from '../utils/filterDOMProps';
 import { type MaybeAccessor, access } from '../utils/reactivity';
-import { type RadioGroupState, radioGroupSyncVersion } from 'solid-stately';
+import { type RadioGroupState, radioGroupSyncVersion } from '@proyecto-viviana/solid-stately';
 import { radioGroupData } from './createRadioGroup';
 import { type PressEvent } from '../interactions/PressEvent';
 

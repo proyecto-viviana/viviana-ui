@@ -1,5 +1,5 @@
 import { type JSX, splitProps, mergeProps as solidMergeProps, createMemo } from 'solid-js';
-import { createButton } from 'solidaria';
+import { createButton } from '@proyecto-viviana/solidaria';
 import type { ButtonProps, ButtonVariant, ButtonStyle } from './types';
 
 const variantStyles: Record<ButtonVariant, Record<ButtonStyle, string>> = {

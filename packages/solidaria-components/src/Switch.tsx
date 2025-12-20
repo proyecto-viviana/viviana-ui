@@ -19,8 +19,8 @@ import {
   createFocusRing,
   createHover,
   type AriaSwitchProps,
-} from 'solidaria';
-import { createToggleState, type ToggleState } from 'solid-stately';
+} from '@proyecto-viviana/solidaria';
+import { createToggleState, type ToggleState } from '@proyecto-viviana/solid-stately';
 import { VisuallyHidden } from './VisuallyHidden';
 import {
   type RenderChildren,
