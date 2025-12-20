@@ -20,7 +20,15 @@ export type { AvatarProps, AvatarGroupProps, AvatarSize } from './avatar';
 
 // Switch
 export { TabSwitch, ToggleSwitch } from './switch';
-export type { TabSwitchProps, ToggleSwitchProps } from './switch';
+export type { TabSwitchProps, ToggleSwitchProps, SwitchSize } from './switch';
+
+// Checkbox
+export { Checkbox } from './checkbox';
+export type { CheckboxProps, CheckboxSize } from './checkbox';
+
+// Radio
+export { RadioGroup, Radio } from './radio';
+export type { RadioGroupProps, RadioProps, RadioGroupOrientation, RadioGroupSize } from './radio';
 
 // Dialog
 export { Dialog } from './dialog';

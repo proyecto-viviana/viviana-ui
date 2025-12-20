@@ -1,4 +1,9 @@
-import { createSignal, createEffect } from 'solid-js'
+import { type JSX, createSignal, createEffect, splitProps, mergeProps as solidMergeProps, createMemo } from 'solid-js'
+import { createSwitch, createToggleState, type AriaSwitchProps } from '@proyecto-viviana/solidaria'
+
+// ============================================
+// TAB SWITCH (Two-option selector)
+// ============================================
 
 interface SwitchOption {
   label: string
@@ -69,38 +74,115 @@ export function TabSwitch(props: TabSwitchProps) {
   )
 }
 
-export interface ToggleSwitchProps {
+// ============================================
+// TOGGLE SWITCH (On/Off switch with aria support)
+// ============================================
+
+export type SwitchSize = 'sm' | 'md' | 'lg'
+
+export interface ToggleSwitchProps extends Omit<AriaSwitchProps, 'isSelected' | 'defaultSelected' | 'onChange'> {
+  /** Whether the switch is checked (controlled). */
   checked?: boolean
+  /** Whether the switch is checked by default (uncontrolled). */
+  defaultChecked?: boolean
+  /** Handler called when the switch state changes. */
   onChange?: (checked: boolean) => void
-  disabled?: boolean
+  /** The size of the switch. */
+  size?: SwitchSize
+  /** Additional CSS class name. */
   class?: string
+  /** Label text for the switch. */
+  children?: JSX.Element
 }
 
-export function ToggleSwitch(props: ToggleSwitchProps) {
-  const [checked, setChecked] = createSignal(props.checked ?? false)
+const sizeStyles = {
+  sm: {
+    track: 'h-5 w-9',
+    thumb: 'h-4 w-4 top-0.5 left-0.5',
+    translate: 'translate-x-4',
+  },
+  md: {
+    track: 'h-6 w-11',
+    thumb: 'h-5 w-5 top-0.5 left-0.5',
+    translate: 'translate-x-5',
+  },
+  lg: {
+    track: 'h-7 w-14',
+    thumb: 'h-6 w-6 top-0.5 left-0.5',
+    translate: 'translate-x-7',
+  },
+}
 
-  const handleToggle = () => {
-    if (props.disabled) return
-    const newValue = !checked()
-    setChecked(newValue)
-    props.onChange?.(newValue)
+/**
+ * A switch allows users to toggle between two mutually exclusive states.
+ * Uses createSwitch from solidaria for full accessibility support.
+ */
+export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
+  let inputRef: HTMLInputElement | null = null
+
+  const defaultProps: Partial<ToggleSwitchProps> = {
+    size: 'md',
   }
 
+  const merged = solidMergeProps(defaultProps, props)
+
+  const [local, ariaProps] = splitProps(merged, [
+    'checked',
+    'defaultChecked',
+    'onChange',
+    'size',
+    'class',
+    'children',
+  ])
+
+  // Create toggle state
+  const state = createToggleState(() => ({
+    isSelected: local.checked,
+    defaultSelected: local.defaultChecked,
+    onChange: local.onChange,
+  }))
+
+  // Create switch aria props
+  const switchAria = createSwitch(
+    () => ({
+      ...ariaProps,
+      children: local.children,
+    }),
+    state,
+    () => inputRef
+  )
+
+  const size = () => sizeStyles[local.size!]
+
+  const trackClasses = createMemo(() => {
+    const base = 'relative rounded-full transition-colors duration-200 cursor-pointer focus-within:ring-2 focus-within:ring-accent-300 focus-within:ring-offset-2 focus-within:ring-offset-bg-400'
+    const sizeClass = size().track
+    const colorClass = state.isSelected() ? 'bg-accent' : 'bg-bg-300'
+    const disabledClass = ariaProps.isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+    const custom = local.class || ''
+
+    return [base, sizeClass, colorClass, disabledClass, custom].filter(Boolean).join(' ')
+  })
+
+  const thumbClasses = createMemo(() => {
+    const base = 'absolute rounded-full bg-white shadow transition-transform duration-200'
+    const sizeClass = size().thumb
+    const translateClass = state.isSelected() ? size().translate : 'translate-x-0'
+
+    return [base, sizeClass, translateClass].filter(Boolean).join(' ')
+  })
+
   return (
-    <button
-      class={`relative h-6 w-11 rounded-full transition-colors duration-200 ${
-        checked() ? 'bg-accent' : 'bg-bg-300'
-      } ${props.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${props.class ?? ''}`}
-      onClick={handleToggle}
-      disabled={props.disabled}
-      role="switch"
-      aria-checked={checked()}
-    >
-      <span
-        class={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
-          checked() ? 'translate-x-5' : 'translate-x-0'
-        }`}
-      />
-    </button>
+    <label {...switchAria.labelProps} class="inline-flex items-center gap-2 cursor-pointer">
+      <span class={trackClasses()}>
+        <input
+          ref={(el) => (inputRef = el)}
+          {...switchAria.inputProps}
+          class="sr-only"
+        />
+        <span class={thumbClasses()} />
+      </span>
+      {local.children && <span class="text-primary-200">{local.children}</span>}
+    </label>
   )
 }
