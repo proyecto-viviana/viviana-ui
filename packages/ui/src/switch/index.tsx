@@ -1,5 +1,6 @@
 import { type JSX, createSignal, createEffect, splitProps, mergeProps as solidMergeProps, createMemo } from 'solid-js'
 import { createSwitch, createToggleState, type AriaSwitchProps } from '@proyecto-viviana/solidaria'
+import { type SwitchSize } from './Switch'
 
 // Re-export the new solidaria-components based Switch
 export { Switch, type SwitchProps, type SwitchSize } from './Switch'
@@ -81,8 +82,6 @@ export function TabSwitch(props: TabSwitchProps) {
 // TOGGLE SWITCH (On/Off switch with aria support)
 // ============================================
 
-export type SwitchSize = 'sm' | 'md' | 'lg'
-
 export interface ToggleSwitchProps extends Omit<AriaSwitchProps, 'isSelected' | 'defaultSelected' | 'onChange'> {
   /** Whether the switch is checked (controlled). */
   checked?: boolean
@@ -155,7 +154,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
     () => inputRef
   )
 
-  const size = () => sizeStyles[local.size!]
+  const size = () => sizeStyles[local.size as SwitchSize]
 
   const trackClasses = createMemo(() => {
     const base = 'relative rounded-full transition-colors duration-200 cursor-pointer focus-within:ring-2 focus-within:ring-accent-300 focus-within:ring-offset-2 focus-within:ring-offset-bg-400'

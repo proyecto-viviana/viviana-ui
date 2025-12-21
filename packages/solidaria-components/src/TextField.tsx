@@ -120,8 +120,6 @@ export function TextArea(props: TextAreaProps): JSX.Element {
  * ```
  */
 export function TextField(props: TextFieldProps): JSX.Element {
-  let inputRef: HTMLInputElement | HTMLTextAreaElement | null = null;
-
   // Split props
   const [local, ariaProps] = splitProps(props, [
     'children',
@@ -138,14 +136,11 @@ export function TextField(props: TextFieldProps): JSX.Element {
   }));
 
   // Create text field aria props
-  const textFieldAria = createTextField(
-    () => ({
-      ...ariaProps,
-      value: state.value(),
-      onChange: state.setValue,
-    }),
-    (el) => { inputRef = el; }
-  );
+  const textFieldAria = createTextField(() => ({
+    ...ariaProps,
+    value: state.value(),
+    onChange: state.setValue,
+  }));
 
   // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
@@ -186,6 +181,12 @@ export function TextField(props: TextFieldProps): JSX.Element {
     return filtered;
   });
 
+  // Remove ref from spread props to avoid type conflicts
+  const cleanHoverProps = () => {
+    const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+
   // Context value for sub-components
   const contextValue = createMemo<TextFieldContextValue>(() => ({
     labelProps: textFieldAria.labelProps as JSX.LabelHTMLAttributes<HTMLLabelElement>,
@@ -199,7 +200,7 @@ export function TextField(props: TextFieldProps): JSX.Element {
     <TextFieldContext.Provider value={contextValue()}>
       <div
         {...domProps()}
-        {...hoverProps}
+        {...cleanHoverProps()}
         class={renderProps().class}
         style={renderProps().style}
         data-disabled={ariaProps.isDisabled || undefined}

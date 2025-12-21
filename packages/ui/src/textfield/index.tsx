@@ -132,10 +132,24 @@ export function TextField(props: TextFieldProps): JSX.Element {
     return [base, sizeClass].filter(Boolean).join(' ')
   })
 
+  // Remove ref from spread props to avoid type conflicts
+  const cleanLabelProps = () => {
+    const { ref: _ref1, ...rest } = textFieldAria.labelProps as Record<string, unknown>
+    return rest
+  }
+  const cleanDescriptionProps = () => {
+    const { ref: _ref2, ...rest } = textFieldAria.descriptionProps as Record<string, unknown>
+    return rest
+  }
+  const cleanErrorMessageProps = () => {
+    const { ref: _ref3, ...rest } = textFieldAria.errorMessageProps as Record<string, unknown>
+    return rest
+  }
+
   return (
     <div class={`${local.class || ''}`}>
       <Show when={local.label}>
-        <label {...textFieldAria.labelProps} class={labelClasses()}>
+        <label {...cleanLabelProps()} class={labelClasses()}>
           {local.label}
           <Show when={ariaProps.isRequired}>
             <span class="text-danger-400 ml-0.5">*</span>
@@ -149,13 +163,13 @@ export function TextField(props: TextFieldProps): JSX.Element {
       />
 
       <Show when={local.description && !textFieldAria.isInvalid}>
-        <p {...textFieldAria.descriptionProps} class={descriptionClasses()}>
+        <p {...cleanDescriptionProps()} class={descriptionClasses()}>
           {local.description}
         </p>
       </Show>
 
       <Show when={local.errorMessage && textFieldAria.isInvalid}>
-        <p {...textFieldAria.errorMessageProps} class={errorClasses()}>
+        <p {...cleanErrorMessageProps()} class={errorClasses()}>
           {local.errorMessage}
         </p>
       </Show>

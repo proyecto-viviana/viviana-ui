@@ -7,9 +7,7 @@
 
 import {
   type JSX,
-  type Accessor,
   createContext,
-  useContext,
   createMemo,
   splitProps,
 } from 'solid-js';
@@ -84,8 +82,6 @@ export const ButtonContext = createContext<ButtonProps | null>(null);
  * ```
  */
 export function Button(props: ButtonProps): JSX.Element {
-  let ref: HTMLButtonElement | null = null;
-
   // Split props
   const [local, ariaProps] = splitProps(props, [
     'children',
@@ -94,14 +90,22 @@ export function Button(props: ButtonProps): JSX.Element {
     'slot',
   ]);
 
+  // Helper to resolve isDisabled (handles both boolean and Accessor<boolean>)
+  const resolveDisabled = (): boolean => {
+    const disabled = ariaProps.isDisabled;
+    if (typeof disabled === 'function') {
+      return disabled();
+    }
+    return !!disabled;
+  };
+
   // Create button aria props
-  const buttonAria = createButton(
-    () => ({
-      ...ariaProps,
-      children: typeof local.children === 'function' ? true : local.children,
-    }),
-    () => ref
-  );
+  const buttonAria = createButton({
+    ...ariaProps,
+    get isDisabled() {
+      return resolveDisabled();
+    },
+  });
 
   // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
@@ -109,7 +113,7 @@ export function Button(props: ButtonProps): JSX.Element {
   // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
-      return ariaProps.isDisabled;
+      return resolveDisabled();
     },
   });
 
@@ -119,7 +123,7 @@ export function Button(props: ButtonProps): JSX.Element {
     isPressed: buttonAria.isPressed(),
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible(),
-    isDisabled: buttonAria.isDisabled,
+    isDisabled: resolveDisabled(),
   }));
 
   // Resolve render props
@@ -139,20 +143,33 @@ export function Button(props: ButtonProps): JSX.Element {
     return filtered;
   });
 
+  // Remove ref from spread props to avoid type conflicts
+  const cleanButtonProps = () => {
+    const { ref: _ref1, ...rest } = buttonAria.buttonProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanFocusProps = () => {
+    const { ref: _ref2, ...rest } = focusProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanHoverProps = () => {
+    const { ref: _ref3, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+
   return (
     <button
-      ref={(el) => (ref = el)}
       {...domProps()}
-      {...buttonAria.buttonProps}
-      {...focusProps}
-      {...hoverProps}
+      {...cleanButtonProps()}
+      {...cleanFocusProps()}
+      {...cleanHoverProps()}
       class={renderProps().class}
       style={renderProps().style}
       data-pressed={buttonAria.isPressed() || undefined}
       data-hovered={isHovered() || undefined}
       data-focused={isFocused() || undefined}
       data-focus-visible={isFocusVisible() || undefined}
-      data-disabled={buttonAria.isDisabled || undefined}
+      data-disabled={resolveDisabled() || undefined}
     >
       {renderProps().children}
     </button>

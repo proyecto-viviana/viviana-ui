@@ -6,13 +6,9 @@
 import {
   type JSX,
   type Accessor,
-  type ParentProps,
   createContext,
   useContext,
-  children as resolveChildren,
   createMemo,
-  splitProps,
-  mergeProps as solidMergeProps,
 } from 'solid-js';
 
 // ============================================
@@ -103,7 +99,7 @@ export function useRenderProps<T extends object>(
 /**
  * Context value that can be null or the actual value
  */
-export type ContextValue<T, E extends HTMLElement = HTMLElement> = T | null;
+export type ContextValue<T> = T | null;
 
 /**
  * Creates a context with props and ref merging support

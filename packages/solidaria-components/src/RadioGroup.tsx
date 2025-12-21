@@ -7,7 +7,6 @@
 
 import {
   type JSX,
-  type Accessor,
   type ParentProps,
   createContext,
   useContext,
@@ -25,6 +24,7 @@ import {
 import {
   createRadioGroupState,
   type RadioGroupState,
+  type RadioGroupProps as RadioGroupStateProps,
 } from '@proyecto-viviana/solid-stately';
 import { VisuallyHidden } from './VisuallyHidden';
 import {
@@ -80,6 +80,7 @@ export interface RadioRenderProps {
 
 export interface RadioGroupProps
   extends Omit<AriaRadioGroupProps, 'children' | 'label' | 'description' | 'errorMessage'>,
+    Pick<RadioGroupStateProps, 'value' | 'defaultValue' | 'onChange'>,
     SlotProps {
   /** The children of the component. A function may be provided to receive render props. */
   children?: RenderChildren<RadioGroupRenderProps>;
@@ -148,9 +149,9 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   // Render props values
   const renderValues = createMemo<RadioGroupRenderProps>(() => ({
     orientation: (ariaProps.orientation as Orientation) ?? 'vertical',
-    isDisabled: state.isDisabled(),
-    isReadOnly: state.isReadOnly(),
-    isRequired: state.isRequired(),
+    isDisabled: state.isDisabled,
+    isReadOnly: state.isReadOnly,
+    isRequired: state.isRequired,
     isInvalid: groupAria.isInvalid,
     state,
   }));
@@ -169,17 +170,23 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(ariaProps, { global: true }));
 
+  // Remove ref from spread props to avoid type conflicts
+  const cleanGroupProps = () => {
+    const { ref: _ref, ...rest } = groupAria.radioGroupProps as Record<string, unknown>;
+    return rest;
+  };
+
   return (
     <RadioGroupStateContext.Provider value={state}>
       <div
         {...domProps()}
-        {...groupAria.radioGroupProps}
+        {...cleanGroupProps()}
         class={renderProps().class}
         style={renderProps().style}
         data-orientation={ariaProps.orientation ?? 'vertical'}
-        data-disabled={state.isDisabled() || undefined}
-        data-readonly={state.isReadOnly() || undefined}
-        data-required={state.isRequired() || undefined}
+        data-disabled={state.isDisabled || undefined}
+        data-readonly={state.isReadOnly || undefined}
+        data-required={state.isRequired || undefined}
         data-invalid={groupAria.isInvalid || undefined}
       >
         {renderProps().children}
@@ -242,7 +249,7 @@ export function Radio(props: RadioProps): JSX.Element {
   // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
-      return radioAria.isDisabled || state.isReadOnly();
+      return radioAria.isDisabled || state.isReadOnly;
     },
   });
 
@@ -254,9 +261,9 @@ export function Radio(props: RadioProps): JSX.Element {
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible(),
     isDisabled: radioAria.isDisabled,
-    isReadOnly: state.isReadOnly(),
-    isInvalid: state.isInvalid(),
-    isRequired: state.isRequired(),
+    isReadOnly: state.isReadOnly,
+    isInvalid: state.isInvalid,
+    isRequired: state.isRequired,
   }));
 
   // Resolve render props
@@ -278,11 +285,29 @@ export function Radio(props: RadioProps): JSX.Element {
     return filtered;
   });
 
+  // Remove ref from spread props to avoid type conflicts
+  const cleanLabelProps = () => {
+    const { ref: _ref1, ...rest } = radioAria.labelProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanHoverProps = () => {
+    const { ref: _ref2, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanInputProps = () => {
+    const { ref: _ref3, ...rest } = radioAria.inputProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanFocusProps = () => {
+    const { ref: _ref4, ...rest } = focusProps as Record<string, unknown>;
+    return rest;
+  };
+
   return (
     <label
       {...domProps()}
-      {...radioAria.labelProps}
-      {...hoverProps}
+      {...cleanLabelProps()}
+      {...cleanHoverProps()}
       class={renderProps().class}
       style={renderProps().style}
       data-selected={radioAria.isSelected() || undefined}
@@ -291,15 +316,15 @@ export function Radio(props: RadioProps): JSX.Element {
       data-focused={isFocused() || undefined}
       data-focus-visible={isFocusVisible() || undefined}
       data-disabled={radioAria.isDisabled || undefined}
-      data-readonly={state.isReadOnly() || undefined}
-      data-invalid={state.isInvalid() || undefined}
-      data-required={state.isRequired() || undefined}
+      data-readonly={state.isReadOnly || undefined}
+      data-invalid={state.isInvalid || undefined}
+      data-required={state.isRequired || undefined}
     >
       <VisuallyHidden>
         <input
           ref={(el) => (inputRef = el)}
-          {...radioAria.inputProps}
-          {...focusProps}
+          {...cleanInputProps()}
+          {...cleanFocusProps()}
         />
       </VisuallyHidden>
       {renderProps().children}

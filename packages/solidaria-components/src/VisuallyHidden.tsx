@@ -5,7 +5,7 @@
  * Port of react-aria's VisuallyHidden.
  */
 
-import { type JSX, type ParentProps, splitProps, mergeProps } from 'solid-js';
+import { type JSX, type ParentProps, splitProps } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 
 // ============================================

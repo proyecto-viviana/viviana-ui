@@ -7,12 +7,9 @@
 
 import {
   type JSX,
-  type Accessor,
   createContext,
-  useContext,
   createMemo,
   splitProps,
-  mergeProps as solidMergeProps,
 } from 'solid-js';
 import {
   createSwitch,
@@ -166,11 +163,29 @@ export function Switch(props: SwitchProps): JSX.Element {
     return filtered;
   });
 
+  // Remove ref from spread props to avoid type conflicts
+  const cleanLabelProps = () => {
+    const { ref: _ref1, ...rest } = switchAria.labelProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanHoverProps = () => {
+    const { ref: _ref2, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanInputProps = () => {
+    const { ref: _ref3, ...rest } = switchAria.inputProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanFocusProps = () => {
+    const { ref: _ref4, ...rest } = focusProps as Record<string, unknown>;
+    return rest;
+  };
+
   return (
     <label
       {...domProps()}
-      {...switchAria.labelProps}
-      {...hoverProps}
+      {...cleanLabelProps()}
+      {...cleanHoverProps()}
       class={renderProps().class}
       style={renderProps().style}
       data-selected={switchAria.isSelected() || undefined}
@@ -184,8 +199,8 @@ export function Switch(props: SwitchProps): JSX.Element {
       <VisuallyHidden>
         <input
           ref={(el) => (inputRef = el)}
-          {...switchAria.inputProps}
-          {...focusProps}
+          {...cleanInputProps()}
+          {...cleanFocusProps()}
         />
       </VisuallyHidden>
       {renderProps().children}

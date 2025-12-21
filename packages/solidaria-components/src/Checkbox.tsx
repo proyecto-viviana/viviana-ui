@@ -26,7 +26,6 @@ import {
 import {
   createToggleState,
   createCheckboxGroupState,
-  type ToggleState,
   type CheckboxGroupState,
 } from '@proyecto-viviana/solid-stately';
 import { VisuallyHidden } from './VisuallyHidden';
@@ -150,8 +149,8 @@ export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Eleme
 
   // Render props values
   const renderValues = createMemo<CheckboxGroupRenderProps>(() => ({
-    isDisabled: state.isDisabled(),
-    isReadOnly: state.isReadOnly(),
+    isDisabled: state.isDisabled,
+    isReadOnly: state.isReadOnly,
     isRequired: ariaProps.isRequired ?? false,
     isInvalid: groupAria.isInvalid,
     state,
@@ -171,15 +170,21 @@ export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Eleme
   // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(ariaProps, { global: true }));
 
+  // Remove ref from spread props to avoid type conflicts
+  const cleanGroupProps = () => {
+    const { ref: _ref, ...rest } = groupAria.groupProps as Record<string, unknown>;
+    return rest;
+  };
+
   return (
     <CheckboxGroupStateContext.Provider value={state}>
       <div
         {...domProps()}
-        {...groupAria.groupProps}
+        {...cleanGroupProps()}
         class={renderProps().class}
         style={renderProps().style}
-        data-disabled={state.isDisabled() || undefined}
-        data-readonly={state.isReadOnly() || undefined}
+        data-disabled={state.isDisabled || undefined}
+        data-readonly={state.isReadOnly || undefined}
         data-required={ariaProps.isRequired || undefined}
         data-invalid={groupAria.isInvalid || undefined}
       >
@@ -323,11 +328,29 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     return filtered;
   });
 
+  // Remove ref from spread props to avoid type conflicts
+  const cleanLabelProps = () => {
+    const { ref: _ref1, ...rest } = labelProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanHoverProps = () => {
+    const { ref: _ref2, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanInputProps = () => {
+    const { ref: _ref3, ...rest } = inputProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanFocusProps = () => {
+    const { ref: _ref4, ...rest } = focusProps as Record<string, unknown>;
+    return rest;
+  };
+
   return (
     <label
       {...domProps()}
-      {...labelProps}
-      {...hoverProps}
+      {...cleanLabelProps()}
+      {...cleanHoverProps()}
       class={renderProps().class}
       style={renderProps().style}
       data-selected={isSelected() || undefined}
@@ -344,8 +367,8 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
       <VisuallyHidden>
         <input
           ref={(el) => (inputRef = el)}
-          {...inputProps}
-          {...focusProps}
+          {...cleanInputProps()}
+          {...cleanFocusProps()}
         />
       </VisuallyHidden>
       {renderProps().children}
