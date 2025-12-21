@@ -1,0 +1,282 @@
+/**
+ * Tests for solidaria-components ToggleSwitch
+ *
+ * These tests verify the headless ToggleSwitch component follows
+ * react-aria-components patterns.
+ *
+ * Note: The component is named ToggleSwitch to avoid conflict with
+ * SolidJS's built-in Switch component.
+ */
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen } from '@solidjs/testing-library';
+import userEvent from '@testing-library/user-event';
+import { PointerEventsCheckLevel } from '@testing-library/user-event';
+import {
+  ToggleSwitch,
+  type ToggleSwitchRenderProps,
+} from '../src/Switch';
+
+const pointerMap = [
+  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
+  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
+];
+
+function setupUser() {
+  return userEvent.setup({
+    delay: null,
+    pointerMap: pointerMap as any,
+    pointerEventsCheck: PointerEventsCheckLevel.Never,
+  });
+}
+
+describe('ToggleSwitch', () => {
+  let user: ReturnType<typeof setupUser>;
+
+  beforeEach(() => {
+    user = setupUser();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe('rendering', () => {
+    it('should render a switch with default class', () => {
+      render(() => <ToggleSwitch aria-label="Toggle">Toggle</ToggleSwitch>);
+      const checkbox = screen.getByRole('switch');
+      const label = checkbox.closest('label');
+      expect(label).toHaveClass('solidaria-ToggleSwitch');
+    });
+
+    it('should render a switch with custom class', () => {
+      render(() => <ToggleSwitch aria-label="Toggle" class="custom-class">Toggle</ToggleSwitch>);
+      const checkbox = screen.getByRole('switch');
+      const label = checkbox.closest('label');
+      expect(label).toHaveClass('custom-class');
+    });
+
+    it('should render children', () => {
+      render(() => <ToggleSwitch aria-label="Toggle">Enable feature</ToggleSwitch>);
+      expect(screen.getByText('Enable feature')).toBeInTheDocument();
+    });
+
+    it('should render with role="switch"', () => {
+      render(() => <ToggleSwitch aria-label="Toggle">Toggle</ToggleSwitch>);
+      const switchEl = screen.getByRole('switch');
+      expect(switchEl).toBeInTheDocument();
+    });
+  });
+
+  describe('render props', () => {
+    it('should support render props for children', async () => {
+      render(() => (
+        <ToggleSwitch aria-label="Toggle">
+          {(props: ToggleSwitchRenderProps) => (
+            <span>{props.isSelected ? 'On' : 'Off'}</span>
+          )}
+        </ToggleSwitch>
+      ));
+
+      expect(screen.getByText('Off')).toBeInTheDocument();
+
+      await user.click(screen.getByRole('switch'));
+      expect(screen.getByText('On')).toBeInTheDocument();
+    });
+
+    it('should support render props for class', async () => {
+      render(() => (
+        <ToggleSwitch aria-label="Toggle" class={(props: ToggleSwitchRenderProps) => props.isSelected ? 'on' : 'off'}>
+          Toggle
+        </ToggleSwitch>
+      ));
+
+      const label = screen.getByRole('switch').closest('label');
+      expect(label).toHaveClass('off');
+
+      await user.click(screen.getByRole('switch'));
+      expect(label).toHaveClass('on');
+    });
+
+    it('should provide isHovered in render props', async () => {
+      render(() => (
+        <ToggleSwitch aria-label="Toggle" class={(props: ToggleSwitchRenderProps) => props.isHovered ? 'hovered' : 'not-hovered'}>
+          Toggle
+        </ToggleSwitch>
+      ));
+
+      const label = screen.getByRole('switch').closest('label')!;
+      expect(label).toHaveClass('not-hovered');
+
+      await user.hover(label);
+      expect(label).toHaveClass('hovered');
+    });
+
+    it('should provide isFocusVisible in render props', async () => {
+      render(() => (
+        <ToggleSwitch aria-label="Toggle" class={(props: ToggleSwitchRenderProps) => props.isFocusVisible ? 'focus-visible' : 'no-focus'}>
+          Toggle
+        </ToggleSwitch>
+      ));
+
+      const label = screen.getByRole('switch').closest('label')!;
+      expect(label).toHaveClass('no-focus');
+
+      await user.tab();
+      expect(label).toHaveClass('focus-visible');
+    });
+  });
+
+  describe('data attributes', () => {
+    it('should set data-selected when selected', async () => {
+      render(() => <ToggleSwitch aria-label="Toggle">Toggle</ToggleSwitch>);
+      const label = screen.getByRole('switch').closest('label')!;
+
+      expect(label).not.toHaveAttribute('data-selected');
+
+      await user.click(screen.getByRole('switch'));
+      expect(label).toHaveAttribute('data-selected');
+    });
+
+    it('should set data-hovered when hovered', async () => {
+      render(() => <ToggleSwitch aria-label="Toggle">Toggle</ToggleSwitch>);
+      const label = screen.getByRole('switch').closest('label')!;
+
+      expect(label).not.toHaveAttribute('data-hovered');
+
+      await user.hover(label);
+      expect(label).toHaveAttribute('data-hovered');
+    });
+
+    it('should set data-disabled when disabled', () => {
+      render(() => <ToggleSwitch aria-label="Toggle" isDisabled>Toggle</ToggleSwitch>);
+      const label = screen.getByRole('switch').closest('label')!;
+      expect(label).toHaveAttribute('data-disabled');
+    });
+
+    it('should set data-readonly when readonly', () => {
+      render(() => <ToggleSwitch aria-label="Toggle" isReadOnly>Toggle</ToggleSwitch>);
+      const label = screen.getByRole('switch').closest('label')!;
+      expect(label).toHaveAttribute('data-readonly');
+    });
+
+    it('should set data-focus-visible on keyboard focus', async () => {
+      render(() => <ToggleSwitch aria-label="Toggle">Toggle</ToggleSwitch>);
+      const label = screen.getByRole('switch').closest('label')!;
+
+      expect(label).not.toHaveAttribute('data-focus-visible');
+
+      await user.tab();
+      expect(label).toHaveAttribute('data-focus-visible');
+    });
+  });
+
+  describe('controlled/uncontrolled', () => {
+    it('should work as uncontrolled with defaultSelected', async () => {
+      render(() => <ToggleSwitch aria-label="Toggle" defaultSelected>Toggle</ToggleSwitch>);
+
+      const switchEl = screen.getByRole('switch');
+      const label = switchEl.closest('label')!;
+      expect(label).toHaveAttribute('data-selected');
+
+      await user.click(switchEl);
+      expect(label).not.toHaveAttribute('data-selected');
+    });
+
+    it('should work as controlled with isSelected', () => {
+      render(() => <ToggleSwitch aria-label="Toggle" isSelected>Toggle</ToggleSwitch>);
+
+      const switchEl = screen.getByRole('switch');
+      const label = switchEl.closest('label')!;
+      expect(label).toHaveAttribute('data-selected');
+    });
+
+    it('should call onChange when toggled', async () => {
+      const onChange = vi.fn();
+      render(() => <ToggleSwitch aria-label="Toggle" onChange={onChange}>Toggle</ToggleSwitch>);
+
+      await user.click(screen.getByRole('switch'));
+      expect(onChange).toHaveBeenCalledWith(true);
+
+      await user.click(screen.getByRole('switch'));
+      expect(onChange).toHaveBeenCalledWith(false);
+    });
+  });
+
+  describe('disabled state', () => {
+    it('should not toggle when disabled', async () => {
+      const onChange = vi.fn();
+      render(() => <ToggleSwitch aria-label="Toggle" isDisabled onChange={onChange}>Toggle</ToggleSwitch>);
+
+      await user.click(screen.getByRole('switch'));
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('should disable the input when disabled', () => {
+      render(() => <ToggleSwitch aria-label="Toggle" isDisabled>Toggle</ToggleSwitch>);
+      expect(screen.getByRole('switch')).toBeDisabled();
+    });
+  });
+
+  describe('readonly state', () => {
+    it('should not toggle when readonly', async () => {
+      const onChange = vi.fn();
+      render(() => <ToggleSwitch aria-label="Toggle" isReadOnly defaultSelected onChange={onChange}>Toggle</ToggleSwitch>);
+
+      await user.click(screen.getByRole('switch'));
+      expect(onChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('keyboard interaction', () => {
+    // Space key triggers native checkbox change event which works in browser
+    // but JSDOM doesn't fully simulate the native toggle on space
+    it.skip('should toggle on Space key', async () => {
+      render(() => <ToggleSwitch aria-label="Toggle">Toggle</ToggleSwitch>);
+
+      const switchEl = screen.getByRole('switch');
+      const label = switchEl.closest('label')!;
+      await user.tab();
+      expect(document.activeElement).toBe(switchEl);
+
+      await user.keyboard('{ }');
+      expect(label).toHaveAttribute('data-selected');
+
+      await user.keyboard('{ }');
+      expect(label).not.toHaveAttribute('data-selected');
+    });
+  });
+
+  describe('accessibility', () => {
+    it('should support aria-label', () => {
+      render(() => <ToggleSwitch aria-label="Enable notifications">Toggle</ToggleSwitch>);
+      const switchEl = screen.getByRole('switch', { name: 'Enable notifications' });
+      expect(switchEl).toBeInTheDocument();
+    });
+
+    it('should support aria-describedby', () => {
+      render(() => (
+        <>
+          <span id="desc">This enables the feature</span>
+          <ToggleSwitch aria-label="Toggle" aria-describedby="desc">Toggle</ToggleSwitch>
+        </>
+      ));
+      const switchEl = screen.getByRole('switch');
+      expect(switchEl).toHaveAttribute('aria-describedby', 'desc');
+    });
+
+    it('should toggle checked state', async () => {
+      render(() => <ToggleSwitch aria-label="Toggle">Toggle</ToggleSwitch>);
+
+      const switchEl = screen.getByRole('switch');
+      const label = switchEl.closest('label')!;
+
+      // Initially not selected
+      expect(label).not.toHaveAttribute('data-selected');
+
+      await user.click(switchEl);
+      // Now selected
+      expect(label).toHaveAttribute('data-selected');
+    });
+  });
+
+});

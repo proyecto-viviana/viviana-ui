@@ -29,11 +29,6 @@ export interface CheckboxGroupProps {
   isRequired?: boolean;
   /** Whether the checkbox group is invalid. */
   isInvalid?: boolean;
-  /**
-   * The current validation state of the checkbox group.
-   * @deprecated Use `isInvalid` instead.
-   */
-  validationState?: 'valid' | 'invalid';
   /** The name of the checkbox group, used when submitting an HTML form. */
   name?: string;
   /** The form to associate the checkbox group with. */
@@ -57,11 +52,6 @@ export interface CheckboxGroupState {
   readonly isDisabled: boolean;
   /** Whether the checkbox group is read only. */
   readonly isReadOnly: boolean;
-  /**
-   * The current validation state of the checkbox group.
-   * @deprecated Use `isInvalid` instead.
-   */
-  readonly validationState: 'valid' | 'invalid' | null;
   /** Whether the checkbox group is invalid. */
   readonly isInvalid: boolean;
   /**
@@ -118,8 +108,7 @@ export function createCheckboxGroupState(
 
   // Check if invalid
   const isInvalid = () => {
-    const p = getProps();
-    return p.isInvalid ?? p.validationState === 'invalid';
+    return getProps().isInvalid ?? false;
   };
 
   // Set value
@@ -190,10 +179,6 @@ export function createCheckboxGroupState(
     },
     get isReadOnly() {
       return getProps().isReadOnly ?? false;
-    },
-    get validationState() {
-      const p = getProps();
-      return p.validationState ?? (isInvalid() ? 'invalid' : null);
     },
     get isInvalid() {
       return isInvalid();

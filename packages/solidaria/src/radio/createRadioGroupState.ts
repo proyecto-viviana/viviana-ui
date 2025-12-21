@@ -30,11 +30,6 @@ export interface RadioGroupProps {
   isRequired?: boolean;
   /** Whether the radio group is invalid. */
   isInvalid?: boolean;
-  /**
-   * The current validation state of the radio group.
-   * @deprecated Use `isInvalid` instead.
-   */
-  validationState?: 'valid' | 'invalid';
   /** The name of the radio group, used when submitting an HTML form. */
   name?: string;
   /** The form to associate the radio group with. */
@@ -52,11 +47,7 @@ export interface RadioGroupProps {
 }
 
 export interface RadioGroupState {
-  /**
-   * The name for the group, used for native form submission.
-   * @deprecated
-   * @private
-   */
+  /** The name for the group, used for native form submission. */
   readonly name: string;
 
   /** Whether the radio group is disabled. */
@@ -67,12 +58,6 @@ export interface RadioGroupState {
 
   /** Whether the radio group is required. */
   readonly isRequired: boolean;
-
-  /**
-   * Whether the radio group is valid or invalid.
-   * @deprecated Use `isInvalid` instead.
-   */
-  readonly validationState: 'valid' | 'invalid' | null;
 
   /** Whether the radio group is invalid. */
   readonly isInvalid: boolean;
@@ -156,8 +141,7 @@ export function createRadioGroupState(
 
   // Check if invalid
   const isInvalid = () => {
-    const p = getProps();
-    return p.isInvalid ?? p.validationState === 'invalid';
+    return getProps().isInvalid ?? false;
   };
 
   // Set value
@@ -203,10 +187,6 @@ export function createRadioGroupState(
     },
     get isRequired() {
       return getProps().isRequired ?? false;
-    },
-    get validationState() {
-      const p = getProps();
-      return p.validationState ?? (isInvalid() ? 'invalid' : null);
     },
     get isInvalid() {
       return isInvalid();

@@ -36,12 +36,12 @@ export {
   type ButtonRenderProps,
 } from './Button';
 
-// Switch
+// ToggleSwitch (named to avoid conflict with SolidJS's Switch)
 export {
-  Switch,
-  SwitchContext,
-  type SwitchProps,
-  type SwitchRenderProps,
+  ToggleSwitch,
+  ToggleSwitchContext,
+  type ToggleSwitchProps,
+  type ToggleSwitchRenderProps,
 } from './Switch';
 
 // Checkbox

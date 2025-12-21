@@ -123,7 +123,7 @@ export function createTextField<T extends HTMLInputElement | HTMLTextAreaElement
   // Build input props
   const getInputProps = (): JSX.InputHTMLAttributes<T> => {
     const p = getProps();
-    const isInvalid = p.isInvalid || p.validationState === 'invalid';
+    const isInvalid = p.isInvalid ?? false;
     const isTextarea = p.inputElementType === 'textarea';
 
     return mergeProps(
@@ -175,8 +175,7 @@ export function createTextField<T extends HTMLInputElement | HTMLTextAreaElement
   };
 
   const getIsInvalid = () => {
-    const p = getProps();
-    return p.isInvalid || p.validationState === 'invalid' || false;
+    return getProps().isInvalid ?? false;
   };
 
   return {

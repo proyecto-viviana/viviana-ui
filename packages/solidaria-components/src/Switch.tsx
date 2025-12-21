@@ -1,8 +1,10 @@
 /**
- * Switch component for solidaria-components
+ * ToggleSwitch component for solidaria-components
  *
  * A pre-wired headless switch that combines state + aria hooks.
  * Port of react-aria-components/src/Switch.tsx
+ *
+ * Named "ToggleSwitch" to avoid conflict with SolidJS's built-in Switch component.
  */
 
 import {
@@ -32,7 +34,7 @@ import {
 // TYPES
 // ============================================
 
-export interface SwitchRenderProps {
+export interface ToggleSwitchRenderProps {
   /** Whether the switch is selected. */
   isSelected: boolean;
   /** Whether the switch is currently hovered with a mouse. */
@@ -51,22 +53,22 @@ export interface SwitchRenderProps {
   state: ToggleState;
 }
 
-export interface SwitchProps
+export interface ToggleSwitchProps
   extends Omit<AriaSwitchProps, 'children'>,
     SlotProps {
   /** The children of the component. A function may be provided to receive render props. */
-  children?: RenderChildren<SwitchRenderProps>;
+  children?: RenderChildren<ToggleSwitchRenderProps>;
   /** The CSS className for the element. */
-  class?: ClassNameOrFunction<SwitchRenderProps>;
+  class?: ClassNameOrFunction<ToggleSwitchRenderProps>;
   /** The inline style for the element. */
-  style?: StyleOrFunction<SwitchRenderProps>;
+  style?: StyleOrFunction<ToggleSwitchRenderProps>;
 }
 
 // ============================================
 // CONTEXT
 // ============================================
 
-export const SwitchContext = createContext<SwitchProps | null>(null);
+export const ToggleSwitchContext = createContext<ToggleSwitchProps | null>(null);
 
 // ============================================
 // COMPONENT
@@ -78,9 +80,11 @@ export const SwitchContext = createContext<SwitchProps | null>(null);
  * This is a headless component that provides accessibility and state management.
  * Style it using the render props pattern or data attributes.
  *
+ * Named "ToggleSwitch" to avoid conflict with SolidJS's built-in Switch component.
+ *
  * @example
  * ```tsx
- * <Switch>
+ * <ToggleSwitch>
  *   {({ isSelected }) => (
  *     <>
  *       <span class={`switch-track ${isSelected ? 'bg-blue-500' : 'bg-gray-300'}`}>
@@ -89,10 +93,10 @@ export const SwitchContext = createContext<SwitchProps | null>(null);
  *       <span>Enable notifications</span>
  *     </>
  *   )}
- * </Switch>
+ * </ToggleSwitch>
  * ```
  */
-export function Switch(props: SwitchProps): JSX.Element {
+export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   let inputRef: HTMLInputElement | null = null;
 
   // Split props
@@ -133,7 +137,7 @@ export function Switch(props: SwitchProps): JSX.Element {
   });
 
   // Render props values
-  const renderValues = createMemo<SwitchRenderProps>(() => ({
+  const renderValues = createMemo<ToggleSwitchRenderProps>(() => ({
     isSelected: switchAria.isSelected(),
     isHovered: isHovered(),
     isPressed: switchAria.isPressed(),
@@ -150,7 +154,7 @@ export function Switch(props: SwitchProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Switch',
+      defaultClassName: 'solidaria-ToggleSwitch',
     },
     renderValues
   );
@@ -207,3 +211,4 @@ export function Switch(props: SwitchProps): JSX.Element {
     </label>
   );
 }
+

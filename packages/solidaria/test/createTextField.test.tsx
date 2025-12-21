@@ -63,11 +63,11 @@ describe('createTextField hook', () => {
       expect(props.readOnly).toBeFalsy();
     });
 
-    it('with appropriate props if validationState is defined', () => {
-      let props = renderTextFieldHook({ validationState: 'invalid', 'aria-label': 'mandatory label' });
+    it('with appropriate props if isInvalid is true', () => {
+      let props = renderTextFieldHook({ isInvalid: true, 'aria-label': 'mandatory label' });
       expect(props['aria-invalid']).toBeTruthy();
 
-      props = renderTextFieldHook({ validationState: 'valid', 'aria-label': 'mandatory label' });
+      props = renderTextFieldHook({ isInvalid: false, 'aria-label': 'mandatory label' });
       expect(props['aria-invalid']).toBeUndefined();
     });
 

@@ -1,0 +1,111 @@
+Testing Improvement Plan Summary
+Created: 2025-01-21
+Updated: 2025-12-21
+Status: Phase 1.1 Complete
+
+COMPLETED WORK
+==============
+✅ Phase 1.1: solid-stately tests - 78 tests, all passing
+   - createCheckboxGroupState.test.ts: 25 tests (matches @react-stately/checkbox pattern)
+   - createRadioGroupState.test.ts: 25 tests (follows @react-stately patterns)
+   - createToggleState.test.ts: 15 tests (matches @react-stately/toggle)
+   - createTextFieldState.test.ts: 13 tests (controlled/uncontrolled only - no useTextFieldState in @react-stately)
+
+KEY LESSONS LEARNED
+===================
+1. Tests must match ACTUAL API - the original tests invented features that don't exist
+2. @react-stately has minimal tests - only useCheckboxGroupState and useControlledState have tests
+3. @react-stately does NOT have useTextFieldState - text field state is handled at aria layer
+4. Test patterns should follow @react-stately conventions (render components, not just call hooks)
+
+REMAINING PHASES
+================
+
+PHASE 1.2: solidaria-components tests (P0 - CRITICAL) - 12 hours
+----------------------------------------------------------------
+   - Create packages/solidaria-components/test/
+   - Test headless component composition of hooks
+   - Button, Checkbox, RadioGroup, Switch, TextField components
+   - Expected: 50+ tests total
+   - NOTE: First verify what API actually exists before writing tests!
+
+PHASE 2: Fix Anti-Patterns (P1) - REDUCED SCOPE
+------------------------------------------------
+2.1 Review createTextField.test.tsx pattern
+   - Check if anti-pattern still exists
+   - May already be fixed with correct testing approach
+
+2.2 createRoot wrappers - May not be needed
+   - @testing-library/solid-js handles this internally
+   - Only needed for direct hook testing (like solid-stately tests)
+
+PHASE 3: Form & Integration Features (P2) - BLOCKED
+----------------------------------------------------
+- Only implement when Form component exists
+- Validation tests blocked by validationBehavior implementation
+
+PHASE 4: Component-Specific Gaps (P2) - 6 hours
+------------------------------------------------
+4.1 Button component gaps (2 hours)
+   - elementType="a" (anchor button) - if supported
+   - isPending loading state - if supported
+
+4.2 Checkbox gaps (2 hours)
+   - Indeterminate state - 2 tests
+
+4.3 Switch gaps (2 hours)
+   - ARIA pattern variations - 2 tests
+
+PHASE 5: Test Infrastructure (P3) - LOW PRIORITY
+-------------------------------------------------
+- Shared test utilities - consider if duplication becomes a problem
+- Current approach is working fine
+
+PRIORITY SUMMARY (UPDATED)
+==========================
+P0 (Critical):
+- ✅ solid-stately: DONE - 78 tests, all passing
+- 🔴 solidaria-components: 0 tests (needs API review first)
+
+P1 (High):
+- Review existing test patterns (may already be fine)
+
+P2 (Medium):
+- Form features (blocked by implementation)
+- Component-specific gaps
+
+P3 (Low):
+- Test infrastructure
+
+WHAT NOT TO TEST
+================
+❌ Features that don't exist in the implementation
+❌ Features not in @react-stately/@react-aria (invented API)
+❌ Form integration if no <Form> component
+❌ Validation if no validationBehavior prop
+✅ Only test features that ACTUALLY exist in our code
+
+SUCCESS CRITERIA (UPDATED)
+==========================
+- solid-stately: ✅ 78 tests, all passing, matches @react-stately patterns
+- solidaria-components: Review API first, then write matching tests
+- solidaria: Tests match actual hook implementations
+- ui: Tests match actual component implementations
+- Test parity: Tests should match @react-stately test patterns, not invent new features
+
+CURRENT STATE
+=============
+✅ Phase 1.1 solid-stately tests: COMPLETE (78 tests)
+🔴 Phase 1.2 solidaria-components tests: Not started (review API first!)
+🟡 Phase 2-5: Reduced scope based on learnings
+
+NEXT STEPS
+==========
+1. Before writing solidaria-components tests:
+   - Read the actual component implementations
+   - Check what props and API they expose
+   - Only write tests for features that exist
+
+2. Run full test suite to establish baseline:
+   - bun run test:run
+   - Document current coverage

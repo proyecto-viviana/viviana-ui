@@ -37,14 +37,7 @@ export interface ValidationResult {
 export interface Validation<T> {
   /** Whether the input value is invalid. */
   isInvalid?: boolean;
-  /**
-   * Whether the input value is valid.
-   * @deprecated Use `isInvalid` instead.
-   */
-  validationState?: 'valid' | 'invalid';
-  /**
-   * Whether the input is required before form submission.
-   */
+  /** Whether the input is required before form submission. */
   isRequired?: boolean;
   /** A function that returns an error message if a given value is invalid. */
   validate?: (value: T) => string | string[] | true | null | undefined;
@@ -80,10 +73,10 @@ export function createField(props: MaybeAccessor<AriaFieldProps>): FieldAria {
   const errorMessageId = createId();
 
   const getDescriptionProps = (): FieldAria['descriptionProps'] => {
-    const { description, errorMessage, isInvalid, validationState } = getProps();
+    const { description, errorMessage, isInvalid } = getProps();
 
     // Only include ID if description exists or there's an error message that might be shown
-    if (!description && !errorMessage && !isInvalid && validationState !== 'invalid') {
+    if (!description && !errorMessage && !isInvalid) {
       return {};
     }
 
@@ -93,10 +86,10 @@ export function createField(props: MaybeAccessor<AriaFieldProps>): FieldAria {
   };
 
   const getErrorMessageProps = (): FieldAria['errorMessageProps'] => {
-    const { errorMessage, isInvalid, validationState } = getProps();
+    const { errorMessage, isInvalid } = getProps();
 
     // Only include ID if there's an error message and the field is invalid
-    if (!errorMessage && !isInvalid && validationState !== 'invalid') {
+    if (!errorMessage && !isInvalid) {
       return {};
     }
 
@@ -106,7 +99,7 @@ export function createField(props: MaybeAccessor<AriaFieldProps>): FieldAria {
   };
 
   const getFieldProps = (): AriaLabelingProps & DOMProps => {
-    const { description, errorMessage, isInvalid, validationState } = getProps();
+    const { description, errorMessage, isInvalid } = getProps();
 
     const describedByIds: string[] = [];
 
@@ -118,7 +111,7 @@ export function createField(props: MaybeAccessor<AriaFieldProps>): FieldAria {
     // Add error message ID if field is invalid and error message exists
     // Use aria-describedby for error message because aria-errormessage is unsupported
     // using VoiceOver or NVDA. See https://github.com/adobe/react-spectrum/issues/1346#issuecomment-740136268
-    if ((isInvalid || validationState === 'invalid') && errorMessage) {
+    if (isInvalid && errorMessage) {
       describedByIds.push(errorMessageId);
     }
 

@@ -9,7 +9,7 @@
  */
 
 import { type JSX, splitProps, mergeProps as solidMergeProps } from 'solid-js';
-import { Switch as HeadlessSwitch, type SwitchProps as HeadlessSwitchProps, type SwitchRenderProps } from '@proyecto-viviana/solidaria-components';
+import { ToggleSwitch as HeadlessToggleSwitch, type ToggleSwitchProps as HeadlessToggleSwitchProps, type ToggleSwitchRenderProps } from '@proyecto-viviana/solidaria-components';
 
 // ============================================
 // TYPES
@@ -17,7 +17,7 @@ import { Switch as HeadlessSwitch, type SwitchProps as HeadlessSwitchProps, type
 
 export type SwitchSize = 'sm' | 'md' | 'lg';
 
-export interface ToggleSwitchProps extends Omit<HeadlessSwitchProps, 'class' | 'children'> {
+export interface ToggleSwitchProps extends Omit<HeadlessToggleSwitchProps, 'class' | 'children'> {
   /** The size of the switch. */
   size?: SwitchSize;
   /** Additional CSS class name. */
@@ -74,7 +74,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   const size = () => sizeStyles[local.size!];
 
   // Generate class based on render props
-  const getClassName = (renderProps: SwitchRenderProps): string => {
+  const getClassName = (renderProps: ToggleSwitchRenderProps): string => {
     const base = 'inline-flex items-center gap-2 cursor-pointer';
     const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed opacity-50' : '';
     const custom = local.class || '';
@@ -82,7 +82,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   };
 
   return (
-    <HeadlessSwitch
+    <HeadlessToggleSwitch
       {...headlessProps}
       class={getClassName}
     >
@@ -108,6 +108,6 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
           {local.children && <span class="text-primary-200">{local.children}</span>}
         </>
       )}
-    </HeadlessSwitch>
+    </HeadlessToggleSwitch>
   );
 }

@@ -40,11 +40,6 @@ export interface AriaToggleProps {
   isRequired?: boolean;
   /** Whether the element is invalid. */
   isInvalid?: boolean;
-  /**
-   * The current validation state of the element.
-   * @deprecated Use `isInvalid` instead.
-   */
-  validationState?: 'valid' | 'invalid';
   /** The element's children. */
   children?: JSX.Element;
   /** Defines a string value that labels the current element. */
@@ -121,8 +116,7 @@ export function createToggle(
   const isDisabled = () => getProps().isDisabled ?? false;
   const isReadOnly = () => getProps().isReadOnly ?? false;
   const isInvalid = () => {
-    const p = getProps();
-    return p.isInvalid ?? p.validationState === 'invalid';
+    return getProps().isInvalid ?? false;
   };
 
   // Handle press state for keyboard interactions and cases where labelProps is not used.

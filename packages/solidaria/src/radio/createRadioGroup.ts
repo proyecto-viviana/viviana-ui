@@ -35,11 +35,6 @@ export interface AriaRadioGroupProps {
   isRequired?: boolean;
   /** Whether the radio group is invalid. */
   isInvalid?: boolean;
-  /**
-   * The current validation state of the radio group.
-   * @deprecated Use `isInvalid` instead.
-   */
-  validationState?: 'valid' | 'invalid';
   /** The axis the Radio Button(s) should align with. Defaults to 'vertical'. */
   orientation?: 'horizontal' | 'vertical';
   /** The name of the radio group, used when submitting an HTML form. */
