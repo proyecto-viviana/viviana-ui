@@ -1,18 +1,18 @@
 import type { JSX } from 'solid-js';
-import type { AriaButtonProps } from '@proyecto-viviana/solidaria';
+import type { ButtonProps as HeadlessButtonProps } from '@proyecto-viviana/solidaria-components';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'accent' | 'positive' | 'negative' | 'ghost' | 'link';
 export type ButtonStyle = 'fill' | 'outline';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type StaticColor = 'white' | 'black';
 
-export interface ButtonProps extends AriaButtonProps {
+export interface ButtonProps extends Omit<HeadlessButtonProps, 'class' | 'children' | 'style'> {
   /** The content to display in the button. */
   children?: JSX.Element;
   /** The visual style of the button. */
   variant?: ButtonVariant;
   /** The background style of the button. */
-  style?: ButtonStyle;
+  buttonStyle?: ButtonStyle;
   /** The size of the button. */
   size?: ButtonSize;
   /** Whether the button should take up the full width of its container. */
@@ -21,6 +21,4 @@ export interface ButtonProps extends AriaButtonProps {
   staticColor?: StaticColor;
   /** Additional CSS class name. */
   class?: string;
-  /** Ref to the button element. */
-  ref?: HTMLButtonElement | ((el: HTMLButtonElement) => void);
 }

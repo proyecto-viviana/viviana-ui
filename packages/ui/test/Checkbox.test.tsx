@@ -58,22 +58,22 @@ describe('Checkbox', () => {
       expect(onChangeSpy).toHaveBeenCalledWith(false);
     });
 
-    it('supports defaultChecked', () => {
-      render(() => <Checkbox aria-label="Test checkbox" defaultChecked />);
+    it('supports defaultSelected', () => {
+      render(() => <Checkbox aria-label="Test checkbox" defaultSelected />);
       const checkbox = screen.getByRole('checkbox');
       expect(checkbox).toBeChecked();
     });
   });
 
   describe('controlled mode', () => {
-    it('reflects controlled checked value', () => {
-      render(() => <Checkbox aria-label="Test checkbox" checked={true} />);
+    it('reflects controlled isSelected value', () => {
+      render(() => <Checkbox aria-label="Test checkbox" isSelected={true} />);
       const checkbox = screen.getByRole('checkbox');
       expect(checkbox).toBeChecked();
     });
 
     it('calls onChange in controlled mode', async () => {
-      render(() => <Checkbox aria-label="Test checkbox" checked={false} onChange={onChangeSpy} />);
+      render(() => <Checkbox aria-label="Test checkbox" isSelected={false} onChange={onChangeSpy} />);
       const checkbox = screen.getByRole('checkbox');
 
       await user.click(checkbox);
@@ -144,11 +144,11 @@ describe('Checkbox', () => {
       expect(screen.getByText('Accept terms')).toBeInTheDocument();
     });
 
-    it('clicking label toggles checkbox', async () => {
+    it('clicking checkbox toggles it', async () => {
       render(() => <Checkbox onChange={onChangeSpy}>Accept terms</Checkbox>);
-      const label = screen.getByText('Accept terms');
+      const checkbox = screen.getByRole('checkbox');
 
-      await user.click(label);
+      await user.click(checkbox);
       expect(onChangeSpy).toHaveBeenCalledWith(true);
     });
   });

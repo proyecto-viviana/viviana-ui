@@ -58,22 +58,22 @@ describe('ToggleSwitch', () => {
       expect(onChangeSpy).toHaveBeenCalledWith(false);
     });
 
-    it('supports defaultChecked', () => {
-      render(() => <ToggleSwitch aria-label="Test switch" defaultChecked />);
+    it('supports defaultSelected', () => {
+      render(() => <ToggleSwitch aria-label="Test switch" defaultSelected />);
       const switchEl = screen.getByRole('switch');
       expect(switchEl).toBeChecked();
     });
   });
 
   describe('controlled mode', () => {
-    it('reflects controlled checked value', () => {
-      render(() => <ToggleSwitch aria-label="Test switch" checked={true} />);
+    it('reflects controlled isSelected value', () => {
+      render(() => <ToggleSwitch aria-label="Test switch" isSelected={true} />);
       const switchEl = screen.getByRole('switch');
       expect(switchEl).toBeChecked();
     });
 
     it('calls onChange in controlled mode', async () => {
-      render(() => <ToggleSwitch aria-label="Test switch" checked={false} onChange={onChangeSpy} />);
+      render(() => <ToggleSwitch aria-label="Test switch" isSelected={false} onChange={onChangeSpy} />);
       const switchEl = screen.getByRole('switch');
 
       await user.click(switchEl);

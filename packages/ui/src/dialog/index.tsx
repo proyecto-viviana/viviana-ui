@@ -42,7 +42,7 @@ export function Dialog(props: DialogProps) {
           <Show when={props.primaryAction || props.secondaryAction}>
             <div class="flex flex-1 flex-row items-end justify-center gap-5 py-5">
               <Show when={props.secondaryAction}>
-                <Button variant="primary" style="outline" onPress={props.secondaryAction!.onClick}>
+                <Button variant="primary" buttonStyle="outline" onPress={props.secondaryAction!.onClick}>
                   {props.secondaryAction!.label}
                 </Button>
               </Show>

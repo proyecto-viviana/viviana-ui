@@ -200,38 +200,19 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
 // ============================================
 
 /**
- * A radio represents an individual option within a radio group.
- *
- * @example
- * ```tsx
- * <Radio value="option1">
- *   {({ isSelected }) => (
- *     <>
- *       <span class={`radio ${isSelected ? 'selected' : ''}`}>
- *         {isSelected && '●'}
- *       </span>
- *       <span>Option 1</span>
- *     </>
- *   )}
- * </Radio>
- * ```
+ * Internal Radio implementation that has access to RadioGroupStateContext.
+ * This is rendered inside the RadioGroup's context provider.
  */
-export function Radio(props: RadioProps): JSX.Element {
+function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): JSX.Element {
   let inputRef: HTMLInputElement | null = null;
+  const { radioProps, state } = props;
 
-  const [local, ariaProps] = splitProps(props, [
+  const [local, ariaProps] = splitProps(radioProps, [
     'children',
     'class',
     'style',
     'slot',
   ]);
-
-  // Get state from context
-  const state = useContext(RadioGroupStateContext);
-
-  if (!state) {
-    throw new Error('Radio must be used within a RadioGroup');
-  }
 
   // Create radio aria props
   const radioAria = createRadio(
@@ -330,4 +311,41 @@ export function Radio(props: RadioProps): JSX.Element {
       {renderProps().children}
     </label>
   );
+}
+
+/**
+ * A radio represents an individual option within a radio group.
+ *
+ * This component uses a deferred rendering pattern to work around SolidJS's
+ * JSX evaluation order. The actual implementation is rendered inside a function
+ * that checks for context availability at render time, not component creation time.
+ *
+ * @example
+ * ```tsx
+ * <Radio value="option1">
+ *   {({ isSelected }) => (
+ *     <>
+ *       <span class={`radio ${isSelected ? 'selected' : ''}`}>
+ *         {isSelected && '●'}
+ *       </span>
+ *       <span>Option 1</span>
+ *     </>
+ *   )}
+ * </Radio>
+ * ```
+ */
+export function Radio(props: RadioProps): JSX.Element {
+  // Store props for deferred access - don't access context here!
+  // The context check is deferred to render time via the returned function.
+  // This allows Radio to be created as a JSX child before RadioGroup renders.
+
+  // Return a getter function that SolidJS will call during render
+  // At render time, the RadioGroupStateContext will be available
+  return (() => {
+    const state = useContext(RadioGroupStateContext);
+    if (!state) {
+      throw new Error('Radio must be used within a RadioGroup');
+    }
+    return <RadioImpl radioProps={props} state={state} />;
+  }) as unknown as JSX.Element;
 }

@@ -1,15 +1,26 @@
-import { type JSX, splitProps, mergeProps as solidMergeProps, createMemo, Show } from 'solid-js'
-import { createTextField, type AriaTextFieldProps } from '@proyecto-viviana/solidaria'
-import { createTextFieldState } from '@proyecto-viviana/solid-stately'
+/**
+ * TextField component for proyecto-viviana-ui
+ *
+ * A styled text field component built on top of solidaria-components.
+ * This component only handles styling - all behavior and accessibility
+ * is provided by the headless TextField from solidaria-components.
+ */
+
+import { type JSX, splitProps, mergeProps as solidMergeProps, Show } from 'solid-js'
+import {
+  TextField as HeadlessTextField,
+  type TextFieldProps as HeadlessTextFieldProps,
+  type TextFieldRenderProps,
+} from '@proyecto-viviana/solidaria-components'
 
 // ============================================
-// TEXTFIELD COMPONENT
+// TYPES
 // ============================================
 
 export type TextFieldSize = 'sm' | 'md' | 'lg'
 export type TextFieldVariant = 'outline' | 'filled'
 
-export interface TextFieldProps extends Omit<AriaTextFieldProps, 'label' | 'description' | 'errorMessage'> {
+export interface TextFieldProps extends Omit<HeadlessTextFieldProps, 'class' | 'children' | 'style'> {
   /** The size of the text field. */
   size?: TextFieldSize
   /** The visual variant of the text field. */
@@ -23,6 +34,10 @@ export interface TextFieldProps extends Omit<AriaTextFieldProps, 'label' | 'desc
   /** Error message shown when invalid. */
   errorMessage?: string
 }
+
+// ============================================
+// STYLES
+// ============================================
 
 const sizeStyles = {
   sm: {
@@ -42,9 +57,14 @@ const sizeStyles = {
   },
 }
 
+// ============================================
+// COMPONENT
+// ============================================
+
 /**
  * A text field allows users to enter a plain text value with a keyboard.
- * Uses createTextField from solidaria for full accessibility support.
+ *
+ * Built on solidaria-components TextField for full accessibility support.
  */
 export function TextField(props: TextFieldProps): JSX.Element {
   const defaultProps: Partial<TextFieldProps> = {
@@ -54,7 +74,7 @@ export function TextField(props: TextFieldProps): JSX.Element {
 
   const merged = solidMergeProps(defaultProps, props)
 
-  const [local, ariaProps] = splitProps(merged, [
+  const [local, headlessProps] = splitProps(merged, [
     'size',
     'variant',
     'class',
@@ -63,116 +83,96 @@ export function TextField(props: TextFieldProps): JSX.Element {
     'errorMessage',
   ])
 
-  // Create text field state
-  const state = createTextFieldState(() => ({
-    value: ariaProps.value,
-    defaultValue: ariaProps.defaultValue,
-    onChange: ariaProps.onChange,
-  }))
-
-  // Create text field aria props
-  const textFieldAria = createTextField(() => ({
-    ...ariaProps,
-    label: local.label,
-    description: local.description,
-    errorMessage: local.errorMessage,
-    value: state.value(),
-    onChange: state.setValue,
-  }))
-
   const size = () => sizeStyles[local.size!]
 
-  const inputClasses = createMemo(() => {
-    const base = 'w-full rounded-md transition-all duration-200 outline-none'
-    const sizeClass = size().input
-
-    // Variant styles
-    let variantClass: string
-    if (local.variant === 'filled') {
-      variantClass = 'bg-bg-200 border border-transparent'
-    } else {
-      variantClass = 'bg-transparent border border-bg-400'
-    }
-
-    // State styles
-    let stateClass: string
-    if (ariaProps.isDisabled) {
-      stateClass = 'bg-bg-200 text-primary-500 cursor-not-allowed opacity-60'
-    } else if (textFieldAria.isInvalid) {
-      stateClass = 'border-danger-500 focus:border-danger-400 focus:ring-2 focus:ring-danger-400/20'
-    } else {
-      stateClass = 'text-primary-100 placeholder:text-primary-500 focus:border-accent focus:ring-2 focus:ring-accent/20'
-    }
-
-    // Hover styles (only when not disabled)
-    const hoverClass = ariaProps.isDisabled ? '' : 'hover:border-accent-300'
-
-    return [base, sizeClass, variantClass, stateClass, hoverClass].filter(Boolean).join(' ')
-  })
-
-  const labelClasses = createMemo(() => {
-    const base = 'block font-medium text-primary-200 mb-1'
-    const sizeClass = size().label
-    const disabledClass = ariaProps.isDisabled ? 'opacity-60' : ''
-
-    return [base, sizeClass, disabledClass].filter(Boolean).join(' ')
-  })
-
-  const descriptionClasses = createMemo(() => {
-    const base = 'mt-1 text-primary-400'
-    const sizeClass = size().description
-
-    return [base, sizeClass].filter(Boolean).join(' ')
-  })
-
-  const errorClasses = createMemo(() => {
-    const base = 'mt-1 text-danger-400'
-    const sizeClass = size().description
-
-    return [base, sizeClass].filter(Boolean).join(' ')
-  })
-
-  // Remove ref from spread props to avoid type conflicts
-  const cleanLabelProps = () => {
-    const { ref: _ref1, ...rest } = textFieldAria.labelProps as Record<string, unknown>
-    return rest
-  }
-  const cleanDescriptionProps = () => {
-    const { ref: _ref2, ...rest } = textFieldAria.descriptionProps as Record<string, unknown>
-    return rest
-  }
-  const cleanErrorMessageProps = () => {
-    const { ref: _ref3, ...rest } = textFieldAria.errorMessageProps as Record<string, unknown>
-    return rest
+  // Generate class based on render props
+  const getClassName = (renderProps: TextFieldRenderProps): string => {
+    const base = ''
+    const disabledClass = renderProps.isDisabled ? 'opacity-60' : ''
+    const custom = local.class || ''
+    return [base, disabledClass, custom].filter(Boolean).join(' ')
   }
 
   return (
-    <div class={`${local.class || ''}`}>
-      <Show when={local.label}>
-        <label {...cleanLabelProps()} class={labelClasses()}>
-          {local.label}
-          <Show when={ariaProps.isRequired}>
-            <span class="text-danger-400 ml-0.5">*</span>
-          </Show>
-        </label>
-      </Show>
+    <HeadlessTextField
+      {...headlessProps}
+      class={getClassName}
+    >
+      {(renderProps) => {
+        const inputClasses = () => {
+          const base = 'w-full rounded-md transition-all duration-200 outline-none'
+          const sizeClass = size().input
 
-      <input
-        {...textFieldAria.inputProps}
-        class={inputClasses()}
-      />
+          let variantClass: string
+          if (local.variant === 'filled') {
+            variantClass = 'bg-bg-200 border border-transparent'
+          } else {
+            variantClass = 'bg-transparent border border-bg-400'
+          }
 
-      <Show when={local.description && !textFieldAria.isInvalid}>
-        <p {...cleanDescriptionProps()} class={descriptionClasses()}>
-          {local.description}
-        </p>
-      </Show>
+          let stateClass: string
+          if (renderProps.isDisabled) {
+            stateClass = 'bg-bg-200 text-primary-500 cursor-not-allowed opacity-60'
+          } else if (renderProps.isInvalid) {
+            stateClass = 'border-danger-500 focus:border-danger-400 focus:ring-2 focus:ring-danger-400/20'
+          } else {
+            stateClass = 'text-primary-100 placeholder:text-primary-500 focus:border-accent focus:ring-2 focus:ring-accent/20'
+          }
 
-      <Show when={local.errorMessage && textFieldAria.isInvalid}>
-        <p {...cleanErrorMessageProps()} class={errorClasses()}>
-          {local.errorMessage}
-        </p>
-      </Show>
-    </div>
+          const hoverClass = renderProps.isDisabled ? '' : 'hover:border-accent-300'
+
+          return [base, sizeClass, variantClass, stateClass, hoverClass].filter(Boolean).join(' ')
+        }
+
+        const labelClasses = () => {
+          const base = 'block font-medium text-primary-200 mb-1'
+          const sizeClass = size().label
+          const disabledClass = renderProps.isDisabled ? 'opacity-60' : ''
+
+          return [base, sizeClass, disabledClass].filter(Boolean).join(' ')
+        }
+
+        const descriptionClasses = () => {
+          const base = 'mt-1 text-primary-400'
+          const sizeClass = size().description
+
+          return [base, sizeClass].filter(Boolean).join(' ')
+        }
+
+        const errorClasses = () => {
+          const base = 'mt-1 text-danger-400'
+          const sizeClass = size().description
+
+          return [base, sizeClass].filter(Boolean).join(' ')
+        }
+
+        return (
+          <>
+            <Show when={local.label}>
+              <label class={labelClasses()}>
+                {local.label}
+                <Show when={renderProps.isRequired}>
+                  <span class="text-danger-400 ml-0.5">*</span>
+                </Show>
+              </label>
+            </Show>
+
+            <input class={inputClasses()} />
+
+            <Show when={local.description && !renderProps.isInvalid}>
+              <p class={descriptionClasses()}>
+                {local.description}
+              </p>
+            </Show>
+
+            <Show when={local.errorMessage && renderProps.isInvalid}>
+              <p class={errorClasses()}>
+                {local.errorMessage}
+              </p>
+            </Show>
+          </>
+        )
+      }}
+    </HeadlessTextField>
   )
 }

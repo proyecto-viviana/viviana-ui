@@ -1,9 +1,11 @@
 /**
- * Switch component for proyecto-viviana-ui
+ * ToggleSwitch component for proyecto-viviana-ui
  *
  * A styled switch component built on top of solidaria-components.
  * This component only handles styling - all behavior and accessibility
  * is provided by the headless Switch from solidaria-components.
+ *
+ * Named "ToggleSwitch" to avoid conflict with SolidJS's built-in Switch component.
  */
 
 import { type JSX, splitProps, mergeProps as solidMergeProps } from 'solid-js';
@@ -15,7 +17,7 @@ import { Switch as HeadlessSwitch, type SwitchProps as HeadlessSwitchProps, type
 
 export type SwitchSize = 'sm' | 'md' | 'lg';
 
-export interface SwitchProps extends Omit<HeadlessSwitchProps, 'class' | 'children'> {
+export interface ToggleSwitchProps extends Omit<HeadlessSwitchProps, 'class' | 'children'> {
   /** The size of the switch. */
   size?: SwitchSize;
   /** Additional CSS class name. */
@@ -54,9 +56,10 @@ const sizeStyles = {
  * A switch allows users to toggle between two mutually exclusive states.
  *
  * Built on solidaria-components Switch for full accessibility support.
+ * Named "ToggleSwitch" to avoid conflict with SolidJS's built-in Switch component.
  */
-export function Switch(props: SwitchProps): JSX.Element {
-  const defaultProps: Partial<SwitchProps> = {
+export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
+  const defaultProps: Partial<ToggleSwitchProps> = {
     size: 'md',
   };
 

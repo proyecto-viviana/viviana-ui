@@ -1,28 +1,52 @@
-import { type JSX, splitProps, mergeProps as solidMergeProps, createMemo, Show } from 'solid-js'
-import { createCheckbox, createToggleState, type AriaCheckboxProps } from '@proyecto-viviana/solidaria'
+/**
+ * Checkbox component for proyecto-viviana-ui
+ *
+ * A styled checkbox component built on top of solidaria-components.
+ * This component only handles styling - all behavior and accessibility
+ * is provided by the headless Checkbox from solidaria-components.
+ */
+
+import { type JSX, splitProps, mergeProps as solidMergeProps, Show } from 'solid-js'
+import {
+  Checkbox as HeadlessCheckbox,
+  CheckboxGroup as HeadlessCheckboxGroup,
+  type CheckboxProps as HeadlessCheckboxProps,
+  type CheckboxGroupProps as HeadlessCheckboxGroupProps,
+  type CheckboxRenderProps,
+  type CheckboxGroupRenderProps,
+} from '@proyecto-viviana/solidaria-components'
 
 // ============================================
-// CHECKBOX COMPONENT
+// TYPES
 // ============================================
 
 export type CheckboxSize = 'sm' | 'md' | 'lg'
 
-export interface CheckboxProps extends Omit<AriaCheckboxProps, 'isSelected' | 'defaultSelected' | 'onChange'> {
-  /** Whether the checkbox is checked (controlled). */
-  checked?: boolean
-  /** Whether the checkbox is checked by default (uncontrolled). */
-  defaultChecked?: boolean
-  /** Handler called when the checkbox state changes. */
-  onChange?: (checked: boolean) => void
+export interface CheckboxProps extends Omit<HeadlessCheckboxProps, 'class' | 'children' | 'style'> {
   /** The size of the checkbox. */
   size?: CheckboxSize
   /** Additional CSS class name. */
   class?: string
   /** Label text for the checkbox. */
   children?: JSX.Element
-  /** Whether to show the indeterminate state. */
-  isIndeterminate?: boolean
 }
+
+export interface CheckboxGroupProps extends Omit<HeadlessCheckboxGroupProps, 'class' | 'children' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
+  /** Children checkboxes. */
+  children?: JSX.Element
+  /** Label for the group. */
+  label?: string
+  /** Description for the group. */
+  description?: string
+  /** Error message when invalid. */
+  errorMessage?: string
+}
+
+// ============================================
+// STYLES
+// ============================================
 
 const sizeStyles = {
   sm: {
@@ -42,7 +66,10 @@ const sizeStyles = {
   },
 }
 
-// Checkmark SVG icon
+// ============================================
+// ICONS
+// ============================================
+
 function CheckIcon(props: { class?: string }) {
   return (
     <svg
@@ -62,7 +89,6 @@ function CheckIcon(props: { class?: string }) {
   )
 }
 
-// Indeterminate dash icon
 function IndeterminateIcon(props: { class?: string }) {
   return (
     <svg
@@ -81,106 +107,152 @@ function IndeterminateIcon(props: { class?: string }) {
   )
 }
 
+// ============================================
+// CHECKBOX COMPONENT
+// ============================================
+
 /**
  * A checkbox allows users to select one or more items from a set.
- * Uses createCheckbox from solidaria for full accessibility support.
+ *
+ * Built on solidaria-components Checkbox for full accessibility support.
  */
 export function Checkbox(props: CheckboxProps): JSX.Element {
-  let inputRef: HTMLInputElement | null = null
-
   const defaultProps: Partial<CheckboxProps> = {
     size: 'md',
   }
 
   const merged = solidMergeProps(defaultProps, props)
 
-  const [local, ariaProps] = splitProps(merged, [
-    'checked',
-    'defaultChecked',
-    'onChange',
+  const [local, headlessProps] = splitProps(merged, [
     'size',
     'class',
     'children',
-    'isIndeterminate',
   ])
-
-  // Create toggle state
-  const state = createToggleState(() => ({
-    isSelected: local.checked,
-    defaultSelected: local.defaultChecked,
-    onChange: local.onChange,
-  }))
-
-  // Create checkbox aria props
-  const checkboxAria = createCheckbox(
-    () => ({
-      ...ariaProps,
-      isIndeterminate: local.isIndeterminate,
-      children: local.children,
-    }),
-    state,
-    () => inputRef
-  )
 
   const size = () => sizeStyles[local.size!]
 
-  const boxClasses = createMemo(() => {
-    const base = 'relative flex items-center justify-center rounded border-2 transition-all duration-200'
-    const sizeClass = size().box
-
-    // Color based on state
-    let colorClass: string
-    if (ariaProps.isDisabled) {
-      colorClass = 'border-bg-300 bg-bg-200'
-    } else if (state.isSelected() || local.isIndeterminate) {
-      colorClass = 'border-accent bg-accent'
-    } else {
-      colorClass = 'border-primary-600 bg-transparent hover:border-accent-300'
-    }
-
-    const focusClass = 'focus-within:ring-2 focus-within:ring-accent-300 focus-within:ring-offset-2 focus-within:ring-offset-bg-400'
-    const cursorClass = ariaProps.isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'
-
-    return [base, sizeClass, colorClass, focusClass, cursorClass].filter(Boolean).join(' ')
-  })
-
-  const iconClasses = createMemo(() => {
-    const base = 'text-white transition-opacity duration-200'
-    const sizeClass = size().icon
-    const visibilityClass = (state.isSelected() || local.isIndeterminate) ? 'opacity-100' : 'opacity-0'
-
-    return [base, sizeClass, visibilityClass].filter(Boolean).join(' ')
-  })
-
-  const labelClasses = createMemo(() => {
-    const base = 'text-primary-200'
-    const sizeClass = size().label
-    const disabledClass = ariaProps.isDisabled ? 'opacity-50' : ''
-
-    return [base, sizeClass, disabledClass].filter(Boolean).join(' ')
-  })
+  // Generate class based on render props
+  const getClassName = (renderProps: CheckboxRenderProps): string => {
+    const base = 'inline-flex items-center gap-2 cursor-pointer'
+    const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed opacity-50' : ''
+    const custom = local.class || ''
+    return [base, disabledClass, custom].filter(Boolean).join(' ')
+  }
 
   return (
-    <label
-      {...checkboxAria.labelProps}
-      class={`inline-flex items-center gap-2 cursor-pointer ${ariaProps.isDisabled ? 'cursor-not-allowed' : ''} ${local.class || ''}`}
+    <HeadlessCheckbox
+      {...headlessProps}
+      class={getClassName}
     >
-      <span class={boxClasses()}>
-        <input
-          ref={(el) => (inputRef = el)}
-          {...checkboxAria.inputProps}
-          class="sr-only"
-        />
-        <Show
-          when={!local.isIndeterminate}
-          fallback={<IndeterminateIcon class={iconClasses()} />}
-        >
-          <CheckIcon class={iconClasses()} />
-        </Show>
-      </span>
-      <Show when={local.children}>
-        <span class={labelClasses()}>{local.children}</span>
+      {(renderProps) => {
+        const boxClasses = () => {
+          const base = 'relative flex items-center justify-center rounded border-2 transition-all duration-200'
+          const sizeClass = size().box
+
+          let colorClass: string
+          if (renderProps.isDisabled) {
+            colorClass = 'border-bg-300 bg-bg-200'
+          } else if (renderProps.isSelected || renderProps.isIndeterminate) {
+            colorClass = 'border-accent bg-accent'
+          } else {
+            colorClass = 'border-primary-600 bg-transparent hover:border-accent-300'
+          }
+
+          const focusClass = renderProps.isFocusVisible
+            ? 'ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400'
+            : ''
+          const cursorClass = renderProps.isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'
+
+          return [base, sizeClass, colorClass, focusClass, cursorClass].filter(Boolean).join(' ')
+        }
+
+        const iconClasses = () => {
+          const base = 'text-white transition-opacity duration-200'
+          const sizeClass = size().icon
+          const visibilityClass = (renderProps.isSelected || renderProps.isIndeterminate)
+            ? 'opacity-100'
+            : 'opacity-0'
+
+          return [base, sizeClass, visibilityClass].filter(Boolean).join(' ')
+        }
+
+        const labelClasses = () => {
+          const base = 'text-primary-200'
+          const sizeClass = size().label
+          const disabledClass = renderProps.isDisabled ? 'opacity-50' : ''
+
+          return [base, sizeClass, disabledClass].filter(Boolean).join(' ')
+        }
+
+        return (
+          <>
+            <span class={boxClasses()}>
+              <Show
+                when={!renderProps.isIndeterminate}
+                fallback={<IndeterminateIcon class={iconClasses()} />}
+              >
+                <CheckIcon class={iconClasses()} />
+              </Show>
+            </span>
+            <Show when={local.children}>
+              <span class={labelClasses()}>{local.children}</span>
+            </Show>
+          </>
+        )
+      }}
+    </HeadlessCheckbox>
+  )
+}
+
+// ============================================
+// CHECKBOX GROUP COMPONENT
+// ============================================
+
+/**
+ * A checkbox group allows users to select multiple items from a list.
+ *
+ * Built on solidaria-components CheckboxGroup for full accessibility support.
+ */
+export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
+  const [local, headlessProps] = splitProps(props, [
+    'class',
+    'children',
+    'label',
+    'description',
+    'errorMessage',
+  ])
+
+  // Generate class based on render props
+  const getClassName = (renderProps: CheckboxGroupRenderProps): string => {
+    const base = 'flex flex-col gap-2'
+    const disabledClass = renderProps.isDisabled ? 'opacity-50' : ''
+    const custom = local.class || ''
+    return [base, disabledClass, custom].filter(Boolean).join(' ')
+  }
+
+  // Render children function for the headless component
+  const renderChildren = (renderProps: CheckboxGroupRenderProps) => (
+    <>
+      <Show when={local.label}>
+        <span class="text-sm font-medium text-primary-200">{local.label}</span>
       </Show>
-    </label>
+      <div class="flex flex-col gap-2">
+        {local.children}
+      </div>
+      <Show when={local.description && !renderProps.isInvalid}>
+        <span class="text-sm text-primary-400">{local.description}</span>
+      </Show>
+      <Show when={local.errorMessage && renderProps.isInvalid}>
+        <span class="text-sm text-danger-400">{local.errorMessage}</span>
+      </Show>
+    </>
+  )
+
+  return (
+    <HeadlessCheckboxGroup
+      {...headlessProps}
+      class={getClassName}
+      children={renderChildren as any}
+    />
   )
 }

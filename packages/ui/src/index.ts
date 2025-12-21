@@ -23,8 +23,8 @@ export { TabSwitch, ToggleSwitch } from './switch';
 export type { TabSwitchProps, ToggleSwitchProps, SwitchSize } from './switch';
 
 // Checkbox
-export { Checkbox } from './checkbox';
-export type { CheckboxProps, CheckboxSize } from './checkbox';
+export { Checkbox, CheckboxGroup } from './checkbox';
+export type { CheckboxProps, CheckboxGroupProps, CheckboxSize } from './checkbox';
 
 // Radio
 export { RadioGroup, Radio } from './radio';
