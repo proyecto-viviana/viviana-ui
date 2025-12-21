@@ -1,0 +1,199 @@
+/**
+ * TextField hook for Solidaria
+ *
+ * Provides the behavior and accessibility implementation for a text field.
+ *
+ * This is a 1:1 port of @react-aria/textfield's useTextField hook.
+ */
+
+import { JSX } from 'solid-js';
+import { createField, type AriaFieldProps, type FieldAria } from '../label';
+import { createFocusable, type FocusableProps } from '../interactions';
+import { mergeProps, filterDOMProps } from '../utils';
+import { type MaybeAccessor, access } from '../utils/reactivity';
+
+// ============================================
+// TYPES
+// ============================================
+
+export interface AriaTextFieldProps extends AriaFieldProps, FocusableProps {
+  /** The current value (controlled). */
+  value?: string;
+  /** The default value (uncontrolled). */
+  defaultValue?: string;
+  /** Handler that is called when the value changes. */
+  onChange?: (value: string) => void;
+  /** Whether the input is disabled. */
+  isDisabled?: boolean;
+  /** Whether the input is read only. */
+  isReadOnly?: boolean;
+  /** Whether the input is required. */
+  isRequired?: boolean;
+  /** The type of input to render. */
+  type?: 'text' | 'search' | 'url' | 'tel' | 'email' | 'password' | string;
+  /** The input mode hint for virtual keyboards. */
+  inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
+  /** The name of the input element, used when submitting an HTML form. */
+  name?: string;
+  /** Regex pattern to validate the input value. */
+  pattern?: string;
+  /** The maximum number of characters supported by the input. */
+  maxLength?: number;
+  /** The minimum number of characters required by the input. */
+  minLength?: number;
+  /** Placeholder text for the input. */
+  placeholder?: string;
+  /** Whether to enable auto complete. */
+  autoComplete?: string;
+  /** Whether to enable auto correct. */
+  autoCorrect?: string;
+  /** Whether to enable spell check. */
+  spellCheck?: 'true' | 'false';
+  /** Controls whether and how text input is automatically capitalized. */
+  autoCapitalize?: 'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters';
+  /** The element type to use for the input. Defaults to 'input'. */
+  inputElementType?: 'input' | 'textarea';
+
+  // Clipboard events
+  onCopy?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, ClipboardEvent>;
+  onCut?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, ClipboardEvent>;
+  onPaste?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, ClipboardEvent>;
+
+  // Composition events
+  onCompositionStart?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, CompositionEvent>;
+  onCompositionEnd?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, CompositionEvent>;
+  onCompositionUpdate?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, CompositionEvent>;
+
+  // Selection events
+  onSelect?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, Event>;
+
+  // Input events
+  onBeforeInput?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, InputEvent>;
+  onInput?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, InputEvent>;
+}
+
+export interface TextFieldAria<T extends HTMLInputElement | HTMLTextAreaElement = HTMLInputElement> extends Omit<FieldAria, 'fieldProps'> {
+  /** Props for the input element. */
+  inputProps: JSX.InputHTMLAttributes<T>;
+  /** Whether the text field is invalid. */
+  isInvalid: boolean;
+}
+
+// ============================================
+// IMPLEMENTATION
+// ============================================
+
+/**
+ * Provides the behavior and accessibility implementation for a text field.
+ * Text fields allow users to input text with a keyboard.
+ *
+ * @param props - Props for the text field.
+ * @param ref - Optional ref callback for the input element.
+ */
+export function createTextField<T extends HTMLInputElement | HTMLTextAreaElement = HTMLInputElement>(
+  props: MaybeAccessor<AriaTextFieldProps>,
+  ref?: (el: T) => void
+): TextFieldAria<T> {
+  const getProps = () => access(props);
+
+  // Get field accessibility props (label, description, error message)
+  const { labelProps, fieldProps, descriptionProps, errorMessageProps } = createField(props);
+
+  // Get focusable props
+  const { focusableProps } = createFocusable(
+    {
+      get isDisabled() {
+        return getProps().isDisabled;
+      },
+      get autoFocus() {
+        return getProps().autoFocus;
+      },
+      onFocus: getProps().onFocus,
+      onBlur: getProps().onBlur,
+      onFocusChange: getProps().onFocusChange,
+      onKeyDown: getProps().onKeyDown,
+      onKeyUp: getProps().onKeyUp,
+    },
+    ref as ((el: HTMLElement) => void) | undefined
+  );
+
+  // Filter DOM props
+  const getDomProps = () => filterDOMProps(getProps() as Record<string, unknown>, { labelable: true });
+
+  // Build input props
+  const getInputProps = (): JSX.InputHTMLAttributes<T> => {
+    const p = getProps();
+    const isInvalid = p.isInvalid || p.validationState === 'invalid';
+    const isTextarea = p.inputElementType === 'textarea';
+
+    return mergeProps(
+      getDomProps(),
+      {
+        disabled: p.isDisabled,
+        readOnly: p.isReadOnly,
+        required: p.isRequired,
+        'aria-required': p.isRequired || undefined,
+        'aria-invalid': isInvalid || undefined,
+        value: p.value ?? p.defaultValue ?? '',
+        onChange: (e: Event) => {
+          const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+          p.onChange?.(target.value);
+        },
+        // Don't include type and pattern for textarea elements
+        type: isTextarea ? undefined : (p.type ?? 'text'),
+        inputMode: p.inputMode,
+        name: p.name,
+        pattern: isTextarea ? undefined : p.pattern,
+        maxLength: p.maxLength,
+        minLength: p.minLength,
+        placeholder: p.placeholder,
+        autoComplete: p.autoComplete,
+        autoCorrect: p.autoCorrect,
+        autoCapitalize: p.autoCapitalize,
+        spellCheck: p.spellCheck,
+
+        // Clipboard events
+        onCopy: p.onCopy,
+        onCut: p.onCut,
+        onPaste: p.onPaste,
+
+        // Composition events
+        onCompositionStart: p.onCompositionStart,
+        onCompositionEnd: p.onCompositionEnd,
+        onCompositionUpdate: p.onCompositionUpdate,
+
+        // Selection events
+        onSelect: p.onSelect,
+
+        // Input events
+        onBeforeInput: p.onBeforeInput,
+        onInput: p.onInput,
+      },
+      focusableProps as Record<string, unknown>,
+      fieldProps as Record<string, unknown>
+    ) as JSX.InputHTMLAttributes<T>;
+  };
+
+  const getIsInvalid = () => {
+    const p = getProps();
+    return p.isInvalid || p.validationState === 'invalid' || false;
+  };
+
+  return {
+    get labelProps() {
+      return labelProps;
+    },
+    get inputProps() {
+      return getInputProps();
+    },
+    get descriptionProps() {
+      return descriptionProps;
+    },
+    get errorMessageProps() {
+      return errorMessageProps;
+    },
+    get isInvalid() {
+      return getIsInvalid();
+    },
+  };
+}

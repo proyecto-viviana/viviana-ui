@@ -5,6 +5,13 @@ export {
   type ToggleState,
 } from './toggle';
 
+// TextField
+export {
+  createTextFieldState,
+  type TextFieldStateOptions,
+  type TextFieldState,
+} from './textfield';
+
 // Checkbox
 export {
   createCheckboxGroupState,

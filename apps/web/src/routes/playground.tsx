@@ -20,6 +20,7 @@ import {
   ConversationBubble,
   TimelineItem,
   PageLayout,
+  TextField,
 } from '@proyecto-viviana/ui'
 import {
   createButton,
@@ -237,6 +238,51 @@ function Playground() {
                 <Checkbox size="md" aria-label="Medium checkbox" />
                 <Checkbox size="lg" aria-label="Large checkbox" />
               </div>
+            </div>
+          </Section>
+
+          {/* TextField Component */}
+          <Section title="TextField" description="Text input with label, description, and validation">
+            <div class="space-y-4">
+              <TextField
+                label="Email"
+                placeholder="Enter your email"
+                description="We'll never share your email"
+              />
+              <TextField
+                label="Password"
+                type="password"
+                placeholder="Enter your password"
+                isRequired
+              />
+              <TextField
+                label="Username"
+                placeholder="Choose a username"
+                isInvalid
+                errorMessage="Username is already taken"
+              />
+              <div class="flex gap-4">
+                <TextField
+                  label="Small"
+                  size="sm"
+                  placeholder="Small input"
+                />
+                <TextField
+                  label="Large"
+                  size="lg"
+                  placeholder="Large input"
+                />
+              </div>
+              <TextField
+                label="Disabled"
+                value="Can't edit this"
+                isDisabled
+              />
+              <TextField
+                label="Filled variant"
+                variant="filled"
+                placeholder="With filled style"
+              />
             </div>
           </Section>
 

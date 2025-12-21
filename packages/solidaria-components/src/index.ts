@@ -70,3 +70,18 @@ export {
   type RadioGroupRenderProps,
   type Orientation,
 } from './RadioGroup';
+
+// TextField
+export {
+  TextField,
+  TextFieldContext,
+  Label,
+  Input,
+  TextArea,
+  type TextFieldProps,
+  type TextFieldRenderProps,
+  type TextFieldContextValue,
+  type LabelProps,
+  type InputProps,
+  type TextAreaProps,
+} from './TextField';

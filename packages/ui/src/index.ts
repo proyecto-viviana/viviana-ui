@@ -81,3 +81,7 @@ export type { ProjectCardProps, ProjectCardSize } from './project-card';
 // PageLayout
 export { PageLayout } from './page-layout';
 export type { PageLayoutProps } from './page-layout';
+
+// TextField
+export { TextField } from './textfield';
+export type { TextFieldProps, TextFieldSize, TextFieldVariant } from './textfield';

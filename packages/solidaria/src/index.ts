@@ -94,6 +94,13 @@ export {
   type SwitchAria,
 } from './switch';
 
+// TextField
+export {
+  createTextField,
+  type AriaTextFieldProps,
+  type TextFieldAria,
+} from './textfield';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

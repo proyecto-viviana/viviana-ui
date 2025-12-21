@@ -91,10 +91,11 @@
 
 /* ===== FILL VARIANTS ===== */
 
-/* Primary = bg-primary-700, text-primary-200 */
+/* Primary = bg-primary-700, text-primary-200, border-bottom-primary-200 */
 .vui-button--fill.vui-button--primary {
   background: var(--color-primary-700);
   color: var(--color-primary-200);
+  border-bottom: 1px solid var(--color-primary-200);
 }
 
 /* Secondary = bg-primary-600, text-primary-100 */
@@ -224,6 +225,7 @@
 .vui-chip--primary {
   background: var(--color-primary-700);
   color: var(--color-primary-100);
+  border-bottom: 1px solid var(--color-primary-200);
 }
 
 .vui-chip--accent {

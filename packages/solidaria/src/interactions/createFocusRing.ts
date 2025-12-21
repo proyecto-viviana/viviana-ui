@@ -8,7 +8,7 @@
  * Port of @react-aria/focus useFocusRing.
  */
 
-import { type JSX, type Accessor, createSignal, createEffect, onCleanup, createMemo } from 'solid-js';
+import { type JSX, type Accessor, createSignal, createEffect, onCleanup } from 'solid-js';
 import { createFocus } from './createFocus';
 
 // ============================================
@@ -94,7 +94,7 @@ function setupGlobalFocusListeners() {
  * For text inputs, focus rings are always visible when focused.
  */
 export function createFocusRing(props: FocusRingProps = {}): FocusRingResult {
-  const { isTextInput = false, autoFocus = false, within = false } = props;
+  const { isTextInput = false, autoFocus = false } = props;
 
   const [isFocused, setIsFocused] = createSignal(false);
   const [isFocusVisible, setIsFocusVisible] = createSignal(autoFocus);
