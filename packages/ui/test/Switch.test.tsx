@@ -149,4 +149,72 @@ describe('ToggleSwitch', () => {
       expect(onChangeSpy).toHaveBeenCalled();
     });
   });
+
+  describe('aria attributes', () => {
+    it('supports aria-label', () => {
+      render(() => <ToggleSwitch aria-label="Custom label" />);
+      const switchEl = screen.getByRole('switch');
+      expect(switchEl).toHaveAttribute('aria-label', 'Custom label');
+    });
+
+    it('supports aria-labelledby', () => {
+      render(() => (
+        <>
+          <span id="label">Label text</span>
+          <ToggleSwitch aria-labelledby="label" />
+        </>
+      ));
+      const switchEl = screen.getByRole('switch');
+      expect(switchEl).toHaveAttribute('aria-labelledby', 'label');
+    });
+
+    it('supports aria-describedby', () => {
+      render(() => (
+        <>
+          <span id="desc">Description text</span>
+          <ToggleSwitch aria-label="Test" aria-describedby="desc" />
+        </>
+      ));
+      const switchEl = screen.getByRole('switch');
+      expect(switchEl).toHaveAttribute('aria-describedby', 'desc');
+    });
+  });
+
+  describe('readonly state', () => {
+    it('does not toggle when readonly', async () => {
+      render(() => <ToggleSwitch aria-label="Test switch" isReadOnly onChange={onChangeSpy} />);
+      const switchEl = screen.getByRole('switch');
+
+      await user.click(switchEl);
+      expect(onChangeSpy).not.toHaveBeenCalled();
+    });
+
+    it('sets aria-readonly when isReadOnly is true', () => {
+      render(() => <ToggleSwitch aria-label="Test switch" isReadOnly />);
+      const switchEl = screen.getByRole('switch');
+      expect(switchEl).toHaveAttribute('aria-readonly', 'true');
+    });
+  });
+
+  describe('excludeFromTabOrder', () => {
+    it('removes switch from tab order when excludeFromTabOrder is true', () => {
+      render(() => <ToggleSwitch aria-label="Test switch" excludeFromTabOrder />);
+      const switchEl = screen.getByRole('switch');
+      expect(switchEl).toHaveAttribute('tabindex', '-1');
+    });
+  });
+
+  describe('custom props', () => {
+    it('allows custom data attributes to be passed through', () => {
+      render(() => <ToggleSwitch aria-label="Test switch" data-testid="custom-switch" />);
+      const switchEl = screen.getByRole('switch');
+      expect(switchEl).toHaveAttribute('data-testid', 'custom-switch');
+    });
+
+    it('allows custom data-foo attribute', () => {
+      render(() => <ToggleSwitch aria-label="Test switch" data-foo="bar" />);
+      const switchEl = screen.getByRole('switch');
+      expect(switchEl).toHaveAttribute('data-foo', 'bar');
+    });
+  });
 });

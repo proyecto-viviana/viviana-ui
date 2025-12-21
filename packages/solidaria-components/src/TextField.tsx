@@ -188,16 +188,18 @@ export function TextField(props: TextFieldProps): JSX.Element {
   };
 
   // Context value for sub-components
-  const contextValue = createMemo<TextFieldContextValue>(() => ({
+  // Note: We create the value object directly (not in a memo) so it's available
+  // immediately when children access the context
+  const contextValue: TextFieldContextValue = {
     labelProps: textFieldAria.labelProps as JSX.LabelHTMLAttributes<HTMLLabelElement>,
     inputProps: { ...textFieldAria.inputProps, ...focusProps } as JSX.InputHTMLAttributes<HTMLInputElement>,
     descriptionProps: textFieldAria.descriptionProps as JSX.HTMLAttributes<HTMLElement>,
     errorMessageProps: textFieldAria.errorMessageProps as JSX.HTMLAttributes<HTMLElement>,
     isInvalid: textFieldAria.isInvalid,
-  }));
+  };
 
   return (
-    <TextFieldContext.Provider value={contextValue()}>
+    <TextFieldContext.Provider value={contextValue}>
       <div
         {...domProps()}
         {...cleanHoverProps()}

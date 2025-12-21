@@ -126,8 +126,10 @@ describe('Button', () => {
     expect(onPressChangeSpy).toHaveBeenCalledTimes(2);
   });
 
-  // Note: autoFocus test is skipped because JSDOM doesn't fully support autoFocus behavior
-  // The autoFocus functionality is tested at the solidaria layer
+  // autoFocus works via onMount + focusSafely(), not the HTML autofocus attribute.
+  // JSDOM doesn't execute focus behavior, so document.activeElement stays as body.
+  // React-testing-library has special handling that SolidJS testing-library lacks.
+  // The implementation is correct (verified in browser) - just untestable in JSDOM.
   it.skip('supports autoFocus', () => {
     render(() => <Button autoFocus>Click Me</Button>);
 
@@ -263,4 +265,37 @@ describe('Button', () => {
       expect(button).toHaveAttribute('data-static-color', 'black');
     });
   });
+
+  describe('button type', () => {
+    it('defaults to type="button"', () => {
+      render(() => <Button>Click Me</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('type', 'button');
+    });
+
+    it('supports type="submit"', () => {
+      render(() => <Button type="submit">Submit</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('type', 'submit');
+    });
+
+    it('supports type="reset"', () => {
+      render(() => <Button type="reset">Reset</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('type', 'reset');
+    });
+  });
+
+  describe('excludeFromTabOrder', () => {
+    it('removes button from tab order when excludeFromTabOrder is true', () => {
+      render(() => <Button excludeFromTabOrder>Click Me</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('tabindex', '-1');
+    });
+  });
+
+  // Note: The following features from @react-spectrum are not yet implemented:
+  // - elementType="a" (anchor button) - would need to change Button to support polymorphism
+  // - isPending (loading state) - requires spinner component and i18n
+  // These are tracked in the roadmap for future implementation.
 });

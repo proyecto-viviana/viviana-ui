@@ -184,5 +184,68 @@ describe('Checkbox', () => {
       const checkbox = screen.getByRole('checkbox');
       expect(checkbox).toHaveAttribute('aria-describedby', 'desc');
     });
+
+    it('supports aria-labelledby', () => {
+      render(() => (
+        <>
+          <span id="label">Label text</span>
+          <Checkbox aria-labelledby="label" />
+        </>
+      ));
+      const checkbox = screen.getByRole('checkbox');
+      expect(checkbox).toHaveAttribute('aria-labelledby', 'label');
+    });
+  });
+
+  describe('invalid state', () => {
+    it('sets aria-invalid when isInvalid is true', () => {
+      render(() => <Checkbox aria-label="Test checkbox" isInvalid />);
+      const checkbox = screen.getByRole('checkbox');
+      expect(checkbox).toHaveAttribute('aria-invalid', 'true');
+    });
+
+    it('does not set aria-invalid when isInvalid is false', () => {
+      render(() => <Checkbox aria-label="Test checkbox" />);
+      const checkbox = screen.getByRole('checkbox');
+      expect(checkbox).not.toHaveAttribute('aria-invalid');
+    });
+  });
+
+  describe('readonly state', () => {
+    it('does not toggle when readonly', async () => {
+      render(() => <Checkbox aria-label="Test checkbox" isReadOnly onChange={onChangeSpy} />);
+      const checkbox = screen.getByRole('checkbox');
+
+      await user.click(checkbox);
+      expect(onChangeSpy).not.toHaveBeenCalled();
+    });
+
+    it('sets aria-readonly when isReadOnly is true', () => {
+      render(() => <Checkbox aria-label="Test checkbox" isReadOnly />);
+      const checkbox = screen.getByRole('checkbox');
+      expect(checkbox).toHaveAttribute('aria-readonly', 'true');
+    });
+  });
+
+  describe('excludeFromTabOrder', () => {
+    it('removes checkbox from tab order when excludeFromTabOrder is true', () => {
+      render(() => <Checkbox aria-label="Test checkbox" excludeFromTabOrder />);
+      const checkbox = screen.getByRole('checkbox');
+      expect(checkbox).toHaveAttribute('tabindex', '-1');
+    });
+  });
+
+  describe('custom props', () => {
+    it('allows custom data attributes to be passed through', () => {
+      render(() => <Checkbox aria-label="Test checkbox" data-testid="custom-checkbox" />);
+      const checkbox = screen.getByRole('checkbox');
+      expect(checkbox).toHaveAttribute('data-testid', 'custom-checkbox');
+    });
+
+    it('allows custom data-foo attribute', () => {
+      render(() => <Checkbox aria-label="Test checkbox" data-foo="bar" />);
+      const checkbox = screen.getByRole('checkbox');
+      expect(checkbox).toHaveAttribute('data-foo', 'bar');
+    });
   });
 });

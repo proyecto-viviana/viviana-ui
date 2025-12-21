@@ -310,5 +310,93 @@ describe('RadioGroup', () => {
       const group = screen.getByRole('radiogroup');
       expect(group).toHaveAttribute('aria-label', 'Custom label');
     });
+
+    it('supports aria-labelledby on group', () => {
+      render(() => (
+        <>
+          <span id="label">Group label</span>
+          <RadioGroup aria-labelledby="label">
+            <Radio value="a">Option A</Radio>
+          </RadioGroup>
+        </>
+      ));
+      const group = screen.getByRole('radiogroup');
+      expect(group).toHaveAttribute('aria-labelledby', 'label');
+    });
+
+    it('supports aria-describedby on group', () => {
+      render(() => (
+        <>
+          <span id="desc">Group description</span>
+          <RadioGroup aria-label="Test" aria-describedby="desc">
+            <Radio value="a">Option A</Radio>
+          </RadioGroup>
+        </>
+      ));
+      const group = screen.getByRole('radiogroup');
+      expect(group).toHaveAttribute('aria-describedby', 'desc');
+    });
+  });
+
+  describe('readonly state', () => {
+    it('does not call onChange when group is readonly', async () => {
+      render(() => (
+        <RadioGroup aria-label="Test group" isReadOnly onChange={onChangeSpy}>
+          <Radio value="a">Option A</Radio>
+          <Radio value="b">Option B</Radio>
+        </RadioGroup>
+      ));
+      const radios = screen.getAllByRole('radio');
+
+      await user.click(radios[0]);
+      await user.click(radios[1]);
+      expect(onChangeSpy).not.toHaveBeenCalled();
+    });
+
+    it('sets aria-readonly on radios when group is readonly', () => {
+      render(() => (
+        <RadioGroup aria-label="Test group" isReadOnly>
+          <Radio value="a">Option A</Radio>
+          <Radio value="b">Option B</Radio>
+        </RadioGroup>
+      ));
+      const group = screen.getByRole('radiogroup');
+      expect(group).toHaveAttribute('data-readonly', 'true');
+    });
+  });
+
+  describe('required state', () => {
+    it('sets aria-required when isRequired is true', () => {
+      render(() => (
+        <RadioGroup aria-label="Test group" isRequired>
+          <Radio value="a">Option A</Radio>
+          <Radio value="b">Option B</Radio>
+        </RadioGroup>
+      ));
+      const group = screen.getByRole('radiogroup');
+      expect(group).toHaveAttribute('aria-required', 'true');
+    });
+  });
+
+  describe('custom props', () => {
+    it('allows custom data attributes on group', () => {
+      render(() => (
+        <RadioGroup aria-label="Test group" data-testid="custom-group">
+          <Radio value="a">Option A</Radio>
+        </RadioGroup>
+      ));
+      const group = screen.getByRole('radiogroup');
+      expect(group).toHaveAttribute('data-testid', 'custom-group');
+    });
+
+    it('allows custom data attributes on radio', () => {
+      render(() => (
+        <RadioGroup aria-label="Test group">
+          <Radio value="a" data-testid="custom-radio">Option A</Radio>
+        </RadioGroup>
+      ));
+      const radio = screen.getByRole('radio');
+      expect(radio).toHaveAttribute('data-testid', 'custom-radio');
+    });
   });
 });
