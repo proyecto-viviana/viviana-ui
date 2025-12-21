@@ -108,13 +108,13 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   ]);
 
   // Create toggle state
-  const state = createToggleState(() => ({
-    isSelected: ariaProps.isSelected,
-    defaultSelected: ariaProps.defaultSelected,
-    onChange: ariaProps.onChange,
-    isDisabled: ariaProps.isDisabled,
-    isReadOnly: ariaProps.isReadOnly,
-  }));
+  // Use getters to ensure props are read lazily inside reactive contexts
+  const state = createToggleState({
+    get isSelected() { return ariaProps.isSelected; },
+    get defaultSelected() { return ariaProps.defaultSelected; },
+    get onChange() { return ariaProps.onChange; },
+    get isReadOnly() { return ariaProps.isReadOnly; },
+  });
 
   // Create switch aria props
   const switchAria = createSwitch(

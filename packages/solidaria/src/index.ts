@@ -94,12 +94,34 @@ export {
   type SwitchAria,
 } from './switch';
 
+// Link
+export {
+  createLink,
+  type AriaLinkProps,
+  type LinkAria,
+} from './link';
+
 // TextField
 export {
   createTextField,
   type AriaTextFieldProps,
   type TextFieldAria,
 } from './textfield';
+
+// ProgressBar
+export {
+  createProgressBar,
+  type AriaProgressBarProps,
+  type ProgressBarAria,
+} from './progress';
+
+// Separator
+export {
+  createSeparator,
+  type AriaSeparatorProps,
+  type SeparatorAria,
+  type Orientation,
+} from './separator';
 
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';

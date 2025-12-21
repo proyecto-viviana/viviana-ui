@@ -8,7 +8,7 @@
  * styling through the class prop functions.
  */
 
-import { type JSX, Show, createContext, useContext } from 'solid-js'
+import { type JSX, Show, createContext, useContext, splitProps } from 'solid-js'
 import {
   RadioGroup as HeadlessRadioGroup,
   Radio as HeadlessRadio,
@@ -81,9 +81,18 @@ const sizeStyles = {
  * Built on solidaria-components RadioGroup for full accessibility support.
  */
 export function RadioGroup(props: RadioGroupProps): JSX.Element {
-  const size = props.size ?? 'md'
-  const customClass = props.class ?? ''
-  const orientation = props.orientation ?? 'vertical'
+  // Split out our custom styling props from the rest
+  const [local, headlessProps] = splitProps(props, [
+    'size',
+    'class',
+    'label',
+    'description',
+    'errorMessage',
+    'children',
+  ])
+
+  const size = local.size ?? 'md'
+  const customClass = local.class ?? ''
 
   // Generate class based on render props
   const getClassName = (renderProps: RadioGroupRenderProps): string => {
@@ -93,30 +102,28 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
     return [base, orientationClass, disabledClass, customClass].filter(Boolean).join(' ')
   }
 
-  // Extract props to pass to headless, excluding our custom ones
-  const { size: _, class: __, label, description, errorMessage, children, ...headlessProps } = props
-
   // Create render children function
   const renderChildren = (renderProps: RadioGroupRenderProps) => (
     <>
-      <Show when={label}>
-        <span class="text-primary-200 font-medium mb-1">{label}</span>
+      <Show when={local.label}>
+        <span class="text-primary-200 font-medium mb-1">{local.label}</span>
       </Show>
-      {typeof children === 'function' ? children(renderProps) : children}
-      <Show when={description && !renderProps.isInvalid}>
-        <span class="text-primary-400 text-sm">{description}</span>
+      {typeof local.children === 'function' ? local.children(renderProps) : local.children}
+      <Show when={local.description && !renderProps.isInvalid}>
+        <span class="text-primary-400 text-sm">{local.description}</span>
       </Show>
-      <Show when={errorMessage && renderProps.isInvalid}>
-        <span class="text-danger-400 text-sm">{errorMessage}</span>
+      <Show when={local.errorMessage && renderProps.isInvalid}>
+        <span class="text-danger-400 text-sm">{local.errorMessage}</span>
       </Show>
     </>
   )
 
+  // Pass remaining props through to headless component
+  // headlessProps maintains reactivity for controlled values like value/onChange
   return (
     <RadioSizeContext.Provider value={size}>
       <HeadlessRadioGroup
         {...headlessProps}
-        orientation={orientation}
         class={getClassName}
         data-size={size}
         children={renderChildren as any}

@@ -128,6 +128,7 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     pointerType: null as PointerType | null,
     userSelect: undefined as string | undefined,
     metaKeyEvents: null as Map<string, KeyboardEvent> | null,
+    clickCleanup: null as (() => void) | null,
   };
 
   // Global listeners manager
@@ -222,6 +223,12 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
     removeAllGlobalListeners();
 
+    // Clean up click timeout/listener if set
+    if (pressState.clickCleanup) {
+      pressState.clickCleanup();
+      pressState.clickCleanup = null;
+    }
+
     if (!props.allowTextSelectionOnPress) {
       restoreTextSelection(pressState.target as HTMLElement);
     }
@@ -288,8 +295,49 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
     const isOverTarget = nodeContains(pressState.target, getEventTarget(e) as Element);
     if (isOverTarget && pressState.pointerType != null && pressState.pointerType !== 'virtual') {
-      // Pointer released over target - wait for onClick to complete the press sequence
-      // This matches React-Aria's behavior for compatibility with DOM mutations and third-party libraries
+      // Pointer released over target - wait for onClick to complete the press sequence.
+      // This matches React-Aria's behavior for compatibility with DOM mutations and third-party libraries.
+      // https://github.com/adobe/react-spectrum/issues/1513
+      // https://issues.chromium.org/issues/40732224
+      //
+      // However, if stopPropagation is called on the click event (e.g., by a child input element),
+      // the onClick handler on this element won't fire. We work around this by triggering a click
+      // ourselves after a timeout. This timeout is canceled during the click event in case the
+      // real one fires first. The timeout must be at least 32ms, because Safari on iOS delays the
+      // click event on non-form elements without certain ARIA roles (for hover emulation).
+      // https://github.com/WebKit/WebKit/blob/dccfae42bb29bd4bdef052e469f604a9387241c0/Source/WebKit/WebProcess/WebPage/ios/WebPageIOS.mm#L875-L892
+      let clickFired = false;
+      const timeout = setTimeout(() => {
+        // Guard for SSR/test environments where the element may no longer exist
+        if (typeof HTMLElement === 'undefined') {
+          return;
+        }
+        if (pressState.isPressed && pressState.target instanceof HTMLElement) {
+          if (clickFired) {
+            // Click already happened, just cancel the press state
+            cancel(e);
+          } else {
+            // Click didn't happen (probably due to stopPropagation), trigger it manually
+            pressState.target.focus();
+            pressState.target.click();
+          }
+        }
+      }, 80);
+
+      // Use a capturing listener to track if a click occurred.
+      // If stopPropagation is called it may never reach our handler.
+      const doc = pressState.target.ownerDocument ?? document;
+      const clickListener = () => {
+        clickFired = true;
+      };
+      doc.addEventListener('click', clickListener, true);
+
+      // Store cleanup function
+      pressState.clickCleanup = () => {
+        clearTimeout(timeout);
+        doc.removeEventListener('click', clickListener, true);
+      };
+
       pressState.isOverTarget = false;
     } else {
       // Pointer released outside target, or virtual - cancel the press
@@ -696,6 +744,11 @@ export function createPress(props: CreatePressProps = {}): PressResult {
   // Clean up on unmount
   onCleanup(() => {
     removeAllGlobalListeners();
+    // Clean up click timeout/listener if pending
+    if (pressState.clickCleanup) {
+      pressState.clickCleanup();
+      pressState.clickCleanup = null;
+    }
   });
 
   return {

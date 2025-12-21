@@ -1,0 +1,157 @@
+/**
+ * @vitest-environment jsdom
+ */
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@solidjs/testing-library';
+import userEvent from '@testing-library/user-event';
+import { Link } from '../src/Link';
+
+describe('Link', () => {
+  it('should render a link with default class', () => {
+    render(() => <Link>Test</Link>);
+    const link = screen.getByRole('link');
+    expect(link.tagName).toBe('SPAN');
+    expect(link).toHaveClass('solidaria-Link');
+  });
+
+  it('should render a link with custom class', () => {
+    render(() => <Link class="test">Test</Link>);
+    const link = screen.getByRole('link');
+    expect(link).toHaveClass('test');
+  });
+
+  it('should support DOM props', () => {
+    render(() => <Link data-foo="bar">Test</Link>);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('data-foo', 'bar');
+  });
+
+  it('should render an anchor element when href is provided', () => {
+    render(() => <Link href="https://example.com">Test</Link>);
+    const link = screen.getByRole('link');
+    expect(link.tagName).toBe('A');
+    expect(link).toHaveAttribute('href', 'https://example.com');
+  });
+
+  it('should support render props', async () => {
+    render(() => (
+      <Link>
+        {(renderProps) => (renderProps.isHovered ? 'Hovered' : 'Test')}
+      </Link>
+    ));
+    const link = screen.getByRole('link');
+    expect(link).toHaveTextContent('Test');
+
+    await userEvent.hover(link);
+    expect(link).toHaveTextContent('Hovered');
+  });
+
+  it('should support hover state', async () => {
+    const hoverStartSpy = vi.fn();
+    const hoverChangeSpy = vi.fn();
+    const hoverEndSpy = vi.fn();
+
+    render(() => (
+      <Link
+        class={(renderProps) => (renderProps.isHovered ? 'hover' : '')}
+        onHoverStart={hoverStartSpy}
+        onHoverChange={hoverChangeSpy}
+        onHoverEnd={hoverEndSpy}
+      >
+        Test
+      </Link>
+    ));
+    const link = screen.getByRole('link');
+
+    expect(link).not.toHaveAttribute('data-hovered');
+    expect(link).not.toHaveClass('hover');
+
+    await userEvent.hover(link);
+    expect(link).toHaveAttribute('data-hovered', 'true');
+    expect(link).toHaveClass('hover');
+    expect(hoverStartSpy).toHaveBeenCalledTimes(1);
+    expect(hoverChangeSpy).toHaveBeenCalledTimes(1);
+
+    await userEvent.unhover(link);
+    expect(link).not.toHaveAttribute('data-hovered');
+    expect(link).not.toHaveClass('hover');
+    expect(hoverEndSpy).toHaveBeenCalledTimes(1);
+    expect(hoverChangeSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('should support focus ring', async () => {
+    render(() => (
+      <Link class={(renderProps) => (renderProps.isFocusVisible ? 'focus' : '')}>
+        Test
+      </Link>
+    ));
+    const link = screen.getByRole('link');
+
+    expect(link).not.toHaveAttribute('data-focus-visible');
+    expect(link).not.toHaveClass('focus');
+
+    await userEvent.tab();
+    expect(document.activeElement).toBe(link);
+    expect(link).toHaveAttribute('data-focus-visible', 'true');
+    expect(link).toHaveClass('focus');
+
+    await userEvent.tab();
+    expect(link).not.toHaveAttribute('data-focus-visible');
+    expect(link).not.toHaveClass('focus');
+  });
+
+  it('should support press state', async () => {
+    const onPress = vi.fn();
+    render(() => (
+      <Link
+        class={(renderProps) => (renderProps.isPressed ? 'pressed' : '')}
+        onPress={onPress}
+      >
+        Test
+      </Link>
+    ));
+    const link = screen.getByRole('link');
+
+    expect(link).not.toHaveAttribute('data-pressed');
+    expect(link).not.toHaveClass('pressed');
+
+    // Use click which is more reliable than pointer events in jsdom
+    await userEvent.click(link);
+
+    // After click completes, press state should be cleared and onPress called
+    expect(link).not.toHaveAttribute('data-pressed');
+    expect(link).not.toHaveClass('pressed');
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('should support disabled state', () => {
+    render(() => (
+      <Link isDisabled class={(renderProps) => (renderProps.isDisabled ? 'disabled' : '')}>
+        Test
+      </Link>
+    ));
+    const link = screen.getByRole('link');
+
+    expect(link).toHaveAttribute('aria-disabled', 'true');
+    expect(link).toHaveAttribute('data-disabled', 'true');
+    expect(link).toHaveClass('disabled');
+  });
+
+  it('should support aria-current', () => {
+    render(() => <Link aria-current="page">Test</Link>);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('aria-current', 'page');
+    expect(link).toHaveAttribute('data-current', 'true');
+  });
+
+  it('should support target and rel attributes', () => {
+    render(() => (
+      <Link href="https://example.com" target="_blank" rel="noopener noreferrer">
+        Test
+      </Link>
+    ));
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+});

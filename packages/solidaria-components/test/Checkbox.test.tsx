@@ -293,7 +293,7 @@ describe('CheckboxGroup', () => {
     // where inputProps.checked is not being reactively tracked when the component
     // is inside a CheckboxGroup. The state updates correctly but the DOM isn't synced.
     // This needs to be fixed in the Checkbox component implementation.
-    it.skip('should support controlled value', () => {
+    it('should support controlled value', () => {
       render(() => (
         <CheckboxGroup aria-label="Options" value={['a']}>
           <Checkbox value="a">Option A</Checkbox>
@@ -306,7 +306,7 @@ describe('CheckboxGroup', () => {
       expect(checkboxes[1]).not.toBeChecked();
     });
 
-    it.skip('should support defaultValue', async () => {
+    it('should support defaultValue', async () => {
       render(() => (
         <CheckboxGroup aria-label="Options" defaultValue={['b']}>
           <Checkbox value="a">Option A</Checkbox>

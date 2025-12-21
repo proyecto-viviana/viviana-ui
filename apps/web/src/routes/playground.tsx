@@ -21,6 +21,9 @@ import {
   TimelineItem,
   PageLayout,
   TextField,
+  Link,
+  ProgressBar,
+  Separator,
 } from '@proyecto-viviana/ui'
 import {
   createButton,
@@ -283,6 +286,113 @@ function Playground() {
                 variant="filled"
                 placeholder="With filled style"
               />
+            </div>
+          </Section>
+
+          {/* Link Component */}
+          <Section title="Link" description="Accessible link with hover and press states">
+            <div class="space-y-4">
+              <div class="flex flex-wrap gap-4">
+                <Link href="https://example.com" target="_blank">External Link</Link>
+                <Link variant="secondary" onPress={() => setLastAction('Secondary link pressed')}>Secondary Link</Link>
+                <Link variant="subtle" onPress={() => setLastAction('Subtle link pressed')}>Subtle Link</Link>
+              </div>
+              <div class="flex flex-wrap gap-4">
+                <Link isDisabled>Disabled Link</Link>
+                <Link href="https://example.com" aria-current="page">Current Page Link</Link>
+              </div>
+              <p class="text-sm text-primary-400">
+                Links support keyboard navigation (Enter key), hover states, and press feedback.
+              </p>
+            </div>
+          </Section>
+
+          {/* ProgressBar Component */}
+          <Section title="ProgressBar" description="Shows progress of an operation over time">
+            <div class="space-y-6">
+              <div class="space-y-4">
+                <ProgressBar value={25} label="Uploading..." />
+                <ProgressBar value={50} label="Processing" variant="accent" />
+                <ProgressBar value={75} label="Almost done" variant="success" />
+                <ProgressBar value={100} label="Complete" variant="success" />
+              </div>
+              <div class="space-y-4">
+                <span class="text-sm text-primary-300 block">Indeterminate:</span>
+                <ProgressBar isIndeterminate label="Loading..." />
+              </div>
+              <div class="space-y-4">
+                <span class="text-sm text-primary-300 block">Sizes:</span>
+                <ProgressBar value={60} size="sm" label="Small" />
+                <ProgressBar value={60} size="md" label="Medium" />
+                <ProgressBar value={60} size="lg" label="Large" />
+              </div>
+              <div class="space-y-4">
+                <span class="text-sm text-primary-300 block">Variants:</span>
+                <ProgressBar value={40} variant="primary" aria-label="Primary progress" />
+                <ProgressBar value={40} variant="accent" aria-label="Accent progress" />
+                <ProgressBar value={40} variant="success" aria-label="Success progress" />
+                <ProgressBar value={40} variant="warning" aria-label="Warning progress" />
+                <ProgressBar value={40} variant="danger" aria-label="Danger progress" />
+              </div>
+              <div>
+                <span class="text-sm text-primary-300 block mb-2">Custom value label:</span>
+                <ProgressBar value={2} minValue={0} maxValue={5} valueLabel="Step 2 of 5" label="Setup Progress" />
+              </div>
+            </div>
+          </Section>
+
+          {/* Separator Component */}
+          <Section title="Separator" description="Visual divider between groups of content">
+            <div class="space-y-6">
+              <div class="space-y-4">
+                <span class="text-sm text-primary-300 block">Horizontal (default):</span>
+                <Separator />
+                <p class="text-sm text-primary-400">Content above and below the separator.</p>
+              </div>
+              <div>
+                <span class="text-sm text-primary-300 block mb-2">Vertical:</span>
+                <div class="flex items-center gap-4 h-8">
+                  <span class="text-primary-200">Item 1</span>
+                  <Separator orientation="vertical" />
+                  <span class="text-primary-200">Item 2</span>
+                  <Separator orientation="vertical" />
+                  <span class="text-primary-200">Item 3</span>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <span class="text-sm text-primary-300 block">Sizes:</span>
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-primary-400 w-8">sm:</span>
+                    <Separator size="sm" class="flex-1" />
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-primary-400 w-8">md:</span>
+                    <Separator size="md" class="flex-1" />
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-primary-400 w-8">lg:</span>
+                    <Separator size="lg" class="flex-1" />
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <span class="text-sm text-primary-300 block">Variants:</span>
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-primary-400 w-16">default:</span>
+                    <Separator variant="default" class="flex-1" />
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-primary-400 w-16">subtle:</span>
+                    <Separator variant="subtle" class="flex-1" />
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-primary-400 w-16">strong:</span>
+                    <Separator variant="strong" class="flex-1" />
+                  </div>
+                </div>
+              </div>
             </div>
           </Section>
 

@@ -1,0 +1,127 @@
+/**
+ * @vitest-environment jsdom
+ */
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@solidjs/testing-library';
+import userEvent from '@testing-library/user-event';
+import { Dynamic } from 'solid-js/web';
+import { createLink } from '../src/link';
+
+// Test component that uses createLink
+function TestLink(props: {
+  href?: string;
+  isDisabled?: boolean;
+  onPress?: () => void;
+  onClick?: () => void;
+  elementType?: string;
+  'aria-current'?: 'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false' | boolean;
+  children?: string;
+}) {
+  // Determine the element type first - this must be passed to createLink
+  const elementType = () => {
+    if (props.elementType === 'a' || (!props.elementType && props.href)) {
+      return 'a';
+    }
+    return 'span';
+  };
+
+  const { linkProps, isPressed } = createLink({
+    get href() { return props.href; },
+    get isDisabled() { return props.isDisabled; },
+    get onPress() { return props.onPress; },
+    get onClick() { return props.onClick; },
+    get elementType() { return elementType(); },
+    get 'aria-current'() { return props['aria-current']; },
+  });
+
+  return (
+    <Dynamic
+      component={elementType()}
+      {...linkProps}
+      data-pressed={isPressed() || undefined}
+    >
+      {props.children ?? 'Test Link'}
+    </Dynamic>
+  );
+}
+
+describe('createLink', () => {
+  it('should render a link with role="link" when no href', () => {
+    render(() => <TestLink />);
+    const link = screen.getByRole('link');
+    expect(link).toBeInTheDocument();
+    expect(link.tagName).toBe('SPAN');
+    expect(link).toHaveAttribute('role', 'link');
+    expect(link).toHaveAttribute('tabIndex', '0');
+  });
+
+  it('should render an anchor element when href is provided', () => {
+    render(() => <TestLink href="https://example.com" />);
+    const link = screen.getByRole('link');
+    expect(link.tagName).toBe('A');
+    expect(link).toHaveAttribute('href', 'https://example.com');
+  });
+
+  it('should support disabled state', () => {
+    render(() => <TestLink isDisabled />);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('aria-disabled', 'true');
+    expect(link).not.toHaveAttribute('tabIndex');
+  });
+
+  it('should call onPress when clicked', async () => {
+    const onPress = vi.fn();
+    render(() => <TestLink onPress={onPress} />);
+    const link = screen.getByRole('link');
+
+    await userEvent.click(link);
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not call onPress when disabled', async () => {
+    const onPress = vi.fn();
+    render(() => <TestLink isDisabled onPress={onPress} />);
+    const link = screen.getByRole('link');
+
+    await userEvent.click(link);
+    expect(onPress).not.toHaveBeenCalled();
+  });
+
+  it('should support aria-current', () => {
+    render(() => <TestLink aria-current="page" />);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('should support keyboard activation with Enter', async () => {
+    const onPress = vi.fn();
+    render(() => <TestLink onPress={onPress} />);
+    const link = screen.getByRole('link');
+
+    link.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  // Note: Links only respond to Enter key, not Space (per WAI-ARIA guidelines)
+  // This matches native <a> behavior and React Aria's implementation
+
+  it('should call onClick handler', async () => {
+    const onClick = vi.fn();
+    render(() => <TestLink onClick={onClick} />);
+    const link = screen.getByRole('link');
+
+    fireEvent.click(link);
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('should prevent onClick when disabled', async () => {
+    const onClick = vi.fn();
+    render(() => <TestLink isDisabled onClick={onClick} href="https://example.com" />);
+    const link = screen.getByRole('link');
+
+    fireEvent.click(link);
+    // onClick should still be called but default should be prevented
+    expect(onClick).not.toHaveBeenCalled();
+  });
+});

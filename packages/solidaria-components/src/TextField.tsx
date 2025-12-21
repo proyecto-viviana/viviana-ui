@@ -8,6 +8,7 @@
 import {
   type JSX,
   createContext,
+  useContext,
   createMemo,
   splitProps,
 } from 'solid-js';
@@ -81,20 +82,69 @@ export interface LabelProps extends JSX.LabelHTMLAttributes<HTMLLabelElement> {
   children?: JSX.Element;
 }
 
+/**
+ * A label element that automatically wires up to the parent TextField context.
+ * This enables the proper htmlFor/id relationship between label and input.
+ */
 export function Label(props: LabelProps): JSX.Element {
-  return <label {...props}>{props.children}</label>;
+  const context = useContext(TextFieldContext);
+
+  // Merge context labelProps with local props (local props take precedence)
+  const mergedProps = () => {
+    if (context) {
+      const { ref: _ref, ...contextLabelProps } = context.labelProps as Record<string, unknown>;
+      return { ...contextLabelProps, ...props };
+    }
+    return props;
+  };
+
+  return <label {...mergedProps()}>{props.children}</label>;
 }
 
 export interface InputProps extends Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'children'> {}
 
+/**
+ * An input element that automatically wires up to the parent TextField context.
+ * This enables focus tracking, validation, and accessibility props to flow from
+ * the TextField to the actual input element.
+ */
 export function Input(props: InputProps): JSX.Element {
-  return <input {...props} />;
+  const context = useContext(TextFieldContext);
+
+  // Merge context inputProps with local props (local props take precedence)
+  const mergedProps = () => {
+    if (context) {
+      // Remove ref from context props to avoid conflicts
+      const { ref: _ref, ...contextInputProps } = context.inputProps as Record<string, unknown>;
+      return { ...contextInputProps, ...props };
+    }
+    return props;
+  };
+
+  return <input {...mergedProps()} />;
 }
 
 export interface TextAreaProps extends Omit<JSX.TextareaHTMLAttributes<HTMLTextAreaElement>, 'children'> {}
 
+/**
+ * A textarea element that automatically wires up to the parent TextField context.
+ * This enables focus tracking, validation, and accessibility props to flow from
+ * the TextField to the actual textarea element.
+ */
 export function TextArea(props: TextAreaProps): JSX.Element {
-  return <textarea {...props} />;
+  const context = useContext(TextFieldContext);
+
+  // Merge context inputProps with local props (local props take precedence)
+  // Note: TextArea uses inputProps from context since it's an input variant
+  const mergedProps = () => {
+    if (context) {
+      const { ref: _ref, type: _type, ...contextInputProps } = context.inputProps as Record<string, unknown>;
+      return { ...contextInputProps, ...props };
+    }
+    return props;
+  };
+
+  return <textarea {...mergedProps()} />;
 }
 
 // ============================================
@@ -129,11 +179,12 @@ export function TextField(props: TextFieldProps): JSX.Element {
   ]);
 
   // Create text field state
-  const state = createTextFieldState(() => ({
-    value: ariaProps.value,
-    defaultValue: ariaProps.defaultValue,
-    onChange: ariaProps.onChange,
-  }));
+  // Use getters to ensure props are read lazily inside reactive contexts
+  const state = createTextFieldState({
+    get value() { return ariaProps.value; },
+    get defaultValue() { return ariaProps.defaultValue; },
+    get onChange() { return ariaProps.onChange; },
+  });
 
   // Create text field aria props
   const textFieldAria = createTextField(() => ({

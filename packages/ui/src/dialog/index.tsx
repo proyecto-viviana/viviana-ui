@@ -1,7 +1,7 @@
 import type { JSX } from 'solid-js'
 import { Show } from 'solid-js'
 import { Button } from '../button'
-import { Chip } from '../chip'
+import { Chip } from '../custom/chip'
 
 export interface DialogProps {
   title: string

@@ -134,15 +134,16 @@ export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Eleme
   ]);
 
   // Create checkbox group state
-  const state = createCheckboxGroupState(() => ({
-    value: ariaProps.value,
-    defaultValue: ariaProps.defaultValue,
-    onChange: ariaProps.onChange,
-    isDisabled: ariaProps.isDisabled,
-    isReadOnly: ariaProps.isReadOnly,
-    isRequired: ariaProps.isRequired,
-    isInvalid: ariaProps.isInvalid,
-  }));
+  // Use getters to ensure props are read lazily inside reactive contexts
+  const state = createCheckboxGroupState({
+    get value() { return ariaProps.value; },
+    get defaultValue() { return ariaProps.defaultValue; },
+    get onChange() { return ariaProps.onChange; },
+    get isDisabled() { return ariaProps.isDisabled; },
+    get isReadOnly() { return ariaProps.isReadOnly; },
+    get isRequired() { return ariaProps.isRequired; },
+    get isInvalid() { return ariaProps.isInvalid; },
+  });
 
   // Create checkbox group aria props
   const groupAria = createCheckboxGroup(() => ariaProps, state);
@@ -259,13 +260,13 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     inputProps = itemAria.inputProps;
   } else {
     // Standalone checkbox
-    const state = createToggleState(() => ({
-      isSelected: ariaProps.isSelected,
-      defaultSelected: ariaProps.defaultSelected,
-      onChange: ariaProps.onChange,
-      isDisabled: ariaProps.isDisabled,
-      isReadOnly: ariaProps.isReadOnly,
-    }));
+    // Use getters to ensure props are read lazily inside reactive contexts
+    const state = createToggleState({
+      get isSelected() { return ariaProps.isSelected; },
+      get defaultSelected() { return ariaProps.defaultSelected; },
+      get onChange() { return ariaProps.onChange; },
+      get isReadOnly() { return ariaProps.isReadOnly; },
+    });
 
     const checkboxAria = createCheckbox(
       () => ({

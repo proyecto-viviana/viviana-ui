@@ -4,10 +4,8 @@
  * These tests verify the headless TextField component follows
  * react-aria-components patterns.
  *
- * Note: The Label and Input sub-components are basic elements that don't
- * automatically wire up to TextField context. For full accessibility,
- * the ARIA props need to be manually applied or the context consumed.
- * These tests focus on the TextField wrapper behavior.
+ * The Label, Input, and TextArea sub-components automatically wire up to
+ * TextField context for proper accessibility and focus tracking.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
@@ -15,6 +13,8 @@ import userEvent from '@testing-library/user-event';
 import { PointerEventsCheckLevel } from '@testing-library/user-event';
 import {
   TextField,
+  Input,
+  Label,
   type TextFieldRenderProps,
 } from '../src/TextField';
 
@@ -90,11 +90,10 @@ describe('TextField', () => {
       expect(screen.getByText('Disabled')).toBeInTheDocument();
     });
 
-    // Skip: Focus tracking requires child input to use TextField context
-    it.skip('should support render props for class with focus', async () => {
+    it('should support render props for class with focus', async () => {
       render(() => (
         <TextField aria-label="Name" class={(props: TextFieldRenderProps) => props.isFocused ? 'focused' : 'not-focused'}>
-          <input />
+          <Input />
         </TextField>
       ));
 
@@ -224,12 +223,10 @@ describe('TextField', () => {
       expect(wrapper).toHaveAttribute('data-hovered');
     });
 
-    // Note: Focus tracking requires the child input to be wired to TextField's
-    // context. These tests are skipped because the basic <input> doesn't use context.
-    it.skip('should set data-focused when focused', async () => {
+    it('should set data-focused when focused', async () => {
       render(() => (
         <TextField aria-label="Name">
-          <input />
+          <Input />
         </TextField>
       ));
 
@@ -240,10 +237,10 @@ describe('TextField', () => {
       expect(wrapper).toHaveAttribute('data-focused');
     });
 
-    it.skip('should set data-focus-visible on keyboard focus', async () => {
+    it('should set data-focus-visible on keyboard focus', async () => {
       render(() => (
         <TextField aria-label="Name">
-          <input />
+          <Input />
         </TextField>
       ));
 

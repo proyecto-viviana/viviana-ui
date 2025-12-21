@@ -133,15 +133,18 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   ]);
 
   // Create radio group state
-  const state = createRadioGroupState(() => ({
-    value: ariaProps.value,
-    defaultValue: ariaProps.defaultValue,
-    onChange: ariaProps.onChange,
-    isDisabled: ariaProps.isDisabled,
-    isReadOnly: ariaProps.isReadOnly,
-    isRequired: ariaProps.isRequired,
-    isInvalid: ariaProps.isInvalid,
-  }));
+  // We pass a function that returns props so that createRadioGroupState
+  // can access props reactively. The props object itself is a proxy in SolidJS,
+  // so accessing props.value inside a reactive context will track changes.
+  const state = createRadioGroupState({
+    get value() { return props.value; },
+    get defaultValue() { return props.defaultValue; },
+    get onChange() { return props.onChange; },
+    get isDisabled() { return props.isDisabled; },
+    get isReadOnly() { return props.isReadOnly; },
+    get isRequired() { return props.isRequired; },
+    get isInvalid() { return props.isInvalid; },
+  });
 
   // Create radio group aria props
   const groupAria = createRadioGroup(() => ariaProps, state);

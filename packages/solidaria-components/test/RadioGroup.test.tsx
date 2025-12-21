@@ -189,6 +189,47 @@ describe('RadioGroup', () => {
       await user.click(screen.getAllByRole('radio')[1]);
       expect(onChange).toHaveBeenCalledWith('b');
     });
+
+    it('should work in fully controlled mode with signal', async () => {
+      const { createSignal } = await import('solid-js');
+
+      // Create a wrapper component that properly passes the signal value
+      // In SolidJS, the value needs to be read inside a reactive context
+      function ControlledRadioGroup() {
+        const [value, setValue] = createSignal<string | null>(null);
+
+        return (
+          <RadioGroup
+            aria-label="Options"
+            value={value()}
+            onChange={(v) => setValue(v)}
+          >
+            <Radio value="a">Option A</Radio>
+            <Radio value="b">Option B</Radio>
+          </RadioGroup>
+        );
+      }
+
+      render(() => <ControlledRadioGroup />);
+
+      const radios = screen.getAllByRole('radio');
+      const labelA = radios[0].closest('label')!;
+      const labelB = radios[1].closest('label')!;
+
+      // Initially no selection
+      expect(labelA).not.toHaveAttribute('data-selected');
+      expect(labelB).not.toHaveAttribute('data-selected');
+
+      // Click first radio
+      await user.click(radios[0]);
+      expect(labelA).toHaveAttribute('data-selected');
+      expect(labelB).not.toHaveAttribute('data-selected');
+
+      // Click second radio
+      await user.click(radios[1]);
+      expect(labelA).not.toHaveAttribute('data-selected');
+      expect(labelB).toHaveAttribute('data-selected');
+    });
   });
 
   describe('render props', () => {

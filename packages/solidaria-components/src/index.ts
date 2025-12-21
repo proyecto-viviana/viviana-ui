@@ -85,3 +85,27 @@ export {
   type InputProps,
   type TextAreaProps,
 } from './TextField';
+
+// Link
+export {
+  Link,
+  LinkContext,
+  type LinkProps,
+  type LinkRenderProps,
+} from './Link';
+
+// ProgressBar
+export {
+  ProgressBar,
+  ProgressBarContext,
+  type ProgressBarProps,
+  type ProgressBarRenderProps,
+} from './ProgressBar';
+
+// Separator
+export {
+  Separator,
+  SeparatorContext,
+  type SeparatorProps,
+  type SeparatorRenderProps,
+} from './Separator';

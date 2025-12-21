@@ -1,6 +1,6 @@
 import type { JSX } from 'solid-js'
 import { Show } from 'solid-js'
-import { Avatar } from '../avatar'
+import { Avatar } from '../../avatar'
 
 export interface ProfileCardProps {
   username: string
