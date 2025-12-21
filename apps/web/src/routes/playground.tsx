@@ -19,6 +19,7 @@ import {
   ConversationPreview,
   ConversationBubble,
   TimelineItem,
+  PageLayout,
 } from '@proyecto-viviana/ui'
 import {
   createButton,
@@ -28,7 +29,7 @@ import {
   type CheckboxGroupState,
   type AriaCheckboxGroupItemProps,
 } from '@proyecto-viviana/solidaria'
-import { Header } from '@/components'
+import { Header, ThemeCreator } from '@/components'
 // Fire gif for event card decoration
 const fireGif = '/fire.gif'
 
@@ -43,19 +44,44 @@ function Playground() {
   const [toggleOn, setToggleOn] = createSignal(false)
   const [checkboxChecked, setCheckboxChecked] = createSignal(false)
   const [radioValue, setRadioValue] = createSignal<string | null>(null)
+  const [themeVars, setThemeVars] = createSignal<Record<string, string>>({})
+
+  // Apply theme CSS variables to the playground container
+  const themeStyle = () => {
+    const vars = themeVars()
+    return Object.entries(vars)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('; ')
+  }
 
   return (
-    <div class="min-h-screen bg-bg-400">
+    <PageLayout>
       <Header />
 
       <div class="mx-auto max-w-6xl px-6 py-12">
-        <header class="mb-12">
+        <header class="mb-8">
           <h1 class="text-4xl font-bold text-primary-100">Component Playground</h1>
           <p class="mt-2 text-lg text-primary-300">
             Interactive showcase of proyecto-viviana-ui components
           </p>
           <p class="mt-1 text-sm text-primary-400">Last action: {lastAction()}</p>
         </header>
+
+        {/* Theme Creator */}
+        <div class="mb-8 p-4 rounded-xl border border-primary-600 bg-bg-300">
+          <ThemeCreator onThemeChange={setThemeVars} />
+        </div>
+
+        {/* Theme Preview Area */}
+        <div class="p-6 rounded-xl bg-bg-200 border border-bg-300 mb-8" style={themeStyle()}>
+          <h3 class="text-lg font-semibold text-primary-200 mb-4">Theme Preview</h3>
+          <div class="flex flex-wrap gap-3">
+            <Button>Primary</Button>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="accent">Accent</Button>
+            <Chip text="Chip" variant="primary" />
+          </div>
+        </div>
 
         <div class="grid gap-8 lg:grid-cols-2">
           {/* Button Component */}
@@ -397,15 +423,15 @@ function Playground() {
           </Section>
         </div>
       </div>
-    </div>
+    </PageLayout>
   )
 }
 
 function Section(props: { title: string; description: string; children: any; class?: string }) {
   return (
-    <section class={`rounded-xl border border-bg-100 bg-bg-200 p-6 shadow-sm ${props.class ?? ''}`}>
-      <h2 class="mb-1 text-xl font-semibold text-primary-100">{props.title}</h2>
-      <p class="mb-4 text-sm text-primary-400">{props.description}</p>
+    <section class={`vui-feature-card ${props.class ?? ''}`}>
+      <h3 class="vui-feature-card__title">{props.title}</h3>
+      <p class="vui-feature-card__description" style={{ "margin-bottom": "1rem" }}>{props.description}</p>
       {props.children}
     </section>
   )

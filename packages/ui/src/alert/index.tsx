@@ -29,7 +29,8 @@ export function Alert(props: AlertProps) {
     >
       <div class="flex items-center gap-3 flex-1">
         <Show when={props.title}>
-          <span class="font-semibold">{props.title}</span>
+          <span class="font-semibold font-jost">{props.title}</span>
+          <span class="opacity-50">|</span>
         </Show>
         <div class="flex-1">{props.children}</div>
         <Show when={props.dismissible}>

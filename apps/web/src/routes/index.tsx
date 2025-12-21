@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/solid-router";
 import { createSignal, For } from "solid-js";
-import { Button, GitHubIcon, Icon } from "@proyecto-viviana/ui";
+import { Button, GitHubIcon, Icon, PageLayout } from "@proyecto-viviana/ui";
 import { createButton } from "@proyecto-viviana/solidaria";
 import { Header } from "@/components";
 
@@ -10,14 +10,14 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   return (
-    <div class="vui-landing">
+    <PageLayout>
       <Header />
       <Hero />
       <Features />
       <ComponentShowcase />
       <CodeExample />
       <Footer />
-    </div>
+    </PageLayout>
   );
 }
 
@@ -122,7 +122,7 @@ function ComponentShowcase() {
           <p class="vui-section__description">Beautifully styled, fully interactive components</p>
         </div>
 
-        <div class="vui-feature-card" style={{ "max-width": "48rem", margin: "0 auto" }}>
+        <div class="vui-feature-card vui-feature-card--alt" style={{ "max-width": "48rem", margin: "0 auto" }}>
           <h3 class="vui-feature-card__title" style={{ "margin-bottom": "1.5rem" }}>
             Button Variants
           </h3>

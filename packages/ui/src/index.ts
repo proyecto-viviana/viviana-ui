@@ -77,3 +77,7 @@ export type { TooltipProps } from './tooltip';
 // ProjectCard
 export { ProjectCard } from './project-card';
 export type { ProjectCardProps, ProjectCardSize } from './project-card';
+
+// PageLayout
+export { PageLayout } from './page-layout';
+export type { PageLayoutProps } from './page-layout';

@@ -35,6 +35,9 @@ bun.lockb
 # TanStack
 .tanstack/
 
+# Cloudflare Wrangler
+.wrangler/
+
 react-spectrum
 .claude
 

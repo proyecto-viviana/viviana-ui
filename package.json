@@ -13,6 +13,7 @@
     "build:web": "bun run --cwd apps/web build",
     "dev": "bun run --cwd apps/web dev",
     "start": "bun run --cwd apps/web start",
+    "deploy": "bun run --cwd apps/web deploy",
     "test": "vitest",
     "test:run": "vitest run",
     "typecheck": "tsc --noEmit"

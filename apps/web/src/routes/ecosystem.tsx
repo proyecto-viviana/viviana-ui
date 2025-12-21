@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/solid-router'
 import { Header } from '@/components'
-import { ProjectCard } from '@proyecto-viviana/ui'
+import { ProjectCard, PageLayout } from '@proyecto-viviana/ui'
 
 export const Route = createFileRoute('/ecosystem')({
   component: Ecosystem,
@@ -8,7 +8,7 @@ export const Route = createFileRoute('/ecosystem')({
 
 function Ecosystem() {
   return (
-    <div class="min-h-screen bg-bg-400">
+    <PageLayout>
       <Header />
 
       <div class="mx-auto max-w-6xl px-6 py-12">
@@ -76,6 +76,6 @@ function Ecosystem() {
           </div>
         </section>
       </div>
-    </div>
+    </PageLayout>
   )
 }

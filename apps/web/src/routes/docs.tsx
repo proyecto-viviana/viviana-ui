@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
-import { Button } from "@proyecto-viviana/ui";
+import { Button, PageLayout } from "@proyecto-viviana/ui";
 import { createButton, createPress } from "@proyecto-viviana/solidaria";
 import { Header } from "@/components";
 
@@ -30,10 +30,10 @@ function Docs() {
   ];
 
   return (
-    <div class="min-h-screen bg-bg-400">
+    <PageLayout>
       <Header />
-      <div class="flex">
-        <aside class="w-64 shrink-0 border-r border-bg-300 bg-bg-300">
+      <div class="flex flex-1">
+        <aside class="w-64 shrink-0 border-r border-bg-300 bg-bg-200">
           <div class="sticky top-0 p-6">
             <p class="text-sm text-primary-300">Documentation</p>
           </div>
@@ -73,7 +73,7 @@ function Docs() {
         </nav>
       </aside>
 
-      <main class="flex-1 overflow-auto bg-bg-400">
+      <main class="flex-1 overflow-auto">
         <Show when={currentPage() === "getting-started"}>
           <GettingStartedPage />
         </Show>
@@ -91,7 +91,7 @@ function Docs() {
         </Show>
       </main>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "start": "vite preview"
+    "start": "vite preview",
+    "deploy": "bun run build && wrangler deploy"
   },
   "dependencies": {
     "@proyecto-viviana/solidaria": "workspace:*",

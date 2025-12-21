@@ -36,9 +36,6 @@
   filter: drop-shadow(0 0 10px rgba(223, 92, 154, 0.8));
 }
 
-.shadow-primary-chip {
-  box-shadow: 0 2px 8px rgba(79, 109, 133, 0.4);
-}
 
 /* ===== BUTTON COMPONENT ===== */
 .vui-button {
@@ -94,11 +91,10 @@
 
 /* ===== FILL VARIANTS ===== */
 
-/* Primary = bg-primary-700, text-primary-200, with chip shadow */
+/* Primary = bg-primary-700, text-primary-200 */
 .vui-button--fill.vui-button--primary {
   background: var(--color-primary-700);
   color: var(--color-primary-200);
-  box-shadow: 0 2px 8px rgba(79, 109, 133, 0.4);
 }
 
 /* Secondary = bg-primary-600, text-primary-100 */
@@ -120,10 +116,11 @@
   border: 1px solid var(--color-success-400);
 }
 
-/* Negative = bg-danger-400, text-white */
+/* Negative = bg-danger-600, text-danger-100, border-danger-400 */
 .vui-button--fill.vui-button--negative {
-  background: var(--color-danger-400);
-  color: white;
+  background: var(--color-danger-600);
+  color: var(--color-danger-100);
+  border: 1px solid var(--color-danger-400);
 }
 
 /* Ghost = transparent, text-primary-300, hover:bg-bg-200 */
@@ -227,7 +224,6 @@
 .vui-chip--primary {
   background: var(--color-primary-700);
   color: var(--color-primary-100);
-  box-shadow: 0 2px 8px rgba(79, 109, 133, 0.4);
 }
 
 .vui-chip--accent {
@@ -386,6 +382,7 @@
 }
 
 .prose h1 {
+  font-family: 'Jost', sans-serif;
   font-size: 2.25rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -393,6 +390,7 @@
 }
 
 .prose h2 {
+  font-family: 'Jost', sans-serif;
   font-size: 1.5rem;
   font-weight: 600;
   margin-top: 2rem;
@@ -401,6 +399,7 @@
 }
 
 .prose h3 {
+  font-family: 'Jost', sans-serif;
   font-size: 1.25rem;
   font-weight: 600;
   margin-top: 1.5rem;
@@ -565,6 +564,24 @@
   color: var(--color-accent-300);
 }
 
+/* ===== PAGE LAYOUT ===== */
+.vui-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg-100);
+  font-family: 'Sen', sans-serif;
+}
+
+.vui-page h1,
+.vui-page h2,
+.vui-page h3,
+.vui-page h4,
+.vui-page h5,
+.vui-page h6 {
+  font-family: 'Jost', sans-serif;
+}
+
 /* ===== LANDING PAGE LAYOUT ===== */
 .vui-landing {
   display: flex;
@@ -700,8 +717,13 @@
   padding: 1.5rem;
   border-radius: 0.75rem;
   border: 1px solid var(--color-bg-300);
-  background: var(--color-bg-300);
+  background: var(--color-bg-200);
   transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.vui-feature-card--alt {
+  background: var(--color-bg-300);
+  border-color: var(--color-bg-400);
 }
 
 .vui-feature-card:hover {
