@@ -4,8 +4,7 @@
  * Styled separator component built on top of solidaria hook directly.
  */
 
-import { type JSX, splitProps, createMemo } from 'solid-js';
-import { Dynamic } from 'solid-js/web';
+import { type JSX, splitProps, createMemo, Show } from 'solid-js';
 import { createSeparator, type Orientation } from '@proyecto-viviana/solidaria';
 
 // ============================================
@@ -117,11 +116,26 @@ export function Separator(props: SeparatorProps): JSX.Element {
     return base.filter(Boolean).join(' ');
   });
 
+  // Extract props without ref to avoid type issues with specific element types
+  const getAriaProps = () => {
+    const { ref: _, ...props } = separatorAria.separatorProps as Record<string, unknown>;
+    return props;
+  };
+
   return (
-    <Dynamic
-      component={elementType()}
-      {...separatorAria.separatorProps}
-      class={className()}
-    />
+    <Show
+      when={orientation() === 'vertical'}
+      fallback={
+        <hr
+          {...getAriaProps()}
+          class={className()}
+        />
+      }
+    >
+      <div
+        {...getAriaProps()}
+        class={className()}
+      />
+    </Show>
   );
 }

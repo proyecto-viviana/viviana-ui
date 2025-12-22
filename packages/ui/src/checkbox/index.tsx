@@ -144,7 +144,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
       {...headlessProps}
       class={getClassName}
     >
-      {(renderProps) => {
+      {(renderProps: CheckboxRenderProps) => {
         const boxClasses = () => {
           const base = 'relative flex items-center justify-center rounded border-2 transition-all duration-200'
           const sizeClass = size().box

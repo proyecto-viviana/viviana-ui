@@ -86,7 +86,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
       {...headlessProps}
       class={getClassName}
     >
-      {(renderProps) => (
+      {(renderProps: ToggleSwitchRenderProps) => (
         <>
           <span
             class={[

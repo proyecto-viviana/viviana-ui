@@ -3,26 +3,29 @@
   "version": "0.0.1",
   "description": "Pre-wired headless components for SolidJS - port of react-aria-components",
   "type": "module",
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "solid": "./src/index.ts",
-      "import": "./src/index.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
-    "src",
-    "dist"
+    "dist",
+    "src"
   ],
+  "sideEffects": false,
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json",
-    "dev": "vite build --watch"
+    "build": "rimraf dist tsconfig.build.tsbuildinfo && vite build && tsc -p tsconfig.build.json",
+    "dev": "vite build --watch",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@proyecto-viviana/solidaria": "workspace:*",
-    "@proyecto-viviana/solid-stately": "workspace:*"
+    "@proyecto-viviana/solidaria": "^0.0.1",
+    "@proyecto-viviana/solid-stately": "^0.0.1"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"
@@ -38,5 +41,12 @@
     "headless",
     "components"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/proyecto-viviana/proyecto-viviana"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

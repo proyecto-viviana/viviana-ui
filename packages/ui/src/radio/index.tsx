@@ -162,7 +162,7 @@ export function Radio(props: RadioProps): JSX.Element {
       {...headlessProps}
       class={getClassName}
     >
-      {(renderProps) => {
+      {(renderProps: RadioRenderProps) => {
         const circleClasses = () => {
           const base = 'relative flex items-center justify-center rounded-full border-2 transition-all duration-200'
           const sizeClass = size().circle

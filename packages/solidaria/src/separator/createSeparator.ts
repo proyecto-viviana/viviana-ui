@@ -53,7 +53,7 @@ export function createSeparator(
 ): SeparatorAria {
   const getSeparatorProps = (): JSX.HTMLAttributes<HTMLElement> => {
     const p = access(props);
-    const domProps = filterDOMProps(p, { labelable: true });
+    const domProps = filterDOMProps(p as Record<string, unknown>, { labelable: true });
 
     // if orientation is horizontal, aria-orientation default is horizontal, so we leave it undefined
     // if it's vertical, we need to specify it

@@ -1,35 +1,36 @@
 {
   "name": "@proyecto-viviana/ui",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Styled UI components for SolidJS - inspired by React Spectrum",
   "type": "module",
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "solid": "./src/index.ts",
-      "import": "./src/index.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
-    "./theme.css": "./src/theme.css",
-    "./styles.css": "./src/styles.css",
-    "./components.css": "./src/components.css",
-    "./assets/*": "./src/assets/*"
+    "./theme.css": "./dist/theme.css",
+    "./styles.css": "./dist/styles.css",
+    "./components.css": "./dist/components.css"
   },
   "files": [
-    "src",
-    "dist"
+    "dist",
+    "src"
   ],
   "sideEffects": [
     "*.css"
   ],
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json",
-    "dev": "vite build --watch"
+    "build": "rimraf dist tsconfig.build.tsbuildinfo && vite build && tsc -p tsconfig.build.json",
+    "dev": "vite build --watch",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@proyecto-viviana/solidaria": "workspace:*",
-    "@proyecto-viviana/solidaria-components": "workspace:*"
+    "@proyecto-viviana/solidaria": "^0.0.1",
+    "@proyecto-viviana/solidaria-components": "^0.0.1"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"
@@ -44,5 +45,12 @@
     "components",
     "design-system"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/proyecto-viviana/proyecto-viviana"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
