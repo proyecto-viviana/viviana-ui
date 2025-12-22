@@ -10,7 +10,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "solid": "./src/index.ts",
-      "browser": "./dist/index.js",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
@@ -31,8 +30,8 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@proyecto-viviana/solidaria": "^0.0.2",
-    "@proyecto-viviana/solidaria-components": "^0.0.2"
+    "@proyecto-viviana/solidaria": "^0.0.6",
+    "@proyecto-viviana/solidaria-components": "^0.0.6"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"

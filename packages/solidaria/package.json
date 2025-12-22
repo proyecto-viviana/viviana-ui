@@ -10,7 +10,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "solid": "./src/index.ts",
-      "browser": "./dist/index.js",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     }
@@ -26,7 +25,7 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@proyecto-viviana/solid-stately": "^0.0.1"
+    "@proyecto-viviana/solid-stately": "^0.0.6"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"

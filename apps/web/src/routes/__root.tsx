@@ -2,7 +2,7 @@
 import { Suspense, type JSX } from "solid-js";
 import { Outlet, createRootRoute, HeadContent, Scripts } from "@tanstack/solid-router";
 import { HydrationScript } from "solid-js/web";
-import "@/styles.css";
+import appStyles from "@/styles.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -23,6 +23,7 @@ export const Route = createRootRoute({
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Sen:wght@400..800&display=swap",
       },
+      { rel: "stylesheet", href: appStyles },
     ],
   }),
   component: RootComponent,
