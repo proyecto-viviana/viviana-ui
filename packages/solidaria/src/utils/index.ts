@@ -30,6 +30,9 @@ export {
   shouldPreventDefaultKeyboard,
   shouldPreventDefaultUp,
   openLink,
+  isScrollable,
+  getScrollParent,
+  willOpenKeyboard,
 } from './dom';
 
 // Geometry utilities
@@ -64,3 +67,6 @@ export {
   addGlobalListenerOnce,
   type GlobalListenerOptions,
 } from './globalListeners';
+
+// Environment detection
+export { isTestEnv, isDevEnv, isProdEnv } from './env';

@@ -123,6 +123,40 @@ export {
   type Orientation,
 } from './separator';
 
+// Overlays
+export {
+  // Scroll prevention
+  createPreventScroll,
+  type PreventScrollOptions,
+  // Overlay trigger
+  createOverlayTrigger,
+  onCloseMap,
+  type OverlayTriggerProps,
+  type OverlayTriggerAria,
+  // Overlay behavior
+  createOverlay,
+  type AriaOverlayProps,
+  type OverlayAria,
+  // Interact outside
+  createInteractOutside,
+  type InteractOutsideProps,
+  // Aria hiding
+  ariaHideOutside,
+  keepVisible,
+  type AriaHideOutsideOptions,
+  // Modal
+  ModalProvider,
+  OverlayProvider,
+  OverlayContainer,
+  useModalProvider,
+  createModal,
+  type ModalProviderProps,
+  type ModalProviderAria,
+  type OverlayContainerProps,
+  type AriaModalOptions,
+  type ModalAria,
+} from './overlays';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

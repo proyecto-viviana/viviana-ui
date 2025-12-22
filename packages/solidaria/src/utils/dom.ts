@@ -242,3 +242,81 @@ export function openLink(target: HTMLAnchorElement, event: Event, allowOpener = 
     window.location.href = href;
   }
 }
+
+// ============================================
+// Scroll utilities
+// ============================================
+
+/**
+ * Checks if an element is scrollable based on its overflow style.
+ * @param node - The element to check
+ * @param checkForOverflow - If true, also check if the element actually overflows
+ */
+export function isScrollable(node: Element | null, checkForOverflow?: boolean): boolean {
+  if (!node) {
+    return false;
+  }
+
+  const style = window.getComputedStyle(node);
+  const scrollable = /(auto|scroll)/.test(style.overflow + style.overflowX + style.overflowY);
+
+  if (scrollable && checkForOverflow) {
+    return node.scrollHeight !== node.clientHeight || node.scrollWidth !== node.clientWidth;
+  }
+
+  return scrollable;
+}
+
+/**
+ * Gets the nearest scrollable parent element.
+ * @param node - The starting element
+ * @param checkForOverflow - If true, only return parents that actually overflow
+ */
+export function getScrollParent(node: Element, checkForOverflow?: boolean): Element {
+  let scrollableNode: Element | null = node;
+
+  if (isScrollable(scrollableNode, checkForOverflow)) {
+    scrollableNode = scrollableNode.parentElement;
+  }
+
+  while (scrollableNode && !isScrollable(scrollableNode, checkForOverflow)) {
+    scrollableNode = scrollableNode.parentElement;
+  }
+
+  return scrollableNode || document.scrollingElement || document.documentElement;
+}
+
+/**
+ * Checks if an element will open a virtual keyboard when focused.
+ * Used for iOS Safari scroll handling.
+ */
+export function willOpenKeyboard(target: Element | null): boolean {
+  if (!target) {
+    return false;
+  }
+
+  const tagName = target.tagName.toLowerCase();
+
+  // Inputs that open keyboard (not all input types do)
+  if (tagName === 'input') {
+    const type = (target as HTMLInputElement).type.toLowerCase();
+    // These input types open the keyboard
+    const keyboardTypes = [
+      'text', 'search', 'url', 'tel', 'email', 'password',
+      'date', 'month', 'week', 'time', 'datetime-local', 'number'
+    ];
+    return keyboardTypes.includes(type);
+  }
+
+  // Textareas always open keyboard
+  if (tagName === 'textarea') {
+    return true;
+  }
+
+  // Contenteditable elements open keyboard
+  if (target.hasAttribute('contenteditable') && target.getAttribute('contenteditable') !== 'false') {
+    return true;
+  }
+
+  return false;
+}

@@ -11,6 +11,7 @@ import { JSX } from 'solid-js';
 import { createId } from '../ssr';
 import { createLabels } from './createLabels';
 import { type MaybeAccessor, access } from '../utils/reactivity';
+import { isDevEnv } from '../utils/env';
 
 // ============================================
 // TYPES
@@ -92,7 +93,7 @@ export function createLabel(props: MaybeAccessor<LabelAriaProps>): LabelAria {
 
     if (label) {
       labelledBy = ariaLabelledby ? `${labelId} ${ariaLabelledby}` : labelId;
-    } else if (!ariaLabelledby && !ariaLabel && process.env.NODE_ENV !== 'production') {
+    } else if (!ariaLabelledby && !ariaLabel && isDevEnv()) {
       console.warn(
         'If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility'
       );

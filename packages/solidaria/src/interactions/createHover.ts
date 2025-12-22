@@ -9,6 +9,7 @@
 
 import { type JSX, type Accessor, createSignal, createEffect, onCleanup, createMemo } from 'solid-js';
 import { type MaybeAccessor, access } from '../utils/reactivity';
+import { isTestEnv } from '../utils/env';
 
 // ============================================
 // TYPES
@@ -74,7 +75,7 @@ function setupGlobalTouchEvents() {
   if (hoverCount === 0) {
     if (typeof PointerEvent !== 'undefined') {
       document.addEventListener('pointerup', handleGlobalPointerEvent);
-    } else if (process.env.NODE_ENV === 'test') {
+    } else if (isTestEnv()) {
       document.addEventListener('touchend', setGlobalIgnoreEmulatedMouseEvents);
     }
   }
@@ -88,7 +89,7 @@ function setupGlobalTouchEvents() {
 
     if (typeof PointerEvent !== 'undefined') {
       document.removeEventListener('pointerup', handleGlobalPointerEvent);
-    } else if (process.env.NODE_ENV === 'test') {
+    } else if (isTestEnv()) {
       document.removeEventListener('touchend', setGlobalIgnoreEmulatedMouseEvents);
     }
   };

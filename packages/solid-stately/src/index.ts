@@ -27,6 +27,13 @@ export {
   type RadioGroupState,
 } from './radio';
 
+// Overlays
+export {
+  createOverlayTriggerState,
+  type OverlayTriggerProps,
+  type OverlayTriggerState,
+} from './overlays';
+
 // SSR
 export { createIsSSR, createId, canUseDOM } from './ssr';
 

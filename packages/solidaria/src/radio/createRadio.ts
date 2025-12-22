@@ -13,6 +13,7 @@ import { createFocusable } from '../interactions/createFocusable';
 import { mergeProps } from '../utils/mergeProps';
 import { filterDOMProps } from '../utils/filterDOMProps';
 import { type MaybeAccessor, access } from '../utils/reactivity';
+import { isDevEnv } from '../utils/env';
 import { type RadioGroupState, radioGroupSyncVersion } from '@proyecto-viviana/solid-stately';
 import { radioGroupData } from './createRadioGroup';
 import { type PressEvent } from '../interactions/PressEvent';
@@ -101,7 +102,7 @@ export function createRadio(
     const p = getProps();
     const hasChildren = p.children != null;
     const hasAriaLabel = p['aria-label'] != null || p['aria-labelledby'] != null;
-    if (!hasChildren && !hasAriaLabel && process.env.NODE_ENV !== 'production') {
+    if (!hasChildren && !hasAriaLabel && isDevEnv()) {
       console.warn('If you do not provide children, you must specify an aria-label for accessibility');
     }
   });
