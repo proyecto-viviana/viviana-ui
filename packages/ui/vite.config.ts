@@ -1,7 +1,10 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'node:url';
 import solidPlugin from 'vite-plugin-solid';
 import { copyFileSync, mkdirSync, existsSync } from 'fs';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Plugin to copy CSS files to dist
 function copyCssPlugin() {
@@ -25,22 +28,27 @@ function copyCssPlugin() {
   };
 }
 
-export default defineConfig({
-  plugins: [
-    solidPlugin(),
-    copyCssPlugin(),
-  ],
-  build: {
-    lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      formats: ['es'],
-      fileName: () => 'index.js',
+export default defineConfig(({ mode }) => {
+  // Use --mode ssr to trigger SSR build
+  const isSSR = mode === 'ssr';
+
+  return {
+    plugins: [
+      solidPlugin({ ssr: isSSR }),
+      copyCssPlugin(),
+    ],
+    build: {
+      lib: {
+        entry: resolve(__dirname, 'src/index.ts'),
+        formats: ['es'],
+        fileName: () => isSSR ? 'index.ssr.js' : 'index.js',
+      },
+      rollupOptions: {
+        external: ['solid-js', 'solid-js/web', 'solid-js/store', '@proyecto-viviana/solidaria', '@proyecto-viviana/solidaria-components'],
+      },
+      sourcemap: true,
+      minify: false,
+      target: 'esnext',
     },
-    rollupOptions: {
-      external: ['solid-js', 'solid-js/web', 'solid-js/store', '@proyecto-viviana/solidaria', '@proyecto-viviana/solidaria-components'],
-    },
-    sourcemap: true,
-    minify: false,
-    target: 'esnext',
-  },
+  };
 });

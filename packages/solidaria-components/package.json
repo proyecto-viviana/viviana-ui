@@ -1,16 +1,18 @@
 {
   "name": "@proyecto-viviana/solidaria-components",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "description": "Pre-wired headless components for SolidJS - port of react-aria-components",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.ssr.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "solid": "./src/index.ts",
+      "browser": "./dist/index.js",
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "default": "./dist/index.js"
     }
   },
   "files": [
@@ -19,8 +21,8 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "rimraf dist tsconfig.build.tsbuildinfo && vite build && tsc -p tsconfig.build.json",
-    "dev": "vite build --watch",
+    "build": "tsup && tsc -p tsconfig.build.json",
+    "dev": "tsup --watch",
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
