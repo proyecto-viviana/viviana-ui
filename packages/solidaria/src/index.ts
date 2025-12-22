@@ -157,6 +157,31 @@ export {
   type ModalAria,
 } from './overlays';
 
+// ListBox
+export {
+  createListBox,
+  createOption,
+  getListBoxData,
+  type AriaListBoxProps,
+  type ListBoxAria,
+  type AriaOptionProps,
+  type OptionAria,
+} from './listbox';
+
+// Menu
+export {
+  createMenu,
+  createMenuItem,
+  createMenuTrigger,
+  getMenuData,
+  type AriaMenuProps,
+  type MenuAria,
+  type AriaMenuItemProps,
+  type MenuItemAria,
+  type AriaMenuTriggerProps,
+  type MenuTriggerAria,
+} from './menu';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

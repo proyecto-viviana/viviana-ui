@@ -26,9 +26,8 @@ function Hero() {
     <section class="vui-hero">
       <div class="vui-hero__container">
         <h1 class="vui-hero__title">
-          <span>Beautiful, Accessible</span>
+          <span class="vui-gradient-text">The Accessible and Performant Web Toolkit</span>
           <br />
-          <span class="vui-gradient-text">SolidJS Components</span>
         </h1>
         <p class="vui-hero__subtitle">
           A carefully crafted component library for SolidJS, inspired by Adobe's React Spectrum.
@@ -122,7 +121,10 @@ function ComponentShowcase() {
           <p class="vui-section__description">Beautifully styled, fully interactive components</p>
         </div>
 
-        <div class="vui-feature-card vui-feature-card--alt" style={{ "max-width": "48rem", margin: "0 auto" }}>
+        <div
+          class="vui-feature-card vui-feature-card--alt"
+          style={{ "max-width": "48rem", margin: "0 auto" }}
+        >
           <h3 class="vui-feature-card__title" style={{ "margin-bottom": "1.5rem" }}>
             Button Variants
           </h3>
