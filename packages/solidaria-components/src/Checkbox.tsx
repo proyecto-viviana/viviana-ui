@@ -182,14 +182,14 @@ export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Eleme
       <div
         {...domProps()}
         {...cleanGroupProps()}
-        class={renderProps().class}
-        style={renderProps().style}
+        class={renderProps.class()}
+        style={renderProps.style()}
         data-disabled={state.isDisabled || undefined}
         data-readonly={state.isReadOnly || undefined}
         data-required={ariaProps.isRequired || undefined}
         data-invalid={groupAria.isInvalid || undefined}
       >
-        {renderProps().children}
+        {renderProps.children}
       </div>
     </CheckboxGroupStateContext.Provider>
   );
@@ -352,8 +352,8 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
       {...domProps()}
       {...cleanLabelProps()}
       {...cleanHoverProps()}
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-selected={isSelected() || undefined}
       data-indeterminate={local.isIndeterminate || undefined}
       data-pressed={isPressed() || undefined}
@@ -372,7 +372,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
           {...cleanFocusProps()}
         />
       </VisuallyHidden>
-      {renderProps().children}
+      {renderProps.children}
     </label>
   );
 }

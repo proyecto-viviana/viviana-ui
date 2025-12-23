@@ -235,8 +235,8 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
           {...domProps()}
           {...cleanListBoxProps()}
           {...cleanFocusProps()}
-          class={renderProps().class}
-          style={renderProps().style}
+          class={renderProps.class()}
+          style={renderProps.style()}
           data-focused={state.isFocused() || undefined}
           data-focus-visible={isFocusVisible() || undefined}
           data-disabled={resolveDisabled() || undefined}
@@ -244,7 +244,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
         >
           {isEmpty() && local.renderEmptyState
             ? local.renderEmptyState()
-            : <For each={stateProps.items}>{local.children}</For>
+            : <For each={stateProps.items}>{(item) => local.children(item)}</For>
           }
         </ul>
       </ListBoxStateContext.Provider>
@@ -329,8 +329,8 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     <li
       {...cleanOptionProps()}
       {...cleanHoverProps()}
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-selected={optionAria.isSelected() || undefined}
       data-focused={optionAria.isFocused() || undefined}
       data-focus-visible={optionAria.isFocusVisible() || undefined}
@@ -338,7 +338,7 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={optionAria.isDisabled() || undefined}
     >
-      {renderProps().children}
+      {renderProps.children}
     </li>
   );
 }

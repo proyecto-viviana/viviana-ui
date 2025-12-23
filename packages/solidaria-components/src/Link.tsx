@@ -186,8 +186,8 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
       {...cleanLinkProps()}
       {...cleanHoverProps()}
       {...cleanFocusProps()}
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-hovered={isHovered() || undefined}
       data-pressed={linkAria.isPressed() || undefined}
       data-focused={isFocused() || undefined}
@@ -195,7 +195,7 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
       data-current={!!ariaProps['aria-current'] || undefined}
       data-disabled={ariaProps.isDisabled || undefined}
     >
-      {renderProps().children}
+      {renderProps.children}
     </Dynamic>
   );
 }

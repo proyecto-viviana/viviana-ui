@@ -12,6 +12,7 @@ import {
   splitProps,
   useContext,
   For,
+  Show,
 } from 'solid-js';
 import {
   createMenu,
@@ -291,8 +292,8 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
       {...cleanFocusProps()}
       {...cleanHoverProps()}
       type="button"
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-open={state.isOpen() || undefined}
       data-focused={isFocused() || undefined}
       data-focus-visible={isFocusVisible() || undefined}
@@ -300,7 +301,7 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={local.isDisabled || undefined}
     >
-      {renderProps().children}
+      {renderProps.children}
     </button>
   );
 }
@@ -393,21 +394,27 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     return rest;
   };
 
+  // If inside a MenuTrigger, only render when open
+  // If standalone (no trigger context), always render
+  const shouldRender = () => triggerContext ? triggerContext.state.isOpen() : true;
+
   return (
-    <MenuContext.Provider value={{ state }}>
-      <MenuStateContext.Provider value={state}>
-        <ul
-          {...cleanMenuProps()}
-          {...cleanTriggerMenuProps()}
-          {...cleanFocusProps()}
-          class={renderProps().class}
-          style={renderProps().style}
-          data-focused={state.isFocused() || undefined}
-        >
-          <For each={stateProps.items}>{local.children}</For>
-        </ul>
-      </MenuStateContext.Provider>
-    </MenuContext.Provider>
+    <Show when={shouldRender()}>
+      <MenuContext.Provider value={{ state }}>
+        <MenuStateContext.Provider value={state}>
+          <ul
+            {...cleanMenuProps()}
+            {...cleanTriggerMenuProps()}
+            {...cleanFocusProps()}
+            class={renderProps.class()}
+            style={renderProps.style()}
+            data-focused={state.isFocused() || undefined}
+          >
+            <For each={stateProps.items}>{(item) => local.children(item)}</For>
+          </ul>
+        </MenuStateContext.Provider>
+      </MenuContext.Provider>
+    </Show>
   );
 }
 
@@ -492,15 +499,15 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     <li
       {...cleanItemProps()}
       {...cleanHoverProps()}
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-focused={itemAria.isFocused() || undefined}
       data-focus-visible={itemAria.isFocusVisible() || undefined}
       data-pressed={itemAria.isPressed() || undefined}
       data-hovered={isHovered() || undefined}
       data-disabled={itemAria.isDisabled() || undefined}
     >
-      {renderProps().children}
+      {renderProps.children}
     </li>
   );
 }

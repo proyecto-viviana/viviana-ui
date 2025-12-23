@@ -184,15 +184,15 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
       <div
         {...domProps()}
         {...cleanGroupProps()}
-        class={renderProps().class}
-        style={renderProps().style}
+        class={renderProps.class()}
+        style={renderProps.style()}
         data-orientation={ariaProps.orientation ?? 'vertical'}
         data-disabled={state.isDisabled || undefined}
         data-readonly={state.isReadOnly || undefined}
         data-required={state.isRequired || undefined}
         data-invalid={groupAria.isInvalid || undefined}
       >
-        {renderProps().children}
+        {renderProps.children}
       </div>
     </RadioGroupStateContext.Provider>
   );
@@ -292,8 +292,8 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
       {...domProps()}
       {...cleanLabelProps()}
       {...cleanHoverProps()}
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-selected={radioAria.isSelected() || undefined}
       data-pressed={radioAria.isPressed() || undefined}
       data-hovered={isHovered() || undefined}
@@ -311,7 +311,7 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
           {...cleanFocusProps()}
         />
       </VisuallyHidden>
-      {renderProps().children}
+      {renderProps.children}
     </label>
   );
 }

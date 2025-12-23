@@ -190,8 +190,8 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
       {...domProps()}
       {...cleanLabelProps()}
       {...cleanHoverProps()}
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-selected={switchAria.isSelected() || undefined}
       data-pressed={switchAria.isPressed() || undefined}
       data-hovered={isHovered() || undefined}
@@ -207,7 +207,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
           {...cleanFocusProps()}
         />
       </VisuallyHidden>
-      {renderProps().children}
+      {renderProps.children}
     </label>
   );
 }

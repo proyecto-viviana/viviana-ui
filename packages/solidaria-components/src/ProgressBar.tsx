@@ -152,11 +152,11 @@ export function ProgressBar(props: ParentProps<ProgressBarProps>): JSX.Element {
     <div
       {...domProps()}
       {...progressAria.progressBarProps}
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       slot={local.slot}
     >
-      {renderProps().children}
+      {renderProps.children}
     </div>
   );
 }

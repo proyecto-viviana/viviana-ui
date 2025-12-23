@@ -254,8 +254,8 @@ export function TextField(props: TextFieldProps): JSX.Element {
       <div
         {...domProps()}
         {...cleanHoverProps()}
-        class={renderProps().class}
-        style={renderProps().style}
+        class={renderProps.class()}
+        style={renderProps.style()}
         data-disabled={ariaProps.isDisabled || undefined}
         data-invalid={textFieldAria.isInvalid || undefined}
         data-readonly={ariaProps.isReadOnly || undefined}
@@ -264,7 +264,7 @@ export function TextField(props: TextFieldProps): JSX.Element {
         data-focused={isFocused() || undefined}
         data-focus-visible={isFocusVisible() || undefined}
       >
-        {renderProps().children}
+        {renderProps.children}
       </div>
     </TextFieldContext.Provider>
   );

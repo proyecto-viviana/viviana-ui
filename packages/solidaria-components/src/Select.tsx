@@ -87,8 +87,8 @@ export interface SelectProps<T>
   placeholder?: string;
   /** The name of the select, used when submitting an HTML form. */
   name?: string;
-  /** The children of the component. A function may be provided to render each item. */
-  children: (item: T) => JSX.Element;
+  /** The children of the component (compound components: SelectTrigger, SelectListBox). */
+  children: JSX.Element;
   /** The CSS className for the element. */
   class?: ClassNameOrFunction<SelectRenderProps>;
   /** The inline style for the element. */
@@ -113,6 +113,8 @@ export interface SelectValueProps<T> extends SlotProps {
   class?: ClassNameOrFunction<SelectValueRenderProps<T>>;
   /** The inline style for the element. */
   style?: StyleOrFunction<SelectValueRenderProps<T>>;
+  /** Placeholder text when no option is selected. Overrides the placeholder from Select. */
+  placeholder?: string;
 }
 
 export interface SelectTriggerRenderProps {
@@ -196,6 +198,8 @@ interface SelectContextValue<T> {
   isFocused: Accessor<boolean>;
   isFocusVisible: Accessor<boolean>;
   placeholder?: string;
+  items: T[];
+  renderItem?: (item: T) => JSX.Element;
 }
 
 export const SelectContext = createContext<SelectContextValue<unknown> | null>(null);
@@ -323,14 +327,15 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
         isFocused,
         isFocusVisible,
         placeholder: ariaProps.placeholder,
+        items: stateProps.items,
       }}
     >
       <SelectStateContext.Provider value={state}>
         <div
           {...domProps()}
           {...cleanHoverProps()}
-          class={renderProps().class}
-          style={renderProps().style}
+          class={renderProps.class()}
+          style={renderProps.style()}
           data-open={isOpen() || undefined}
           data-focused={isFocused() || undefined}
           data-focus-visible={isFocusVisible() || undefined}
@@ -355,7 +360,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
               </For>
             </select>
           </div>
-          <For each={stateProps.items}>{local.children}</For>
+          {local.children}
         </div>
       </SelectStateContext.Provider>
     </SelectContext.Provider>
@@ -417,15 +422,15 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
       {...cleanTriggerProps()}
       {...cleanHoverProps()}
       type="button"
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-open={isOpen() || undefined}
       data-focused={isFocused() || undefined}
       data-focus-visible={isFocusVisible() || undefined}
       data-hovered={isHovered() || undefined}
       data-disabled={state.isDisabled || undefined}
     >
-      {renderProps().children}
+      {renderProps.children}
     </button>
   );
 }
@@ -434,15 +439,18 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
  * Displays the selected value in a select.
  */
 export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['children', 'class', 'style', 'slot', 'placeholder']);
 
   // Get context
   const context = useContext(SelectContext);
   if (!context) {
     throw new Error('SelectValue must be used within a Select');
   }
-  const { valueProps, placeholder } = context;
+  const { valueProps, placeholder: contextPlaceholder } = context;
   const state = context.state as SelectState<T>;
+
+  // Use local placeholder if provided, otherwise fall back to context
+  const placeholder = () => local.placeholder ?? contextPlaceholder;
 
   // Render props values
   const renderValues = createMemo<SelectValueRenderProps<T>>(() => {
@@ -451,7 +459,7 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
       selectedItem,
       selectedText: selectedItem?.textValue ?? null,
       isSelected: selectedItem != null,
-      placeholder,
+      placeholder: placeholder(),
     };
   });
 
@@ -472,11 +480,11 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
   return (
     <span
       {...valueProps}
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-placeholder={!renderValues().isSelected || undefined}
     >
-      {renderProps().children}
+      {renderProps.children}
     </span>
   );
 }
@@ -492,7 +500,7 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
   if (!context) {
     throw new Error('SelectListBox must be used within a Select');
   }
-  const { menuProps, state: selectState } = context;
+  const { menuProps, state: selectState, isOpen } = context;
   const state = selectState as SelectState<T>;
 
   // Create listbox aria props - reuse select's internal list state via collection
@@ -550,27 +558,29 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
   const items = () => Array.from(state.collection());
 
   return (
-    <ul
-      {...cleanMenuProps()}
-      {...cleanListBoxProps()}
-      class={renderProps().class}
-      style={renderProps().style}
-      data-focused={state.isFocused() || undefined}
-    >
-      <Show when={local.children} fallback={
-        <For each={items()}>
-          {(node) => (
-            <SelectOption id={node.key}>
-              {node.textValue}
-            </SelectOption>
-          )}
-        </For>
-      }>
-        <For each={items()}>
-          {(node) => node.value != null ? local.children!(node.value) : null}
-        </For>
-      </Show>
-    </ul>
+    <Show when={isOpen()}>
+      <ul
+        {...cleanMenuProps()}
+        {...cleanListBoxProps()}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-focused={state.isFocused() || undefined}
+      >
+        <Show when={local.children} fallback={
+          <For each={items()}>
+            {(node) => (
+              <SelectOption id={node.key}>
+                {node.textValue}
+              </SelectOption>
+            )}
+          </For>
+        }>
+          <For each={items()}>
+            {(node) => node.value != null ? local.children!(node.value) : null}
+          </For>
+        </Show>
+      </ul>
+    </Show>
   );
 }
 
@@ -681,8 +691,8 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
     <li
       {...cleanOptionProps()}
       {...cleanHoverProps()}
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-selected={optionAria.isSelected() || undefined}
       data-focused={optionAria.isFocused() || undefined}
       data-focus-visible={optionAria.isFocusVisible() || undefined}
@@ -690,7 +700,7 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={optionAria.isDisabled() || undefined}
     >
-      {renderProps().children}
+      {renderProps.children}
     </li>
   );
 }

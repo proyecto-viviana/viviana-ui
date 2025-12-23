@@ -163,15 +163,15 @@ export function Button(props: ButtonProps): JSX.Element {
       {...cleanButtonProps()}
       {...cleanFocusProps()}
       {...cleanHoverProps()}
-      class={renderProps().class}
-      style={renderProps().style}
+      class={renderProps.class()}
+      style={renderProps.style()}
       data-pressed={buttonAria.isPressed() || undefined}
       data-hovered={isHovered() || undefined}
       data-focused={isFocused() || undefined}
       data-focus-visible={isFocusVisible() || undefined}
       data-disabled={resolveDisabled() || undefined}
     >
-      {renderProps().children}
+      {renderProps.children}
     </button>
   );
 }

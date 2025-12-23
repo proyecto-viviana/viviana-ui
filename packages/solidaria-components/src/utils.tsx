@@ -55,41 +55,51 @@ export interface SlotProps {
 // ============================================
 
 /**
- * Resolves render props (children, class, style) based on component state
+ * Resolves render props (children, class, style) based on component state.
+ *
+ * IMPORTANT: Children are returned as a GETTER to ensure they are evaluated lazily
+ * within the JSX tree, after context providers are set up. This is critical for SSR.
  */
 export function useRenderProps<T extends object>(
   props: RenderPropsBase<T> & { defaultClassName?: string },
   values: Accessor<T>
-): Accessor<{
+): {
+  /** Accessor for class - safe to call anytime */
+  class: Accessor<string>;
+  /** Accessor for style - safe to call anytime */
+  style: Accessor<JSX.CSSProperties | undefined>;
+  /** Getter for children - MUST be called inside JSX, after context providers */
   children: JSX.Element;
-  class: string;
-  style: JSX.CSSProperties | undefined;
-}> {
-  return createMemo(() => {
+} {
+  const { children, class: className, style, defaultClassName = '' } = props;
+
+  // Compute class and style eagerly (they don't depend on context)
+  const computedClass = createMemo(() => {
     const currentValues = values();
-    const { children, class: className, style, defaultClassName = '' } = props;
-
-    // Resolve children
-    const resolvedChildren = typeof children === 'function'
-      ? children(currentValues)
-      : children;
-
-    // Resolve class
-    const resolvedClass = typeof className === 'function'
+    return typeof className === 'function'
       ? className(currentValues)
       : className ?? defaultClassName;
+  });
 
-    // Resolve style
-    const resolvedStyle = typeof style === 'function'
+  const computedStyle = createMemo(() => {
+    const currentValues = values();
+    return typeof style === 'function'
       ? style(currentValues)
       : style;
-
-    return {
-      children: resolvedChildren,
-      class: resolvedClass,
-      style: resolvedStyle,
-    };
   });
+
+  // Return object with separate accessors
+  // Children is a getter that evaluates lazily when accessed in JSX
+  return {
+    class: computedClass,
+    style: computedStyle,
+    get children() {
+      const currentValues = values();
+      return typeof children === 'function'
+        ? children(currentValues)
+        : children;
+    },
+  };
 }
 
 // ============================================

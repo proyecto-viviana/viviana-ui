@@ -33,6 +33,19 @@ import {
   type CheckboxGroupState,
   type AriaCheckboxGroupItemProps,
 } from '@proyecto-viviana/solidaria'
+import {
+  ListBox,
+  ListBoxOption,
+  Menu,
+  MenuItem,
+  MenuTrigger,
+  MenuButton,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectListBox,
+  SelectOption,
+} from '@proyecto-viviana/solidaria-components'
 import { Header, ThemeCreator } from '@/components'
 // Fire gif for event card decoration
 const fireGif = '/fire.gif'
@@ -577,6 +590,21 @@ function Playground() {
           <Section title="createCheckboxGroup Hook" description="Accessible checkbox group with ARIA support" class="lg:col-span-2">
             <CheckboxGroupDemo onSelectionChange={(values) => setLastAction(`Selected: ${values.join(', ') || 'none'}`)} />
           </Section>
+
+          {/* ListBox Component */}
+          <Section title="ListBox" description="Accessible list with keyboard navigation and selection">
+            <ListBoxDemo onSelectionChange={(key) => setLastAction(`ListBox selected: ${key}`)} />
+          </Section>
+
+          {/* Menu Component */}
+          <Section title="Menu" description="Dropdown menu with keyboard navigation">
+            <MenuDemo onAction={(action) => setLastAction(`Menu action: ${action}`)} />
+          </Section>
+
+          {/* Select Component */}
+          <Section title="Select" description="Accessible dropdown select with keyboard support" class="lg:col-span-2">
+            <SelectDemo onSelectionChange={(key) => setLastAction(`Select changed: ${key}`)} />
+          </Section>
         </div>
       </div>
     </PageLayout>
@@ -784,6 +812,187 @@ function ReadonlyCheckboxDemo() {
       <CustomCheckbox value="readonly2" state={state} isReadOnly>
         Read-only (unchecked)
       </CustomCheckbox>
+    </div>
+  )
+}
+
+// ============================================
+// ListBox Demo
+// ============================================
+
+const listBoxItems = [
+  { id: 'react', name: 'React', description: 'A JavaScript library for building user interfaces' },
+  { id: 'solid', name: 'SolidJS', description: 'Simple and performant reactivity for building user interfaces' },
+  { id: 'vue', name: 'Vue', description: 'The progressive JavaScript framework' },
+  { id: 'svelte', name: 'Svelte', description: 'Cybernetically enhanced web apps' },
+  { id: 'angular', name: 'Angular', description: 'Platform for building mobile and desktop web applications' },
+]
+
+function ListBoxDemo(props: { onSelectionChange?: (key: string | number) => void }) {
+  return (
+    <div class="space-y-4">
+      <ListBox
+        items={listBoxItems}
+        getKey={(item) => item.id}
+        selectionMode="single"
+        onSelectionChange={(keys) => {
+          const key = [...keys][0]
+          if (key) props.onSelectionChange?.(key)
+        }}
+        aria-label="Choose a framework"
+        class="border border-primary-600 rounded-lg overflow-hidden bg-bg-300 max-h-64 overflow-y-auto"
+      >
+        {(item) => (
+          <ListBoxOption
+            id={item.id}
+            item={item}
+            class="px-4 py-3 cursor-pointer outline-none transition-colors data-selected:bg-accent/20 data-focused:bg-primary-700"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-primary-100">{item.name}</div>
+                <div class="text-sm text-primary-400">{item.description}</div>
+              </div>
+            </div>
+          </ListBoxOption>
+        )}
+      </ListBox>
+      <p class="text-xs text-primary-400">
+        Use arrow keys to navigate, Enter/Space to select
+      </p>
+    </div>
+  )
+}
+
+// ============================================
+// Menu Demo
+// ============================================
+
+const menuItems = [
+  { id: 'edit', label: 'Edit', variant: 'default' },
+  { id: 'duplicate', label: 'Duplicate', variant: 'default' },
+  { id: 'share', label: 'Share', variant: 'default' },
+  { id: 'delete', label: 'Delete', variant: 'danger' },
+]
+
+function MenuDemo(props: { onAction?: (action: string) => void }) {
+  return (
+    <div class="space-y-4">
+      <MenuTrigger>
+        <MenuButton class="px-4 py-2 bg-primary-700 hover:bg-primary-600 text-primary-100 rounded-lg border border-primary-500 transition-colors flex items-center gap-2">
+          Actions
+          <span class="text-xs">▼</span>
+        </MenuButton>
+        <Menu
+          items={menuItems}
+          getKey={(item) => item.id}
+          onAction={(key) => props.onAction?.(String(key))}
+          class="absolute mt-1 min-w-48 bg-bg-200 border border-primary-600 rounded-lg shadow-xl overflow-hidden z-50"
+        >
+          {(item) => (
+            <MenuItem
+              id={item.id}
+              class={`px-4 py-2 cursor-pointer outline-none transition-colors ${
+                item.variant === 'danger'
+                  ? 'data-focused:bg-danger/20 text-danger'
+                  : 'data-focused:bg-primary-700 text-primary-100'
+              }`}
+            >
+              {item.label}
+            </MenuItem>
+          )}
+        </Menu>
+      </MenuTrigger>
+      <p class="text-xs text-primary-400">
+        Click button to open, use arrow keys to navigate, Enter to select, Escape to close
+      </p>
+    </div>
+  )
+}
+
+// ============================================
+// Select Demo
+// ============================================
+
+const selectItems = [
+  { id: 'sm', label: 'Small', size: '640px' },
+  { id: 'md', label: 'Medium', size: '768px' },
+  { id: 'lg', label: 'Large', size: '1024px' },
+  { id: 'xl', label: 'Extra Large', size: '1280px' },
+  { id: '2xl', label: '2X Large', size: '1536px' },
+]
+
+function SelectDemo(props: { onSelectionChange?: (key: string | number | null) => void }) {
+  const [selectedKey, setSelectedKey] = createSignal<string | number | null>('md')
+
+  const handleChange = (key: string | number | null) => {
+    setSelectedKey(key)
+    props.onSelectionChange?.(key)
+  }
+
+  return (
+    <div class="space-y-6">
+      <div class="grid gap-6 sm:grid-cols-2">
+        {/* Basic Select */}
+        <div>
+          <h4 class="text-sm font-medium text-primary-200 mb-2">Basic Select</h4>
+          <Select
+            items={selectItems}
+            getKey={(item) => item.id}
+            selectedKey={selectedKey()}
+            onSelectionChange={handleChange}
+            aria-label="Choose a breakpoint"
+          >
+            <SelectTrigger class="w-full px-4 py-2 bg-bg-300 border border-primary-600 rounded-lg text-primary-100 flex items-center justify-between hover:border-primary-400 transition-colors">
+              <SelectValue placeholder="Select a size..." />
+              <span class="text-primary-400">▼</span>
+            </SelectTrigger>
+            <SelectListBox class="absolute mt-1 w-full bg-bg-200 border border-primary-600 rounded-lg shadow-xl overflow-hidden z-50">
+              {(item) => (
+                <SelectOption
+                  id={item.id}
+                  item={item}
+                  class="px-4 py-2 cursor-pointer outline-none transition-colors data-selected:bg-accent/20 data-selected:text-accent data-focused:bg-primary-700 text-primary-100"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="font-medium">{item.label}</span>
+                      <span class="text-sm text-primary-400 ml-2">({item.size})</span>
+                    </div>
+                  </div>
+                </SelectOption>
+              )}
+            </SelectListBox>
+          </Select>
+        </div>
+
+        {/* Disabled Select */}
+        <div>
+          <h4 class="text-sm font-medium text-primary-200 mb-2">Disabled Select</h4>
+          <Select
+            items={selectItems}
+            getKey={(item) => item.id}
+            defaultSelectedKey="lg"
+            isDisabled
+            aria-label="Disabled select"
+          >
+            <SelectTrigger class="w-full px-4 py-2 bg-bg-300 border border-primary-600 rounded-lg text-primary-400 flex items-center justify-between opacity-50 cursor-not-allowed">
+              <SelectValue placeholder="Select..." />
+              <span class="text-primary-400">▼</span>
+            </SelectTrigger>
+            <SelectListBox class="hidden">
+              {(item) => <SelectOption id={item.id} item={item}>{item.label}</SelectOption>}
+            </SelectListBox>
+          </Select>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-xs text-primary-400">
+          Click to open dropdown, use arrow keys to navigate options, Enter/Space to select, Escape to close.
+          The selected value is: <strong class="text-primary-200">{selectedKey() || 'none'}</strong>
+        </p>
+      </div>
     </div>
   )
 }
