@@ -20,7 +20,11 @@
     "allowSyntheticDefaultImports": true,
     "types": ["bun-types"],
     "paths": {
-      "@solidaria/*": ["./packages/*/src"]
+      "@solidaria/*": ["./packages/*/src"],
+      "@proyecto-viviana/solid-stately": ["./packages/solid-stately/src/index.ts"],
+      "@proyecto-viviana/solidaria": ["./packages/solidaria/src/index.ts"],
+      "@proyecto-viviana/solidaria-components": ["./packages/solidaria-components/src/index.ts"],
+      "@proyecto-viviana/ui": ["./packages/ui/src/index.ts"]
     }
   },
   "include": ["packages/*/src/**/*", "packages/*/build.ts"],

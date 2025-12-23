@@ -517,6 +517,46 @@
   text-shadow: 6px 5px 0 var(--color-accent);
 }
 
+/* Inverted variant - first word gets the 3D effect, second word is muted */
+.vui-logo.vui-logo--inverted .vui-logo__first {
+  position: relative;
+  color: var(--color-primary-500);
+  font-weight: 900;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+  paint-order: stroke fill;
+}
+
+.vui-logo.vui-logo--inverted .vui-logo__first::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  color: transparent;
+  -webkit-text-stroke: 0;
+  text-shadow: 4px 3px 0 var(--color-accent);
+}
+
+.vui-logo.vui-logo--inverted .vui-logo__second {
+  position: static;
+  color: var(--color-primary-800);
+  font-weight: 300;
+  -webkit-text-stroke: 0;
+  paint-order: normal;
+}
+
+.vui-logo.vui-logo--inverted .vui-logo__second::before {
+  content: none;
+}
+
+.vui-logo.vui-logo--inverted.vui-logo--lg .vui-logo__first::before {
+  text-shadow: 5px 4px 0 var(--color-accent);
+}
+
+.vui-logo.vui-logo--inverted.vui-logo--xl .vui-logo__first::before {
+  text-shadow: 6px 5px 0 var(--color-accent);
+}
+
 /* ===== HEADER COMPONENT ===== */
 .vui-header {
   position: fixed;

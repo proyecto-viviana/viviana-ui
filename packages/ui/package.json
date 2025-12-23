@@ -13,9 +13,18 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./theme.css": "./dist/theme.css",
-    "./styles.css": "./dist/styles.css",
-    "./components.css": "./dist/components.css"
+    "./theme.css": {
+      "import": "./dist/theme.css",
+      "default": "./src/theme.css"
+    },
+    "./styles.css": {
+      "import": "./dist/styles.css",
+      "default": "./src/styles.css"
+    },
+    "./components.css": {
+      "import": "./dist/components.css",
+      "default": "./src/components.css"
+    }
   },
   "files": [
     "dist",
@@ -30,8 +39,8 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@proyecto-viviana/solidaria": "^0.0.6",
-    "@proyecto-viviana/solidaria-components": "^0.0.6"
+    "@proyecto-viviana/solidaria": "workspace:*",
+    "@proyecto-viviana/solidaria-components": "workspace:*"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"

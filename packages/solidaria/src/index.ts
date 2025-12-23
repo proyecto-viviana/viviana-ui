@@ -182,6 +182,19 @@ export {
   type MenuTriggerAria,
 } from './menu';
 
+// Select
+export {
+  createSelect,
+  createHiddenSelect,
+  HiddenSelect,
+  getSelectData,
+  type AriaSelectProps,
+  type SelectAria,
+  type AriaHiddenSelectProps,
+  type HiddenSelectAria,
+  type HiddenSelectProps,
+} from './select';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

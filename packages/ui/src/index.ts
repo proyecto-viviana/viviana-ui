@@ -70,6 +70,10 @@ export type { ChipProps, ChipVariant } from './custom/chip';
 export { NavHeader } from './custom/nav-header';
 export type { NavHeaderProps } from './custom/nav-header';
 
+// Header
+export { Header } from './custom/header';
+export type { HeaderProps } from './custom/header';
+
 // LateralNav
 export { LateralNav, NavItem, NavLink, NavSection } from './custom/lateral-nav';
 export type { LateralNavProps, NavItemProps, NavLinkProps, NavSectionProps } from './custom/lateral-nav';

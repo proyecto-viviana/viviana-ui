@@ -70,7 +70,15 @@ export {
   type MenuStateProps,
   type MenuState,
   type MenuTriggerStateProps,
+  type MenuTriggerState,
 } from './collections';
+
+// Select
+export {
+  createSelectState,
+  type SelectStateProps,
+  type SelectState,
+} from './select';
 
 // SSR
 export { createIsSSR, createId, canUseDOM } from './ssr';

@@ -42,4 +42,5 @@ export {
   type MenuStateProps,
   type MenuState,
   type MenuTriggerStateProps,
+  type MenuTriggerState,
 } from './createMenuState';

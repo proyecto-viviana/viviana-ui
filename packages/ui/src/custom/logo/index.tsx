@@ -9,6 +9,8 @@ export interface LogoProps {
   secondWord?: string;
   /** Size variant of the logo */
   size?: LogoSize;
+  /** Invert the styles (first word gets 3D effect, second word is muted) */
+  inverted?: boolean;
   /** Additional CSS classes */
   class?: string;
 }
@@ -44,9 +46,11 @@ export function Logo(props: LogoProps): JSX.Element {
   const secondWord = () => props.secondWord ?? "Viviana";
 
   return (
-    <span class={`vui-logo ${sizeClass()} ${props.class ?? ""}`}>
-      <span class="vui-logo__first">{firstWord()}</span>
-      <span class="vui-logo__second" data-text={secondWord()}>
+    <span class={`vui-logo ${sizeClass()} ${props.inverted ? "vui-logo--inverted" : ""} ${props.class ?? ""}`}>
+      <span class="vui-logo__first" data-text={props.inverted ? firstWord() : undefined}>
+        {firstWord()}
+      </span>
+      <span class="vui-logo__second" data-text={props.inverted ? undefined : secondWord()}>
         {secondWord()}
       </span>
     </span>
