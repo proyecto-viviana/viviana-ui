@@ -24,6 +24,27 @@ import {
   Link,
   ProgressBar,
   Separator,
+  // New styled collection components
+  Select as StyledSelect,
+  SelectTrigger as StyledSelectTrigger,
+  SelectValue as StyledSelectValue,
+  SelectListBox as StyledSelectListBox,
+  SelectOption as StyledSelectOption,
+  Menu as StyledMenu,
+  MenuItem as StyledMenuItem,
+  MenuTrigger as StyledMenuTrigger,
+  MenuButton as StyledMenuButton,
+  MenuSeparator as StyledMenuSeparator,
+  ListBox as StyledListBox,
+  ListBoxOption as StyledListBoxOption,
+  // Tabs
+  Tabs as StyledTabs,
+  TabList as StyledTabList,
+  Tab as StyledTab,
+  TabPanel as StyledTabPanel,
+  // Breadcrumbs
+  Breadcrumbs as StyledBreadcrumbs,
+  BreadcrumbItem as StyledBreadcrumbItem,
 } from '@proyecto-viviana/ui'
 import {
   createButton,
@@ -605,6 +626,31 @@ function Playground() {
           <Section title="Select" description="Accessible dropdown select with keyboard support" class="lg:col-span-2">
             <SelectDemo onSelectionChange={(key) => setLastAction(`Select changed: ${key}`)} />
           </Section>
+
+          {/* Styled Select Component */}
+          <Section title="Styled Select (ui)" description="Pre-styled select with size variants">
+            <StyledSelectDemo onSelectionChange={(key) => setLastAction(`Styled Select: ${key}`)} />
+          </Section>
+
+          {/* Styled Menu Component */}
+          <Section title="Styled Menu (ui)" description="Pre-styled dropdown menu with variants">
+            <StyledMenuDemo onAction={(action) => setLastAction(`Styled Menu: ${action}`)} />
+          </Section>
+
+          {/* Styled ListBox Component */}
+          <Section title="Styled ListBox (ui)" description="Pre-styled list with selection" class="lg:col-span-2">
+            <StyledListBoxDemo onSelectionChange={(key) => setLastAction(`Styled ListBox: ${key}`)} />
+          </Section>
+
+          {/* Styled Tabs Component */}
+          <Section title="Styled Tabs (ui)" description="Pre-styled tabs with variants" class="lg:col-span-2">
+            <StyledTabsDemo onSelectionChange={(key) => setLastAction(`Styled Tab: ${key}`)} />
+          </Section>
+
+          {/* Styled Breadcrumbs Component */}
+          <Section title="Styled Breadcrumbs (ui)" description="Pre-styled navigation breadcrumbs" class="lg:col-span-2">
+            <StyledBreadcrumbsDemo onNavigate={(path) => setLastAction(`Navigate: ${path}`)} />
+          </Section>
         </div>
       </div>
     </PageLayout>
@@ -993,6 +1039,570 @@ function SelectDemo(props: { onSelectionChange?: (key: string | number | null) =
           The selected value is: <strong class="text-primary-200">{selectedKey() || 'none'}</strong>
         </p>
       </div>
+    </div>
+  )
+}
+
+// ============================================
+// Styled Select Demo (ui package)
+// ============================================
+
+interface FruitItem {
+  id: string
+  label: string
+}
+
+const styledSelectItems: FruitItem[] = [
+  { id: 'apple', label: 'Apple' },
+  { id: 'banana', label: 'Banana' },
+  { id: 'cherry', label: 'Cherry' },
+  { id: 'date', label: 'Date' },
+  { id: 'elderberry', label: 'Elderberry' },
+]
+
+function StyledSelectDemo(props: { onSelectionChange?: (key: string | number | null) => void }) {
+  const [selectedKey, setSelectedKey] = createSignal<string | number | null>(null)
+
+  const handleChange = (key: string | number | null) => {
+    setSelectedKey(key)
+    props.onSelectionChange?.(key)
+  }
+
+  return (
+    <div class="space-y-6">
+      <div class="grid gap-6 sm:grid-cols-3">
+        {/* Small size */}
+        <StyledSelect<FruitItem>
+          items={styledSelectItems}
+          getKey={(item: FruitItem) => item.id}
+          getTextValue={(item: FruitItem) => item.label}
+          selectedKey={selectedKey()}
+          onSelectionChange={handleChange}
+          size="sm"
+          label="Small"
+          placeholder="Pick a fruit..."
+        >
+          <StyledSelectTrigger>
+            <StyledSelectValue />
+          </StyledSelectTrigger>
+          <StyledSelectListBox>
+            {(item: FruitItem) => (
+              <StyledSelectOption id={item.id}>{item.label}</StyledSelectOption>
+            )}
+          </StyledSelectListBox>
+        </StyledSelect>
+
+        {/* Medium size (default) */}
+        <StyledSelect<FruitItem>
+          items={styledSelectItems}
+          getKey={(item: FruitItem) => item.id}
+          getTextValue={(item: FruitItem) => item.label}
+          selectedKey={selectedKey()}
+          onSelectionChange={handleChange}
+          size="md"
+          label="Medium"
+          placeholder="Pick a fruit..."
+        >
+          <StyledSelectTrigger>
+            <StyledSelectValue />
+          </StyledSelectTrigger>
+          <StyledSelectListBox>
+            {(item: FruitItem) => (
+              <StyledSelectOption id={item.id}>{item.label}</StyledSelectOption>
+            )}
+          </StyledSelectListBox>
+        </StyledSelect>
+
+        {/* Large size */}
+        <StyledSelect<FruitItem>
+          items={styledSelectItems}
+          getKey={(item: FruitItem) => item.id}
+          getTextValue={(item: FruitItem) => item.label}
+          selectedKey={selectedKey()}
+          onSelectionChange={handleChange}
+          size="lg"
+          label="Large"
+          placeholder="Pick a fruit..."
+        >
+          <StyledSelectTrigger>
+            <StyledSelectValue />
+          </StyledSelectTrigger>
+          <StyledSelectListBox>
+            {(item: FruitItem) => (
+              <StyledSelectOption id={item.id}>{item.label}</StyledSelectOption>
+            )}
+          </StyledSelectListBox>
+        </StyledSelect>
+      </div>
+      <p class="text-xs text-primary-400">
+        Pre-styled Select with size variants. Selected: <strong class="text-primary-200">{selectedKey() || 'none'}</strong>
+      </p>
+    </div>
+  )
+}
+
+// ============================================
+// Styled Menu Demo (ui package)
+// ============================================
+
+interface MenuItemData {
+  id: string
+  label: string
+  shortcut?: string
+  isSeparator?: boolean
+  isDestructive?: boolean
+}
+
+const styledMenuItems: MenuItemData[] = [
+  { id: 'new', label: 'New File', shortcut: '⌘N' },
+  { id: 'open', label: 'Open...', shortcut: '⌘O' },
+  { id: 'save', label: 'Save', shortcut: '⌘S' },
+  { id: 'separator', label: '', isSeparator: true },
+  { id: 'delete', label: 'Delete', isDestructive: true },
+]
+
+interface SimpleMenuItem {
+  id: string
+  label: string
+}
+
+function StyledMenuDemo(props: { onAction?: (action: string) => void }) {
+  return (
+    <div class="space-y-4">
+      <div class="flex gap-4 flex-wrap">
+        {/* Primary variant */}
+        <StyledMenuTrigger size="md">
+          <StyledMenuButton variant="primary">
+            File Menu
+          </StyledMenuButton>
+          <StyledMenu<MenuItemData>
+            items={styledMenuItems.filter((i: MenuItemData) => !i.isSeparator)}
+            getKey={(item: MenuItemData) => item.id}
+            onAction={(key: string | number) => props.onAction?.(String(key))}
+          >
+            {(item: MenuItemData) => (
+              <StyledMenuItem
+                id={item.id}
+                shortcut={item.shortcut}
+                isDestructive={item.isDestructive}
+              >
+                {item.label}
+              </StyledMenuItem>
+            )}
+          </StyledMenu>
+        </StyledMenuTrigger>
+
+        {/* Secondary variant */}
+        <StyledMenuTrigger size="md">
+          <StyledMenuButton variant="secondary">
+            Edit Menu
+          </StyledMenuButton>
+          <StyledMenu<SimpleMenuItem>
+            items={[
+              { id: 'cut', label: 'Cut' },
+              { id: 'copy', label: 'Copy' },
+              { id: 'paste', label: 'Paste' },
+            ]}
+            getKey={(item: SimpleMenuItem) => item.id}
+            onAction={(key: string | number) => props.onAction?.(String(key))}
+          >
+            {(item: SimpleMenuItem) => (
+              <StyledMenuItem id={item.id}>
+                {item.label}
+              </StyledMenuItem>
+            )}
+          </StyledMenu>
+        </StyledMenuTrigger>
+
+        {/* Quiet variant */}
+        <StyledMenuTrigger size="sm">
+          <StyledMenuButton variant="quiet">
+            More
+          </StyledMenuButton>
+          <StyledMenu<SimpleMenuItem>
+            items={[
+              { id: 'settings', label: 'Settings' },
+              { id: 'help', label: 'Help' },
+            ]}
+            getKey={(item: SimpleMenuItem) => item.id}
+            onAction={(key: string | number) => props.onAction?.(String(key))}
+          >
+            {(item: SimpleMenuItem) => (
+              <StyledMenuItem id={item.id}>
+                {item.label}
+              </StyledMenuItem>
+            )}
+          </StyledMenu>
+        </StyledMenuTrigger>
+      </div>
+      <p class="text-xs text-primary-400">
+        Pre-styled Menu with button variants (primary, secondary, quiet) and size options.
+      </p>
+    </div>
+  )
+}
+
+// ============================================
+// Styled ListBox Demo (ui package)
+// ============================================
+
+interface MailboxItem {
+  id: string
+  label: string
+  description: string
+}
+
+const styledListBoxItems: MailboxItem[] = [
+  { id: 'inbox', label: 'Inbox', description: '24 unread messages' },
+  { id: 'drafts', label: 'Drafts', description: '3 draft messages' },
+  { id: 'sent', label: 'Sent', description: '156 sent messages' },
+  { id: 'archive', label: 'Archive', description: '1,234 archived' },
+  { id: 'trash', label: 'Trash', description: '12 items' },
+]
+
+type SelectionKeys = 'all' | Set<string | number>
+
+function StyledListBoxDemo(props: { onSelectionChange?: (key: string | number) => void }) {
+  return (
+    <div class="grid gap-6 sm:grid-cols-3">
+      {/* Small size */}
+      <StyledListBox<MailboxItem>
+        items={styledListBoxItems}
+        getKey={(item: MailboxItem) => item.id}
+        getTextValue={(item: MailboxItem) => item.label}
+        selectionMode="single"
+        size="sm"
+        label="Small ListBox"
+        onSelectionChange={(keys: SelectionKeys) => {
+          if (keys !== 'all') {
+            const key = [...keys][0]
+            if (key) props.onSelectionChange?.(key)
+          }
+        }}
+      >
+        {(item: MailboxItem) => (
+          <StyledListBoxOption id={item.id} description={item.description}>
+            {item.label}
+          </StyledListBoxOption>
+        )}
+      </StyledListBox>
+
+      {/* Medium size */}
+      <StyledListBox<MailboxItem>
+        items={styledListBoxItems}
+        getKey={(item: MailboxItem) => item.id}
+        getTextValue={(item: MailboxItem) => item.label}
+        selectionMode="single"
+        size="md"
+        label="Medium ListBox"
+        onSelectionChange={(keys: SelectionKeys) => {
+          if (keys !== 'all') {
+            const key = [...keys][0]
+            if (key) props.onSelectionChange?.(key)
+          }
+        }}
+      >
+        {(item: MailboxItem) => (
+          <StyledListBoxOption id={item.id} description={item.description}>
+            {item.label}
+          </StyledListBoxOption>
+        )}
+      </StyledListBox>
+
+      {/* Large size */}
+      <StyledListBox<MailboxItem>
+        items={styledListBoxItems}
+        getKey={(item: MailboxItem) => item.id}
+        getTextValue={(item: MailboxItem) => item.label}
+        selectionMode="single"
+        size="lg"
+        label="Large ListBox"
+        onSelectionChange={(keys: SelectionKeys) => {
+          if (keys !== 'all') {
+            const key = [...keys][0]
+            if (key) props.onSelectionChange?.(key)
+          }
+        }}
+      >
+        {(item: MailboxItem) => (
+          <StyledListBoxOption id={item.id} description={item.description}>
+            {item.label}
+          </StyledListBoxOption>
+        )}
+      </StyledListBox>
+    </div>
+  )
+}
+
+// ============================================
+// Styled Tabs Demo (ui package)
+// ============================================
+
+interface TabItem {
+  id: string
+  label: string
+  content: string
+}
+
+const tabItems: TabItem[] = [
+  { id: 'overview', label: 'Overview', content: 'This is the overview panel content. It provides a summary of all features.' },
+  { id: 'features', label: 'Features', content: 'Explore the rich features including accessibility, keyboard navigation, and customization.' },
+  { id: 'specs', label: 'Specifications', content: 'Technical specifications and requirements for integration.' },
+  { id: 'reviews', label: 'Reviews', content: 'User reviews and testimonials about the component library.' },
+]
+
+function StyledTabsDemo(props: { onSelectionChange?: (key: string | number) => void }) {
+  const [selectedKey, setSelectedKey] = createSignal<string | number>('overview')
+
+  const handleChange = (key: string | number) => {
+    setSelectedKey(key)
+    props.onSelectionChange?.(key)
+  }
+
+  return (
+    <div class="space-y-8">
+      {/* Underline variant (default) */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Underline Variant</h4>
+        <StyledTabs<TabItem>
+          items={tabItems}
+          getKey={(item: TabItem) => item.id}
+          getTextValue={(item: TabItem) => item.label}
+          selectedKey={selectedKey()}
+          onSelectionChange={handleChange}
+          variant="underline"
+        >
+          <StyledTabList>
+            {(item: TabItem) => (
+              <StyledTab id={item.id}>{item.label}</StyledTab>
+            )}
+          </StyledTabList>
+          <StyledTabPanel>
+            {() => {
+              const selected = tabItems.find((item: TabItem) => item.id === selectedKey())
+              return <p class="text-primary-300">{selected?.content}</p>
+            }}
+          </StyledTabPanel>
+        </StyledTabs>
+      </div>
+
+      {/* Pill variant */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Pill Variant</h4>
+        <StyledTabs<TabItem>
+          items={tabItems}
+          getKey={(item: TabItem) => item.id}
+          getTextValue={(item: TabItem) => item.label}
+          defaultSelectedKey="features"
+          variant="pill"
+        >
+          <StyledTabList>
+            {(item: TabItem) => (
+              <StyledTab id={item.id}>{item.label}</StyledTab>
+            )}
+          </StyledTabList>
+          <StyledTabPanel>
+            <p class="text-primary-300">{tabItems[1].content}</p>
+          </StyledTabPanel>
+        </StyledTabs>
+      </div>
+
+      {/* Boxed variant with sizes */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Boxed Variant with Sizes</h4>
+        <div class="grid gap-6 sm:grid-cols-3">
+          {/* Small */}
+          <StyledTabs<TabItem>
+            items={tabItems.slice(0, 3)}
+            getKey={(item: TabItem) => item.id}
+            getTextValue={(item: TabItem) => item.label}
+            defaultSelectedKey="overview"
+            variant="boxed"
+            size="sm"
+          >
+            <StyledTabList>
+              {(item: TabItem) => (
+                <StyledTab id={item.id}>{item.label}</StyledTab>
+              )}
+            </StyledTabList>
+            <StyledTabPanel>
+              <p class="text-primary-400 text-sm">Small tabs content</p>
+            </StyledTabPanel>
+          </StyledTabs>
+
+          {/* Medium */}
+          <StyledTabs<TabItem>
+            items={tabItems.slice(0, 3)}
+            getKey={(item: TabItem) => item.id}
+            getTextValue={(item: TabItem) => item.label}
+            defaultSelectedKey="overview"
+            variant="boxed"
+            size="md"
+          >
+            <StyledTabList>
+              {(item: TabItem) => (
+                <StyledTab id={item.id}>{item.label}</StyledTab>
+              )}
+            </StyledTabList>
+            <StyledTabPanel>
+              <p class="text-primary-300">Medium tabs content</p>
+            </StyledTabPanel>
+          </StyledTabs>
+
+          {/* Large */}
+          <StyledTabs<TabItem>
+            items={tabItems.slice(0, 3)}
+            getKey={(item: TabItem) => item.id}
+            getTextValue={(item: TabItem) => item.label}
+            defaultSelectedKey="overview"
+            variant="boxed"
+            size="lg"
+          >
+            <StyledTabList>
+              {(item: TabItem) => (
+                <StyledTab id={item.id}>{item.label}</StyledTab>
+              )}
+            </StyledTabList>
+            <StyledTabPanel>
+              <p class="text-primary-200">Large tabs content</p>
+            </StyledTabPanel>
+          </StyledTabs>
+        </div>
+      </div>
+
+      <p class="text-xs text-primary-400">
+        Pre-styled Tabs with variants (underline, pill, boxed) and sizes (sm, md, lg). Use arrow keys to navigate between tabs.
+      </p>
+    </div>
+  )
+}
+
+// ============================================
+// Styled Breadcrumbs Demo (ui package)
+// ============================================
+
+interface BreadcrumbData {
+  id: string
+  label: string
+  href?: string
+  isCurrent?: boolean
+}
+
+const breadcrumbItems: BreadcrumbData[] = [
+  { id: 'home', label: 'Home', href: '/' },
+  { id: 'products', label: 'Products', href: '/products' },
+  { id: 'category', label: 'Electronics', href: '/products/electronics' },
+  { id: 'item', label: 'Smartphones', isCurrent: true },
+]
+
+function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
+  return (
+    <div class="space-y-8">
+      {/* Default variant */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Default Variant</h4>
+        <StyledBreadcrumbs<BreadcrumbData>
+          items={breadcrumbItems}
+          getKey={(item: BreadcrumbData) => item.id}
+        >
+          {(item: BreadcrumbData) => (
+            <StyledBreadcrumbItem
+              isCurrent={item.isCurrent}
+              href={item.href}
+              onPress={() => props.onNavigate?.(item.href ?? item.label)}
+            >
+              {item.label}
+            </StyledBreadcrumbItem>
+          )}
+        </StyledBreadcrumbs>
+      </div>
+
+      {/* Subtle variant */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Subtle Variant</h4>
+        <StyledBreadcrumbs<BreadcrumbData>
+          items={breadcrumbItems}
+          getKey={(item: BreadcrumbData) => item.id}
+          variant="subtle"
+        >
+          {(item: BreadcrumbData) => (
+            <StyledBreadcrumbItem
+              isCurrent={item.isCurrent}
+              href={item.href}
+              onPress={() => props.onNavigate?.(item.href ?? item.label)}
+            >
+              {item.label}
+            </StyledBreadcrumbItem>
+          )}
+        </StyledBreadcrumbs>
+      </div>
+
+      {/* Size variants */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Size Variants</h4>
+        <div class="space-y-4">
+          {/* Small */}
+          <div>
+            <span class="text-xs text-primary-400 block mb-1">Small:</span>
+            <StyledBreadcrumbs<BreadcrumbData>
+              items={breadcrumbItems.slice(0, 3)}
+              getKey={(item: BreadcrumbData) => item.id}
+              size="sm"
+            >
+              {(item: BreadcrumbData) => (
+                <StyledBreadcrumbItem
+                  isCurrent={item.id === 'category'}
+                  href={item.href}
+                >
+                  {item.label}
+                </StyledBreadcrumbItem>
+              )}
+            </StyledBreadcrumbs>
+          </div>
+
+          {/* Medium */}
+          <div>
+            <span class="text-xs text-primary-400 block mb-1">Medium:</span>
+            <StyledBreadcrumbs<BreadcrumbData>
+              items={breadcrumbItems.slice(0, 3)}
+              getKey={(item: BreadcrumbData) => item.id}
+              size="md"
+            >
+              {(item: BreadcrumbData) => (
+                <StyledBreadcrumbItem
+                  isCurrent={item.id === 'category'}
+                  href={item.href}
+                >
+                  {item.label}
+                </StyledBreadcrumbItem>
+              )}
+            </StyledBreadcrumbs>
+          </div>
+
+          {/* Large */}
+          <div>
+            <span class="text-xs text-primary-400 block mb-1">Large:</span>
+            <StyledBreadcrumbs<BreadcrumbData>
+              items={breadcrumbItems.slice(0, 3)}
+              getKey={(item: BreadcrumbData) => item.id}
+              size="lg"
+            >
+              {(item: BreadcrumbData) => (
+                <StyledBreadcrumbItem
+                  isCurrent={item.id === 'category'}
+                  href={item.href}
+                >
+                  {item.label}
+                </StyledBreadcrumbItem>
+              )}
+            </StyledBreadcrumbs>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-xs text-primary-400">
+        Pre-styled Breadcrumbs with variants (default, subtle) and sizes (sm, md, lg). Click items to navigate.
+      </p>
     </div>
   )
 }

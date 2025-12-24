@@ -58,6 +58,26 @@ export type { ProgressBarProps, ProgressBarSize, ProgressBarVariant } from './pr
 export { Separator } from './separator';
 export type { SeparatorProps, SeparatorVariant, SeparatorSize } from './separator';
 
+// Select
+export { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from './select';
+export type { SelectProps, SelectTriggerProps, SelectValueProps, SelectListBoxProps, SelectOptionProps, SelectSize } from './select';
+
+// Menu
+export { Menu, MenuItem, MenuTrigger, MenuButton, MenuSeparator } from './menu';
+export type { MenuProps, MenuItemProps, MenuTriggerProps, MenuButtonProps, MenuSeparatorProps, MenuSize } from './menu';
+
+// ListBox
+export { ListBox, ListBoxOption } from './listbox';
+export type { ListBoxProps, ListBoxOptionProps, ListBoxSize } from './listbox';
+
+// Tabs
+export { Tabs, TabList, Tab, TabPanel } from './tabs';
+export type { TabsProps, TabListProps, TabProps, TabPanelProps, TabsSize, TabsVariant, TabOrientation } from './tabs';
+
+// Breadcrumbs
+export { Breadcrumbs, BreadcrumbItem } from './breadcrumbs';
+export type { BreadcrumbsProps, BreadcrumbItemProps, BreadcrumbsSize, BreadcrumbsVariant } from './breadcrumbs';
+
 // ============================================
 // CUSTOM COMPONENTS
 // ============================================

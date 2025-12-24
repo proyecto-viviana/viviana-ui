@@ -80,6 +80,15 @@ export {
   type SelectState,
 } from './select';
 
+// Tabs
+export {
+  createTabListState,
+  type TabListStateProps,
+  type TabListState,
+  type KeyboardActivation,
+  type TabOrientation,
+} from './tabs';
+
 // SSR
 export { createIsSSR, createId, canUseDOM } from './ssr';
 

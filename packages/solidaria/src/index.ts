@@ -195,6 +195,32 @@ export {
   type HiddenSelectProps,
 } from './select';
 
+// Tabs
+export {
+  createTabList,
+  createTab,
+  createTabPanel,
+  type TabListState,
+  type TabOrientation,
+  type KeyboardActivation,
+  type AriaTabListProps,
+  type TabListAria,
+  type AriaTabProps,
+  type TabAria,
+  type AriaTabPanelProps,
+  type TabPanelAria,
+} from './tabs';
+
+// Breadcrumbs
+export {
+  createBreadcrumbs,
+  createBreadcrumbItem,
+  type AriaBreadcrumbsProps,
+  type BreadcrumbsAria,
+  type AriaBreadcrumbItemProps,
+  type BreadcrumbItemAria,
+} from './breadcrumbs';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

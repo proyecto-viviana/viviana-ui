@@ -1,0 +1,239 @@
+/**
+ * ListBox component for proyecto-viviana-ui
+ *
+ * Styled listbox component built on top of solidaria-components.
+ * Inspired by Spectrum 2's ListBox component patterns.
+ */
+
+import { type JSX, Show, splitProps, createContext, useContext } from 'solid-js'
+import {
+  ListBox as HeadlessListBox,
+  ListBoxOption as HeadlessListBoxOption,
+  type ListBoxProps as HeadlessListBoxProps,
+  type ListBoxOptionProps as HeadlessListBoxOptionProps,
+  type ListBoxRenderProps,
+  type ListBoxOptionRenderProps,
+} from '@proyecto-viviana/solidaria-components'
+import type { Key } from '@proyecto-viviana/solid-stately'
+
+// ============================================
+// SIZE CONTEXT
+// ============================================
+
+export type ListBoxSize = 'sm' | 'md' | 'lg'
+
+const ListBoxSizeContext = createContext<ListBoxSize>('md')
+
+// ============================================
+// TYPES
+// ============================================
+
+export interface ListBoxProps<T> extends Omit<HeadlessListBoxProps<T>, 'class' | 'style'> {
+  /** The size of the listbox. */
+  size?: ListBoxSize
+  /** Additional CSS class name. */
+  class?: string
+  /** Label for the listbox. */
+  label?: string
+  /** Description for the listbox. */
+  description?: string
+}
+
+export interface ListBoxOptionProps<T> extends Omit<HeadlessListBoxOptionProps<T>, 'class' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
+  /** Optional description text. */
+  description?: string
+  /** Optional icon to display before the label. */
+  icon?: JSX.Element
+}
+
+// ============================================
+// STYLES
+// ============================================
+
+const sizeStyles = {
+  sm: {
+    list: 'py-1',
+    option: 'text-sm py-1.5 px-3 gap-2',
+    icon: 'h-4 w-4',
+    label: 'text-sm',
+    description: 'text-xs',
+  },
+  md: {
+    list: 'py-1.5',
+    option: 'text-base py-2 px-4 gap-3',
+    icon: 'h-5 w-5',
+    label: 'text-base',
+    description: 'text-sm',
+  },
+  lg: {
+    list: 'py-2',
+    option: 'text-lg py-2.5 px-5 gap-3',
+    icon: 'h-6 w-6',
+    label: 'text-lg',
+    description: 'text-base',
+  },
+}
+
+// ============================================
+// LISTBOX COMPONENT
+// ============================================
+
+/**
+ * A listbox displays a list of options and allows a user to select one or more of them.
+ *
+ * Built on solidaria-components ListBox for full accessibility support.
+ */
+export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
+  const [local, headlessProps] = splitProps(props, [
+    'size',
+    'class',
+    'label',
+    'description',
+    'children',
+    'renderEmptyState',
+  ])
+
+  const size = local.size ?? 'md'
+  const styles = sizeStyles[size]
+  const customClass = local.class ?? ''
+
+  const getClassName = (renderProps: ListBoxRenderProps): string => {
+    const base = 'rounded-lg border-2 border-primary-600 bg-bg-400 overflow-auto focus:outline-none'
+    const sizeClass = styles.list
+
+    let stateClass: string
+    if (renderProps.isDisabled) {
+      stateClass = 'opacity-50'
+    } else {
+      stateClass = ''
+    }
+
+    const focusClass = renderProps.isFocusVisible
+      ? 'ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400'
+      : ''
+
+    return [base, sizeClass, stateClass, focusClass, customClass].filter(Boolean).join(' ')
+  }
+
+  const defaultEmptyState = () => (
+    <li class="py-4 px-4 text-center text-primary-500">
+      No items
+    </li>
+  )
+
+  return (
+    <ListBoxSizeContext.Provider value={size}>
+      <div class="flex flex-col gap-1.5">
+        <Show when={local.label}>
+          <label class={`text-primary-200 font-medium ${styles.label}`}>
+            {local.label}
+          </label>
+        </Show>
+        <HeadlessListBox
+          {...headlessProps}
+          class={getClassName}
+          renderEmptyState={local.renderEmptyState ?? defaultEmptyState}
+          children={local.children}
+        />
+        <Show when={local.description}>
+          <span class="text-primary-400 text-sm">{local.description}</span>
+        </Show>
+      </div>
+    </ListBoxSizeContext.Provider>
+  )
+}
+
+// ============================================
+// LISTBOX OPTION COMPONENT
+// ============================================
+
+/**
+ * An option in a listbox.
+ */
+export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
+  const [local, headlessProps] = splitProps(props, ['class', 'children', 'description', 'icon'])
+  const size = useContext(ListBoxSizeContext)
+  const styles = () => sizeStyles[size]
+  const customClass = local.class ?? ''
+
+  const getClassName = (renderProps: ListBoxOptionRenderProps): string => {
+    const base = 'flex items-center cursor-pointer transition-colors duration-150 outline-none'
+    const sizeClass = styles().option
+
+    let colorClass: string
+    if (renderProps.isDisabled) {
+      colorClass = 'text-primary-500 cursor-not-allowed'
+    } else if (renderProps.isSelected) {
+      if (renderProps.isFocused || renderProps.isHovered) {
+        colorClass = 'bg-accent/30 text-accent'
+      } else {
+        colorClass = 'bg-accent/20 text-accent'
+      }
+    } else if (renderProps.isFocused || renderProps.isHovered) {
+      colorClass = 'bg-bg-300 text-primary-100'
+    } else {
+      colorClass = 'text-primary-200'
+    }
+
+    const focusClass = renderProps.isFocusVisible
+      ? 'ring-2 ring-inset ring-accent-300'
+      : ''
+
+    return [base, sizeClass, colorClass, focusClass, customClass].filter(Boolean).join(' ')
+  }
+
+  const renderChildren = (renderProps: ListBoxOptionRenderProps) => (
+    <>
+      <Show when={local.icon}>
+        <span class={`flex-shrink-0 ${styles().icon}`}>{local.icon}</span>
+      </Show>
+      <Show when={renderProps.isSelected}>
+        <CheckIcon class={`flex-shrink-0 ${styles().icon} text-accent`} />
+      </Show>
+      <div class="flex flex-col flex-1 min-w-0">
+        <span class="truncate">
+          {typeof local.children === 'function' ? local.children(renderProps) : local.children}
+        </span>
+        <Show when={local.description}>
+          <span class={`text-primary-400 truncate ${styles().description}`}>
+            {local.description}
+          </span>
+        </Show>
+      </div>
+    </>
+  )
+
+  return (
+    <HeadlessListBoxOption
+      {...headlessProps}
+      class={getClassName}
+      children={renderChildren}
+    />
+  )
+}
+
+// ============================================
+// ICONS
+// ============================================
+
+function CheckIcon(props: { class?: string }): JSX.Element {
+  return (
+    <svg
+      class={props.class}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+  )
+}
+
+// Attach sub-components for convenience
+ListBox.Option = ListBoxOption
+
+// Re-export Key type for convenience
+export type { Key }

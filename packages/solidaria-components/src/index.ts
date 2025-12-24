@@ -160,3 +160,32 @@ export {
   type SelectOptionProps,
   type SelectOptionRenderProps,
 } from './Select';
+
+// Tabs
+export {
+  Tabs,
+  TabList,
+  Tab,
+  TabPanel,
+  TabsContext,
+  TabsStateContext,
+  type TabsProps,
+  type TabsRenderProps,
+  type TabListProps,
+  type TabListRenderProps,
+  type TabProps,
+  type TabRenderProps,
+  type TabPanelProps,
+  type TabPanelRenderProps,
+} from './Tabs';
+
+// Breadcrumbs
+export {
+  Breadcrumbs,
+  BreadcrumbItem,
+  BreadcrumbsContext,
+  type BreadcrumbsProps,
+  type BreadcrumbsRenderProps,
+  type BreadcrumbItemProps,
+  type BreadcrumbItemRenderProps,
+} from './Breadcrumbs';

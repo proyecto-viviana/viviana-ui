@@ -145,12 +145,18 @@ export function createLink(
       ariaProps['aria-describedby'] = p['aria-describedby'];
     }
 
-    // Handle onClick - only call user's onClick when not disabled
+    // Handle onClick - prevent default navigation when appropriate
     const onClick = (e: MouseEvent) => {
       // If disabled, prevent navigation and don't call user's onClick
       if (disabled) {
         e.preventDefault();
         return;
+      }
+
+      // If onPress is provided, prevent default navigation
+      // This allows onPress to handle the action (e.g., client-side routing)
+      if (p.onPress) {
+        e.preventDefault();
       }
 
       // Call user's onClick if provided
