@@ -1,245 +1,465 @@
-# Solidaria
+# Proyecto Viviana
 
-A SolidJS port of Adobe's React Aria and React Stately libraries, providing accessible UI primitives for building design systems.
+A comprehensive SolidJS component library inspired by Adobe's React Aria and React Spectrum. This monorepo provides a complete solution for building accessible, high-quality user interfaces with SolidJS.
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| `@proyecto-viviana/solid-stately` | State management hooks for UI components |
-| `@proyecto-viviana/solidaria` | Accessibility hooks (ARIA patterns) |
-| `@proyecto-viviana/solidaria-components` | Unstyled, accessible components |
-| `@proyecto-viviana/ui` | Styled component library |
+| Package | Version | Description |
+|---------|---------|-------------|
+| [@proyecto-viviana/solid-stately](./packages/solid-stately) | 0.0.6 | State management for UI components (port of React Stately) |
+| [@proyecto-viviana/solidaria](./packages/solidaria) | 0.0.6 | Accessibility primitives (port of React Aria) |
+| [@proyecto-viviana/solidaria-components](./packages/solidaria-components) | 0.0.6 | Pre-wired headless components (port of React Aria Components) |
+| [@proyecto-viviana/ui](./packages/ui) | 0.1.7 | Styled UI components with Tailwind CSS |
 
-## Installation
+## Architecture
 
-```bash
-# Using bun
-bun add @proyecto-viviana/solidaria @proyecto-viviana/solid-stately
+The library follows a 4-layer architecture pattern:
 
-# Using npm
-npm install @proyecto-viviana/solidaria @proyecto-viviana/solid-stately
+```
+┌─────────────────────────────────────────────────────┐
+│                    @proyecto-viviana/ui              │  Styled components
+│         (Tailwind CSS, design tokens, variants)      │
+└─────────────────────────────────────────────────────┘
+                          │
+┌─────────────────────────────────────────────────────┐
+│           @proyecto-viviana/solidaria-components     │  Headless components
+│      (Pre-wired state + accessibility, render props) │
+└─────────────────────────────────────────────────────┘
+                          │
+┌─────────────────────────────────────────────────────┐
+│               @proyecto-viviana/solidaria            │  ARIA hooks
+│        (Accessibility behavior, keyboard, focus)     │
+└─────────────────────────────────────────────────────┘
+                          │
+┌─────────────────────────────────────────────────────┐
+│             @proyecto-viviana/solid-stately          │  State management
+│           (Signals, reactive state, collections)     │
+└─────────────────────────────────────────────────────┘
 ```
 
 ## Quick Start
 
-```tsx
-import { createButton } from '@proyecto-viviana/solidaria';
+### Installation
 
-function Button(props) {
-  let ref;
-  const { buttonProps } = createButton(props, () => ref);
+```bash
+# For styled components (recommended)
+bun add @proyecto-viviana/ui solid-js
 
-  return (
-    <button {...buttonProps} ref={ref}>
-      {props.children}
-    </button>
-  );
-}
+# For headless components
+bun add @proyecto-viviana/solidaria-components solid-js
+
+# For maximum control (hooks only)
+bun add @proyecto-viviana/solidaria @proyecto-viviana/solid-stately solid-js
 ```
 
-## Available Hooks
-
-### State Management (solid-stately)
-
-#### Toggle & Selection
-- `createToggleState` - Boolean toggle state
-- `createCheckboxGroupState` - Checkbox group selection
-- `createRadioGroupState` - Radio group selection
-
-#### Overlays
-- `createOverlayTriggerState` - Overlay open/close state
-
-#### Collections
-- `createListState` - List with selection and focus
-- `createSelectionState` - Selection management (single/multiple)
-- `createMenuState` - Menu state with actions
-- `createMenuTriggerState` - Menu trigger open/close state
-- `ListCollection` - Collection data structure
-
-### Accessibility Hooks (solidaria)
-
-#### Button & Toggle
-- `createButton` - Button with press handling
-- `createToggleButton` - Toggle button with pressed state
-- `createToggle` - Generic toggle behavior
-
-#### Form Controls
-- `createCheckbox` - Checkbox with indeterminate support
-- `createCheckboxGroup` - Group of checkboxes
-- `createRadio` - Radio button
-- `createRadioGroup` - Radio button group
-- `createSwitch` - Switch/toggle control
-- `createTextField` - Text input field
-
-#### Interactions
-- `createPress` - Press events (mouse, touch, keyboard)
-- `createHover` - Hover events
-- `createFocusRing` - Focus ring visibility
-- `createFocusable` - Focus management
-
-#### Labels & Fields
-- `createLabel` - Label/input association
-- `createField` - Field with label, description, error
-
-#### Navigation
-- `createLink` - Accessible link
-
-#### Feedback
-- `createProgressBar` - Progress indicator
-- `createSeparator` - Visual separator
-
-#### Overlays
-- `createOverlayTrigger` - Trigger for overlays
-- `createOverlay` - Overlay behavior (keyboard dismiss)
-- `createInteractOutside` - Click outside detection
-- `createPreventScroll` - Scroll lock
-- `createModal` - Modal dialog
-- `ariaHideOutside` - Hide elements from screen readers
-
-#### Collections
-- `createListBox` - Listbox with keyboard navigation
-- `createOption` - Listbox option
-- `createMenu` - Menu with keyboard navigation
-- `createMenuItem` - Menu item
-- `createMenuTrigger` - Menu trigger button
-
-#### Utilities
-- `mergeProps` - Merge multiple prop objects
-- `filterDOMProps` - Filter non-DOM props
-- `createId` - Generate unique IDs
-
-## Examples
-
-### Checkbox
+### Basic Usage
 
 ```tsx
-import { createCheckbox, createToggleState } from '@proyecto-viviana/solidaria';
+import { Button, TextField, Select } from '@proyecto-viviana/ui';
+import '@proyecto-viviana/ui/styles.css';
 
-function Checkbox(props) {
-  let ref;
-  const state = createToggleState(props);
-  const { inputProps } = createCheckbox(props, state, () => ref);
-
-  return (
-    <label>
-      <input {...inputProps} ref={ref} />
-      {props.children}
-    </label>
-  );
-}
-```
-
-### Menu
-
-```tsx
-import { createMenu, createMenuItem, createMenuTrigger } from '@proyecto-viviana/solidaria';
-import { createMenuState, createOverlayTriggerState } from '@proyecto-viviana/solid-stately';
-
-function Menu(props) {
-  const triggerState = createOverlayTriggerState();
-  const menuState = createMenuState({
-    items: props.items,
-    getKey: (item) => item.key,
-    onAction: props.onAction,
-    onClose: () => triggerState.close(),
-  });
-
-  const { menuTriggerProps, menuProps: triggerMenuProps } = createMenuTrigger({}, triggerState);
-  const { menuProps } = createMenu({ onClose: () => triggerState.close() }, menuState);
-
+function App() {
   return (
     <div>
-      <button {...menuTriggerProps} onClick={menuTriggerProps.onPress}>
-        {props.label}
-      </button>
-      <Show when={triggerState.isOpen()}>
-        <ul {...menuProps} {...triggerMenuProps}>
-          <For each={props.items}>
-            {(item) => <MenuItem item={item} state={menuState} />}
-          </For>
-        </ul>
-      </Show>
+      <TextField label="Name" placeholder="Enter your name" />
+      <Button variant="accent" onPress={() => alert('Hello!')}>
+        Say Hello
+      </Button>
     </div>
   );
 }
 ```
 
-### ListBox
+## Available Components
+
+### Form Controls
+- **Button** - Action buttons with variants (primary, secondary, accent, negative)
+- **Checkbox / CheckboxGroup** - Single and grouped checkboxes
+- **Radio / RadioGroup** - Radio button groups
+- **TextField** - Text input with label and validation
+- **NumberField** - Numeric input with increment/decrement
+- **SearchField** - Search input with clear button
+- **Slider** - Range input with track and thumb
+- **Switch** - Toggle switches
+
+### Navigation
+- **Tabs** - Tabbed navigation with panels
+- **Breadcrumbs** - Navigation breadcrumb trail
+- **Link** - Accessible links
+
+### Selection
+- **Select** - Dropdown selection
+- **Menu** - Action menus with trigger
+- **ListBox** - Selectable lists
+
+### Feedback
+- **Alert** - Informational alerts
+- **Badge** - Status badges
+- **ProgressBar** - Progress indicators
+- **Tooltip** - Contextual tooltips
+- **Dialog** - Modal dialogs
+
+### Layout
+- **Separator** - Visual dividers
+- **PageLayout** - Page structure
+- **LateralNav** - Side navigation
+
+### Custom Components
+- **Avatar / AvatarGroup** - User avatars
+- **Chip** - Tag-like chips
+- **ProfileCard** - User profile cards
+- **EventCard** - Event display cards
+- **CalendarCard** - Calendar widgets
+- **Conversation** - Chat bubbles
+- **TimelineItem** - Timeline entries
+
+## Hooks Reference
+
+### State Management (solid-stately)
+
+| Hook | Description |
+|------|-------------|
+| `createToggleState` | Boolean toggle state |
+| `createCheckboxGroupState` | Checkbox group selection |
+| `createRadioGroupState` | Radio group selection |
+| `createOverlayTriggerState` | Overlay open/close state |
+| `createListState` | List with selection and focus |
+| `createSingleSelectListState` | Single selection list |
+| `createSelectionState` | Selection management |
+| `createMenuState` | Menu state with actions |
+| `createMenuTriggerState` | Menu trigger state |
+| `createSelectState` | Select dropdown state |
+| `createTabListState` | Tab navigation state |
+| `createNumberFieldState` | Numeric input state |
+| `createSearchFieldState` | Search input state |
+| `createSliderState` | Slider/range state |
+| `createTextFieldState` | Text input state |
+
+### Accessibility Hooks (solidaria)
+
+| Hook | Description |
+|------|-------------|
+| `createButton` | Button with press handling |
+| `createToggleButton` | Toggle button with pressed state |
+| `createCheckbox` | Checkbox with indeterminate support |
+| `createCheckboxGroup` | Group of checkboxes |
+| `createRadio` | Radio button |
+| `createRadioGroup` | Radio button group |
+| `createSwitch` | Switch/toggle control |
+| `createTextField` | Text input field |
+| `createNumberField` | Numeric input field |
+| `createSearchField` | Search input field |
+| `createSlider` | Range slider |
+| `createLink` | Accessible link |
+| `createTabs` | Tab navigation |
+| `createTabList` | Tab list container |
+| `createTab` | Individual tab |
+| `createTabPanel` | Tab panel content |
+| `createBreadcrumbs` | Breadcrumb navigation |
+| `createBreadcrumbItem` | Breadcrumb item |
+| `createListBox` | Listbox with keyboard navigation |
+| `createOption` | Listbox option |
+| `createMenu` | Menu with keyboard navigation |
+| `createMenuItem` | Menu item |
+| `createMenuTrigger` | Menu trigger button |
+| `createSelect` | Select dropdown |
+| `createHiddenSelect` | Native select for forms |
+| `createProgressBar` | Progress indicator |
+| `createSeparator` | Visual separator |
+| `createPress` | Press events |
+| `createHover` | Hover events |
+| `createFocusRing` | Focus ring visibility |
+| `createFocusable` | Focus management |
+| `createLabel` | Label/input association |
+| `createField` | Field with label, description, error |
+| `createOverlayTrigger` | Overlay trigger |
+| `createOverlay` | Overlay behavior |
+| `createModal` | Modal dialog |
+| `createPreventScroll` | Scroll lock |
+| `createInteractOutside` | Click outside detection |
+
+## Examples
+
+### Using Styled Components
 
 ```tsx
-import { createListBox, createOption } from '@proyecto-viviana/solidaria';
-import { createListState } from '@proyecto-viviana/solid-stately';
+import { Button, TextField, Checkbox, Select } from '@proyecto-viviana/ui';
+import '@proyecto-viviana/ui/styles.css';
 
-function ListBox(props) {
-  const state = createListState({
-    items: props.items,
-    getKey: (item) => item.key,
-    selectionMode: 'single',
-    onSelectionChange: props.onSelectionChange,
-  });
-
-  const { listBoxProps } = createListBox({}, state);
+function Form() {
+  const [name, setName] = createSignal('');
+  const [agreed, setAgreed] = createSignal(false);
 
   return (
-    <ul {...listBoxProps}>
-      <For each={props.items}>
-        {(item) => <Option item={item} state={state} />}
-      </For>
-    </ul>
+    <form>
+      <TextField
+        label="Full Name"
+        value={name()}
+        onChange={setName}
+        size="md"
+      />
+
+      <Select
+        label="Country"
+        items={[
+          { key: 'us', label: 'United States' },
+          { key: 'uk', label: 'United Kingdom' },
+          { key: 'ca', label: 'Canada' },
+        ]}
+        onSelectionChange={(key) => console.log('Selected:', key)}
+      />
+
+      <Checkbox
+        isSelected={agreed()}
+        onChange={setAgreed}
+      >
+        I agree to the terms
+      </Checkbox>
+
+      <Button variant="accent" type="submit">
+        Submit
+      </Button>
+    </form>
+  );
+}
+```
+
+### Using Headless Components
+
+```tsx
+import { Button, TextField, Checkbox } from '@proyecto-viviana/solidaria-components';
+
+function Form() {
+  return (
+    <form>
+      <TextField>
+        {({ labelProps, inputProps }) => (
+          <>
+            <Label {...labelProps}>Email</Label>
+            <Input {...inputProps} class="my-input-class" />
+          </>
+        )}
+      </TextField>
+
+      <Checkbox>
+        {({ inputProps, isSelected }) => (
+          <label class={isSelected ? 'checked' : ''}>
+            <input {...inputProps} />
+            Subscribe to newsletter
+          </label>
+        )}
+      </Checkbox>
+
+      <Button>
+        {({ buttonProps, isPressed }) => (
+          <button
+            {...buttonProps}
+            class={isPressed ? 'pressed' : ''}
+          >
+            Submit
+          </button>
+        )}
+      </Button>
+    </form>
+  );
+}
+```
+
+### Using Low-Level Hooks
+
+```tsx
+import { createButton, createCheckbox } from '@proyecto-viviana/solidaria';
+import { createToggleState } from '@proyecto-viviana/solid-stately';
+
+function CustomButton(props) {
+  let ref;
+  const { buttonProps, isPressed } = createButton(props, () => ref);
+
+  return (
+    <button
+      {...buttonProps}
+      ref={ref}
+      class={isPressed() ? 'pressed' : ''}
+    >
+      {props.children}
+    </button>
   );
 }
 
-function Option(props) {
-  const { optionProps, isSelected, isFocused } = createOption(
-    { key: props.item.key },
-    props.state
-  );
+function CustomCheckbox(props) {
+  let ref;
+  const state = createToggleState(props);
+  const { inputProps, labelProps } = createCheckbox(props, state, () => ref);
 
   return (
-    <li
-      {...optionProps}
-      style={{
-        background: isSelected() ? 'blue' : isFocused() ? 'lightblue' : 'white',
-      }}
-    >
-      {props.item.label}
-    </li>
+    <label {...labelProps}>
+      <input {...inputProps} ref={ref} />
+      <span class={state.isSelected() ? 'checked' : ''}>
+        {props.children}
+      </span>
+    </label>
   );
 }
 ```
 
 ## Development
 
+### Prerequisites
+
+- [Bun](https://bun.sh/) >= 1.0
+- Node.js >= 18
+
+### Setup
+
 ```bash
+# Clone the repository
+git clone https://github.com/proyecto-viviana/proyecto-viviana.git
+cd proyecto-viviana
+
 # Install dependencies
 bun install
 
 # Build all packages
 bun run build
 
-# Run tests
-bun run test
-
-# Run tests in watch mode
-bun run test:watch
-
-# Start dev server
+# Start development server
 bun run dev
 ```
 
-## Project Structure
+### Scripts
+
+| Command | Description |
+|---------|-------------|
+| `bun run build` | Build all packages |
+| `bun run dev` | Start development server (playground) |
+| `bun run test` | Run tests in watch mode |
+| `bun run test:run` | Run tests once |
+| `bun run typecheck` | TypeScript type checking |
+| `bun run release` | Build and publish packages |
+
+### Project Structure
 
 ```
-packages/
-  solid-stately/     # State management
-  solidaria/         # Accessibility hooks
-  solidaria-components/  # Unstyled components
-  ui/                # Styled components
-apps/
-  web/               # Demo application
+proyecto-viviana/
+├── apps/
+│   └── web/                    # Demo/playground application
+├── packages/
+│   ├── solid-stately/          # State management (React Stately port)
+│   │   └── src/
+│   │       ├── toggle/         # Toggle state
+│   │       ├── checkbox/       # Checkbox group state
+│   │       ├── radio/          # Radio group state
+│   │       ├── overlays/       # Overlay trigger state
+│   │       ├── collections/    # List, selection, menu states
+│   │       ├── select/         # Select state
+│   │       ├── tabs/           # Tab list state
+│   │       ├── numberfield/    # Number field state
+│   │       ├── searchfield/    # Search field state
+│   │       ├── slider/         # Slider state
+│   │       └── textfield/      # Text field state
+│   │
+│   ├── solidaria/              # ARIA hooks (React Aria port)
+│   │   └── src/
+│   │       ├── button/         # Button, toggle button
+│   │       ├── checkbox/       # Checkbox, checkbox group
+│   │       ├── radio/          # Radio, radio group
+│   │       ├── switch/         # Switch toggle
+│   │       ├── textfield/      # Text field
+│   │       ├── numberfield/    # Number field
+│   │       ├── searchfield/    # Search field
+│   │       ├── slider/         # Slider
+│   │       ├── interactions/   # Press, hover, focus
+│   │       ├── label/          # Label, field
+│   │       ├── link/           # Link
+│   │       ├── progress/       # Progress bar
+│   │       ├── separator/      # Separator
+│   │       ├── overlays/       # Overlay, modal, interact outside
+│   │       ├── listbox/        # ListBox, option
+│   │       ├── menu/           # Menu, menu item, trigger
+│   │       ├── select/         # Select, hidden select
+│   │       ├── tabs/           # Tabs, tab, tab panel
+│   │       └── breadcrumbs/    # Breadcrumbs
+│   │
+│   ├── solidaria-components/   # Headless components (RAC port)
+│   │   └── src/
+│   │       ├── Button.tsx
+│   │       ├── Checkbox.tsx
+│   │       ├── RadioGroup.tsx
+│   │       ├── Switch.tsx
+│   │       ├── TextField.tsx
+│   │       ├── NumberField.tsx
+│   │       ├── SearchField.tsx
+│   │       ├── Slider.tsx
+│   │       ├── Link.tsx
+│   │       ├── ProgressBar.tsx
+│   │       ├── Separator.tsx
+│   │       ├── ListBox.tsx
+│   │       ├── Menu.tsx
+│   │       ├── Select.tsx
+│   │       ├── Tabs.tsx
+│   │       └── Breadcrumbs.tsx
+│   │
+│   └── ui/                     # Styled components
+│       └── src/
+│           ├── button/         # Styled button
+│           ├── checkbox/       # Styled checkbox
+│           ├── radio/          # Styled radio
+│           ├── switch/         # Styled switch
+│           ├── textfield/      # Styled text field
+│           ├── numberfield/    # Styled number field
+│           ├── searchfield/    # Styled search field
+│           ├── slider/         # Styled slider
+│           ├── select/         # Styled select
+│           ├── menu/           # Styled menu
+│           ├── listbox/        # Styled listbox
+│           ├── tabs/           # Styled tabs
+│           ├── breadcrumbs/    # Styled breadcrumbs
+│           ├── dialog/         # Modal dialog
+│           ├── tooltip/        # Tooltip
+│           ├── alert/          # Alert
+│           ├── badge/          # Badge
+│           ├── progress-bar/   # Progress bar
+│           ├── separator/      # Separator
+│           ├── link/           # Link
+│           ├── avatar/         # Avatar
+│           ├── icon/           # Icons
+│           └── custom/         # Custom components
+│               ├── chip/
+│               ├── nav-header/
+│               ├── lateral-nav/
+│               ├── profile-card/
+│               ├── event-card/
+│               ├── calendar-card/
+│               ├── conversation/
+│               └── timeline-item/
+│
+└── react-spectrum/             # Reference implementation (read-only)
 ```
+
+## Key Features
+
+- **Full Accessibility** - WAI-ARIA compliant with keyboard navigation and screen reader support
+- **SSR Support** - Server-side rendering compatible with proper hydration
+- **Type Safe** - Full TypeScript support with exported types
+- **Fine-grained Reactivity** - Built on SolidJS signals for optimal performance
+- **Customizable** - Multiple abstraction levels for different needs
+- **Tree Shakeable** - Only import what you use
+- **Internationalization Ready** - Number formatting, RTL support
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
 
 ## License
 
 MIT
+
+## Credits
+
+Inspired by and based on Adobe's [React Spectrum](https://react-spectrum.adobe.com/) libraries:
+- [React Stately](https://react-spectrum.adobe.com/react-stately/)
+- [React Aria](https://react-spectrum.adobe.com/react-aria/)
+- [React Aria Components](https://react-spectrum.adobe.com/react-aria/components.html)
