@@ -1,0 +1,479 @@
+/**
+ * SearchField component for solidaria-components
+ *
+ * A pre-wired headless search field that combines state + aria hooks.
+ * Port of react-aria-components/src/SearchField.tsx
+ */
+
+import {
+  type JSX,
+  createContext,
+  createMemo,
+  splitProps,
+  useContext,
+  Show,
+} from 'solid-js';
+import {
+  createSearchField,
+  createFocusRing,
+  createHover,
+  createPress,
+  type AriaSearchFieldProps,
+} from '@proyecto-viviana/solidaria';
+import {
+  createSearchFieldState,
+  type SearchFieldState,
+} from '@proyecto-viviana/solid-stately';
+import {
+  type RenderChildren,
+  type ClassNameOrFunction,
+  type StyleOrFunction,
+  type SlotProps,
+  useRenderProps,
+  filterDOMProps,
+} from './utils';
+
+// ============================================
+// TYPES
+// ============================================
+
+export interface SearchFieldRenderProps {
+  /** Whether the search field is empty. */
+  isEmpty: boolean;
+  /** Whether the search field is disabled. */
+  isDisabled: boolean;
+  /** Whether the search field is invalid. */
+  isInvalid: boolean;
+  /** Whether the search field is read-only. */
+  isReadOnly: boolean;
+  /** Whether the search field is required. */
+  isRequired: boolean;
+  /** The current value. */
+  value: string;
+}
+
+export interface SearchFieldProps extends Omit<AriaSearchFieldProps, 'label'>, SlotProps {
+  /** The current value (controlled). */
+  value?: string;
+  /** The default value (uncontrolled). */
+  defaultValue?: string;
+  /** Handler called when the value changes. */
+  onChange?: (value: string) => void;
+  /** Handler called when the user submits the search. */
+  onSubmit?: (value: string) => void;
+  /** Handler called when the field is cleared. */
+  onClear?: () => void;
+  /** A visible label for the search field. */
+  label?: JSX.Element;
+  /** The children of the component. */
+  children?: RenderChildren<SearchFieldRenderProps>;
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<SearchFieldRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<SearchFieldRenderProps>;
+}
+
+export interface SearchFieldInputRenderProps {
+  /** Whether the input is focused. */
+  isFocused: boolean;
+  /** Whether the input has keyboard focus. */
+  isFocusVisible: boolean;
+  /** Whether the input is hovered. */
+  isHovered: boolean;
+  /** Whether the input is disabled. */
+  isDisabled: boolean;
+  /** Whether the input is invalid. */
+  isInvalid: boolean;
+}
+
+export interface SearchFieldInputProps extends SlotProps {
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<SearchFieldInputRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<SearchFieldInputRenderProps>;
+}
+
+export interface SearchFieldClearButtonRenderProps {
+  /** Whether the button is pressed. */
+  isPressed: boolean;
+  /** Whether the button is hovered. */
+  isHovered: boolean;
+  /** Whether the button is disabled. */
+  isDisabled: boolean;
+}
+
+export interface SearchFieldClearButtonProps extends SlotProps {
+  /** The children of the button. */
+  children?: RenderChildren<SearchFieldClearButtonRenderProps>;
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<SearchFieldClearButtonRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<SearchFieldClearButtonRenderProps>;
+}
+
+// ============================================
+// CONTEXT
+// ============================================
+
+interface SearchFieldContextValue {
+  state: SearchFieldState;
+  inputProps: JSX.InputHTMLAttributes<HTMLInputElement>;
+  clearButtonProps: {
+    'aria-label': string;
+    tabIndex: number;
+    disabled?: boolean;
+    onMouseDown: (e: MouseEvent) => void;
+    onClick: () => void;
+  };
+  labelProps: JSX.HTMLAttributes<HTMLElement>;
+  descriptionProps: JSX.HTMLAttributes<HTMLElement>;
+  errorMessageProps: JSX.HTMLAttributes<HTMLElement>;
+  isDisabled: boolean;
+  isInvalid: boolean;
+  isRequired: boolean;
+  isReadOnly: boolean;
+  inputRef: HTMLInputElement | undefined;
+  setInputRef: (el: HTMLInputElement) => void;
+}
+
+export const SearchFieldContext = createContext<SearchFieldContextValue | null>(null);
+
+// ============================================
+// COMPONENTS
+// ============================================
+
+/**
+ * A search field allows a user to enter and clear a search query.
+ */
+export function SearchField(props: SearchFieldProps): JSX.Element {
+  const [local, stateProps, ariaProps, rest] = splitProps(
+    props,
+    ['children', 'class', 'style', 'slot'],
+    ['value', 'defaultValue', 'onChange', 'onSubmit', 'onClear'],
+    ['label', 'aria-label', 'aria-labelledby', 'aria-describedby', 'isDisabled', 'isReadOnly', 'isRequired', 'isInvalid', 'description', 'errorMessage', 'id', 'autoFocus', 'name', 'placeholder', 'autoComplete', 'maxLength', 'minLength', 'pattern']
+  );
+
+  // Create search field state
+  const state = createSearchFieldState({
+    get value() {
+      return stateProps.value;
+    },
+    get defaultValue() {
+      return stateProps.defaultValue;
+    },
+    get onChange() {
+      return stateProps.onChange;
+    },
+  });
+
+  // Ref for the input
+  let inputRef: HTMLInputElement | undefined;
+  const setInputRef = (el: HTMLInputElement) => {
+    inputRef = el;
+  };
+
+  // Create search field aria props
+  const {
+    labelProps,
+    inputProps,
+    clearButtonProps,
+    descriptionProps,
+    errorMessageProps,
+  } = createSearchField(
+    {
+      get isDisabled() {
+        return ariaProps.isDisabled;
+      },
+      get isReadOnly() {
+        return ariaProps.isReadOnly;
+      },
+      get isRequired() {
+        return ariaProps.isRequired;
+      },
+      get isInvalid() {
+        return ariaProps.isInvalid;
+      },
+      get label() {
+        return ariaProps.label;
+      },
+      get 'aria-label'() {
+        return ariaProps['aria-label'];
+      },
+      get 'aria-labelledby'() {
+        return ariaProps['aria-labelledby'];
+      },
+      get 'aria-describedby'() {
+        return ariaProps['aria-describedby'];
+      },
+      get description() {
+        return ariaProps.description;
+      },
+      get errorMessage() {
+        return ariaProps.errorMessage;
+      },
+      get placeholder() {
+        return ariaProps.placeholder;
+      },
+      get name() {
+        return ariaProps.name;
+      },
+      get autoFocus() {
+        return ariaProps.autoFocus;
+      },
+      get autoComplete() {
+        return ariaProps.autoComplete;
+      },
+      get maxLength() {
+        return ariaProps.maxLength;
+      },
+      get minLength() {
+        return ariaProps.minLength;
+      },
+      get pattern() {
+        return ariaProps.pattern;
+      },
+      get onSubmit() {
+        return stateProps.onSubmit;
+      },
+      get onClear() {
+        return stateProps.onClear;
+      },
+    },
+    state,
+    () => inputRef ?? null
+  );
+
+  // Render props values
+  const renderValues = createMemo<SearchFieldRenderProps>(() => ({
+    isEmpty: state.value() === '',
+    isDisabled: ariaProps.isDisabled ?? false,
+    isInvalid: ariaProps.isInvalid ?? false,
+    isRequired: ariaProps.isRequired ?? false,
+    isReadOnly: ariaProps.isReadOnly ?? false,
+    value: state.value(),
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      children: local.children,
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-SearchField',
+    },
+    renderValues
+  );
+
+  // Filter DOM props
+  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+
+  return (
+    <SearchFieldContext.Provider
+      value={{
+        state,
+        inputProps,
+        clearButtonProps,
+        labelProps: labelProps as JSX.HTMLAttributes<HTMLElement>,
+        descriptionProps,
+        errorMessageProps,
+        isDisabled: ariaProps.isDisabled ?? false,
+        isInvalid: ariaProps.isInvalid ?? false,
+        isRequired: ariaProps.isRequired ?? false,
+        isReadOnly: ariaProps.isReadOnly ?? false,
+        inputRef,
+        setInputRef,
+      }}
+    >
+      <div
+        {...domProps()}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-empty={state.value() === '' || undefined}
+        data-disabled={ariaProps.isDisabled || undefined}
+        data-invalid={ariaProps.isInvalid || undefined}
+        data-required={ariaProps.isRequired || undefined}
+        data-readonly={ariaProps.isReadOnly || undefined}
+      >
+        {renderProps.children}
+      </div>
+    </SearchFieldContext.Provider>
+  );
+}
+
+/**
+ * The label for a search field.
+ */
+export function SearchFieldLabel(props: { children?: JSX.Element; class?: string; style?: JSX.CSSProperties }): JSX.Element {
+  const context = useContext(SearchFieldContext);
+  if (!context) {
+    throw new Error('SearchFieldLabel must be used within a SearchField');
+  }
+
+  return (
+    <span
+      {...context.labelProps}
+      class={props.class ?? 'solidaria-SearchField-label'}
+      style={props.style}
+    >
+      {props.children}
+    </span>
+  );
+}
+
+/**
+ * The input element for a search field.
+ */
+export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
+
+  const context = useContext(SearchFieldContext);
+  if (!context) {
+    throw new Error('SearchFieldInput must be used within a SearchField');
+  }
+
+  // Create focus ring
+  const { isFocused, isFocusVisible, focusProps } = createFocusRing();
+
+  // Create hover
+  const { isHovered, hoverProps } = createHover({
+    get isDisabled() {
+      return context.isDisabled;
+    },
+  });
+
+  // Render props values
+  const renderValues = createMemo<SearchFieldInputRenderProps>(() => ({
+    isFocused: isFocused(),
+    isFocusVisible: isFocusVisible(),
+    isHovered: isHovered(),
+    isDisabled: context.isDisabled,
+    isInvalid: context.isInvalid,
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-SearchField-input',
+    },
+    renderValues
+  );
+
+  // Remove ref from spread props
+  const cleanInputProps = () => {
+    const { ref: _ref, ...rest } = context.inputProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanFocusProps = () => {
+    const { ref: _ref, ...rest } = focusProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanHoverProps = () => {
+    const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+
+  return (
+    <input
+      ref={context.setInputRef}
+      {...cleanInputProps()}
+      {...cleanFocusProps()}
+      {...cleanHoverProps()}
+      class={renderProps.class()}
+      style={renderProps.style()}
+      data-focused={isFocused() || undefined}
+      data-focus-visible={isFocusVisible() || undefined}
+      data-hovered={isHovered() || undefined}
+      data-disabled={context.isDisabled || undefined}
+      data-invalid={context.isInvalid || undefined}
+    />
+  );
+}
+
+/**
+ * The clear button for a search field.
+ */
+export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.Element {
+  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+
+  const context = useContext(SearchFieldContext);
+  if (!context) {
+    throw new Error('SearchFieldClearButton must be used within a SearchField');
+  }
+
+  // Create press
+  const { isPressed, pressProps } = createPress({
+    get isDisabled() {
+      return context.isDisabled || context.isReadOnly;
+    },
+    onPress: () => {
+      context.clearButtonProps.onClick();
+    },
+  });
+
+  // Create hover
+  const { isHovered, hoverProps } = createHover({
+    get isDisabled() {
+      return context.isDisabled || context.isReadOnly;
+    },
+  });
+
+  const isDisabled = () => context.isDisabled || context.isReadOnly;
+  const isEmpty = () => context.state.value() === '';
+
+  // Render props values
+  const renderValues = createMemo<SearchFieldClearButtonRenderProps>(() => ({
+    isPressed: isPressed(),
+    isHovered: isHovered(),
+    isDisabled: isDisabled(),
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      children: local.children,
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-SearchField-clear',
+    },
+    renderValues
+  );
+
+  // Remove ref from spread props
+  const cleanPressProps = () => {
+    const { ref: _ref, ...rest } = pressProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanHoverProps = () => {
+    const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+
+  // Only show clear button when there's a value
+  return (
+    <Show when={!isEmpty()}>
+      <button
+        type="button"
+        aria-label={context.clearButtonProps['aria-label']}
+        tabIndex={context.clearButtonProps.tabIndex}
+        disabled={context.clearButtonProps.disabled}
+        onMouseDown={context.clearButtonProps.onMouseDown}
+        {...cleanPressProps()}
+        {...cleanHoverProps()}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-pressed={isPressed() || undefined}
+        data-hovered={isHovered() || undefined}
+        data-disabled={isDisabled() || undefined}
+      >
+        {renderProps.children}
+      </button>
+    </Show>
+  );
+}
+
+// Attach sub-components
+SearchField.Label = SearchFieldLabel;
+SearchField.Input = SearchFieldInput;
+SearchField.ClearButton = SearchFieldClearButton;

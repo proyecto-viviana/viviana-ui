@@ -221,6 +221,27 @@ export {
   type BreadcrumbItemAria,
 } from './breadcrumbs';
 
+// NumberField
+export {
+  createNumberField,
+  type AriaNumberFieldProps,
+  type NumberFieldAria,
+} from './numberfield';
+
+// SearchField
+export {
+  createSearchField,
+  type AriaSearchFieldProps,
+  type SearchFieldAria,
+} from './searchfield';
+
+// Slider
+export {
+  createSlider,
+  type AriaSliderProps,
+  type SliderAria,
+} from './slider';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

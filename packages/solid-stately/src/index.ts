@@ -89,6 +89,28 @@ export {
   type TabOrientation,
 } from './tabs';
 
+// NumberField
+export {
+  createNumberFieldState,
+  type NumberFieldStateProps,
+  type NumberFieldState,
+} from './numberfield';
+
+// SearchField
+export {
+  createSearchFieldState,
+  type SearchFieldStateProps,
+  type SearchFieldState,
+} from './searchfield';
+
+// Slider
+export {
+  createSliderState,
+  type SliderStateProps,
+  type SliderState,
+  type SliderOrientation,
+} from './slider';
+
 // SSR
 export { createIsSSR, createId, canUseDOM } from './ssr';
 

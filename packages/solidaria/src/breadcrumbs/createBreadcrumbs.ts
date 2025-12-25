@@ -5,7 +5,6 @@
  * Port of @react-aria/breadcrumbs.
  */
 
-import { type Accessor } from 'solid-js';
 import { createLink, type AriaLinkProps, type LinkAria } from '../link';
 import { filterDOMProps } from '../utils/filterDOMProps';
 import { mergeProps } from '../utils/mergeProps';

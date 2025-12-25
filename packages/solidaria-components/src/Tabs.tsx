@@ -261,14 +261,28 @@ export function TabList<T>(props: TabListProps<T>): JSX.Element {
 
   // Get state from context
   const context = useContext(TabsContext);
-  if (!context) {
-    throw new Error('TabList must be used within a Tabs component');
-  }
-  const state = context.state as TabListState<T>;
-  const items = context.items as T[];
+
+  return (
+    <Show
+      when={context}
+      fallback={<div class="solidaria-TabList" role="tablist" />}
+    >
+      {(ctx) => <TabListInner context={ctx()} local={local} ariaProps={ariaProps} />}
+    </Show>
+  );
+}
+
+/** Inner TabList component that has access to context */
+function TabListInner<T>(props: {
+  context: TabsContextValue<unknown>;
+  local: { children: (item: T) => JSX.Element; class?: ClassNameOrFunction<TabListRenderProps>; style?: StyleOrFunction<TabListRenderProps>; slot?: string };
+  ariaProps: Omit<TabListProps<T>, 'children' | 'class' | 'style' | 'slot'>;
+}): JSX.Element {
+  const state = props.context.state as TabListState<T>;
+  const items = props.context.items as T[];
 
   // Create tab list aria props
-  const { tabListProps } = createTabList<T>(ariaProps, state);
+  const { tabListProps } = createTabList<T>(props.ariaProps as AriaTabListProps, state);
 
   // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
@@ -284,12 +298,25 @@ export function TabList<T>(props: TabListProps<T>): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      class: local.class,
-      style: local.style,
+      class: props.local.class,
+      style: props.local.style,
       defaultClassName: 'solidaria-TabList',
     },
     renderValues
   );
+
+  // Helper to safely call event handlers that may be bound tuples
+  const callHandler = <E extends Event>(
+    handler: ((e: E) => void) | [object, (e: E) => void] | undefined,
+    event: E
+  ) => {
+    if (!handler) return;
+    if (Array.isArray(handler)) {
+      handler[1].call(handler[0], event);
+    } else {
+      handler(event);
+    }
+  };
 
   // Combine event handlers
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -298,12 +325,12 @@ export function TabList<T>(props: TabListProps<T>): JSX.Element {
 
   const handleFocus = (e: FocusEvent) => {
     tabListProps.onFocus(e);
-    focusProps.onFocus?.(e);
+    callHandler(focusProps.onFocus as any, e);
   };
 
   const handleBlur = (e: FocusEvent) => {
     tabListProps.onBlur(e);
-    focusProps.onBlur?.(e);
+    callHandler(focusProps.onBlur as any, e);
   };
 
   return (
@@ -323,7 +350,7 @@ export function TabList<T>(props: TabListProps<T>): JSX.Element {
       data-orientation={state.orientation()}
       data-disabled={state.isDisabled() || undefined}
     >
-      <For each={items}>{(item) => local.children(item)}</For>
+      <For each={items}>{(item) => props.local.children(item)}</For>
     </div>
   );
 }
@@ -342,23 +369,35 @@ export function Tab(props: TabProps): JSX.Element {
 
   // Get state from context
   const context = useContext(TabsStateContext);
-  if (!context) {
-    throw new Error('Tab must be used within a Tabs component');
-  }
-  const state = context;
 
+  return (
+    <Show
+      when={context}
+      fallback={<div class="solidaria-Tab" role="tab" />}
+    >
+      {(state) => <TabInner state={state()} local={local} ariaProps={ariaProps} />}
+    </Show>
+  );
+}
+
+/** Inner Tab component that has access to context */
+function TabInner(props: {
+  state: TabListState<unknown>;
+  local: { children?: RenderChildren<TabRenderProps>; class?: ClassNameOrFunction<TabRenderProps>; style?: StyleOrFunction<TabRenderProps>; slot?: string; id: Key };
+  ariaProps: Omit<TabProps, 'children' | 'class' | 'style' | 'slot' | 'id'>;
+}): JSX.Element {
   // Create tab aria props
   const tabAria = createTab<unknown>(
     {
-      key: local.id,
+      key: props.local.id,
       get isDisabled() {
-        return ariaProps.isDisabled;
+        return props.ariaProps.isDisabled;
       },
       get 'aria-label'() {
-        return ariaProps['aria-label'];
+        return props.ariaProps['aria-label'];
       },
     },
-    state
+    props.state
   );
 
   // Create hover
@@ -381,9 +420,9 @@ export function Tab(props: TabProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
-      class: local.class,
-      style: local.style,
+      children: props.local.children,
+      class: props.local.class,
+      style: props.local.style,
       defaultClassName: 'solidaria-Tab',
     },
     renderValues
@@ -477,7 +516,7 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
         data-selected={isSelected() || undefined}
         data-focused={isFocused() || undefined}
         data-focus-visible={isFocusVisible() || undefined}
-        inert={!isSelected() ? '' : undefined}
+        inert={!isSelected() || undefined}
         hidden={!isSelected() && !local.shouldForceMount ? true : undefined}
       >
         {renderProps.children}

@@ -21,6 +21,7 @@ import {
   createListBox,
   createOption,
   createHover,
+  createInteractOutside,
   type AriaSelectProps,
   type AriaOptionProps,
 } from '@proyecto-viviana/solidaria';
@@ -503,6 +504,22 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
   const { menuProps, state: selectState, isOpen } = context;
   const state = selectState as SelectState<T>;
 
+  // Ref for the listbox element (for click outside detection)
+  let listBoxRef: HTMLUListElement | undefined;
+
+  // Handle click outside to close select
+  createInteractOutside({
+    ref: () => listBoxRef ?? null,
+    onInteractOutside: () => {
+      if (isOpen()) {
+        state.close();
+      }
+    },
+    get isDisabled() {
+      return !isOpen();
+    },
+  });
+
   // Create listbox aria props - reuse select's internal list state via collection
   const { listBoxProps } = createListBox(
     {},
@@ -560,6 +577,7 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
   return (
     <Show when={isOpen()}>
       <ul
+        ref={(el) => (listBoxRef = el)}
         {...cleanMenuProps()}
         {...cleanListBoxProps()}
         class={renderProps.class()}

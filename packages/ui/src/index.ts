@@ -78,6 +78,18 @@ export type { TabsProps, TabListProps, TabProps, TabPanelProps, TabsSize, TabsVa
 export { Breadcrumbs, BreadcrumbItem } from './breadcrumbs';
 export type { BreadcrumbsProps, BreadcrumbItemProps, BreadcrumbsSize, BreadcrumbsVariant } from './breadcrumbs';
 
+// NumberField
+export { NumberField } from './numberfield';
+export type { NumberFieldProps, NumberFieldSize, NumberFieldVariant } from './numberfield';
+
+// SearchField
+export { SearchField } from './searchfield';
+export type { SearchFieldProps, SearchFieldSize, SearchFieldVariant } from './searchfield';
+
+// Slider
+export { Slider } from './slider';
+export type { SliderProps, SliderSize, SliderVariant } from './slider';
+
 // ============================================
 // CUSTOM COMPONENTS
 // ============================================

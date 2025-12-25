@@ -150,7 +150,7 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
       >
         <ol class="solidaria-Breadcrumbs-list">
           <For each={items()}>
-            {(item, index) => (
+            {(item) => (
               <li class="solidaria-Breadcrumbs-item">
                 {local.children(item)}
               </li>
@@ -239,9 +239,6 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     },
     renderValues
   );
-
-  // Determine element type
-  const ElementType = () => ariaProps.elementType ?? 'a';
 
   return (
     <a

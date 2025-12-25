@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { Suspense, type JSX } from "solid-js";
+import { Suspense, ErrorBoundary, type JSX } from "solid-js";
 import { Outlet, createRootRoute, HeadContent, Scripts } from "@tanstack/solid-router";
 import { HydrationScript } from "solid-js/web";
 import appStyles from "@/styles.css?url";
@@ -37,6 +37,28 @@ function RootComponent() {
   );
 }
 
+function ErrorFallback(props: { error: Error; reset: () => void }) {
+  return (
+    <div style={{ padding: "2rem", "text-align": "center" }}>
+      <h2 style={{ color: "#ef4444", "margin-bottom": "1rem" }}>Something went wrong</h2>
+      <p style={{ color: "#9ca3af", "margin-bottom": "1rem" }}>{props.error.message}</p>
+      <button
+        onClick={props.reset}
+        style={{
+          padding: "0.5rem 1rem",
+          background: "#3b82f6",
+          color: "white",
+          border: "none",
+          "border-radius": "0.375rem",
+          cursor: "pointer",
+        }}
+      >
+        Try again
+      </button>
+    </div>
+  );
+}
+
 function RootDocument(props: { children: JSX.Element }) {
   return (
     <html lang="en">
@@ -45,7 +67,9 @@ function RootDocument(props: { children: JSX.Element }) {
         <HeadContent />
       </head>
       <body class="font-jost antialiased">
-        <Suspense>{props.children}</Suspense>
+        <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
+          <Suspense>{props.children}</Suspense>
+        </ErrorBoundary>
         <Scripts />
       </body>
     </html>

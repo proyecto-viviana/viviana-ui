@@ -1,0 +1,542 @@
+/**
+ * NumberField component for solidaria-components
+ *
+ * A pre-wired headless number field that combines state + aria hooks.
+ * Port of react-aria-components/src/NumberField.tsx
+ */
+
+import {
+  type JSX,
+  createContext,
+  createMemo,
+  splitProps,
+  useContext,
+} from 'solid-js';
+import {
+  createNumberField,
+  createFocusRing,
+  createHover,
+  createPress,
+  type AriaNumberFieldProps,
+} from '@proyecto-viviana/solidaria';
+import {
+  createNumberFieldState,
+  type NumberFieldState,
+} from '@proyecto-viviana/solid-stately';
+import {
+  type RenderChildren,
+  type ClassNameOrFunction,
+  type StyleOrFunction,
+  type SlotProps,
+  useRenderProps,
+  filterDOMProps,
+} from './utils';
+
+// ============================================
+// TYPES
+// ============================================
+
+export interface NumberFieldRenderProps {
+  /** Whether the number field is disabled. */
+  isDisabled: boolean;
+  /** Whether the number field is invalid. */
+  isInvalid: boolean;
+  /** Whether the number field is required. */
+  isRequired: boolean;
+  /** Whether the number field is read-only. */
+  isReadOnly: boolean;
+  /** The current numeric value. */
+  value: number;
+}
+
+export interface NumberFieldProps extends Omit<AriaNumberFieldProps, 'label'>, SlotProps {
+  /** The current value (controlled). */
+  value?: number;
+  /** The default value (uncontrolled). */
+  defaultValue?: number;
+  /** Handler called when the value changes. */
+  onChange?: (value: number) => void;
+  /** The minimum value. */
+  minValue?: number;
+  /** The maximum value. */
+  maxValue?: number;
+  /** The step value for increment/decrement. */
+  step?: number;
+  /** The locale for number formatting. */
+  locale?: string;
+  /** Number format options. */
+  formatOptions?: Intl.NumberFormatOptions;
+  /** A visible label for the number field. */
+  label?: JSX.Element;
+  /** The children of the component. */
+  children?: RenderChildren<NumberFieldRenderProps>;
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<NumberFieldRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<NumberFieldRenderProps>;
+}
+
+export interface NumberFieldInputRenderProps {
+  /** Whether the input is focused. */
+  isFocused: boolean;
+  /** Whether the input has keyboard focus. */
+  isFocusVisible: boolean;
+  /** Whether the input is hovered. */
+  isHovered: boolean;
+  /** Whether the input is disabled. */
+  isDisabled: boolean;
+  /** Whether the input is invalid. */
+  isInvalid: boolean;
+}
+
+export interface NumberFieldInputProps extends SlotProps {
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<NumberFieldInputRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<NumberFieldInputRenderProps>;
+}
+
+export interface NumberFieldButtonRenderProps {
+  /** Whether the button is pressed. */
+  isPressed: boolean;
+  /** Whether the button is hovered. */
+  isHovered: boolean;
+  /** Whether the button is disabled. */
+  isDisabled: boolean;
+}
+
+export interface NumberFieldIncrementButtonProps extends SlotProps {
+  /** The children of the button. */
+  children?: RenderChildren<NumberFieldButtonRenderProps>;
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<NumberFieldButtonRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<NumberFieldButtonRenderProps>;
+}
+
+export interface NumberFieldDecrementButtonProps extends SlotProps {
+  /** The children of the button. */
+  children?: RenderChildren<NumberFieldButtonRenderProps>;
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<NumberFieldButtonRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<NumberFieldButtonRenderProps>;
+}
+
+// ============================================
+// CONTEXT
+// ============================================
+
+interface NumberFieldContextValue {
+  state: NumberFieldState;
+  inputProps: JSX.InputHTMLAttributes<HTMLInputElement>;
+  incrementButtonProps: JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+  decrementButtonProps: JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+  labelProps: JSX.HTMLAttributes<HTMLElement>;
+  groupProps: JSX.HTMLAttributes<HTMLElement>;
+  descriptionProps: JSX.HTMLAttributes<HTMLElement>;
+  errorMessageProps: JSX.HTMLAttributes<HTMLElement>;
+  isDisabled: boolean;
+  isInvalid: boolean;
+  isRequired: boolean;
+  isReadOnly: boolean;
+}
+
+export const NumberFieldContext = createContext<NumberFieldContextValue | null>(null);
+
+// ============================================
+// COMPONENTS
+// ============================================
+
+/**
+ * A number field allows a user to enter a number and increment/decrement the value.
+ */
+export function NumberField(props: NumberFieldProps): JSX.Element {
+  const [local, stateProps, ariaProps, rest] = splitProps(
+    props,
+    ['children', 'class', 'style', 'slot'],
+    ['value', 'defaultValue', 'onChange', 'minValue', 'maxValue', 'step', 'locale', 'formatOptions'],
+    ['label', 'aria-label', 'aria-labelledby', 'aria-describedby', 'isDisabled', 'isReadOnly', 'isRequired', 'isInvalid', 'description', 'errorMessage', 'id', 'autoFocus', 'name']
+  );
+
+  // Create number field state
+  const state = createNumberFieldState({
+    get value() {
+      return stateProps.value;
+    },
+    get defaultValue() {
+      return stateProps.defaultValue;
+    },
+    get onChange() {
+      return stateProps.onChange;
+    },
+    get minValue() {
+      return stateProps.minValue;
+    },
+    get maxValue() {
+      return stateProps.maxValue;
+    },
+    get step() {
+      return stateProps.step;
+    },
+    get locale() {
+      return stateProps.locale;
+    },
+    get formatOptions() {
+      return stateProps.formatOptions;
+    },
+    get isDisabled() {
+      return ariaProps.isDisabled;
+    },
+    get isReadOnly() {
+      return ariaProps.isReadOnly;
+    },
+  });
+
+  // Ref for the input
+  let inputRef: HTMLInputElement | undefined;
+
+  // Create number field aria props
+  const {
+    labelProps,
+    groupProps,
+    inputProps,
+    incrementButtonProps,
+    decrementButtonProps,
+    descriptionProps,
+    errorMessageProps,
+  } = createNumberField(ariaProps, state, () => inputRef ?? null);
+
+  // Render props values
+  const renderValues = createMemo<NumberFieldRenderProps>(() => ({
+    isDisabled: ariaProps.isDisabled ?? false,
+    isInvalid: ariaProps.isInvalid ?? false,
+    isRequired: ariaProps.isRequired ?? false,
+    isReadOnly: ariaProps.isReadOnly ?? false,
+    value: state.numberValue(),
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      children: local.children,
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-NumberField',
+    },
+    renderValues
+  );
+
+  // Filter DOM props
+  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+
+  return (
+    <NumberFieldContext.Provider
+      value={{
+        state,
+        inputProps,
+        incrementButtonProps,
+        decrementButtonProps,
+        labelProps,
+        groupProps,
+        descriptionProps,
+        errorMessageProps,
+        isDisabled: ariaProps.isDisabled ?? false,
+        isInvalid: ariaProps.isInvalid ?? false,
+        isRequired: ariaProps.isRequired ?? false,
+        isReadOnly: ariaProps.isReadOnly ?? false,
+      }}
+    >
+      <div
+        {...domProps()}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-disabled={ariaProps.isDisabled || undefined}
+        data-invalid={ariaProps.isInvalid || undefined}
+        data-required={ariaProps.isRequired || undefined}
+        data-readonly={ariaProps.isReadOnly || undefined}
+      >
+        {renderProps.children}
+      </div>
+    </NumberFieldContext.Provider>
+  );
+}
+
+/**
+ * The label for a number field.
+ */
+export function NumberFieldLabel(props: { children?: JSX.Element; class?: string; style?: JSX.CSSProperties }): JSX.Element {
+  const context = useContext(NumberFieldContext);
+  if (!context) {
+    throw new Error('NumberFieldLabel must be used within a NumberField');
+  }
+
+  return (
+    <span
+      {...context.labelProps}
+      class={props.class ?? 'solidaria-NumberField-label'}
+      style={props.style}
+    >
+      {props.children}
+    </span>
+  );
+}
+
+/**
+ * The input group for a number field (contains input and buttons).
+ */
+export function NumberFieldGroup(props: { children?: JSX.Element; class?: string; style?: JSX.CSSProperties }): JSX.Element {
+  const context = useContext(NumberFieldContext);
+  if (!context) {
+    throw new Error('NumberFieldGroup must be used within a NumberField');
+  }
+
+  // Extract ref to avoid type issues
+  const cleanGroupProps = () => {
+    const { ref: _ref, ...rest } = context.groupProps as Record<string, unknown>;
+    return rest;
+  };
+
+  return (
+    <div
+      {...cleanGroupProps()}
+      class={props.class ?? 'solidaria-NumberField-group'}
+      style={props.style}
+    >
+      {props.children}
+    </div>
+  );
+}
+
+/**
+ * The input element for a number field.
+ */
+export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
+
+  const context = useContext(NumberFieldContext);
+  if (!context) {
+    throw new Error('NumberFieldInput must be used within a NumberField');
+  }
+
+  // Create focus ring
+  const { isFocused, isFocusVisible, focusProps } = createFocusRing();
+
+  // Create hover
+  const { isHovered, hoverProps } = createHover({
+    get isDisabled() {
+      return context.isDisabled;
+    },
+  });
+
+  // Render props values
+  const renderValues = createMemo<NumberFieldInputRenderProps>(() => ({
+    isFocused: isFocused(),
+    isFocusVisible: isFocusVisible(),
+    isHovered: isHovered(),
+    isDisabled: context.isDisabled,
+    isInvalid: context.isInvalid,
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-NumberField-input',
+    },
+    renderValues
+  );
+
+  // Remove ref from spread props
+  const cleanInputProps = () => {
+    const { ref: _ref, ...rest } = context.inputProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanFocusProps = () => {
+    const { ref: _ref, ...rest } = focusProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanHoverProps = () => {
+    const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+
+  return (
+    <input
+      {...cleanInputProps()}
+      {...cleanFocusProps()}
+      {...cleanHoverProps()}
+      class={renderProps.class()}
+      style={renderProps.style()}
+      data-focused={isFocused() || undefined}
+      data-focus-visible={isFocusVisible() || undefined}
+      data-hovered={isHovered() || undefined}
+      data-disabled={context.isDisabled || undefined}
+      data-invalid={context.isInvalid || undefined}
+    />
+  );
+}
+
+/**
+ * The increment button for a number field.
+ */
+export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProps): JSX.Element {
+  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+
+  const context = useContext(NumberFieldContext);
+  if (!context) {
+    throw new Error('NumberFieldIncrementButton must be used within a NumberField');
+  }
+
+  // Create press
+  const { isPressed, pressProps } = createPress({
+    get isDisabled() {
+      return context.isDisabled || !context.state.canIncrement();
+    },
+    onPress: () => {
+      context.state.increment();
+    },
+  });
+
+  // Create hover
+  const { isHovered, hoverProps } = createHover({
+    get isDisabled() {
+      return context.isDisabled || !context.state.canIncrement();
+    },
+  });
+
+  const isDisabled = () => context.isDisabled || !context.state.canIncrement();
+
+  // Render props values
+  const renderValues = createMemo<NumberFieldButtonRenderProps>(() => ({
+    isPressed: isPressed(),
+    isHovered: isHovered(),
+    isDisabled: isDisabled(),
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      children: local.children,
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-NumberField-increment',
+    },
+    renderValues
+  );
+
+  // Remove ref from spread props
+  const cleanButtonProps = () => {
+    const { ref: _ref, ...rest } = context.incrementButtonProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanPressProps = () => {
+    const { ref: _ref, ...rest } = pressProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanHoverProps = () => {
+    const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+
+  return (
+    <button
+      {...cleanButtonProps()}
+      {...cleanPressProps()}
+      {...cleanHoverProps()}
+      class={renderProps.class()}
+      style={renderProps.style()}
+      data-pressed={isPressed() || undefined}
+      data-hovered={isHovered() || undefined}
+      data-disabled={isDisabled() || undefined}
+    >
+      {renderProps.children}
+    </button>
+  );
+}
+
+/**
+ * The decrement button for a number field.
+ */
+export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProps): JSX.Element {
+  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+
+  const context = useContext(NumberFieldContext);
+  if (!context) {
+    throw new Error('NumberFieldDecrementButton must be used within a NumberField');
+  }
+
+  // Create press
+  const { isPressed, pressProps } = createPress({
+    get isDisabled() {
+      return context.isDisabled || !context.state.canDecrement();
+    },
+    onPress: () => {
+      context.state.decrement();
+    },
+  });
+
+  // Create hover
+  const { isHovered, hoverProps } = createHover({
+    get isDisabled() {
+      return context.isDisabled || !context.state.canDecrement();
+    },
+  });
+
+  const isDisabled = () => context.isDisabled || !context.state.canDecrement();
+
+  // Render props values
+  const renderValues = createMemo<NumberFieldButtonRenderProps>(() => ({
+    isPressed: isPressed(),
+    isHovered: isHovered(),
+    isDisabled: isDisabled(),
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      children: local.children,
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-NumberField-decrement',
+    },
+    renderValues
+  );
+
+  // Remove ref from spread props
+  const cleanButtonProps = () => {
+    const { ref: _ref, ...rest } = context.decrementButtonProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanPressProps = () => {
+    const { ref: _ref, ...rest } = pressProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanHoverProps = () => {
+    const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+
+  return (
+    <button
+      {...cleanButtonProps()}
+      {...cleanPressProps()}
+      {...cleanHoverProps()}
+      class={renderProps.class()}
+      style={renderProps.style()}
+      data-pressed={isPressed() || undefined}
+      data-hovered={isHovered() || undefined}
+      data-disabled={isDisabled() || undefined}
+    >
+      {renderProps.children}
+    </button>
+  );
+}
+
+// Attach sub-components
+NumberField.Label = NumberFieldLabel;
+NumberField.Group = NumberFieldGroup;
+NumberField.Input = NumberFieldInput;
+NumberField.IncrementButton = NumberFieldIncrementButton;
+NumberField.DecrementButton = NumberFieldDecrementButton;

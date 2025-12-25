@@ -3,7 +3,7 @@
  * Based on @react-aria/tabs.
  */
 
-import { type Accessor, createMemo, onMount, onCleanup } from 'solid-js';
+import { type Accessor, createMemo, onMount } from 'solid-js';
 import { createFocusRing } from '../interactions';
 import { createPress } from '../interactions';
 import { createHover } from '../interactions';
@@ -354,7 +354,7 @@ export function createTab<T>(
   });
 
   // Hover handling
-  const { isHovered, hoverProps } = createHover({
+  const { isHovered } = createHover({
     get isDisabled() {
       return isDisabled();
     },
@@ -364,27 +364,40 @@ export function createTab<T>(
   const tabId = generateTabId(state, key());
   const tabPanelId = generateTabPanelId(state, key());
 
+  // Helper to safely call event handlers that may be bound tuples
+  const callHandler = <E extends Event>(
+    handler: ((e: E) => void) | [object, (e: E) => void] | undefined,
+    event: E
+  ) => {
+    if (!handler) return;
+    if (Array.isArray(handler)) {
+      handler[1].call(handler[0], event);
+    } else {
+      handler(event);
+    }
+  };
+
   // Focus management
   const handleFocus = (e: FocusEvent) => {
     state.setFocusedKey(key());
-    focusProps.onFocus?.(e);
+    callHandler(focusProps.onFocus as any, e);
   };
 
   // Combine all handlers
   const handleKeyDown = (e: KeyboardEvent) => {
-    pressProps.onKeyDown?.(e as any);
+    callHandler(pressProps.onKeyDown as any, e);
   };
 
   const handleMouseDown = (e: MouseEvent) => {
-    pressProps.onMouseDown?.(e as any);
+    callHandler(pressProps.onMouseDown as any, e);
   };
 
   const handlePointerDown = (e: PointerEvent) => {
-    pressProps.onPointerDown?.(e as any);
+    callHandler(pressProps.onPointerDown as any, e);
   };
 
   const handleClick = (e: MouseEvent) => {
-    pressProps.onClick?.(e as any);
+    callHandler(pressProps.onClick as any, e);
   };
 
   // Focus this tab when it becomes selected and focused

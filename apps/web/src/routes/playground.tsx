@@ -45,6 +45,12 @@ import {
   // Breadcrumbs
   Breadcrumbs as StyledBreadcrumbs,
   BreadcrumbItem as StyledBreadcrumbItem,
+  // NumberField
+  NumberField as StyledNumberField,
+  // SearchField
+  SearchField as StyledSearchField,
+  // Slider
+  Slider as StyledSlider,
 } from '@proyecto-viviana/ui'
 import {
   createButton,
@@ -650,6 +656,21 @@ function Playground() {
           {/* Styled Breadcrumbs Component */}
           <Section title="Styled Breadcrumbs (ui)" description="Pre-styled navigation breadcrumbs" class="lg:col-span-2">
             <StyledBreadcrumbsDemo onNavigate={(path) => setLastAction(`Navigate: ${path}`)} />
+          </Section>
+
+          {/* Styled NumberField Component */}
+          <Section title="Styled NumberField (ui)" description="Number input with increment/decrement buttons" class="lg:col-span-2">
+            <StyledNumberFieldDemo onChange={(value) => setLastAction(`NumberField: ${value}`)} />
+          </Section>
+
+          {/* Styled SearchField Component */}
+          <Section title="Styled SearchField (ui)" description="Search input with clear button" class="lg:col-span-2">
+            <StyledSearchFieldDemo onSearch={(value) => setLastAction(`Search: ${value}`)} />
+          </Section>
+
+          {/* Styled Slider Component */}
+          <Section title="Styled Slider (ui)" description="Range input with draggable thumb" class="lg:col-span-2">
+            <StyledSliderDemo onChange={(value) => setLastAction(`Slider: ${value}`)} />
           </Section>
         </div>
       </div>
@@ -1602,6 +1623,431 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
 
       <p class="text-xs text-primary-400">
         Pre-styled Breadcrumbs with variants (default, subtle) and sizes (sm, md, lg). Click items to navigate.
+      </p>
+    </div>
+  )
+}
+
+// ============================================
+// Styled NumberField Demo (ui package)
+// ============================================
+
+function StyledNumberFieldDemo(props: { onChange?: (value: number) => void }) {
+  const [value, setValue] = createSignal(50)
+  const [currencyValue, setCurrencyValue] = createSignal(99.99)
+
+  const handleChange = (newValue: number) => {
+    setValue(newValue)
+    props.onChange?.(newValue)
+  }
+
+  return (
+    <div class="space-y-8">
+      {/* Basic NumberField */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Basic NumberField</h4>
+        <div class="max-w-xs">
+          <StyledNumberField
+            label="Quantity"
+            value={value()}
+            onChange={handleChange}
+            minValue={0}
+            maxValue={100}
+            step={1}
+          />
+        </div>
+      </div>
+
+      {/* Size variants */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Size Variants</h4>
+        <div class="grid gap-6 sm:grid-cols-3">
+          <StyledNumberField
+            label="Small"
+            defaultValue={10}
+            size="sm"
+            minValue={0}
+            maxValue={50}
+          />
+          <StyledNumberField
+            label="Medium (default)"
+            defaultValue={25}
+            size="md"
+            minValue={0}
+            maxValue={50}
+          />
+          <StyledNumberField
+            label="Large"
+            defaultValue={40}
+            size="lg"
+            minValue={0}
+            maxValue={50}
+          />
+        </div>
+      </div>
+
+      {/* With min/max constraints */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">With Min/Max Constraints (0-10)</h4>
+        <div class="max-w-xs">
+          <StyledNumberField
+            label="Rating"
+            defaultValue={5}
+            minValue={0}
+            maxValue={10}
+            step={1}
+            description="Enter a rating from 0 to 10"
+          />
+        </div>
+      </div>
+
+      {/* Currency formatting */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Currency Formatting</h4>
+        <div class="max-w-xs">
+          <StyledNumberField
+            label="Price"
+            value={currencyValue()}
+            onChange={setCurrencyValue}
+            minValue={0}
+            step={0.01}
+            formatOptions={{
+              style: 'currency',
+              currency: 'USD',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Percent formatting */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Percent Formatting</h4>
+        <div class="max-w-xs">
+          <StyledNumberField
+            label="Discount"
+            defaultValue={0.15}
+            minValue={0}
+            maxValue={1}
+            step={0.01}
+            formatOptions={{
+              style: 'percent',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Disabled state */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">States</h4>
+        <div class="grid gap-6 sm:grid-cols-2">
+          <StyledNumberField
+            label="Disabled"
+            defaultValue={42}
+            isDisabled
+          />
+          <StyledNumberField
+            label="Invalid"
+            defaultValue={-5}
+            isInvalid
+            errorMessage="Value must be positive"
+          />
+        </div>
+      </div>
+
+      {/* Hidden stepper */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Hidden Stepper (keyboard only)</h4>
+        <div class="max-w-xs">
+          <StyledNumberField
+            label="Amount"
+            defaultValue={100}
+            hideStepper
+            description="Use arrow keys to adjust"
+          />
+        </div>
+      </div>
+
+      <p class="text-xs text-primary-400">
+        NumberField with increment/decrement buttons. Supports keyboard navigation (arrows, Page Up/Down, Home/End),
+        number formatting (currency, percent), min/max constraints, and step values.
+      </p>
+    </div>
+  )
+}
+
+// ============================================
+// Styled SearchField Demo (ui package)
+// ============================================
+
+function StyledSearchFieldDemo(props: { onSearch?: (value: string) => void }) {
+  const [value, setValue] = createSignal('')
+
+  const handleSubmit = (searchValue: string) => {
+    props.onSearch?.(searchValue)
+  }
+
+  return (
+    <div class="space-y-8">
+      {/* Basic SearchField */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Basic SearchField</h4>
+        <div class="max-w-md">
+          <StyledSearchField
+            label="Search"
+            placeholder="Search for items..."
+            value={value()}
+            onChange={setValue}
+            onSubmit={handleSubmit}
+            onClear={() => setValue('')}
+          />
+        </div>
+      </div>
+
+      {/* Size variants */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Size Variants</h4>
+        <div class="grid gap-6 sm:grid-cols-3">
+          <StyledSearchField
+            label="Small"
+            placeholder="Search..."
+            size="sm"
+            onSubmit={handleSubmit}
+          />
+          <StyledSearchField
+            label="Medium (default)"
+            placeholder="Search..."
+            size="md"
+            onSubmit={handleSubmit}
+          />
+          <StyledSearchField
+            label="Large"
+            placeholder="Search..."
+            size="lg"
+            onSubmit={handleSubmit}
+          />
+        </div>
+      </div>
+
+      {/* Variant styles */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Variants</h4>
+        <div class="grid gap-6 sm:grid-cols-2">
+          <StyledSearchField
+            label="Outline (default)"
+            placeholder="Search..."
+            variant="outline"
+            onSubmit={handleSubmit}
+          />
+          <StyledSearchField
+            label="Filled"
+            placeholder="Search..."
+            variant="filled"
+            onSubmit={handleSubmit}
+          />
+        </div>
+      </div>
+
+      {/* With description */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">With Description</h4>
+        <div class="max-w-md">
+          <StyledSearchField
+            label="Product Search"
+            placeholder="Enter product name or SKU..."
+            description="Press Enter to search, Escape to clear"
+            onSubmit={handleSubmit}
+          />
+        </div>
+      </div>
+
+      {/* States */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">States</h4>
+        <div class="grid gap-6 sm:grid-cols-2">
+          <StyledSearchField
+            label="Disabled"
+            placeholder="Can't search..."
+            defaultValue="disabled search"
+            isDisabled
+          />
+          <StyledSearchField
+            label="Invalid"
+            placeholder="Search..."
+            defaultValue="invalid query"
+            isInvalid
+            errorMessage="Invalid search query"
+          />
+        </div>
+      </div>
+
+      {/* Without search icon */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Hidden Search Icon</h4>
+        <div class="max-w-md">
+          <StyledSearchField
+            label="Filter"
+            placeholder="Filter items..."
+            hideSearchIcon
+            onSubmit={handleSubmit}
+          />
+        </div>
+      </div>
+
+      <p class="text-xs text-primary-400">
+        SearchField with clear button. Press Enter to submit, Escape to clear.
+        The clear button appears when there's text in the field.
+      </p>
+    </div>
+  )
+}
+
+// ============================================
+// Styled Slider Demo (ui package)
+// ============================================
+
+function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
+  const [value, setValue] = createSignal(50)
+
+  const handleChange = (newValue: number) => {
+    setValue(newValue)
+    props.onChange?.(newValue)
+  }
+
+  return (
+    <div class="space-y-8">
+      {/* Basic Slider */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Basic Slider</h4>
+        <div class="max-w-md">
+          <StyledSlider
+            label="Volume"
+            value={value()}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+
+      {/* Size variants */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Size Variants</h4>
+        <div class="grid gap-6">
+          <StyledSlider
+            label="Small"
+            defaultValue={30}
+            size="sm"
+            onChange={props.onChange}
+          />
+          <StyledSlider
+            label="Medium (default)"
+            defaultValue={50}
+            size="md"
+            onChange={props.onChange}
+          />
+          <StyledSlider
+            label="Large"
+            defaultValue={70}
+            size="lg"
+            onChange={props.onChange}
+          />
+        </div>
+      </div>
+
+      {/* Variant styles */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Variants</h4>
+        <div class="grid gap-6">
+          <StyledSlider
+            label="Default"
+            defaultValue={40}
+            variant="default"
+            onChange={props.onChange}
+          />
+          <StyledSlider
+            label="Accent"
+            defaultValue={60}
+            variant="accent"
+            onChange={props.onChange}
+          />
+        </div>
+      </div>
+
+      {/* Custom range and step */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Custom Range and Step</h4>
+        <div class="grid gap-6">
+          <StyledSlider
+            label="Temperature (°C)"
+            defaultValue={22}
+            minValue={16}
+            maxValue={30}
+            step={0.5}
+            showMinMax
+            onChange={props.onChange}
+          />
+          <StyledSlider
+            label="Rating"
+            defaultValue={3}
+            minValue={1}
+            maxValue={5}
+            step={1}
+            showMinMax
+            onChange={props.onChange}
+          />
+        </div>
+      </div>
+
+      {/* With formatting */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">With Formatting</h4>
+        <div class="grid gap-6">
+          <StyledSlider
+            label="Price"
+            defaultValue={500}
+            minValue={0}
+            maxValue={1000}
+            step={50}
+            formatOptions={{ style: 'currency', currency: 'USD' }}
+            onChange={props.onChange}
+          />
+          <StyledSlider
+            label="Discount"
+            defaultValue={25}
+            minValue={0}
+            maxValue={100}
+            formatOptions={{ style: 'percent', maximumFractionDigits: 0 }}
+            onChange={(v) => props.onChange?.(v / 100)}
+          />
+        </div>
+      </div>
+
+      {/* Disabled */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Disabled</h4>
+        <div class="max-w-md">
+          <StyledSlider
+            label="Disabled Slider"
+            defaultValue={50}
+            isDisabled
+          />
+        </div>
+      </div>
+
+      {/* Without output */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Without Output</h4>
+        <div class="max-w-md">
+          <StyledSlider
+            label="Brightness"
+            defaultValue={75}
+            showOutput={false}
+            onChange={props.onChange}
+          />
+        </div>
+      </div>
+
+      <p class="text-xs text-primary-400">
+        Slider with keyboard support (arrows, Page Up/Down, Home/End) and drag functionality.
+        Supports custom ranges, steps, and number formatting.
       </p>
     </div>
   )

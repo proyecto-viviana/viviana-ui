@@ -21,6 +21,7 @@ import {
   createFocusRing,
   createHover,
   createButton,
+  createInteractOutside,
   type AriaMenuProps,
   type AriaMenuItemProps,
   type AriaMenuTriggerProps,
@@ -319,6 +320,9 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   // Get trigger context if available
   const triggerContext = useContext(MenuTriggerContext);
 
+  // Ref for the menu element (for click outside detection)
+  let menuRef: HTMLUListElement | undefined;
+
   // Create menu state
   const state = createMenuState<T>({
     get items() {
@@ -363,6 +367,19 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   // Create focus ring
   const { isFocused, focusProps } = createFocusRing();
 
+  // Handle click outside to close menu
+  createInteractOutside({
+    ref: () => menuRef ?? null,
+    onInteractOutside: () => {
+      if (triggerContext?.state.isOpen()) {
+        triggerContext.state.close();
+      }
+    },
+    get isDisabled() {
+      return !triggerContext?.state.isOpen();
+    },
+  });
+
   // Render props values
   const renderValues = createMemo<MenuRenderProps>(() => ({
     isFocused: state.isFocused() || isFocused(),
@@ -403,6 +420,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
       <MenuContext.Provider value={{ state }}>
         <MenuStateContext.Provider value={state}>
           <ul
+            ref={(el) => (menuRef = el)}
             {...cleanMenuProps()}
             {...cleanTriggerMenuProps()}
             {...cleanFocusProps()}

@@ -1,0 +1,500 @@
+/**
+ * Slider component for solidaria-components
+ *
+ * A pre-wired headless slider that combines state + aria hooks.
+ * Port of react-aria-components/src/Slider.tsx
+ */
+
+import {
+  type JSX,
+  createContext,
+  createMemo,
+  splitProps,
+  useContext,
+  Show,
+} from 'solid-js';
+import {
+  createSlider,
+  createFocusRing,
+  createHover,
+  type AriaSliderProps,
+} from '@proyecto-viviana/solidaria';
+import {
+  createSliderState,
+  type SliderState,
+  type SliderOrientation,
+} from '@proyecto-viviana/solid-stately';
+import {
+  type RenderChildren,
+  type ClassNameOrFunction,
+  type StyleOrFunction,
+  type SlotProps,
+  useRenderProps,
+  filterDOMProps,
+} from './utils';
+
+// ============================================
+// TYPES
+// ============================================
+
+export interface SliderRenderProps {
+  /** Whether the slider is disabled. */
+  isDisabled: boolean;
+  /** Whether the slider is being dragged. */
+  isDragging: boolean;
+  /** Whether the slider is focused. */
+  isFocused: boolean;
+  /** The current value. */
+  value: number;
+  /** The value as a percent (0-1). */
+  valuePercent: number;
+  /** The orientation. */
+  orientation: SliderOrientation;
+}
+
+export interface SliderProps extends Omit<AriaSliderProps, 'label'>, SlotProps {
+  /** The current value (controlled). */
+  value?: number;
+  /** The default value (uncontrolled). */
+  defaultValue?: number;
+  /** Handler called when the value changes. */
+  onChange?: (value: number) => void;
+  /** Handler called when dragging ends. */
+  onChangeEnd?: (value: number) => void;
+  /** The minimum value. */
+  minValue?: number;
+  /** The maximum value. */
+  maxValue?: number;
+  /** The step value. */
+  step?: number;
+  /** The orientation of the slider. */
+  orientation?: SliderOrientation;
+  /** The locale for number formatting. */
+  locale?: string;
+  /** Number format options. */
+  formatOptions?: Intl.NumberFormatOptions;
+  /** A visible label for the slider. */
+  label?: JSX.Element;
+  /** The children of the component. */
+  children?: RenderChildren<SliderRenderProps>;
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<SliderRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<SliderRenderProps>;
+}
+
+export interface SliderTrackRenderProps {
+  /** Whether the slider is disabled. */
+  isDisabled: boolean;
+  /** Whether the slider is being dragged. */
+  isDragging: boolean;
+  /** The value as a percent (0-1). */
+  valuePercent: number;
+  /** The orientation. */
+  orientation: SliderOrientation;
+}
+
+export interface SliderTrackProps extends SlotProps {
+  /** The children of the track. */
+  children?: RenderChildren<SliderTrackRenderProps>;
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<SliderTrackRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<SliderTrackRenderProps>;
+}
+
+export interface SliderThumbRenderProps {
+  /** Whether the slider is disabled. */
+  isDisabled: boolean;
+  /** Whether the thumb is being dragged. */
+  isDragging: boolean;
+  /** Whether the thumb is focused. */
+  isFocused: boolean;
+  /** Whether the thumb has keyboard focus. */
+  isFocusVisible: boolean;
+  /** Whether the thumb is hovered. */
+  isHovered: boolean;
+  /** The current value. */
+  value: number;
+  /** The value as a percent (0-1). */
+  valuePercent: number;
+}
+
+export interface SliderThumbProps extends SlotProps {
+  /** The children of the thumb. */
+  children?: RenderChildren<SliderThumbRenderProps>;
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<SliderThumbRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<SliderThumbRenderProps>;
+}
+
+export interface SliderOutputRenderProps {
+  /** The current value. */
+  value: number;
+  /** The formatted value string. */
+  formattedValue: string;
+}
+
+export interface SliderOutputProps extends SlotProps {
+  /** The children of the output. */
+  children?: RenderChildren<SliderOutputRenderProps>;
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<SliderOutputRenderProps>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<SliderOutputRenderProps>;
+}
+
+// ============================================
+// CONTEXT
+// ============================================
+
+interface SliderContextValue {
+  state: SliderState;
+  trackProps: JSX.HTMLAttributes<HTMLElement>;
+  thumbProps: JSX.HTMLAttributes<HTMLElement>;
+  outputProps: JSX.HTMLAttributes<HTMLElement>;
+  inputProps: JSX.InputHTMLAttributes<HTMLInputElement>;
+  trackRef: HTMLElement | undefined;
+  setTrackRef: (el: HTMLElement) => void;
+}
+
+export const SliderContext = createContext<SliderContextValue | null>(null);
+
+// ============================================
+// COMPONENTS
+// ============================================
+
+/**
+ * A slider allows users to select a value from a range.
+ */
+export function Slider(props: SliderProps): JSX.Element {
+  const [local, stateProps, ariaProps, rest] = splitProps(
+    props,
+    ['children', 'class', 'style', 'slot'],
+    ['value', 'defaultValue', 'onChange', 'onChangeEnd', 'minValue', 'maxValue', 'step', 'orientation', 'locale', 'formatOptions'],
+    ['label', 'aria-label', 'aria-labelledby', 'aria-describedby', 'isDisabled', 'id']
+  );
+
+  // Create slider state
+  const state = createSliderState({
+    get value() {
+      return stateProps.value;
+    },
+    get defaultValue() {
+      return stateProps.defaultValue;
+    },
+    get onChange() {
+      return stateProps.onChange;
+    },
+    get onChangeEnd() {
+      return stateProps.onChangeEnd;
+    },
+    get minValue() {
+      return stateProps.minValue;
+    },
+    get maxValue() {
+      return stateProps.maxValue;
+    },
+    get step() {
+      return stateProps.step;
+    },
+    get orientation() {
+      return stateProps.orientation;
+    },
+    get locale() {
+      return stateProps.locale;
+    },
+    get formatOptions() {
+      return stateProps.formatOptions;
+    },
+    get isDisabled() {
+      return ariaProps.isDisabled;
+    },
+  });
+
+  // Track ref for pointer handling
+  let trackRef: HTMLElement | undefined;
+  const setTrackRef = (el: HTMLElement) => {
+    trackRef = el;
+  };
+
+  // Create slider aria props
+  const {
+    labelProps,
+    groupProps,
+    trackProps,
+    thumbProps,
+    inputProps,
+    outputProps,
+  } = createSlider(ariaProps, state, () => trackRef ?? null);
+
+  // Render props values
+  const renderValues = createMemo<SliderRenderProps>(() => ({
+    isDisabled: state.isDisabled,
+    isDragging: state.isDragging(),
+    isFocused: state.isFocused(),
+    value: state.value(),
+    valuePercent: state.getValuePercent(),
+    orientation: state.orientation,
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      children: local.children,
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-Slider',
+    },
+    renderValues
+  );
+
+  // Filter DOM props
+  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+
+  // Clean props helpers
+  const cleanGroupProps = () => {
+    const { ref: _ref, ...rest } = groupProps as Record<string, unknown>;
+    return rest;
+  };
+
+  return (
+    <SliderContext.Provider
+      value={{
+        state,
+        trackProps,
+        thumbProps,
+        outputProps,
+        inputProps,
+        trackRef,
+        setTrackRef,
+      }}
+    >
+      <div
+        {...domProps()}
+        {...cleanGroupProps()}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-disabled={state.isDisabled || undefined}
+        data-orientation={state.orientation}
+        data-dragging={state.isDragging() || undefined}
+      >
+        {/* Label */}
+        <Show when={ariaProps.label}>
+          <span {...labelProps}>{ariaProps.label}</span>
+        </Show>
+
+        {renderProps.children}
+
+        {/* Hidden input for form submission */}
+        <input {...inputProps} />
+      </div>
+    </SliderContext.Provider>
+  );
+}
+
+/**
+ * The track element of a slider.
+ */
+export function SliderTrack(props: SliderTrackProps): JSX.Element {
+  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+
+  const context = useContext(SliderContext);
+  if (!context) {
+    throw new Error('SliderTrack must be used within a Slider');
+  }
+
+  const { state, trackProps, setTrackRef } = context;
+
+  // Render props values
+  const renderValues = createMemo<SliderTrackRenderProps>(() => ({
+    isDisabled: state.isDisabled,
+    isDragging: state.isDragging(),
+    valuePercent: state.getValuePercent(),
+    orientation: state.orientation,
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      children: local.children,
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-Slider-track',
+    },
+    renderValues
+  );
+
+  // Clean props
+  const cleanTrackProps = () => {
+    const { ref: _ref, style: trackStyle, ...rest } = trackProps as Record<string, unknown>;
+    return rest;
+  };
+
+  // Merge styles
+  const mergedStyle = () => {
+    const trackStyle = (trackProps as { style?: Record<string, string> }).style || {};
+    const renderStyle = renderProps.style() || {};
+    return { ...trackStyle, ...renderStyle };
+  };
+
+  return (
+    <div
+      ref={setTrackRef}
+      {...cleanTrackProps()}
+      class={renderProps.class()}
+      style={mergedStyle()}
+      data-disabled={state.isDisabled || undefined}
+      data-orientation={state.orientation}
+      data-dragging={state.isDragging() || undefined}
+    >
+      {renderProps.children}
+    </div>
+  );
+}
+
+/**
+ * The thumb element of a slider.
+ */
+export function SliderThumb(props: SliderThumbProps): JSX.Element {
+  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+
+  const context = useContext(SliderContext);
+  if (!context) {
+    throw new Error('SliderThumb must be used within a Slider');
+  }
+
+  const { state, thumbProps } = context;
+
+  // Create focus ring
+  const { isFocused, isFocusVisible, focusProps } = createFocusRing();
+
+  // Create hover
+  const { isHovered, hoverProps } = createHover({
+    get isDisabled() {
+      return state.isDisabled;
+    },
+  });
+
+  // Render props values
+  const renderValues = createMemo<SliderThumbRenderProps>(() => ({
+    isDisabled: state.isDisabled,
+    isDragging: state.isDragging(),
+    isFocused: isFocused() || state.isFocused(),
+    isFocusVisible: isFocusVisible(),
+    isHovered: isHovered(),
+    value: state.value(),
+    valuePercent: state.getValuePercent(),
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      children: local.children,
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-Slider-thumb',
+    },
+    renderValues
+  );
+
+  // Clean props
+  const cleanThumbProps = () => {
+    const { ref: _ref, style: thumbStyle, ...rest } = thumbProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanFocusProps = () => {
+    const { ref: _ref, ...rest } = focusProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanHoverProps = () => {
+    const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+
+  // Merge styles
+  const mergedStyle = () => {
+    const thumbStyle = (thumbProps as { style?: Record<string, string> }).style || {};
+    const renderStyle = renderProps.style() || {};
+    return { ...thumbStyle, ...renderStyle };
+  };
+
+  return (
+    <div
+      {...cleanThumbProps()}
+      {...cleanFocusProps()}
+      {...cleanHoverProps()}
+      class={renderProps.class()}
+      style={mergedStyle()}
+      data-disabled={state.isDisabled || undefined}
+      data-dragging={state.isDragging() || undefined}
+      data-focused={isFocused() || undefined}
+      data-focus-visible={isFocusVisible() || undefined}
+      data-hovered={isHovered() || undefined}
+    >
+      {renderProps.children}
+    </div>
+  );
+}
+
+/**
+ * The output element of a slider, displaying the current value.
+ */
+export function SliderOutput(props: SliderOutputProps): JSX.Element {
+  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+
+  const context = useContext(SliderContext);
+  if (!context) {
+    throw new Error('SliderOutput must be used within a Slider');
+  }
+
+  const { state, outputProps } = context;
+
+  // Render props values
+  const renderValues = createMemo<SliderOutputRenderProps>(() => ({
+    value: state.value(),
+    formattedValue: state.getFormattedValue(),
+  }));
+
+  // Resolve render props
+  const renderProps = useRenderProps(
+    {
+      children: local.children,
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-Slider-output',
+    },
+    renderValues
+  );
+
+  // Clean props
+  const cleanOutputProps = () => {
+    const { ref: _ref, ...rest } = outputProps as Record<string, unknown>;
+    return rest;
+  };
+
+  // Default children shows formatted value
+  const children = () => {
+    const c = renderProps.children;
+    if (c === undefined || c === null) {
+      return state.getFormattedValue();
+    }
+    return c;
+  };
+
+  return (
+    <output
+      {...cleanOutputProps()}
+      class={renderProps.class()}
+      style={renderProps.style()}
+    >
+      {children()}
+    </output>
+  );
+}
+
+// Attach sub-components
+Slider.Track = SliderTrack;
+Slider.Thumb = SliderThumb;
+Slider.Output = SliderOutput;

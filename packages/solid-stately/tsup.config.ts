@@ -4,7 +4,9 @@ import { solidPlugin } from 'esbuild-plugin-solid';
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm'],
-  dts: true,
+  dts: {
+    resolve: true,
+  },
   target: 'esnext',
   sourcemap: true,
   splitting: false,

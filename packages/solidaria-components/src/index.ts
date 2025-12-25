@@ -189,3 +189,53 @@ export {
   type BreadcrumbItemProps,
   type BreadcrumbItemRenderProps,
 } from './Breadcrumbs';
+
+// NumberField
+export {
+  NumberField,
+  NumberFieldLabel,
+  NumberFieldGroup,
+  NumberFieldInput,
+  NumberFieldIncrementButton,
+  NumberFieldDecrementButton,
+  NumberFieldContext,
+  type NumberFieldProps,
+  type NumberFieldRenderProps,
+  type NumberFieldInputProps,
+  type NumberFieldInputRenderProps,
+  type NumberFieldIncrementButtonProps,
+  type NumberFieldDecrementButtonProps,
+  type NumberFieldButtonRenderProps,
+} from './NumberField';
+
+// SearchField
+export {
+  SearchField,
+  SearchFieldLabel,
+  SearchFieldInput,
+  SearchFieldClearButton,
+  SearchFieldContext,
+  type SearchFieldProps,
+  type SearchFieldRenderProps,
+  type SearchFieldInputProps,
+  type SearchFieldInputRenderProps,
+  type SearchFieldClearButtonProps,
+  type SearchFieldClearButtonRenderProps,
+} from './SearchField';
+
+// Slider
+export {
+  Slider,
+  SliderTrack,
+  SliderThumb,
+  SliderOutput,
+  SliderContext,
+  type SliderProps,
+  type SliderRenderProps,
+  type SliderTrackProps,
+  type SliderTrackRenderProps,
+  type SliderThumbProps,
+  type SliderThumbRenderProps,
+  type SliderOutputProps,
+  type SliderOutputRenderProps,
+} from './Slider';
