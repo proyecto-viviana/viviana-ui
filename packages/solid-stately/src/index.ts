@@ -80,6 +80,16 @@ export {
   type SelectState,
 } from './select';
 
+// ComboBox
+export {
+  createComboBoxState,
+  defaultContainsFilter,
+  type ComboBoxState,
+  type ComboBoxStateProps,
+  type FilterFn,
+  type MenuTriggerAction,
+} from './combobox';
+
 // Tabs
 export {
   createTabListState,
@@ -111,8 +121,16 @@ export {
   type SliderOrientation,
 } from './slider';
 
+// Tooltip
+export {
+  createTooltipTriggerState,
+  resetTooltipState,
+  type TooltipTriggerProps,
+  type TooltipTriggerState,
+} from './tooltip';
+
 // SSR
-export { createIsSSR, createId, canUseDOM } from './ssr';
+export { createIsSSR, createId, canUseDOM, isServer } from './ssr';
 
 // Utils
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

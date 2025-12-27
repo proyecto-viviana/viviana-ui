@@ -88,12 +88,12 @@ export interface FilterDOMPropsOptions {
  * @param props - The component props to be filtered.
  * @param opts - Props to override.
  */
-export function filterDOMProps(
-  props: Record<string, unknown>,
+export function filterDOMProps<T extends object>(
+  props: T,
   opts: FilterDOMPropsOptions = {}
-): Record<string, unknown> {
+): Partial<T> {
   const { labelable, isLink, global, events = global, propNames } = opts;
-  const filteredProps: Record<string, unknown> = {};
+  const filteredProps: Partial<T> = {};
 
   for (const prop in props) {
     if (
@@ -108,7 +108,7 @@ export function filterDOMProps(
         propNames?.has(prop) ||
         propRe.test(prop))
     ) {
-      filteredProps[prop] = props[prop];
+      (filteredProps as Record<string, unknown>)[prop] = props[prop];
     }
   }
 

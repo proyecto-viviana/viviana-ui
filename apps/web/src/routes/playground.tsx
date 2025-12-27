@@ -51,6 +51,14 @@ import {
   SearchField as StyledSearchField,
   // Slider
   Slider as StyledSlider,
+  // ComboBox
+  ComboBox as StyledComboBox,
+  ComboBoxInputGroup as StyledComboBoxInputGroup,
+  ComboBoxInput as StyledComboBoxInput,
+  ComboBoxButton as StyledComboBoxButton,
+  ComboBoxListBox as StyledComboBoxListBox,
+  ComboBoxOption as StyledComboBoxOption,
+  defaultContainsFilter,
 } from '@proyecto-viviana/ui'
 import {
   createButton,
@@ -671,6 +679,11 @@ function Playground() {
           {/* Styled Slider Component */}
           <Section title="Styled Slider (ui)" description="Range input with draggable thumb" class="lg:col-span-2">
             <StyledSliderDemo onChange={(value) => setLastAction(`Slider: ${value}`)} />
+          </Section>
+
+          {/* Styled ComboBox Component */}
+          <Section title="Styled ComboBox (ui)" description="Filterable dropdown with text input" class="lg:col-span-2">
+            <StyledComboBoxDemo onSelectionChange={(key) => setLastAction(`ComboBox: ${key}`)} />
           </Section>
         </div>
       </div>
@@ -1904,6 +1917,215 @@ function StyledSearchFieldDemo(props: { onSearch?: (value: string) => void }) {
 // ============================================
 // Styled Slider Demo (ui package)
 // ============================================
+
+// ============================================
+// Styled ComboBox Demo (ui package)
+// ============================================
+
+interface ComboBoxItem {
+  id: string
+  name: string
+  category: string
+}
+
+const comboBoxItems: ComboBoxItem[] = [
+  { id: 'apple', name: 'Apple', category: 'Fruit' },
+  { id: 'banana', name: 'Banana', category: 'Fruit' },
+  { id: 'cherry', name: 'Cherry', category: 'Fruit' },
+  { id: 'carrot', name: 'Carrot', category: 'Vegetable' },
+  { id: 'celery', name: 'Celery', category: 'Vegetable' },
+  { id: 'cucumber', name: 'Cucumber', category: 'Vegetable' },
+  { id: 'date', name: 'Date', category: 'Fruit' },
+  { id: 'elderberry', name: 'Elderberry', category: 'Fruit' },
+]
+
+function StyledComboBoxDemo(props: { onSelectionChange?: (key: string | number | null) => void }) {
+  const [selectedKey, setSelectedKey] = createSignal<string | number | null>(null)
+
+  const handleChange = (key: string | number | null) => {
+    setSelectedKey(key)
+    props.onSelectionChange?.(key)
+  }
+
+  return (
+    <div class="space-y-8">
+      {/* Basic ComboBox */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Basic ComboBox with Filtering</h4>
+        <div class="max-w-md">
+          <StyledComboBox<ComboBoxItem>
+            items={comboBoxItems}
+            getKey={(item: ComboBoxItem) => item.id}
+            getTextValue={(item: ComboBoxItem) => item.name}
+            selectedKey={selectedKey()}
+            onSelectionChange={handleChange}
+            defaultFilter={defaultContainsFilter}
+            label="Select a food"
+            placeholder="Type to filter..."
+          >
+            <StyledComboBoxInputGroup>
+              <StyledComboBoxInput />
+              <StyledComboBoxButton />
+            </StyledComboBoxInputGroup>
+            <StyledComboBoxListBox>
+              {(item: ComboBoxItem) => (
+                <StyledComboBoxOption id={item.id}>
+                  <div class="flex justify-between items-center w-full">
+                    <span>{item.name}</span>
+                    <span class="text-xs text-primary-400">{item.category}</span>
+                  </div>
+                </StyledComboBoxOption>
+              )}
+            </StyledComboBoxListBox>
+          </StyledComboBox>
+        </div>
+      </div>
+
+      {/* Size variants */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Size Variants</h4>
+        <div class="grid gap-6 sm:grid-cols-3">
+          <StyledComboBox<ComboBoxItem>
+            items={comboBoxItems}
+            getKey={(item: ComboBoxItem) => item.id}
+            getTextValue={(item: ComboBoxItem) => item.name}
+            defaultFilter={defaultContainsFilter}
+            size="sm"
+            label="Small"
+            placeholder="Filter..."
+          >
+            <StyledComboBoxInputGroup>
+              <StyledComboBoxInput />
+              <StyledComboBoxButton />
+            </StyledComboBoxInputGroup>
+            <StyledComboBoxListBox>
+              {(item: ComboBoxItem) => (
+                <StyledComboBoxOption id={item.id}>{item.name}</StyledComboBoxOption>
+              )}
+            </StyledComboBoxListBox>
+          </StyledComboBox>
+
+          <StyledComboBox<ComboBoxItem>
+            items={comboBoxItems}
+            getKey={(item: ComboBoxItem) => item.id}
+            getTextValue={(item: ComboBoxItem) => item.name}
+            defaultFilter={defaultContainsFilter}
+            size="md"
+            label="Medium"
+            placeholder="Filter..."
+          >
+            <StyledComboBoxInputGroup>
+              <StyledComboBoxInput />
+              <StyledComboBoxButton />
+            </StyledComboBoxInputGroup>
+            <StyledComboBoxListBox>
+              {(item: ComboBoxItem) => (
+                <StyledComboBoxOption id={item.id}>{item.name}</StyledComboBoxOption>
+              )}
+            </StyledComboBoxListBox>
+          </StyledComboBox>
+
+          <StyledComboBox<ComboBoxItem>
+            items={comboBoxItems}
+            getKey={(item: ComboBoxItem) => item.id}
+            getTextValue={(item: ComboBoxItem) => item.name}
+            defaultFilter={defaultContainsFilter}
+            size="lg"
+            label="Large"
+            placeholder="Filter..."
+          >
+            <StyledComboBoxInputGroup>
+              <StyledComboBoxInput />
+              <StyledComboBoxButton />
+            </StyledComboBoxInputGroup>
+            <StyledComboBoxListBox>
+              {(item: ComboBoxItem) => (
+                <StyledComboBoxOption id={item.id}>{item.name}</StyledComboBoxOption>
+              )}
+            </StyledComboBoxListBox>
+          </StyledComboBox>
+        </div>
+      </div>
+
+      {/* With description and validation */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">With Description & Validation</h4>
+        <div class="grid gap-6 sm:grid-cols-2">
+          <StyledComboBox<ComboBoxItem>
+            items={comboBoxItems}
+            getKey={(item: ComboBoxItem) => item.id}
+            getTextValue={(item: ComboBoxItem) => item.name}
+            defaultFilter={defaultContainsFilter}
+            label="Favorite Food"
+            placeholder="Start typing..."
+            description="Choose your favorite food from the list"
+          >
+            <StyledComboBoxInputGroup>
+              <StyledComboBoxInput />
+              <StyledComboBoxButton />
+            </StyledComboBoxInputGroup>
+            <StyledComboBoxListBox>
+              {(item: ComboBoxItem) => (
+                <StyledComboBoxOption id={item.id}>{item.name}</StyledComboBoxOption>
+              )}
+            </StyledComboBoxListBox>
+          </StyledComboBox>
+
+          <StyledComboBox<ComboBoxItem>
+            items={comboBoxItems}
+            getKey={(item: ComboBoxItem) => item.id}
+            getTextValue={(item: ComboBoxItem) => item.name}
+            defaultFilter={defaultContainsFilter}
+            label="Required Food"
+            placeholder="Select one..."
+            isInvalid
+            errorMessage="Please select a food item"
+          >
+            <StyledComboBoxInputGroup>
+              <StyledComboBoxInput />
+              <StyledComboBoxButton />
+            </StyledComboBoxInputGroup>
+            <StyledComboBoxListBox>
+              {(item: ComboBoxItem) => (
+                <StyledComboBoxOption id={item.id}>{item.name}</StyledComboBoxOption>
+              )}
+            </StyledComboBoxListBox>
+          </StyledComboBox>
+        </div>
+      </div>
+
+      {/* Disabled state */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Disabled</h4>
+        <div class="max-w-md">
+          <StyledComboBox<ComboBoxItem>
+            items={comboBoxItems}
+            getKey={(item: ComboBoxItem) => item.id}
+            getTextValue={(item: ComboBoxItem) => item.name}
+            defaultSelectedKey="apple"
+            isDisabled
+            label="Disabled ComboBox"
+          >
+            <StyledComboBoxInputGroup>
+              <StyledComboBoxInput />
+              <StyledComboBoxButton />
+            </StyledComboBoxInputGroup>
+            <StyledComboBoxListBox>
+              {(item: ComboBoxItem) => (
+                <StyledComboBoxOption id={item.id}>{item.name}</StyledComboBoxOption>
+              )}
+            </StyledComboBoxListBox>
+          </StyledComboBox>
+        </div>
+      </div>
+
+      <p class="text-xs text-primary-400">
+        ComboBox combines a text input with a filterable listbox. Type to filter options, use arrow keys to navigate,
+        Enter to select, Escape to close. Selected: <strong class="text-primary-200">{selectedKey() || 'none'}</strong>
+      </p>
+    </div>
+  )
+}
 
 function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
   const [value, setValue] = createSignal(50)

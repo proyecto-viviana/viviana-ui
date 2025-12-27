@@ -242,6 +242,24 @@ export {
   type SliderAria,
 } from './slider';
 
+// Tooltip
+export {
+  createTooltip,
+  createTooltipTrigger,
+  type TooltipProps,
+  type TooltipAria,
+  type TooltipTriggerProps,
+  type TooltipTriggerAria,
+} from './tooltip';
+
+// ComboBox
+export {
+  createComboBox,
+  getComboBoxData,
+  type AriaComboBoxProps,
+  type ComboBoxAria,
+} from './combobox';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

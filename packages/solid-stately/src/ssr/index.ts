@@ -6,7 +6,12 @@
  */
 
 import { createUniqueId } from 'solid-js';
-import { isServer } from 'solid-js/web';
+import { isServer as _isServer } from 'solid-js/web';
+
+/**
+ * Re-export isServer from solid-js/web for convenience.
+ */
+export const isServer = _isServer;
 
 /**
  * Returns whether the component is currently being server side rendered.

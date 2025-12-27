@@ -39,8 +39,8 @@ export { Icon, GitHubIcon } from './icon';
 export type { IconProps, GitHubIconProps } from './icon';
 
 // Tooltip
-export { Tooltip } from './tooltip';
-export type { TooltipProps } from './tooltip';
+export { Tooltip, TooltipTrigger, SimpleTooltip } from './tooltip';
+export type { TooltipProps, TooltipTriggerProps, TooltipPlacement, TooltipVariant, SimpleTooltipProps } from './tooltip';
 
 // TextField
 export { TextField } from './textfield';
@@ -89,6 +89,10 @@ export type { SearchFieldProps, SearchFieldSize, SearchFieldVariant } from './se
 // Slider
 export { Slider } from './slider';
 export type { SliderProps, SliderSize, SliderVariant } from './slider';
+
+// ComboBox
+export { ComboBox, ComboBoxInputGroup, ComboBoxInput, ComboBoxButton, ComboBoxListBox, ComboBoxOption, defaultContainsFilter } from './combobox';
+export type { ComboBoxProps, ComboBoxInputProps, ComboBoxButtonProps, ComboBoxListBoxProps, ComboBoxOptionProps, ComboBoxSize, FilterFn, MenuTriggerAction } from './combobox';
 
 // ============================================
 // CUSTOM COMPONENTS

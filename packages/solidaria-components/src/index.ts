@@ -239,3 +239,35 @@ export {
   type SliderOutputProps,
   type SliderOutputRenderProps,
 } from './Slider';
+
+// Tooltip
+export {
+  Tooltip,
+  TooltipTrigger,
+  type TooltipProps,
+  type TooltipRenderProps,
+  type TooltipTriggerComponentProps,
+  type TooltipTriggerState,
+} from './Tooltip';
+
+// ComboBox
+export {
+  ComboBox,
+  ComboBoxInput,
+  ComboBoxButton,
+  ComboBoxListBox,
+  ComboBoxOption,
+  ComboBoxContext,
+  ComboBoxStateContext,
+  defaultContainsFilter,
+  type ComboBoxProps,
+  type ComboBoxRenderProps,
+  type ComboBoxInputProps,
+  type ComboBoxInputRenderProps,
+  type ComboBoxButtonProps,
+  type ComboBoxButtonRenderProps,
+  type ComboBoxListBoxProps,
+  type ComboBoxListBoxRenderProps,
+  type ComboBoxOptionProps,
+  type ComboBoxOptionRenderProps,
+} from './ComboBox';

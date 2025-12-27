@@ -5,8 +5,11 @@ type Props = { [key: string]: unknown };
  * by chaining them rather than replacing.
  *
  * Based on react-aria's mergeProps but adapted for SolidJS.
+ *
+ * @param args - Props objects to merge
+ * @returns Merged props object. Use type parameter R to specify the result type.
  */
-export function mergeProps<T extends object>(...args: T[]): Record<string, unknown> {
+export function mergeProps<R extends object = Record<string, unknown>, T extends object = object>(...args: T[]): R {
   const result: Props = {};
 
   for (const props of args) {
@@ -34,7 +37,7 @@ export function mergeProps<T extends object>(...args: T[]): Record<string, unkno
     }
   }
 
-  return result;
+  return result as R;
 }
 
 function chainHandlers(existingHandler: Function, newHandler: Function) {

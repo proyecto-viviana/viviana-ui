@@ -179,12 +179,16 @@ export function removeDataAttributes<T extends Record<string, unknown>>(props: T
 }
 
 /**
- * Filter DOM props - keep only valid DOM attributes
+ * Filter DOM props - keep only valid DOM attributes.
+ *
+ * @param props - Component props to filter
+ * @param options - Options for filtering (global: include global attrs)
+ * @returns Object containing only valid DOM props. Use type parameter R to specify return type.
  */
-export function filterDOMProps<T extends Record<string, unknown>>(
-  props: T,
+export function filterDOMProps<R extends object = Record<string, unknown>>(
+  props: object,
   options: { global?: boolean } = {}
-): Record<string, unknown> {
+): R {
   const { global = false } = options;
   const result: Record<string, unknown> = {};
 
@@ -197,16 +201,19 @@ export function filterDOMProps<T extends Record<string, unknown>>(
   const dataAttrs = /^data-/;
   const eventHandlers = /^on[A-Z]/;
 
-  for (const [key, value] of Object.entries(props)) {
+  for (const key in props) {
     if (
-      (global && globalAttrs.has(key)) ||
-      ariaAttrs.test(key) ||
-      dataAttrs.test(key) ||
-      eventHandlers.test(key)
+      Object.prototype.hasOwnProperty.call(props, key) &&
+      (
+        (global && globalAttrs.has(key)) ||
+        ariaAttrs.test(key) ||
+        dataAttrs.test(key) ||
+        eventHandlers.test(key)
+      )
     ) {
-      result[key] = value;
+      result[key] = (props as Record<string, unknown>)[key];
     }
   }
 
-  return result;
+  return result as R;
 }
