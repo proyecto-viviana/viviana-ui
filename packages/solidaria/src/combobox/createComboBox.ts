@@ -93,10 +93,14 @@ export function createComboBox<T>(
   props: MaybeAccessor<AriaComboBoxProps>,
   state: ComboBoxState<T>,
   inputRef: () => HTMLInputElement | null,
-  buttonRef?: () => HTMLElement | null
+  buttonRef?: () => HTMLElement | null,
+  listBoxRef?: () => HTMLElement | null
 ): ComboBoxAria<T> {
   const getProps = () => access(props);
   const id = createId(getProps().id);
+
+  // Track if a pointerdown happened inside the listbox to prevent blur from closing
+  let isPointerDownInsideListBox = false;
 
   // Generate IDs for associated elements
   const inputId = `${id}-input`;
@@ -104,6 +108,26 @@ export function createComboBox<T>(
   const listBoxId = `${id}-listbox`;
   const descriptionId = `${id}-description`;
   const errorMessageId = `${id}-error`;
+
+  // Set up global pointerdown listener to track clicks inside listbox
+  // This is needed because the option's createPress stops propagation
+  createEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    const handleGlobalPointerDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement;
+      // Check if the click is inside the listbox
+      if (target.closest(`[id="${listBoxId}"]`)) {
+        isPointerDownInsideListBox = true;
+      }
+    };
+
+    document.addEventListener('pointerdown', handleGlobalPointerDown, true);
+
+    onCleanup(() => {
+      document.removeEventListener('pointerdown', handleGlobalPointerDown, true);
+    });
+  });
 
   // Filter DOM props
   const domProps = () =>
@@ -297,26 +321,59 @@ export function createComboBox<T>(
   };
 
   const handleBlur = (e: FocusEvent) => {
-    // Don't blur if focus is moving to the button or listbox
-    const relatedTarget = e.relatedTarget as HTMLElement | null;
-    const button = buttonRef?.();
+    // Delay blur handling slightly to allow click events to complete
+    // This is necessary because clicking on a non-focusable element (like <li>)
+    // causes the input to lose focus before the click event fires
+    requestAnimationFrame(() => {
+      // If the menu is already closed (by option click), don't do anything
+      if (!state.isOpen()) {
+        return;
+      }
 
-    if (relatedTarget && (
-      button?.contains(relatedTarget) ||
-      relatedTarget.closest(`[id="${listBoxId}"]`)
-    )) {
-      return;
-    }
+      // Don't blur if focus is moving to the button or listbox
+      const relatedTarget = e.relatedTarget as HTMLElement | null;
+      const button = buttonRef?.();
+      const listBox = listBoxRef?.();
 
-    state.setFocused(false);
+      // Check if the click/focus is moving to the button or listbox
+      if (relatedTarget && (
+        button?.contains(relatedTarget) ||
+        relatedTarget.closest(`[id="${listBoxId}"]`)
+      )) {
+        return;
+      }
 
-    // Close and revert on blur
-    if (state.isOpen()) {
-      state.close();
-    }
+      // If a pointerdown happened inside the listbox, don't close
+      if (isPointerDownInsideListBox) {
+        isPointerDownInsideListBox = false;
+        return;
+      }
 
-    getProps().onBlur?.(e);
-    getProps().onFocusChange?.(false);
+      // Check if the active element is in the listbox
+      if (listBox) {
+        const activeElement = document.activeElement;
+        if (activeElement && listBox.contains(activeElement)) {
+          return;
+        }
+      }
+
+      // Check if the listbox still exists in the DOM (might have been clicked on)
+      // and if focus went back to the input
+      const input = inputRef();
+      if (input && document.activeElement === input) {
+        return;
+      }
+
+      state.setFocused(false);
+
+      // Close and revert on blur
+      if (state.isOpen()) {
+        state.close();
+      }
+
+      getProps().onBlur?.(e);
+      getProps().onFocusChange?.(false);
+    });
   };
 
   return {
@@ -395,6 +452,15 @@ export function createComboBox<T>(
         role: 'listbox',
         'aria-labelledby': inputId,
         tabIndex: -1,
+        // Track pointerdown inside listbox to prevent blur from closing
+        // Use capture phase because createPress calls stopPropagation on pointerdown
+        onPointerDownCapture: () => {
+          isPointerDownInsideListBox = true;
+        },
+        onMouseDownCapture: () => {
+          // Fallback for environments without PointerEvent
+          isPointerDownInsideListBox = true;
+        },
       } as JSX.HTMLAttributes<HTMLElement>;
     },
     get descriptionProps() {

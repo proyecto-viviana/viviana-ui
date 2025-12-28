@@ -6,7 +6,12 @@ export type TimelineEventType = 'follow' | 'like' | 'comment' | 'event' | 'custo
 
 export interface TimelineItemProps {
   type?: TimelineEventType
-  icon?: JSX.Element
+  /**
+   * Icon to display between the two avatars.
+   * Use a function returning JSX for SSR compatibility: `icon={() => <MyIcon />}`
+   * Or pass a simple string for text-based icons: `icon="👋"`
+   */
+  icon?: string | (() => JSX.Element)
   leftUser?: {
     name: string
     avatar?: string
@@ -15,7 +20,12 @@ export interface TimelineItemProps {
     name: string
     avatar?: string
   }
-  message?: JSX.Element
+  /**
+   * Custom message content.
+   * Use a function returning JSX for SSR compatibility: `message={() => <span>...</span>}`
+   * Or pass a simple string.
+   */
+  message?: string | (() => JSX.Element)
   class?: string
 }
 
@@ -56,6 +66,20 @@ export function TimelineItem(props: TimelineItemProps) {
   const leftName = () => props.leftUser?.name ?? ''
   const rightName = () => props.rightUser?.name ?? ''
 
+  const renderIcon = () => {
+    const icon = props.icon
+    if (!icon) return null
+    if (typeof icon === 'string') return icon
+    return icon()
+  }
+
+  const renderMessage = () => {
+    const message = props.message
+    if (!message) return null
+    if (typeof message === 'string') return message
+    return message()
+  }
+
   return (
     <div class={`inline-flex w-auto flex-col gap-5 rounded-2xl border border-primary-700 bg-bg-200 p-5 hover:bg-bg-300 transition-colors ${props.class ?? ''}`}>
       <div class="flex items-center justify-around gap-3">
@@ -63,7 +87,7 @@ export function TimelineItem(props: TimelineItemProps) {
           <Avatar src={props.leftUser!.avatar} alt={props.leftUser!.name} />
         </Show>
         <Show when={props.icon}>
-          {props.icon}
+          {renderIcon()}
         </Show>
         <Show when={props.rightUser}>
           <Avatar src={props.rightUser!.avatar} alt={props.rightUser!.name} />
@@ -72,7 +96,7 @@ export function TimelineItem(props: TimelineItemProps) {
       <div class="flex items-center justify-center gap-3 text-center">
         <span class="font-light text-primary-300">
           <Show when={props.message} fallback={eventMessages[type()](leftName(), rightName())}>
-            {props.message}
+            {renderMessage()}
           </Show>
         </span>
       </div>

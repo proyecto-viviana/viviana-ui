@@ -1,4 +1,4 @@
-import type { JSX } from 'solid-js'
+import { type JSX, Show } from 'solid-js'
 
 export type ChipVariant = 'primary' | 'secondary' | 'accent' | 'outline'
 
@@ -6,7 +6,12 @@ export interface ChipProps {
   text: string
   variant?: ChipVariant
   onClick?: () => void
-  icon?: JSX.Element
+  /**
+   * Icon to display before the text.
+   * Use a function returning JSX for SSR compatibility: `icon={() => <MyIcon />}`
+   * Or pass a simple string for text-based icons: `icon="★"`
+   */
+  icon?: string | (() => JSX.Element)
   class?: string
 }
 
@@ -20,12 +25,21 @@ const variantStyles: Record<ChipVariant, string> = {
 export function Chip(props: ChipProps) {
   const variant = () => props.variant ?? 'primary'
 
+  const renderIcon = () => {
+    const icon = props.icon
+    if (!icon) return null
+    if (typeof icon === 'string') return icon
+    return icon()
+  }
+
   return (
     <button
       class={`flex justify-center items-center h-6 w-auto rounded-full px-4 py-1 font-medium text-sm tracking-wide transition-colors ${variantStyles[variant()]} ${props.class ?? ''}`}
       onClick={props.onClick}
     >
-      {props.icon && <span class="mr-1.5">{props.icon}</span>}
+      <Show when={props.icon}>
+        <span class="mr-1.5">{renderIcon()}</span>
+      </Show>
       <span>{props.text}</span>
     </button>
   )

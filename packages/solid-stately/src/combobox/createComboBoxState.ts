@@ -113,6 +113,12 @@ export interface ComboBoxState<T = unknown> {
   revert(): void;
   /** Whether a specific key is disabled. */
   isKeyDisabled(key: Key): boolean;
+  /** Select a key and close the menu (for ListState compatibility). */
+  select(key: Key): void;
+  /** The selection mode (always 'single' for combobox). */
+  readonly selectionMode: Accessor<'single'>;
+  /** Check if a key is selected. */
+  isSelected(key: Key): boolean;
   /** Whether the combobox is disabled. */
   readonly isDisabled: boolean;
   /** Whether the combobox is read-only. */
@@ -503,6 +509,16 @@ export function createComboBoxState<T = unknown>(
     return key;
   }, undefined);
 
+  // ---- Selection Methods for ListState compatibility ----
+  // These methods allow createOption to work with ComboBoxState
+  const select = (key: Key) => {
+    setSelectedKey(key);
+    closeMenu();
+  };
+
+  const selectionMode: Accessor<'single'> = () => 'single';
+  const isSelected = (key: Key) => selectedKey() === key;
+
   // ---- Return State ----
   return {
     collection: displayedCollection,
@@ -524,6 +540,10 @@ export function createComboBoxState<T = unknown>(
     focusStrategy,
     commit,
     revert,
+    // Selection state methods for ListState compatibility
+    select,
+    selectionMode,
+    isSelected,
     isKeyDisabled: (key: Key) => listState.isDisabled(key),
     get isDisabled() {
       return getProps().isDisabled ?? false;

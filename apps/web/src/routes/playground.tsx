@@ -136,7 +136,7 @@ function Playground() {
         </div>
 
         <div class="grid gap-8 lg:grid-cols-2">
-          {/* Button Component */}
+          {/* DEBUG: Testing just Button section */}
           <Section title="Button" description="Primary interactive element with variants and styles">
             <div class="space-y-4">
               <div class="flex flex-wrap gap-3">
@@ -161,7 +161,7 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Badge Component */}
+          {/* DEBUG: Testing Badge alone */}
           <Section title="Badge" description="Notification indicators and counts">
             <div class="flex flex-wrap items-center gap-4">
               <div class="flex items-center gap-2">
@@ -187,18 +187,19 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Chip Component */}
+          {/* Chip with both string and function icons (SSR-safe) */}
           <Section title="Chip" description="Small labels and tag buttons">
             <div class="flex flex-wrap gap-3">
               <Chip text="Primary" variant="primary" onClick={() => setLastAction('Primary chip')} />
               <Chip text="Secondary" variant="secondary" onClick={() => setLastAction('Secondary chip')} />
               <Chip text="Accent" variant="accent" onClick={() => setLastAction('Accent chip')} />
               <Chip text="Outline" variant="outline" onClick={() => setLastAction('Outline chip')} />
-              <Chip text="With Icon" variant="primary" icon={<span>★</span>} onClick={() => setLastAction('Icon chip')} />
+              <Chip text="String Icon" variant="primary" icon="★" onClick={() => setLastAction('String icon chip')} />
+              <Chip text="Function Icon" variant="accent" icon={() => <span>🎉</span>} onClick={() => setLastAction('Function icon chip')} />
             </div>
           </Section>
 
-          {/* Alert Component */}
+          {/* DEBUG: Testing Alert */}
           <Section title="Alert" description="Contextual feedback messages">
             <div class="space-y-3">
               <Alert variant="info" title="Information">
@@ -216,8 +217,8 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Avatar Component */}
-          <Section title="Avatar" description="User profile images with status">
+          {/* DEBUG: Commenting out Avatar onwards for now */}
+          {/* <Section title="Avatar" description="User profile images with status">
             <div class="space-y-4">
               <div class="flex items-center gap-4">
                 <Avatar size="xs" alt="XS" />
@@ -237,8 +238,8 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Switch Components */}
-          <Section title="Switch" description="Toggle and tab switch controls">
+          {/* Commenting out all remaining sections for testing */}
+          {/* <Section title="Switch" description="Toggle and tab switch controls">
             <div class="space-y-4">
               <div class="flex items-center gap-4">
                 <span class="text-sm text-primary-200">Toggle:</span>
@@ -260,7 +261,6 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Checkbox Component */}
           <Section title="Checkbox" description="Toggle selection with accessible checkbox">
             <div class="space-y-4">
               <div class="space-y-3">
@@ -292,7 +292,6 @@ function Playground() {
             </div>
           </Section>
 
-          {/* TextField Component */}
           <Section title="TextField" description="Text input with label, description, and validation">
             <div class="space-y-4">
               <TextField
@@ -335,10 +334,10 @@ function Playground() {
                 placeholder="With filled style"
               />
             </div>
-          </Section>
+          </Section> */}
 
-          {/* Link Component */}
-          <Section title="Link" description="Accessible link with hover and press states">
+          {/* DEBUG: Commenting out Link and all remaining sections */}
+          {/* <Section title="Link" description="Accessible link with hover and press states">
             <div class="space-y-4">
               <div class="flex flex-wrap gap-4">
                 <Link href="https://example.com" target="_blank">External Link</Link>
@@ -355,7 +354,6 @@ function Playground() {
             </div>
           </Section>
 
-          {/* ProgressBar Component */}
           <Section title="ProgressBar" description="Shows progress of an operation over time">
             <div class="space-y-6">
               <div class="space-y-4">
@@ -389,7 +387,6 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Separator Component */}
           <Section title="Separator" description="Visual divider between groups of content">
             <div class="space-y-6">
               <div class="space-y-4">
@@ -444,7 +441,6 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Radio Group Component */}
           <Section title="RadioGroup" description="Single selection from multiple options">
             <div class="space-y-6">
               <RadioGroup
@@ -501,8 +497,64 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Profile Card */}
-          <Section title="ProfileCard" description="User profile display cards">
+          <Section title="RadioGroup2" description="Single selection from multiple options">
+            <div class="space-y-6">
+              <RadioGroup
+                label="Choose your plan"
+                value={radioValue()}
+                onChange={(value) => {
+                  setRadioValue(value)
+                  setLastAction(`Radio selected: ${value}`)
+                }}
+              >
+                <Radio value="free">Free Plan</Radio>
+                <Radio value="pro">Pro Plan</Radio>
+                <Radio value="enterprise">Enterprise Plan</Radio>
+              </RadioGroup>
+
+              <div class="border-t border-bg-100 pt-4">
+                <RadioGroup
+                  label="Horizontal layout"
+                  orientation="horizontal"
+                  defaultValue="option2"
+                >
+                  <Radio value="option1">Option 1</Radio>
+                  <Radio value="option2">Option 2</Radio>
+                  <Radio value="option3">Option 3</Radio>
+                </RadioGroup>
+              </div>
+
+              <div class="border-t border-bg-100 pt-4">
+                <span class="text-sm text-primary-300 block mb-2">Sizes:</span>
+                <div class="flex gap-8">
+                  <RadioGroup aria-label="Small size" size="sm" defaultValue="a">
+                    <Radio value="a">Small</Radio>
+                  </RadioGroup>
+                  <RadioGroup aria-label="Medium size" size="md" defaultValue="a">
+                    <Radio value="a">Medium</Radio>
+                  </RadioGroup>
+                  <RadioGroup aria-label="Large size" size="lg" defaultValue="a">
+                    <Radio value="a">Large</Radio>
+                  </RadioGroup>
+                </div>
+              </div>
+
+              <div class="border-t border-bg-100 pt-4">
+                <RadioGroup
+                  label="With validation"
+                  isInvalid
+                  errorMessage="Please select an option"
+                  description="This field is required"
+                >
+                  <Radio value="a">Option A</Radio>
+                  <Radio value="b">Option B</Radio>
+                </RadioGroup>
+              </div>
+            </div>
+          </Section>
+
+          {/* DEBUG: Commenting out cards/dialog section */}
+          {/* <Section title="ProfileCard" description="User profile display cards">
             <ProfileCard
               username="@viviana_dev"
               bio="Building accessible SolidJS components. React Aria patterns for Solid."
@@ -517,7 +569,6 @@ function Playground() {
             />
           </Section>
 
-          {/* Event Card */}
           <Section title="EventCard" description="Event display with attendees">
             <EventCard
               title="Fiesta de Taylor 2021 todos invitados"
@@ -538,7 +589,6 @@ function Playground() {
             />
           </Section>
 
-          {/* Calendar Card */}
           <Section title="CalendarCard" description="Calendar event with followers">
             <CalendarCard
               title="Component Design Workshop"
@@ -551,7 +601,6 @@ function Playground() {
             />
           </Section>
 
-          {/* Conversation Components */}
           <Section title="Conversation" description="Chat and messaging UI">
             <div class="space-y-4">
               <ConversationPreview
@@ -569,7 +618,6 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Timeline Item */}
           <Section title="TimelineItem" description="Social activity timeline">
             <div class="flex flex-wrap gap-4">
               <TimelineItem
@@ -587,7 +635,6 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Dialog */}
           <Section title="Dialog" description="Modal dialog with actions" class="lg:col-span-2">
             <Dialog
               title="Welcome!"
@@ -609,7 +656,6 @@ function Playground() {
             </Dialog>
           </Section>
 
-          {/* createButton Hook */}
           <Section title="createButton Hook" description="Low-level hook for custom implementations" class="lg:col-span-2">
             <div class="flex flex-wrap gap-4">
               <CustomGradientButton onPress={() => setLastAction('Gradient button pressed!')}>
@@ -621,67 +667,56 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Checkbox Group Hook */}
           <Section title="createCheckboxGroup Hook" description="Accessible checkbox group with ARIA support" class="lg:col-span-2">
             <CheckboxGroupDemo onSelectionChange={(values) => setLastAction(`Selected: ${values.join(', ') || 'none'}`)} />
-          </Section>
+          </Section> */}
 
-          {/* ListBox Component */}
-          <Section title="ListBox" description="Accessible list with keyboard navigation and selection">
+          {/* DEBUG: Commenting out middle sections */}
+          {/* <Section title="ListBox" description="Accessible list with keyboard navigation and selection">
             <ListBoxDemo onSelectionChange={(key) => setLastAction(`ListBox selected: ${key}`)} />
           </Section>
 
-          {/* Menu Component */}
           <Section title="Menu" description="Dropdown menu with keyboard navigation">
             <MenuDemo onAction={(action) => setLastAction(`Menu action: ${action}`)} />
           </Section>
 
-          {/* Select Component */}
           <Section title="Select" description="Accessible dropdown select with keyboard support" class="lg:col-span-2">
             <SelectDemo onSelectionChange={(key) => setLastAction(`Select changed: ${key}`)} />
           </Section>
 
-          {/* Styled Select Component */}
           <Section title="Styled Select (ui)" description="Pre-styled select with size variants">
             <StyledSelectDemo onSelectionChange={(key) => setLastAction(`Styled Select: ${key}`)} />
           </Section>
 
-          {/* Styled Menu Component */}
           <Section title="Styled Menu (ui)" description="Pre-styled dropdown menu with variants">
             <StyledMenuDemo onAction={(action) => setLastAction(`Styled Menu: ${action}`)} />
           </Section>
 
-          {/* Styled ListBox Component */}
           <Section title="Styled ListBox (ui)" description="Pre-styled list with selection" class="lg:col-span-2">
             <StyledListBoxDemo onSelectionChange={(key) => setLastAction(`Styled ListBox: ${key}`)} />
-          </Section>
+          </Section> */}
 
-          {/* Styled Tabs Component */}
-          <Section title="Styled Tabs (ui)" description="Pre-styled tabs with variants" class="lg:col-span-2">
+          {/* DEBUG: Commenting out bottom sections to find hydration error source */}
+          {/* <Section title="Styled Tabs (ui)" description="Pre-styled tabs with variants" class="lg:col-span-2">
             <StyledTabsDemo onSelectionChange={(key) => setLastAction(`Styled Tab: ${key}`)} />
           </Section>
 
-          {/* Styled Breadcrumbs Component */}
           <Section title="Styled Breadcrumbs (ui)" description="Pre-styled navigation breadcrumbs" class="lg:col-span-2">
             <StyledBreadcrumbsDemo onNavigate={(path) => setLastAction(`Navigate: ${path}`)} />
           </Section>
 
-          {/* Styled NumberField Component */}
           <Section title="Styled NumberField (ui)" description="Number input with increment/decrement buttons" class="lg:col-span-2">
             <StyledNumberFieldDemo onChange={(value) => setLastAction(`NumberField: ${value}`)} />
           </Section>
 
-          {/* Styled SearchField Component */}
           <Section title="Styled SearchField (ui)" description="Search input with clear button" class="lg:col-span-2">
             <StyledSearchFieldDemo onSearch={(value) => setLastAction(`Search: ${value}`)} />
           </Section>
 
-          {/* Styled Slider Component */}
           <Section title="Styled Slider (ui)" description="Range input with draggable thumb" class="lg:col-span-2">
             <StyledSliderDemo onChange={(value) => setLastAction(`Slider: ${value}`)} />
-          </Section>
+          </Section> */}
 
-          {/* Styled ComboBox Component */}
           <Section title="Styled ComboBox (ui)" description="Filterable dropdown with text input" class="lg:col-span-2">
             <StyledComboBoxDemo onSelectionChange={(key) => setLastAction(`ComboBox: ${key}`)} />
           </Section>

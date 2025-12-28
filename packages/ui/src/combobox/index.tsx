@@ -326,12 +326,19 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
     return [base, sizeClass, colorClass, focusClass, customClass].filter(Boolean).join(' ')
   }
 
+  // Compute padding for non-selected items to align with check icon
+  const iconPadding: Record<ComboBoxSize, string> = {
+    sm: 'pl-6',  // h-4 icon + gap
+    md: 'pl-7',  // h-5 icon + gap
+    lg: 'pl-8',  // h-6 icon + gap
+  }
+
   const renderChildren = (renderProps: ComboBoxOptionRenderProps) => (
     <>
       <Show when={renderProps.isSelected}>
         <CheckIcon class={`${styles().icon} text-accent flex-shrink-0`} />
       </Show>
-      <span class={`flex-1 ${renderProps.isSelected ? '' : `pl-[calc(${styles().icon.split(' ')[0].replace('h-', '')}*0.25rem+0.5rem)]`}`}>
+      <span class={`flex-1 ${renderProps.isSelected ? '' : iconPadding[size]}`}>
         {typeof local.children === 'function' ? local.children(renderProps) : local.children}
       </span>
     </>

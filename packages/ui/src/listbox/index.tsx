@@ -44,8 +44,11 @@ export interface ListBoxOptionProps<T> extends Omit<HeadlessListBoxOptionProps<T
   class?: string
   /** Optional description text. */
   description?: string
-  /** Optional icon to display before the label. */
-  icon?: JSX.Element
+  /**
+   * Optional icon to display before the label.
+   * Use a function returning JSX for SSR compatibility: `icon={() => <MyIcon />}`
+   */
+  icon?: () => JSX.Element
 }
 
 // ============================================
@@ -187,7 +190,7 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   const renderChildren = (renderProps: ListBoxOptionRenderProps) => (
     <>
       <Show when={local.icon}>
-        <span class={`flex-shrink-0 ${styles().icon}`}>{local.icon}</span>
+        <span class={`flex-shrink-0 ${styles().icon}`}>{local.icon?.()}</span>
       </Show>
       <Show when={renderProps.isSelected}>
         <CheckIcon class={`flex-shrink-0 ${styles().icon} text-accent`} />

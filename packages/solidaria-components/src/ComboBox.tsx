@@ -599,7 +599,7 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
     },
   });
 
-  // Create listbox aria props
+  // Create listbox aria props using ComboBoxState's ListState-compatible interface
   const { listBoxProps } = createListBox(
     {},
     {
@@ -608,26 +608,19 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
       setFocusedKey: state.setFocusedKey,
       isFocused: state.isFocused,
       setFocused: state.setFocused,
+      // Use state's built-in methods
+      selectionMode: state.selectionMode,
+      select: state.select,
+      isSelected: state.isSelected,
+      isDisabled: state.isKeyDisabled,
+      // Additional ListState interface requirements
       selectedKeys: () => {
         const key = state.selectedKey();
         return key != null ? new Set([key]) : new Set();
       },
-      isSelected: (key: Key) => state.selectedKey() === key,
-      isDisabled: state.isKeyDisabled,
-      selectionMode: () => 'single' as const,
       disallowEmptySelection: () => true,
-      select: (key: Key) => {
-        state.setSelectedKey(key);
-        state.close();
-      },
-      toggleSelection: (key: Key) => {
-        state.setSelectedKey(key);
-        state.close();
-      },
-      replaceSelection: (key: Key) => {
-        state.setSelectedKey(key);
-        state.close();
-      },
+      toggleSelection: state.select,
+      replaceSelection: state.select,
       extendSelection: () => {},
       selectAll: () => {},
       clearSelection: () => state.setSelectedKey(null),
@@ -662,10 +655,28 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
 
   const items = () => Array.from(state.collection());
 
+  // Prevent focus from being lost when clicking in the listbox
+  // This is critical - if we don't prevent default, the input loses focus
+  // and the blur handler closes the menu before the click can be processed
+  // We need to attach this in the ref callback to use capture phase
+  const setupMouseDownHandler = (el: HTMLUListElement) => {
+    listBoxRef = el;
+    if (el) {
+      const mouseHandler = (e: MouseEvent) => {
+        e.preventDefault();
+      };
+      const pointerHandler = (e: PointerEvent) => {
+        e.preventDefault();
+      };
+      el.addEventListener('mousedown', mouseHandler, true); // capture phase
+      el.addEventListener('pointerdown', pointerHandler, true); // capture phase
+    }
+  };
+
   return (
     <Show when={isOpen()}>
       <ul
-        ref={(el) => (listBoxRef = el)}
+        ref={setupMouseDownHandler}
         {...cleanContextProps()}
         {...cleanListBoxProps()}
         class={renderProps.class()}
@@ -711,7 +722,7 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
   }
   const state = context as ComboBoxState<T>;
 
-  // Create option aria props
+  // Create option aria props using ComboBoxState's ListState-compatible interface
   const optionAria = createOption<T>(
     {
       key: local.id,
@@ -728,26 +739,19 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
       setFocusedKey: state.setFocusedKey,
       isFocused: state.isFocused,
       setFocused: state.setFocused,
+      // Use state's built-in methods
+      selectionMode: state.selectionMode,
+      select: state.select,
+      isSelected: state.isSelected,
+      isDisabled: state.isKeyDisabled,
+      // Additional ListState interface requirements
       selectedKeys: () => {
         const key = state.selectedKey();
         return key != null ? new Set([key]) : new Set();
       },
-      isSelected: (key: Key) => state.selectedKey() === key,
-      isDisabled: state.isKeyDisabled,
-      selectionMode: () => 'single' as const,
       disallowEmptySelection: () => true,
-      select: (key: Key) => {
-        state.setSelectedKey(key);
-        state.close();
-      },
-      toggleSelection: (key: Key) => {
-        state.setSelectedKey(key);
-        state.close();
-      },
-      replaceSelection: (key: Key) => {
-        state.setSelectedKey(key);
-        state.close();
-      },
+      toggleSelection: state.select,
+      replaceSelection: state.select,
       extendSelection: () => {},
       selectAll: () => {},
       clearSelection: () => state.setSelectedKey(null),

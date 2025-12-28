@@ -55,8 +55,11 @@ export interface MenuProps<T> extends Omit<HeadlessMenuProps<T>, 'class' | 'styl
 export interface MenuItemProps<T> extends Omit<HeadlessMenuItemProps<T>, 'class' | 'style'> {
   /** Additional CSS class name. */
   class?: string
-  /** Optional icon to display before the label. */
-  icon?: JSX.Element
+  /**
+   * Optional icon to display before the label.
+   * Use a function returning JSX for SSR compatibility: `icon={() => <MyIcon />}`
+   */
+  icon?: () => JSX.Element
   /** Optional keyboard shortcut to display. */
   shortcut?: string
   /** Whether this is a destructive action. */
@@ -239,7 +242,7 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
   const renderChildren = (renderProps: MenuItemRenderProps) => (
     <>
       <Show when={local.icon}>
-        <span class={`flex-shrink-0 ${styles().icon}`}>{local.icon}</span>
+        <span class={`flex-shrink-0 ${styles().icon}`}>{local.icon?.()}</span>
       </Show>
       <span class="flex-1">
         {typeof local.children === 'function' ? local.children(renderProps) : local.children}
