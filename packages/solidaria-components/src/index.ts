@@ -271,3 +271,30 @@ export {
   type ComboBoxOptionProps,
   type ComboBoxOptionRenderProps,
 } from './ComboBox';
+
+// Dialog
+export {
+  Dialog,
+  DialogTrigger,
+  DialogContext,
+  DialogTriggerContext,
+  useDialogTrigger,
+  Heading,
+  DialogHeading,
+  type DialogProps,
+  type DialogRenderProps,
+  type DialogTriggerProps,
+  type HeadingProps,
+} from './Dialog';
+
+// Modal
+export {
+  Modal,
+  ModalOverlay,
+  OverlayTriggerStateContext,
+  useOverlayTriggerState,
+  type ModalProps,
+  type ModalOverlayProps,
+  type ModalRenderProps,
+  type OverlayTriggerState,
+} from './Modal';

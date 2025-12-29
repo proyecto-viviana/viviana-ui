@@ -165,17 +165,24 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
   }
 
   const vStyles = variantStyles[ctx.variant]
-  const separatorClass = `${sizeStyles[ctx.size].icon} ${vStyles.separator} mx-1 shrink-0 hidden data-current:hidden [&:not([data-current])]:block`
+  // Hide separator on first item, and on current (last) item
+  const separatorClass = `${sizeStyles[ctx.size].icon} ${vStyles.separator} mx-1 shrink-0 hidden data-current:hidden [&:not([data-current])]:block [li:first-child_&]:!hidden`
+
+  // Wrap children with separator icon
+  const renderChildren = () => (
+    <>
+      {/* Separator shows before items except first and current */}
+      {ctx.showSeparator && <ChevronIcon class={separatorClass} />}
+      {local.children as JSX.Element}
+    </>
+  )
 
   return (
     <HeadlessBreadcrumbItem
       {...headlessProps}
       class={getClassName}
-    >
-      {/* Separator shows before non-current items via data-current attribute */}
-      {ctx.showSeparator && <ChevronIcon class={separatorClass} />}
-      {local.children}
-    </HeadlessBreadcrumbItem>
+      children={renderChildren()}
+    />
   )
 }
 

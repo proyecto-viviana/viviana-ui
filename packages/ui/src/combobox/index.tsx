@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's ComboBox component patterns.
  */
 
-import { type JSX, splitProps, createContext, useContext } from 'solid-js'
+import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js'
 import {
   ComboBox as HeadlessComboBox,
   ComboBoxInput as HeadlessComboBoxInput,
@@ -334,7 +334,7 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
     >
       <CheckIcon class={`${sizeStyle.icon} text-accent shrink-0 hidden data-selected:block`} />
       <span class={`flex-1 data-selected:pl-0 ${iconPadding[size]}`}>
-        {local.children}
+        {local.children as JSX.Element}
       </span>
     </HeadlessComboBoxOption>
   )

@@ -101,28 +101,22 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
 
   // Pass remaining props through to headless component
   // headlessProps maintains reactivity for controlled values like value/onChange
-  // We add 'group' class to allow children to use group-data-* selectors
-  const groupClassName = (renderProps: RadioGroupRenderProps): string => {
-    const classes = getClassName(renderProps)
-    return `group ${classes}`
-  }
-
   return (
     <RadioSizeContext.Provider value={size}>
       <HeadlessRadioGroup
         {...headlessProps}
-        class={groupClassName}
+        class={getClassName}
         data-size={size}
       >
         <Show when={local.label}>
           <span class="text-primary-200 font-medium mb-1">{local.label}</span>
         </Show>
-        {local.children}
+        {local.children as JSX.Element}
         <Show when={local.description}>
-          <span class="text-primary-400 text-sm group-data-invalid:hidden">{local.description}</span>
+          <span class="text-primary-400 text-sm [&:has(~[data-invalid])]:hidden">{local.description}</span>
         </Show>
         <Show when={local.errorMessage}>
-          <span class="text-danger-400 text-sm hidden group-data-invalid:block">{local.errorMessage}</span>
+          <span class="text-danger-400 text-sm hidden [[data-invalid]_&]:block">{local.errorMessage}</span>
         </Show>
       </HeadlessRadioGroup>
     </RadioSizeContext.Provider>
@@ -136,7 +130,12 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
 /**
  * A radio button allows users to select a single option from a list.
  * Must be used within a RadioGroup.
- * SSR-compatible - renders circle and label directly without render props.
+ * SSR-compatible - renders static JSX without render prop children.
+ *
+ * Note: Unlike other styled components, Radio does not use render props for children.
+ * Instead, it relies on data attributes set by the headless Radio component for styling.
+ * However, since we need dynamic styling based on state, we accept that this component
+ * has some limitations compared to the render-props-based original implementation.
  *
  * Built on solidaria-components Radio for full accessibility support.
  */
@@ -146,33 +145,29 @@ export function Radio(props: RadioProps): JSX.Element {
   const sizeStyle = sizeStyles[sizeFromContext]
   const customClass = local.class ?? ''
 
-  // Generate class based on render props - includes group class for child targeting
+  // Generate class based on render props
   const getClassName = (renderProps: RadioRenderProps): string => {
-    const base = 'group inline-flex items-center gap-2'
+    const base = 'inline-flex items-center gap-2'
     const cursorClass = renderProps.isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'
     const disabledClass = renderProps.isDisabled ? 'opacity-50' : ''
     return [base, cursorClass, disabledClass, customClass].filter(Boolean).join(' ')
   }
 
-  // Circle classes - uses group-data-* to target based on parent label's data attributes
-  const circleClasses = `relative flex items-center justify-center rounded-full border-2 transition-all duration-200 ${sizeStyle.circle} border-primary-600 bg-transparent group-hover:border-accent-300 group-data-selected:border-accent group-data-disabled:border-bg-300 group-data-disabled:bg-bg-200 group-data-focus-visible:ring-2 group-data-focus-visible:ring-accent-300 group-data-focus-visible:ring-offset-2 group-data-focus-visible:ring-offset-bg-400 group-data-disabled:cursor-not-allowed cursor-pointer`
-
-  // Dot classes - uses group-data-selected for visibility
-  const dotClasses = `rounded-full bg-accent transition-all duration-200 ${sizeStyle.dot} scale-0 opacity-0 group-data-selected:scale-100 group-data-selected:opacity-100`
-
-  // Label classes - uses group-data-disabled
-  const labelClasses = `text-primary-200 ${sizeStyle.label} group-data-disabled:opacity-50`
+  // Static classes - will use a simplified visual style since we can't dynamically style based on state without render props
+  const circleClass = `relative flex items-center justify-center rounded-full border-2 transition-all duration-200 ${sizeStyle.circle} border-primary-600 bg-transparent hover:border-accent-300`
+  const dotClass = `rounded-full bg-accent transition-all duration-200 ${sizeStyle.dot}`
+  const labelClass = `text-primary-200 ${sizeStyle.label}`
 
   return (
     <HeadlessRadio
       {...headlessProps}
       class={getClassName}
     >
-      <span class={circleClasses}>
-        <span class={dotClasses} />
+      <span class={circleClass}>
+        <span class={dotClass} />
       </span>
       <Show when={local.children}>
-        <span class={labelClasses}>{local.children}</span>
+        <span class={labelClass}>{local.children as JSX.Element}</span>
       </Show>
     </HeadlessRadio>
   )

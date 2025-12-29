@@ -10,6 +10,7 @@ import {
   createContext,
   createMemo,
   splitProps,
+  useContext,
 } from 'solid-js';
 import {
   createButton,
@@ -25,6 +26,7 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { DialogTriggerContext } from './contexts';
 
 // ============================================
 // TYPES
@@ -90,6 +92,13 @@ export function Button(props: ButtonProps): JSX.Element {
     'slot',
   ]);
 
+  // Check if inside a DialogTrigger - if so, toggle the dialog on press
+  // NOTE: Context is captured at component creation time. For Buttons inside a Modal,
+  // the Modal provides OverlayTriggerStateContext, but due to SolidJS's eager JSX evaluation,
+  // components inside Modal children are created before the Modal's Show renders.
+  // So we can't reliably use context here to determine if we're inside a Modal.
+  const dialogTriggerContext = useContext(DialogTriggerContext);
+
   // Helper to resolve isDisabled (handles both boolean and Accessor<boolean>)
   const resolveDisabled = (): boolean => {
     const disabled = ariaProps.isDisabled;
@@ -99,9 +108,32 @@ export function Button(props: ButtonProps): JSX.Element {
     return !!disabled;
   };
 
+  // Determine if this button should act as a dialog trigger
+  // We only toggle if:
+  // 1. We have DialogTriggerContext (we're inside a DialogTrigger)
+  // 2. AND there is NO onPress handler (the trigger button typically has no onPress,
+  //    while close buttons inside dialogs have onPress={close})
+  // This heuristic works because:
+  // - Trigger buttons: don't have onPress, should toggle
+  // - Close buttons: have onPress={close}, should NOT toggle (just call onPress)
+  const isDialogTrigger = () => dialogTriggerContext && !ariaProps.onPress;
+
+  // Wrap onPress to also toggle dialog if this is a trigger button
+  const handlePress = (e: any) => {
+    // Call original onPress if provided
+    if (typeof ariaProps.onPress === 'function') {
+      ariaProps.onPress(e);
+    }
+    // Toggle dialog only if this is a trigger button (has no onPress handler)
+    if (isDialogTrigger()) {
+      dialogTriggerContext!.state.toggle();
+    }
+  };
+
   // Create button aria props
   const buttonAria = createButton({
     ...ariaProps,
+    onPress: handlePress,
     get isDisabled() {
       return resolveDisabled();
     },

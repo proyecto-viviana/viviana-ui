@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's ListBox component patterns.
  */
 
-import { type JSX, splitProps, createContext, useContext } from 'solid-js'
+import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js'
 import {
   ListBox as HeadlessListBox,
   ListBoxOption as HeadlessListBoxOption,
@@ -196,7 +196,7 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
       {local.icon && <span class={`shrink-0 ${sizeStyle.icon}`}>{local.icon()}</span>}
       <CheckIcon class={`shrink-0 ${sizeStyle.icon} text-accent hidden data-selected:block`} />
       <div class="flex flex-col flex-1 min-w-0">
-        <span class="truncate">{local.children}</span>
+        <span class="truncate">{local.children as JSX.Element}</span>
         {local.description && (
           <span class={`text-primary-400 truncate ${sizeStyle.description}`}>
             {local.description}

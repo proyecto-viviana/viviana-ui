@@ -31,8 +31,8 @@ export { RadioGroup, Radio } from './radio';
 export type { RadioGroupProps, RadioProps, RadioGroupOrientation, RadioGroupSize } from './radio';
 
 // Dialog
-export { Dialog } from './dialog';
-export type { DialogProps } from './dialog';
+export { Dialog, DialogTrigger, DialogFooter } from './dialog';
+export type { DialogProps, DialogTriggerProps, DialogFooterProps, DialogSize } from './dialog';
 
 // Icon
 export { Icon, GitHubIcon } from './icon';

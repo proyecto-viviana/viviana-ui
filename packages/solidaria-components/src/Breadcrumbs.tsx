@@ -148,10 +148,10 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
         style={renderProps.style()}
         data-disabled={isDisabled() || undefined}
       >
-        <ol class="solidaria-Breadcrumbs-list">
+        <ol style={{ display: 'flex', 'align-items': 'center', 'list-style': 'none', margin: 0, padding: 0 }}>
           <For each={items()}>
             {(item) => (
-              <li class="solidaria-Breadcrumbs-item">
+              <li style={{ display: 'flex', 'align-items': 'center' }}>
                 {local.children(item)}
               </li>
             )}
@@ -240,11 +240,18 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     renderValues
   );
 
+  // Merge inline flex styles with user styles
+  const mergedStyle = () => {
+    const userStyle = renderProps.style();
+    const baseStyle = { display: 'inline-flex', 'align-items': 'center' };
+    return userStyle ? { ...baseStyle, ...userStyle } : baseStyle;
+  };
+
   return (
     <a
       {...(itemProps as Record<string, unknown>)}
       class={renderProps.class()}
-      style={renderProps.style()}
+      style={mergedStyle()}
       data-current={isCurrent() || undefined}
       data-disabled={isDisabled() || undefined}
       data-pressed={isPressed() || undefined}

@@ -190,7 +190,7 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
       {...headlessProps}
       class={getClassName}
     >
-      {local.children}
+      {local.children as JSX.Element}
       {/* Chevron rotates via CSS based on data-open attribute from headless component */}
       <ChevronIcon class={`${sizeStyle.icon} transition-transform duration-200 data-open:rotate-180`} />
     </HeadlessSelectTrigger>
@@ -302,7 +302,7 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
       {/* Check icon shows only when selected via data-selected attribute */}
       <CheckIcon class={iconClass} />
       <span class={`flex-1 data-selected:pl-0 ${paddingClass}`}>
-        {local.children}
+        {local.children as JSX.Element}
       </span>
     </HeadlessSelectOption>
   )

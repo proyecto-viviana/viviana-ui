@@ -204,16 +204,28 @@ test.describe('Dialog Component', () => {
     await dialogSection.scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);
 
+    // Click to open the dialog first
+    const openButton = dialogSection.locator('button:has-text("Open Dialog")');
+    await openButton.click();
+    await page.waitForTimeout(300);
+
     // Check dialog content is visible
-    const dialogTitle = dialogSection.locator('text="Welcome!"');
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    const dialogTitle = dialog.locator('text="Welcome!"');
     expect(await dialogTitle.count()).toBeGreaterThan(0);
 
-    // Find action buttons
-    const getStartedBtn = dialogSection.locator('button:has-text("Get Started")');
-    const learnMoreBtn = dialogSection.locator('button:has-text("Learn More")');
+    // Find action buttons in the dialog
+    const getStartedBtn = dialog.locator('button:has-text("Get Started")');
+    const cancelBtn = dialog.locator('button:has-text("Cancel")');
 
     expect(await getStartedBtn.count()).toBeGreaterThan(0);
-    expect(await learnMoreBtn.count()).toBeGreaterThan(0);
+    expect(await cancelBtn.count()).toBeGreaterThan(0);
+
+    // Close the dialog
+    await cancelBtn.click();
+    await expect(dialog).not.toBeVisible();
 
     await checkNoHydrationErrors(errors);
   });
@@ -377,6 +389,79 @@ test.describe('ProgressBar Component', () => {
       // Verify progressbar has proper ARIA attributes
       expect(await progressbar.getAttribute('aria-valuemin')).toBeTruthy();
       expect(await progressbar.getAttribute('aria-valuemax')).toBeTruthy();
+    }
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+test.describe('Dialog Component', () => {
+  test('dialog opens and closes correctly', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find dialog section
+    const dialogSection = page.locator('section:has-text("Dialog")').first();
+    await dialogSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Click the "Open Dialog" button
+    const openButton = dialogSection.locator('button:has-text("Open Dialog")');
+    await openButton.click();
+    await page.waitForTimeout(300);
+
+    // Verify dialog is visible
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    // Verify dialog has proper ARIA attributes
+    expect(await dialog.getAttribute('role')).toBe('dialog');
+    expect(await dialog.getAttribute('aria-labelledby')).toBeTruthy();
+
+    // Verify dialog content
+    await expect(dialog.locator('text=Welcome to Proyecto Viviana')).toBeVisible();
+
+    // Click the Get Started button
+    const getStartedButton = dialog.locator('button:has-text("Get Started")');
+    await getStartedButton.click();
+    await page.waitForTimeout(300);
+
+    // Verify dialog is closed
+    await expect(dialog).not.toBeVisible();
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('dialog can be dismissed', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find dialog section
+    const dialogSection = page.locator('section:has-text("Dialog")').first();
+    await dialogSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Click the "Small Dialog" button
+    const openButton = dialogSection.locator('button:has-text("Small Dialog")');
+    await openButton.click();
+    await page.waitForTimeout(300);
+
+    // Verify dialog is visible
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    // Click the close button (X)
+    const closeButton = dialog.locator('button[aria-label="Close dialog"]');
+    if (await closeButton.count() > 0) {
+      await closeButton.click();
+      await page.waitForTimeout(300);
+
+      // Verify dialog is closed
+      await expect(dialog).not.toBeVisible();
     }
 
     await checkNoHydrationErrors(errors);

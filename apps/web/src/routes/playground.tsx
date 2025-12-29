@@ -13,6 +13,8 @@ import {
   RadioGroup,
   Radio,
   Dialog,
+  DialogTrigger,
+  DialogFooter,
   ProfileCard,
   EventCard,
   CalendarCard,
@@ -489,6 +491,8 @@ function Playground() {
             </div>
           </Section>
 
+          {/* RadioGroup temporarily disabled - styled Radio component needs SSR-compatible redesign */}
+          {/*
           <Section title="RadioGroup" description="Single selection from multiple options">
             <div class="space-y-6">
               <RadioGroup
@@ -544,6 +548,7 @@ function Playground() {
               </div>
             </div>
           </Section>
+          */}
 
           <Section title="ProfileCard" description="User profile display cards">
             <ProfileCard
@@ -626,25 +631,92 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="Dialog" description="Modal dialog with actions" class="lg:col-span-2">
-            <Dialog
-              title="Welcome!"
-              subtitle="Getting Started Guide"
-              tags={['New', 'Featured']}
-              primaryAction={{
-                label: 'Get Started',
-                onClick: () => setLastAction('Dialog: Get Started'),
-              }}
-              secondaryAction={{
-                label: 'Learn More',
-                onClick: () => setLastAction('Dialog: Learn More'),
-              }}
-            >
-              <p>
-                Welcome to Proyecto Viviana! A collection of accessible,
-                beautifully styled SolidJS components inspired by React Spectrum.
-              </p>
-            </Dialog>
+          <Section title="Dialog" description="Modal dialog with overlay and backdrop" class="lg:col-span-2">
+            <div class="flex gap-4">
+              <DialogTrigger
+                trigger={<Button variant="primary">Open Dialog</Button>}
+                content={(close) => (
+                  <Dialog
+                    title="Welcome!"
+                    size="md"
+                    isDismissable={true}
+                    onClose={close}
+                  >
+                    <p class="mb-4">
+                      Welcome to Proyecto Viviana! A collection of accessible,
+                      beautifully styled SolidJS components inspired by React Spectrum.
+                    </p>
+                    <DialogFooter>
+                      <Button variant="primary" buttonStyle="outline" onPress={close}>
+                        Cancel
+                      </Button>
+                      <Button variant="primary" onPress={() => {
+                        setLastAction('Dialog: Get Started')
+                        close()
+                      }}>
+                        Get Started
+                      </Button>
+                    </DialogFooter>
+                  </Dialog>
+                )}
+              />
+
+              <DialogTrigger
+                trigger={<Button variant="accent">Small Dialog</Button>}
+                content={(close) => (
+                  <Dialog
+                    title="Confirmation"
+                    size="sm"
+                    isDismissable={true}
+                    onClose={close}
+                  >
+                    <p class="mb-4">
+                      Are you sure you want to continue?
+                    </p>
+                    <DialogFooter>
+                      <Button variant="primary" buttonStyle="outline" onPress={close}>
+                        No
+                      </Button>
+                      <Button variant="danger" onPress={() => {
+                        setLastAction('Dialog: Confirmed')
+                        close()
+                      }}>
+                        Yes, Continue
+                      </Button>
+                    </DialogFooter>
+                  </Dialog>
+                )}
+              />
+
+              <DialogTrigger
+                trigger={<Button variant="secondary">Large Dialog</Button>}
+                content={(close) => (
+                  <Dialog
+                    title="Settings"
+                    size="lg"
+                    isDismissable={true}
+                    onClose={close}
+                  >
+                    <div class="space-y-4">
+                      <p>Configure your application settings below.</p>
+                      <TextField label="Username" placeholder="Enter username" />
+                      <TextField label="Email" placeholder="Enter email" type="email" />
+                    </div>
+                    <DialogFooter>
+                      <Button variant="primary" buttonStyle="outline" onPress={close}>
+                        Cancel
+                      </Button>
+                      <Button variant="primary" onPress={() => {
+                        setLastAction('Dialog: Settings Saved')
+                        close()
+                      }}>
+                        Save Changes
+                      </Button>
+                    </DialogFooter>
+                  </Dialog>
+                )}
+              />
+            </div>
           </Section>
 
           <Section title="createButton Hook" description="Low-level hook for custom implementations" class="lg:col-span-2">

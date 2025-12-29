@@ -260,6 +260,22 @@ export {
   type ComboBoxAria,
 } from './combobox';
 
+// Dialog
+export {
+  createDialog,
+  type AriaDialogProps,
+  type DialogAria,
+} from './dialog';
+
+// Focus
+export {
+  FocusScope,
+  useFocusManager,
+  type FocusScopeProps,
+  type FocusManager,
+  type FocusManagerOptions,
+} from './focus';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

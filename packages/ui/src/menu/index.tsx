@@ -160,7 +160,7 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
       {...headlessProps}
       class={getClassName}
     >
-      {local.children}
+      {local.children as JSX.Element}
       {/* Chevron rotates via CSS based on data-open attribute */}
       <ChevronIcon class={`${sizeStyle.icon} transition-transform duration-200 data-open:rotate-180`} />
     </HeadlessMenuButton>
@@ -243,7 +243,7 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
       class={getClassName}
     >
       {local.icon && <span class={`shrink-0 ${sizeStyle.icon}`}>{local.icon()}</span>}
-      <span class="flex-1">{local.children}</span>
+      <span class="flex-1">{local.children as JSX.Element}</span>
       {local.shortcut && <span class="text-primary-500 text-sm ml-auto">{local.shortcut}</span>}
     </HeadlessMenuItem>
   )
