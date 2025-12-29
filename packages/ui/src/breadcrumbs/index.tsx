@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's Breadcrumbs component patterns.
  */
 
-import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js'
+import { type JSX, splitProps, createContext, useContext } from 'solid-js'
 import {
   Breadcrumbs as HeadlessBreadcrumbs,
   BreadcrumbItem as HeadlessBreadcrumbItem,
@@ -164,27 +164,18 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     return [sizeClass, stateClass, cursorClass, transitionClass, focusClass, customClass].filter(Boolean).join(' ')
   }
 
-  // Wrapper to add separator
-  const renderWithSeparator = (renderProps: BreadcrumbItemRenderProps) => {
-    const vStyles = variantStyles[ctx.variant]
-    const separatorClass = `${sizeStyles[ctx.size].icon} ${vStyles.separator} mx-1 flex-shrink-0`
-
-    return (
-      <>
-        <Show when={ctx.showSeparator && !renderProps.isCurrent}>
-          <ChevronIcon class={separatorClass} />
-        </Show>
-        {typeof local.children === 'function' ? local.children(renderProps) : local.children}
-      </>
-    )
-  }
+  const vStyles = variantStyles[ctx.variant]
+  const separatorClass = `${sizeStyles[ctx.size].icon} ${vStyles.separator} mx-1 shrink-0 hidden data-current:hidden [&:not([data-current])]:block`
 
   return (
     <HeadlessBreadcrumbItem
       {...headlessProps}
       class={getClassName}
-      children={renderWithSeparator}
-    />
+    >
+      {/* Separator shows before non-current items via data-current attribute */}
+      {ctx.showSeparator && <ChevronIcon class={separatorClass} />}
+      {local.children}
+    </HeadlessBreadcrumbItem>
   )
 }
 

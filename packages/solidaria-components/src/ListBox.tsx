@@ -338,7 +338,7 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={optionAria.isDisabled() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </li>
   );
 }

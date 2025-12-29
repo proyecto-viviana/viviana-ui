@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's ComboBox component patterns.
  */
 
-import { type JSX, Show, splitProps, createContext, useContext } from 'solid-js'
+import { type JSX, splitProps, createContext, useContext } from 'solid-js'
 import {
   ComboBox as HeadlessComboBox,
   ComboBoxInput as HeadlessComboBoxInput,
@@ -223,16 +223,17 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
 
 /**
  * The trigger button for a combobox.
+ * SSR-compatible - renders children or chevron icon directly without render props.
  */
 export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
   const [local, headlessProps] = splitProps(props, ['class', 'children'])
   const size = useContext(ComboBoxSizeContext)
-  const styles = () => sizeStyles[size]
+  const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''
 
   const getClassName = (renderProps: ComboBoxButtonRenderProps): string => {
     const base = 'absolute right-0 top-0 flex items-center justify-center transition-all duration-200 rounded-r-lg'
-    const sizeClass = styles().button
+    const sizeClass = sizeStyle.button
 
     let colorClass: string
     if (renderProps.isDisabled) {
@@ -248,21 +249,13 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
     return [base, sizeClass, colorClass, customClass].filter(Boolean).join(' ')
   }
 
-  const renderChildren = (renderProps: ComboBoxButtonRenderProps) => (
-    <>
-      {typeof local.children === 'function' ? local.children(renderProps) : local.children}
-      {!local.children && (
-        <ChevronIcon class={`${styles().icon} transition-transform duration-200 ${renderProps.isOpen ? 'rotate-180' : ''}`} />
-      )}
-    </>
-  )
-
   return (
     <HeadlessComboBoxButton
       {...headlessProps}
       class={getClassName}
-      children={renderChildren}
-    />
+    >
+      {local.children || <ChevronIcon class={`${sizeStyle.icon} transition-transform duration-200 data-open:rotate-180`} />}
+    </HeadlessComboBoxButton>
   )
 }
 
@@ -297,16 +290,17 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
 
 /**
  * An option in a combobox listbox.
+ * SSR-compatible - renders check icon and content directly without render props.
  */
 export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
   const [local, headlessProps] = splitProps(props, ['class', 'children'])
   const size = useContext(ComboBoxSizeContext)
-  const styles = () => sizeStyles[size]
+  const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''
 
   const getClassName = (renderProps: ComboBoxOptionRenderProps): string => {
     const base = 'flex items-center gap-2 cursor-pointer transition-colors duration-150'
-    const sizeClass = styles().option
+    const sizeClass = sizeStyle.option
 
     let colorClass: string
     if (renderProps.isDisabled) {
@@ -333,23 +327,16 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
     lg: 'pl-8',  // h-6 icon + gap
   }
 
-  const renderChildren = (renderProps: ComboBoxOptionRenderProps) => (
-    <>
-      <Show when={renderProps.isSelected}>
-        <CheckIcon class={`${styles().icon} text-accent flex-shrink-0`} />
-      </Show>
-      <span class={`flex-1 ${renderProps.isSelected ? '' : iconPadding[size]}`}>
-        {typeof local.children === 'function' ? local.children(renderProps) : local.children}
-      </span>
-    </>
-  )
-
   return (
     <HeadlessComboBoxOption
       {...headlessProps}
       class={getClassName}
-      children={renderChildren}
-    />
+    >
+      <CheckIcon class={`${sizeStyle.icon} text-accent shrink-0 hidden data-selected:block`} />
+      <span class={`flex-1 data-selected:pl-0 ${iconPadding[size]}`}>
+        {local.children}
+      </span>
+    </HeadlessComboBoxOption>
   )
 }
 

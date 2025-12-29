@@ -264,7 +264,7 @@ export function TextField(props: TextFieldProps): JSX.Element {
         data-focused={isFocused() || undefined}
         data-focus-visible={isFocusVisible() || undefined}
       >
-        {renderProps.children}
+        {renderProps.renderChildren()}
       </div>
     </TextFieldContext.Provider>
   );

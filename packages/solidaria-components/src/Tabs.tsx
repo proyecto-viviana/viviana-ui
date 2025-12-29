@@ -241,7 +241,7 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
           data-orientation={state.orientation()}
           data-disabled={state.isDisabled() || undefined}
         >
-          {renderProps.children}
+          {renderProps.renderChildren()}
         </div>
       </TabsStateContext.Provider>
     </TabsContext.Provider>
@@ -453,7 +453,7 @@ function TabInner(props: {
       data-hovered={isHovered() || undefined}
       data-disabled={tabAria.isDisabled() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </div>
   );
 }
@@ -519,7 +519,7 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
         inert={!isSelected() || undefined}
         hidden={!isSelected() && !local.shouldForceMount ? true : undefined}
       >
-        {renderProps.children}
+        {renderProps.renderChildren()}
       </div>
     </Show>
   );

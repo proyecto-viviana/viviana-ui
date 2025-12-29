@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js'
-import { Show } from 'solid-js'
+import { Show, For } from 'solid-js'
 import { Button } from '../button'
 import { Chip } from '../custom/chip'
 
@@ -58,9 +58,9 @@ export function Dialog(props: DialogProps) {
       <Show when={props.tags && props.tags.length > 0}>
         <div class="relative bottom-4 right-4 w-full">
           <div class="flex flex-row justify-end gap-2 pr-4">
-            {props.tags!.map((tag) => (
-              <Chip variant="primary" text={tag} />
-            ))}
+            <For each={props.tags}>
+              {(tag) => <Chip variant="primary" text={tag} />}
+            </For>
           </div>
         </div>
       </Show>

@@ -294,7 +294,7 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
         data-required={ariaProps.isRequired || undefined}
         data-readonly={ariaProps.isReadOnly || undefined}
       >
-        {renderProps.children}
+        {renderProps.renderChildren()}
       </div>
     </SearchFieldContext.Provider>
   );
@@ -467,7 +467,7 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
         data-hovered={isHovered() || undefined}
         data-disabled={isDisabled() || undefined}
       >
-        {renderProps.children}
+        {renderProps.renderChildren()}
       </button>
     </Show>
   );

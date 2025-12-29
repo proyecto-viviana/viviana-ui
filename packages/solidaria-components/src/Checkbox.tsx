@@ -189,7 +189,7 @@ export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Eleme
         data-required={ariaProps.isRequired || undefined}
         data-invalid={groupAria.isInvalid || undefined}
       >
-        {renderProps.children}
+        {renderProps.renderChildren()}
       </div>
     </CheckboxGroupStateContext.Provider>
   );
@@ -372,7 +372,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
           {...cleanFocusProps()}
         />
       </VisuallyHidden>
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </label>
   );
 }

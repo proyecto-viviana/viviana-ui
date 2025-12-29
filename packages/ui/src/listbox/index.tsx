@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's ListBox component patterns.
  */
 
-import { type JSX, Show, splitProps, createContext, useContext } from 'solid-js'
+import { type JSX, splitProps, createContext, useContext } from 'solid-js'
 import {
   ListBox as HeadlessListBox,
   ListBoxOption as HeadlessListBoxOption,
@@ -154,16 +154,17 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
 
 /**
  * An option in a listbox.
+ * SSR-compatible - renders icon, check, content, and description directly without render props.
  */
 export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   const [local, headlessProps] = splitProps(props, ['class', 'children', 'description', 'icon'])
   const size = useContext(ListBoxSizeContext)
-  const styles = () => sizeStyles[size]
+  const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''
 
   const getClassName = (renderProps: ListBoxOptionRenderProps): string => {
     const base = 'flex items-center cursor-pointer transition-colors duration-150 outline-none'
-    const sizeClass = styles().option
+    const sizeClass = sizeStyle.option
 
     let colorClass: string
     if (renderProps.isDisabled) {
@@ -187,33 +188,22 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     return [base, sizeClass, colorClass, focusClass, customClass].filter(Boolean).join(' ')
   }
 
-  const renderChildren = (renderProps: ListBoxOptionRenderProps) => (
-    <>
-      <Show when={local.icon}>
-        <span class={`flex-shrink-0 ${styles().icon}`}>{local.icon?.()}</span>
-      </Show>
-      <Show when={renderProps.isSelected}>
-        <CheckIcon class={`flex-shrink-0 ${styles().icon} text-accent`} />
-      </Show>
-      <div class="flex flex-col flex-1 min-w-0">
-        <span class="truncate">
-          {typeof local.children === 'function' ? local.children(renderProps) : local.children}
-        </span>
-        <Show when={local.description}>
-          <span class={`text-primary-400 truncate ${styles().description}`}>
-            {local.description}
-          </span>
-        </Show>
-      </div>
-    </>
-  )
-
   return (
     <HeadlessListBoxOption
       {...headlessProps}
       class={getClassName}
-      children={renderChildren}
-    />
+    >
+      {local.icon && <span class={`shrink-0 ${sizeStyle.icon}`}>{local.icon()}</span>}
+      <CheckIcon class={`shrink-0 ${sizeStyle.icon} text-accent hidden data-selected:block`} />
+      <div class="flex flex-col flex-1 min-w-0">
+        <span class="truncate">{local.children}</span>
+        {local.description && (
+          <span class={`text-primary-400 truncate ${sizeStyle.description}`}>
+            {local.description}
+          </span>
+        )}
+      </div>
+    </HeadlessListBoxOption>
   )
 }
 

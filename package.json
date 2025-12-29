@@ -16,6 +16,7 @@
     "deploy": "bun run --cwd apps/web deploy",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:e2e": "bun run --cwd apps/web bunx playwright test",
     "typecheck": "tsc --noEmit",
     "version:patch": "npm version patch --workspaces --no-git-tag-version",
     "version:minor": "npm version minor --workspaces --no-git-tag-version",

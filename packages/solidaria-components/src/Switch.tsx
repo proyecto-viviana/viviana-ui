@@ -207,7 +207,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
           {...cleanFocusProps()}
         />
       </VisuallyHidden>
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </label>
   );
 }

@@ -195,7 +195,7 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
       data-current={!!ariaProps['aria-current'] || undefined}
       data-disabled={ariaProps.isDisabled || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </Dynamic>
   );
 }

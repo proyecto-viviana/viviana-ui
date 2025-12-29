@@ -257,7 +257,7 @@ function TooltipContent(
         style={renderProps.style()}
         data-placement={props.placement}
       >
-        {renderProps.children}
+        {renderProps.renderChildren()}
       </div>
     </OverlayContainer>
   );

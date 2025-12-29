@@ -156,7 +156,7 @@ export function ProgressBar(props: ParentProps<ProgressBarProps>): JSX.Element {
       style={renderProps.style()}
       slot={local.slot}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </div>
   );
 }

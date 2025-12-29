@@ -155,16 +155,17 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
 
 /**
  * The trigger button for a select.
+ * SSR-compatible - renders children and chevron icon directly without render props.
  */
 export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
   const [local, headlessProps] = splitProps(props, ['class', 'children'])
   const size = useContext(SelectSizeContext)
-  const styles = () => sizeStyles[size]
+  const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''
 
   const getClassName = (renderProps: SelectTriggerRenderProps): string => {
     const base = 'inline-flex items-center justify-between rounded-lg border-2 transition-all duration-200 w-full'
-    const sizeClass = styles().trigger
+    const sizeClass = sizeStyle.trigger
 
     let colorClass: string
     if (renderProps.isDisabled) {
@@ -184,19 +185,15 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
     return [base, sizeClass, colorClass, focusClass, customClass].filter(Boolean).join(' ')
   }
 
-  const renderChildren = (renderProps: SelectTriggerRenderProps) => (
-    <>
-      {typeof local.children === 'function' ? local.children(renderProps) : local.children}
-      <ChevronIcon class={`${styles().icon} transition-transform duration-200 ${renderProps.isOpen ? 'rotate-180' : ''}`} />
-    </>
-  )
-
   return (
     <HeadlessSelectTrigger
       {...headlessProps}
       class={getClassName}
-      children={renderChildren}
-    />
+    >
+      {local.children}
+      {/* Chevron rotates via CSS based on data-open attribute from headless component */}
+      <ChevronIcon class={`${sizeStyle.icon} transition-transform duration-200 data-open:rotate-180`} />
+    </HeadlessSelectTrigger>
   )
 }
 
@@ -255,18 +252,26 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
 // SELECT OPTION COMPONENT
 // ============================================
 
+// Padding classes for when no check icon is shown (to maintain alignment)
+const paddingStyles = {
+  sm: 'pl-6',  // h-4 (1rem) + gap-2 (0.5rem) = 1.5rem = pl-6
+  md: 'pl-7',  // h-5 (1.25rem) + gap-2 (0.5rem) = 1.75rem ≈ pl-7
+  lg: 'pl-9',  // h-6 (1.5rem) + gap-3 (0.75rem) = 2.25rem = pl-9
+}
+
 /**
  * An option in a select listbox.
+ * SSR-compatible - renders check icon and content directly without render props.
  */
 export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
   const [local, headlessProps] = splitProps(props, ['class', 'children'])
   const size = useContext(SelectSizeContext)
-  const styles = () => sizeStyles[size]
+  const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''
 
   const getClassName = (renderProps: SelectOptionRenderProps): string => {
     const base = 'flex items-center gap-2 cursor-pointer transition-colors duration-150'
-    const sizeClass = styles().option
+    const sizeClass = sizeStyle.option
 
     let colorClass: string
     if (renderProps.isDisabled) {
@@ -286,23 +291,20 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
     return [base, sizeClass, colorClass, focusClass, customClass].filter(Boolean).join(' ')
   }
 
-  const renderChildren = (renderProps: SelectOptionRenderProps) => (
-    <>
-      <Show when={renderProps.isSelected}>
-        <CheckIcon class={`${styles().icon} text-accent flex-shrink-0`} />
-      </Show>
-      <span class={`flex-1 ${renderProps.isSelected ? '' : `pl-[calc(${styles().icon.split(' ')[0].replace('h-', '')}*0.25rem+0.5rem)]`}`}>
-        {typeof local.children === 'function' ? local.children(renderProps) : local.children}
-      </span>
-    </>
-  )
+  const iconClass = `${sizeStyle.icon} text-accent shrink-0 hidden data-selected:block`
+  const paddingClass = paddingStyles[size]
 
   return (
     <HeadlessSelectOption
       {...headlessProps}
       class={getClassName}
-      children={renderChildren}
-    />
+    >
+      {/* Check icon shows only when selected via data-selected attribute */}
+      <CheckIcon class={iconClass} />
+      <span class={`flex-1 data-selected:pl-0 ${paddingClass}`}>
+        {local.children}
+      </span>
+    </HeadlessSelectOption>
   )
 }
 

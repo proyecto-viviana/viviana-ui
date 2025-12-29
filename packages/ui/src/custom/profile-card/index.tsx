@@ -8,7 +8,11 @@ export interface ProfileCardProps {
   bio?: string
   followers?: number
   following?: number
-  actions?: JSX.Element
+  /**
+   * Actions to display below the profile.
+   * Use a function returning JSX for SSR compatibility: `actions={() => <Button>...</Button>}`
+   */
+  actions?: JSX.Element | (() => JSX.Element)
   class?: string
 }
 
@@ -51,7 +55,9 @@ export function ProfileCard(props: ProfileCardProps) {
         </div>
       </div>
       <Show when={props.actions}>
-        <div class="mt-4 flex gap-2">{props.actions}</div>
+        <div class="mt-4 flex gap-2">
+          {typeof props.actions === 'function' ? props.actions() : props.actions}
+        </div>
       </Show>
     </div>
   )

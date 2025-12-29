@@ -2,10 +2,7 @@
  * RadioGroup and Radio components for proyecto-viviana-ui
  *
  * Styled radio components built on top of solidaria-components.
- *
- * IMPORTANT: Due to SolidJS's JSX evaluation order, we cannot wrap the headless
- * components in a traditional way. Instead, we re-export them and provide
- * styling through the class prop functions.
+ * SSR-compatible - renders children and UI elements directly without render props.
  */
 
 import { type JSX, Show, createContext, useContext, splitProps } from 'solid-js'
@@ -102,32 +99,32 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
     return [base, orientationClass, disabledClass, customClass].filter(Boolean).join(' ')
   }
 
-  // Create render children function
-  const renderChildren = (renderProps: RadioGroupRenderProps) => (
-    <>
-      <Show when={local.label}>
-        <span class="text-primary-200 font-medium mb-1">{local.label}</span>
-      </Show>
-      {typeof local.children === 'function' ? local.children(renderProps) : local.children}
-      <Show when={local.description && !renderProps.isInvalid}>
-        <span class="text-primary-400 text-sm">{local.description}</span>
-      </Show>
-      <Show when={local.errorMessage && renderProps.isInvalid}>
-        <span class="text-danger-400 text-sm">{local.errorMessage}</span>
-      </Show>
-    </>
-  )
-
   // Pass remaining props through to headless component
   // headlessProps maintains reactivity for controlled values like value/onChange
+  // We add 'group' class to allow children to use group-data-* selectors
+  const groupClassName = (renderProps: RadioGroupRenderProps): string => {
+    const classes = getClassName(renderProps)
+    return `group ${classes}`
+  }
+
   return (
     <RadioSizeContext.Provider value={size}>
       <HeadlessRadioGroup
         {...headlessProps}
-        class={getClassName}
+        class={groupClassName}
         data-size={size}
-        children={renderChildren as any}
-      />
+      >
+        <Show when={local.label}>
+          <span class="text-primary-200 font-medium mb-1">{local.label}</span>
+        </Show>
+        {local.children}
+        <Show when={local.description}>
+          <span class="text-primary-400 text-sm group-data-invalid:hidden">{local.description}</span>
+        </Show>
+        <Show when={local.errorMessage}>
+          <span class="text-danger-400 text-sm hidden group-data-invalid:block">{local.errorMessage}</span>
+        </Show>
+      </HeadlessRadioGroup>
     </RadioSizeContext.Provider>
   )
 }
@@ -139,81 +136,44 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
 /**
  * A radio button allows users to select a single option from a list.
  * Must be used within a RadioGroup.
+ * SSR-compatible - renders circle and label directly without render props.
  *
  * Built on solidaria-components Radio for full accessibility support.
  */
 export function Radio(props: RadioProps): JSX.Element {
+  const [local, headlessProps] = splitProps(props, ['class', 'children'])
   const sizeFromContext = useContext(RadioSizeContext)
-  const size = () => sizeStyles[sizeFromContext]
-  const customClass = props.class ?? ''
+  const sizeStyle = sizeStyles[sizeFromContext]
+  const customClass = local.class ?? ''
 
-  // Generate class based on render props
+  // Generate class based on render props - includes group class for child targeting
   const getClassName = (renderProps: RadioRenderProps): string => {
-    const base = 'inline-flex items-center gap-2 cursor-pointer'
-    const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed opacity-50' : ''
-    return [base, disabledClass, customClass].filter(Boolean).join(' ')
+    const base = 'group inline-flex items-center gap-2'
+    const cursorClass = renderProps.isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'
+    const disabledClass = renderProps.isDisabled ? 'opacity-50' : ''
+    return [base, cursorClass, disabledClass, customClass].filter(Boolean).join(' ')
   }
 
-  // Extract props to pass to headless
-  const { class: _, children, ...headlessProps } = props
+  // Circle classes - uses group-data-* to target based on parent label's data attributes
+  const circleClasses = `relative flex items-center justify-center rounded-full border-2 transition-all duration-200 ${sizeStyle.circle} border-primary-600 bg-transparent group-hover:border-accent-300 group-data-selected:border-accent group-data-disabled:border-bg-300 group-data-disabled:bg-bg-200 group-data-focus-visible:ring-2 group-data-focus-visible:ring-accent-300 group-data-focus-visible:ring-offset-2 group-data-focus-visible:ring-offset-bg-400 group-data-disabled:cursor-not-allowed cursor-pointer`
+
+  // Dot classes - uses group-data-selected for visibility
+  const dotClasses = `rounded-full bg-accent transition-all duration-200 ${sizeStyle.dot} scale-0 opacity-0 group-data-selected:scale-100 group-data-selected:opacity-100`
+
+  // Label classes - uses group-data-disabled
+  const labelClasses = `text-primary-200 ${sizeStyle.label} group-data-disabled:opacity-50`
 
   return (
     <HeadlessRadio
       {...headlessProps}
       class={getClassName}
     >
-      {(renderProps: RadioRenderProps) => {
-        const circleClasses = () => {
-          const base = 'relative flex items-center justify-center rounded-full border-2 transition-all duration-200'
-          const sizeClass = size().circle
-
-          let colorClass: string
-          if (renderProps.isDisabled) {
-            colorClass = 'border-bg-300 bg-bg-200'
-          } else if (renderProps.isSelected) {
-            colorClass = 'border-accent bg-transparent'
-          } else {
-            colorClass = 'border-primary-600 bg-transparent hover:border-accent-300'
-          }
-
-          const focusClass = renderProps.isFocusVisible
-            ? 'ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400'
-            : ''
-          const cursorClass = renderProps.isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'
-
-          return [base, sizeClass, colorClass, focusClass, cursorClass].filter(Boolean).join(' ')
-        }
-
-        const dotClasses = () => {
-          const base = 'rounded-full bg-accent transition-all duration-200'
-          const sizeClass = size().dot
-          const visibilityClass = renderProps.isSelected ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
-
-          return [base, sizeClass, visibilityClass].filter(Boolean).join(' ')
-        }
-
-        const labelClasses = () => {
-          const base = 'text-primary-200'
-          const sizeClass = size().label
-          const disabledClass = renderProps.isDisabled ? 'opacity-50' : ''
-
-          return [base, sizeClass, disabledClass].filter(Boolean).join(' ')
-        }
-
-        // Resolve children - could be a function or JSX element
-        const resolvedChildren = typeof children === 'function' ? children(renderProps) : children
-
-        return (
-          <>
-            <span class={circleClasses()}>
-              <span class={dotClasses()} />
-            </span>
-            <Show when={resolvedChildren}>
-              <span class={labelClasses()}>{resolvedChildren}</span>
-            </Show>
-          </>
-        )
-      }}
+      <span class={circleClasses}>
+        <span class={dotClasses} />
+      </span>
+      <Show when={local.children}>
+        <span class={labelClasses}>{local.children}</span>
+      </Show>
     </HeadlessRadio>
   )
 }

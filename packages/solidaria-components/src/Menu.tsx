@@ -302,7 +302,7 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={local.isDisabled || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </button>
   );
 }
@@ -525,7 +525,7 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={itemAria.isDisabled() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </li>
   );
 }

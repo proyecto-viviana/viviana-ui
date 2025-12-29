@@ -256,7 +256,7 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
         data-required={ariaProps.isRequired || undefined}
         data-readonly={ariaProps.isReadOnly || undefined}
       >
-        {renderProps.children}
+        {renderProps.renderChildren()}
       </div>
     </NumberFieldContext.Provider>
   );
@@ -451,7 +451,7 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
       data-hovered={isHovered() || undefined}
       data-disabled={isDisabled() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </button>
   );
 }
@@ -529,7 +529,7 @@ export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProp
       data-hovered={isHovered() || undefined}
       data-disabled={isDisabled() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </button>
   );
 }

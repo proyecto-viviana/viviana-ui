@@ -431,9 +431,14 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={state.isDisabled || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </button>
   );
+}
+
+// Default children function for SelectValue - defined at module level for SSR stability
+function defaultSelectValueChildren<T>(values: SelectValueRenderProps<T>) {
+  return values.selectedText ?? values.placeholder ?? '';
 }
 
 /**
@@ -467,10 +472,7 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children ?? (() => {
-        const values = renderValues();
-        return values.selectedText ?? values.placeholder ?? '';
-      }),
+      children: local.children ?? defaultSelectValueChildren,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Select-value',
@@ -485,7 +487,7 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
       style={renderProps.style()}
       data-placeholder={!renderValues().isSelected || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </span>
   );
 }
@@ -718,7 +720,7 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={optionAria.isDisabled() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </li>
   );
 }

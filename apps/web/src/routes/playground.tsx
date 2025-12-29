@@ -34,7 +34,6 @@ import {
   MenuItem as StyledMenuItem,
   MenuTrigger as StyledMenuTrigger,
   MenuButton as StyledMenuButton,
-  MenuSeparator as StyledMenuSeparator,
   ListBox as StyledListBox,
   ListBoxOption as StyledListBoxOption,
   // Tabs
@@ -59,6 +58,9 @@ import {
   ComboBoxListBox as StyledComboBoxListBox,
   ComboBoxOption as StyledComboBoxOption,
   defaultContainsFilter,
+  // Tooltip
+  Tooltip,
+  TooltipTrigger,
 } from '@proyecto-viviana/ui'
 import {
   createButton,
@@ -66,7 +68,6 @@ import {
   createCheckboxGroupItem,
   createCheckboxGroupState,
   type CheckboxGroupState,
-  type AriaCheckboxGroupItemProps,
 } from '@proyecto-viviana/solidaria'
 import {
   ListBox,
@@ -217,8 +218,57 @@ function Playground() {
             </div>
           </Section>
 
-          {/* DEBUG: Commenting out Avatar onwards for now */}
-          {/* <Section title="Avatar" description="User profile images with status">
+          {/* Tooltip */}
+          <Section title="Tooltip" description="Contextual information on hover/focus">
+            <div class="space-y-6">
+              {/* Placement variants */}
+              <div>
+                <p class="text-sm text-primary-300 mb-3">Placements</p>
+                <div class="flex flex-wrap gap-4">
+                  <TooltipTrigger>
+                    <Button variant="secondary">Top</Button>
+                    <Tooltip placement="top">Tooltip on top</Tooltip>
+                  </TooltipTrigger>
+                  <TooltipTrigger>
+                    <Button variant="secondary">Bottom</Button>
+                    <Tooltip placement="bottom">Tooltip on bottom</Tooltip>
+                  </TooltipTrigger>
+                  <TooltipTrigger>
+                    <Button variant="secondary">Left</Button>
+                    <Tooltip placement="left">Tooltip on left</Tooltip>
+                  </TooltipTrigger>
+                  <TooltipTrigger>
+                    <Button variant="secondary">Right</Button>
+                    <Tooltip placement="right">Tooltip on right</Tooltip>
+                  </TooltipTrigger>
+                </div>
+              </div>
+              {/* With arrow */}
+              <div>
+                <p class="text-sm text-primary-300 mb-3">With Arrow</p>
+                <div class="flex flex-wrap gap-4">
+                  <TooltipTrigger>
+                    <Button variant="primary">Hover me</Button>
+                    <Tooltip placement="top" showArrow>Tooltip with arrow</Tooltip>
+                  </TooltipTrigger>
+                  <TooltipTrigger>
+                    <Button variant="accent">Focus me</Button>
+                    <Tooltip placement="bottom" showArrow variant="info">Info variant with arrow</Tooltip>
+                  </TooltipTrigger>
+                </div>
+              </div>
+              {/* Delay */}
+              <div>
+                <p class="text-sm text-primary-300 mb-3">Custom Delay (500ms)</p>
+                <TooltipTrigger delay={500}>
+                  <Button variant="secondary" style="outline">Delayed tooltip</Button>
+                  <Tooltip>This tooltip has a 500ms delay</Tooltip>
+                </TooltipTrigger>
+              </div>
+            </div>
+          </Section>
+
+          <Section title="Avatar" description="User profile images with status">
             <div class="space-y-4">
               <div class="flex items-center gap-4">
                 <Avatar size="xs" alt="XS" />
@@ -238,8 +288,7 @@ function Playground() {
             </div>
           </Section>
 
-          {/* Commenting out all remaining sections for testing */}
-          {/* <Section title="Switch" description="Toggle and tab switch controls">
+          <Section title="Switch" description="Toggle and tab switch controls">
             <div class="space-y-4">
               <div class="flex items-center gap-4">
                 <span class="text-sm text-primary-200">Toggle:</span>
@@ -334,10 +383,9 @@ function Playground() {
                 placeholder="With filled style"
               />
             </div>
-          </Section> */}
+          </Section>
 
-          {/* DEBUG: Commenting out Link and all remaining sections */}
-          {/* <Section title="Link" description="Accessible link with hover and press states">
+          <Section title="Link" description="Accessible link with hover and press states">
             <div class="space-y-4">
               <div class="flex flex-wrap gap-4">
                 <Link href="https://example.com" target="_blank">External Link</Link>
@@ -497,75 +545,18 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="RadioGroup2" description="Single selection from multiple options">
-            <div class="space-y-6">
-              <RadioGroup
-                label="Choose your plan"
-                value={radioValue()}
-                onChange={(value) => {
-                  setRadioValue(value)
-                  setLastAction(`Radio selected: ${value}`)
-                }}
-              >
-                <Radio value="free">Free Plan</Radio>
-                <Radio value="pro">Pro Plan</Radio>
-                <Radio value="enterprise">Enterprise Plan</Radio>
-              </RadioGroup>
-
-              <div class="border-t border-bg-100 pt-4">
-                <RadioGroup
-                  label="Horizontal layout"
-                  orientation="horizontal"
-                  defaultValue="option2"
-                >
-                  <Radio value="option1">Option 1</Radio>
-                  <Radio value="option2">Option 2</Radio>
-                  <Radio value="option3">Option 3</Radio>
-                </RadioGroup>
-              </div>
-
-              <div class="border-t border-bg-100 pt-4">
-                <span class="text-sm text-primary-300 block mb-2">Sizes:</span>
-                <div class="flex gap-8">
-                  <RadioGroup aria-label="Small size" size="sm" defaultValue="a">
-                    <Radio value="a">Small</Radio>
-                  </RadioGroup>
-                  <RadioGroup aria-label="Medium size" size="md" defaultValue="a">
-                    <Radio value="a">Medium</Radio>
-                  </RadioGroup>
-                  <RadioGroup aria-label="Large size" size="lg" defaultValue="a">
-                    <Radio value="a">Large</Radio>
-                  </RadioGroup>
-                </div>
-              </div>
-
-              <div class="border-t border-bg-100 pt-4">
-                <RadioGroup
-                  label="With validation"
-                  isInvalid
-                  errorMessage="Please select an option"
-                  description="This field is required"
-                >
-                  <Radio value="a">Option A</Radio>
-                  <Radio value="b">Option B</Radio>
-                </RadioGroup>
-              </div>
-            </div>
-          </Section>
-
-          {/* DEBUG: Commenting out cards/dialog section */}
-          {/* <Section title="ProfileCard" description="User profile display cards">
+          <Section title="ProfileCard" description="User profile display cards">
             <ProfileCard
               username="@viviana_dev"
               bio="Building accessible SolidJS components. React Aria patterns for Solid."
               followers={1234}
               following={567}
-              actions={
+              actions={() => (
                 <div class="flex gap-2">
                   <Button variant="primary" onPress={() => setLastAction('Followed!')}>Follow</Button>
                   <Button variant="secondary" style="outline" onPress={() => setLastAction('Message!')}>Message</Button>
                 </div>
-              }
+              )}
             />
           </Section>
 
@@ -581,11 +572,11 @@ function Playground() {
                 { name: 'Carol' },
               ]}
               attendeeCount={42}
-              actions={
+              actions={() => (
                 <Button variant="primary" onPress={() => setLastAction('RSVP!')}>
                   RSVP
                 </Button>
-              }
+              )}
             />
           </Section>
 
@@ -624,13 +615,13 @@ function Playground() {
                 type="follow"
                 leftUser={{ name: 'Alice' }}
                 rightUser={{ name: 'Bob' }}
-                icon={<span class="text-2xl">👋</span>}
+                icon={() => <span class="text-2xl">👋</span>}
               />
               <TimelineItem
                 type="like"
                 leftUser={{ name: 'Carol' }}
                 rightUser={{ name: 'Dave' }}
-                icon={<span class="text-2xl">❤️</span>}
+                icon={() => <span class="text-2xl">❤️</span>}
               />
             </div>
           </Section>
@@ -669,10 +660,9 @@ function Playground() {
 
           <Section title="createCheckboxGroup Hook" description="Accessible checkbox group with ARIA support" class="lg:col-span-2">
             <CheckboxGroupDemo onSelectionChange={(values) => setLastAction(`Selected: ${values.join(', ') || 'none'}`)} />
-          </Section> */}
+          </Section>
 
-          {/* DEBUG: Commenting out middle sections */}
-          {/* <Section title="ListBox" description="Accessible list with keyboard navigation and selection">
+          <Section title="ListBox" description="Accessible list with keyboard navigation and selection">
             <ListBoxDemo onSelectionChange={(key) => setLastAction(`ListBox selected: ${key}`)} />
           </Section>
 
@@ -680,10 +670,12 @@ function Playground() {
             <MenuDemo onAction={(action) => setLastAction(`Menu action: ${action}`)} />
           </Section>
 
+          {/* Select (headless) works fine */}
           <Section title="Select" description="Accessible dropdown select with keyboard support" class="lg:col-span-2">
             <SelectDemo onSelectionChange={(key) => setLastAction(`Select changed: ${key}`)} />
           </Section>
 
+          {/* TESTING: Styled Select re-enabled after fixing inline arrow functions */}
           <Section title="Styled Select (ui)" description="Pre-styled select with size variants">
             <StyledSelectDemo onSelectionChange={(key) => setLastAction(`Styled Select: ${key}`)} />
           </Section>
@@ -694,10 +686,9 @@ function Playground() {
 
           <Section title="Styled ListBox (ui)" description="Pre-styled list with selection" class="lg:col-span-2">
             <StyledListBoxDemo onSelectionChange={(key) => setLastAction(`Styled ListBox: ${key}`)} />
-          </Section> */}
+          </Section>
 
-          {/* DEBUG: Commenting out bottom sections to find hydration error source */}
-          {/* <Section title="Styled Tabs (ui)" description="Pre-styled tabs with variants" class="lg:col-span-2">
+          <Section title="Styled Tabs (ui)" description="Pre-styled tabs with variants" class="lg:col-span-2">
             <StyledTabsDemo onSelectionChange={(key) => setLastAction(`Styled Tab: ${key}`)} />
           </Section>
 
@@ -715,7 +706,7 @@ function Playground() {
 
           <Section title="Styled Slider (ui)" description="Range input with draggable thumb" class="lg:col-span-2">
             <StyledSliderDemo onChange={(value) => setLastAction(`Slider: ${value}`)} />
-          </Section> */}
+          </Section>
 
           <Section title="Styled ComboBox (ui)" description="Filterable dropdown with text input" class="lg:col-span-2">
             <StyledComboBoxDemo onSelectionChange={(key) => setLastAction(`ComboBox: ${key}`)} />
@@ -1002,6 +993,7 @@ function MenuDemo(props: { onAction?: (action: string) => void }) {
           items={menuItems}
           getKey={(item) => item.id}
           onAction={(key) => props.onAction?.(String(key))}
+          aria-label="Actions menu"
           class="absolute mt-1 min-w-48 bg-bg-200 border border-primary-600 rounded-lg shadow-xl overflow-hidden z-50"
         >
           {(item) => (
@@ -1248,6 +1240,7 @@ function StyledMenuDemo(props: { onAction?: (action: string) => void }) {
             items={styledMenuItems.filter((i: MenuItemData) => !i.isSeparator)}
             getKey={(item: MenuItemData) => item.id}
             onAction={(key: string | number) => props.onAction?.(String(key))}
+            aria-label="File menu"
           >
             {(item: MenuItemData) => (
               <StyledMenuItem
@@ -1274,6 +1267,7 @@ function StyledMenuDemo(props: { onAction?: (action: string) => void }) {
             ]}
             getKey={(item: SimpleMenuItem) => item.id}
             onAction={(key: string | number) => props.onAction?.(String(key))}
+            aria-label="Edit menu"
           >
             {(item: SimpleMenuItem) => (
               <StyledMenuItem id={item.id}>
@@ -1295,6 +1289,7 @@ function StyledMenuDemo(props: { onAction?: (action: string) => void }) {
             ]}
             getKey={(item: SimpleMenuItem) => item.id}
             onAction={(key: string | number) => props.onAction?.(String(key))}
+            aria-label="More options"
           >
             {(item: SimpleMenuItem) => (
               <StyledMenuItem id={item.id}>
@@ -1976,11 +1971,23 @@ const comboBoxItems: ComboBoxItem[] = [
 
 function StyledComboBoxDemo(props: { onSelectionChange?: (key: string | number | null) => void }) {
   const [selectedKey, setSelectedKey] = createSignal<string | number | null>(null)
+  const [requiredKey, setRequiredKey] = createSignal<string | number | null>(null)
+  const [requiredTouched, setRequiredTouched] = createSignal(false)
 
   const handleChange = (key: string | number | null) => {
     setSelectedKey(key)
     props.onSelectionChange?.(key)
   }
+
+  const handleRequiredChange = (key: string | number | null) => {
+    setRequiredKey(key)
+  }
+
+  const handleRequiredBlur = () => {
+    setRequiredTouched(true)
+  }
+
+  const isRequiredInvalid = () => requiredTouched() && !requiredKey()
 
   return (
     <div class="space-y-8">
@@ -2111,10 +2118,13 @@ function StyledComboBoxDemo(props: { onSelectionChange?: (key: string | number |
             getKey={(item: ComboBoxItem) => item.id}
             getTextValue={(item: ComboBoxItem) => item.name}
             defaultFilter={defaultContainsFilter}
+            selectedKey={requiredKey()}
+            onSelectionChange={handleRequiredChange}
+            onBlur={handleRequiredBlur}
             label="Required Food"
             placeholder="Select one..."
-            isInvalid
-            errorMessage="Please select a food item"
+            isInvalid={isRequiredInvalid()}
+            errorMessage={isRequiredInvalid() ? "Please select a food item" : undefined}
           >
             <StyledComboBoxInputGroup>
               <StyledComboBoxInput />

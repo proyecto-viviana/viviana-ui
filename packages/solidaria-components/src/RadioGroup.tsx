@@ -192,7 +192,7 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
         data-required={state.isRequired || undefined}
         data-invalid={groupAria.isInvalid || undefined}
       >
-        {renderProps.children}
+        {renderProps.renderChildren()}
       </div>
     </RadioGroupStateContext.Provider>
   );
@@ -311,17 +311,25 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
           {...cleanFocusProps()}
         />
       </VisuallyHidden>
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </label>
   );
 }
 
 /**
+ * Inner wrapper component that requires context.
+ * This is used instead of an IIFE to avoid SSR issues with deferred rendering.
+ */
+function RadioInner(props: { radioProps: RadioProps }): JSX.Element {
+  const state = useContext(RadioGroupStateContext);
+  if (!state) {
+    throw new Error('Radio must be used within a RadioGroup');
+  }
+  return <RadioImpl radioProps={props.radioProps} state={state} />;
+}
+
+/**
  * A radio represents an individual option within a radio group.
- *
- * This component uses a deferred rendering pattern to work around SolidJS's
- * JSX evaluation order. The actual implementation is rendered inside a function
- * that checks for context availability at render time, not component creation time.
  *
  * @example
  * ```tsx
@@ -338,17 +346,6 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
  * ```
  */
 export function Radio(props: RadioProps): JSX.Element {
-  // Store props for deferred access - don't access context here!
-  // The context check is deferred to render time via the returned function.
-  // This allows Radio to be created as a JSX child before RadioGroup renders.
-
-  // Return a getter function that SolidJS will call during render
-  // At render time, the RadioGroupStateContext will be available
-  return (() => {
-    const state = useContext(RadioGroupStateContext);
-    if (!state) {
-      throw new Error('Radio must be used within a RadioGroup');
-    }
-    return <RadioImpl radioProps={props} state={state} />;
-  }) as unknown as JSX.Element;
+  // Use an inner component instead of an IIFE to avoid SSR hydration issues
+  return <RadioInner radioProps={props} />;
 }

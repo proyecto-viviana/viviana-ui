@@ -249,7 +249,7 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
       data-disabled={isDisabled() || undefined}
       data-pressed={isPressed() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </a>
   );
 }

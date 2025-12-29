@@ -171,7 +171,7 @@ export function Button(props: ButtonProps): JSX.Element {
       data-focus-visible={isFocusVisible() || undefined}
       data-disabled={resolveDisabled() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </button>
   );
 }

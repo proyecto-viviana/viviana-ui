@@ -285,7 +285,7 @@ export function Slider(props: SliderProps): JSX.Element {
           <span {...labelProps}>{ariaProps.label}</span>
         </Show>
 
-        {renderProps.children}
+        {renderProps.renderChildren()}
 
         {/* Hidden input for form submission */}
         <input {...inputProps} />
@@ -349,7 +349,7 @@ export function SliderTrack(props: SliderTrackProps): JSX.Element {
       data-orientation={state.orientation}
       data-dragging={state.isDragging() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </div>
   );
 }
@@ -433,7 +433,7 @@ export function SliderThumb(props: SliderThumbProps): JSX.Element {
       data-focus-visible={isFocusVisible() || undefined}
       data-hovered={isHovered() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </div>
   );
 }
@@ -475,12 +475,12 @@ export function SliderOutput(props: SliderOutputProps): JSX.Element {
   };
 
   // Default children shows formatted value
-  const children = () => {
-    const c = renderProps.children;
-    if (c === undefined || c === null) {
+  const renderedChildren = () => {
+    // Check if raw children prop exists before calling renderChildren
+    if (renderProps.children === undefined || renderProps.children === null) {
       return state.getFormattedValue();
     }
-    return c;
+    return renderProps.renderChildren();
   };
 
   return (
@@ -489,7 +489,7 @@ export function SliderOutput(props: SliderOutputProps): JSX.Element {
       class={renderProps.class()}
       style={renderProps.style()}
     >
-      {children()}
+      {renderedChildren()}
     </output>
   );
 }

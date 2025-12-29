@@ -55,22 +55,43 @@ export interface SlotProps {
 // ============================================
 
 /**
- * Resolves render props (children, class, style) based on component state.
- *
- * IMPORTANT: Children are returned as a GETTER to ensure they are evaluated lazily
- * within the JSX tree, after context providers are set up. This is critical for SSR.
+ * Return type for useRenderProps
  */
-export function useRenderProps<T extends object>(
-  props: RenderPropsBase<T> & { defaultClassName?: string },
-  values: Accessor<T>
-): {
+export interface RenderPropsResult<T> {
   /** Accessor for class - safe to call anytime */
   class: Accessor<string>;
   /** Accessor for style - safe to call anytime */
   style: Accessor<JSX.CSSProperties | undefined>;
-  /** Getter for children - MUST be called inside JSX, after context providers */
-  children: JSX.Element;
-} {
+  /**
+   * Render the children. This is a function that returns JSX, NOT a getter.
+   * For SSR compatibility, this should be called within the JSX tree.
+   *
+   * Usage in components:
+   *   {renderProps.renderChildren()}
+   *
+   * Or if you need the raw children/function:
+   *   {renderProps.renderChildren()}
+   */
+  renderChildren: () => JSX.Element;
+  /** The raw children prop (function or JSX) - use renderChildren() in most cases */
+  children: RenderChildren<T> | undefined;
+  /** The render props values accessor */
+  values: Accessor<T>;
+}
+
+/**
+ * Resolves render props (children, class, style) based on component state.
+ *
+ * For SSR compatibility, children are NOT evaluated eagerly. Instead:
+ * - Use `renderChildren()` to render children with current values
+ * - Or access `children` directly if you need the raw prop
+ *
+ * This avoids the getter pattern that causes SSR hydration mismatches.
+ */
+export function useRenderProps<T extends object>(
+  props: RenderPropsBase<T> & { defaultClassName?: string },
+  values: Accessor<T>
+): RenderPropsResult<T> {
   const { children, class: className, style, defaultClassName = '' } = props;
 
   // Compute class and style eagerly (they don't depend on context)
@@ -88,17 +109,19 @@ export function useRenderProps<T extends object>(
       : style;
   });
 
-  // Return object with separate accessors
-  // Children is a getter that evaluates lazily when accessed in JSX
+  // Return object with explicit function for rendering children
+  // This avoids the getter pattern that causes SSR issues
   return {
     class: computedClass,
     style: computedStyle,
-    get children() {
+    renderChildren: () => {
       const currentValues = values();
       return typeof children === 'function'
         ? children(currentValues)
         : children;
     },
+    children,
+    values,
   };
 }
 

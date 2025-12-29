@@ -558,7 +558,7 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={state.isDisabled || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </button>
   );
 }
@@ -810,7 +810,7 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={optionAria.isDisabled() || undefined}
     >
-      {renderProps.children}
+      {renderProps.renderChildren()}
     </li>
   );
 }
