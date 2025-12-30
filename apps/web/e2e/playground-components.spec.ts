@@ -260,6 +260,51 @@ test.describe('Tooltip Component', () => {
 
     await checkNoHydrationErrors(errors);
   });
+
+  test('tooltip positions correctly relative to trigger', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find tooltip section and scroll to it
+    const tooltipSection = page.locator('section:has-text("Tooltip")').first();
+    await tooltipSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Find and hover the "Top" button to trigger tooltip
+    const tooltipTrigger = tooltipSection.locator('button:has-text("Top")').first();
+    const triggerBox = await tooltipTrigger.boundingBox();
+    expect(triggerBox).not.toBeNull();
+
+    await tooltipTrigger.hover();
+    // Wait for tooltip delay (default 1500ms) + extra time
+    await page.waitForTimeout(2000);
+
+    // Verify tooltip appeared
+    const tooltip = page.locator('[role="tooltip"]');
+    expect(await tooltip.count()).toBe(1);
+
+    // Get tooltip position
+    const tooltipBox = await tooltip.first().boundingBox();
+    expect(tooltipBox).not.toBeNull();
+
+    // Verify tooltip is positioned ABOVE the trigger (placement="top")
+    // Tooltip's bottom edge should be above trigger's top edge (with some offset)
+    expect(tooltipBox!.y + tooltipBox!.height).toBeLessThan(triggerBox!.y);
+
+    // Verify tooltip is horizontally centered relative to trigger
+    const tooltipCenterX = tooltipBox!.x + tooltipBox!.width / 2;
+    const triggerCenterX = triggerBox!.x + triggerBox!.width / 2;
+    expect(Math.abs(tooltipCenterX - triggerCenterX)).toBeLessThan(10); // Allow 10px tolerance
+
+    // Verify no horizontal scroll (tooltip not causing overflow)
+    const pageWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    const viewportWidth = await page.evaluate(() => window.innerWidth);
+    expect(pageWidth).toBeLessThanOrEqual(viewportWidth);
+
+    await checkNoHydrationErrors(errors);
+  });
 });
 
 test.describe('Checkbox Component', () => {
@@ -466,4 +511,91 @@ test.describe('Dialog Component', () => {
 
     await checkNoHydrationErrors(errors);
   });
+});
+
+test.describe('Popover Component', () => {
+  test('popover opens and closes correctly', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find popover section
+    const popoverSection = page.locator('section:has-text("Popover")').first();
+    await popoverSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Click the "Bottom" popover trigger
+    const bottomTrigger = popoverSection.locator('[data-testid="popover-bottom-trigger"]');
+    await bottomTrigger.click();
+    await page.waitForTimeout(300);
+
+    // Verify popover is visible
+    const popover = page.locator('[role="dialog"]');
+    await expect(popover).toBeVisible();
+
+    // Verify popover has proper ARIA attributes
+    expect(await popover.getAttribute('role')).toBe('dialog');
+
+    // Verify popover content
+    await expect(popover.locator('text=Bottom Popover')).toBeVisible();
+
+    // Click outside or press Escape to close
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(300);
+
+    // Verify popover is closed
+    await expect(popover).not.toBeVisible();
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('popover with actions renders correctly', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find popover section
+    const popoverSection = page.locator('section:has-text("Popover")').first();
+    await popoverSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Click the "Open with Actions" trigger
+    const actionsTrigger = popoverSection.locator('[data-testid="popover-actions-trigger"]');
+    await actionsTrigger.click();
+    await page.waitForTimeout(300);
+
+    // Verify popover is visible
+    const popover = page.locator('[role="dialog"]');
+    await expect(popover).toBeVisible();
+
+    // Verify action buttons are present
+    await expect(popover.locator('button:has-text("Cancel")')).toBeVisible();
+    await expect(popover.locator('button:has-text("Confirm")')).toBeVisible();
+
+    // Press Escape to close
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(300);
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('popover renders without hydration errors', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find popover section
+    const popoverSection = page.locator('section:has-text("Popover")').first();
+    await popoverSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Verify section exists and renders without errors
+    await expect(popoverSection).toBeVisible();
+
+    await checkNoHydrationErrors(errors);
+  });
+
 });

@@ -60,10 +60,6 @@ if (typeof document !== 'undefined') {
   }, true);
 }
 
-function getInteractionModality(): Modality | null {
-  return currentModality;
-}
-
 function isFocusVisible(): boolean {
   return currentModality === 'keyboard';
 }
@@ -155,12 +151,9 @@ export function createTooltipTrigger(
     if (trigger === 'focus') {
       return;
     }
-    // Only set hovered if using pointer modality
-    if (getInteractionModality() === 'pointer') {
-      isHovered = true;
-    } else {
-      isHovered = false;
-    }
+    // Hover events (onPointerEnter) only fire from pointer interactions,
+    // so we can always set isHovered to true here
+    isHovered = true;
     handleShow();
   };
 

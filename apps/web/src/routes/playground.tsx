@@ -63,6 +63,11 @@ import {
   // Tooltip
   Tooltip,
   TooltipTrigger,
+  // Popover
+  Popover,
+  PopoverTrigger,
+  PopoverHeader,
+  PopoverFooter,
 } from '@proyecto-viviana/ui'
 import {
   createButton,
@@ -266,6 +271,87 @@ function Playground() {
                   <Button variant="secondary" style="outline">Delayed tooltip</Button>
                   <Tooltip>This tooltip has a 500ms delay</Tooltip>
                 </TooltipTrigger>
+              </div>
+            </div>
+          </Section>
+
+          {/* Popover */}
+          <Section title="Popover" description="Positioned overlay content triggered by user action">
+            <div class="space-y-6">
+              {/* Basic placements */}
+              <div>
+                <p class="text-sm text-primary-300 mb-3">Placement Options</p>
+                <div class="flex flex-wrap gap-3">
+                  <PopoverTrigger>
+                    <Button variant="secondary" style="outline" data-testid="popover-bottom-trigger">Bottom</Button>
+                    <Popover placement="bottom" data-testid="popover-bottom">
+                      <PopoverHeader title="Bottom Popover" description="This popover opens below the trigger" />
+                      <p class="text-sm">Content positioned at the bottom.</p>
+                    </Popover>
+                  </PopoverTrigger>
+                  <PopoverTrigger>
+                    <Button variant="secondary" style="outline">Top</Button>
+                    <Popover placement="top">
+                      <PopoverHeader title="Top Popover" />
+                      <p class="text-sm">Content positioned at the top.</p>
+                    </Popover>
+                  </PopoverTrigger>
+                  <PopoverTrigger>
+                    <Button variant="secondary" style="outline">Left</Button>
+                    <Popover placement="left">
+                      <PopoverHeader title="Left Popover" />
+                      <p class="text-sm">Content on the left side.</p>
+                    </Popover>
+                  </PopoverTrigger>
+                  <PopoverTrigger>
+                    <Button variant="secondary" style="outline">Right</Button>
+                    <Popover placement="right">
+                      <PopoverHeader title="Right Popover" />
+                      <p class="text-sm">Content on the right side.</p>
+                    </Popover>
+                  </PopoverTrigger>
+                </div>
+              </div>
+              {/* With footer actions */}
+              <div>
+                <p class="text-sm text-primary-300 mb-3">With Footer Actions</p>
+                <PopoverTrigger>
+                  <Button variant="primary" data-testid="popover-actions-trigger">Open with Actions</Button>
+                  <Popover placement="bottom" size="md" data-testid="popover-actions">
+                    <PopoverHeader
+                      title="Confirm Action"
+                      description="Are you sure you want to proceed with this action?"
+                    />
+                    <PopoverFooter>
+                      <Button variant="secondary" style="outline" size="sm">Cancel</Button>
+                      <Button variant="primary" size="sm">Confirm</Button>
+                    </PopoverFooter>
+                  </Popover>
+                </PopoverTrigger>
+              </div>
+              {/* Size variants */}
+              <div>
+                <p class="text-sm text-primary-300 mb-3">Size Variants</p>
+                <div class="flex flex-wrap gap-3">
+                  <PopoverTrigger>
+                    <Button variant="secondary" style="outline">Small</Button>
+                    <Popover placement="bottom" size="sm">
+                      <p class="text-sm">Small popover content.</p>
+                    </Popover>
+                  </PopoverTrigger>
+                  <PopoverTrigger>
+                    <Button variant="secondary" style="outline">Medium</Button>
+                    <Popover placement="bottom" size="md">
+                      <p class="text-sm">Medium popover content with more room for details.</p>
+                    </Popover>
+                  </PopoverTrigger>
+                  <PopoverTrigger>
+                    <Button variant="secondary" style="outline">Large</Button>
+                    <Popover placement="bottom" size="lg">
+                      <p class="text-sm">Large popover content with maximum width for longer content sections.</p>
+                    </Popover>
+                  </PopoverTrigger>
+                </div>
               </div>
             </div>
           </Section>

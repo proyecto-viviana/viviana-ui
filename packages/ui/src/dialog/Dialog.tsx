@@ -5,7 +5,7 @@
  * Follows Spectrum 2 design patterns.
  */
 
-import { type JSX, splitProps, Show, createSignal, createContext, useContext, createUniqueId, onMount, onCleanup } from 'solid-js'
+import { type JSX, splitProps, Show, createSignal, createContext, useContext, createUniqueId, onMount, onCleanup, createEffect } from 'solid-js'
 import { Portal } from 'solid-js/web'
 import { createInteractOutside } from '@proyecto-viviana/solidaria'
 
@@ -197,6 +197,18 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
     }
     document.addEventListener('keydown', handleKeyDown)
     onCleanup(() => document.removeEventListener('keydown', handleKeyDown))
+  })
+
+  // Prevent background scroll when dialog is open
+  createEffect(() => {
+    if (!isOpenControlled()) return
+
+    const prevOverflow = document.documentElement.style.overflow
+    document.documentElement.style.overflow = 'hidden'
+
+    onCleanup(() => {
+      document.documentElement.style.overflow = prevOverflow
+    })
   })
 
   return (

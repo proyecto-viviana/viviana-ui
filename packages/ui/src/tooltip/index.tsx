@@ -43,8 +43,9 @@ export interface TooltipProps extends Omit<HeadlessTooltipProps, 'class' | 'styl
 // STYLES
 // ============================================
 
+// Note: Position is now calculated by the headless layer (solidaria-components)
+// so we don't need CSS positioning classes here
 const baseStyles = [
-  'absolute z-50',
   'px-3 py-2 rounded-lg',
   'text-sm font-medium',
   'shadow-lg',
@@ -57,13 +58,6 @@ const variantStyles: Record<TooltipVariant, string> = {
   default: 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900',
   neutral: 'bg-neutral-800 text-neutral-100 dark:bg-neutral-200 dark:text-neutral-900',
   info: 'bg-blue-600 text-white dark:bg-blue-500',
-}
-
-const placementStyles: Record<TooltipPlacement, string> = {
-  top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
-  bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
-  left: 'right-full top-1/2 -translate-y-1/2 mr-2',
-  right: 'left-full top-1/2 -translate-y-1/2 ml-2',
 }
 
 const arrowStyles: Record<TooltipPlacement, string> = {
@@ -130,11 +124,10 @@ export function Tooltip(props: TooltipProps): JSX.Element {
     <HeadlessTooltip
       {...rest}
       placement={placement()}
-      class={(renderProps: TooltipRenderProps) => {
+      class={(_renderProps: TooltipRenderProps) => {
         const classes = [
           baseStyles,
           variantStyles[variant()],
-          placementStyles[renderProps.placement ?? placement()],
           local.class ?? '',
         ].filter(Boolean).join(' ')
         return classes

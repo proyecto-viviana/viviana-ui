@@ -11,8 +11,12 @@ import {
   createContext,
   useContext,
   createMemo,
+  createSignal,
+  createEffect,
+  onCleanup,
   Show,
 } from 'solid-js';
+import { isServer } from 'solid-js/web';
 import {
   createTooltipTriggerState,
   type TooltipTriggerState,
@@ -162,12 +166,39 @@ const TriggerWrapper: ParentComponent<{
   // Get the child element and clone it with trigger props
   const child = () => props.children as JSX.Element;
 
-  // We need to return the child with the trigger props spread onto it
-  // This is tricky in SolidJS - we'll wrap in a span for now
+  // We wrap in a span with display:contents to not affect layout.
+  // However, display:contents makes getBoundingClientRect return zeros,
+  // so we pass a ref callback that finds the first actual element child.
+  const handleRef = (span: HTMLSpanElement) => {
+    // Find the first element child that has dimensions (not display:contents)
+    const findVisibleChild = (el: Element): HTMLElement | null => {
+      if (el instanceof HTMLElement) {
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          return el;
+        }
+        // Check children
+        for (const child of el.children) {
+          const found = findVisibleChild(child);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    const visibleChild = findVisibleChild(span);
+    if (visibleChild) {
+      props.ref(visibleChild);
+    } else {
+      // Fallback to span itself
+      props.ref(span);
+    }
+  };
+
   return (
     <span
       {...props.triggerProps}
-      ref={props.ref}
+      ref={handleRef}
       style={{ display: 'contents' }}
     >
       {child()}
@@ -208,6 +239,7 @@ export function Tooltip(props: TooltipProps): JSX.Element {
         state={state()}
         contextTooltipProps={context?.tooltipProps ?? {}}
         placement={placement()}
+        triggerRef={context?.triggerRef ?? (() => null)}
       />
     </Show>
   );
@@ -221,9 +253,23 @@ function TooltipContent(
     state: TooltipTriggerState;
     contextTooltipProps: { id?: string };
     placement: 'top' | 'bottom' | 'left' | 'right';
+    triggerRef: () => HTMLElement | null | undefined;
   }
 ): JSX.Element {
+  if (isServer) {
+    return null as unknown as JSX.Element;
+  }
+
+  let tooltipRef!: HTMLDivElement;
   const { tooltipProps: ariaTooltipProps } = createTooltip({}, props.state);
+
+  // Signal to track position styles
+  // Start with visibility hidden, then show after positioning
+  const [positionStyles, setPositionStyles] = createSignal({
+    top: '0px',
+    left: '0px',
+    visibility: 'hidden' as 'hidden' | 'visible',
+  });
 
   const values = createMemo<TooltipRenderProps>(() => ({
     isEntering: false, // TODO: animation support
@@ -241,6 +287,70 @@ function TooltipContent(
     values
   );
 
+  // Calculate position based on trigger element
+  // Using position: fixed so we use viewport coordinates directly from getBoundingClientRect
+  const updatePosition = () => {
+    const triggerEl = props.triggerRef();
+    if (!triggerEl || !tooltipRef) return;
+
+    const triggerRect = triggerEl.getBoundingClientRect();
+    // Use offsetWidth/offsetHeight which are more reliable than getBoundingClientRect
+    // when the element might be positioned off-screen initially
+    const tooltipWidth = tooltipRef.offsetWidth;
+    const tooltipHeight = tooltipRef.offsetHeight;
+    const offset = 8; // Gap between trigger and tooltip
+
+    let top = 0;
+    let left = 0;
+
+    // Using viewport coordinates for position: fixed
+    switch (props.placement) {
+      case 'top':
+        top = triggerRect.top - tooltipHeight - offset;
+        left = triggerRect.left + (triggerRect.width - tooltipWidth) / 2;
+        break;
+      case 'bottom':
+        top = triggerRect.bottom + offset;
+        left = triggerRect.left + (triggerRect.width - tooltipWidth) / 2;
+        break;
+      case 'left':
+        top = triggerRect.top + (triggerRect.height - tooltipHeight) / 2;
+        left = triggerRect.left - tooltipWidth - offset;
+        break;
+      case 'right':
+        top = triggerRect.top + (triggerRect.height - tooltipHeight) / 2;
+        left = triggerRect.right + offset;
+        break;
+    }
+
+    setPositionStyles({
+      top: `${top}px`,
+      left: `${left}px`,
+      visibility: 'visible',
+    });
+  };
+
+  // Set up positioning effect - runs when trigger ref is available
+  createEffect(() => {
+    const trigger = props.triggerRef();
+    if (!trigger) return;
+
+    // Initial position calculation - use requestAnimationFrame to ensure
+    // the element is rendered and has proper dimensions
+    requestAnimationFrame(() => {
+      updatePosition();
+    });
+
+    // Update on scroll/resize
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+
+    onCleanup(() => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    });
+  });
+
   // Filter to only valid DOM props (aria-*, data-*, events)
   const domProps = filterDOMProps(props);
 
@@ -253,8 +363,14 @@ function TooltipContent(
         {...domProps}
         {...props.contextTooltipProps}
         {...cleanAriaProps}
+        ref={tooltipRef}
         class={renderProps.class()}
-        style={renderProps.style()}
+        style={{
+          position: 'fixed',
+          'z-index': 100000,
+          ...positionStyles(),
+          ...renderProps.style(),
+        }}
         data-placement={props.placement}
       >
         {renderProps.renderChildren()}

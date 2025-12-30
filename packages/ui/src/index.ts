@@ -42,6 +42,10 @@ export type { IconProps, GitHubIconProps } from './icon';
 export { Tooltip, TooltipTrigger, SimpleTooltip } from './tooltip';
 export type { TooltipProps, TooltipTriggerProps, TooltipPlacement, TooltipVariant, SimpleTooltipProps } from './tooltip';
 
+// Popover
+export { Popover, PopoverTrigger, PopoverHeader, PopoverFooter } from './popover';
+export type { PopoverProps, PopoverTriggerProps, PopoverHeaderProps, PopoverFooterProps, PopoverPlacement, PopoverSize, PopoverRenderProps } from './popover';
+
 // TextField
 export { TextField } from './textfield';
 export type { TextFieldProps, TextFieldSize, TextFieldVariant } from './textfield';

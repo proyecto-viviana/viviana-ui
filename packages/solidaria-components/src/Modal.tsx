@@ -198,6 +198,17 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
     isKeyboardDismissDisabled: local.isKeyboardDismissDisabled,
   }
 
+  // Resolve children - handle both static JSX and render functions
+  // IMPORTANT: We access props.children directly (not local.children) to preserve
+  // lazy evaluation inside context providers
+  const resolveChildren = () => {
+    const children = props.children
+    if (typeof children === 'function') {
+      return (children as (props: ModalRenderProps) => JSX.Element)(renderValues())
+    }
+    return children
+  }
+
   return (
     <Show when={isOpen() || local.isExiting}>
       <Portal>
@@ -210,9 +221,7 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
               data-entering={dataAttr(local.isEntering)}
               data-exiting={dataAttr(local.isExiting)}
             >
-              {/* IMPORTANT: Use props.children directly, NOT local.children
-                  This ensures children are lazily evaluated inside the context providers */}
-              {props.children}
+              {resolveChildren()}
             </div>
           </InternalModalContext.Provider>
         </OverlayTriggerStateContext.Provider>

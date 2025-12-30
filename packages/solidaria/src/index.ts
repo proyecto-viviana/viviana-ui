@@ -267,6 +267,22 @@ export {
   type DialogAria,
 } from './dialog';
 
+// Popover
+export {
+  createPopover,
+  createOverlayPosition,
+  calculatePosition,
+  type AriaPopoverProps,
+  type PopoverAria,
+  type AriaPositionProps,
+  type PositionProps,
+  type PositionAria,
+  type Placement,
+  type PlacementAxis,
+  type PositionOpts,
+  type PositionResult,
+} from './popover';
+
 // Focus
 export {
   FocusScope,

@@ -297,4 +297,19 @@ export {
   type ModalOverlayProps,
   type ModalRenderProps,
   type OverlayTriggerState,
-} from './Modal';
+} from './Modal'
+
+// Popover
+export {
+  Popover,
+  PopoverTrigger,
+  PopoverContext,
+  PopoverTriggerContext,
+  usePopoverTrigger,
+  OverlayArrow,
+  type PopoverProps,
+  type PopoverRenderProps,
+  type PopoverTriggerProps,
+  type PopoverTriggerContextValue,
+  type OverlayArrowProps,
+} from './Popover';

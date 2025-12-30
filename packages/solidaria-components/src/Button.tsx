@@ -26,7 +26,7 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
-import { DialogTriggerContext } from './contexts';
+import { DialogTriggerContext, PopoverTriggerContext } from './contexts';
 
 // ============================================
 // TYPES
@@ -92,12 +92,13 @@ export function Button(props: ButtonProps): JSX.Element {
     'slot',
   ]);
 
-  // Check if inside a DialogTrigger - if so, toggle the dialog on press
+  // Check if inside a DialogTrigger or PopoverTrigger - if so, toggle on press
   // NOTE: Context is captured at component creation time. For Buttons inside a Modal,
   // the Modal provides OverlayTriggerStateContext, but due to SolidJS's eager JSX evaluation,
   // components inside Modal children are created before the Modal's Show renders.
   // So we can't reliably use context here to determine if we're inside a Modal.
   const dialogTriggerContext = useContext(DialogTriggerContext);
+  const popoverTriggerContext = useContext(PopoverTriggerContext);
 
   // Helper to resolve isDisabled (handles both boolean and Accessor<boolean>)
   const resolveDisabled = (): boolean => {
@@ -108,17 +109,18 @@ export function Button(props: ButtonProps): JSX.Element {
     return !!disabled;
   };
 
-  // Determine if this button should act as a dialog trigger
+  // Determine if this button should act as a dialog/popover trigger
   // We only toggle if:
-  // 1. We have DialogTriggerContext (we're inside a DialogTrigger)
+  // 1. We have DialogTriggerContext or PopoverTriggerContext (we're inside a trigger)
   // 2. AND there is NO onPress handler (the trigger button typically has no onPress,
   //    while close buttons inside dialogs have onPress={close})
   // This heuristic works because:
   // - Trigger buttons: don't have onPress, should toggle
   // - Close buttons: have onPress={close}, should NOT toggle (just call onPress)
   const isDialogTrigger = () => dialogTriggerContext && !ariaProps.onPress;
+  const isPopoverTrigger = () => popoverTriggerContext && !ariaProps.onPress;
 
-  // Wrap onPress to also toggle dialog if this is a trigger button
+  // Wrap onPress to also toggle dialog/popover if this is a trigger button
   const handlePress = (e: any) => {
     // Call original onPress if provided
     if (typeof ariaProps.onPress === 'function') {
@@ -127,6 +129,10 @@ export function Button(props: ButtonProps): JSX.Element {
     // Toggle dialog only if this is a trigger button (has no onPress handler)
     if (isDialogTrigger()) {
       dialogTriggerContext!.state.toggle();
+    }
+    // Toggle popover only if this is a trigger button (has no onPress handler)
+    if (isPopoverTrigger()) {
+      popoverTriggerContext!.state.toggle();
     }
   };
 
@@ -189,8 +195,17 @@ export function Button(props: ButtonProps): JSX.Element {
     return rest;
   };
 
+  // Ref callback to register with PopoverTrigger context
+  const handleRef = (el: HTMLButtonElement) => {
+    // If this button is a popover trigger, register it
+    if (isPopoverTrigger() && popoverTriggerContext?.setTriggerRef) {
+      popoverTriggerContext.setTriggerRef(el);
+    }
+  };
+
   return (
     <button
+      ref={handleRef}
       {...domProps()}
       {...cleanButtonProps()}
       {...cleanFocusProps()}
