@@ -68,6 +68,19 @@ import {
   PopoverTrigger,
   PopoverHeader,
   PopoverFooter,
+  // Toast
+  ToastProvider,
+  ToastRegion,
+  addToast,
+  toastSuccess,
+  toastError,
+  toastWarning,
+  toastInfo,
+  // Disclosure
+  Disclosure,
+  DisclosureGroup,
+  DisclosureTrigger,
+  DisclosurePanel,
 } from '@proyecto-viviana/ui'
 import {
   createButton,
@@ -115,6 +128,7 @@ function Playground() {
   }
 
   return (
+    <ToastProvider useGlobalQueue>
     <PageLayout>
       <Header />
 
@@ -869,9 +883,156 @@ function Playground() {
           <Section title="Styled ComboBox (ui)" description="Filterable dropdown with text input" class="lg:col-span-2">
             <StyledComboBoxDemo onSelectionChange={(key) => setLastAction(`ComboBox: ${key}`)} />
           </Section>
+
+          {/* Disclosure Section */}
+          <Section title="Disclosure" description="Expandable/collapsible content panels" class="lg:col-span-2">
+            <div class="space-y-6">
+              {/* Single Disclosure */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Single Disclosure</h4>
+                <Disclosure variant="bordered">
+                  <DisclosureTrigger>What is a Disclosure?</DisclosureTrigger>
+                  <DisclosurePanel>
+                    A disclosure is a widget that can be toggled to show or hide content.
+                    It's useful for FAQs, collapsible sections, and progressive disclosure patterns.
+                  </DisclosurePanel>
+                </Disclosure>
+              </div>
+
+              {/* Accordion (DisclosureGroup) */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Accordion (Single Expand)</h4>
+                <DisclosureGroup variant="bordered">
+                  <Disclosure id="section-1">
+                    <DisclosureTrigger>Section 1: Introduction</DisclosureTrigger>
+                    <DisclosurePanel>
+                      This is the content for section 1. Only one section can be expanded at a time
+                      in this accordion mode.
+                    </DisclosurePanel>
+                  </Disclosure>
+                  <Disclosure id="section-2">
+                    <DisclosureTrigger>Section 2: Features</DisclosureTrigger>
+                    <DisclosurePanel>
+                      This is the content for section 2. When you expand this, section 1 will collapse
+                      automatically.
+                    </DisclosurePanel>
+                  </Disclosure>
+                  <Disclosure id="section-3">
+                    <DisclosureTrigger>Section 3: Conclusion</DisclosureTrigger>
+                    <DisclosurePanel>
+                      This is the content for section 3. The accordion pattern is great for FAQs and
+                      settings pages.
+                    </DisclosurePanel>
+                  </Disclosure>
+                </DisclosureGroup>
+              </div>
+
+              {/* Multiple Expand Accordion */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Accordion (Multiple Expand)</h4>
+                <DisclosureGroup allowsMultipleExpanded variant="filled">
+                  <Disclosure id="multi-1">
+                    <DisclosureTrigger>Panel A</DisclosureTrigger>
+                    <DisclosurePanel>Multiple panels can be open at once in this mode.</DisclosurePanel>
+                  </Disclosure>
+                  <Disclosure id="multi-2">
+                    <DisclosureTrigger>Panel B</DisclosureTrigger>
+                    <DisclosurePanel>Try opening both panels!</DisclosurePanel>
+                  </Disclosure>
+                </DisclosureGroup>
+              </div>
+
+              {/* Variants */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Variants</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Disclosure variant="default">
+                    <DisclosureTrigger>Default Variant</DisclosureTrigger>
+                    <DisclosurePanel>Simple border-bottom style.</DisclosurePanel>
+                  </Disclosure>
+                  <Disclosure variant="bordered">
+                    <DisclosureTrigger>Bordered Variant</DisclosureTrigger>
+                    <DisclosurePanel>Full border with rounded corners.</DisclosurePanel>
+                  </Disclosure>
+                  <Disclosure variant="filled">
+                    <DisclosureTrigger>Filled Variant</DisclosureTrigger>
+                    <DisclosurePanel>Background fill style.</DisclosurePanel>
+                  </Disclosure>
+                  <Disclosure variant="ghost">
+                    <DisclosureTrigger>Ghost Variant</DisclosureTrigger>
+                    <DisclosurePanel>Minimal style with hover effects.</DisclosurePanel>
+                  </Disclosure>
+                </div>
+              </div>
+            </div>
+          </Section>
+
+          {/* Toast Section */}
+          <Section title="Toast" description="Toast notifications with auto-dismiss and variants" class="lg:col-span-2">
+            <div class="space-y-4">
+              <p class="text-sm text-primary-300 mb-3">Click buttons to show toast notifications</p>
+              <div class="flex flex-wrap gap-3">
+                <Button
+                  variant="primary"
+                  onPress={() => toastSuccess('Changes saved successfully!')}
+                >
+                  Success Toast
+                </Button>
+                <Button
+                  variant="danger"
+                  onPress={() => toastError('Something went wrong. Please try again.')}
+                >
+                  Error Toast
+                </Button>
+                <Button
+                  variant="secondary"
+                  onPress={() => toastWarning('Your session will expire in 5 minutes.')}
+                >
+                  Warning Toast
+                </Button>
+                <Button
+                  variant="secondary"
+                  style="outline"
+                  onPress={() => toastInfo('New features are available!')}
+                >
+                  Info Toast
+                </Button>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <Button
+                  variant="secondary"
+                  style="outline"
+                  onPress={() => addToast({
+                    title: 'Custom Toast',
+                    description: 'This toast has both title and description with a longer timeout.',
+                    type: 'info',
+                  }, { timeout: 10000 })}
+                >
+                  With Description
+                </Button>
+                <Button
+                  variant="secondary"
+                  style="outline"
+                  onPress={() => addToast({
+                    title: 'Action Required',
+                    description: 'Click the button below to take action.',
+                    type: 'warning',
+                    action: {
+                      label: 'Take Action',
+                      onAction: () => setLastAction('Toast action clicked!'),
+                    },
+                  }, { timeout: 15000 })}
+                >
+                  With Action
+                </Button>
+              </div>
+            </div>
+          </Section>
         </div>
       </div>
+      <ToastRegion placement="bottom-end" />
     </PageLayout>
+    </ToastProvider>
   )
 }
 

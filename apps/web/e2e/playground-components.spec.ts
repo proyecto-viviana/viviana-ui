@@ -599,3 +599,321 @@ test.describe('Popover Component', () => {
   });
 
 });
+
+test.describe('Toast Component', () => {
+  test('toast appears when triggered', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find toast section
+    const toastSection = page.locator('section:has-text("Toast")').first();
+    await toastSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Click success toast button
+    const successButton = toastSection.locator('button:has-text("Success Toast")');
+    await successButton.click();
+    await page.waitForTimeout(300);
+
+    // Verify toast appeared
+    const toast = page.locator('[role="alertdialog"]');
+    await expect(toast.first()).toBeVisible();
+
+    // Verify toast has correct content
+    const toastText = await toast.first().textContent();
+    expect(toastText).toContain('Changes saved');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('toast closes when clicking close button', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find toast section and trigger a toast
+    const toastSection = page.locator('section:has-text("Toast")').first();
+    await toastSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    const infoButton = toastSection.locator('button:has-text("Info Toast")');
+    await infoButton.click();
+    await page.waitForTimeout(300);
+
+    // Verify toast is visible
+    const toast = page.locator('[role="alertdialog"]');
+    await expect(toast.first()).toBeVisible();
+
+    // Get initial toast count
+    const initialCount = await toast.count();
+
+    // Click close button
+    const closeButton = toast.first().locator('button[aria-label="Dismiss"]');
+    await closeButton.click();
+
+    // Wait for exit animation and removal
+    await page.waitForTimeout(1000);
+
+    // Verify toast count decreased (it may have exiting animation)
+    const finalCount = await toast.count();
+    expect(finalCount).toBeLessThan(initialCount);
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('toast with action button works', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find toast section
+    const toastSection = page.locator('section:has-text("Toast")').first();
+    await toastSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Click "With Action" button
+    const actionButton = toastSection.locator('button:has-text("With Action")');
+    await actionButton.click();
+    await page.waitForTimeout(300);
+
+    // Verify toast appeared with action button
+    const toast = page.locator('[role="alertdialog"]');
+    await expect(toast.first()).toBeVisible();
+
+    // Verify action button exists in the toast
+    const takeActionBtn = toast.first().locator('button:has-text("Take Action")');
+    await expect(takeActionBtn).toBeVisible();
+
+    // Click the action button (just verify it's clickable)
+    await takeActionBtn.click();
+    await page.waitForTimeout(200);
+
+    // The action was clicked - verify no errors occurred
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('multiple toasts stack correctly', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find toast section
+    const toastSection = page.locator('section:has-text("Toast")').first();
+    await toastSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Trigger multiple toasts rapidly
+    const successButton = toastSection.locator('button:has-text("Success Toast")');
+    const errorButton = toastSection.locator('button:has-text("Error Toast")');
+    const warningButton = toastSection.locator('button:has-text("Warning Toast")');
+
+    await successButton.click();
+    await page.waitForTimeout(100);
+    await errorButton.click();
+    await page.waitForTimeout(100);
+    await warningButton.click();
+    await page.waitForTimeout(300);
+
+    // Verify multiple toasts are visible
+    const toasts = page.locator('[role="alertdialog"]');
+    const toastCount = await toasts.count();
+    expect(toastCount).toBeGreaterThanOrEqual(3);
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+test.describe('Disclosure Component', () => {
+  test('single disclosure expands and collapses', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find disclosure section
+    const disclosureSection = page.locator('section:has-text("Disclosure")').first();
+    await disclosureSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Find the single disclosure trigger
+    const trigger = disclosureSection.locator('button:has-text("What is a Disclosure?")');
+    await expect(trigger).toBeVisible();
+
+    // Initially should be collapsed (check aria-expanded)
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+    // Click to expand
+    await trigger.click();
+    await page.waitForTimeout(300);
+
+    // Verify aria-expanded attribute changes to true
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    // Click again to collapse
+    await trigger.click();
+    await page.waitForTimeout(300);
+
+    // Should be collapsed again
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('accordion single expand mode works', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find disclosure section
+    const disclosureSection = page.locator('section:has-text("Disclosure")').first();
+    await disclosureSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Find accordion triggers (single expand mode)
+    const section1Trigger = disclosureSection.locator('button:has-text("Section 1: Introduction")');
+    const section2Trigger = disclosureSection.locator('button:has-text("Section 2: Features")');
+
+    // Initially both should be collapsed
+    await expect(section1Trigger).toHaveAttribute('aria-expanded', 'false');
+    await expect(section2Trigger).toHaveAttribute('aria-expanded', 'false');
+
+    // Click section 1 to expand
+    await section1Trigger.click();
+    await page.waitForTimeout(300);
+
+    // Section 1 should be expanded
+    await expect(section1Trigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(section2Trigger).toHaveAttribute('aria-expanded', 'false');
+
+    // Click section 2 - section 1 should auto-collapse
+    await section2Trigger.click();
+    await page.waitForTimeout(300);
+
+    // Section 2 should be expanded, section 1 should be collapsed
+    await expect(section1Trigger).toHaveAttribute('aria-expanded', 'false');
+    await expect(section2Trigger).toHaveAttribute('aria-expanded', 'true');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('accordion multiple expand mode allows multiple panels open', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find disclosure section
+    const disclosureSection = page.locator('section:has-text("Disclosure")').first();
+    await disclosureSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Find multiple expand accordion triggers
+    const panelATrigger = disclosureSection.locator('button:has-text("Panel A")');
+    const panelBTrigger = disclosureSection.locator('button:has-text("Panel B")');
+
+    // Initially both should be collapsed
+    await expect(panelATrigger).toHaveAttribute('aria-expanded', 'false');
+    await expect(panelBTrigger).toHaveAttribute('aria-expanded', 'false');
+
+    // Click Panel A to expand
+    await panelATrigger.click();
+    await page.waitForTimeout(300);
+
+    // Panel A should be expanded
+    await expect(panelATrigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(panelBTrigger).toHaveAttribute('aria-expanded', 'false');
+
+    // Click Panel B - Panel A should stay expanded
+    await panelBTrigger.click();
+    await page.waitForTimeout(300);
+
+    // Both panels should now be expanded
+    await expect(panelATrigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(panelBTrigger).toHaveAttribute('aria-expanded', 'true');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('disclosure variants render correctly', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find disclosure section
+    const disclosureSection = page.locator('section:has-text("Disclosure")').first();
+    await disclosureSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Find variant triggers
+    const defaultTrigger = disclosureSection.locator('button:has-text("Default Variant")');
+    const borderedTrigger = disclosureSection.locator('button:has-text("Bordered Variant")');
+    const filledTrigger = disclosureSection.locator('button:has-text("Filled Variant")');
+    const ghostTrigger = disclosureSection.locator('button:has-text("Ghost Variant")');
+
+    // All variant triggers should be visible
+    await expect(defaultTrigger).toBeVisible();
+    await expect(borderedTrigger).toBeVisible();
+    await expect(filledTrigger).toBeVisible();
+    await expect(ghostTrigger).toBeVisible();
+
+    // Test that they all expand correctly
+    await defaultTrigger.click();
+    await page.waitForTimeout(200);
+    await expect(defaultTrigger).toHaveAttribute('aria-expanded', 'true');
+
+    await borderedTrigger.click();
+    await page.waitForTimeout(200);
+    await expect(borderedTrigger).toHaveAttribute('aria-expanded', 'true');
+
+    await filledTrigger.click();
+    await page.waitForTimeout(200);
+    await expect(filledTrigger).toHaveAttribute('aria-expanded', 'true');
+
+    await ghostTrigger.click();
+    await page.waitForTimeout(200);
+    await expect(ghostTrigger).toHaveAttribute('aria-expanded', 'true');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('disclosure is keyboard accessible', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await page.waitForLoadState('networkidle');
+
+    // Find disclosure section
+    const disclosureSection = page.locator('section:has-text("Disclosure")').first();
+    await disclosureSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Find a disclosure trigger
+    const trigger = disclosureSection.locator('button:has-text("What is a Disclosure?")');
+
+    // Focus the trigger
+    await trigger.focus();
+
+    // Press Enter to expand
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(300);
+
+    // Should be expanded
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    // Press Space to collapse
+    await page.keyboard.press('Space');
+    await page.waitForTimeout(300);
+
+    // Should be collapsed
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+    await checkNoHydrationErrors(errors);
+  });
+});

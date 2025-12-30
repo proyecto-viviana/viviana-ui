@@ -267,6 +267,16 @@ export {
   type DialogAria,
 } from './dialog';
 
+// Toast
+export {
+  createToast,
+  createToastRegion,
+  type AriaToastProps,
+  type ToastAria,
+  type AriaToastRegionProps,
+  type ToastRegionAria,
+} from './toast';
+
 // Popover
 export {
   createPopover,
@@ -291,6 +301,16 @@ export {
   type FocusManager,
   type FocusManagerOptions,
 } from './focus';
+
+// Disclosure
+export {
+  createDisclosure,
+  createDisclosureGroup,
+  type AriaDisclosureProps,
+  type DisclosureAria,
+  type AriaDisclosureGroupProps,
+  type DisclosureGroupAria,
+} from './disclosure';
 
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
