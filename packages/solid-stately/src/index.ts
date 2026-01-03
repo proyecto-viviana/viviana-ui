@@ -153,6 +153,74 @@ export {
   type Key as DisclosureKey,
 } from './disclosure';
 
+// Calendar
+export {
+  // Calendar State
+  createCalendarState,
+  type CalendarStateProps,
+  type CalendarState,
+  type ValidationState,
+  // Range Calendar State
+  createRangeCalendarState,
+  type RangeCalendarStateProps,
+  type RangeCalendarState,
+  type DateRange,
+  type RangeValue,
+  // Date Field State
+  createDateFieldState,
+  type DateFieldStateProps,
+  type DateFieldState,
+  type DateSegment,
+  type DateSegmentType,
+  // Time Field State
+  createTimeFieldState,
+  type TimeFieldStateProps,
+  type TimeFieldState,
+  type TimeSegment,
+  type TimeSegmentType,
+  type TimeValue,
+  // Date types
+  type CalendarDate,
+  type CalendarDateTime,
+  type ZonedDateTime,
+  type DateValue,
+  type Time,
+  // Date utilities
+  today,
+  now,
+  getLocalTimeZone,
+  parseDate,
+  parseDateTime,
+  parseTime,
+  parseAbsolute,
+  parseAbsoluteToLocal,
+  parseZonedDateTime,
+  toCalendarDate,
+  toCalendarDateTime,
+  toZoned,
+  toTime,
+  CalendarDateClass,
+  CalendarDateTimeClass,
+  ZonedDateTimeClass,
+  TimeClass,
+  DateFormatter,
+  isSameDay,
+  isSameMonth,
+  isSameYear,
+  isToday,
+  isWeekend,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  startOfYear,
+  endOfYear,
+  getWeeksInMonth,
+  getDayOfWeek,
+  minDate,
+  maxDate,
+} from './calendar';
+
 // SSR
 export { createIsSSR, createId, canUseDOM, isServer } from './ssr';
 

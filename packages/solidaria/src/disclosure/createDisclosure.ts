@@ -6,9 +6,11 @@
  * Port of @react-aria/disclosure useDisclosure.
  */
 
-import { type JSX, createMemo, createEffect } from 'solid-js';
+import { type JSX, createEffect } from 'solid-js';
 import { type DisclosureState } from '@proyecto-viviana/solid-stately';
 import { createId, canUseDOM } from '../ssr';
+import { createPress } from '../interactions/createPress';
+import { mergeProps } from '../utils/mergeProps';
 
 // ============================================
 // TYPES
@@ -44,7 +46,11 @@ export interface DisclosureAria {
  * function Disclosure(props) {
  *   const state = createDisclosureState(props);
  *   let panelRef;
- *   const { buttonProps, panelProps } = createDisclosure(props, state, () => panelRef);
+ *   const { buttonProps, panelProps } = createDisclosure(
+ *     { get isDisabled() { return props.isDisabled; } },
+ *     state,
+ *     () => panelRef
+ *   );
  *
  *   return (
  *     <div>
@@ -58,10 +64,13 @@ export interface DisclosureAria {
  * ```
  */
 export function createDisclosure(
-  props: AriaDisclosureProps,
+  props: AriaDisclosureProps | (() => AriaDisclosureProps),
   state: DisclosureState,
   panelRef: () => HTMLElement | null
 ): DisclosureAria {
+  // Handle both plain object and accessor function patterns
+  const getProps = typeof props === 'function' ? props : () => props;
+
   const triggerId = createId();
   const panelId = createId();
 
@@ -80,37 +89,43 @@ export function createDisclosure(
     }
   });
 
-  // Button props
-  const buttonProps = createMemo<JSX.ButtonHTMLAttributes<HTMLButtonElement>>(() => ({
-    id: triggerId,
-    type: 'button',
-    'aria-expanded': state.isExpanded(),
-    'aria-controls': panelId,
-    disabled: props.isDisabled,
-    onClick: () => {
-      if (!props.isDisabled) {
-        state.toggle();
-      }
+  // Use createPress for proper interaction handling (matches Select/Menu pattern)
+  const { pressProps } = createPress({
+    get isDisabled() {
+      return getProps().isDisabled;
     },
-    onKeyDown: (e: KeyboardEvent) => {
-      if (props.isDisabled) return;
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        state.toggle();
-      }
+    onPress() {
+      state.toggle();
     },
-  }));
-
-  // Panel props
-  const panelProps = createMemo<JSX.HTMLAttributes<HTMLElement>>(() => ({
-    id: panelId,
-    role: 'region',
-    'aria-labelledby': triggerId,
-    hidden: !state.isExpanded() || undefined,
-  }));
+  });
 
   return {
-    get buttonProps() { return buttonProps(); },
-    get panelProps() { return panelProps(); },
+    // Button props - merge with pressProps for consistent interaction handling
+    // Using getter (not createMemo) to match createSelect pattern
+    get buttonProps(): JSX.ButtonHTMLAttributes<HTMLButtonElement> {
+      const p = getProps();
+      // Note: Don't add duplicate onKeyDown handler here!
+      // createPress already handles Enter/Space via its onPress callback.
+      // Adding another toggle call would double-toggle (toggle on keydown, toggle again on keyup).
+      return mergeProps(
+        pressProps as Record<string, unknown>,
+        {
+          id: triggerId,
+          type: 'button',
+          'aria-expanded': state.isExpanded(),
+          'aria-controls': panelId,
+          disabled: p.isDisabled,
+        } as Record<string, unknown>
+      ) as JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+    },
+    // Panel props
+    get panelProps(): JSX.HTMLAttributes<HTMLElement> {
+      return {
+        id: panelId,
+        role: 'region',
+        'aria-labelledby': triggerId,
+        hidden: !state.isExpanded() || undefined,
+      };
+    },
   };
 }

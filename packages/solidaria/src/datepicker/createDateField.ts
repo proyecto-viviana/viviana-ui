@@ -1,0 +1,154 @@
+/**
+ * createDateField hook for Solidaria
+ *
+ * Provides the behavior and accessibility implementation for a date field component.
+ * Based on @react-aria/datepicker useDateField
+ */
+
+import { createMemo } from 'solid-js';
+import { createId } from '../ssr';
+import { createLabel } from '../label/createLabel';
+import { access, type MaybeAccessor } from '../utils/reactivity';
+import { mergeProps } from '../utils/mergeProps';
+import type { DateFieldState, DateSegment } from '@proyecto-viviana/solid-stately';
+
+// ============================================
+// TYPES
+// ============================================
+
+export interface AriaDateFieldProps {
+  /** An ID for the date field. */
+  id?: string;
+  /** A visible label for the date field. */
+  label?: string;
+  /** An accessible label for the date field. */
+  'aria-label'?: string;
+  /** The ID of an element that labels the date field. */
+  'aria-labelledby'?: string;
+  /** The ID of an element that describes the date field. */
+  'aria-describedby'?: string;
+  /** Whether the date field is disabled. */
+  isDisabled?: boolean;
+  /** Whether the date field is read-only. */
+  isReadOnly?: boolean;
+  /** Whether the date field is required. */
+  isRequired?: boolean;
+  /** Whether the date field is invalid. */
+  isInvalid?: boolean;
+  /** Description text. */
+  description?: string;
+  /** Error message. */
+  errorMessage?: string;
+}
+
+export interface DateFieldAria {
+  /** Props for the label element. */
+  labelProps: Record<string, unknown>;
+  /** Props for the field container element. */
+  fieldProps: Record<string, unknown>;
+  /** Props for the input container (holds segments). */
+  inputProps: Record<string, unknown>;
+  /** Props for the description element. */
+  descriptionProps: Record<string, unknown>;
+  /** Props for the error message element. */
+  errorMessageProps: Record<string, unknown>;
+  /** The segments to render. */
+  segments: DateSegment[];
+}
+
+// ============================================
+// IMPLEMENTATION
+// ============================================
+
+/**
+ * Provides the behavior and accessibility implementation for a date field component.
+ */
+export function createDateField<T extends DateFieldState>(
+  props: MaybeAccessor<AriaDateFieldProps>,
+  state: T,
+  _ref?: () => HTMLElement | null
+): DateFieldAria {
+  const getProps = () => access(props);
+  const id = createId(getProps().id);
+  const descriptionId = createId();
+  const errorMessageId = createId();
+
+  // Create label handling
+  const { labelProps, fieldProps: labelFieldProps } = createLabel({
+    get label() { return getProps().label; },
+    get 'aria-label'() { return getProps()['aria-label']; },
+    get 'aria-labelledby'() { return getProps()['aria-labelledby']; },
+    labelElementType: 'span',
+  });
+
+  // Build aria-describedby
+  const getAriaDescribedBy = () => {
+    const p = getProps();
+    const ids: string[] = [];
+    if (p['aria-describedby']) {
+      ids.push(p['aria-describedby']);
+    }
+    if (p.description) {
+      ids.push(descriptionId);
+    }
+    if (p.isInvalid && p.errorMessage) {
+      ids.push(errorMessageId);
+    }
+    return ids.length > 0 ? ids.join(' ') : undefined;
+  };
+
+  // Segments from state
+  const segments = createMemo(() => state.segments());
+
+  // Field container props
+  const fieldProps = createMemo(() => {
+    const p = getProps();
+
+    return mergeProps(labelFieldProps as Record<string, unknown>, {
+      id,
+      role: 'group',
+      'aria-disabled': p.isDisabled || state.isDisabled() || undefined,
+      'aria-readonly': p.isReadOnly || state.isReadOnly() || undefined,
+      'aria-required': p.isRequired || state.isRequired() || undefined,
+      'aria-invalid': p.isInvalid || state.isInvalid() || undefined,
+      'aria-describedby': getAriaDescribedBy(),
+    });
+  });
+
+  // Input container props
+  const inputProps = createMemo(() => ({
+    role: 'presentation',
+  }));
+
+  // Description props
+  const descriptionProps = createMemo(() => ({
+    id: descriptionId,
+  }));
+
+  // Error message props
+  const errorMessageProps = createMemo(() => ({
+    id: errorMessageId,
+    role: 'alert',
+  }));
+
+  return {
+    get labelProps() {
+      return labelProps as Record<string, unknown>;
+    },
+    get fieldProps() {
+      return fieldProps();
+    },
+    get inputProps() {
+      return inputProps();
+    },
+    get descriptionProps() {
+      return descriptionProps();
+    },
+    get errorMessageProps() {
+      return errorMessageProps();
+    },
+    get segments() {
+      return segments();
+    },
+  };
+}

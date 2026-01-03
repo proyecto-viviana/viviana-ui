@@ -136,15 +136,19 @@ export function createDisclosureGroupState(
   };
 
   // Ensure only one item is expanded if allowsMultipleExpanded is false
+  // Note: We use untrack to prevent infinite loops when calling setExpandedKeys
   createEffect(() => {
     const p = propsAccessor();
     const allowsMultiple = p.allowsMultipleExpanded ?? false;
     const keys = expandedKeys();
 
     if (!allowsMultiple && keys.size > 1) {
+      // Use queueMicrotask to defer the update and avoid infinite effect loop
       const firstKey = keys.values().next().value;
       if (firstKey != null) {
-        setExpandedKeys(new Set([firstKey]));
+        queueMicrotask(() => {
+          setExpandedKeys(new Set([firstKey]));
+        });
       }
     }
   });

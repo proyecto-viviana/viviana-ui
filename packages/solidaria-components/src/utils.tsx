@@ -6,10 +6,15 @@
 import {
   type JSX,
   type Accessor,
+  type FlowComponent,
   createContext,
   useContext,
   createMemo,
+  createSignal,
+  onMount,
+  Show,
 } from 'solid-js';
+import { isServer } from 'solid-js/web';
 
 // ============================================
 // TYPES
@@ -239,4 +244,86 @@ export function filterDOMProps<R extends object = Record<string, unknown>>(
   }
 
   return result as R;
+}
+
+// ============================================
+// CLIENT-ONLY UTILITIES
+// ============================================
+
+export interface ClientOnlyProps {
+  /** The children to render only on the client */
+  children: JSX.Element;
+  /** Optional fallback to render during SSR and initial hydration */
+  fallback?: JSX.Element;
+}
+
+/**
+ * ClientOnly component - renders children only on the client side.
+ *
+ * During SSR, renders the fallback (or nothing).
+ * During hydration, renders the same fallback to match SSR.
+ * After hydration completes, switches to render children.
+ *
+ * This is useful for components that rely on browser APIs or
+ * have different server/client output.
+ *
+ * @example
+ * ```tsx
+ * <ClientOnly fallback={<div>Loading...</div>}>
+ *   <Calendar />
+ * </ClientOnly>
+ * ```
+ */
+export const ClientOnly: FlowComponent<ClientOnlyProps> = (props) => {
+  // On server, always render fallback
+  if (isServer) {
+    return <>{props.fallback}</>;
+  }
+
+  // On client, track if we've hydrated
+  const [isHydrated, setIsHydrated] = createSignal(false);
+
+  // onMount runs after hydration is complete
+  onMount(() => {
+    setIsHydrated(true);
+  });
+
+  return (
+    <Show when={isHydrated()} fallback={props.fallback}>
+      {props.children}
+    </Show>
+  );
+};
+
+/**
+ * Returns true only on the client after hydration is complete.
+ * Can be used to conditionally render client-only content.
+ *
+ * @example
+ * ```tsx
+ * const hydrated = useIsHydrated();
+ * return (
+ *   <Show when={hydrated()} fallback={<Placeholder />}>
+ *     <ClientOnlyComponent />
+ *   </Show>
+ * );
+ * ```
+ */
+export function useIsHydrated(): Accessor<boolean> {
+  // On server, always return false
+  if (isServer) {
+    return () => false;
+  }
+
+  // On client, start false and switch to true after animation frame
+  // This ensures we're past the hydration phase
+  const [isHydrated, setIsHydrated] = createSignal(false);
+
+  // Use requestAnimationFrame to ensure we're past hydration
+  // onMount may not fire during hydration for matching DOM
+  requestAnimationFrame(() => {
+    setIsHydrated(true);
+  });
+
+  return isHydrated;
 }

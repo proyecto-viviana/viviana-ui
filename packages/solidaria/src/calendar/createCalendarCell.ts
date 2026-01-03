@@ -1,0 +1,178 @@
+/**
+ * createCalendarCell hook for Solidaria
+ *
+ * Provides the behavior and accessibility implementation for a calendar cell.
+ * Based on @react-aria/calendar useCalendarCell
+ */
+
+import { createSignal, createMemo, onMount } from 'solid-js';
+import { access, type MaybeAccessor } from '../utils/reactivity';
+import type { CalendarState, CalendarDate, DateValue } from '@proyecto-viviana/solid-stately';
+import { isToday as isTodayUtil, DateFormatter, getLocalTimeZone } from '@internationalized/date';
+
+// ============================================
+// TYPES
+// ============================================
+
+export interface AriaCalendarCellProps {
+  /** The date represented by the cell. */
+  date: DateValue;
+  /** Whether the cell is disabled. */
+  isDisabled?: boolean;
+}
+
+export interface CalendarCellAria {
+  /** Props for the cell element (td or gridcell). */
+  cellProps: Record<string, unknown>;
+  /** Props for the button inside the cell. */
+  buttonProps: Record<string, unknown>;
+  /** Whether the cell is selected. */
+  isSelected: boolean;
+  /** Whether the cell is focused. */
+  isFocused: boolean;
+  /** Whether the cell is disabled. */
+  isDisabled: boolean;
+  /** Whether the cell is unavailable (e.g., booked date). */
+  isUnavailable: boolean;
+  /** Whether the cell is outside the visible month. */
+  isOutsideMonth: boolean;
+  /** Whether the cell represents today. */
+  isToday: boolean;
+  /** Whether the cell is pressed. */
+  isPressed: boolean;
+  /** The formatted date string. */
+  formattedDate: string;
+}
+
+// ============================================
+// IMPLEMENTATION
+// ============================================
+
+/**
+ * Provides the behavior and accessibility implementation for a calendar cell.
+ */
+export function createCalendarCell<T extends CalendarState>(
+  props: MaybeAccessor<AriaCalendarCellProps>,
+  state: T,
+  ref?: () => HTMLElement | null
+): CalendarCellAria {
+  const getProps = () => access(props);
+  const [isPressed, setIsPressed] = createSignal(false);
+  const timeZone = getLocalTimeZone();
+
+  // Get the date from props
+  const date = createMemo(() => getProps().date as CalendarDate);
+
+  // Check states
+  const isSelected = createMemo(() => state.isSelected(date()));
+  const isFocused = createMemo(() => state.isCellFocused(date()));
+  const isDisabled = createMemo(() => {
+    return getProps().isDisabled || state.isCellDisabled(date());
+  });
+  const isUnavailable = createMemo(() => state.isCellUnavailable(date()));
+  const isOutsideMonth = createMemo(() => state.isOutsideVisibleRange(date()));
+  const isToday = createMemo(() => isTodayUtil(date(), timeZone));
+
+  // Format the date for display
+  const formattedDate = createMemo(() => {
+    return date().day.toString();
+  });
+
+  // Handle click
+  const handleClick = () => {
+    if (!isDisabled() && !isUnavailable()) {
+      state.selectDate(date());
+    }
+  };
+
+  // Handle pointer events for pressed state
+  const handlePointerDown = () => {
+    if (!isDisabled() && !isUnavailable()) {
+      setIsPressed(true);
+    }
+  };
+
+  const handlePointerUp = () => {
+    setIsPressed(false);
+  };
+
+  // Focus the button when it becomes focused in state
+  onMount(() => {
+    const element = ref?.();
+    if (element && isFocused()) {
+      element.focus();
+    }
+  });
+
+  // Cell props (for the td element)
+  const cellProps = createMemo(() => ({
+    role: 'gridcell',
+    'aria-disabled': isDisabled() || undefined,
+    'aria-selected': isSelected() || undefined,
+  }));
+
+  // Button props (for the interactive element inside)
+  const buttonProps = createMemo(() => {
+    const d = date();
+    const formatter = new DateFormatter('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    return {
+      role: 'button',
+      tabIndex: isFocused() ? 0 : -1,
+      'aria-label': formatter.format(d.toDate(timeZone)),
+      'aria-disabled': isDisabled() || undefined,
+      'aria-pressed': isPressed() || undefined,
+      disabled: isDisabled(),
+      onClick: handleClick,
+      onPointerDown: handlePointerDown,
+      onPointerUp: handlePointerUp,
+      onPointerLeave: handlePointerUp,
+      onFocus: () => {
+        // Only update if this cell isn't already the focused date
+        // This prevents infinite loops when focus is programmatically set
+        if (!state.isCellFocused(d)) {
+          state.setFocusedDate(d);
+        }
+        state.setFocused(true);
+      },
+    };
+  });
+
+  return {
+    get cellProps() {
+      return cellProps();
+    },
+    get buttonProps() {
+      return buttonProps();
+    },
+    get isSelected() {
+      return isSelected();
+    },
+    get isFocused() {
+      return isFocused();
+    },
+    get isDisabled() {
+      return isDisabled();
+    },
+    get isUnavailable() {
+      return isUnavailable();
+    },
+    get isOutsideMonth() {
+      return isOutsideMonth();
+    },
+    get isToday() {
+      return isToday();
+    },
+    get isPressed() {
+      return isPressed();
+    },
+    get formattedDate() {
+      return formattedDate();
+    },
+  };
+}

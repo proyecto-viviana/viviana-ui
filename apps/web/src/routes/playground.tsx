@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/solid-router'
-import { createSignal, JSX } from 'solid-js'
+import { createSignal, JSX, onMount, Show, For, createContext, useContext, Accessor } from 'solid-js'
 import {
   Button,
   Badge,
@@ -81,6 +81,13 @@ import {
   DisclosureGroup,
   DisclosureTrigger,
   DisclosurePanel,
+  // Meter
+  Meter,
+  // TagGroup
+  TagGroup,
+  // Calendar/DatePicker
+  Calendar,
+  DatePicker,
 } from '@proyecto-viviana/ui'
 import {
   createButton,
@@ -101,7 +108,11 @@ import {
   SelectValue,
   SelectListBox,
   SelectOption,
+  Disclosure as HeadlessDisclosure,
+  DisclosureTrigger as HeadlessDisclosureTrigger,
+  DisclosurePanel as HeadlessDisclosurePanel,
 } from '@proyecto-viviana/solidaria-components'
+import { CalendarDateClass as CalendarDate, type DateValue, type CalendarDate as CalendarDateType } from '@proyecto-viviana/solid-stately'
 import { Header, ThemeCreator } from '@/components'
 // Fire gif for event card decoration
 const fireGif = '/fire.gif'
@@ -109,6 +120,143 @@ const fireGif = '/fire.gif'
 export const Route = createFileRoute('/playground')({
   component: Playground,
 })
+
+// ============================================
+// Section visibility system for lazy loading
+// ============================================
+
+// All available section IDs - these match the Section component id props
+const SECTION_IDS = [
+  'button', 'badge', 'chip', 'alert', 'tooltip', 'popover', 'avatar',
+  'switch', 'checkbox', 'textfield', 'link', 'progressbar', 'separator',
+  'radiogroup', 'profilecard', 'eventcard', 'calendarcard', 'conversation',
+  'timelineitem', 'dialog', 'createbutton-hook', 'createcheckboxgroup-hook',
+  'listbox', 'menu', 'select', 'styled-select', 'styled-menu', 'styled-listbox',
+  'styled-tabs', 'styled-breadcrumbs', 'styled-numberfield', 'styled-searchfield',
+  'styled-slider', 'styled-combobox', 'disclosure', 'meter', 'taggroup',
+  'calendar', 'datepicker', 'toast'
+] as const;
+
+type SectionId = typeof SECTION_IDS[number];
+
+// Context for section visibility
+const SectionVisibilityContext = createContext<{
+  isVisible: (id: SectionId) => boolean;
+  toggle: (id: SectionId) => void;
+  showAll: () => void;
+  hideAll: () => void;
+}>();
+
+// Section control panel component
+function SectionControlPanel(props: {
+  visibleSections: Accessor<Set<SectionId>>;
+  setVisibleSections: (fn: (prev: Set<SectionId>) => Set<SectionId>) => void;
+}) {
+  const toggle = (id: SectionId) => {
+    props.setVisibleSections(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const showAll = () => {
+    props.setVisibleSections(() => new Set(SECTION_IDS));
+  };
+
+  const hideAll = () => {
+    props.setVisibleSections(() => new Set());
+  };
+
+  return (
+    <div class="mb-8 p-4 rounded-xl border border-primary-600 bg-bg-300">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-primary-200">Section Visibility</h3>
+        <div class="flex gap-2">
+          <button
+            class="px-3 py-1 text-sm rounded bg-primary-600 text-primary-100 hover:bg-primary-500"
+            onClick={showAll}
+            data-testid="show-all-sections"
+          >
+            Show All
+          </button>
+          <button
+            class="px-3 py-1 text-sm rounded bg-primary-600 text-primary-100 hover:bg-primary-500"
+            onClick={hideAll}
+            data-testid="hide-all-sections"
+          >
+            Hide All
+          </button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+        <For each={SECTION_IDS as unknown as SectionId[]}>
+          {(id) => (
+            <label
+              class="flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-bg-400 transition-colors"
+              data-testid={`section-toggle-${id}`}
+            >
+              <input
+                type="checkbox"
+                checked={props.visibleSections().has(id)}
+                onChange={() => toggle(id)}
+                class="w-4 h-4 accent-accent"
+              />
+              <span class="text-sm text-primary-300 truncate">{id}</span>
+            </label>
+          )}
+        </For>
+      </div>
+    </div>
+  );
+}
+
+// Component that only renders on client (for testing SSR bypass)
+function ClientOnlyDisclosure() {
+  const [mounted, setMounted] = createSignal(false);
+  onMount(() => {
+    console.log('[ClientOnlyDisclosure] onMount fired!');
+    setMounted(true);
+  });
+
+  return (
+    <Show when={mounted()} fallback={<div class="p-3 text-primary-400" data-testid="client-only-loading">Loading...</div>}>
+      <HeadlessDisclosure>
+        <HeadlessDisclosureTrigger class="w-full text-left p-3 bg-accent-600 text-white rounded hover:bg-accent-500 transition-colors">
+          Client-Only Toggle
+        </HeadlessDisclosureTrigger>
+        <HeadlessDisclosurePanel class="p-3 mt-1 bg-accent-700 text-white rounded">
+          This disclosure was rendered client-side only (no SSR).
+        </HeadlessDisclosurePanel>
+      </HeadlessDisclosure>
+    </Show>
+  );
+}
+
+// Very simple test component - just a basic reactive button with no dependencies
+function SimpleDiagnosticButton() {
+  const [count, setCount] = createSignal(0);
+  onMount(() => {
+    console.log('[SimpleDiagnosticButton] onMount fired!');
+  });
+
+  return (
+    <button
+      data-testid="simple-diagnostic-button"
+      class="p-3 bg-success-500 text-white rounded"
+      onClick={() => {
+        console.log('[SimpleDiagnosticButton] clicked, count was:', count());
+        setCount(c => c + 1);
+      }}
+    >
+      Simple Button: {count()}
+    </button>
+  );
+}
 
 function Playground() {
   const [count, setCount] = createSignal(0)
@@ -118,6 +266,9 @@ function Playground() {
   const [checkboxChecked, setCheckboxChecked] = createSignal(false)
   const [radioValue, setRadioValue] = createSignal<string | null>(null)
   const [themeVars, setThemeVars] = createSignal<Record<string, string>>({})
+
+  // Section visibility - starts with all sections HIDDEN for faster hydration
+  const [visibleSections, setVisibleSections] = createSignal<Set<SectionId>>(new Set())
 
   // Apply theme CSS variables to the playground container
   const themeStyle = () => {
@@ -157,9 +308,21 @@ function Playground() {
           </div>
         </div>
 
+        {/* Section Visibility Control Panel */}
+        <SectionControlPanel
+          visibleSections={visibleSections}
+          setVisibleSections={setVisibleSections}
+        />
+
+        {/* Diagnostic button - always visible for testing hydration */}
+        <div class="mb-8 p-4 rounded-xl border border-success-600 bg-bg-300">
+          <h3 class="text-lg font-semibold text-primary-200 mb-4">Hydration Test</h3>
+          <SimpleDiagnosticButton />
+        </div>
+
         <div class="grid gap-8 lg:grid-cols-2">
           {/* DEBUG: Testing just Button section */}
-          <Section title="Button" description="Primary interactive element with variants and styles">
+          <Section id="button" visibleSections={visibleSections} title="Button" description="Primary interactive element with variants and styles">
             <div class="space-y-4">
               <div class="flex flex-wrap gap-3">
                 <Button onPress={() => setCount((c) => c + 1)}>Count: {count()}</Button>
@@ -184,7 +347,7 @@ function Playground() {
           </Section>
 
           {/* DEBUG: Testing Badge alone */}
-          <Section title="Badge" description="Notification indicators and counts">
+          <Section id="badge" visibleSections={visibleSections} title="Badge" description="Notification indicators and counts">
             <div class="flex flex-wrap items-center gap-4">
               <div class="flex items-center gap-2">
                 <Badge count={5} variant="primary" />
@@ -210,7 +373,7 @@ function Playground() {
           </Section>
 
           {/* Chip with both string and function icons (SSR-safe) */}
-          <Section title="Chip" description="Small labels and tag buttons">
+          <Section id="chip" visibleSections={visibleSections} title="Chip" description="Small labels and tag buttons">
             <div class="flex flex-wrap gap-3">
               <Chip text="Primary" variant="primary" onClick={() => setLastAction('Primary chip')} />
               <Chip text="Secondary" variant="secondary" onClick={() => setLastAction('Secondary chip')} />
@@ -222,7 +385,7 @@ function Playground() {
           </Section>
 
           {/* DEBUG: Testing Alert */}
-          <Section title="Alert" description="Contextual feedback messages">
+          <Section id="alert" visibleSections={visibleSections} title="Alert" description="Contextual feedback messages">
             <div class="space-y-3">
               <Alert variant="info" title="Information">
                 This is an informational message.
@@ -240,7 +403,7 @@ function Playground() {
           </Section>
 
           {/* Tooltip */}
-          <Section title="Tooltip" description="Contextual information on hover/focus">
+          <Section id="tooltip" visibleSections={visibleSections} title="Tooltip" description="Contextual information on hover/focus">
             <div class="space-y-6">
               {/* Placement variants */}
               <div>
@@ -290,7 +453,7 @@ function Playground() {
           </Section>
 
           {/* Popover */}
-          <Section title="Popover" description="Positioned overlay content triggered by user action">
+          <Section id="popover" visibleSections={visibleSections} title="Popover" description="Positioned overlay content triggered by user action">
             <div class="space-y-6">
               {/* Basic placements */}
               <div>
@@ -370,7 +533,7 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="Avatar" description="User profile images with status">
+          <Section id="avatar" visibleSections={visibleSections} title="Avatar" description="User profile images with status">
             <div class="space-y-4">
               <div class="flex items-center gap-4">
                 <Avatar size="xs" alt="XS" />
@@ -390,7 +553,7 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="Switch" description="Toggle and tab switch controls">
+          <Section id="switch" visibleSections={visibleSections} title="Switch" description="Toggle and tab switch controls">
             <div class="space-y-4">
               <div class="flex items-center gap-4">
                 <span class="text-sm text-primary-200">Toggle:</span>
@@ -412,7 +575,7 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="Checkbox" description="Toggle selection with accessible checkbox">
+          <Section id="checkbox" visibleSections={visibleSections} title="Checkbox" description="Toggle selection with accessible checkbox">
             <div class="space-y-4">
               <div class="space-y-3">
                 <Checkbox
@@ -443,7 +606,7 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="TextField" description="Text input with label, description, and validation">
+          <Section id="textfield" visibleSections={visibleSections} title="TextField" description="Text input with label, description, and validation">
             <div class="space-y-4">
               <TextField
                 label="Email"
@@ -487,7 +650,7 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="Link" description="Accessible link with hover and press states">
+          <Section id="link" visibleSections={visibleSections} title="Link" description="Accessible link with hover and press states">
             <div class="space-y-4">
               <div class="flex flex-wrap gap-4">
                 <Link href="https://example.com" target="_blank">External Link</Link>
@@ -504,7 +667,7 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="ProgressBar" description="Shows progress of an operation over time">
+          <Section id="progressbar" visibleSections={visibleSections} title="ProgressBar" description="Shows progress of an operation over time">
             <div class="space-y-6">
               <div class="space-y-4">
                 <ProgressBar value={25} label="Uploading..." />
@@ -537,7 +700,7 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="Separator" description="Visual divider between groups of content">
+          <Section id="separator" visibleSections={visibleSections} title="Separator" description="Visual divider between groups of content">
             <div class="space-y-6">
               <div class="space-y-4">
                 <span class="text-sm text-primary-300 block">Horizontal (default):</span>
@@ -593,7 +756,7 @@ function Playground() {
 
           {/* RadioGroup temporarily disabled - styled Radio component needs SSR-compatible redesign */}
           {/*
-          <Section title="RadioGroup" description="Single selection from multiple options">
+          <Section id="radiogroup" visibleSections={visibleSections} title="RadioGroup" description="Single selection from multiple options">
             <div class="space-y-6">
               <RadioGroup
                 label="Choose your plan"
@@ -650,7 +813,7 @@ function Playground() {
           </Section>
           */}
 
-          <Section title="ProfileCard" description="User profile display cards">
+          <Section id="profilecard" visibleSections={visibleSections} title="ProfileCard" description="User profile display cards">
             <ProfileCard
               username="@viviana_dev"
               bio="Building accessible SolidJS components. React Aria patterns for Solid."
@@ -665,7 +828,7 @@ function Playground() {
             />
           </Section>
 
-          <Section title="EventCard" description="Event display with attendees">
+          <Section id="eventcard" visibleSections={visibleSections} title="EventCard" description="Event display with attendees">
             <EventCard
               title="Fiesta de Taylor 2021 todos invitados"
               date="2 días"
@@ -685,7 +848,7 @@ function Playground() {
             />
           </Section>
 
-          <Section title="CalendarCard" description="Calendar event with followers">
+          <Section id="calendarcard" visibleSections={visibleSections} title="CalendarCard" description="Calendar event with followers">
             <CalendarCard
               title="Component Design Workshop"
               tags={['Design', 'UI/UX']}
@@ -697,7 +860,7 @@ function Playground() {
             />
           </Section>
 
-          <Section title="Conversation" description="Chat and messaging UI">
+          <Section id="conversation" visibleSections={visibleSections} title="Conversation" description="Chat and messaging UI">
             <div class="space-y-4">
               <ConversationPreview
                 user={{ name: 'Alice', online: true }}
@@ -714,7 +877,7 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="TimelineItem" description="Social activity timeline">
+          <Section id="timelineitem" visibleSections={visibleSections} title="TimelineItem" description="Social activity timeline">
             <div class="flex flex-wrap gap-4">
               <TimelineItem
                 type="follow"
@@ -731,7 +894,7 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="Dialog" description="Modal dialog with overlay and backdrop" class="lg:col-span-2">
+          <Section id="dialog" visibleSections={visibleSections} title="Dialog" description="Modal dialog with overlay and backdrop" class="lg:col-span-2">
             <div class="flex gap-4">
               <DialogTrigger
                 trigger={<Button variant="primary">Open Dialog</Button>}
@@ -819,7 +982,7 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="createButton Hook" description="Low-level hook for custom implementations" class="lg:col-span-2">
+          <Section id="createbutton-hook" visibleSections={visibleSections} title="createButton Hook" description="Low-level hook for custom implementations" class="lg:col-span-2">
             <div class="flex flex-wrap gap-4">
               <CustomGradientButton onPress={() => setLastAction('Gradient button pressed!')}>
                 Custom Gradient Button
@@ -830,66 +993,91 @@ function Playground() {
             </div>
           </Section>
 
-          <Section title="createCheckboxGroup Hook" description="Accessible checkbox group with ARIA support" class="lg:col-span-2">
+          <Section id="createcheckboxgroup-hook" visibleSections={visibleSections} title="createCheckboxGroup Hook" description="Accessible checkbox group with ARIA support" class="lg:col-span-2">
             <CheckboxGroupDemo onSelectionChange={(values) => setLastAction(`Selected: ${values.join(', ') || 'none'}`)} />
           </Section>
 
-          <Section title="ListBox" description="Accessible list with keyboard navigation and selection">
+          <Section id="listbox" visibleSections={visibleSections} title="ListBox" description="Accessible list with keyboard navigation and selection">
             <ListBoxDemo onSelectionChange={(key) => setLastAction(`ListBox selected: ${key}`)} />
           </Section>
 
-          <Section title="Menu" description="Dropdown menu with keyboard navigation">
+          <Section id="menu" visibleSections={visibleSections} title="Menu" description="Dropdown menu with keyboard navigation">
             <MenuDemo onAction={(action) => setLastAction(`Menu action: ${action}`)} />
           </Section>
 
           {/* Select (headless) works fine */}
-          <Section title="Select" description="Accessible dropdown select with keyboard support" class="lg:col-span-2">
+          <Section id="select" visibleSections={visibleSections} title="Select" description="Accessible dropdown select with keyboard support" class="lg:col-span-2">
             <SelectDemo onSelectionChange={(key) => setLastAction(`Select changed: ${key}`)} />
           </Section>
 
           {/* TESTING: Styled Select re-enabled after fixing inline arrow functions */}
-          <Section title="Styled Select (ui)" description="Pre-styled select with size variants">
+          <Section id="styled-select" visibleSections={visibleSections} title="Styled Select (ui)" description="Pre-styled select with size variants">
             <StyledSelectDemo onSelectionChange={(key) => setLastAction(`Styled Select: ${key}`)} />
           </Section>
 
-          <Section title="Styled Menu (ui)" description="Pre-styled dropdown menu with variants">
+          <Section id="styled-menu" visibleSections={visibleSections} title="Styled Menu (ui)" description="Pre-styled dropdown menu with variants">
             <StyledMenuDemo onAction={(action) => setLastAction(`Styled Menu: ${action}`)} />
           </Section>
 
-          <Section title="Styled ListBox (ui)" description="Pre-styled list with selection" class="lg:col-span-2">
+          <Section id="styled-listbox" visibleSections={visibleSections} title="Styled ListBox (ui)" description="Pre-styled list with selection" class="lg:col-span-2">
             <StyledListBoxDemo onSelectionChange={(key) => setLastAction(`Styled ListBox: ${key}`)} />
           </Section>
 
-          <Section title="Styled Tabs (ui)" description="Pre-styled tabs with variants" class="lg:col-span-2">
+          <Section id="styled-tabs" visibleSections={visibleSections} title="Styled Tabs (ui)" description="Pre-styled tabs with variants" class="lg:col-span-2">
             <StyledTabsDemo onSelectionChange={(key) => setLastAction(`Styled Tab: ${key}`)} />
           </Section>
 
-          <Section title="Styled Breadcrumbs (ui)" description="Pre-styled navigation breadcrumbs" class="lg:col-span-2">
+          <Section id="styled-breadcrumbs" visibleSections={visibleSections} title="Styled Breadcrumbs (ui)" description="Pre-styled navigation breadcrumbs" class="lg:col-span-2">
             <StyledBreadcrumbsDemo onNavigate={(path) => setLastAction(`Navigate: ${path}`)} />
           </Section>
 
-          <Section title="Styled NumberField (ui)" description="Number input with increment/decrement buttons" class="lg:col-span-2">
+          <Section id="styled-numberfield" visibleSections={visibleSections} title="Styled NumberField (ui)" description="Number input with increment/decrement buttons" class="lg:col-span-2">
             <StyledNumberFieldDemo onChange={(value) => setLastAction(`NumberField: ${value}`)} />
           </Section>
 
-          <Section title="Styled SearchField (ui)" description="Search input with clear button" class="lg:col-span-2">
+          <Section id="styled-searchfield" visibleSections={visibleSections} title="Styled SearchField (ui)" description="Search input with clear button" class="lg:col-span-2">
             <StyledSearchFieldDemo onSearch={(value) => setLastAction(`Search: ${value}`)} />
           </Section>
 
-          <Section title="Styled Slider (ui)" description="Range input with draggable thumb" class="lg:col-span-2">
+          <Section id="styled-slider" visibleSections={visibleSections} title="Styled Slider (ui)" description="Range input with draggable thumb" class="lg:col-span-2">
             <StyledSliderDemo onChange={(value) => setLastAction(`Slider: ${value}`)} />
           </Section>
 
-          <Section title="Styled ComboBox (ui)" description="Filterable dropdown with text input" class="lg:col-span-2">
+          <Section id="styled-combobox" visibleSections={visibleSections} title="Styled ComboBox (ui)" description="Filterable dropdown with text input" class="lg:col-span-2">
             <StyledComboBoxDemo onSelectionChange={(key) => setLastAction(`ComboBox: ${key}`)} />
           </Section>
 
           {/* Disclosure Section */}
-          <Section title="Disclosure" description="Expandable/collapsible content panels" class="lg:col-span-2">
+          <Section id="disclosure" visibleSections={visibleSections} title="Disclosure" description="Expandable/collapsible content panels" class="lg:col-span-2">
             <div class="space-y-6">
+              {/* Headless Disclosure (for testing hydration) */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Headless Disclosure (Test)</h4>
+                <HeadlessDisclosure>
+                  <HeadlessDisclosureTrigger class="w-full text-left p-3 bg-bg-400 rounded hover:bg-bg-300 transition-colors">
+                    Headless Toggle Test
+                  </HeadlessDisclosureTrigger>
+                  <HeadlessDisclosurePanel class="p-3 mt-1 bg-bg-300 rounded">
+                    This is a headless disclosure panel. If you can see this after clicking, it works!
+                  </HeadlessDisclosurePanel>
+                </HeadlessDisclosure>
+              </div>
+
+              {/* Client-only Disclosure (for testing without SSR) */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Client-Only Disclosure</h4>
+                <ClientOnlyDisclosure />
+              </div>
+
+              {/* Simple diagnostic button to test basic SolidJS reactivity */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Diagnostic Button</h4>
+                <SimpleDiagnosticButton />
+              </div>
+
               {/* Single Disclosure */}
               <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Single Disclosure</h4>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Single Disclosure (Styled)</h4>
                 <Disclosure variant="bordered">
                   <DisclosureTrigger>What is a Disclosure?</DisclosureTrigger>
                   <DisclosurePanel>
@@ -967,8 +1155,121 @@ function Playground() {
             </div>
           </Section>
 
+          {/* Meter Section */}
+          <Section id="meter" visibleSections={visibleSections} title="Meter" description="Display a quantity within a known range">
+            <div class="space-y-6">
+              {/* Primary variant */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Primary Variant</h4>
+                <div class="space-y-3">
+                  <Meter label="Storage Used" value={75} showValue />
+                  <Meter label="Memory" value={45} size="sm" showValue />
+                  <Meter label="CPU" value={90} size="lg" showValue />
+                </div>
+              </div>
+
+              {/* Color variants */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Color Variants</h4>
+                <div class="space-y-3">
+                  <Meter label="Success" value={30} variant="success" showValue />
+                  <Meter label="Warning" value={65} variant="warning" showValue />
+                  <Meter label="Danger" value={85} variant="danger" showValue />
+                  <Meter label="Info" value={50} variant="info" showValue />
+                  <Meter label="Accent" value={40} variant="accent" showValue />
+                </div>
+              </div>
+
+              {/* Without label */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Without Label</h4>
+                <Meter value={60} aria-label="Progress" />
+              </div>
+            </div>
+          </Section>
+
+          {/* TagGroup Section */}
+          <Section id="taggroup" visibleSections={visibleSections} title="TagGroup" description="Selectable and removable tag collections">
+            <div class="space-y-6">
+              {/* Basic removable tags */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Removable Tags</h4>
+                <TagGroupDemo />
+              </div>
+
+              {/* Selection */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Selectable Tags</h4>
+                <TagGroupSelectionDemo />
+              </div>
+
+              {/* Variants */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Tag Variants</h4>
+                <div class="space-y-4">
+                  <TagGroup
+                    items={[{ id: '1', name: 'Default' }, { id: '2', name: 'Style' }]}
+                    variant="default"
+                    size="md"
+                  >
+                    {(item) => item.name}
+                  </TagGroup>
+                  <TagGroup
+                    items={[{ id: '1', name: 'Outline' }, { id: '2', name: 'Style' }]}
+                    variant="outline"
+                    size="md"
+                  >
+                    {(item) => item.name}
+                  </TagGroup>
+                  <TagGroup
+                    items={[{ id: '1', name: 'Solid' }, { id: '2', name: 'Style' }]}
+                    variant="solid"
+                    size="md"
+                  >
+                    {(item) => item.name}
+                  </TagGroup>
+                </div>
+              </div>
+
+              {/* Sizes */}
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Tag Sizes</h4>
+                <div class="space-y-4">
+                  <TagGroup
+                    items={[{ id: '1', name: 'Small' }, { id: '2', name: 'Tags' }]}
+                    size="sm"
+                  >
+                    {(item) => item.name}
+                  </TagGroup>
+                  <TagGroup
+                    items={[{ id: '1', name: 'Medium' }, { id: '2', name: 'Tags' }]}
+                    size="md"
+                  >
+                    {(item) => item.name}
+                  </TagGroup>
+                  <TagGroup
+                    items={[{ id: '1', name: 'Large' }, { id: '2', name: 'Tags' }]}
+                    size="lg"
+                  >
+                    {(item) => item.name}
+                  </TagGroup>
+                </div>
+              </div>
+            </div>
+          </Section>
+
+          {/* Calendar Section */}
+          <Section id="calendar" visibleSections={visibleSections} title="Calendar" description="Date selection calendars with navigation">
+            <CalendarDemo />
+          </Section>
+
+          {/* DatePicker Section */}
+          <Section id="datepicker" visibleSections={visibleSections} title="DatePicker" description="Date field with calendar popup">
+            <DatePickerDemo />
+          </Section>
+
           {/* Toast Section */}
-          <Section title="Toast" description="Toast notifications with auto-dismiss and variants" class="lg:col-span-2">
+          <Section id="toast" visibleSections={visibleSections} title="Toast" description="Toast notifications with auto-dismiss and variants" class="lg:col-span-2">
             <div class="space-y-4">
               <p class="text-sm text-primary-300 mb-3">Click buttons to show toast notifications</p>
               <div class="flex flex-wrap gap-3">
@@ -1036,13 +1337,36 @@ function Playground() {
   )
 }
 
-function Section(props: { title: string; description: string; children: any; class?: string }) {
+function Section(props: {
+  id: SectionId;
+  title: string;
+  description: string;
+  children: any;
+  class?: string;
+  visibleSections: Accessor<Set<SectionId>>;
+}) {
   return (
-    <section class={`vui-feature-card ${props.class ?? ''}`}>
-      <h3 class="vui-feature-card__title">{props.title}</h3>
-      <p class="vui-feature-card__description" style={{ "margin-bottom": "1rem" }}>{props.description}</p>
-      {props.children}
-    </section>
+    <Show
+      when={props.visibleSections().has(props.id)}
+      fallback={
+        <section
+          class={`vui-feature-card opacity-50 ${props.class ?? ''}`}
+          data-testid={`section-${props.id}-hidden`}
+        >
+          <h3 class="vui-feature-card__title text-primary-400">{props.title}</h3>
+          <p class="vui-feature-card__description text-primary-500">Enable in panel above to view</p>
+        </section>
+      }
+    >
+      <section
+        class={`vui-feature-card ${props.class ?? ''}`}
+        data-testid={`section-${props.id}`}
+      >
+        <h3 class="vui-feature-card__title">{props.title}</h3>
+        <p class="vui-feature-card__description" style={{ "margin-bottom": "1rem" }}>{props.description}</p>
+        {props.children}
+      </section>
+    </Show>
   )
 }
 
@@ -2636,5 +2960,152 @@ function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
         Supports custom ranges, steps, and number formatting.
       </p>
     </div>
+  )
+}
+
+// TagGroup Demo Components
+interface TagItem {
+  id: string
+  name: string
+}
+
+function TagGroupDemo() {
+  const [tags, setTags] = createSignal<TagItem[]>([
+    { id: '1', name: 'React' },
+    { id: '2', name: 'SolidJS' },
+    { id: '3', name: 'Vue' },
+    { id: '4', name: 'Angular' },
+    { id: '5', name: 'Svelte' },
+  ])
+
+  const handleRemove = (keys: Set<string | number>) => {
+    setTags((prev) => prev.filter((tag) => !keys.has(tag.id)))
+  }
+
+  return (
+    <TagGroup
+      label="Frameworks"
+      items={tags()}
+      onRemove={handleRemove}
+    >
+      {(item) => item.name}
+    </TagGroup>
+  )
+}
+
+function TagGroupSelectionDemo() {
+  const [selectedKeys, setSelectedKeys] = createSignal<Set<string | number>>(new Set(['ts']))
+
+  const items: TagItem[] = [
+    { id: 'ts', name: 'TypeScript' },
+    { id: 'js', name: 'JavaScript' },
+    { id: 'rust', name: 'Rust' },
+    { id: 'go', name: 'Go' },
+    { id: 'py', name: 'Python' },
+  ]
+
+  const handleSelectionChange = (keys: 'all' | Set<string | number>) => {
+    if (keys === 'all') {
+      setSelectedKeys(new Set(items.map((i) => i.id)))
+    } else {
+      setSelectedKeys(keys)
+    }
+  }
+
+  return (
+    <div class="space-y-2">
+      <TagGroup
+        label="Languages"
+        items={items}
+        selectionMode="multiple"
+        selectedKeys={selectedKeys()}
+        onSelectionChange={handleSelectionChange}
+        variant="outline"
+      >
+        {(item) => item.name}
+      </TagGroup>
+      <p class="text-xs text-primary-400">
+        Selected: {Array.from(selectedKeys()).join(', ') || 'None'}
+      </p>
+    </div>
+  )
+}
+
+// ============================================
+// CALENDAR DEMOS
+// ============================================
+
+function CalendarDemo() {
+  const [selectedDate, setSelectedDate] = createSignal<DateValue | null>(null)
+
+  console.log('[CalendarDemo] Rendering CalendarDemo component');
+
+  return (
+    <div class="space-y-2">
+      <Calendar
+        aria-label="Select a date"
+        value={selectedDate()}
+        onChange={setSelectedDate}
+      />
+      <p class="text-xs text-primary-400">
+        Selected: {selectedDate()?.toString() || 'None'}
+      </p>
+    </div>
+  )
+}
+
+function CalendarDisabledDemo() {
+  const today = new CalendarDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate())
+
+  // Disable weekends
+  const isDateUnavailable = (date: DateValue) => {
+    const d = date as CalendarDateType
+    const jsDate = new Date(d.year, d.month - 1, d.day)
+    const day = jsDate.getDay()
+    return day === 0 || day === 6 // Sunday = 0, Saturday = 6
+  }
+
+  return (
+    <Calendar
+      aria-label="Select a weekday"
+      isDateUnavailable={isDateUnavailable}
+      defaultValue={today}
+    />
+  )
+}
+
+// ============================================
+// DATEPICKER DEMOS
+// ============================================
+
+function DatePickerDemo() {
+  const [selectedDate, setSelectedDate] = createSignal<DateValue | null>(null)
+
+  return (
+    <div class="space-y-2">
+      <DatePicker
+        label="Event Date"
+        value={selectedDate()}
+        onChange={setSelectedDate}
+      />
+      <p class="text-xs text-primary-400">
+        Selected: {selectedDate()?.toString() || 'None'}
+      </p>
+    </div>
+  )
+}
+
+function DatePickerRangeDemo() {
+  const today = new CalendarDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate())
+  const minDate = today
+  const maxDate = new CalendarDate(today.year, today.month + 3, today.day)
+
+  return (
+    <DatePicker
+      label="Booking Date"
+      minValue={minDate}
+      maxValue={maxDate}
+      placeholderValue={today}
+    />
   )
 }

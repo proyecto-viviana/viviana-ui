@@ -54,7 +54,7 @@ export interface DisclosureGroupRenderProps {
 
 export interface DisclosureProps extends DisclosureStateProps {
   /** The children of the component. */
-  children?: RenderChildren<DisclosureRenderProps>;
+  children?: JSX.Element;
   /** The CSS className for the element. */
   class?: ClassNameOrFunction<DisclosureRenderProps>;
   /** The inline style for the element. */
@@ -67,7 +67,7 @@ export interface DisclosureProps extends DisclosureStateProps {
 
 export interface DisclosureGroupProps extends DisclosureGroupStateProps {
   /** The children of the component. */
-  children?: RenderChildren<DisclosureGroupRenderProps>;
+  children?: JSX.Element;
   /** The CSS className for the element. */
   class?: ClassNameOrFunction<DisclosureGroupRenderProps>;
   /** The inline style for the element. */
@@ -98,9 +98,12 @@ export interface DisclosurePanelProps {
 
 interface DisclosureContextValue {
   state: DisclosureState;
-  isDisabled: boolean;
-  buttonProps: JSX.ButtonHTMLAttributes<HTMLButtonElement>;
-  panelProps: JSX.HTMLAttributes<HTMLElement>;
+  isDisabled: () => boolean;
+  /** The disclosure ARIA result object - access .buttonProps and .panelProps as getters */
+  disclosureAria: {
+    readonly buttonProps: JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+    readonly panelProps: JSX.HTMLAttributes<HTMLElement>;
+  };
 }
 
 export const DisclosureContext = createContext<DisclosureContextValue | null>(null);
@@ -195,17 +198,6 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
   // Extract ref from groupProps to avoid type conflicts
   const { ref: _ref, ...cleanGroupProps } = groupProps as Record<string, unknown>;
 
-  // Resolve children - handle both static JSX and render functions
-  // IMPORTANT: We access props.children directly (not local.children) to preserve
-  // lazy evaluation inside context providers
-  const resolveChildren = () => {
-    const children = props.children;
-    if (typeof children === 'function') {
-      return (children as (props: DisclosureGroupRenderProps) => JSX.Element)(renderValues());
-    }
-    return children;
-  };
-
   return (
     <DisclosureGroupContext.Provider value={contextValue}>
       <div
@@ -215,7 +207,7 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
         style={renderProps.style()}
         data-disabled={dataAttr(state.isDisabled)}
       >
-        {resolveChildren()}
+        {props.children}
       </div>
     </DisclosureGroupContext.Provider>
   );
@@ -279,15 +271,17 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
   // Panel ref as a signal so the createEffect in createDisclosure can track it
   const [panelRef, setPanelRefSignal] = createSignal<HTMLElement | null>(null);
 
+  // Determine if disabled (used in multiple places)
+  const isDisabled = () => local.isDisabled || groupContext?.state.isDisabled || false;
+
   // Create disclosure accessibility props
+  // Pass props as accessor function for reactivity
+  // IMPORTANT: Don't destructure! The getters must be called fresh each render
   const disclosureAria = createDisclosure(
-    { isDisabled: local.isDisabled || groupContext?.state.isDisabled },
+    () => ({ isDisabled: isDisabled() }),
     state,
     panelRef  // Pass the accessor directly
   );
-
-  // Determine if disabled
-  const isDisabled = () => local.isDisabled || groupContext?.state.isDisabled || false;
 
   // Render props values
   const renderValues = createMemo<DisclosureRenderProps>(() => ({
@@ -308,28 +302,16 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
   // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
 
-  // Context value - pass as object directly (not memoized call) so it stays reactive
+  // Context value - pass the disclosureAria object with getters intact
   const contextValue: DisclosureContextValue = {
     state,
-    get isDisabled() { return isDisabled(); },
-    get buttonProps() { return disclosureAria.buttonProps; },
-    get panelProps() { return disclosureAria.panelProps; },
+    isDisabled,  // Pass the accessor function, not the value
+    disclosureAria,
   };
 
   // Setter for panel ref
   const setPanelRef = (el: HTMLElement | null) => {
     setPanelRefSignal(el);
-  };
-
-  // Resolve children - handle both static JSX and render functions
-  // IMPORTANT: We access props.children directly (not local.children) to preserve
-  // lazy evaluation inside context providers
-  const resolveChildren = () => {
-    const children = props.children;
-    if (typeof children === 'function') {
-      return (children as (props: DisclosureRenderProps) => JSX.Element)(renderValues());
-    }
-    return children;
   };
 
   return (
@@ -342,7 +324,7 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
           data-expanded={dataAttr(state.isExpanded())}
           data-disabled={dataAttr(isDisabled())}
         >
-          {resolveChildren()}
+          {props.children}
         </div>
       </DisclosurePanelRefContext.Provider>
     </DisclosureContext.Provider>
@@ -358,45 +340,31 @@ const DisclosurePanelRefContext = createContext<((el: HTMLElement | null) => voi
 
 /**
  * DisclosureTrigger is the button that toggles the disclosure.
+ * Pattern matches SelectTrigger for consistency.
  */
 export function DisclosureTrigger(props: DisclosureTriggerProps): JSX.Element {
   // Get context - now safe because parent uses lazy children evaluation
   const context = useContext(DisclosureContext);
+  if (!context) {
+    throw new Error('DisclosureTrigger must be used within a Disclosure');
+  }
+
+  const { state, disclosureAria, isDisabled } = context;
 
   // Reactive accessors
-  const isExpanded = () => context?.state.isExpanded() ?? false;
-  const isDisabled = () => context?.isDisabled ?? false;
+  const isExpanded = () => state.isExpanded();
 
-  // Get buttonProps from context - extract ref to avoid type issues
+  // Get buttonProps from the getter each time - this ensures reactivity
+  // IMPORTANT: Call the getter fresh each render to get updated aria-expanded, etc.
   const getButtonProps = () => {
-    if (!context) return { id: undefined, 'aria-controls': undefined };
-    const { ref: _ref, ...rest } = context.buttonProps as Record<string, unknown>;
+    const { ref: _ref, ...rest } = disclosureAria.buttonProps as Record<string, unknown>;
     return rest;
-  };
-
-  const handleClick = () => {
-    if (context && !isDisabled()) {
-      context.state.toggle();
-    }
-  };
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (!context || isDisabled()) return;
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      context.state.toggle();
-    }
   };
 
   return (
     <button
+      {...getButtonProps()}
       type="button"
-      id={getButtonProps().id as string | undefined}
-      aria-expanded={isExpanded()}
-      aria-controls={getButtonProps()['aria-controls'] as string | undefined}
-      disabled={isDisabled()}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
       class={props.class}
       style={props.style}
       data-expanded={dataAttr(isExpanded())}
@@ -423,7 +391,7 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
 
   // Reactive accessors
   const isExpanded = () => context?.state.isExpanded() ?? false;
-  const isDisabled = () => context?.isDisabled ?? false;
+  const isDisabled = () => context?.isDisabled() ?? false;
 
   // Render props values
   const renderValues = createMemo<DisclosureRenderProps>(() => ({
@@ -445,10 +413,11 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
   // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
 
-  // Get panelProps - extract ref to avoid type issues
+  // Get panelProps from the getter each time - this ensures reactivity
+  // IMPORTANT: Call the getter fresh each render to get updated hidden attribute, etc.
   const getPanelProps = () => {
     if (!context) return { id: undefined, role: 'region', 'aria-labelledby': undefined, hidden: true };
-    const { ref: _ref, ...rest } = context.panelProps as Record<string, unknown>;
+    const { ref: _ref, ...rest } = context.disclosureAria.panelProps as Record<string, unknown>;
     return rest;
   };
 

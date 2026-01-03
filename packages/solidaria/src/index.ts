@@ -312,6 +312,69 @@ export {
   type DisclosureGroupAria,
 } from './disclosure';
 
+// Meter
+export {
+  createMeter,
+  type AriaMeterProps,
+  type MeterAria,
+} from './meter';
+
+// Tag
+export {
+  createTagGroup,
+  createTag,
+  getTagGroupData,
+  type AriaTagGroupProps,
+  type TagGroupAria,
+  type AriaTagProps,
+  type TagAria,
+} from './tag';
+
+// Calendar
+export {
+  // Calendar
+  createCalendar,
+  type AriaCalendarProps,
+  type CalendarAria,
+  // Calendar Grid
+  createCalendarGrid,
+  type AriaCalendarGridProps,
+  type CalendarGridAria,
+  // Calendar Cell
+  createCalendarCell,
+  type AriaCalendarCellProps,
+  type CalendarCellAria,
+  // Range Calendar
+  createRangeCalendar,
+  type AriaRangeCalendarProps,
+  type RangeCalendarAria,
+  // Range Calendar Cell
+  createRangeCalendarCell,
+  type AriaRangeCalendarCellProps,
+  type RangeCalendarCellAria,
+} from './calendar';
+
+// DatePicker
+export {
+  // Date Field
+  createDateField,
+  type AriaDateFieldProps,
+  type DateFieldAria,
+  // Date Segment
+  createDateSegment,
+  type AriaDateSegmentProps,
+  type DateSegmentAria,
+  // Time Field
+  createTimeField,
+  type AriaTimeFieldProps,
+  type TimeFieldAria,
+  // Date Picker
+  createDatePicker,
+  type AriaDatePickerProps,
+  type DatePickerAria,
+  type DatePickerState,
+} from './datepicker';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

@@ -27,6 +27,9 @@
   "peerDependencies": {
     "solid-js": "^1.9.0"
   },
+  "dependencies": {
+    "@internationalized/date": "^3.8.0"
+  },
   "devDependencies": {
     "solid-js": "^1.9.10"
   },
