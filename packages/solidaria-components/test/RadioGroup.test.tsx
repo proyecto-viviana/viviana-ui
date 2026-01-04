@@ -610,15 +610,14 @@ describe('RadioGroup', () => {
   });
 
   describe('Radio outside RadioGroup', () => {
-    it('should throw error when Radio is used outside RadioGroup', () => {
-      // Suppress console.error for this test
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    it('should render nothing when Radio is used outside RadioGroup', () => {
+      // Radio renders null when used outside RadioGroup context
+      // This is intentional to support HMR/hot reloading during development
+      const { container } = render(() => <Radio value="a">Option A</Radio>);
 
-      expect(() => {
-        render(() => <Radio value="a">Option A</Radio>);
-      }).toThrow('Radio must be used within a RadioGroup');
-
-      consoleSpy.mockRestore();
+      // Should render nothing (empty container)
+      expect(container.querySelector('.solidaria-Radio')).toBeNull();
+      expect(screen.queryByRole('radio')).toBeNull();
     });
   });
 });

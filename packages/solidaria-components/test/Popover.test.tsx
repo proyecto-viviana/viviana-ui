@@ -2,7 +2,7 @@
  * Tests for Popover component
  */
 import { describe, it, expect, afterEach } from 'vitest'
-import { render, screen, cleanup } from '@solidjs/testing-library'
+import { render, screen, cleanup, waitFor } from '@solidjs/testing-library'
 import userEvent from '@testing-library/user-event'
 import { PointerEventsCheckLevel } from '@testing-library/user-event'
 import { Popover, PopoverTrigger, usePopoverTrigger } from '../src/Popover'
@@ -113,7 +113,10 @@ describe('Popover', () => {
       const button = screen.getByRole('button', { name: 'Open' })
       await user.click(button)
 
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
+      // Wait for requestAnimationFrame to complete (positioning sets visibility)
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument()
+      })
     })
 
     it('should support isNonModal (no dialog role)', async () => {
@@ -173,10 +176,13 @@ describe('Popover', () => {
       const button = screen.getByRole('button', { name: 'Open' })
       await user.click(button)
 
-      const dialog = screen.getByRole('dialog')
-      // The data-placement should eventually be set based on actual positioning
-      // In tests without real positioning, it may start as null
-      expect(dialog).toBeInTheDocument()
+      // Wait for requestAnimationFrame to complete (positioning sets visibility)
+      await waitFor(() => {
+        const dialog = screen.getByRole('dialog')
+        // The data-placement should eventually be set based on actual positioning
+        // In tests without real positioning, it may start as null
+        expect(dialog).toBeInTheDocument()
+      })
     })
 
     it('should render with custom trigger name', async () => {
@@ -192,8 +198,11 @@ describe('Popover', () => {
       const button = screen.getByRole('button', { name: 'Open' })
       await user.click(button)
 
-      const dialog = screen.getByRole('dialog')
-      expect(dialog.getAttribute('data-trigger')).toBe('CustomTrigger')
+      // Wait for requestAnimationFrame to complete (positioning sets visibility)
+      await waitFor(() => {
+        const dialog = screen.getByRole('dialog')
+        expect(dialog.getAttribute('data-trigger')).toBe('CustomTrigger')
+      })
     })
   })
 
@@ -286,8 +295,11 @@ describe('Popover', () => {
       const button = screen.getByRole('button', { name: 'Open' })
       await user.click(button)
 
-      const dialog = screen.getByRole('dialog')
-      expect(dialog.getAttribute('tabindex')).toBe('-1')
+      // Wait for requestAnimationFrame to complete (positioning sets visibility)
+      await waitFor(() => {
+        const dialog = screen.getByRole('dialog')
+        expect(dialog.getAttribute('tabindex')).toBe('-1')
+      })
     })
 
     it('should contain focus within popover when modal', async () => {
@@ -306,9 +318,12 @@ describe('Popover', () => {
       const triggerButton = screen.getByRole('button', { name: 'Open' })
       await user.click(triggerButton)
 
-      // The popover dialog should exist
-      const dialog = screen.getByRole('dialog')
-      expect(dialog).toBeInTheDocument()
+      // Wait for requestAnimationFrame to complete (positioning sets visibility)
+      await waitFor(() => {
+        // The popover dialog should exist
+        const dialog = screen.getByRole('dialog')
+        expect(dialog).toBeInTheDocument()
+      })
 
       // Tab through elements inside popover
       const firstBtn = screen.getByTestId('first-btn')
@@ -366,9 +381,12 @@ describe('Popover', () => {
       const button = screen.getByRole('button', { name: 'Open' })
       await user.click(button)
 
-      const dialog = screen.getByRole('dialog')
-      // dataAttr returns '' (empty string) for true values - standard HTML boolean attribute
-      expect(dialog.hasAttribute('data-entering')).toBe(true)
+      // Wait for requestAnimationFrame to complete (positioning sets visibility)
+      await waitFor(() => {
+        const dialog = screen.getByRole('dialog')
+        // dataAttr returns '' (empty string) for true values - standard HTML boolean attribute
+        expect(dialog.hasAttribute('data-entering')).toBe(true)
+      })
     })
 
     it('should apply data-exiting attribute when isExiting is true', async () => {
@@ -386,9 +404,12 @@ describe('Popover', () => {
       const button = screen.getByRole('button', { name: 'Open' })
       await user.click(button)
 
-      const dialog = screen.getByRole('dialog')
-      // dataAttr returns '' (empty string) for true values - standard HTML boolean attribute
-      expect(dialog.hasAttribute('data-exiting')).toBe(true)
+      // Wait for requestAnimationFrame to complete (positioning sets visibility)
+      await waitFor(() => {
+        const dialog = screen.getByRole('dialog')
+        // dataAttr returns '' (empty string) for true values - standard HTML boolean attribute
+        expect(dialog.hasAttribute('data-exiting')).toBe(true)
+      })
     })
   })
 

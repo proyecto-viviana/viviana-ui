@@ -12,6 +12,7 @@ import {
   useContext,
   createMemo,
   splitProps,
+  Show,
 } from 'solid-js';
 import {
   createRadio,
@@ -179,6 +180,17 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
     return rest;
   };
 
+  // Resolve children - we need to pass render props if children is a function
+  // but we use local.children directly (not renderProps.renderChildren())
+  // to preserve SolidJS context propagation for nested components like Radio
+  const resolvedChildren = () => {
+    const children = local.children;
+    if (typeof children === 'function') {
+      return children(renderValues());
+    }
+    return children;
+  };
+
   return (
     <RadioGroupStateContext.Provider value={state}>
       <div
@@ -192,7 +204,7 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
         data-required={state.isRequired || undefined}
         data-invalid={groupAria.isInvalid || undefined}
       >
-        {renderProps.renderChildren()}
+        {resolvedChildren()}
       </div>
     </RadioGroupStateContext.Provider>
   );
@@ -317,18 +329,6 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
 }
 
 /**
- * Inner wrapper component that requires context.
- * This is used instead of an IIFE to avoid SSR issues with deferred rendering.
- */
-function RadioInner(props: { radioProps: RadioProps }): JSX.Element {
-  const state = useContext(RadioGroupStateContext);
-  if (!state) {
-    throw new Error('Radio must be used within a RadioGroup');
-  }
-  return <RadioImpl radioProps={props.radioProps} state={state} />;
-}
-
-/**
  * A radio represents an individual option within a radio group.
  *
  * @example
@@ -346,6 +346,17 @@ function RadioInner(props: { radioProps: RadioProps }): JSX.Element {
  * ```
  */
 export function Radio(props: RadioProps): JSX.Element {
-  // Use an inner component instead of an IIFE to avoid SSR hydration issues
-  return <RadioInner radioProps={props} />;
+  // Get context - will be null if not inside RadioGroup
+  // The context is accessed reactively to work with solid-refresh HMR
+  const getState = createMemo(() => useContext(RadioGroupStateContext));
+
+  return (
+    <Show
+      when={getState()}
+      fallback={null}
+      keyed
+    >
+      {(state) => <RadioImpl radioProps={props} state={state} />}
+    </Show>
+  );
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, fireEvent, screen } from '@solidjs/testing-library';
+import { render, fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { resetTooltipState } from '@proyecto-viviana/solid-stately';
 import { Tooltip, TooltipTrigger } from '../src/Tooltip';
 import { Button } from '../src/Button';
@@ -102,7 +102,10 @@ describe('Tooltip', () => {
     resetTooltipState();
   });
 
-  it('should have role="tooltip"', () => {
+  it('should have role="tooltip"', async () => {
+    // Use real timers for this test since visibility depends on requestAnimationFrame
+    vi.useRealTimers();
+
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
@@ -110,7 +113,13 @@ describe('Tooltip', () => {
       </TooltipTrigger>
     ));
 
-    expect(screen.getByRole('tooltip')).toBeInTheDocument();
+    // Wait for requestAnimationFrame to complete (positioning sets visibility)
+    await waitFor(() => {
+      expect(screen.getByRole('tooltip')).toBeInTheDocument();
+    });
+
+    // Restore fake timers for subsequent tests
+    vi.useFakeTimers();
   });
 
   it('should apply custom class via render prop', () => {
