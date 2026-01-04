@@ -241,7 +241,7 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
           data-orientation={state.orientation()}
           data-disabled={state.isDisabled() || undefined}
         >
-          {renderProps.renderChildren()}
+          {local.children}
         </div>
       </TabsStateContext.Provider>
     </TabsContext.Provider>
@@ -432,11 +432,11 @@ function TabInner(props: {
     <div
       id={tabAria.tabProps.id}
       role={tabAria.tabProps.role}
-      aria-selected={tabAria.tabProps['aria-selected']}
-      aria-disabled={tabAria.tabProps['aria-disabled']}
-      aria-controls={tabAria.tabProps['aria-controls']}
+      aria-selected={tabAria.isSelected()}
+      aria-disabled={tabAria.isDisabled() || undefined}
+      aria-controls={tabAria.isSelected() ? tabAria.tabProps['aria-controls'] : undefined}
       aria-label={tabAria.tabProps['aria-label']}
-      tabIndex={tabAria.tabProps.tabIndex}
+      tabIndex={tabAria.isSelected() && !tabAria.isDisabled() ? 0 : -1}
       class={renderProps.class()}
       style={renderProps.style()}
       onKeyDown={tabAria.tabProps.onKeyDown}
@@ -498,7 +498,16 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
   );
 
   // Determine if we should render the panel
-  const shouldRender = () => local.shouldForceMount || isSelected();
+  // If no id is provided, render when any tab is selected (shared panel pattern)
+  // If id is provided, render when that specific tab is selected
+  const shouldRender = () => {
+    if (local.shouldForceMount) return true;
+    if (ariaProps.id === undefined) {
+      // Shared panel pattern - render when any tab is selected
+      return state ? state.selectedKey() !== null : true;
+    }
+    return isSelected();
+  };
 
   return (
     <Show when={shouldRender()}>
@@ -516,8 +525,8 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
         data-selected={isSelected() || undefined}
         data-focused={isFocused() || undefined}
         data-focus-visible={isFocusVisible() || undefined}
-        inert={!isSelected() || undefined}
-        hidden={!isSelected() && !local.shouldForceMount ? true : undefined}
+        inert={ariaProps.id !== undefined && !isSelected() ? true : undefined}
+        hidden={ariaProps.id !== undefined && !isSelected() && !local.shouldForceMount ? true : undefined}
       >
         {renderProps.renderChildren()}
       </div>

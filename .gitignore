@@ -9,6 +9,9 @@ dist/
 
 # Testing
 coverage/
+e2e-screenshots/
+test-results/
+playwright-report/
 
 # IDE
 .vscode/

@@ -49,16 +49,6 @@ export interface CalendarAria {
 // IMPLEMENTATION
 // ============================================
 
-// Debug logging
-const DEBUG_CREATE_CALENDAR = true;
-let createCalendarInstanceCount = 0;
-
-function logCreateCalendar(instanceId: number, message: string, ...args: unknown[]) {
-  if (DEBUG_CREATE_CALENDAR && typeof console !== 'undefined') {
-    console.log(`[createCalendar #${instanceId}] ${message}`, ...args);
-  }
-}
-
 /**
  * Provides the behavior and accessibility implementation for a calendar component.
  */
@@ -66,26 +56,12 @@ export function createCalendar<T extends CalendarState>(
   props: MaybeAccessor<AriaCalendarProps>,
   state: T
 ): CalendarAria {
-  const instanceId = ++createCalendarInstanceCount;
-  logCreateCalendar(instanceId, 'Creating calendar ARIA');
-
   const getProps = () => access(props);
   const id = createId(getProps().id);
   const titleId = createId();
 
-  logCreateCalendar(instanceId, 'IDs created:', { id, titleId });
-
   // Title (e.g., "December 2024")
-  let titleCallCount = 0;
-  const title = createMemo(() => {
-    titleCallCount++;
-    logCreateCalendar(instanceId, `title memo called (${titleCallCount})`);
-    if (titleCallCount > 100) {
-      console.error(`[createCalendar #${instanceId}] INFINITE LOOP in title!`);
-      throw new Error('Infinite loop in createCalendar title');
-    }
-    return state.title();
-  });
+  const title = createMemo(() => state.title());
 
   // Previous button props
   const prevButtonProps = createMemo(() => {

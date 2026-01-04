@@ -139,6 +139,50 @@ const SECTION_IDS = [
 
 type SectionId = typeof SECTION_IDS[number];
 
+// Pretty display names for sections
+const SECTION_NAMES: Record<SectionId, string> = {
+  'button': 'Button',
+  'badge': 'Badge',
+  'chip': 'Chip',
+  'alert': 'Alert',
+  'tooltip': 'Tooltip',
+  'popover': 'Popover',
+  'avatar': 'Avatar',
+  'switch': 'Switch',
+  'checkbox': 'Checkbox',
+  'textfield': 'Text Field',
+  'link': 'Link',
+  'progressbar': 'Progress Bar',
+  'separator': 'Separator',
+  'radiogroup': 'Radio Group',
+  'profilecard': 'Profile Card',
+  'eventcard': 'Event Card',
+  'calendarcard': 'Calendar Card',
+  'conversation': 'Conversation',
+  'timelineitem': 'Timeline Item',
+  'dialog': 'Dialog',
+  'createbutton-hook': 'createButton Hook',
+  'createcheckboxgroup-hook': 'createCheckboxGroup Hook',
+  'listbox': 'ListBox',
+  'menu': 'Menu',
+  'select': 'Select',
+  'styled-select': 'Styled Select',
+  'styled-menu': 'Styled Menu',
+  'styled-listbox': 'Styled ListBox',
+  'styled-tabs': 'Styled Tabs',
+  'styled-breadcrumbs': 'Styled Breadcrumbs',
+  'styled-numberfield': 'Number Field',
+  'styled-searchfield': 'Search Field',
+  'styled-slider': 'Slider',
+  'styled-combobox': 'ComboBox',
+  'disclosure': 'Disclosure',
+  'meter': 'Meter',
+  'taggroup': 'Tag Group',
+  'calendar': 'Calendar',
+  'datepicker': 'Date Picker',
+  'toast': 'Toast',
+};
+
 // Context for section visibility
 const SectionVisibilityContext = createContext<{
   isVisible: (id: SectionId) => boolean;
@@ -206,7 +250,7 @@ function SectionControlPanel(props: {
                 onChange={() => toggle(id)}
                 class="w-4 h-4 accent-accent"
               />
-              <span class="text-sm text-primary-300 truncate">{id}</span>
+              <span class="text-sm text-primary-300 truncate">{SECTION_NAMES[id]}</span>
             </label>
           )}
         </For>
@@ -1345,19 +1389,9 @@ function Section(props: {
   class?: string;
   visibleSections: Accessor<Set<SectionId>>;
 }) {
+  // Completely remove from DOM when not visible
   return (
-    <Show
-      when={props.visibleSections().has(props.id)}
-      fallback={
-        <section
-          class={`vui-feature-card opacity-50 ${props.class ?? ''}`}
-          data-testid={`section-${props.id}-hidden`}
-        >
-          <h3 class="vui-feature-card__title text-primary-400">{props.title}</h3>
-          <p class="vui-feature-card__description text-primary-500">Enable in panel above to view</p>
-        </section>
-      }
-    >
+    <Show when={props.visibleSections().has(props.id)}>
       <section
         class={`vui-feature-card ${props.class ?? ''}`}
         data-testid={`section-${props.id}`}
