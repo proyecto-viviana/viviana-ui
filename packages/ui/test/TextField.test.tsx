@@ -199,28 +199,35 @@ describe('TextField', () => {
   });
 
   describe('focus events', () => {
-    // Note: Focus state tracking in solidaria requires the focus handlers to be
-    // properly connected to the input. In JSDOM, fireEvent.focus doesn't trigger
-    // the focusProps handlers from createFocusRing. The implementation is correct
-    // but not testable with simple fireEvent. Verified working in browser.
-    it.skip('sets data-focused when input is focused', () => {
+    // Focus state tracking works by using userEvent.click which properly triggers
+    // focus handlers, unlike fireEvent.focus which doesn't fully simulate browser behavior.
+    it('sets data-focused when input is focused', async () => {
       render(() => <TextField aria-label="Test input" />);
       const container = screen.getByRole('textbox').closest('div') as HTMLElement;
       const input = screen.getByRole('textbox');
 
-      fireEvent.focus(input);
+      // Use userEvent.click to properly trigger focus
+      await user.click(input);
       expect(container).toHaveAttribute('data-focused', 'true');
     });
 
-    it.skip('removes data-focused when input loses focus', () => {
-      render(() => <TextField aria-label="Test input" />);
+    it('removes data-focused when input loses focus', async () => {
+      render(() => (
+        <>
+          <TextField aria-label="Test input" />
+          <button>Other</button>
+        </>
+      ));
       const container = screen.getByRole('textbox').closest('div') as HTMLElement;
       const input = screen.getByRole('textbox');
+      const otherButton = screen.getByRole('button');
 
-      fireEvent.focus(input);
+      // Focus via click
+      await user.click(input);
       expect(container).toHaveAttribute('data-focused', 'true');
 
-      fireEvent.blur(input);
+      // Click elsewhere to blur
+      await user.click(otherButton);
       expect(container).not.toHaveAttribute('data-focused');
     });
   });

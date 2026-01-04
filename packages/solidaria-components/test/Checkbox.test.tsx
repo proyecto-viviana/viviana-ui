@@ -5,7 +5,7 @@
  * react-aria-components patterns.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
+import { render, screen, fireEvent } from '@solidjs/testing-library';
 import userEvent from '@testing-library/user-event';
 import { PointerEventsCheckLevel } from '@testing-library/user-event';
 import {
@@ -214,20 +214,30 @@ describe('Checkbox', () => {
   });
 
   describe('keyboard interaction', () => {
-    // Space key triggers native checkbox change event which works in browser
-    // but JSDOM doesn't fully simulate the native checkbox toggle on space
-    it.skip('should toggle on Space key', async () => {
-      render(() => <Checkbox>Test</Checkbox>);
+    // React Aria tests Space key for isPressed state, not for toggle.
+    // The actual toggle relies on native browser behavior (tested via click).
+    // This matches react-aria-components/test/Checkbox.test.js pattern.
+    it('should show pressed state on Space key', async () => {
+      render(() => (
+        <Checkbox class={({ isPressed }: CheckboxRenderProps) => isPressed ? 'pressed' : ''}>
+          Test
+        </Checkbox>
+      ));
 
       const checkbox = screen.getByRole('checkbox');
+      const label = checkbox.closest('label') as HTMLElement;
+
+      expect(label).not.toHaveAttribute('data-pressed');
+      expect(label).not.toHaveClass('pressed');
+
       await user.tab();
-      expect(document.activeElement).toBe(checkbox);
+      await user.keyboard('[Space>]');
+      expect(label).toHaveAttribute('data-pressed', 'true');
+      expect(label).toHaveClass('pressed');
 
-      await user.keyboard('{ }');
-      expect(checkbox).toBeChecked();
-
-      await user.keyboard('{ }');
-      expect(checkbox).not.toBeChecked();
+      await user.keyboard('[/Space]');
+      expect(label).not.toHaveAttribute('data-pressed');
+      expect(label).not.toHaveClass('pressed');
     });
   });
 });
@@ -289,12 +299,7 @@ describe('CheckboxGroup', () => {
       expect(checkboxes[1]).toBeChecked();
     });
 
-    // Skip: CheckboxGroup reactivity issue - inputProps.checked is not being
-    // reactively tracked when the Checkbox is inside a CheckboxGroup. The state
-    // updates correctly but the DOM's checked attribute isn't synced.
-    // Root cause: When inputProps (with getter for checked: isSelected()) is
-    // assigned to a variable and spread, the getter may not evaluate reactively.
-    it.skip('should support controlled value', () => {
+    it('should support controlled value', () => {
       render(() => (
         <CheckboxGroup aria-label="Options" value={['a']}>
           <Checkbox value="a">Option A</Checkbox>
@@ -307,8 +312,7 @@ describe('CheckboxGroup', () => {
       expect(checkboxes[1]).not.toBeChecked();
     });
 
-    // Skip: Same CheckboxGroup reactivity issue as above
-    it.skip('should support defaultValue', async () => {
+    it('should support defaultValue', async () => {
       render(() => (
         <CheckboxGroup aria-label="Options" defaultValue={['b']}>
           <Checkbox value="a">Option A</Checkbox>
@@ -321,7 +325,7 @@ describe('CheckboxGroup', () => {
       expect(checkboxes[1]).toBeChecked();
     });
 
-    it.skip('should call onChange with updated values', async () => {
+    it('should call onChange with updated values', async () => {
       const onChange = vi.fn();
       render(() => (
         <CheckboxGroup aria-label="Options" onChange={onChange}>

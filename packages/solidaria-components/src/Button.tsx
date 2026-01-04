@@ -181,6 +181,11 @@ export function Button(props: ButtonProps): JSX.Element {
     return filtered;
   });
 
+  // Extract refs from props to combine them manually
+  const buttonPropsRef = (buttonAria.buttonProps as Record<string, unknown>).ref as ((el: HTMLElement) => void) | undefined;
+  const focusPropsRef = (focusProps as Record<string, unknown>).ref as ((el: HTMLElement) => void) | undefined;
+  const hoverPropsRef = (hoverProps as Record<string, unknown>).ref as ((el: HTMLElement) => void) | undefined;
+
   // Remove ref from spread props to avoid type conflicts
   const cleanButtonProps = () => {
     const { ref: _ref1, ...rest } = buttonAria.buttonProps as Record<string, unknown>;
@@ -195,8 +200,13 @@ export function Button(props: ButtonProps): JSX.Element {
     return rest;
   };
 
-  // Ref callback to register with PopoverTrigger context
+  // Ref callback that combines all refs
   const handleRef = (el: HTMLButtonElement) => {
+    // Call the focusable ref for autoFocus support
+    buttonPropsRef?.(el);
+    focusPropsRef?.(el);
+    hoverPropsRef?.(el);
+
     // If this button is a popover trigger, register it
     if (isPopoverTrigger() && popoverTriggerContext?.setTriggerRef) {
       popoverTriggerContext.setTriggerRef(el);

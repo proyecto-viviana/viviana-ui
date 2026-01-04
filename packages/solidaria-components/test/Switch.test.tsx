@@ -228,21 +228,33 @@ describe('ToggleSwitch', () => {
   });
 
   describe('keyboard interaction', () => {
-    // Space key triggers native checkbox change event which works in browser
-    // but JSDOM doesn't fully simulate the native toggle on space
-    it.skip('should toggle on Space key', async () => {
-      render(() => <ToggleSwitch aria-label="Toggle">Toggle</ToggleSwitch>);
+    // React Aria tests Space key for isPressed state, not for toggle.
+    // The actual toggle relies on native browser behavior (tested via click).
+    // This matches react-aria-components/test/Switch.test.js pattern.
+    it('should show pressed state on Space key', async () => {
+      render(() => (
+        <ToggleSwitch
+          aria-label="Toggle"
+          class={({ isPressed }: ToggleSwitchRenderProps) => isPressed ? 'pressed' : ''}
+        >
+          Toggle
+        </ToggleSwitch>
+      ));
 
       const switchEl = screen.getByRole('switch');
-      const label = switchEl.closest('label')!;
+      const label = switchEl.closest('label') as HTMLElement;
+
+      expect(label).not.toHaveAttribute('data-pressed');
+      expect(label).not.toHaveClass('pressed');
+
       await user.tab();
-      expect(document.activeElement).toBe(switchEl);
+      await user.keyboard('[Space>]');
+      expect(label).toHaveAttribute('data-pressed', 'true');
+      expect(label).toHaveClass('pressed');
 
-      await user.keyboard('{ }');
-      expect(label).toHaveAttribute('data-selected');
-
-      await user.keyboard('{ }');
-      expect(label).not.toHaveAttribute('data-selected');
+      await user.keyboard('[/Space]');
+      expect(label).not.toHaveAttribute('data-pressed');
+      expect(label).not.toHaveClass('pressed');
     });
   });
 

@@ -50,8 +50,8 @@ describe('TooltipTrigger', () => {
     expect(screen.queryByTestId('tooltip')).not.toBeInTheDocument();
   });
 
-  // SKIPPED: JSDOM doesn't properly trigger focus handlers via fireEvent
-  it.skip('should call onOpenChange when tooltip opens', () => {
+  it('should call onOpenChange when tooltip opens via hover', async () => {
+    vi.useRealTimers(); // Need real timers for this test
     const onOpenChange = vi.fn();
 
     render(() => (
@@ -61,12 +61,18 @@ describe('TooltipTrigger', () => {
       </TooltipTrigger>
     ));
 
-    // Trigger keyboard focus to open tooltip
+    // Get the wrapper span that has the trigger props (not the button itself)
     const trigger = screen.getByTestId('trigger');
-    fireEvent.keyDown(document, { key: 'Tab' }); // Set modality to keyboard
-    fireEvent.focus(trigger);
+    const wrapper = trigger.closest('span')!;
 
-    expect(onOpenChange).toHaveBeenCalledWith(true);
+    // Fire pointerEnter on the wrapper which has the hover handlers
+    fireEvent.pointerEnter(wrapper, { pointerType: 'mouse' });
+
+    await waitFor(() => {
+      expect(onOpenChange).toHaveBeenCalledWith(true);
+    });
+
+    vi.useFakeTimers(); // Restore for other tests
   });
 
   it('should support controlled open state with signals', () => {

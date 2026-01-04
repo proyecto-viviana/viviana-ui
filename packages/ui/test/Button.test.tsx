@@ -126,15 +126,20 @@ describe('Button', () => {
     expect(onPressChangeSpy).toHaveBeenCalledTimes(2);
   });
 
-  // autoFocus works via onMount + focusSafely(), not the HTML autofocus attribute.
-  // JSDOM doesn't execute focus behavior, so document.activeElement stays as body.
-  // React-testing-library has special handling that SolidJS testing-library lacks.
-  // The implementation is correct (verified in browser) - just untestable in JSDOM.
-  it.skip('supports autoFocus', () => {
+  // autoFocus works via onMount + focusSafely() which calls element.focus()
+  // We verify autoFocus works by spying on the focus method
+  it('supports autoFocus', () => {
+    // Create a spy on HTMLElement.prototype.focus before rendering
+    const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus');
+
     render(() => <Button autoFocus>Click Me</Button>);
 
     const button = screen.getByRole('button');
-    expect(document.activeElement).toBe(button);
+    // Verify focus was called on the button element
+    expect(focusSpy).toHaveBeenCalled();
+    expect(focusSpy.mock.calls.some(call => call[0]?.preventScroll === true || focusSpy.mock.instances.includes(button))).toBe(true);
+
+    focusSpy.mockRestore();
   });
 
   it('handles touch press', async () => {

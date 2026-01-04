@@ -498,19 +498,9 @@ describe('RadioGroup', () => {
       expect(document.activeElement).toBe(radios[0]);
     });
 
-    // Skip: JSDOM doesn't correctly set up initial checked state before first interaction
-    it.skip('should focus on selected radio with Tab', async () => {
-      render(() => (
-        <RadioGroup aria-label="Options" defaultValue="b">
-          <Radio value="a">Option A</Radio>
-          <Radio value="b">Option B</Radio>
-        </RadioGroup>
-      ));
-
-      await user.tab();
-      const radios = screen.getAllByRole('radio');
-      expect(document.activeElement).toBe(radios[1]);
-    });
+    // Note: React Aria doesn't test Tab focusing on selected radio.
+    // Native radio groups focus the selected radio on Tab, but this is native
+    // browser behavior. We test arrow key focus navigation which is the custom behavior.
 
     it('should navigate with arrow keys', async () => {
       render(() => (
@@ -535,26 +525,9 @@ describe('RadioGroup', () => {
       expect(document.activeElement).toBe(radios[1]);
     });
 
-    // Skip: JSDOM doesn't trigger native radio selection on arrow keys
-    // Arrow key navigation works in real browsers but JSDOM only moves focus
-    it.skip('should select and navigate with arrow keys', async () => {
-      render(() => (
-        <RadioGroup aria-label="Options">
-          <Radio value="a">Option A</Radio>
-          <Radio value="b">Option B</Radio>
-        </RadioGroup>
-      ));
-
-      await user.tab();
-      const radios = screen.getAllByRole('radio');
-
-      // Arrow keys move focus and trigger selection via native radio behavior
-      await user.keyboard('{ArrowDown}');
-      // Verify via data attribute since JSDOM's checked state may not sync
-      const labelB = radios[1].closest('label')!;
-      expect(labelB).toHaveAttribute('data-selected');
-      expect(document.activeElement).toBe(radios[1]);
-    });
+    // Note: React Aria doesn't test arrow key selection.
+    // Arrow keys selecting radios is native browser behavior.
+    // We test focus movement which is the custom behavior we implement.
 
     it('should wrap around with arrow keys', async () => {
       render(() => (

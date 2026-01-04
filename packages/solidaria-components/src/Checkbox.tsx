@@ -177,6 +177,17 @@ export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Eleme
     return rest;
   };
 
+  // Resolve children - we need to pass render props if children is a function
+  // but we use local.children directly (not renderProps.renderChildren())
+  // to preserve SolidJS context propagation for nested components like Checkbox
+  const resolvedChildren = () => {
+    const children = local.children;
+    if (typeof children === 'function') {
+      return children(renderValues());
+    }
+    return children;
+  };
+
   return (
     <CheckboxGroupStateContext.Provider value={state}>
       <div
@@ -189,7 +200,7 @@ export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Eleme
         data-required={ariaProps.isRequired || undefined}
         data-invalid={groupAria.isInvalid || undefined}
       >
-        {renderProps.renderChildren()}
+        {resolvedChildren()}
       </div>
     </CheckboxGroupStateContext.Provider>
   );
