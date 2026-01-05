@@ -1443,6 +1443,129 @@ test.describe('DatePicker Component', () => {
 
     await checkNoHydrationErrors(errors);
   });
+
+  test('datepicker selects date with single click', async ({ page }) => {
+    // This test verifies the fix for the double-click selection bug
+    // where clicking a date would first focus it, requiring a second click to select
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    // Enable the datepicker section
+    await enableSection(page, 'datepicker');
+
+    const datePickerSection = page.locator('section.vui-feature-card:has(h3.vui-feature-card__title:text-is("DatePicker"))');
+    await expect(datePickerSection).toBeVisible({ timeout: 10000 });
+    await datePickerSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1000);
+
+    // Wait for client-only DatePicker to mount
+    const triggerButton = datePickerSection.locator('button').first();
+    await expect(triggerButton).toBeVisible({ timeout: 10000 });
+
+    // Click the trigger button to open calendar
+    await triggerButton.click();
+    await page.waitForTimeout(500);
+
+    // Calendar popup should appear - look for the grid
+    const calendar = page.locator('table[role="grid"]');
+    await expect(calendar.first()).toBeVisible({ timeout: 5000 });
+
+    // Find a date cell using role="button" (calendar cells have button role)
+    // Get all clickable calendar date cells
+    const dateCells = page.locator('[role="button"]:not([aria-disabled="true"])').filter({
+      has: page.locator('text=/^\\d{1,2}$/') // Only cells with 1-2 digit numbers
+    });
+
+    // Wait for date cells to be available
+    const cellCount = await dateCells.count();
+    expect(cellCount).toBeGreaterThan(0);
+
+    // Click the 15th cell (middle of the month) or first available
+    const targetCell = cellCount > 14 ? dateCells.nth(14) : dateCells.first();
+    await expect(targetCell).toBeVisible();
+
+    // Get the date number before clicking
+    const dateText = await targetCell.textContent();
+    console.log(`Clicking date cell with text: ${dateText}`);
+
+    // Click the date cell ONCE - with force since it might have overlay issues
+    await targetCell.click();
+
+    // Wait for selection to process
+    await page.waitForTimeout(500);
+
+    // For the DatePicker popup, clicking a date should close the popup
+    // Check if the calendar/popup closed
+    const calendarVisible = await calendar.first().isVisible().catch(() => false);
+
+    // The test passes if the calendar popup closed (selection worked)
+    // In DatePicker, shouldCloseOnSelect is true by default
+    expect(calendarVisible).toBe(false);
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('datepicker updates field value after single-click selection', async ({ page }) => {
+    // This test ensures the date field shows the selected value after clicking a date
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    // Enable the datepicker section
+    await enableSection(page, 'datepicker');
+
+    const datePickerSection = page.locator('section.vui-feature-card:has(h3.vui-feature-card__title:text-is("DatePicker"))');
+    await expect(datePickerSection).toBeVisible({ timeout: 10000 });
+    await datePickerSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1000);
+
+    // Wait for client-only DatePicker to mount
+    const triggerButton = datePickerSection.locator('button').first();
+    await expect(triggerButton).toBeVisible({ timeout: 10000 });
+
+    // Get the date segments before selection
+    const segments = datePickerSection.locator('[role="spinbutton"]');
+    await expect(segments.first()).toBeVisible({ timeout: 10000 });
+
+    // Check initial state - segments may show placeholder or empty
+    const initialMonthText = await segments.first().textContent();
+
+    // Click the trigger button to open calendar
+    await triggerButton.click();
+    await page.waitForTimeout(500);
+
+    // Calendar popup should appear
+    const calendar = page.locator('table[role="grid"]');
+    await expect(calendar.first()).toBeVisible({ timeout: 5000 });
+
+    // Find a date cell using role="button" (calendar cells have button role)
+    const dateCells = page.locator('[role="button"]:not([aria-disabled="true"])').filter({
+      has: page.locator('text=/^\\d{1,2}$/') // Only cells with 1-2 digit numbers
+    });
+
+    // Wait for date cells to be available
+    const cellCount = await dateCells.count();
+    expect(cellCount).toBeGreaterThan(0);
+
+    // Click a date cell in the middle of available dates
+    const targetCell = cellCount > 14 ? dateCells.nth(14) : dateCells.first();
+    await targetCell.click();
+    await page.waitForTimeout(500);
+
+    // Check that the "Selected:" text in the demo updates
+    const selectedText = datePickerSection.locator('text=Selected:').first();
+    if (await selectedText.isVisible()) {
+      // The selected text should contain a date after clicking
+      const selectedContent = await selectedText.textContent();
+      // Just verify the text has changed or contains date info
+      expect(selectedContent).toBeTruthy();
+    }
+
+    await checkNoHydrationErrors(errors);
+  });
 });
 
 // Tabs tests

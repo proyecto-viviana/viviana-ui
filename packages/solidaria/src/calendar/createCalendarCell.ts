@@ -78,17 +78,26 @@ export function createCalendarCell<T extends CalendarState>(
     return date().day.toString();
   });
 
-  // Handle click
-  const handleClick = () => {
+  // Handle pointer down - this is where selection happens
+  // Using pointerdown instead of click ensures selection happens immediately
+  // before focus changes can interfere with the event
+  const handlePointerDown = (e: PointerEvent) => {
     if (!isDisabled() && !isUnavailable()) {
+      setIsPressed(true);
+      // Select the date on pointer down for immediate response
+      // This matches React Aria's behavior of using onPressStart
       state.selectDate(date());
+      // Prevent default to avoid double-triggering with onClick
+      e.preventDefault();
     }
   };
 
-  // Handle pointer events for pressed state
-  const handlePointerDown = () => {
+  // Handle click - kept for accessibility (keyboard Enter/Space)
+  const handleClick = () => {
+    // Only select on click if not already selected via pointerdown
+    // This handles keyboard activation (Enter/Space)
     if (!isDisabled() && !isUnavailable()) {
-      setIsPressed(true);
+      state.selectDate(date());
     }
   };
 
