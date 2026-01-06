@@ -221,7 +221,7 @@ function DateFieldInner<T extends DateValue = CalendarDate>(
         data-required={dataAttr(state.isRequired())}
         data-invalid={dataAttr(state.isInvalid())}
       >
-        {typeof local.children === 'function' ? null : local.children}
+        {local.children}
       </div>
     </DateFieldContext.Provider>
   );
