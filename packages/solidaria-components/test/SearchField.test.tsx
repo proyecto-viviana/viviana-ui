@@ -1,0 +1,358 @@
+/**
+ * SearchField tests - Port of React Aria's SearchField.test.tsx
+ *
+ * Tests for SearchField component functionality including:
+ * - Rendering
+ * - Value input and clearing
+ * - Submit behavior
+ * - Disabled/readonly states
+ * - ARIA attributes
+ */
+
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
+import userEvent from '@testing-library/user-event';
+import { PointerEventsCheckLevel } from '@testing-library/user-event';
+import {
+  SearchField,
+  SearchFieldLabel,
+  SearchFieldInput,
+  SearchFieldClearButton,
+} from '../src/SearchField';
+
+// Pointer map matching react-spectrum's test setup
+const pointerMap = [
+  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
+  { name: 'MouseRight', pointerType: 'mouse', button: 'secondary' },
+  { name: 'MouseMiddle', pointerType: 'mouse', button: 'auxiliary' },
+  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
+  { name: 'TouchB', pointerType: 'touch' },
+  { name: 'TouchC', pointerType: 'touch' },
+];
+
+function setupUser() {
+  return userEvent.setup({
+    delay: null,
+    pointerMap: pointerMap as any,
+    pointerEventsCheck: PointerEventsCheckLevel.Never,
+  });
+}
+
+// Helper component for testing - SearchField uses render props pattern
+function TestSearchField(props: {
+  fieldProps?: Partial<Parameters<typeof SearchField>[0]>;
+}) {
+  return (
+    <SearchField aria-label="Test Search" {...props.fieldProps}>
+      {() => (
+        <>
+          <SearchFieldInput />
+          <SearchFieldClearButton>×</SearchFieldClearButton>
+        </>
+      )}
+    </SearchField>
+  );
+}
+
+describe('SearchField', () => {
+  let user: ReturnType<typeof setupUser>;
+
+  beforeEach(() => {
+    user = setupUser();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  // ============================================
+  // RENDERING
+  // ============================================
+
+  describe('rendering', () => {
+    it('should render with default class', () => {
+      render(() => <TestSearchField />);
+
+      const field = document.querySelector('.solidaria-SearchField');
+      expect(field).toBeInTheDocument();
+    });
+
+    it('should render input with searchbox role', () => {
+      render(() => <TestSearchField />);
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toBeInTheDocument();
+    });
+
+    it('should render with label', () => {
+      render(() => (
+        <SearchField>
+          {() => (
+            <>
+              <SearchFieldLabel>Search</SearchFieldLabel>
+              <SearchFieldInput />
+            </>
+          )}
+        </SearchField>
+      ));
+
+      expect(screen.getByText('Search')).toBeInTheDocument();
+    });
+
+    it('should render with custom class', () => {
+      render(() => <TestSearchField fieldProps={{ class: 'my-search-field' }} />);
+
+      const field = document.querySelector('.my-search-field');
+      expect(field).toBeInTheDocument();
+    });
+
+    it('should not render clear button when empty', () => {
+      render(() => <TestSearchField />);
+
+      // Clear button uses aria-label "Clear search"
+      const clearButton = screen.queryByRole('button');
+      expect(clearButton).not.toBeInTheDocument();
+    });
+  });
+
+  // ============================================
+  // VALUE INPUT
+  // ============================================
+
+  describe('value input', () => {
+    it('should display defaultValue', () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello' }} />);
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toHaveValue('hello');
+    });
+
+    it('should display controlled value', () => {
+      render(() => <TestSearchField fieldProps={{ value: 'world' }} />);
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toHaveValue('world');
+    });
+
+    it('should fire onChange when typing', async () => {
+      const onChange = vi.fn();
+      render(() => <TestSearchField fieldProps={{ defaultValue: '', onChange }} />);
+
+      const input = screen.getByRole('searchbox') as HTMLInputElement;
+      // Use fireEvent.change for more reliable input event firing in jsdom
+      fireEvent.change(input, { target: { value: 'test' } });
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith('test');
+      });
+    });
+
+    it('should update value on type', async () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: '' }} />);
+
+      const input = screen.getByRole('searchbox');
+      await user.type(input, 'test');
+
+      expect(input).toHaveValue('test');
+    });
+  });
+
+  // ============================================
+  // CLEAR BUTTON
+  // ============================================
+
+  describe('clear button', () => {
+    it('should show clear button when value is present', () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello' }} />);
+
+      const clearButton = screen.getByRole('button');
+      expect(clearButton).toBeInTheDocument();
+    });
+
+    it('should clear value on clear button click', async () => {
+      const onClear = vi.fn();
+      const onChange = vi.fn();
+      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello', onClear, onChange }} />);
+
+      const clearButton = screen.getByRole('button');
+      await user.click(clearButton);
+
+      // Verify the clear callback was called
+      expect(onClear).toHaveBeenCalled();
+      // After clicking clear, the clear button should no longer be visible (since value is empty)
+      await waitFor(() => {
+        expect(screen.queryByRole('button')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should fire onClear callback', async () => {
+      const onClear = vi.fn();
+      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello', onClear }} />);
+
+      const clearButton = screen.getByRole('button');
+      await user.click(clearButton);
+
+      expect(onClear).toHaveBeenCalled();
+    });
+
+    it('should have aria-label on clear button', () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello' }} />);
+
+      const clearButton = screen.getByRole('button');
+      expect(clearButton).toHaveAttribute('aria-label');
+    });
+  });
+
+  // ============================================
+  // SUBMIT BEHAVIOR
+  // ============================================
+
+  describe('submit behavior', () => {
+    it('should fire onSubmit on Enter', async () => {
+      const onSubmit = vi.fn();
+      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello', onSubmit }} />);
+
+      const input = screen.getByRole('searchbox');
+      input.focus();
+      await user.keyboard('{Enter}');
+
+      expect(onSubmit).toHaveBeenCalledWith('hello');
+    });
+  });
+
+  // ============================================
+  // DISABLED STATE
+  // ============================================
+
+  describe('disabled state', () => {
+    it('should support isDisabled', () => {
+      render(() => <TestSearchField fieldProps={{ isDisabled: true }} />);
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toBeDisabled();
+    });
+
+    it('should have data-disabled attribute on field', () => {
+      render(() => <TestSearchField fieldProps={{ isDisabled: true }} />);
+
+      const field = document.querySelector('.solidaria-SearchField');
+      expect(field).toHaveAttribute('data-disabled');
+    });
+
+    it('should not allow typing when disabled', async () => {
+      render(() => <TestSearchField fieldProps={{ isDisabled: true, defaultValue: '' }} />);
+
+      const input = screen.getByRole('searchbox');
+      await user.type(input, 'test');
+
+      expect(input).toHaveValue('');
+    });
+  });
+
+  // ============================================
+  // READ ONLY STATE
+  // ============================================
+
+  describe('read only state', () => {
+    it('should support isReadOnly', () => {
+      render(() => <TestSearchField fieldProps={{ isReadOnly: true }} />);
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toHaveAttribute('readonly');
+    });
+
+    it('should have data-readonly attribute on field', () => {
+      render(() => <TestSearchField fieldProps={{ isReadOnly: true }} />);
+
+      const field = document.querySelector('.solidaria-SearchField');
+      expect(field).toHaveAttribute('data-readonly');
+    });
+  });
+
+  // ============================================
+  // REQUIRED STATE
+  // ============================================
+
+  describe('required state', () => {
+    it('should support isRequired', () => {
+      render(() => <TestSearchField fieldProps={{ isRequired: true }} />);
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toHaveAttribute('aria-required', 'true');
+    });
+
+    it('should have data-required attribute on field', () => {
+      render(() => <TestSearchField fieldProps={{ isRequired: true }} />);
+
+      const field = document.querySelector('.solidaria-SearchField');
+      expect(field).toHaveAttribute('data-required');
+    });
+  });
+
+  // ============================================
+  // INVALID STATE
+  // ============================================
+
+  describe('invalid state', () => {
+    it('should support isInvalid', () => {
+      render(() => <TestSearchField fieldProps={{ isInvalid: true }} />);
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toHaveAttribute('aria-invalid', 'true');
+    });
+
+    it('should have data-invalid attribute on field', () => {
+      render(() => <TestSearchField fieldProps={{ isInvalid: true }} />);
+
+      const field = document.querySelector('.solidaria-SearchField');
+      expect(field).toHaveAttribute('data-invalid');
+    });
+  });
+
+  // ============================================
+  // ARIA ATTRIBUTES
+  // ============================================
+
+  describe('aria attributes', () => {
+    it('should have searchbox role on input', () => {
+      render(() => <TestSearchField />);
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toBeInTheDocument();
+    });
+
+    it('should have aria-label when provided', () => {
+      render(() => <TestSearchField />);
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toHaveAttribute('aria-label', 'Test Search');
+    });
+
+    it('should have search type on input', () => {
+      render(() => <TestSearchField />);
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toHaveAttribute('type', 'search');
+    });
+  });
+
+  // ============================================
+  // DATA ATTRIBUTES
+  // ============================================
+
+  describe('data attributes', () => {
+    it('should have data-empty when empty', () => {
+      render(() => <TestSearchField />);
+
+      const field = document.querySelector('.solidaria-SearchField');
+      expect(field).toHaveAttribute('data-empty');
+    });
+
+    it('should not have data-empty when has value', () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello' }} />);
+
+      const field = document.querySelector('.solidaria-SearchField');
+      expect(field).not.toHaveAttribute('data-empty');
+    });
+  });
+});
