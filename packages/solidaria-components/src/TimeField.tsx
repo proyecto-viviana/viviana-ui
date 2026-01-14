@@ -216,7 +216,7 @@ function TimeFieldInner<T extends TimeValue = TimeValue>(
         data-required={dataAttr(state.isRequired())}
         data-invalid={dataAttr(state.isInvalid())}
       >
-        {typeof local.children === 'function' ? null : local.children}
+        {local.children}
       </div>
     </TimeFieldContext.Provider>
   );
