@@ -375,6 +375,22 @@ export {
   type DatePickerState,
 } from './datepicker';
 
+// Grid
+export {
+  createGrid,
+  createGridRow,
+  createGridCell,
+  GridKeyboardDelegate,
+  getGridData,
+  type KeyboardDelegate,
+  type GridProps,
+  type GridAria,
+  type GridRowProps,
+  type GridRowAria,
+  type GridCellProps,
+  type GridCellAria,
+} from './grid';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

@@ -221,6 +221,32 @@ export {
   maxDate,
 } from './calendar';
 
+// Grid
+export {
+  createGridState,
+  type GridState,
+  type GridStateOptions,
+  type GridCollection,
+  type GridNode,
+  type GridNodeType,
+} from './grid';
+
+// Table
+export {
+  createTableState,
+  TableCollection,
+  createTableCollection,
+  type TableState,
+  type TableStateOptions,
+  type ITableCollection,
+  type SortDescriptor,
+  type SortDirection,
+  type Sortable,
+  type ColumnDefinition,
+  type RowDefinition,
+  type TableCollectionOptions,
+} from './table';
+
 // SSR
 export { createIsSSR, createId, canUseDOM, isServer } from './ssr';
 
