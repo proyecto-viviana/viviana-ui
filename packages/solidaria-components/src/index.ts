@@ -505,3 +505,16 @@ export {
   type TableCellProps,
   type TableCellRenderProps,
 } from './Table';
+
+// GridList
+export {
+  GridList,
+  GridListItem,
+  GridListSelectionCheckbox,
+  GridListContext,
+  GridListStateContext,
+  type GridListProps,
+  type GridListRenderProps,
+  type GridListItemProps,
+  type GridListItemRenderProps,
+} from './GridList';

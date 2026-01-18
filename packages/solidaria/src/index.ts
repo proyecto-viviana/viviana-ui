@@ -419,6 +419,20 @@ export {
   type TableSelectAllCheckboxAria,
 } from './table';
 
+// GridList
+export {
+  createGridList,
+  createGridListItem,
+  createGridListSelectionCheckbox,
+  getGridListData,
+  type AriaGridListProps,
+  type GridListAria,
+  type AriaGridListItemProps,
+  type GridListItemAria,
+  type AriaGridListSelectionCheckboxProps,
+  type GridListSelectionCheckboxAria,
+} from './gridlist';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';
