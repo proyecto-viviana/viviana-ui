@@ -433,6 +433,20 @@ export {
   type GridListSelectionCheckboxAria,
 } from './gridlist';
 
+// Tree
+export {
+  createTree,
+  createTreeItem,
+  createTreeSelectionCheckbox,
+  getTreeData,
+  type AriaTreeProps,
+  type TreeAria,
+  type AriaTreeItemProps,
+  type TreeItemAria,
+  type AriaTreeSelectionCheckboxProps,
+  type TreeSelectionCheckboxAria,
+} from './tree';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

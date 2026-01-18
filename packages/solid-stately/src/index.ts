@@ -247,6 +247,18 @@ export {
   type TableCollectionOptions,
 } from './table';
 
+// Tree
+export {
+  createTreeState,
+  TreeCollection,
+  createTreeCollection,
+  type TreeState,
+  type TreeStateOptions,
+  type TreeCollectionInterface,
+  type TreeNode,
+  type TreeItemData,
+} from './tree';
+
 // SSR
 export { createIsSSR, createId, canUseDOM, isServer } from './ssr';
 
