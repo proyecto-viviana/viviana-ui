@@ -1,0 +1,30 @@
+/**
+ * Table accessibility primitives for Table components.
+ * Based on @react-aria/table.
+ */
+
+export { createTable, getTableData } from './createTable';
+export { createTableHeaderRow } from './createTableHeaderRow';
+export { createTableColumnHeader } from './createTableColumnHeader';
+export { createTableRow } from './createTableRow';
+export { createTableCell } from './createTableCell';
+export { createTableRowGroup } from './createTableRowGroup';
+export { createTableSelectionCheckbox } from './createTableSelectionCheckbox';
+export { createTableSelectAllCheckbox } from './createTableSelectAllCheckbox';
+export type {
+  AriaTableProps,
+  TableAria,
+  AriaTableHeaderRowProps,
+  TableHeaderRowAria,
+  AriaTableColumnHeaderProps,
+  TableColumnHeaderAria,
+  AriaTableRowProps,
+  TableRowAria,
+  AriaTableCellProps,
+  TableCellAria,
+  AriaTableRowGroupProps,
+  TableRowGroupAria,
+  AriaTableSelectionCheckboxProps,
+  TableSelectionCheckboxAria,
+  TableSelectAllCheckboxAria,
+} from './types';

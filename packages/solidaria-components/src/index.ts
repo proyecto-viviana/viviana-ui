@@ -478,3 +478,30 @@ export {
   type DatePickerContentProps,
   type DatePickerContextValue,
 } from './DatePicker';
+
+// Table
+export {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableSelectionCheckbox,
+  TableSelectAllCheckbox,
+  TableContext,
+  TableStateContext,
+  TableRowContext,
+  type TableProps,
+  type TableRenderProps,
+  type TableHeaderProps,
+  type TableHeaderRenderProps,
+  type TableColumnProps,
+  type TableColumnRenderProps,
+  type TableBodyProps,
+  type TableBodyRenderProps,
+  type TableRowProps,
+  type TableRowRenderProps,
+  type TableCellProps,
+  type TableCellRenderProps,
+} from './Table';

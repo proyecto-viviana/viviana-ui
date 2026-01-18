@@ -391,6 +391,34 @@ export {
   type GridCellAria,
 } from './grid';
 
+// Table
+export {
+  createTable,
+  createTableHeaderRow,
+  createTableColumnHeader,
+  createTableRow,
+  createTableCell,
+  createTableRowGroup,
+  createTableSelectionCheckbox,
+  createTableSelectAllCheckbox,
+  getTableData,
+  type AriaTableProps,
+  type TableAria,
+  type AriaTableHeaderRowProps,
+  type TableHeaderRowAria,
+  type AriaTableColumnHeaderProps,
+  type TableColumnHeaderAria,
+  type AriaTableRowProps,
+  type TableRowAria,
+  type AriaTableCellProps,
+  type TableCellAria,
+  type AriaTableRowGroupProps,
+  type TableRowGroupAria,
+  type AriaTableSelectionCheckboxProps,
+  type TableSelectionCheckboxAria,
+  type TableSelectAllCheckboxAria,
+} from './table';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';
