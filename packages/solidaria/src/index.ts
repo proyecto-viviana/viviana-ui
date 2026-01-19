@@ -528,6 +528,23 @@ export {
   type LandmarkController,
 } from './landmark';
 
+// Visually Hidden
+export {
+  createVisuallyHidden,
+  visuallyHiddenStyles,
+  type AriaVisuallyHiddenProps,
+  type VisuallyHiddenAria,
+} from './visually-hidden';
+
+// Live Announcer
+export {
+  announce,
+  clearAnnouncer,
+  destroyAnnouncer,
+  type Assertiveness,
+  type Message,
+} from './live-announcer';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';
