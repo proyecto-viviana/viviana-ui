@@ -169,6 +169,98 @@ export type { TimeFieldProps, TimeFieldSize, TimeValue } from './calendar/TimeFi
 export { DatePicker } from './calendar/DatePicker';
 export type { DatePickerProps, DatePickerSize } from './calendar/DatePicker';
 
+// Table
+export {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableSelectionCheckbox,
+  TableSelectAllCheckbox,
+} from './table';
+export type {
+  TableProps,
+  TableHeaderProps,
+  TableColumnProps,
+  TableBodyProps,
+  TableRowProps,
+  TableCellProps,
+  TableSize,
+  TableVariant,
+} from './table';
+
+// GridList
+export {
+  GridList,
+  GridListItem,
+  GridListSelectionCheckbox,
+} from './gridlist';
+export type {
+  GridListProps,
+  GridListItemProps,
+  GridListSize,
+  GridListVariant,
+  GridListLayout,
+} from './gridlist';
+
+// Tree
+export {
+  Tree,
+  TreeItem,
+  TreeExpandButton,
+  TreeSelectionCheckbox,
+} from './tree';
+export type {
+  TreeProps,
+  TreeItemProps,
+  TreeExpandButtonProps,
+  TreeSize,
+  TreeVariant,
+} from './tree';
+
+// Color
+export {
+  ColorSlider,
+  ColorSliderTrack,
+  ColorSliderThumb,
+  ColorArea,
+  ColorAreaGradient,
+  ColorAreaThumb,
+  ColorWheel,
+  ColorWheelTrack,
+  ColorWheelThumb,
+  ColorField,
+  ColorFieldInput,
+  ColorSwatch,
+  ColorPicker,
+} from './color';
+export type {
+  ColorSliderProps,
+  ColorAreaProps,
+  ColorWheelProps,
+  ColorFieldProps,
+  ColorSwatchProps,
+  ColorPickerProps,
+  ColorSize,
+} from './color';
+
+// Landmark
+export {
+  Landmark,
+  SkipLink,
+  LandmarkNavigator,
+  useLandmarkController,
+} from './landmark';
+export type {
+  LandmarkProps,
+  SkipLinkProps,
+  LandmarkNavigatorProps,
+  AriaLandmarkRole,
+  LandmarkController,
+} from './landmark';
+
 // ============================================
 // CUSTOM COMPONENTS
 // ============================================

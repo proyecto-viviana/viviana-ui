@@ -584,3 +584,14 @@ export {
   type ColorSwatchProps,
   type ColorSwatchRenderProps,
 } from './Color';
+
+// Landmark
+export {
+  Landmark,
+  LandmarkContext,
+  useLandmarkController,
+  type LandmarkProps,
+  type LandmarkRenderProps,
+  type AriaLandmarkRole,
+  type LandmarkController,
+} from './Landmark';

@@ -518,6 +518,16 @@ export {
   getGlobalAllowedDropOperations,
 } from './dnd';
 
+// Landmark
+export {
+  createLandmark,
+  getLandmarkController,
+  type AriaLandmarkRole,
+  type AriaLandmarkProps,
+  type LandmarkAria,
+  type LandmarkController,
+} from './landmark';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';
