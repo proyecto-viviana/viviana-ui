@@ -145,13 +145,27 @@ solidaria provides accessibility hooks that implement WAI-ARIA patterns for UI c
 | createCollator | Locale-aware string sorting |
 | createFilter | Locale-aware string filtering |
 
+### SSR / Server-Side Rendering
+
+| Hook/Utility | Description |
+|--------------|-------------|
+| SSRProvider | SSR context provider with prefix support |
+| createIsSSR | Check if currently rendering on server |
+| useIsSSR | Reactive SSR/hydration state hook |
+| createHydrationState | Track hydration completion |
+| createBrowserEffect | Effect that only runs on client |
+| createBrowserValue | Computed value only on client |
+| getWindow | Safe window access |
+| getDocument | Safe document access |
+| getPortalContainer | Get container for portals |
+
 ### Utilities
 
 | Utility | Description |
 |---------|-------------|
 | mergeProps | Merge multiple prop objects |
 | filterDOMProps | Filter out non-DOM props |
-| createId | Generate unique IDs |
+| createId | Generate unique IDs (SSR-safe) |
 
 ## Usage Example
 

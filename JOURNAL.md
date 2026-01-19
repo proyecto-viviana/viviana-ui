@@ -97,22 +97,24 @@ A SolidJS port of Adobe's React Spectrum component library, following a 4-layer 
   - `createCollator` for locale-aware sorting
   - `createFilter` for locale-aware string filtering (startsWith, endsWith, contains)
 
+### Phase 16: SSR Support
+- **solidaria**: Enhanced SSR utilities
+  - `SSRProvider` with nested prefix support for micro-frontends
+  - `createHydrationState`, `useIsSSR` for hydration tracking
+  - `createBrowserEffect`, `createBrowserValue` for client-only code
+  - `getWindow`, `getDocument`, `getOwnerDocument`, `getOwnerWindow` for safe DOM access
+  - `getPortalContainer` for SSR-safe portal containers
+- **solidaria**: Enhanced live announcer
+  - `useAnnouncer` hook with SSR safety
+- **solidaria**: Enhanced interaction modality
+  - `useIsKeyboardFocused` hook with SSR safety
+
 ## Current Status
 
-**Tests**: 2135 passing
+**Tests**: 2161 passing
 **Packages**: 4 (solid-stately, solidaria, solidaria-components, ui)
 
 ## Roadmap: Future Phases
-
-### Phase 16: SSR Support
-**Priority: High**
-
-Server-side rendering utilities for SolidStart and other SSR frameworks.
-
-- [ ] **solidaria**
-  - SSR-safe ID generation (already exists, enhance)
-  - Hydration helpers
-  - SSR context for announcer and modality
 
 ### Phase 17: Focus Management Enhancements
 **Priority: Medium**
@@ -207,6 +209,13 @@ Editable tag input with suggestions.
 ## Changelog
 
 ### 2026-01-19
+- Completed Phase 16: SSR Support
+  - Enhanced SSR module with `SSRProvider`, hydration hooks
+  - Added `createBrowserEffect`, `createBrowserValue` for client-only code
+  - Added safe DOM accessors (`getWindow`, `getDocument`, etc.)
+  - Added `useAnnouncer` hook with SSR safety
+  - Added `useIsKeyboardFocused` hook with SSR safety
+  - 26 new tests (2161 total)
 - Completed Phase 15: i18n / Internationalization
   - Added `I18nProvider`, `useLocale`, `createDefaultLocale`, `getDefaultLocale`
   - Added `isRTL()` for RTL language detection

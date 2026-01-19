@@ -75,7 +75,28 @@ export {
 } from './label';
 
 // SSR
-export { createIsSSR, createId, canUseDOM } from './ssr';
+export {
+  // Basic utilities
+  createIsSSR,
+  createId,
+  canUseDOM,
+  // SSR Provider
+  SSRProvider,
+  type SSRProviderProps,
+  type SSRContextValue,
+  // Hydration state
+  createHydrationState,
+  useIsSSR,
+  // Browser-safe utilities
+  createBrowserEffect,
+  createBrowserValue,
+  // Safe DOM access
+  getWindow,
+  getDocument,
+  getOwnerDocument,
+  getOwnerWindow,
+  getPortalContainer,
+} from './ssr';
 
 // Toggle
 export {
@@ -541,8 +562,10 @@ export {
   announce,
   clearAnnouncer,
   destroyAnnouncer,
+  useAnnouncer,
   type Assertiveness,
   type Message,
+  type UseAnnouncerResult,
 } from './live-announcer';
 
 // Form

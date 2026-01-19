@@ -5,7 +5,13 @@
  * ARIA live regions. Useful for announcing dynamic content changes.
  *
  * Port of react-aria's @react-aria/live-announcer.
+ *
+ * SSR Safety: All functions are safe to call during SSR. The announcer
+ * will only be created when running in the browser.
  */
+
+import { onCleanup, createEffect } from 'solid-js';
+import { isServer } from 'solid-js/web';
 
 // ============================================
 // TYPES
@@ -225,4 +231,92 @@ export function destroyAnnouncer(): void {
     liveAnnouncer.destroy();
     liveAnnouncer = null;
   }
+}
+
+// ============================================
+// HOOK-BASED API
+// ============================================
+
+export interface UseAnnouncerResult {
+  /** Announce a message to screen readers. */
+  announce: (
+    message: Message,
+    assertiveness?: Assertiveness,
+    timeout?: number
+  ) => void;
+  /** Clear announcements for the given assertiveness level. */
+  clear: (assertiveness?: Assertiveness) => void;
+}
+
+/**
+ * Hook that provides access to the live announcer with automatic cleanup.
+ *
+ * This is the recommended way to use the announcer in SolidJS components.
+ * It ensures the announcer is created only on the client and provides
+ * type-safe methods for announcing and clearing messages.
+ *
+ * SSR Safety: Returns no-op functions during SSR. The announcer is only
+ * created when the component mounts on the client.
+ *
+ * @example
+ * ```tsx
+ * function SearchResults(props) {
+ *   const announcer = useAnnouncer();
+ *
+ *   createEffect(() => {
+ *     const count = props.results.length;
+ *     announcer.announce(`${count} results found`, 'polite');
+ *   });
+ *
+ *   return <ul>...</ul>;
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * function Form() {
+ *   const announcer = useAnnouncer();
+ *
+ *   const onSubmit = async () => {
+ *     try {
+ *       await submitForm();
+ *       announcer.announce('Form submitted successfully');
+ *     } catch (error) {
+ *       announcer.announce('Error submitting form', 'assertive');
+ *     }
+ *   };
+ *
+ *   return <form onSubmit={onSubmit}>...</form>;
+ * }
+ * ```
+ */
+export function useAnnouncer(): UseAnnouncerResult {
+  // During SSR, return no-op functions
+  if (isServer) {
+    return {
+      announce: () => {},
+      clear: () => {},
+    };
+  }
+
+  // Ensure the announcer is initialized
+  createEffect(() => {
+    // Initialize on first use
+    if (!liveAnnouncer) {
+      liveAnnouncer = new LiveAnnouncer();
+    }
+  });
+
+  return {
+    announce: (
+      message: Message,
+      assertiveness: Assertiveness = 'assertive',
+      timeout: number = LIVEREGION_TIMEOUT_DELAY
+    ) => {
+      announce(message, assertiveness, timeout);
+    },
+    clear: (assertiveness?: Assertiveness) => {
+      clearAnnouncer(assertiveness);
+    },
+  };
 }

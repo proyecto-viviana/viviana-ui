@@ -5,9 +5,13 @@
  * Used to determine when to show focus rings and manage focus behavior.
  *
  * Port of @react-aria/interactions useInteractionModality.
+ *
+ * SSR Safety: All functions are safe to call during SSR. Event listeners
+ * are only added when running in the browser.
  */
 
 import { type Accessor, createSignal, createEffect, onCleanup } from 'solid-js';
+import { isServer } from 'solid-js/web';
 
 // ============================================
 // TYPES
@@ -112,6 +116,9 @@ export function addModalityListener(
 /**
  * Tracks the current interaction modality.
  *
+ * SSR Safety: Returns a signal that always returns null during SSR.
+ * Event listeners are only set up on the client.
+ *
  * @example
  * ```tsx
  * function FocusIndicator() {
@@ -126,6 +133,13 @@ export function addModalityListener(
  * ```
  */
 export function createInteractionModality(): InteractionModalityResult {
+  // During SSR, return a signal that always returns null
+  if (isServer) {
+    return {
+      modality: () => null,
+    };
+  }
+
   const [modality, setModality] = createSignal<Modality | null>(currentModality);
 
   createEffect(() => {
@@ -144,4 +158,33 @@ export function createInteractionModality(): InteractionModalityResult {
   return {
     modality,
   };
+}
+
+/**
+ * Hook to track whether the user is currently interacting with the keyboard.
+ *
+ * SSR Safety: Returns false during SSR.
+ *
+ * @example
+ * ```tsx
+ * function FocusRing(props) {
+ *   const isKeyboardFocused = useIsKeyboardFocused();
+ *
+ *   return (
+ *     <div
+ *       class={isKeyboardFocused() && props.isFocused ? 'focus-ring' : ''}
+ *     >
+ *       {props.children}
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
+export function useIsKeyboardFocused(): Accessor<boolean> {
+  if (isServer) {
+    return () => false;
+  }
+
+  const { modality } = createInteractionModality();
+  return () => modality() === 'keyboard';
 }

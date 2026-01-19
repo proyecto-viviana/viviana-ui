@@ -33,6 +33,7 @@ export {
   setInteractionModality,
   setupGlobalFocusListeners,
   addModalityListener,
+  useIsKeyboardFocused,
   type Modality,
   type InteractionModalityResult,
 } from './createInteractionModality';
