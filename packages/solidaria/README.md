@@ -86,6 +86,15 @@ solidaria provides accessibility hooks that implement WAI-ARIA patterns for UI c
 | createLabel | Label/input association |
 | createField | Field with label, description, error |
 
+### Accessibility
+
+| Hook/Function | Description |
+|---------------|-------------|
+| createVisuallyHidden | Visually hide content for screen readers |
+| announce | Announce messages to screen readers |
+| clearAnnouncer | Clear pending announcements |
+| destroyAnnouncer | Remove live announcer from DOM |
+
 ### Utilities
 
 | Utility | Description |
