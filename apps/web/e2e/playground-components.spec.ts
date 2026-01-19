@@ -2053,3 +2053,376 @@ test.describe('Styled Menu Component', () => {
     await checkNoHydrationErrors(errors);
   });
 });
+
+// Table tests
+test.describe('Table Component', () => {
+  test('table section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'table');
+
+    const section = page.locator('[data-testid="section-table"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for table element
+    const table = section.locator('[role="grid"], table');
+    await expect(table.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('table has proper ARIA attributes', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'table');
+
+    const section = page.locator('[data-testid="section-table"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for rows
+    const rows = section.locator('[role="row"]');
+    expect(await rows.count()).toBeGreaterThan(0);
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// GridList tests
+test.describe('GridList Component', () => {
+  test('gridlist section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'gridlist');
+
+    const section = page.locator('[data-testid="section-gridlist"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for grid element
+    const grid = section.locator('[role="grid"]');
+    await expect(grid.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('gridlist items are selectable', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'gridlist');
+
+    const section = page.locator('[data-testid="section-gridlist"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for gridcell or row items
+    const items = section.locator('[role="row"], [role="gridcell"]');
+    expect(await items.count()).toBeGreaterThan(0);
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// Tree tests
+test.describe('Tree Component', () => {
+  test('tree section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'tree');
+
+    const section = page.locator('[data-testid="section-tree"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for tree element
+    const tree = section.locator('[role="treegrid"], [role="tree"]');
+    await expect(tree.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('tree items can be expanded', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'tree');
+
+    const section = page.locator('[data-testid="section-tree"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for tree items
+    const treeItems = section.locator('[role="row"], [role="treeitem"]');
+    expect(await treeItems.count()).toBeGreaterThan(0);
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// RangeCalendar tests
+test.describe('RangeCalendar Component', () => {
+  test('rangecalendar section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'rangecalendar');
+
+    const section = page.locator('[data-testid="section-rangecalendar"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for calendar grid
+    const grid = section.locator('[role="grid"]');
+    await expect(grid.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('rangecalendar shows month navigation', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'rangecalendar');
+
+    const section = page.locator('[data-testid="section-rangecalendar"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for navigation buttons
+    const buttons = section.locator('button');
+    expect(await buttons.count()).toBeGreaterThan(0);
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// DateField tests
+test.describe('DateField Component', () => {
+  test('datefield section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'datefield');
+
+    const section = page.locator('[data-testid="section-datefield"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for input or date field
+    const field = section.locator('[role="group"], input');
+    await expect(field.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('datefield has spinbutton segments', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'datefield');
+
+    const section = page.locator('[data-testid="section-datefield"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for spinbutton segments (month, day, year)
+    const segments = section.locator('[role="spinbutton"]');
+    expect(await segments.count()).toBeGreaterThan(0);
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// TimeField tests
+test.describe('TimeField Component', () => {
+  test('timefield section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'timefield');
+
+    const section = page.locator('[data-testid="section-timefield"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for input or time field
+    const field = section.locator('[role="group"], input');
+    await expect(field.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('timefield has spinbutton segments', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'timefield');
+
+    const section = page.locator('[data-testid="section-timefield"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for spinbutton segments (hour, minute)
+    const segments = section.locator('[role="spinbutton"]');
+    expect(await segments.count()).toBeGreaterThan(0);
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// ColorSlider tests
+test.describe('ColorSlider Component', () => {
+  test('colorslider section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'colorslider');
+
+    const section = page.locator('[data-testid="section-colorslider"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for slider element
+    const slider = section.locator('[role="slider"], input[type="range"]');
+    await expect(slider.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// ColorArea tests
+test.describe('ColorArea Component', () => {
+  test('colorarea section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'colorarea');
+
+    const section = page.locator('[data-testid="section-colorarea"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for color area element - ColorArea renders as a div with specific class
+    const area = section.locator('.solidaria-ColorArea, [role="slider"], div');
+    await expect(area.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// ColorWheel tests
+test.describe('ColorWheel Component', () => {
+  test('colorwheel section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'colorwheel');
+
+    const section = page.locator('[data-testid="section-colorwheel"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for color wheel element - ColorWheel renders as a div with specific class
+    const wheel = section.locator('.solidaria-ColorWheel, [role="slider"], div');
+    await expect(wheel.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// ColorField tests
+test.describe('ColorField Component', () => {
+  test('colorfield section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'colorfield');
+
+    const section = page.locator('[data-testid="section-colorfield"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for input field
+    const input = section.locator('input');
+    await expect(input.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// ColorSwatch tests
+test.describe('ColorSwatch Component', () => {
+  test('colorswatch section can be enabled without crashing', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'colorswatch');
+
+    const section = page.locator('[data-testid="section-colorswatch"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Check for color swatch elements - ColorSwatch renders as a div with specific class
+    const swatch = section.locator('.solidaria-ColorSwatch, [role="img"], div');
+    await expect(swatch.first()).toBeVisible({ timeout: 5000 });
+
+    await checkNoHydrationErrors(errors);
+  });
+});
