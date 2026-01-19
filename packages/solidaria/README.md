@@ -94,6 +94,43 @@ solidaria provides accessibility hooks that implement WAI-ARIA patterns for UI c
 | announce | Announce messages to screen readers |
 | clearAnnouncer | Clear pending announcements |
 | destroyAnnouncer | Remove live announcer from DOM |
+| createLandmark | ARIA landmark regions with F6 navigation |
+| createFormValidation | Form validation with native HTML integration |
+| createInteractionModality | Track keyboard/pointer/virtual interaction |
+
+### Grid & Table
+
+| Hook | Description |
+|------|-------------|
+| createGrid | Grid with keyboard navigation |
+| createTable | Table with sorting, selection |
+| createGridList | Single-column grid list |
+
+### Tree
+
+| Hook | Description |
+|------|-------------|
+| createTree | Tree with expand/collapse |
+| createTreeItem | Tree item with nested children |
+
+### Color
+
+| Hook | Description |
+|------|-------------|
+| createColorSlider | Color channel slider |
+| createColorArea | 2D color picker area |
+| createColorWheel | Circular hue wheel |
+| createColorField | Color text input |
+| createColorSwatch | Color preview swatch |
+
+### Drag & Drop
+
+| Hook | Description |
+|------|-------------|
+| createDrag | Draggable element |
+| createDrop | Drop target |
+| createDraggableCollection | Collection-level drag |
+| createDroppableCollection | Collection-level drop |
 
 ### Utilities
 

@@ -1,0 +1,214 @@
+# Proyecto Viviana - Development Journal
+
+A SolidJS port of Adobe's React Spectrum component library, following a 4-layer architecture pattern.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  @proyecto-viviana/ui                                           │
+│  Styled, ready-to-use components with design system             │
+├─────────────────────────────────────────────────────────────────┤
+│  @proyecto-viviana/solidaria-components                         │
+│  Unstyled, composable components with render props              │
+├─────────────────────────────────────────────────────────────────┤
+│  @proyecto-viviana/solidaria                                    │
+│  ARIA hooks - accessibility patterns and keyboard navigation    │
+├─────────────────────────────────────────────────────────────────┤
+│  @proyecto-viviana/solid-stately                                │
+│  State hooks - headless state management                        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Completed Phases
+
+### Phase 1-7: Core Foundation
+- Toggle state (`createToggleState`)
+- Checkbox/Radio groups (`createCheckboxGroupState`, `createRadioGroupState`)
+- Text/Number/Search fields
+- Overlays and modals
+- Collections and selection (`createListState`, `createSelectionState`)
+- Tabs, Menu, Select, ComboBox
+- Slider, Tooltip, Toast, Disclosure
+- Calendar and DatePicker
+- Focus management (`FocusScope`, `createFocusRing`)
+
+### Phase 8: Grid/Table
+- **solid-stately**: `createGridState`, `createTableState`, `TableCollection`
+- **solidaria**: `createGrid`, `createTable`, `createGridList` with full ARIA support
+- **solidaria-components**: `Table`, `GridList` unstyled components
+- **ui**: Styled Table with sorting, selection, and column resizing
+
+### Phase 9: Tree
+- **solid-stately**: `createTreeState`, `TreeCollection`
+- **solidaria**: `createTree`, `createTreeItem` with expand/collapse
+- **solidaria-components**: `Tree` component with nested items
+- **ui**: Styled Tree with indicators and selection
+
+### Phase 10: Color
+- **solid-stately**: `createColorSliderState`, `createColorAreaState`, `createColorWheelState`, `createColorFieldState`
+- **solidaria**: `createColorSlider`, `createColorArea`, `createColorWheel`, `createColorField`, `createColorSwatch`
+- **solidaria-components**: Color picker components
+- **ui**: Styled color components
+
+### Phase 11: Drag and Drop
+- **solid-stately**: `createDragState`, `createDropState`, `createDraggableCollectionState`, `createDroppableCollectionState`
+- **solidaria**: `createDrag`, `createDrop`, `createDraggableCollection`, `createDroppableCollection`, `createDraggableItem`, `createDroppableItem`
+- Full HTML5 drag and drop with custom drag preview support
+
+### Phase 12: Landmarks
+- **solidaria**: `createLandmark`, `getLandmarkController`
+- F6 keyboard navigation between landmark regions
+- Support for all ARIA landmark roles
+
+### Phase 13: Accessibility Utilities
+- **solidaria**: `createVisuallyHidden`, `visuallyHiddenStyles`
+- **solidaria**: `announce`, `clearAnnouncer`, `destroyAnnouncer` (LiveAnnouncer)
+- Screen reader announcements via ARIA live regions
+
+### Phase 14: Form Validation
+- **solid-stately**: `createFormValidationState`, `mergeValidation`
+  - Realtime (aria) and native (on submit) validation behaviors
+  - Server-side validation via context
+  - `ValidationResult`, `ValidityState` types
+- **solidaria**: `createFormValidation`
+  - Native HTML form validation integration
+  - Custom validity, invalid event handling
+- **solidaria**: `createInteractionModality`
+  - Tracks keyboard/pointer/virtual interaction modes
+  - Refactored `createFocusRing` to use shared modality
+
+## Current Status
+
+**Tests**: 2064 passing
+**Packages**: 4 (solid-stately, solidaria, solidaria-components, ui)
+
+## Roadmap: Future Phases
+
+### Phase 15: i18n / Internationalization
+**Priority: High**
+
+Port `@internationalized/*` packages for locale-aware formatting.
+
+- [ ] **solid-stately**
+  - Number formatting with `Intl.NumberFormat`
+  - Date/time formatting with `Intl.DateTimeFormat`
+  - Locale context provider
+
+- [ ] **solidaria**
+  - RTL support utilities
+  - Locale-aware keyboard navigation
+  - Internationalized messages
+
+### Phase 16: SSR Support
+**Priority: High**
+
+Server-side rendering utilities for SolidStart and other SSR frameworks.
+
+- [ ] **solidaria**
+  - SSR-safe ID generation (already exists, enhance)
+  - Hydration helpers
+  - SSR context for announcer and modality
+
+### Phase 17: Focus Management Enhancements
+**Priority: Medium**
+
+Advanced focus management patterns.
+
+- [ ] **solidaria**
+  - Focus restoration on unmount
+  - Focus containment improvements
+  - Virtual focus for large lists
+  - Auto-focus management
+
+### Phase 18: Search Autocomplete
+**Priority: Medium**
+
+SearchAutocomplete component (distinct from ComboBox).
+
+- [ ] **solid-stately**: `createSearchAutocompleteState`
+- [ ] **solidaria**: `createSearchAutocomplete`
+- [ ] **solidaria-components**: `SearchAutocomplete`
+
+### Phase 19: Toolbar
+**Priority: Medium**
+
+Toolbar component with keyboard navigation.
+
+- [ ] **solidaria**: `createToolbar`, `createToolbarItem`
+- [ ] **solidaria-components**: `Toolbar`
+- [ ] **ui**: Styled Toolbar
+
+### Phase 20: Breadcrumbs Enhancement
+**Priority: Low**
+
+Enhanced breadcrumbs with overflow handling.
+
+- [ ] **solidaria-components**: `Breadcrumbs` with menu overflow
+- [ ] **ui**: Styled Breadcrumbs
+
+### Phase 21: ActionGroup / ActionBar
+**Priority: Low**
+
+Grouped actions with selection.
+
+- [ ] **solid-stately**: `createActionGroupState`
+- [ ] **solidaria**: `createActionGroup`
+- [ ] **solidaria-components**: `ActionGroup`, `ActionBar`
+
+### Phase 22: StepList / Wizard
+**Priority: Low**
+
+Multi-step form wizard pattern.
+
+- [ ] **solid-stately**: `createStepListState`
+- [ ] **solidaria**: `createStepList`
+- [ ] **solidaria-components**: `StepList`
+
+### Phase 23: Virtualizer
+**Priority: Medium**
+
+Virtual scrolling for large lists.
+
+- [ ] **solidaria**: Virtual scrolling utilities
+- [ ] Integration with ListBox, Table, Tree
+
+### Phase 24: TagField
+**Priority: Low**
+
+Editable tag input with suggestions.
+
+- [ ] **solid-stately**: `createTagFieldState`
+- [ ] **solidaria**: `createTagField`
+- [ ] **solidaria-components**: `TagField`
+
+## Development Notes
+
+### Testing
+- Uses Vitest with `vmThreads` pool (Windows compatibility)
+- jsdom environment for DOM testing
+- `@solidjs/testing-library` for component tests
+
+### Build
+- tsup for bundling
+- Separate SSR and browser builds
+- TypeScript declarations
+
+### Patterns
+- `MaybeAccessor` for reactive props
+- Context for shared state (validation, modality)
+- Props spreading pattern for ARIA attributes
+- Ref accessor pattern: `() => ref`
+
+## Changelog
+
+### 2026-01-19
+- Completed Phase 14: Form Validation
+  - Added `createFormValidationState` to solid-stately
+  - Added `createFormValidation` to solidaria
+  - Added `createInteractionModality` module
+  - Fixed Vitest runner issue on Windows (vmThreads pool)
+  - 49 new tests (2064 total)
+
+### Previous
+- Phases 1-13 completed (see git history for details)

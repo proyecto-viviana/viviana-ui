@@ -57,6 +57,40 @@ This package is the foundation layer of the Proyecto Viviana component library, 
 | `createNumberFieldState` | Numeric input with validation |
 | `createSearchFieldState` | Search input with clear functionality |
 | `createSliderState` | Range slider state |
+| `createFormValidationState` | Form validation state with realtime/native modes |
+
+### Grid & Table
+
+| Hook | Description |
+|------|-------------|
+| `createGridState` | Grid state with keyboard navigation |
+| `createTableState` | Table state with sorting and selection |
+| `TableCollection` | Collection data structure for tables |
+
+### Tree
+
+| Hook | Description |
+|------|-------------|
+| `createTreeState` | Tree state with expand/collapse |
+| `TreeCollection` | Collection data structure for trees |
+
+### Color
+
+| Hook | Description |
+|------|-------------|
+| `createColorSliderState` | Color channel slider state |
+| `createColorAreaState` | 2D color area picker state |
+| `createColorWheelState` | Circular hue wheel state |
+| `createColorFieldState` | Color text input state |
+
+### Drag & Drop
+
+| Hook | Description |
+|------|-------------|
+| `createDragState` | Drag operation state |
+| `createDropState` | Drop target state |
+| `createDraggableCollectionState` | Collection-level drag state |
+| `createDroppableCollectionState` | Collection-level drop state |
 
 ### Utilities
 
