@@ -78,27 +78,31 @@ A SolidJS port of Adobe's React Spectrum component library, following a 4-layer 
   - Tracks keyboard/pointer/virtual interaction modes
   - Refactored `createFocusRing` to use shared modality
 
+### Phase 15: i18n / Internationalization
+- **solidaria**: Locale context and provider
+  - `I18nProvider`, `useLocale`, `createDefaultLocale`
+  - Automatic browser locale detection
+  - Language change event handling
+- **solidaria**: RTL support
+  - `isRTL()` - RTL detection using Intl.Locale API
+  - Support for Arabic, Hebrew, Persian, Urdu, and more
+- **solidaria**: Number formatting
+  - `NumberFormatter` class with caching and polyfills
+  - `createNumberFormatter` hook
+  - Currency, percent, unit formatting
+  - signDisplay and unit polyfills for older browsers
+- **solidaria**: Date formatting
+  - `createDateFormatter` hook with caching
+- **solidaria**: String utilities
+  - `createCollator` for locale-aware sorting
+  - `createFilter` for locale-aware string filtering (startsWith, endsWith, contains)
+
 ## Current Status
 
-**Tests**: 2064 passing
+**Tests**: 2135 passing
 **Packages**: 4 (solid-stately, solidaria, solidaria-components, ui)
 
 ## Roadmap: Future Phases
-
-### Phase 15: i18n / Internationalization
-**Priority: High**
-
-Port `@internationalized/*` packages for locale-aware formatting.
-
-- [ ] **solid-stately**
-  - Number formatting with `Intl.NumberFormat`
-  - Date/time formatting with `Intl.DateTimeFormat`
-  - Locale context provider
-
-- [ ] **solidaria**
-  - RTL support utilities
-  - Locale-aware keyboard navigation
-  - Internationalized messages
 
 ### Phase 16: SSR Support
 **Priority: High**
@@ -203,6 +207,12 @@ Editable tag input with suggestions.
 ## Changelog
 
 ### 2026-01-19
+- Completed Phase 15: i18n / Internationalization
+  - Added `I18nProvider`, `useLocale`, `createDefaultLocale`, `getDefaultLocale`
+  - Added `isRTL()` for RTL language detection
+  - Added `NumberFormatter` class with polyfills
+  - Added `createNumberFormatter`, `createDateFormatter`, `createCollator`, `createFilter`
+  - 71 new tests (2135 total)
 - Completed Phase 14: Form Validation
   - Added `createFormValidationState` to solid-stately
   - Added `createFormValidation` to solidaria

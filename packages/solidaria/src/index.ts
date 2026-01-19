@@ -553,6 +553,31 @@ export {
   type ValidationBehavior,
 } from './form';
 
+// i18n
+export {
+  // Locale
+  I18nProvider,
+  useLocale,
+  createDefaultLocale,
+  getDefaultLocale,
+  type Direction,
+  type Locale,
+  type I18nProviderProps,
+  // RTL
+  isRTL,
+  // Number formatting
+  NumberFormatter,
+  createNumberFormatter,
+  type NumberFormatOptions,
+  // Date formatting
+  createDateFormatter,
+  // String collation
+  createCollator,
+  // String filtering
+  createFilter,
+  type Filter,
+} from './i18n';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

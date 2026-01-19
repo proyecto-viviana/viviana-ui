@@ -132,6 +132,19 @@ solidaria provides accessibility hooks that implement WAI-ARIA patterns for UI c
 | createDraggableCollection | Collection-level drag |
 | createDroppableCollection | Collection-level drop |
 
+### i18n / Internationalization
+
+| Hook/Utility | Description |
+|--------------|-------------|
+| I18nProvider | Locale context provider |
+| useLocale | Get current locale and direction |
+| createDefaultLocale | Browser locale with change detection |
+| isRTL | RTL language detection |
+| createNumberFormatter | Localized number formatting |
+| createDateFormatter | Localized date formatting |
+| createCollator | Locale-aware string sorting |
+| createFilter | Locale-aware string filtering |
+
 ### Utilities
 
 | Utility | Description |
