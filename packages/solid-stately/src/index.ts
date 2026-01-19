@@ -352,6 +352,23 @@ export {
   type DroppableCollectionState,
 } from './dnd';
 
+// Form
+export {
+  createFormValidationState,
+  mergeValidation,
+  FormValidationContext,
+  privateValidationStateProp,
+  VALID_VALIDITY_STATE,
+  DEFAULT_VALIDATION_RESULT,
+  type FormValidationState,
+  type FormValidationProps,
+  type ValidationResult,
+  type ValidationErrors,
+  type ValidationFunction,
+  type ValidationBehavior,
+  type ValidityState,
+} from './form';
+
 // SSR
 export { createIsSSR, createId, canUseDOM, isServer } from './ssr';
 

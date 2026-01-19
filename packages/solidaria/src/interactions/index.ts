@@ -26,6 +26,17 @@ export {
   type FocusRingResult,
 } from './createFocusRing';
 
+// Interaction modality
+export {
+  createInteractionModality,
+  getInteractionModality,
+  setInteractionModality,
+  setupGlobalFocusListeners,
+  addModalityListener,
+  type Modality,
+  type InteractionModalityResult,
+} from './createInteractionModality';
+
 // Hover interactions
 export {
   createHover,

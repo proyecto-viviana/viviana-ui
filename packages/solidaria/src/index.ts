@@ -545,6 +545,14 @@ export {
   type Message,
 } from './live-announcer';
 
+// Form
+export {
+  createFormValidation,
+  type FormValidationProps,
+  type ValidatableElement,
+  type ValidationBehavior,
+} from './form';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

@@ -10,6 +10,12 @@
 
 import { type JSX, type Accessor, createSignal, createEffect, onCleanup } from 'solid-js';
 import { createFocus } from './createFocus';
+import {
+  type Modality,
+  getInteractionModality,
+  setupGlobalFocusListeners,
+  addModalityListener,
+} from './createInteractionModality';
 
 // ============================================
 // TYPES
@@ -34,53 +40,6 @@ export interface FocusRingResult {
 }
 
 // ============================================
-// GLOBAL STATE
-// ============================================
-
-type Modality = 'keyboard' | 'pointer' | 'virtual';
-
-let currentModality: Modality | null = null;
-let hasSetupGlobalListeners = false;
-let changeHandlers = new Set<(modality: Modality) => void>();
-
-function triggerChangeHandlers(modality: Modality) {
-  currentModality = modality;
-  for (const handler of changeHandlers) {
-    handler(modality);
-  }
-}
-
-function handleKeyboardEvent(e: KeyboardEvent) {
-  // Ignore modifier keys
-  if (e.metaKey || e.altKey || e.ctrlKey || e.key === 'Control' || e.key === 'Shift' || e.key === 'Meta') {
-    return;
-  }
-  currentModality = 'keyboard';
-  triggerChangeHandlers('keyboard');
-}
-
-function handlePointerEvent(e: PointerEvent | MouseEvent) {
-  currentModality = 'pointer';
-  if (e.type === 'mousedown' || e.type === 'pointerdown') {
-    triggerChangeHandlers('pointer');
-  }
-}
-
-function setupGlobalFocusListeners() {
-  if (typeof document === 'undefined' || hasSetupGlobalListeners) {
-    return;
-  }
-
-  hasSetupGlobalListeners = true;
-
-  // Track keyboard vs pointer modality
-  document.addEventListener('keydown', handleKeyboardEvent, true);
-  document.addEventListener('keyup', handleKeyboardEvent, true);
-  document.addEventListener('mousedown', handlePointerEvent, true);
-  document.addEventListener('pointerdown', handlePointerEvent, true);
-}
-
-// ============================================
 // IMPLEMENTATION
 // ============================================
 
@@ -98,20 +57,17 @@ export function createFocusRing(props: FocusRingProps = {}): FocusRingResult {
 
   const [isFocused, setIsFocused] = createSignal(false);
   const [isFocusVisible, setIsFocusVisible] = createSignal(autoFocus);
-  const [modality, setModality] = createSignal<Modality | null>(currentModality);
+  const [modality, setModality] = createSignal<Modality | null>(getInteractionModality());
 
   // Setup global listeners
   createEffect(() => {
     setupGlobalFocusListeners();
 
-    const handler = (newModality: Modality) => {
+    const cleanup = addModalityListener((newModality: Modality) => {
       setModality(newModality);
-    };
-
-    changeHandlers.add(handler);
-    onCleanup(() => {
-      changeHandlers.delete(handler);
     });
+
+    onCleanup(cleanup);
   });
 
   // Update focus visible based on modality and focus state
