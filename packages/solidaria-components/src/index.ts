@@ -535,3 +535,52 @@ export {
   type TreeItemRenderProps,
   type TreeExpandButtonProps,
 } from './Tree';
+
+// Color
+export {
+  // ColorSlider
+  ColorSlider,
+  ColorSliderTrack,
+  ColorSliderThumb,
+  ColorSliderContext,
+  type ColorSliderProps,
+  type ColorSliderRenderProps,
+  type ColorSliderTrackProps,
+  type ColorSliderTrackRenderProps,
+  type ColorSliderThumbProps,
+  type ColorSliderThumbRenderProps,
+  // ColorArea
+  ColorArea,
+  ColorAreaGradient,
+  ColorAreaThumb,
+  ColorAreaContext,
+  type ColorAreaProps,
+  type ColorAreaRenderProps,
+  type ColorAreaGradientProps,
+  type ColorAreaGradientRenderProps,
+  type ColorAreaThumbProps,
+  type ColorAreaThumbRenderProps,
+  // ColorWheel
+  ColorWheel,
+  ColorWheelTrack,
+  ColorWheelThumb,
+  ColorWheelContext,
+  type ColorWheelProps,
+  type ColorWheelRenderProps,
+  type ColorWheelTrackProps,
+  type ColorWheelTrackRenderProps,
+  type ColorWheelThumbProps,
+  type ColorWheelThumbRenderProps,
+  // ColorField
+  ColorField,
+  ColorFieldInput,
+  ColorFieldContext,
+  type ColorFieldProps,
+  type ColorFieldRenderProps,
+  type ColorFieldInputProps,
+  type ColorFieldInputRenderProps,
+  // ColorSwatch
+  ColorSwatch,
+  type ColorSwatchProps,
+  type ColorSwatchRenderProps,
+} from './Color';

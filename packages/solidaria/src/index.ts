@@ -447,6 +447,25 @@ export {
   type TreeSelectionCheckboxAria,
 } from './tree';
 
+// Color
+export {
+  createColorSlider,
+  createColorArea,
+  createColorWheel,
+  createColorField,
+  createColorSwatch,
+  type AriaColorSliderOptions,
+  type ColorSliderAria,
+  type AriaColorAreaOptions,
+  type ColorAreaAria,
+  type AriaColorWheelOptions,
+  type ColorWheelAria,
+  type AriaColorFieldOptions,
+  type ColorFieldAria,
+  type AriaColorSwatchOptions,
+  type ColorSwatchAria,
+} from './color';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

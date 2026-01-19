@@ -259,6 +259,39 @@ export {
   type TreeItemData,
 } from './tree';
 
+// Color
+export {
+  // Types
+  type Color,
+  type ColorFormat,
+  type ColorSpace,
+  type ColorChannel,
+  type ColorChannelRange,
+  type ColorAxes,
+  // Color utilities
+  parseColor,
+  normalizeColor,
+  createRGBColor,
+  createHSLColor,
+  createHSBColor,
+  // Color Slider State
+  createColorSliderState,
+  type ColorSliderStateOptions,
+  type ColorSliderState,
+  // Color Area State
+  createColorAreaState,
+  type ColorAreaStateOptions,
+  type ColorAreaState,
+  // Color Wheel State
+  createColorWheelState,
+  type ColorWheelStateOptions,
+  type ColorWheelState,
+  // Color Field State
+  createColorFieldState,
+  type ColorFieldStateOptions,
+  type ColorFieldState,
+} from './color';
+
 // SSR
 export { createIsSSR, createId, canUseDOM, isServer } from './ssr';
 
