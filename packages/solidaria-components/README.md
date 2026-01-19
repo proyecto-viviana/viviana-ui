@@ -34,6 +34,7 @@ solidaria-components provides ready-to-use headless components that combine stat
 | Tabs, TabList, Tab, TabPanel | Tabbed navigation |
 | Breadcrumbs, BreadcrumbItem | Breadcrumb navigation |
 | Link | Accessible link |
+| Landmark | ARIA landmark regions with F6 navigation |
 
 ### Selection
 

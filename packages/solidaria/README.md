@@ -49,6 +49,7 @@ solidaria provides accessibility hooks that implement WAI-ARIA patterns for UI c
 | createTabList | Tab list container |
 | createTab | Individual tab |
 | createTabPanel | Tab panel content |
+| createLandmark | ARIA landmark regions with F6 navigation |
 
 ### Selection Components
 

@@ -64,6 +64,26 @@ function App() {
 | Tabs, TabList, Tab, TabPanel | Tabbed navigation |
 | Breadcrumbs, BreadcrumbItem | Breadcrumb trail |
 | Link | Accessible links |
+| Landmark, SkipLink, LandmarkNavigator | ARIA landmarks with F6 navigation |
+
+### Data Display
+
+| Component | Description |
+|-----------|-------------|
+| Table | Data tables with sorting/selection |
+| GridList, GridListItem | Grid lists with keyboard nav |
+| Tree, TreeItem | Hierarchical tree views |
+
+### Color
+
+| Component | Description |
+|-----------|-------------|
+| ColorSlider | Single channel color slider |
+| ColorArea | 2D color gradient picker |
+| ColorWheel | Circular hue picker |
+| ColorField | Hex/RGB color input |
+| ColorSwatch | Color preview |
+| ColorPicker | Complete color picker |
 
 ### Feedback
 
