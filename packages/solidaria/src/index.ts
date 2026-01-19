@@ -466,6 +466,58 @@ export {
   type ColorSwatchAria,
 } from './color';
 
+// Drag & Drop
+export {
+  // Basic hooks
+  createDrag,
+  createDrop,
+  // Collection hooks
+  createDraggableCollection,
+  createDroppableCollection,
+  // Item hooks
+  createDraggableItem,
+  createDroppableItem,
+  // Global state
+  setGlobalDraggingCollectionRef,
+  getGlobalDraggingCollectionRef,
+  setGlobalDropCollectionRef,
+  getGlobalDropCollectionRef,
+  // Types
+  type AriaDragOptions,
+  type DragAria,
+  type AriaDropOptions,
+  type DropAria,
+  type DraggableCollectionOptions,
+  type DraggableCollectionAria,
+  type DroppableCollectionOptions,
+  type DroppableCollectionAria,
+  type DropTargetDelegate,
+  type DraggableItemOptions,
+  type DraggableItemAria,
+  type DroppableItemOptions,
+  type DroppableItemAria,
+  // Utilities
+  CUSTOM_DRAG_TYPE,
+  NATIVE_DRAG_TYPES,
+  GENERIC_TYPE,
+  DROP_OPERATION,
+  DROP_OPERATION_ALLOWED,
+  EFFECT_ALLOWED,
+  DROP_EFFECT_TO_DROP_OPERATION,
+  DROP_OPERATION_TO_DROP_EFFECT,
+  getTypes,
+  writeToDataTransfer,
+  readFromDataTransfer,
+  DragTypesImpl,
+  isTextDropItem,
+  isFileDropItem,
+  isDirectoryDropItem,
+  setGlobalDropEffect,
+  getGlobalDropEffect,
+  setGlobalAllowedDropOperations,
+  getGlobalAllowedDropOperations,
+} from './dnd';
+
 // Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from './utils';
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

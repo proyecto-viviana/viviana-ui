@@ -1,0 +1,209 @@
+/**
+ * createDrag - ARIA hook for drag operations.
+ *
+ * Provides accessibility props for draggable elements with support for
+ * mouse, touch, and keyboard interactions.
+ */
+
+import { createMemo, type Accessor } from 'solid-js';
+import { createDragState } from '@proyecto-viviana/solid-stately';
+import type { AriaDragOptions, DragAria } from './types';
+import {
+  writeToDataTransfer,
+  DROP_OPERATION,
+  EFFECT_ALLOWED,
+  DROP_EFFECT_TO_DROP_OPERATION,
+  setGlobalAllowedDropOperations,
+  setGlobalDropEffect,
+  getGlobalDropEffect,
+} from './utils';
+
+/**
+ * Creates ARIA props for a draggable element.
+ *
+ * @param props - Accessor returning drag options
+ * @returns Drag ARIA props and state
+ */
+export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
+  const getProps = createMemo(() => props());
+
+  // Create drag state
+  const state = createDragState(() => ({
+    getItems: getProps().getItems,
+    getAllowedDropOperations: getProps().getAllowedDropOperations,
+    onDragStart: getProps().onDragStart,
+    onDragMove: getProps().onDragMove,
+    onDragEnd: getProps().onDragEnd,
+    isDisabled: getProps().isDisabled,
+    hasDragButton: getProps().hasDragButton,
+    preview: getProps().preview,
+  }));
+
+  // Track position for drag move
+  let lastX = 0;
+  let lastY = 0;
+
+  const onDragStart = (e: DragEvent) => {
+    if (e.defaultPrevented) return;
+    e.stopPropagation();
+
+    const p = getProps();
+
+    // Call state handler
+    state.startDrag(e.clientX, e.clientY);
+
+    // Get items and write to data transfer
+    const items = state.getItems();
+    e.dataTransfer?.clearData?.();
+    if (e.dataTransfer) {
+      writeToDataTransfer(e.dataTransfer, items);
+    }
+
+    // Set allowed drop operations
+    let allowed = DROP_OPERATION.all;
+    const allowedOps = state.getAllowedDropOperations();
+    if (allowedOps.length > 0) {
+      allowed = DROP_OPERATION.none;
+      for (const op of allowedOps) {
+        allowed |= DROP_OPERATION[op] || DROP_OPERATION.none;
+      }
+    }
+
+    setGlobalAllowedDropOperations(allowed);
+    const effectAllowed = EFFECT_ALLOWED[allowed] || 'none';
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed =
+        (effectAllowed === 'cancel' ? 'none' : effectAllowed) as DataTransfer['effectAllowed'];
+    }
+
+    // Handle custom preview
+    if (typeof p.preview?.current === 'function' && e.dataTransfer) {
+      p.preview.current(items, (node, userX, userY) => {
+        if (!node || !e.dataTransfer) return;
+
+        const size = node.getBoundingClientRect();
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        let defaultX = e.clientX - rect.x;
+        let defaultY = e.clientY - rect.y;
+
+        if (defaultX > size.width || defaultY > size.height) {
+          defaultX = size.width / 2;
+          defaultY = size.height / 2;
+        }
+
+        let offsetX = typeof userX === 'number' ? userX : defaultX;
+        let offsetY = typeof userY === 'number' ? userY : defaultY;
+
+        offsetX = Math.max(0, Math.min(offsetX, size.width));
+        offsetY = Math.max(0, Math.min(offsetY, size.height));
+
+        e.dataTransfer.setDragImage(node, offsetX, offsetY);
+      });
+    }
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+  };
+
+  const onDrag = (e: DragEvent) => {
+    e.stopPropagation();
+
+    if (e.clientX === lastX && e.clientY === lastY) {
+      return;
+    }
+
+    state.moveDrag(e.clientX, e.clientY);
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+  };
+
+  const onDragEnd = (e: DragEvent) => {
+    e.stopPropagation();
+
+    let dropEffect: string = e.dataTransfer?.dropEffect ?? 'none';
+    // Chrome Android fix - use global drop effect
+    if (getGlobalDropEffect()) {
+      dropEffect = getGlobalDropEffect()!;
+    }
+
+    const dropOperation = DROP_EFFECT_TO_DROP_OPERATION[dropEffect];
+    state.endDrag(e.clientX, e.clientY, dropOperation);
+
+    setGlobalAllowedDropOperations(DROP_OPERATION.none);
+    setGlobalDropEffect(undefined);
+  };
+
+  // Keyboard/screen reader drag initiation
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' && e.target === e.currentTarget) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  const onKeyUp = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' && e.target === e.currentTarget) {
+      e.preventDefault();
+      e.stopPropagation();
+      // Would initiate keyboard-based drag mode
+      // This is a simplified version - full implementation needs DragManager
+      const rect = (e.target as HTMLElement).getBoundingClientRect();
+      state.startDrag(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    }
+  };
+
+  const dragProps = createMemo(() => {
+    const p = getProps();
+
+    if (p.isDisabled) {
+      return {
+        draggable: false as const,
+      };
+    }
+
+    const baseProps: Record<string, unknown> = {
+      draggable: true as const,
+      onDragStart,
+      onDrag,
+      onDragEnd,
+    };
+
+    // Add keyboard handlers if no separate drag button
+    if (!p.hasDragButton) {
+      baseProps.onKeyDown = onKeyDown;
+      baseProps.onKeyUp = onKeyUp;
+    }
+
+    return baseProps;
+  });
+
+  const dragButtonProps = createMemo(() => {
+    const p = getProps();
+
+    if (p.isDisabled) {
+      return {
+        disabled: true,
+      };
+    }
+
+    return {
+      type: 'button' as const,
+      'aria-label': 'Drag',
+      onKeyDown,
+      onKeyUp,
+    };
+  });
+
+  return {
+    get dragProps() {
+      return dragProps() as DragAria['dragProps'];
+    },
+    get dragButtonProps() {
+      return dragButtonProps() as DragAria['dragButtonProps'];
+    },
+    get isDragging() {
+      return state.isDragging;
+    },
+  };
+}
