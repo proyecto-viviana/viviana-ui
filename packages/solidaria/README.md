@@ -170,6 +170,20 @@ solidaria provides accessibility hooks that implement WAI-ARIA patterns for UI c
 | createVirtualFocus | Virtual focus for large collections |
 | createAutoFocus | Priority-based auto-focus queue |
 
+### Test Utilities
+
+| Utility | Description |
+|---------|-------------|
+| setupUser | Configure userEvent for testing |
+| pointerMap | Pointer map for mouse/touch/pen |
+| createPointerEvent | Create pointer events for tests |
+| press / hover / tabTo | High-level interaction helpers |
+| getAriaRole / isAriaDisabled / etc. | ARIA attribute querying |
+| getFocusableElements | Query focusable elements |
+| waitForFocus | Wait for focus changes |
+| createButtonTester / etc. | Component-specific testers |
+| setupTestEnvironment | Install jsdom polyfills |
+
 ### Utilities
 
 | Utility | Description |
