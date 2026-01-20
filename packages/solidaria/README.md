@@ -159,6 +159,17 @@ solidaria provides accessibility hooks that implement WAI-ARIA patterns for UI c
 | getDocument | Safe document access |
 | getPortalContainer | Get container for portals |
 
+### Focus Management
+
+| Hook/Utility | Description |
+|--------------|-------------|
+| FocusScope | Focus containment and restoration |
+| useFocusManager | Programmatic focus navigation |
+| createFocusRestore | Save and restore focus with retry |
+| pushFocusStack / popFocusStack | Cross-scope focus tracking |
+| createVirtualFocus | Virtual focus for large collections |
+| createAutoFocus | Priority-based auto-focus queue |
+
 ### Utilities
 
 | Utility | Description |

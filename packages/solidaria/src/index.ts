@@ -316,11 +316,30 @@ export {
 
 // Focus
 export {
+  // FocusScope
   FocusScope,
   useFocusManager,
   type FocusScopeProps,
   type FocusManager,
   type FocusManagerOptions,
+  // Focus Restoration
+  createFocusRestore,
+  pushFocusStack,
+  popFocusStack,
+  getFocusStackLength,
+  clearFocusStack,
+  type FocusRestoreOptions,
+  type FocusRestoreResult,
+  // Virtual Focus
+  createVirtualFocus,
+  type VirtualFocusOptions,
+  type VirtualFocusResult,
+  // Auto Focus
+  createAutoFocus,
+  clearAutoFocusQueue,
+  getAutoFocusQueueLength,
+  type AutoFocusOptions,
+  type AutoFocusResult,
 } from './focus';
 
 // Disclosure
