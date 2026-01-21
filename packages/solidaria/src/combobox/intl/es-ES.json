@@ -1,0 +1,7 @@
+{
+  "focusAnnouncement": "{isGroupChange, select, true {Grupo {groupTitle} activado, con {groupCount, plural, one {# opción} other {# opciones}}. } other {}}{optionText}{isSelected, select, true {, seleccionado} other {}}",
+  "countAnnouncement": "{optionCount, plural, one {# opción disponible} other {# opciones disponibles}}.",
+  "selectedAnnouncement": "{optionText}, seleccionado",
+  "buttonLabel": "Mostrar sugerencias",
+  "listboxLabel": "Sugerencias"
+}

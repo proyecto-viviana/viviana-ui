@@ -5,6 +5,7 @@
  */
 
 import { type JSX, type Accessor, createEffect, onCleanup } from 'solid-js';
+import { isServer } from 'solid-js/web';
 import { createPress } from '../interactions/createPress';
 import { createFocusRing } from '../interactions/createFocusRing';
 import { createLabel } from '../label/createLabel';
@@ -12,7 +13,23 @@ import { filterDOMProps } from '../utils/filterDOMProps';
 import { mergeProps } from '../utils/mergeProps';
 import { createId } from '../ssr';
 import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { ComboBoxState, CollectionNode } from '@proyecto-viviana/solid-stately';
+import { isAppleDevice } from '../utils/platform';
+import { ariaHideOutside } from '../overlays/ariaHideOutside';
+import { announce } from '../live-announcer';
+import { createStringFormatter } from '../i18n';
+import { comboBoxIntlStrings } from './intl';
+import type { ComboBoxState, CollectionNode, Key } from '@proyecto-viviana/solid-stately';
+
+/**
+ * Helper to count items in a collection
+ */
+function getItemCount<T>(collection: { getKeys(): Iterable<Key> }): number {
+  let count = 0;
+  for (const _ of collection.getKeys()) {
+    count++;
+  }
+  return count;
+}
 
 export interface AriaComboBoxProps {
   /** An ID for the combobox. */
@@ -99,6 +116,16 @@ export function createComboBox<T>(
   const getProps = () => access(props);
   const id = createId(getProps().id);
 
+  // Development-time warning for missing accessibility labels
+  if (import.meta.env?.DEV || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development')) {
+    const p = getProps();
+    if (!p.label && !p['aria-label'] && !p['aria-labelledby']) {
+      console.warn(
+        '[solidaria] A ComboBox requires a label, aria-label, or aria-labelledby attribute for accessibility.'
+      );
+    }
+  }
+
   // Track if a pointerdown happened inside the listbox to prevent blur from closing
   let isPointerDownInsideListBox = false;
 
@@ -168,6 +195,111 @@ export function createComboBox<T>(
 
   // Track focus state from state
   const isFocused = state.isFocused;
+
+  // String formatter for VoiceOver announcements
+  // Only create on client side
+  const stringFormatter = !isServer ? createStringFormatter(comboBoxIntlStrings) : null;
+
+  // Track previous values for announcements
+  let lastFocusedKey: Key | null = null;
+  let lastSelectedKey: Key | null = null;
+  let lastOptionCount = 0;
+  let lastIsOpen = false;
+
+  // VoiceOver has issues with announcing aria-activedescendant properly on change
+  // (especially on iOS). We use a live region announcer to announce focus changes
+  // manually. This matches React Aria's behavior.
+  createEffect(() => {
+    if (isServer || !stringFormatter) return;
+
+    const focusedKey = state.focusedKey();
+    const isOpen = state.isOpen();
+    const collection = state.collection();
+
+    // Get the focused item
+    const focusedItem = focusedKey != null && isOpen
+      ? collection.getItem(focusedKey)
+      : null;
+
+    // Announce focus changes on Apple devices
+    if (isAppleDevice() && focusedItem != null && focusedKey !== lastFocusedKey) {
+      const isSelected = state.selectedKey() === focusedKey;
+      const optionText = focusedItem.textValue || '';
+
+      // For now, we don't support sections, so isGroupChange is always false
+      const announcement = stringFormatter().format('focusAnnouncement', {
+        isGroupChange: false,
+        groupTitle: '',
+        groupCount: 0,
+        optionText,
+        isSelected,
+      });
+
+      announce(announcement, 'polite');
+    }
+
+    lastFocusedKey = focusedKey;
+  });
+
+  // Announce the number of available suggestions when it changes
+  createEffect(() => {
+    if (isServer || !stringFormatter) return;
+
+    const isOpen = state.isOpen();
+    const collection = state.collection();
+    const optionCount = getItemCount(collection);
+    const focusedKey = state.focusedKey();
+
+    // Only announce the number of options available when the menu opens if there is no
+    // focused item, otherwise screen readers will typically read e.g. "1 of 6".
+    // The exception is VoiceOver since this isn't included in the message above.
+    const didOpenWithoutFocusedItem =
+      isOpen !== lastIsOpen &&
+      (focusedKey == null || isAppleDevice());
+
+    if (isOpen && (didOpenWithoutFocusedItem || optionCount !== lastOptionCount)) {
+      const announcement = stringFormatter().format('countAnnouncement', { optionCount });
+      announce(announcement, 'polite');
+    }
+
+    lastOptionCount = optionCount;
+    lastIsOpen = isOpen;
+  });
+
+  // Announce when a selection occurs for VoiceOver. Other screen readers typically do this automatically.
+  createEffect(() => {
+    if (isServer || !stringFormatter) return;
+
+    const selectedKey = state.selectedKey();
+    const selectedItem = state.selectedItem();
+
+    if (isAppleDevice() && state.isFocused() && selectedItem && selectedKey !== lastSelectedKey) {
+      const optionText = selectedItem.textValue || '';
+      const announcement = stringFormatter().format('selectedAnnouncement', { optionText });
+      announce(announcement, 'polite');
+    }
+
+    lastSelectedKey = selectedKey;
+  });
+
+  // Hide other page content from screen readers when the listbox is open.
+  // This requires both the input and listbox refs to be available.
+  // Note: This feature is important for screen reader accessibility but
+  // only works when a popoverRef/listBoxRef is provided.
+  createEffect(() => {
+    if (isServer) return;
+
+    const isOpen = state.isOpen();
+    const inputEl = inputRef();
+    const listBoxEl = listBoxRef?.();
+
+    // Only apply ariaHideOutside if we have both elements available
+    // This ensures the listbox won't be accidentally hidden
+    if (isOpen && inputEl && listBoxEl) {
+      const cleanup = ariaHideOutside([inputEl, listBoxEl]);
+      onCleanup(cleanup);
+    }
+  });
 
   // Handle press on button trigger
   const { pressProps } = createPress({
@@ -440,7 +572,7 @@ export function createComboBox<T>(
           'aria-expanded': isOpen,
           'aria-controls': isOpen ? listBoxId : undefined,
           'aria-disabled': isDisabled || undefined,
-          'aria-label': 'Show suggestions',
+          'aria-label': stringFormatter?.().format('buttonLabel') ?? 'Show suggestions',
           'data-open': isOpen || undefined,
           'data-disabled': isDisabled || undefined,
         } as Record<string, unknown>

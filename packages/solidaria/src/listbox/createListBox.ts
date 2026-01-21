@@ -75,6 +75,16 @@ export function createListBox<T>(
   const getProps = () => access(props);
   const id = createId(getProps().id);
 
+  // Development-time warning for missing accessibility labels
+  if (import.meta.env?.DEV || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development')) {
+    const p = getProps();
+    if (!p.label && !p['aria-label'] && !p['aria-labelledby']) {
+      console.warn(
+        '[solidaria] A ListBox requires an aria-label or aria-labelledby attribute for accessibility.'
+      );
+    }
+  }
+
   // Filter DOM props
   const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 

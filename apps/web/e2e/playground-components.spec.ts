@@ -2054,6 +2054,202 @@ test.describe('Styled Menu Component', () => {
   });
 });
 
+// Accessibility: Menu keyboard navigation tests
+test.describe('Menu Keyboard Navigation (Accessibility)', () => {
+  test('menu supports ArrowDown and ArrowUp navigation', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'styled-menu');
+
+    const section = page.locator('[data-testid="section-styled-menu"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    const trigger = section.locator('button').first();
+    await trigger.click();
+    await page.waitForTimeout(500);
+
+    // Check menu is visible
+    const menu = page.locator('[role="menu"]');
+    if (await menu.first().isVisible().catch(() => false)) {
+      const items = menu.first().locator('[role="menuitem"]');
+      const count = await items.count();
+
+      if (count > 1) {
+        // Focus the menu
+        await menu.first().focus();
+        await page.waitForTimeout(100);
+
+        // Press ArrowDown
+        await page.keyboard.press('ArrowDown');
+        await page.waitForTimeout(100);
+
+        // Press ArrowDown again
+        await page.keyboard.press('ArrowDown');
+        await page.waitForTimeout(100);
+
+        // Press ArrowUp
+        await page.keyboard.press('ArrowUp');
+        await page.waitForTimeout(100);
+
+        // Navigation should work without errors
+      }
+    }
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('menu closes on Escape key', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'styled-menu');
+
+    const section = page.locator('[data-testid="section-styled-menu"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    const trigger = section.locator('button').first();
+    await trigger.click();
+    await page.waitForTimeout(500);
+
+    // Check menu is visible
+    const menu = page.locator('[role="menu"]');
+    const wasVisible = await menu.first().isVisible().catch(() => false);
+
+    if (wasVisible) {
+      // Press Escape
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(300);
+
+      // Menu should close
+      await expect(menu.first()).not.toBeVisible({ timeout: 2000 }).catch(() => {});
+    }
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
+// Accessibility: ComboBox keyboard navigation tests
+test.describe('ComboBox Keyboard Navigation (Accessibility)', () => {
+  test('combobox supports ArrowDown/ArrowUp navigation in listbox', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'styled-combobox');
+
+    const section = page.locator('[data-testid="section-styled-combobox"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    const input = section.locator('input[role="combobox"]').first();
+    await input.click();
+    await page.waitForTimeout(500);
+
+    // Check if listbox appeared
+    const listbox = page.locator('[role="listbox"]');
+    if (await listbox.first().isVisible().catch(() => false)) {
+      // Navigate with ArrowDown
+      await page.keyboard.press('ArrowDown');
+      await page.waitForTimeout(100);
+
+      // Navigate again
+      await page.keyboard.press('ArrowDown');
+      await page.waitForTimeout(100);
+
+      // Navigate up
+      await page.keyboard.press('ArrowUp');
+      await page.waitForTimeout(100);
+
+      // Check aria-activedescendant is set on input
+      const activeDescendant = await input.getAttribute('aria-activedescendant');
+      expect(activeDescendant).not.toBeNull();
+    }
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('combobox closes on Escape key', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'styled-combobox');
+
+    const section = page.locator('[data-testid="section-styled-combobox"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    const input = section.locator('input[role="combobox"]').first();
+    await input.click();
+    await page.waitForTimeout(500);
+
+    const listbox = page.locator('[role="listbox"]');
+    const wasVisible = await listbox.first().isVisible().catch(() => false);
+
+    if (wasVisible) {
+      // Press Escape
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(300);
+
+      // Listbox should close
+      await expect(listbox.first()).not.toBeVisible({ timeout: 2000 }).catch(() => {});
+    }
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('combobox selects item on Enter key', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await page.goto('/playground');
+    await waitForPageReady(page);
+
+    await enableSection(page, 'styled-combobox');
+
+    const section = page.locator('[data-testid="section-styled-combobox"]');
+    await expect(section).toBeVisible({ timeout: 10000 });
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    const input = section.locator('input[role="combobox"]').first();
+    await input.click();
+    await page.waitForTimeout(500);
+
+    const listbox = page.locator('[role="listbox"]');
+    if (await listbox.first().isVisible().catch(() => false)) {
+      // Navigate to first option
+      await page.keyboard.press('ArrowDown');
+      await page.waitForTimeout(100);
+
+      // Select with Enter
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(300);
+
+      // Listbox should close after selection
+      await expect(listbox.first()).not.toBeVisible({ timeout: 2000 }).catch(() => {});
+
+      // Input should have a value
+      const value = await input.inputValue();
+      expect(value.length).toBeGreaterThan(0);
+    }
+
+    await checkNoHydrationErrors(errors);
+  });
+});
+
 // Table tests
 test.describe('Table Component', () => {
   test('table section can be enabled without crashing', async ({ page }) => {

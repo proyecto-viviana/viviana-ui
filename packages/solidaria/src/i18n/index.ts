@@ -28,3 +28,13 @@ export { createCollator } from './createCollator';
 
 // String filtering
 export { createFilter, type Filter } from './createFilter';
+
+// String formatting (ICU MessageFormat)
+export {
+  createStringFormatter,
+  createStringDictionary,
+  type LocalizedString,
+  type LocalizedStringDictionary,
+  type LocalizedStringFormatter,
+  type LocalizedStrings,
+} from './createStringFormatter';

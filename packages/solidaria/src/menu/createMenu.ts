@@ -11,7 +11,44 @@ import { filterDOMProps } from '../utils/filterDOMProps';
 import { mergeProps } from '../utils/mergeProps';
 import { createId } from '../ssr';
 import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { MenuState, Key } from '@proyecto-viviana/solid-stately';
+import type { MenuState, Key, ListCollection } from '@proyecto-viviana/solid-stately';
+
+/**
+ * Find the next non-disabled key in a collection.
+ */
+function findNextNonDisabledKey<T>(
+  collection: ListCollection<T>,
+  currentKey: Key | null,
+  direction: 'next' | 'prev',
+  isDisabled: (key: Key) => boolean,
+  wrap: boolean
+): Key | null {
+  const getNextKey = direction === 'next'
+    ? (key: Key) => collection.getKeyAfter(key)
+    : (key: Key) => collection.getKeyBefore(key);
+
+  const getFirstKey = direction === 'next'
+    ? () => collection.getFirstKey()
+    : () => collection.getLastKey();
+
+  let nextKey = currentKey != null ? getNextKey(currentKey) : getFirstKey();
+
+  // Skip disabled keys
+  while (nextKey != null && isDisabled(nextKey)) {
+    nextKey = getNextKey(nextKey);
+  }
+
+  // If we've reached the end and wrapping is enabled
+  if (nextKey == null && wrap) {
+    nextKey = getFirstKey();
+    // Skip disabled keys from the start
+    while (nextKey != null && isDisabled(nextKey)) {
+      nextKey = getNextKey(nextKey);
+    }
+  }
+
+  return nextKey;
+}
 
 export interface AriaMenuProps {
   /** An ID for the menu. */
@@ -74,6 +111,16 @@ export function createMenu<T>(
   const getProps = () => access(props);
   const id = createId(getProps().id);
 
+  // Development-time warning for missing accessibility labels
+  if (import.meta.env?.DEV || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development')) {
+    const p = getProps();
+    if (!p.label && !p['aria-label'] && !p['aria-labelledby']) {
+      console.warn(
+        '[solidaria] A Menu requires an aria-label or aria-labelledby attribute for accessibility.'
+      );
+    }
+  }
+
   // Filter DOM props
   const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
@@ -124,48 +171,50 @@ export function createMenu<T>(
 
     const collection = state.collection();
     const p = getProps();
+    const wrap = p.shouldFocusWrap ?? false;
+
+    // Use state.isDisabled which properly checks the disabledKeys accessor
+    const isDisabled = (key: Key) => state.isDisabled(key);
 
     switch (e.key) {
       case 'ArrowDown': {
         e.preventDefault();
         const currentKey = state.focusedKey();
-        const nextKey = currentKey ? collection.getKeyAfter(currentKey) : collection.getFirstKey();
-        if (nextKey) {
+        const nextKey = findNextNonDisabledKey(collection, currentKey, 'next', isDisabled, wrap);
+        if (nextKey != null) {
           state.setFocusedKey(nextKey);
-        } else if (p.shouldFocusWrap) {
-          const firstKey = collection.getFirstKey();
-          if (firstKey) {
-            state.setFocusedKey(firstKey);
-          }
         }
         break;
       }
       case 'ArrowUp': {
         e.preventDefault();
         const currentKey = state.focusedKey();
-        const prevKey = currentKey ? collection.getKeyBefore(currentKey) : collection.getLastKey();
-        if (prevKey) {
+        const prevKey = findNextNonDisabledKey(collection, currentKey, 'prev', isDisabled, wrap);
+        if (prevKey != null) {
           state.setFocusedKey(prevKey);
-        } else if (p.shouldFocusWrap) {
-          const lastKey = collection.getLastKey();
-          if (lastKey) {
-            state.setFocusedKey(lastKey);
-          }
         }
         break;
       }
       case 'Home': {
         e.preventDefault();
-        const firstKey = collection.getFirstKey();
-        if (firstKey) {
+        // Find first non-disabled key
+        let firstKey = collection.getFirstKey();
+        while (firstKey != null && isDisabled(firstKey)) {
+          firstKey = collection.getKeyAfter(firstKey);
+        }
+        if (firstKey != null) {
           state.setFocusedKey(firstKey);
         }
         break;
       }
       case 'End': {
         e.preventDefault();
-        const lastKey = collection.getLastKey();
-        if (lastKey) {
+        // Find last non-disabled key
+        let lastKey = collection.getLastKey();
+        while (lastKey != null && isDisabled(lastKey)) {
+          lastKey = collection.getKeyBefore(lastKey);
+        }
+        if (lastKey != null) {
           state.setFocusedKey(lastKey);
         }
         break;
@@ -174,7 +223,8 @@ export function createMenu<T>(
       case 'Enter': {
         e.preventDefault();
         const focusedKey = state.focusedKey();
-        if (focusedKey != null) {
+        // Don't activate disabled items
+        if (focusedKey != null && !isDisabled(focusedKey)) {
           p.onAction?.(focusedKey);
           p.onClose?.();
         }

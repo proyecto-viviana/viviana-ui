@@ -1,7 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot } from 'solid-js';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { createRoot, createSignal } from 'solid-js';
 import { createComboBox } from '../src/combobox';
 import { createComboBoxState } from '@proyecto-viviana/solid-stately';
+import * as liveAnnouncer from '../src/live-announcer';
+import * as platform from '../src/utils/platform';
 
 interface TestItem {
   id: string;
@@ -566,6 +568,159 @@ describe('createComboBox', () => {
         );
 
         expect(comboBox.inputProps['aria-required']).toBe(true);
+        dispose();
+      });
+    });
+  });
+
+  describe('accessibility warnings', () => {
+    it('should warn when no label is provided in development', () => {
+      // Mock console.warn
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        // Create combobox without label, aria-label, or aria-labelledby
+        createComboBox(
+          {},
+          state,
+          () => inputRef
+        );
+
+        expect(warnSpy).toHaveBeenCalledWith(
+          expect.stringContaining('ComboBox requires a label')
+        );
+        dispose();
+      });
+
+      warnSpy.mockRestore();
+    });
+
+    it('should not warn when aria-label is provided', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        createComboBox(
+          { 'aria-label': 'Select fruit' },
+          state,
+          () => inputRef
+        );
+
+        expect(warnSpy).not.toHaveBeenCalled();
+        dispose();
+      });
+
+      warnSpy.mockRestore();
+    });
+
+    it('should not warn when aria-labelledby is provided', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        createComboBox(
+          { 'aria-labelledby': 'my-label-id' },
+          state,
+          () => inputRef
+        );
+
+        expect(warnSpy).not.toHaveBeenCalled();
+        dispose();
+      });
+
+      warnSpy.mockRestore();
+    });
+
+    it('should not warn when label prop is provided', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef
+        );
+
+        expect(warnSpy).not.toHaveBeenCalled();
+        dispose();
+      });
+
+      warnSpy.mockRestore();
+    });
+  });
+
+  describe('VoiceOver announcements', () => {
+    let announceSpy: ReturnType<typeof vi.spyOn>;
+    let isAppleDeviceSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      // Mark as test environment
+      (globalThis as Record<string, unknown>).IS_SOLIDARIA_TEST = true;
+
+      announceSpy = vi.spyOn(liveAnnouncer, 'announce').mockImplementation(() => {});
+      isAppleDeviceSpy = vi.spyOn(platform, 'isAppleDevice');
+    });
+
+    afterEach(() => {
+      announceSpy.mockRestore();
+      isAppleDeviceSpy.mockRestore();
+      delete (globalThis as Record<string, unknown>).IS_SOLIDARIA_TEST;
+    });
+
+    it('should not announce on non-Apple devices', () => {
+      isAppleDeviceSpy.mockReturnValue(false);
+
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef
+        );
+
+        // Open the combobox and set focused key
+        state.open();
+        state.setFocusedKey('1');
+
+        // announcements should not happen on non-Apple (checked synchronously)
+        expect(announceSpy).not.toHaveBeenCalled();
         dispose();
       });
     });
