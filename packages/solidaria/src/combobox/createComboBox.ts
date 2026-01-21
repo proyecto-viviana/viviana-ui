@@ -14,6 +14,7 @@ import { mergeProps } from '../utils/mergeProps';
 import { createId } from '../ssr';
 import { access, type MaybeAccessor } from '../utils/reactivity';
 import { isAppleDevice } from '../utils/platform';
+import { openLink } from '../utils/dom';
 import { ariaHideOutside } from '../overlays/ariaHideOutside';
 import { announce } from '../live-announcer';
 import { createStringFormatter } from '../i18n';
@@ -332,7 +333,26 @@ export function createComboBox<T>(
       case 'Enter':
         if (state.isOpen() && focusedKey != null) {
           e.preventDefault();
-          state.commit();
+
+          // Check if the focused item is a link
+          // Link href can be in props (for components) or value (for dynamic items)
+          const collectionItem = collection.getItem(focusedKey);
+          const itemHref = collectionItem?.props?.href ?? (collectionItem?.value as Record<string, unknown> | null)?.href;
+          if (itemHref) {
+            // Find the actual anchor element in the DOM and trigger navigation
+            const listBox = listBoxRef?.();
+            if (listBox) {
+              const item = listBox.querySelector(
+                `[data-key="${CSS.escape(String(focusedKey))}"]`
+              );
+              if (item instanceof HTMLAnchorElement) {
+                openLink(item, e);
+              }
+            }
+            state.close();
+          } else {
+            state.commit();
+          }
         }
         break;
 
@@ -452,60 +472,72 @@ export function createComboBox<T>(
     getProps().onFocusChange?.(true);
   };
 
+  // Track the last touch event time for iPad VoiceOver double-tap debouncing
+  let lastEventTime = 0;
+
   const handleBlur = (e: FocusEvent) => {
-    // Delay blur handling slightly to allow click events to complete
-    // This is necessary because clicking on a non-focusable element (like <li>)
-    // causes the input to lose focus before the click event fires
-    requestAnimationFrame(() => {
-      // If the menu is already closed (by option click), don't do anything
-      if (!state.isOpen()) {
-        return;
-      }
+    // Use synchronous ref checks instead of requestAnimationFrame
+    // This matches React Aria's implementation and is more reliable
+    const relatedTarget = e.relatedTarget as HTMLElement | null;
+    const button = buttonRef?.();
+    const listBox = listBoxRef?.();
 
-      // Don't blur if focus is moving to the button or listbox
-      const relatedTarget = e.relatedTarget as HTMLElement | null;
-      const button = buttonRef?.();
-      const listBox = listBoxRef?.();
+    // Don't blur if focus is moving to the button
+    const blurFromButton = button && button === relatedTarget;
 
-      // Check if the click/focus is moving to the button or listbox
-      if (relatedTarget && (
-        button?.contains(relatedTarget) ||
-        relatedTarget.closest(`[id="${listBoxId}"]`)
-      )) {
-        return;
-      }
+    // Don't blur if focus is moving into the listbox/popover
+    const blurIntoPopover = listBox?.contains(relatedTarget);
 
-      // If a pointerdown happened inside the listbox, don't close
-      if (isPointerDownInsideListBox) {
-        isPointerDownInsideListBox = false;
-        return;
-      }
+    if (blurFromButton || blurIntoPopover) {
+      return;
+    }
 
-      // Check if the active element is in the listbox
-      if (listBox) {
-        const activeElement = document.activeElement;
-        if (activeElement && listBox.contains(activeElement)) {
-          return;
-        }
-      }
+    // If a pointerdown happened inside the listbox, don't close
+    // This handles the case when clicking on a non-focusable option
+    if (isPointerDownInsideListBox) {
+      isPointerDownInsideListBox = false;
+      return;
+    }
 
-      // Check if the listbox still exists in the DOM (might have been clicked on)
-      // and if focus went back to the input
-      const input = inputRef();
-      if (input && document.activeElement === input) {
-        return;
-      }
+    // Call user's onBlur handler
+    getProps().onBlur?.(e);
 
-      state.setFocused(false);
+    state.setFocused(false);
+    getProps().onFocusChange?.(false);
+  };
 
-      // Close and revert on blur
-      if (state.isOpen()) {
-        state.close();
-      }
+  // Handle touch events for iPad VoiceOver
+  // VoiceOver on iOS fires a touchend at the center of the element on double-tap.
+  // We detect this and toggle the combobox manually to avoid issues with focus management.
+  const handleTouchEnd = (e: TouchEvent) => {
+    const p = getProps();
+    const isDisabled = p.isDisabled ?? state.isDisabled;
+    const isReadOnly = p.isReadOnly ?? state.isReadOnly;
 
-      getProps().onBlur?.(e);
-      getProps().onFocusChange?.(false);
-    });
+    if (isDisabled || isReadOnly) {
+      return;
+    }
+
+    // Debounce rapid consecutive touchend events (< 500ms)
+    // This handles VoiceOver's double-tap behavior
+    if (e.timeStamp - lastEventTime < 500) {
+      e.preventDefault();
+      inputRef()?.focus();
+      return;
+    }
+
+    // Detect VoiceOver virtual click - it fires at the exact center of the element
+    const rect = (e.target as Element).getBoundingClientRect();
+    const touch = e.changedTouches[0];
+    const centerX = Math.ceil(rect.left + 0.5 * rect.width);
+    const centerY = Math.ceil(rect.top + 0.5 * rect.height);
+
+    if (touch.clientX === centerX && touch.clientY === centerY) {
+      e.preventDefault();
+      inputRef()?.focus();
+      state.toggle(null, 'manual');
+      lastEventTime = e.timeStamp;
+    }
   };
 
   return {
@@ -550,6 +582,7 @@ export function createComboBox<T>(
           onKeyDown: onInputKeyDown,
           onFocus: handleFocus,
           onBlur: handleBlur,
+          onTouchEnd: handleTouchEnd,
           'data-open': isOpen || undefined,
           'data-disabled': isDisabled || undefined,
           'data-readonly': isReadOnly || undefined,

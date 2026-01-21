@@ -4,6 +4,7 @@ import { createComboBox } from '../src/combobox';
 import { createComboBoxState } from '@proyecto-viviana/solid-stately';
 import * as liveAnnouncer from '../src/live-announcer';
 import * as platform from '../src/utils/platform';
+import * as domUtils from '../src/utils/dom';
 
 interface TestItem {
   id: string;
@@ -721,6 +722,525 @@ describe('createComboBox', () => {
 
         // announcements should not happen on non-Apple (checked synchronously)
         expect(announceSpy).not.toHaveBeenCalled();
+        dispose();
+      });
+    });
+  });
+
+  describe('blur handling (P1.1)', () => {
+    it('should not blur when focus moves to button', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+        let buttonRef: HTMLElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        const comboBox = createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef,
+          () => buttonRef
+        );
+
+        // Set initial focused state
+        state.setFocused(true);
+        expect(state.isFocused()).toBe(true);
+
+        // Create a mock button element
+        buttonRef = document.createElement('button');
+
+        // Simulate blur with relatedTarget as button
+        const onBlur = comboBox.inputProps.onBlur as (e: FocusEvent) => void;
+        const blurEvent = new FocusEvent('blur', {
+          relatedTarget: buttonRef,
+        });
+
+        onBlur(blurEvent);
+
+        // Should still be focused because blur went to button
+        expect(state.isFocused()).toBe(true);
+        dispose();
+      });
+    });
+
+    it('should not blur when focus moves into listbox', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+        let buttonRef: HTMLElement | null = null;
+        let listBoxRef: HTMLElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        const comboBox = createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef,
+          () => buttonRef,
+          () => listBoxRef
+        );
+
+        // Set initial focused state
+        state.setFocused(true);
+        expect(state.isFocused()).toBe(true);
+
+        // Create mock listbox with a child option
+        listBoxRef = document.createElement('ul');
+        const option = document.createElement('li');
+        listBoxRef.appendChild(option);
+
+        // Simulate blur with relatedTarget inside listbox
+        const onBlur = comboBox.inputProps.onBlur as (e: FocusEvent) => void;
+        const blurEvent = new FocusEvent('blur', {
+          relatedTarget: option,
+        });
+
+        onBlur(blurEvent);
+
+        // Should still be focused because blur went into listbox
+        expect(state.isFocused()).toBe(true);
+        dispose();
+      });
+    });
+
+    it('should blur when focus moves outside', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+        let buttonRef: HTMLElement | null = null;
+        let listBoxRef: HTMLElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        const comboBox = createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef,
+          () => buttonRef,
+          () => listBoxRef
+        );
+
+        // Set initial focused state
+        state.setFocused(true);
+        expect(state.isFocused()).toBe(true);
+
+        // Create mock elements
+        buttonRef = document.createElement('button');
+        listBoxRef = document.createElement('ul');
+        const outsideElement = document.createElement('div');
+
+        // Simulate blur with relatedTarget outside
+        const onBlur = comboBox.inputProps.onBlur as (e: FocusEvent) => void;
+        const blurEvent = new FocusEvent('blur', {
+          relatedTarget: outsideElement,
+        });
+
+        onBlur(blurEvent);
+
+        // Should be blurred because focus went outside
+        expect(state.isFocused()).toBe(false);
+        dispose();
+      });
+    });
+
+    it('should call onBlur callback when blurring outside', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+        const onBlurCallback = vi.fn();
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        const comboBox = createComboBox(
+          { label: 'Fruit', onBlur: onBlurCallback },
+          state,
+          () => inputRef
+        );
+
+        state.setFocused(true);
+
+        const outsideElement = document.createElement('div');
+        const onBlur = comboBox.inputProps.onBlur as (e: FocusEvent) => void;
+        const blurEvent = new FocusEvent('blur', {
+          relatedTarget: outsideElement,
+        });
+
+        onBlur(blurEvent);
+
+        expect(onBlurCallback).toHaveBeenCalledWith(blurEvent);
+        dispose();
+      });
+    });
+  });
+
+  describe('touch event handling for iPad VoiceOver (P1.2)', () => {
+    it('should provide onTouchEnd handler in inputProps', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        const comboBox = createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef
+        );
+
+        expect(comboBox.inputProps.onTouchEnd).toBeDefined();
+        expect(typeof comboBox.inputProps.onTouchEnd).toBe('function');
+        dispose();
+      });
+    });
+
+    it('should not handle touch when disabled', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+          isDisabled: true,
+        });
+
+        const comboBox = createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef
+        );
+
+        // Initially closed
+        expect(state.isOpen()).toBe(false);
+
+        // Create mock element for center-tap simulation
+        const mockElement = document.createElement('input');
+        mockElement.getBoundingClientRect = () => ({
+          left: 0,
+          top: 0,
+          right: 100,
+          bottom: 50,
+          width: 100,
+          height: 50,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        });
+
+        // Simulate touch at center
+        const onTouchEnd = comboBox.inputProps.onTouchEnd as (e: TouchEvent) => void;
+        const touchEvent = {
+          target: mockElement,
+          timeStamp: 1000,
+          changedTouches: [{
+            clientX: Math.ceil(0 + 0.5 * 100), // centerX
+            clientY: Math.ceil(0 + 0.5 * 50),  // centerY
+          }],
+          preventDefault: vi.fn(),
+        } as unknown as TouchEvent;
+
+        onTouchEnd(touchEvent);
+
+        // Should not open when disabled
+        expect(state.isOpen()).toBe(false);
+        dispose();
+      });
+    });
+
+    it('should not handle touch when readOnly', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+          isReadOnly: true,
+        });
+
+        const comboBox = createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef
+        );
+
+        expect(state.isOpen()).toBe(false);
+
+        const mockElement = document.createElement('input');
+        mockElement.getBoundingClientRect = () => ({
+          left: 0,
+          top: 0,
+          right: 100,
+          bottom: 50,
+          width: 100,
+          height: 50,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        });
+
+        const onTouchEnd = comboBox.inputProps.onTouchEnd as (e: TouchEvent) => void;
+        const touchEvent = {
+          target: mockElement,
+          timeStamp: 1000,
+          changedTouches: [{
+            clientX: Math.ceil(0 + 0.5 * 100),
+            clientY: Math.ceil(0 + 0.5 * 50),
+          }],
+          preventDefault: vi.fn(),
+        } as unknown as TouchEvent;
+
+        onTouchEnd(touchEvent);
+
+        // Should not open when readOnly
+        expect(state.isOpen()).toBe(false);
+        dispose();
+      });
+    });
+
+    it('should toggle when touch is at center (VoiceOver virtual click)', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = document.createElement('input');
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        const comboBox = createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef
+        );
+
+        expect(state.isOpen()).toBe(false);
+
+        // Create mock element for center-tap simulation
+        const mockElement = document.createElement('input');
+        mockElement.getBoundingClientRect = () => ({
+          left: 0,
+          top: 0,
+          right: 100,
+          bottom: 50,
+          width: 100,
+          height: 50,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        });
+
+        const onTouchEnd = comboBox.inputProps.onTouchEnd as (e: TouchEvent) => void;
+        const preventDefault = vi.fn();
+
+        // Touch at exact center (VoiceOver behavior)
+        const touchEvent = {
+          target: mockElement,
+          timeStamp: 1000,
+          changedTouches: [{
+            clientX: Math.ceil(0 + 0.5 * 100), // 50
+            clientY: Math.ceil(0 + 0.5 * 50),  // 25
+          }],
+          preventDefault,
+        } as unknown as TouchEvent;
+
+        onTouchEnd(touchEvent);
+
+        // Should toggle open and call preventDefault
+        expect(state.isOpen()).toBe(true);
+        expect(preventDefault).toHaveBeenCalled();
+        dispose();
+      });
+    });
+
+    it('should debounce rapid consecutive touch events', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = document.createElement('input');
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        const comboBox = createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef
+        );
+
+        const mockElement = document.createElement('input');
+        mockElement.getBoundingClientRect = () => ({
+          left: 0,
+          top: 0,
+          right: 100,
+          bottom: 50,
+          width: 100,
+          height: 50,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        });
+
+        const onTouchEnd = comboBox.inputProps.onTouchEnd as (e: TouchEvent) => void;
+
+        // First touch at center
+        const firstTouchEvent = {
+          target: mockElement,
+          timeStamp: 1000,
+          changedTouches: [{
+            clientX: Math.ceil(0 + 0.5 * 100),
+            clientY: Math.ceil(0 + 0.5 * 50),
+          }],
+          preventDefault: vi.fn(),
+        } as unknown as TouchEvent;
+
+        onTouchEnd(firstTouchEvent);
+        expect(state.isOpen()).toBe(true);
+
+        // Second touch within 500ms (should be debounced)
+        const secondTouchEvent = {
+          target: mockElement,
+          timeStamp: 1200, // 200ms later
+          changedTouches: [{
+            clientX: Math.ceil(0 + 0.5 * 100),
+            clientY: Math.ceil(0 + 0.5 * 50),
+          }],
+          preventDefault: vi.fn(),
+        } as unknown as TouchEvent;
+
+        onTouchEnd(secondTouchEvent);
+
+        // Should still be open (debounced, not toggled back)
+        expect(state.isOpen()).toBe(true);
+        expect(secondTouchEvent.preventDefault).toHaveBeenCalled();
+        dispose();
+      });
+    });
+  });
+
+  describe('link support in ComboBox items (P1.3)', () => {
+    it('should navigate to link on Enter when focused item has href', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+        let listBoxRef: HTMLElement | null = null;
+
+        // Items with href property
+        const linkItems = [
+          { id: '1', name: 'Google', href: 'https://google.com' },
+          { id: '2', name: 'GitHub', href: 'https://github.com' },
+          { id: '3', name: 'Regular Item' },
+        ];
+
+        const state = createComboBoxState({
+          items: linkItems,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        // Mock openLink
+        const openLinkSpy = vi.spyOn(domUtils, 'openLink').mockImplementation(() => {});
+
+        const comboBox = createComboBox(
+          { label: 'Sites' },
+          state,
+          () => inputRef,
+          undefined,
+          () => listBoxRef
+        );
+
+        // Create mock listbox with anchor element
+        listBoxRef = document.createElement('ul');
+        const linkOption = document.createElement('a') as HTMLAnchorElement;
+        linkOption.setAttribute('data-key', '1');
+        linkOption.href = 'https://google.com';
+        listBoxRef.appendChild(linkOption);
+
+        // Open and focus the link item
+        state.open();
+        state.setFocusedKey('1');
+
+        // Simulate Enter key
+        const onKeyDown = comboBox.inputProps.onKeyDown as (e: KeyboardEvent) => void;
+        const enterEvent = {
+          key: 'Enter',
+          preventDefault: vi.fn(),
+        } as unknown as KeyboardEvent;
+
+        onKeyDown(enterEvent);
+
+        // Should call openLink and close the combobox
+        expect(openLinkSpy).toHaveBeenCalledWith(linkOption, enterEvent);
+        expect(state.isOpen()).toBe(false);
+
+        openLinkSpy.mockRestore();
+        dispose();
+      });
+    });
+
+    it('should commit selection on Enter when focused item has no href', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+        let listBoxRef: HTMLElement | null = null;
+
+        // Regular items without href
+        const regularItems = [
+          { id: '1', name: 'Apple' },
+          { id: '2', name: 'Banana' },
+        ];
+
+        const state = createComboBoxState({
+          items: regularItems,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        const openLinkSpy = vi.spyOn(domUtils, 'openLink').mockImplementation(() => {});
+
+        const comboBox = createComboBox(
+          { label: 'Fruit' },
+          state,
+          () => inputRef,
+          undefined,
+          () => listBoxRef
+        );
+
+        listBoxRef = document.createElement('ul');
+
+        // Open and focus a regular item
+        state.open();
+        state.setFocusedKey('1');
+
+        const onKeyDown = comboBox.inputProps.onKeyDown as (e: KeyboardEvent) => void;
+        const enterEvent = {
+          key: 'Enter',
+          preventDefault: vi.fn(),
+        } as unknown as KeyboardEvent;
+
+        onKeyDown(enterEvent);
+
+        // Should NOT call openLink
+        expect(openLinkSpy).not.toHaveBeenCalled();
+        // Should call state.commit() which selects the focused key
+        expect(state.selectedKey()).toBe('1');
+
+        openLinkSpy.mockRestore();
         dispose();
       });
     });
