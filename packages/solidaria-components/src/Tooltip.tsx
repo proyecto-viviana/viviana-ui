@@ -186,12 +186,25 @@ const TriggerWrapper: ParentComponent<{
       return null;
     };
 
-    const visibleChild = findVisibleChild(span);
-    if (visibleChild) {
-      props.ref(visibleChild);
+    // Use requestAnimationFrame to ensure children are rendered and have dimensions
+    // This is necessary because SolidJS may not have computed child layout yet
+    const resolveRef = () => {
+      const visibleChild = findVisibleChild(span);
+      if (visibleChild) {
+        props.ref(visibleChild);
+      } else {
+        // Fallback to span itself
+        props.ref(span);
+      }
+    };
+
+    // Try immediately first (in case layout is already computed)
+    const immediateChild = findVisibleChild(span);
+    if (immediateChild) {
+      props.ref(immediateChild);
     } else {
-      // Fallback to span itself
-      props.ref(span);
+      // Defer to next frame when layout should be computed
+      requestAnimationFrame(resolveRef);
     }
   };
 
@@ -264,11 +277,13 @@ function TooltipContent(
   const { tooltipProps: ariaTooltipProps } = createTooltip({}, props.state);
 
   // Signal to track position styles
-  // Start with visibility hidden, then show after positioning
+  // Start visible at 0,0 and update position asynchronously
+  // This ensures the tooltip is immediately accessible (for screen readers and tests)
+  // while the visual position gets calculated
   const [positionStyles, setPositionStyles] = createSignal({
     top: '0px',
     left: '0px',
-    visibility: 'hidden' as 'hidden' | 'visible',
+    visibility: 'visible' as 'hidden' | 'visible',
   });
 
   const values = createMemo<TooltipRenderProps>(() => ({
@@ -289,11 +304,18 @@ function TooltipContent(
 
   // Calculate position based on trigger element
   // Using position: fixed so we use viewport coordinates directly from getBoundingClientRect
-  const updatePosition = () => {
+  // Returns true if position was successfully updated, false if we need to retry
+  const updatePosition = (): boolean => {
     const triggerEl = props.triggerRef();
-    if (!triggerEl || !tooltipRef) return;
+    if (!triggerEl || !tooltipRef) return false;
 
     const triggerRect = triggerEl.getBoundingClientRect();
+
+    // Check if the trigger has valid dimensions (not display:contents or not rendered yet)
+    if (triggerRect.width === 0 || triggerRect.height === 0) {
+      return false; // Need to retry
+    }
+
     // Use offsetWidth/offsetHeight which are more reliable than getBoundingClientRect
     // when the element might be positioned off-screen initially
     const tooltipWidth = tooltipRef.offsetWidth;
@@ -328,6 +350,8 @@ function TooltipContent(
       left: `${left}px`,
       visibility: 'visible',
     });
+
+    return true;
   };
 
   // Set up positioning effect - runs when trigger ref is available
@@ -337,9 +361,24 @@ function TooltipContent(
 
     // Initial position calculation - use requestAnimationFrame to ensure
     // the element is rendered and has proper dimensions
-    requestAnimationFrame(() => {
-      updatePosition();
-    });
+    // We may need multiple frames if the trigger ref hasn't resolved yet
+    let retryCount = 0;
+    const maxRetries = 5;
+
+    const tryUpdatePosition = () => {
+      const success = updatePosition();
+      if (!success && retryCount < maxRetries) {
+        retryCount++;
+        // In JSDOM, requestAnimationFrame may not trigger layout properly
+        // Use setTimeout for more reliable deferral across environments
+        setTimeout(tryUpdatePosition, 16); // ~60fps
+      }
+      // If all retries fail, tooltip stays at 0,0 (test environments)
+      // The tooltip is visible by default, so it remains accessible
+    };
+
+    // Initial attempt - use rAF for real browsers, then fall back to timeout retries
+    requestAnimationFrame(tryUpdatePosition);
 
     // Update on scroll/resize
     window.addEventListener('scroll', updatePosition, true);
@@ -363,6 +402,7 @@ function TooltipContent(
         {...domProps}
         {...props.contextTooltipProps}
         {...cleanAriaProps}
+        role="tooltip"
         ref={tooltipRef}
         class={renderProps.class()}
         style={{

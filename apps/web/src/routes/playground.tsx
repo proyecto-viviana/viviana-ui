@@ -1775,35 +1775,82 @@ const menuItems = [
   { id: 'delete', label: 'Delete', variant: 'danger' },
 ]
 
+// Menu items with some disabled for testing disabled key navigation
+const menuItemsWithDisabled = [
+  { id: 'item1', label: 'First Item' },
+  { id: 'item2', label: 'Second Item (disabled)' },
+  { id: 'item3', label: 'Third Item (disabled)' },
+  { id: 'item4', label: 'Fourth Item' },
+  { id: 'item5', label: 'Fifth Item' },
+]
+
 function MenuDemo(props: { onAction?: (action: string) => void }) {
   return (
-    <div class="space-y-4">
-      <MenuTrigger>
-        <MenuButton class="px-4 py-2 bg-primary-700 hover:bg-primary-600 text-primary-100 rounded-lg border border-primary-500 transition-colors flex items-center gap-2">
-          Actions
-          <span class="text-xs">▼</span>
-        </MenuButton>
-        <Menu
-          items={menuItems}
-          getKey={(item) => item.id}
-          onAction={(key) => props.onAction?.(String(key))}
-          aria-label="Actions menu"
-          class="absolute mt-1 min-w-48 bg-bg-200 border border-primary-600 rounded-lg shadow-xl overflow-hidden z-50"
-        >
-          {(item) => (
-            <MenuItem
-              id={item.id}
-              class={`px-4 py-2 cursor-pointer outline-none transition-colors ${
-                item.variant === 'danger'
-                  ? 'data-focused:bg-danger/20 text-danger'
-                  : 'data-focused:bg-primary-700 text-primary-100'
-              }`}
-            >
-              {item.label}
-            </MenuItem>
-          )}
-        </Menu>
-      </MenuTrigger>
+    <div class="space-y-6">
+      {/* Basic Menu */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-2">Basic Menu</h4>
+        <MenuTrigger>
+          <MenuButton class="px-4 py-2 bg-primary-700 hover:bg-primary-600 text-primary-100 rounded-lg border border-primary-500 transition-colors flex items-center gap-2">
+            Actions
+            <span class="text-xs">▼</span>
+          </MenuButton>
+          <Menu
+            items={menuItems}
+            getKey={(item) => item.id}
+            onAction={(key) => props.onAction?.(String(key))}
+            aria-label="Actions menu"
+            class="absolute mt-1 min-w-48 bg-bg-200 border border-primary-600 rounded-lg shadow-xl overflow-hidden z-50"
+          >
+            {(item) => (
+              <MenuItem
+                id={item.id}
+                class={`px-4 py-2 cursor-pointer outline-none transition-colors ${
+                  item.variant === 'danger'
+                    ? 'data-focused:bg-danger/20 text-danger'
+                    : 'data-focused:bg-primary-700 text-primary-100'
+                }`}
+              >
+                {item.label}
+              </MenuItem>
+            )}
+          </Menu>
+        </MenuTrigger>
+      </div>
+
+      {/* Menu with Disabled Items */}
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-2">Menu with Disabled Items</h4>
+        <MenuTrigger>
+          <MenuButton
+            class="px-4 py-2 bg-primary-700 hover:bg-primary-600 text-primary-100 rounded-lg border border-primary-500 transition-colors flex items-center gap-2"
+          >
+            Menu with Disabled
+            <span class="text-xs">▼</span>
+          </MenuButton>
+          <Menu
+            items={menuItemsWithDisabled}
+            getKey={(item) => item.id}
+            disabledKeys={['item2', 'item3']}
+            onAction={(key) => props.onAction?.(String(key))}
+            aria-label="Menu with disabled items"
+            class="absolute mt-1 min-w-48 bg-bg-200 border border-primary-600 rounded-lg shadow-xl overflow-hidden z-50"
+          >
+            {(item) => (
+              <MenuItem
+                id={item.id}
+                class="px-4 py-2 cursor-pointer outline-none transition-colors data-focused:bg-primary-700 text-primary-100 data-disabled:opacity-50 data-disabled:cursor-not-allowed"
+              >
+                {item.label}
+              </MenuItem>
+            )}
+          </Menu>
+        </MenuTrigger>
+        <p class="text-xs text-primary-400 mt-2">
+          Items 2 and 3 are disabled. Arrow keys should skip them.
+        </p>
+      </div>
+
       <p class="text-xs text-primary-400">
         Click button to open, use arrow keys to navigate, Enter to select, Escape to close
       </p>

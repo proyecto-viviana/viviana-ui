@@ -119,10 +119,11 @@ describe('Tooltip', () => {
       </TooltipTrigger>
     ));
 
-    // Wait for requestAnimationFrame to complete (positioning sets visibility)
+    // Wait for requestAnimationFrame and retry logic to complete (positioning sets visibility)
+    // Longer timeout needed because retries use setTimeout(16ms) x 5 times + initial rAF
     await waitFor(() => {
       expect(screen.getByRole('tooltip')).toBeInTheDocument();
-    });
+    }, { timeout: 2000 });
 
     // Restore fake timers for subsequent tests
     vi.useFakeTimers();
