@@ -85,18 +85,14 @@ export function createToastRegion<T>(props: AriaToastRegionProps<T>): ToastRegio
   };
 
   // Region props
-  const regionProps = createMemo<JSX.HTMLAttributes<HTMLElement>>(() =>
-    mergeProps(
-      hoverProps,
-      {
-        role: 'region',
-        'aria-label': props['aria-label'] ?? 'Notifications',
-        tabIndex: -1,
-        onFocusIn: handleFocus,
-        onFocusOut: handleBlur,
-      }
-    )
-  );
+  const regionProps = createMemo<JSX.HTMLAttributes<HTMLElement>>(() => ({
+    ...hoverProps,
+    role: 'region' as const,
+    'aria-label': props['aria-label'] ?? 'Notifications',
+    tabIndex: -1,
+    onFocusIn: handleFocus,
+    onFocusOut: handleBlur,
+  }));
 
   return {
     get regionProps() { return regionProps(); },

@@ -201,19 +201,17 @@ export function createTooltipTrigger(
     onBlur,
   });
 
-  const triggerProps = mergeProps(
-    focusableProps,
-    hoverProps,
-    {
-      get 'aria-describedby'() {
-        return state.isOpen() ? tooltipId : undefined;
-      },
-      onPointerDown: onPressStart,
-      onKeyDown: onPressStart,
-      // Remove tabIndex set by focusableProps to avoid overriding
-      tabIndex: undefined,
-    }
-  );
+  const triggerProps = {
+    ...focusableProps,
+    ...hoverProps,
+    get 'aria-describedby'() {
+      return state.isOpen() ? tooltipId : undefined;
+    },
+    onPointerDown: onPressStart,
+    onKeyDown: onPressStart,
+    // Remove tabIndex set by focusableProps to avoid overriding
+    tabIndex: undefined,
+  };
 
   return {
     triggerProps: triggerProps as JSX.HTMLAttributes<HTMLElement>,
