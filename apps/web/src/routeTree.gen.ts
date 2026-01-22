@@ -17,8 +17,10 @@ import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as DocsInstallationRouteImport } from './routes/docs/installation'
 import { Route as DocsHooksCreatePressRouteImport } from './routes/docs/hooks/create-press'
 import { Route as DocsHooksCreateButtonRouteImport } from './routes/docs/hooks/create-button'
+import { Route as DocsComponentsToastRouteImport } from './routes/docs/components/toast'
 import { Route as DocsComponentsTextfieldRouteImport } from './routes/docs/components/textfield'
 import { Route as DocsComponentsTabsRouteImport } from './routes/docs/components/tabs'
+import { Route as DocsComponentsTableRouteImport } from './routes/docs/components/table'
 import { Route as DocsComponentsSelectRouteImport } from './routes/docs/components/select'
 import { Route as DocsComponentsMenuRouteImport } from './routes/docs/components/menu'
 import { Route as DocsComponentsDialogRouteImport } from './routes/docs/components/dialog'
@@ -65,6 +67,11 @@ const DocsHooksCreateButtonRoute = DocsHooksCreateButtonRouteImport.update({
   path: '/hooks/create-button',
   getParentRoute: () => DocsRouteRoute,
 } as any)
+const DocsComponentsToastRoute = DocsComponentsToastRouteImport.update({
+  id: '/components/toast',
+  path: '/components/toast',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
 const DocsComponentsTextfieldRoute = DocsComponentsTextfieldRouteImport.update({
   id: '/components/textfield',
   path: '/components/textfield',
@@ -73,6 +80,11 @@ const DocsComponentsTextfieldRoute = DocsComponentsTextfieldRouteImport.update({
 const DocsComponentsTabsRoute = DocsComponentsTabsRouteImport.update({
   id: '/components/tabs',
   path: '/components/tabs',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsTableRoute = DocsComponentsTableRouteImport.update({
+  id: '/components/table',
+  path: '/components/table',
   getParentRoute: () => DocsRouteRoute,
 } as any)
 const DocsComponentsSelectRoute = DocsComponentsSelectRouteImport.update({
@@ -113,8 +125,10 @@ export interface FileRoutesByFullPath {
   '/docs/components/dialog': typeof DocsComponentsDialogRoute
   '/docs/components/menu': typeof DocsComponentsMenuRoute
   '/docs/components/select': typeof DocsComponentsSelectRoute
+  '/docs/components/table': typeof DocsComponentsTableRoute
   '/docs/components/tabs': typeof DocsComponentsTabsRoute
   '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
+  '/docs/components/toast': typeof DocsComponentsToastRoute
   '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
   '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
 }
@@ -129,8 +143,10 @@ export interface FileRoutesByTo {
   '/docs/components/dialog': typeof DocsComponentsDialogRoute
   '/docs/components/menu': typeof DocsComponentsMenuRoute
   '/docs/components/select': typeof DocsComponentsSelectRoute
+  '/docs/components/table': typeof DocsComponentsTableRoute
   '/docs/components/tabs': typeof DocsComponentsTabsRoute
   '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
+  '/docs/components/toast': typeof DocsComponentsToastRoute
   '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
   '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
 }
@@ -147,8 +163,10 @@ export interface FileRoutesById {
   '/docs/components/dialog': typeof DocsComponentsDialogRoute
   '/docs/components/menu': typeof DocsComponentsMenuRoute
   '/docs/components/select': typeof DocsComponentsSelectRoute
+  '/docs/components/table': typeof DocsComponentsTableRoute
   '/docs/components/tabs': typeof DocsComponentsTabsRoute
   '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
+  '/docs/components/toast': typeof DocsComponentsToastRoute
   '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
   '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
 }
@@ -166,8 +184,10 @@ export interface FileRouteTypes {
     | '/docs/components/dialog'
     | '/docs/components/menu'
     | '/docs/components/select'
+    | '/docs/components/table'
     | '/docs/components/tabs'
     | '/docs/components/textfield'
+    | '/docs/components/toast'
     | '/docs/hooks/create-button'
     | '/docs/hooks/create-press'
   fileRoutesByTo: FileRoutesByTo
@@ -182,8 +202,10 @@ export interface FileRouteTypes {
     | '/docs/components/dialog'
     | '/docs/components/menu'
     | '/docs/components/select'
+    | '/docs/components/table'
     | '/docs/components/tabs'
     | '/docs/components/textfield'
+    | '/docs/components/toast'
     | '/docs/hooks/create-button'
     | '/docs/hooks/create-press'
   id:
@@ -199,8 +221,10 @@ export interface FileRouteTypes {
     | '/docs/components/dialog'
     | '/docs/components/menu'
     | '/docs/components/select'
+    | '/docs/components/table'
     | '/docs/components/tabs'
     | '/docs/components/textfield'
+    | '/docs/components/toast'
     | '/docs/hooks/create-button'
     | '/docs/hooks/create-press'
   fileRoutesById: FileRoutesById
@@ -270,6 +294,13 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof DocsHooksCreateButtonRouteImport
       parentRoute: typeof DocsRouteRoute
     }
+    '/docs/components/toast': {
+      id: '/docs/components/toast'
+      path: '/components/toast'
+      fullPath: '/docs/components/toast'
+      preLoaderRoute: typeof DocsComponentsToastRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
     '/docs/components/textfield': {
       id: '/docs/components/textfield'
       path: '/components/textfield'
@@ -282,6 +313,13 @@ declare module '@tanstack/solid-router' {
       path: '/components/tabs'
       fullPath: '/docs/components/tabs'
       preLoaderRoute: typeof DocsComponentsTabsRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/table': {
+      id: '/docs/components/table'
+      path: '/components/table'
+      fullPath: '/docs/components/table'
+      preLoaderRoute: typeof DocsComponentsTableRouteImport
       parentRoute: typeof DocsRouteRoute
     }
     '/docs/components/select': {
@@ -330,8 +368,10 @@ interface DocsRouteRouteChildren {
   DocsComponentsDialogRoute: typeof DocsComponentsDialogRoute
   DocsComponentsMenuRoute: typeof DocsComponentsMenuRoute
   DocsComponentsSelectRoute: typeof DocsComponentsSelectRoute
+  DocsComponentsTableRoute: typeof DocsComponentsTableRoute
   DocsComponentsTabsRoute: typeof DocsComponentsTabsRoute
   DocsComponentsTextfieldRoute: typeof DocsComponentsTextfieldRoute
+  DocsComponentsToastRoute: typeof DocsComponentsToastRoute
   DocsHooksCreateButtonRoute: typeof DocsHooksCreateButtonRoute
   DocsHooksCreatePressRoute: typeof DocsHooksCreatePressRoute
 }
@@ -344,8 +384,10 @@ const DocsRouteRouteChildren: DocsRouteRouteChildren = {
   DocsComponentsDialogRoute: DocsComponentsDialogRoute,
   DocsComponentsMenuRoute: DocsComponentsMenuRoute,
   DocsComponentsSelectRoute: DocsComponentsSelectRoute,
+  DocsComponentsTableRoute: DocsComponentsTableRoute,
   DocsComponentsTabsRoute: DocsComponentsTabsRoute,
   DocsComponentsTextfieldRoute: DocsComponentsTextfieldRoute,
+  DocsComponentsToastRoute: DocsComponentsToastRoute,
   DocsHooksCreateButtonRoute: DocsHooksCreateButtonRoute,
   DocsHooksCreatePressRoute: DocsHooksCreatePressRoute,
 }

@@ -614,6 +614,11 @@
   font-family: 'Sen', sans-serif;
 }
 
+/* Use this modifier for pages with fixed header where content shouldn't go behind it */
+.vui-page--with-header {
+  padding-top: 70px;
+}
+
 .vui-page h1,
 .vui-page h2,
 .vui-page h3,

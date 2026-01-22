@@ -8,7 +8,7 @@ export const Route = createFileRoute('/ecosystem')({
 
 function Ecosystem() {
   return (
-    <PageLayout>
+    <PageLayout withHeader>
       <Header />
 
       <div class="mx-auto max-w-6xl px-6 py-12">

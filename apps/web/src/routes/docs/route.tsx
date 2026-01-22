@@ -86,7 +86,7 @@ function DocsLayout() {
   });
 
   return (
-    <PageLayout>
+    <PageLayout withHeader>
       <Header />
       <div class="flex flex-1">
         <aside class="w-64 shrink-0 border-r border-bg-300 bg-bg-200 overflow-y-auto">
@@ -106,7 +106,7 @@ function DocsLayout() {
                       <For each={item.items}>
                         {(subItem) => (
                           <Link
-                            href={subItem.href}
+                            to={subItem.href}
                             class="sidebar-link block w-full text-left"
                             activeProps={{ class: "active" }}
                             activeOptions={{ exact: true }}
@@ -120,7 +120,7 @@ function DocsLayout() {
                 }
                 return (
                   <Link
-                    href={item.href}
+                    to={item.href}
                     class="sidebar-link block w-full text-left"
                     activeProps={{ class: "active" }}
                     activeOptions={{ exact: true }}
