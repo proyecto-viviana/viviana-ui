@@ -11,8 +11,19 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
-import { Route as DocsRouteImport } from './routes/docs'
+import { Route as DocsRouteRouteImport } from './routes/docs/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsInstallationRouteImport } from './routes/docs/installation'
+import { Route as DocsHooksCreatePressRouteImport } from './routes/docs/hooks/create-press'
+import { Route as DocsHooksCreateButtonRouteImport } from './routes/docs/hooks/create-button'
+import { Route as DocsComponentsTextfieldRouteImport } from './routes/docs/components/textfield'
+import { Route as DocsComponentsTabsRouteImport } from './routes/docs/components/tabs'
+import { Route as DocsComponentsSelectRouteImport } from './routes/docs/components/select'
+import { Route as DocsComponentsMenuRouteImport } from './routes/docs/components/menu'
+import { Route as DocsComponentsDialogRouteImport } from './routes/docs/components/dialog'
+import { Route as DocsComponentsCheckboxRouteImport } from './routes/docs/components/checkbox'
+import { Route as DocsComponentsButtonRouteImport } from './routes/docs/components/button'
 
 const PlaygroundRoute = PlaygroundRouteImport.update({
   id: '/playground',
@@ -24,7 +35,7 @@ const EcosystemRoute = EcosystemRouteImport.update({
   path: '/ecosystem',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DocsRoute = DocsRouteImport.update({
+const DocsRouteRoute = DocsRouteRouteImport.update({
   id: '/docs',
   path: '/docs',
   getParentRoute: () => rootRouteImport,
@@ -34,37 +45,169 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsInstallationRoute = DocsInstallationRouteImport.update({
+  id: '/installation',
+  path: '/installation',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsHooksCreatePressRoute = DocsHooksCreatePressRouteImport.update({
+  id: '/hooks/create-press',
+  path: '/hooks/create-press',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsHooksCreateButtonRoute = DocsHooksCreateButtonRouteImport.update({
+  id: '/hooks/create-button',
+  path: '/hooks/create-button',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsTextfieldRoute = DocsComponentsTextfieldRouteImport.update({
+  id: '/components/textfield',
+  path: '/components/textfield',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsTabsRoute = DocsComponentsTabsRouteImport.update({
+  id: '/components/tabs',
+  path: '/components/tabs',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsSelectRoute = DocsComponentsSelectRouteImport.update({
+  id: '/components/select',
+  path: '/components/select',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsMenuRoute = DocsComponentsMenuRouteImport.update({
+  id: '/components/menu',
+  path: '/components/menu',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsDialogRoute = DocsComponentsDialogRouteImport.update({
+  id: '/components/dialog',
+  path: '/components/dialog',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsCheckboxRoute = DocsComponentsCheckboxRouteImport.update({
+  id: '/components/checkbox',
+  path: '/components/checkbox',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsButtonRoute = DocsComponentsButtonRouteImport.update({
+  id: '/components/button',
+  path: '/components/button',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/docs': typeof DocsRoute
+  '/docs': typeof DocsRouteRouteWithChildren
   '/ecosystem': typeof EcosystemRoute
   '/playground': typeof PlaygroundRoute
+  '/docs/installation': typeof DocsInstallationRoute
+  '/docs/': typeof DocsIndexRoute
+  '/docs/components/button': typeof DocsComponentsButtonRoute
+  '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
+  '/docs/components/dialog': typeof DocsComponentsDialogRoute
+  '/docs/components/menu': typeof DocsComponentsMenuRoute
+  '/docs/components/select': typeof DocsComponentsSelectRoute
+  '/docs/components/tabs': typeof DocsComponentsTabsRoute
+  '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
+  '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
+  '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/docs': typeof DocsRoute
   '/ecosystem': typeof EcosystemRoute
   '/playground': typeof PlaygroundRoute
+  '/docs/installation': typeof DocsInstallationRoute
+  '/docs': typeof DocsIndexRoute
+  '/docs/components/button': typeof DocsComponentsButtonRoute
+  '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
+  '/docs/components/dialog': typeof DocsComponentsDialogRoute
+  '/docs/components/menu': typeof DocsComponentsMenuRoute
+  '/docs/components/select': typeof DocsComponentsSelectRoute
+  '/docs/components/tabs': typeof DocsComponentsTabsRoute
+  '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
+  '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
+  '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/docs': typeof DocsRoute
+  '/docs': typeof DocsRouteRouteWithChildren
   '/ecosystem': typeof EcosystemRoute
   '/playground': typeof PlaygroundRoute
+  '/docs/installation': typeof DocsInstallationRoute
+  '/docs/': typeof DocsIndexRoute
+  '/docs/components/button': typeof DocsComponentsButtonRoute
+  '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
+  '/docs/components/dialog': typeof DocsComponentsDialogRoute
+  '/docs/components/menu': typeof DocsComponentsMenuRoute
+  '/docs/components/select': typeof DocsComponentsSelectRoute
+  '/docs/components/tabs': typeof DocsComponentsTabsRoute
+  '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
+  '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
+  '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/docs' | '/ecosystem' | '/playground'
+  fullPaths:
+    | '/'
+    | '/docs'
+    | '/ecosystem'
+    | '/playground'
+    | '/docs/installation'
+    | '/docs/'
+    | '/docs/components/button'
+    | '/docs/components/checkbox'
+    | '/docs/components/dialog'
+    | '/docs/components/menu'
+    | '/docs/components/select'
+    | '/docs/components/tabs'
+    | '/docs/components/textfield'
+    | '/docs/hooks/create-button'
+    | '/docs/hooks/create-press'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/docs' | '/ecosystem' | '/playground'
-  id: '__root__' | '/' | '/docs' | '/ecosystem' | '/playground'
+  to:
+    | '/'
+    | '/ecosystem'
+    | '/playground'
+    | '/docs/installation'
+    | '/docs'
+    | '/docs/components/button'
+    | '/docs/components/checkbox'
+    | '/docs/components/dialog'
+    | '/docs/components/menu'
+    | '/docs/components/select'
+    | '/docs/components/tabs'
+    | '/docs/components/textfield'
+    | '/docs/hooks/create-button'
+    | '/docs/hooks/create-press'
+  id:
+    | '__root__'
+    | '/'
+    | '/docs'
+    | '/ecosystem'
+    | '/playground'
+    | '/docs/installation'
+    | '/docs/'
+    | '/docs/components/button'
+    | '/docs/components/checkbox'
+    | '/docs/components/dialog'
+    | '/docs/components/menu'
+    | '/docs/components/select'
+    | '/docs/components/tabs'
+    | '/docs/components/textfield'
+    | '/docs/hooks/create-button'
+    | '/docs/hooks/create-press'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DocsRoute: typeof DocsRoute
+  DocsRouteRoute: typeof DocsRouteRouteWithChildren
   EcosystemRoute: typeof EcosystemRoute
   PlaygroundRoute: typeof PlaygroundRoute
 }
@@ -89,7 +232,7 @@ declare module '@tanstack/solid-router' {
       id: '/docs'
       path: '/docs'
       fullPath: '/docs'
-      preLoaderRoute: typeof DocsRouteImport
+      preLoaderRoute: typeof DocsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -99,12 +242,121 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/': {
+      id: '/docs/'
+      path: '/'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/installation': {
+      id: '/docs/installation'
+      path: '/installation'
+      fullPath: '/docs/installation'
+      preLoaderRoute: typeof DocsInstallationRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/hooks/create-press': {
+      id: '/docs/hooks/create-press'
+      path: '/hooks/create-press'
+      fullPath: '/docs/hooks/create-press'
+      preLoaderRoute: typeof DocsHooksCreatePressRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/hooks/create-button': {
+      id: '/docs/hooks/create-button'
+      path: '/hooks/create-button'
+      fullPath: '/docs/hooks/create-button'
+      preLoaderRoute: typeof DocsHooksCreateButtonRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/textfield': {
+      id: '/docs/components/textfield'
+      path: '/components/textfield'
+      fullPath: '/docs/components/textfield'
+      preLoaderRoute: typeof DocsComponentsTextfieldRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/tabs': {
+      id: '/docs/components/tabs'
+      path: '/components/tabs'
+      fullPath: '/docs/components/tabs'
+      preLoaderRoute: typeof DocsComponentsTabsRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/select': {
+      id: '/docs/components/select'
+      path: '/components/select'
+      fullPath: '/docs/components/select'
+      preLoaderRoute: typeof DocsComponentsSelectRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/menu': {
+      id: '/docs/components/menu'
+      path: '/components/menu'
+      fullPath: '/docs/components/menu'
+      preLoaderRoute: typeof DocsComponentsMenuRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/dialog': {
+      id: '/docs/components/dialog'
+      path: '/components/dialog'
+      fullPath: '/docs/components/dialog'
+      preLoaderRoute: typeof DocsComponentsDialogRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/checkbox': {
+      id: '/docs/components/checkbox'
+      path: '/components/checkbox'
+      fullPath: '/docs/components/checkbox'
+      preLoaderRoute: typeof DocsComponentsCheckboxRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/button': {
+      id: '/docs/components/button'
+      path: '/components/button'
+      fullPath: '/docs/components/button'
+      preLoaderRoute: typeof DocsComponentsButtonRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
   }
 }
 
+interface DocsRouteRouteChildren {
+  DocsInstallationRoute: typeof DocsInstallationRoute
+  DocsIndexRoute: typeof DocsIndexRoute
+  DocsComponentsButtonRoute: typeof DocsComponentsButtonRoute
+  DocsComponentsCheckboxRoute: typeof DocsComponentsCheckboxRoute
+  DocsComponentsDialogRoute: typeof DocsComponentsDialogRoute
+  DocsComponentsMenuRoute: typeof DocsComponentsMenuRoute
+  DocsComponentsSelectRoute: typeof DocsComponentsSelectRoute
+  DocsComponentsTabsRoute: typeof DocsComponentsTabsRoute
+  DocsComponentsTextfieldRoute: typeof DocsComponentsTextfieldRoute
+  DocsHooksCreateButtonRoute: typeof DocsHooksCreateButtonRoute
+  DocsHooksCreatePressRoute: typeof DocsHooksCreatePressRoute
+}
+
+const DocsRouteRouteChildren: DocsRouteRouteChildren = {
+  DocsInstallationRoute: DocsInstallationRoute,
+  DocsIndexRoute: DocsIndexRoute,
+  DocsComponentsButtonRoute: DocsComponentsButtonRoute,
+  DocsComponentsCheckboxRoute: DocsComponentsCheckboxRoute,
+  DocsComponentsDialogRoute: DocsComponentsDialogRoute,
+  DocsComponentsMenuRoute: DocsComponentsMenuRoute,
+  DocsComponentsSelectRoute: DocsComponentsSelectRoute,
+  DocsComponentsTabsRoute: DocsComponentsTabsRoute,
+  DocsComponentsTextfieldRoute: DocsComponentsTextfieldRoute,
+  DocsHooksCreateButtonRoute: DocsHooksCreateButtonRoute,
+  DocsHooksCreatePressRoute: DocsHooksCreatePressRoute,
+}
+
+const DocsRouteRouteWithChildren = DocsRouteRoute._addFileChildren(
+  DocsRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DocsRoute: DocsRoute,
+  DocsRouteRoute: DocsRouteRouteWithChildren,
   EcosystemRoute: EcosystemRoute,
   PlaygroundRoute: PlaygroundRoute,
 }

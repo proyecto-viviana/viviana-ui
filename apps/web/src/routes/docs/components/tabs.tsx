@@ -1,0 +1,250 @@
+import { createFileRoute } from "@tanstack/solid-router";
+import { createSignal } from "solid-js";
+import { Tabs, TabList, Tab, TabPanel } from "@proyecto-viviana/ui";
+import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
+
+export const Route = createFileRoute("/docs/components/tabs")({
+  component: TabsPage,
+});
+
+function TabsPage() {
+  const [selectedKey, setSelectedKey] = createSignal("account");
+
+  return (
+    <DocPage
+      title="Tabs"
+      description="Tabs organize content into separate views where only one view is visible at a time. Users can switch between views by selecting the corresponding tab."
+      importCode={`import { Tabs, TabList, Tab, TabPanel } from '@proyecto-viviana/ui';`}
+    >
+      <Example
+        title="Basic Usage"
+        description="A simple tab interface with multiple panels."
+        code={`<Tabs>
+  <TabList aria-label="Settings">
+    <Tab id="account">Account</Tab>
+    <Tab id="password">Password</Tab>
+    <Tab id="notifications">Notifications</Tab>
+  </TabList>
+  <TabPanel id="account">Account settings content</TabPanel>
+  <TabPanel id="password">Password settings content</TabPanel>
+  <TabPanel id="notifications">Notification settings</TabPanel>
+</Tabs>`}
+      >
+        <Tabs>
+          <TabList aria-label="Settings">
+            <Tab id="account">Account</Tab>
+            <Tab id="password">Password</Tab>
+            <Tab id="notifications">Notifications</Tab>
+          </TabList>
+          <TabPanel id="account">
+            <div class="p-4 text-bg-600">
+              Manage your account settings, profile information, and preferences.
+            </div>
+          </TabPanel>
+          <TabPanel id="password">
+            <div class="p-4 text-bg-600">
+              Change your password and configure two-factor authentication.
+            </div>
+          </TabPanel>
+          <TabPanel id="notifications">
+            <div class="p-4 text-bg-600">
+              Choose which notifications you want to receive and how.
+            </div>
+          </TabPanel>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Controlled Tabs"
+        description="Control which tab is selected programmatically."
+        code={`const [selectedKey, setSelectedKey] = createSignal("account");
+
+<Tabs selectedKey={selectedKey()} onSelectionChange={setSelectedKey}>
+  ...
+</Tabs>`}
+      >
+        <div>
+          <div class="mb-4 flex gap-2">
+            <button
+              class="text-sm px-2 py-1 rounded bg-primary-100 text-primary-600"
+              onClick={() => setSelectedKey("tab1")}
+            >
+              Select Tab 1
+            </button>
+            <button
+              class="text-sm px-2 py-1 rounded bg-primary-100 text-primary-600"
+              onClick={() => setSelectedKey("tab2")}
+            >
+              Select Tab 2
+            </button>
+          </div>
+          <Tabs selectedKey={selectedKey()} onSelectionChange={(key) => setSelectedKey(key as string)}>
+            <TabList aria-label="Controlled tabs">
+              <Tab id="tab1">Tab 1</Tab>
+              <Tab id="tab2">Tab 2</Tab>
+              <Tab id="tab3">Tab 3</Tab>
+            </TabList>
+            <TabPanel id="tab1">
+              <div class="p-4 text-bg-600">Content for Tab 1</div>
+            </TabPanel>
+            <TabPanel id="tab2">
+              <div class="p-4 text-bg-600">Content for Tab 2</div>
+            </TabPanel>
+            <TabPanel id="tab3">
+              <div class="p-4 text-bg-600">Content for Tab 3</div>
+            </TabPanel>
+          </Tabs>
+        </div>
+      </Example>
+
+      <Example
+        title="Disabled Tabs"
+        description="Individual tabs can be disabled."
+        code={`<Tab id="premium" isDisabled>Premium (Locked)</Tab>`}
+      >
+        <Tabs>
+          <TabList aria-label="Features">
+            <Tab id="free">Free Features</Tab>
+            <Tab id="pro">Pro Features</Tab>
+            <Tab id="enterprise" isDisabled>
+              Enterprise (Contact Sales)
+            </Tab>
+          </TabList>
+          <TabPanel id="free">
+            <div class="p-4 text-bg-600">Free tier features available to all users.</div>
+          </TabPanel>
+          <TabPanel id="pro">
+            <div class="p-4 text-bg-600">Premium features for Pro subscribers.</div>
+          </TabPanel>
+          <TabPanel id="enterprise">
+            <div class="p-4 text-bg-600">Enterprise features.</div>
+          </TabPanel>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Vertical Orientation"
+        description="Tabs can be displayed vertically."
+        code={`<Tabs orientation="vertical">
+  <TabList aria-label="Vertical tabs">...</TabList>
+  ...
+</Tabs>`}
+      >
+        <Tabs orientation="vertical">
+          <TabList aria-label="Vertical navigation">
+            <Tab id="general">General</Tab>
+            <Tab id="security">Security</Tab>
+            <Tab id="privacy">Privacy</Tab>
+            <Tab id="advanced">Advanced</Tab>
+          </TabList>
+          <TabPanel id="general">
+            <div class="p-4 text-bg-600">General settings and preferences.</div>
+          </TabPanel>
+          <TabPanel id="security">
+            <div class="p-4 text-bg-600">Security and authentication settings.</div>
+          </TabPanel>
+          <TabPanel id="privacy">
+            <div class="p-4 text-bg-600">Privacy and data sharing options.</div>
+          </TabPanel>
+          <TabPanel id="advanced">
+            <div class="p-4 text-bg-600">Advanced configuration options.</div>
+          </TabPanel>
+        </Tabs>
+      </Example>
+
+      <h2>Tabs Props</h2>
+      <PropsTable
+        props={[
+          {
+            name: "selectedKey",
+            type: "string",
+            description: "Currently selected tab key (controlled)",
+          },
+          {
+            name: "defaultSelectedKey",
+            type: "string",
+            description: "Default selected tab (uncontrolled)",
+          },
+          {
+            name: "onSelectionChange",
+            type: "(key: string) => void",
+            description: "Handler called when selection changes",
+          },
+          {
+            name: "orientation",
+            type: "'horizontal' | 'vertical'",
+            default: "'horizontal'",
+            description: "Tab layout orientation",
+          },
+          {
+            name: "isDisabled",
+            type: "boolean",
+            default: "false",
+            description: "Whether all tabs are disabled",
+          },
+          {
+            name: "disabledKeys",
+            type: "Iterable<string>",
+            description: "Keys of disabled tabs",
+          },
+          {
+            name: "children",
+            type: "JSX.Element",
+            description: "TabList and TabPanel components",
+          },
+        ]}
+      />
+
+      <h2>Tab Props</h2>
+      <PropsTable
+        props={[
+          {
+            name: "id",
+            type: "string",
+            description: "Unique identifier for the tab",
+          },
+          {
+            name: "isDisabled",
+            type: "boolean",
+            default: "false",
+            description: "Whether the tab is disabled",
+          },
+          {
+            name: "children",
+            type: "JSX.Element",
+            description: "Tab label content",
+          },
+        ]}
+      />
+
+      <h2>TabPanel Props</h2>
+      <PropsTable
+        props={[
+          {
+            name: "id",
+            type: "string",
+            description: "Must match the corresponding Tab id",
+          },
+          {
+            name: "children",
+            type: "JSX.Element",
+            description: "Panel content",
+          },
+        ]}
+      />
+
+      <AccessibilitySection>
+        <ul class="list-disc pl-5 space-y-1 text-sm">
+          <li>
+            Uses <code>tablist</code>, <code>tab</code>, and <code>tabpanel</code> ARIA roles
+          </li>
+          <li>Arrow keys navigate between tabs</li>
+          <li>Home/End keys jump to first/last tab</li>
+          <li>Tab panels are linked via <code>aria-controls</code> and <code>aria-labelledby</code></li>
+          <li>Focus indicator clearly shows which tab is focused</li>
+          <li>Automatic activation on focus (follows ARIA best practices)</li>
+        </ul>
+      </AccessibilitySection>
+    </DocPage>
+  );
+}
