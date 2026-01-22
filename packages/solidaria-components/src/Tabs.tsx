@@ -241,7 +241,7 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
           data-orientation={state.orientation()}
           data-disabled={state.isDisabled() || undefined}
         >
-          {local.children}
+          {local.children as JSX.Element}
         </div>
       </TabsStateContext.Provider>
     </TabsContext.Provider>
@@ -444,7 +444,7 @@ function TabInner(props: {
       onPointerDown={tabAria.tabProps.onPointerDown}
       onClick={tabAria.tabProps.onClick}
       onFocus={tabAria.tabProps.onFocus}
-      {...hoverProps}
+      {...(hoverProps as JSX.HTMLAttributes<HTMLDivElement>)}
       data-selected={tabAria.isSelected() || undefined}
       data-focused={tabAria.isFocused() || undefined}
       data-focus-visible={tabAria.isFocusVisible() || undefined}
