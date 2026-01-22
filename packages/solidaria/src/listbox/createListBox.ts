@@ -11,6 +11,7 @@ import { filterDOMProps } from '../utils/filterDOMProps';
 import { mergeProps } from '../utils/mergeProps';
 import { createId } from '../ssr';
 import { access, type MaybeAccessor } from '../utils/reactivity';
+import { isDevEnv } from '../utils/env';
 import type { ListState, Key } from '@proyecto-viviana/solid-stately';
 
 export interface AriaListBoxProps {
@@ -76,7 +77,7 @@ export function createListBox<T>(
   const id = createId(getProps().id);
 
   // Development-time warning for missing accessibility labels
-  if (import.meta.env?.DEV || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development')) {
+  if (isDevEnv()) {
     const p = getProps();
     if (!p.label && !p['aria-label'] && !p['aria-labelledby']) {
       console.warn(

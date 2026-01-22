@@ -19,6 +19,7 @@ import { ariaHideOutside } from '../overlays/ariaHideOutside';
 import { announce } from '../live-announcer';
 import { createStringFormatter } from '../i18n';
 import { comboBoxIntlStrings } from './intl';
+import { isDevEnv } from '../utils/env';
 import type { ComboBoxState, CollectionNode, Key } from '@proyecto-viviana/solid-stately';
 
 /**
@@ -118,7 +119,7 @@ export function createComboBox<T>(
   const id = createId(getProps().id);
 
   // Development-time warning for missing accessibility labels
-  if (import.meta.env?.DEV || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development')) {
+  if (isDevEnv()) {
     const p = getProps();
     if (!p.label && !p['aria-label'] && !p['aria-labelledby']) {
       console.warn(

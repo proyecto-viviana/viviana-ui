@@ -53,11 +53,14 @@ export function isRTL(localeString: string): boolean {
       const locale = new Intl.Locale(localeString).maximize();
 
       // Use the text info object to get the direction if possible.
-      // @ts-ignore - this was implemented as a property by some browsers before it was standardized as a function.
-      const textInfo =
-        typeof locale.getTextInfo === 'function'
-          ? locale.getTextInfo()
-          : (locale as unknown as { textInfo?: { direction: string } }).textInfo;
+      // getTextInfo() was implemented as a property by some browsers before it was standardized as a function.
+      const localeAny = locale as unknown as {
+        getTextInfo?: () => { direction: string };
+        textInfo?: { direction: string };
+      };
+      const textInfo = typeof localeAny.getTextInfo === 'function'
+        ? localeAny.getTextInfo()
+        : localeAny.textInfo;
 
       if (textInfo) {
         return textInfo.direction === 'rtl';

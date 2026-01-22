@@ -11,13 +11,14 @@ import { filterDOMProps } from '../utils/filterDOMProps';
 import { mergeProps } from '../utils/mergeProps';
 import { createId } from '../ssr';
 import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { MenuState, Key, ListCollection } from '@proyecto-viviana/solid-stately';
+import { isDevEnv } from '../utils/env';
+import type { MenuState, Key, Collection } from '@proyecto-viviana/solid-stately';
 
 /**
  * Find the next non-disabled key in a collection.
  */
 function findNextNonDisabledKey<T>(
-  collection: ListCollection<T>,
+  collection: Collection<T>,
   currentKey: Key | null,
   direction: 'next' | 'prev',
   isDisabled: (key: Key) => boolean,
@@ -112,7 +113,7 @@ export function createMenu<T>(
   const id = createId(getProps().id);
 
   // Development-time warning for missing accessibility labels
-  if (import.meta.env?.DEV || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development')) {
+  if (isDevEnv()) {
     const p = getProps();
     if (!p.label && !p['aria-label'] && !p['aria-labelledby']) {
       console.warn(
