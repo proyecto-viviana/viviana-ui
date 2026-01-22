@@ -11,9 +11,9 @@
     "solid-js": "npm:solid-js@^1.9.0",
     "solid-js/web": "npm:solid-js@^1.9.0/web",
     "solid-js/store": "npm:solid-js@^1.9.0/store",
-    "@proyecto-viviana/solid-stately": "../solid-stately/src/index.ts",
-    "@proyecto-viviana/solidaria": "../solidaria/src/index.ts",
-    "@proyecto-viviana/solidaria-components": "../solidaria-components/src/index.ts"
+    "@proyecto-viviana/solid-stately": "jsr:@proyecto-viviana/solid-stately@^0.0.7",
+    "@proyecto-viviana/solidaria": "jsr:@proyecto-viviana/solidaria@^0.0.7",
+    "@proyecto-viviana/solidaria-components": "jsr:@proyecto-viviana/solidaria-components@^0.0.7"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

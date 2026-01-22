@@ -3637,6 +3637,7 @@
       },
       "packages/solidaria": {
         "dependencies": [
+          "jsr:@proyecto-viviana/solid-stately@^0.0.7",
           "npm:@internationalized/string@^3.2.5",
           "npm:solid-js@^1.9.0"
         ],
@@ -3649,6 +3650,8 @@
       },
       "packages/solidaria-components": {
         "dependencies": [
+          "jsr:@proyecto-viviana/solid-stately@^0.0.7",
+          "jsr:@proyecto-viviana/solidaria@^0.0.7",
           "npm:solid-js@^1.9.0"
         ],
         "packageJson": {
@@ -3659,6 +3662,9 @@
       },
       "packages/ui": {
         "dependencies": [
+          "jsr:@proyecto-viviana/solid-stately@^0.0.7",
+          "jsr:@proyecto-viviana/solidaria-components@^0.0.7",
+          "jsr:@proyecto-viviana/solidaria@^0.0.7",
           "npm:solid-js@^1.9.0"
         ],
         "packageJson": {
