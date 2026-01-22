@@ -176,8 +176,12 @@ export function Button(props: ButtonProps): JSX.Element {
   );
 
   // Filter DOM props
+  // Remove onClick from DOM props - it's already handled by createPress
+  // This matches React Aria Components behavior (Button.tsx line 144: delete DOMProps.onClick)
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps, { global: true });
+    // onClick is handled by createPress, not passed directly to DOM
+    delete (filtered as Record<string, unknown>).onClick;
     return filtered;
   });
 

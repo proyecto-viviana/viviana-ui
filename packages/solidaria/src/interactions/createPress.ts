@@ -46,6 +46,12 @@ export interface CreatePressProps {
   onPressUp?: (e: PressEvent) => void;
   /** Handler called when the press state changes. */
   onPressChange?: (isPressed: boolean) => void;
+  /**
+   * Handler called on native click event.
+   * Some third-party libraries pass onClick instead of onPress.
+   * This matches the browser's native activation behavior for certain elements.
+   */
+  onClick?: (e: MouseEvent) => void;
   /** Whether the press should be visual only, not triggering onPress. */
   isPressed?: Accessor<boolean> | boolean;
   /** Whether to prevent focus when pressing. */
@@ -659,6 +665,10 @@ export function createPress(props: CreatePressProps = {}): PressResult {
         e.preventDefault();
         return;
       }
+
+      // Call user's onClick handler if provided
+      // This matches React-Aria's behavior for third-party library compatibility
+      props.onClick?.(e);
 
       // If triggered from a screen reader or by using element.click(),
       // trigger as if it were a keyboard/virtual click.

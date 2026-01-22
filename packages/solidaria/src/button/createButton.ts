@@ -47,6 +47,7 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
     onPressEnd: props.onPressEnd,
     onPressUp: props.onPressUp,
     onPressChange: props.onPressChange,
+    onClick: props.onClick,
     preventFocusOnPress: props.preventFocusOnPress,
   });
 
@@ -126,24 +127,12 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
     ariaProps['aria-current'] = props['aria-current'];
   }
 
-  // Handle onClick passthrough
-  // This chains with any internal click handling from pressProps
-  const clickProps: Record<string, unknown> = {};
-  if (props.onClick) {
-    clickProps.onClick = (e: MouseEvent) => {
-      if (!disabled) {
-        props.onClick?.(e);
-      }
-    };
-  }
-
   const buttonProps = mergeProps(
     filterDOMProps(props as Record<string, unknown>, { labelable: true }),
     additionalProps,
     ariaProps,
     focusableProps as Record<string, unknown>,
-    pressProps as Record<string, unknown>,
-    clickProps
+    pressProps as Record<string, unknown>
   );
 
   return {
