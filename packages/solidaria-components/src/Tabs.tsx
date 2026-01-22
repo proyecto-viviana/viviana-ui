@@ -444,7 +444,7 @@ function TabInner(props: {
       onPointerDown={tabAria.tabProps.onPointerDown}
       onClick={tabAria.tabProps.onClick}
       onFocus={tabAria.tabProps.onFocus}
-      {...(hoverProps as JSX.HTMLAttributes<HTMLDivElement>)}
+      {...hoverProps}
       data-selected={tabAria.isSelected() || undefined}
       data-focused={tabAria.isFocused() || undefined}
       data-focus-visible={tabAria.isFocusVisible() || undefined}

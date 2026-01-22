@@ -38,9 +38,15 @@ export interface CreateHoverProps extends HoverEvents {
   isDisabled?: boolean;
 }
 
+/** Event handler props returned by createHover - safe to spread on any element */
+export type HoverProps = Pick<
+  JSX.HTMLAttributes<HTMLElement>,
+  'onPointerEnter' | 'onPointerLeave' | 'onMouseEnter' | 'onMouseLeave'
+>;
+
 export interface HoverResult {
   /** Props to spread on the target element. */
-  hoverProps: JSX.HTMLAttributes<HTMLElement>;
+  hoverProps: HoverProps;
   /** Whether the element is currently hovered. */
   isHovered: Accessor<boolean>;
 }
@@ -209,7 +215,7 @@ export function createHover(props: MaybeAccessor<CreateHoverProps> = {}): HoverR
   });
 
   return {
-    hoverProps: hoverProps() as JSX.HTMLAttributes<HTMLElement>,
+    hoverProps: hoverProps() as HoverProps,
     isHovered,
   };
 }

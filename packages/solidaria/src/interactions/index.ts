@@ -42,6 +42,7 @@ export {
 export {
   createHover,
   type CreateHoverProps,
+  type HoverProps,
   type HoverResult,
   type HoverEvent,
   type HoverEvents,
