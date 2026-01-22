@@ -7,6 +7,7 @@
 import { createEffect, onCleanup, type JSX, type Accessor } from 'solid-js';
 import { createFocusWithin } from '../interactions/createFocusWithin';
 import { createLabel } from '../label/createLabel';
+import { createTypeSelect } from '../selection/createTypeSelect';
 import { filterDOMProps } from '../utils/filterDOMProps';
 import { mergeProps } from '../utils/mergeProps';
 import { createId } from '../ssr';
@@ -83,6 +84,8 @@ export interface AriaMenuProps {
   shouldFocusWrap?: boolean;
   /** Whether to auto-focus the first item when the menu opens. */
   autoFocus?: boolean | 'first' | 'last';
+  /** Whether type-to-select is disabled. @default false */
+  disallowTypeAhead?: boolean;
 }
 
 export interface MenuAria {
@@ -169,6 +172,17 @@ export function createMenu<T>(
       return getProps()['aria-labelledby'];
     },
     labelElementType: 'span',
+  });
+
+  // Type-to-select
+  const { typeSelectProps } = createTypeSelect({
+    collection: () => state.collection(),
+    focusedKey: () => state.focusedKey(),
+    onFocusedKeyChange: (key) => state.setFocusedKey(key),
+    isKeyDisabled: (key) => state.isDisabled(key),
+    get isDisabled() {
+      return getProps().disallowTypeAhead ?? false;
+    },
   });
 
   // Keyboard navigation
@@ -359,7 +373,7 @@ export function createMenu<T>(
     get menuProps() {
       const p = getProps();
 
-      return mergeProps(
+      const baseProps = mergeProps(
         domProps(),
         focusWithinProps as Record<string, unknown>,
         fieldProps as Record<string, unknown>,
@@ -369,7 +383,14 @@ export function createMenu<T>(
           'aria-disabled': p.isDisabled || undefined,
           onKeyDown,
         } as Record<string, unknown>
-      ) as JSX.HTMLAttributes<HTMLElement>;
+      );
+
+      // Add type-select props if enabled
+      if (!p.disallowTypeAhead) {
+        return mergeProps(baseProps, typeSelectProps as Record<string, unknown>) as JSX.HTMLAttributes<HTMLElement>;
+      }
+
+      return baseProps as JSX.HTMLAttributes<HTMLElement>;
     },
   };
 }

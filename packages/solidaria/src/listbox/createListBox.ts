@@ -7,6 +7,7 @@
 import { createEffect, onCleanup, type JSX } from 'solid-js';
 import { createFocusWithin } from '../interactions/createFocusWithin';
 import { createLabel } from '../label/createLabel';
+import { createTypeSelect } from '../selection/createTypeSelect';
 import { filterDOMProps } from '../utils/filterDOMProps';
 import { mergeProps } from '../utils/mergeProps';
 import { createId } from '../ssr';
@@ -41,6 +42,8 @@ export interface AriaListBoxProps {
   shouldSelectOnPressUp?: boolean;
   /** Whether to focus items on hover. */
   shouldFocusOnHover?: boolean;
+  /** Whether type-to-select is disabled. @default false */
+  disallowTypeAhead?: boolean;
 }
 
 export interface ListBoxAria {
@@ -129,6 +132,17 @@ export function createListBox<T>(
       return getProps()['aria-labelledby'];
     },
     labelElementType: 'span',
+  });
+
+  // Type-to-select
+  const { typeSelectProps } = createTypeSelect({
+    collection: () => state.collection(),
+    focusedKey: () => state.focusedKey(),
+    onFocusedKeyChange: (key) => state.setFocusedKey(key),
+    isKeyDisabled: (key) => state.isDisabled(key),
+    get isDisabled() {
+      return getProps().disallowTypeAhead ?? false;
+    },
   });
 
   // Keyboard navigation
@@ -231,7 +245,7 @@ export function createListBox<T>(
       const p = getProps();
       const selectionMode = state.selectionMode();
 
-      return mergeProps(
+      const baseProps = mergeProps(
         domProps(),
         focusWithinProps as Record<string, unknown>,
         fieldProps as Record<string, unknown>,
@@ -242,7 +256,14 @@ export function createListBox<T>(
           'aria-multiselectable': selectionMode === 'multiple' ? true : undefined,
           onKeyDown,
         }
-      ) as JSX.HTMLAttributes<HTMLElement>;
+      );
+
+      // Add type-select props if enabled
+      if (!p.disallowTypeAhead) {
+        return mergeProps(baseProps, typeSelectProps as Record<string, unknown>) as JSX.HTMLAttributes<HTMLElement>;
+      }
+
+      return baseProps as JSX.HTMLAttributes<HTMLElement>;
     },
   };
 }

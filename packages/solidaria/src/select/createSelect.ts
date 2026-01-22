@@ -8,6 +8,7 @@ import { type JSX, type Accessor, createEffect, onCleanup } from 'solid-js';
 import { createPress } from '../interactions/createPress';
 import { createFocusRing } from '../interactions/createFocusRing';
 import { createLabel } from '../label/createLabel';
+import { createTypeSelect } from '../selection/createTypeSelect';
 import { filterDOMProps } from '../utils/filterDOMProps';
 import { mergeProps } from '../utils/mergeProps';
 import { createId } from '../ssr';
@@ -41,6 +42,8 @@ export interface AriaSelectProps {
   onFocusChange?: (isFocused: boolean) => void;
   /** The name of the select, used when submitting an HTML form. */
   name?: string;
+  /** Whether type-to-select is disabled. @default false */
+  disallowTypeAhead?: boolean;
 }
 
 export interface SelectAria<T> {
@@ -170,6 +173,31 @@ export function createSelect<T>(
 
     return null;
   };
+
+  // Helper to check if key is disabled
+  const isKeyDisabled = (key: string | number): boolean => {
+    const collection = state.collection();
+    return state.isKeyDisabled?.(key) || collection.getItem(key)?.isDisabled || false;
+  };
+
+  // Type-to-select - for Select, typing directly selects items when closed
+  const { typeSelectProps } = createTypeSelect({
+    collection: () => state.collection(),
+    focusedKey: () => state.selectedKey(), // Use selectedKey as the "focused" key for closed Select
+    onFocusedKeyChange: (key) => {
+      // When closed, type-to-select directly changes selection
+      if (!state.isOpen()) {
+        state.setSelectedKey(key);
+      } else {
+        // When open, update focused key (listbox handles selection)
+        state.setFocusedKey(key);
+      }
+    },
+    isKeyDisabled,
+    get isDisabled() {
+      return getProps().disallowTypeAhead ?? false;
+    },
+  });
 
   // Keyboard navigation
   const onKeyDown: JSX.EventHandler<HTMLElement, KeyboardEvent> = (e) => {
@@ -304,7 +332,7 @@ export function createSelect<T>(
       const isOpen = state.isOpen();
       const isDisabled = p.isDisabled ?? state.isDisabled;
 
-      return mergeProps(
+      const baseProps = mergeProps(
         domProps(),
         pressProps as Record<string, unknown>,
         focusProps as Record<string, unknown>,
@@ -327,7 +355,14 @@ export function createSelect<T>(
           'data-disabled': isDisabled || undefined,
           'data-focus-visible': isFocusVisible() || undefined,
         } as Record<string, unknown>
-      ) as JSX.HTMLAttributes<HTMLElement>;
+      );
+
+      // Add type-select props if enabled
+      if (!p.disallowTypeAhead) {
+        return mergeProps(baseProps, typeSelectProps as Record<string, unknown>) as JSX.HTMLAttributes<HTMLElement>;
+      }
+
+      return baseProps as JSX.HTMLAttributes<HTMLElement>;
     },
     get valueProps() {
       return {
