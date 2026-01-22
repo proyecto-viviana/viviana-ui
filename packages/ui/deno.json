@@ -1,0 +1,24 @@
+{
+  "name": "@proyecto-viviana/ui",
+  "version": "0.1.8",
+  "license": "Apache-2.0",
+  "exports": "./src/index.ts",
+  "tasks": {
+    "build": "deno run -A ../../scripts/build.ts ui",
+    "build:types": "deno run -A npm:typescript/tsc -p tsconfig.build.json"
+  },
+  "imports": {
+    "solid-js": "npm:solid-js@^1.9.0",
+    "solid-js/web": "npm:solid-js@^1.9.0/web",
+    "solid-js/store": "npm:solid-js@^1.9.0/store",
+    "@proyecto-viviana/solid-stately": "../solid-stately/src/index.ts",
+    "@proyecto-viviana/solidaria": "../solidaria/src/index.ts",
+    "@proyecto-viviana/solidaria-components": "../solidaria-components/src/index.ts"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "solid-js",
+    "strict": true,
+    "lib": ["dom", "dom.iterable", "esnext", "deno.ns"]
+  }
+}

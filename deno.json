@@ -1,0 +1,51 @@
+{
+  "nodeModulesDir": "auto",
+  "unstable": ["sloppy-imports"],
+  "workspace": [
+    "./packages/solid-stately",
+    "./packages/solidaria",
+    "./packages/solidaria-components",
+    "./packages/ui",
+    "./apps/web"
+  ],
+  "tasks": {
+    "build": "deno task build:stately && deno task build:solidaria && deno task build:components && deno task build:ui",
+    "build:stately": "deno run -A scripts/build.ts solid-stately",
+    "build:solidaria": "deno run -A scripts/build.ts solidaria",
+    "build:components": "deno run -A scripts/build.ts solidaria-components",
+    "build:ui": "deno run -A scripts/build.ts ui",
+    "test": "bun run vitest run",
+    "test:watch": "bun run vitest",
+    "test:e2e": "cd apps/web && bun run playwright test",
+    "dev": "cd apps/web && deno task dev",
+    "typecheck": "deno check packages/*/src/**/*.ts packages/*/src/**/*.tsx",
+    "version:set": "deno run -A scripts/version.ts",
+    "publish:npm": "cd packages/solid-stately && npm publish && cd ../solidaria && npm publish && cd ../solidaria-components && npm publish && cd ../ui && npm publish",
+    "publish:jsr": "cd packages/solid-stately && deno publish && cd ../solidaria && deno publish && cd ../solidaria-components && deno publish && cd ../ui && deno publish",
+    "release": "deno task build && deno task publish:npm && deno task publish:jsr"
+  },
+  "imports": {
+    "solid-js": "npm:solid-js@^1.9.0",
+    "solid-js/web": "npm:solid-js@^1.9.0/web",
+    "solid-js/store": "npm:solid-js@^1.9.0/store",
+    "@internationalized/date": "npm:@internationalized/date@^3.8.0",
+    "@internationalized/string": "npm:@internationalized/string@^3.2.5",
+    "esbuild": "npm:esbuild@^0.24.0",
+    "esbuild-plugin-solid": "npm:esbuild-plugin-solid@^0.6.0",
+    "@proyecto-viviana/solid-stately": "./packages/solid-stately/src/index.ts",
+    "@proyecto-viviana/solidaria": "./packages/solidaria/src/index.ts",
+    "@proyecto-viviana/solidaria-components": "./packages/solidaria-components/src/index.ts",
+    "@proyecto-viviana/ui": "./packages/ui/src/index.ts"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "solid-js",
+    "strict": true,
+    "lib": ["dom", "dom.iterable", "esnext", "deno.ns"]
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "react-spectrum"
+  ]
+}

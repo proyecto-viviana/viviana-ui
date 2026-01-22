@@ -18,7 +18,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["bun-types"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "paths": {
       "@solidaria/*": ["./packages/*/src"],
       "@proyecto-viviana/solid-stately": ["./packages/solid-stately/src/index.ts"],
@@ -27,6 +27,6 @@
       "@proyecto-viviana/ui": ["./packages/ui/src/index.ts"]
     }
   },
-  "include": ["packages/*/src/**/*", "packages/*/build.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["packages/*/src/**/*", "packages/*/build.ts", "scripts/**/*"],
+  "exclude": ["node_modules", "dist", "react-spectrum"]
 }

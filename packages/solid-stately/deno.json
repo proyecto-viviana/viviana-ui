@@ -1,0 +1,22 @@
+{
+  "name": "@proyecto-viviana/solid-stately",
+  "version": "0.0.7",
+  "license": "Apache-2.0",
+  "exports": "./src/index.ts",
+  "tasks": {
+    "build": "deno run -A ../../scripts/build.ts solid-stately",
+    "build:types": "deno run -A npm:typescript/tsc -p tsconfig.build.json"
+  },
+  "imports": {
+    "solid-js": "npm:solid-js@^1.9.0",
+    "solid-js/web": "npm:solid-js@^1.9.0/web",
+    "solid-js/store": "npm:solid-js@^1.9.0/store",
+    "@internationalized/date": "npm:@internationalized/date@^3.8.0"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "solid-js",
+    "strict": true,
+    "lib": ["dom", "dom.iterable", "esnext", "deno.ns"]
+  }
+}

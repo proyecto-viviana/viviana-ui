@@ -1,0 +1,19 @@
+{
+  "name": "@proyecto-viviana/solid-stately",
+  "version": "0.0.7",
+  "license": "Apache-2.0",
+  "exports": "./src/index.ts",
+  "publish": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx",
+      "README.md",
+      "LICENSE"
+    ],
+    "exclude": [
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "test/**/*"
+    ]
+  }
+}
