@@ -145,6 +145,32 @@ export function createSelect<T>(
     },
   });
 
+  // Helper to find next non-disabled key
+  const findNextKey = (fromKey: string | number | null, direction: 'forward' | 'backward'): string | number | null => {
+    const collection = state.collection();
+    let key = fromKey;
+
+    if (key == null) {
+      return direction === 'forward' ? collection.getFirstKey() : collection.getLastKey();
+    }
+
+    const getNext = direction === 'forward'
+      ? (k: string | number) => collection.getKeyAfter(k)
+      : (k: string | number) => collection.getKeyBefore(k);
+
+    let next = getNext(key);
+    while (next != null) {
+      // Check if item is disabled via state.isKeyDisabled or item.isDisabled
+      const isDisabled = state.isKeyDisabled?.(next) || collection.getItem(next)?.isDisabled;
+      if (!isDisabled) {
+        return next;
+      }
+      next = getNext(next);
+    }
+
+    return null;
+  };
+
   // Keyboard navigation
   const onKeyDown: JSX.EventHandler<HTMLElement, KeyboardEvent> = (e) => {
     if (getProps().isDisabled) return;
@@ -158,28 +184,95 @@ export function createSelect<T>(
         e.preventDefault();
         state.toggle();
         break;
+
       case 'ArrowDown':
         e.preventDefault();
         if (!state.isOpen()) {
-          // Open and focus first item or currently selected item
+          // ArrowDown: Open the dropdown and focus first/selected item
           state.open();
           const focusKey = currentKey ?? collection.getFirstKey();
           if (focusKey) {
             state.setFocusedKey(focusKey);
           }
         }
+        // When open, navigation is handled by the listbox
         break;
+
       case 'ArrowUp':
         e.preventDefault();
         if (!state.isOpen()) {
-          // Open and focus last item or currently selected item
+          // ArrowUp: Open the dropdown and focus last/selected item
           state.open();
           const focusKey = currentKey ?? collection.getLastKey();
           if (focusKey) {
             state.setFocusedKey(focusKey);
           }
         }
+        // When open, navigation is handled by the listbox
         break;
+
+      case 'ArrowRight':
+        // ArrowRight: Select next option (for horizontal keyboard navigation pattern)
+        if (!state.isOpen()) {
+          e.preventDefault();
+          const nextKey = findNextKey(currentKey, 'forward');
+          if (nextKey != null) {
+            state.setSelectedKey(nextKey);
+          }
+        }
+        break;
+
+      case 'ArrowLeft':
+        // ArrowLeft: Select previous option (for horizontal keyboard navigation pattern)
+        if (!state.isOpen()) {
+          e.preventDefault();
+          const prevKey = findNextKey(currentKey, 'backward');
+          if (prevKey != null) {
+            state.setSelectedKey(prevKey);
+          }
+        }
+        break;
+
+      case 'Home':
+        // Home: Select first option
+        if (!state.isOpen()) {
+          e.preventDefault();
+          const firstKey = collection.getFirstKey();
+          if (firstKey != null) {
+            // Find first non-disabled key
+            const item = collection.getItem(firstKey);
+            if (item && !item.isDisabled) {
+              state.setSelectedKey(firstKey);
+            } else {
+              const nextKey = findNextKey(firstKey, 'forward');
+              if (nextKey != null) {
+                state.setSelectedKey(nextKey);
+              }
+            }
+          }
+        }
+        break;
+
+      case 'End':
+        // End: Select last option
+        if (!state.isOpen()) {
+          e.preventDefault();
+          const lastKey = collection.getLastKey();
+          if (lastKey != null) {
+            // Find last non-disabled key
+            const item = collection.getItem(lastKey);
+            if (item && !item.isDisabled) {
+              state.setSelectedKey(lastKey);
+            } else {
+              const prevKey = findNextKey(lastKey, 'backward');
+              if (prevKey != null) {
+                state.setSelectedKey(prevKey);
+              }
+            }
+          }
+        }
+        break;
+
       case 'Escape':
         if (state.isOpen()) {
           e.preventDefault();

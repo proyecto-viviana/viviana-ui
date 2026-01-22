@@ -413,6 +413,179 @@ describe('createMenu - disabled key navigation', () => {
   });
 });
 
+describe('createMenu - page navigation', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  it('moves focus down by multiple items on PageDown', () => {
+    createRoot((dispose) => {
+      // Create 15 items to test page navigation
+      const items = Array.from({ length: 15 }, (_, i) => ({
+        key: `item${i + 1}`,
+        label: `Item ${i + 1}`,
+      }));
+
+      const state = createMenuState({
+        items,
+        getKey: (item) => item.key,
+      });
+
+      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+
+      // Start at item1
+      state.setFocusedKey('item1');
+      expect(state.focusedKey()).toBe('item1');
+
+      // Press PageDown - should move forward by multiple items
+      const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
+      onKeyDown({
+        key: 'PageDown',
+        preventDefault: vi.fn(),
+      } as unknown as KeyboardEvent);
+
+      // Should have moved past item1 (exact number depends on fallback page size)
+      const focused = state.focusedKey();
+      expect(focused).not.toBe('item1');
+      // Should be somewhere in the middle or end
+      const focusedIndex = items.findIndex(i => i.key === focused);
+      expect(focusedIndex).toBeGreaterThan(0);
+      dispose();
+    });
+  });
+
+  it('moves focus up by multiple items on PageUp', () => {
+    createRoot((dispose) => {
+      // Create 15 items to test page navigation
+      const items = Array.from({ length: 15 }, (_, i) => ({
+        key: `item${i + 1}`,
+        label: `Item ${i + 1}`,
+      }));
+
+      const state = createMenuState({
+        items,
+        getKey: (item) => item.key,
+      });
+
+      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+
+      // Start at last item
+      state.setFocusedKey('item15');
+      expect(state.focusedKey()).toBe('item15');
+
+      // Press PageUp - should move backward by multiple items
+      const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
+      onKeyDown({
+        key: 'PageUp',
+        preventDefault: vi.fn(),
+      } as unknown as KeyboardEvent);
+
+      // Should have moved before item15
+      const focused = state.focusedKey();
+      expect(focused).not.toBe('item15');
+      // Should be somewhere in the middle or beginning
+      const focusedIndex = items.findIndex(i => i.key === focused);
+      expect(focusedIndex).toBeLessThan(14);
+      dispose();
+    });
+  });
+
+  it('skips disabled items on PageDown', () => {
+    createRoot((dispose) => {
+      const items = Array.from({ length: 15 }, (_, i) => ({
+        key: `item${i + 1}`,
+        label: `Item ${i + 1}`,
+      }));
+
+      // Disable several consecutive items
+      const state = createMenuState({
+        items,
+        getKey: (item) => item.key,
+        disabledKeys: ['item2', 'item3', 'item4', 'item5'],
+      });
+
+      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+
+      // Start at item1
+      state.setFocusedKey('item1');
+
+      // Press PageDown
+      const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
+      onKeyDown({
+        key: 'PageDown',
+        preventDefault: vi.fn(),
+      } as unknown as KeyboardEvent);
+
+      // Should have skipped disabled items
+      const focused = state.focusedKey();
+      expect(['item2', 'item3', 'item4', 'item5']).not.toContain(focused);
+      dispose();
+    });
+  });
+
+  it('stops at last item on PageDown when near end', () => {
+    createRoot((dispose) => {
+      const items = [
+        { key: 'item1', label: 'Item 1' },
+        { key: 'item2', label: 'Item 2' },
+        { key: 'item3', label: 'Item 3' },
+      ];
+
+      const state = createMenuState({
+        items,
+        getKey: (item) => item.key,
+      });
+
+      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+
+      // Start at item2
+      state.setFocusedKey('item2');
+
+      // Press PageDown with only 1 item below
+      const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
+      onKeyDown({
+        key: 'PageDown',
+        preventDefault: vi.fn(),
+      } as unknown as KeyboardEvent);
+
+      // Should be at the last item
+      expect(state.focusedKey()).toBe('item3');
+      dispose();
+    });
+  });
+
+  it('stops at first item on PageUp when near beginning', () => {
+    createRoot((dispose) => {
+      const items = [
+        { key: 'item1', label: 'Item 1' },
+        { key: 'item2', label: 'Item 2' },
+        { key: 'item3', label: 'Item 3' },
+      ];
+
+      const state = createMenuState({
+        items,
+        getKey: (item) => item.key,
+      });
+
+      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+
+      // Start at item2
+      state.setFocusedKey('item2');
+
+      // Press PageUp with only 1 item above
+      const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
+      onKeyDown({
+        key: 'PageUp',
+        preventDefault: vi.fn(),
+      } as unknown as KeyboardEvent);
+
+      // Should be at the first item
+      expect(state.focusedKey()).toBe('item1');
+      dispose();
+    });
+  });
+});
+
 describe('createMenu - accessibility warnings', () => {
   afterEach(() => {
     cleanup();

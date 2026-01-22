@@ -4,7 +4,7 @@
  * Based on @react-aria/menu useMenu.
  */
 
-import { createEffect, onCleanup, type JSX } from 'solid-js';
+import { createEffect, onCleanup, type JSX, type Accessor } from 'solid-js';
 import { createFocusWithin } from '../interactions/createFocusWithin';
 import { createLabel } from '../label/createLabel';
 import { filterDOMProps } from '../utils/filterDOMProps';
@@ -13,6 +13,11 @@ import { createId } from '../ssr';
 import { access, type MaybeAccessor } from '../utils/reactivity';
 import { isDevEnv } from '../utils/env';
 import type { MenuState, Key, Collection } from '@proyecto-viviana/solid-stately';
+
+/**
+ * Default number of items to skip for page up/down when DOM measurement is not available.
+ */
+const DEFAULT_PAGE_SIZE = 10;
 
 /**
  * Find the next non-disabled key in a collection.
@@ -107,7 +112,7 @@ export function getMenuData(state: MenuState): MenuData | undefined {
 export function createMenu<T>(
   props: MaybeAccessor<AriaMenuProps>,
   state: MenuState<T>,
-  _ref?: () => HTMLElement | null
+  ref?: Accessor<HTMLElement | null>
 ): MenuAria {
   const getProps = () => access(props);
   const id = createId(getProps().id);
@@ -234,6 +239,114 @@ export function createMenu<T>(
       case 'Escape': {
         e.preventDefault();
         p.onClose?.();
+        break;
+      }
+      case 'PageDown': {
+        e.preventDefault();
+        const currentKey = state.focusedKey();
+        const el = ref?.();
+
+        if (el) {
+          // Use DOM measurements to calculate how many items fit in a page
+          const visibleHeight = el.clientHeight;
+          let traveled = 0;
+          let targetKey = currentKey;
+
+          while (targetKey != null && traveled < visibleHeight) {
+            const nextKey = collection.getKeyAfter(targetKey);
+            if (nextKey == null) break;
+
+            // Try to measure the item height
+            const itemElement = el.querySelector(`[data-key="${targetKey}"]`);
+            traveled += itemElement?.clientHeight ?? 32;
+
+            // Skip disabled items
+            if (!isDisabled(nextKey)) {
+              targetKey = nextKey;
+            } else {
+              // Skip over disabled items without counting them
+              const afterDisabled = findNextNonDisabledKey(collection, nextKey, 'next', isDisabled, false);
+              if (afterDisabled != null) {
+                targetKey = afterDisabled;
+              } else {
+                break;
+              }
+            }
+          }
+
+          if (targetKey != null && targetKey !== currentKey) {
+            state.setFocusedKey(targetKey);
+          }
+        } else {
+          // Fallback: move by DEFAULT_PAGE_SIZE items
+          let count = DEFAULT_PAGE_SIZE;
+          let targetKey = currentKey;
+
+          while (count > 0 && targetKey != null) {
+            const nextKey = findNextNonDisabledKey(collection, targetKey, 'next', isDisabled, false);
+            if (nextKey == null) break;
+            targetKey = nextKey;
+            count--;
+          }
+
+          if (targetKey != null) {
+            state.setFocusedKey(targetKey);
+          }
+        }
+        break;
+      }
+      case 'PageUp': {
+        e.preventDefault();
+        const currentKey = state.focusedKey();
+        const el = ref?.();
+
+        if (el) {
+          // Use DOM measurements to calculate how many items fit in a page
+          const visibleHeight = el.clientHeight;
+          let traveled = 0;
+          let targetKey = currentKey;
+
+          while (targetKey != null && traveled < visibleHeight) {
+            const prevKey = collection.getKeyBefore(targetKey);
+            if (prevKey == null) break;
+
+            // Try to measure the item height
+            const itemElement = el.querySelector(`[data-key="${targetKey}"]`);
+            traveled += itemElement?.clientHeight ?? 32;
+
+            // Skip disabled items
+            if (!isDisabled(prevKey)) {
+              targetKey = prevKey;
+            } else {
+              // Skip over disabled items without counting them
+              const beforeDisabled = findNextNonDisabledKey(collection, prevKey, 'prev', isDisabled, false);
+              if (beforeDisabled != null) {
+                targetKey = beforeDisabled;
+              } else {
+                break;
+              }
+            }
+          }
+
+          if (targetKey != null && targetKey !== currentKey) {
+            state.setFocusedKey(targetKey);
+          }
+        } else {
+          // Fallback: move by DEFAULT_PAGE_SIZE items
+          let count = DEFAULT_PAGE_SIZE;
+          let targetKey = currentKey;
+
+          while (count > 0 && targetKey != null) {
+            const prevKey = findNextNonDisabledKey(collection, targetKey, 'prev', isDisabled, false);
+            if (prevKey == null) break;
+            targetKey = prevKey;
+            count--;
+          }
+
+          if (targetKey != null) {
+            state.setFocusedKey(targetKey);
+          }
+        }
         break;
       }
     }

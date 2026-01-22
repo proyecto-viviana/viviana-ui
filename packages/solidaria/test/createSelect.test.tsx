@@ -258,6 +258,115 @@ describe('createSelect', () => {
 
       unmount();
     });
+
+    it('selects next option on ArrowRight when closed', () => {
+      const { getByRole, unmount } = render(() => {
+        const state = createTestState({ defaultSelectedKey: 'a' });
+        const { triggerProps, selectedItem } = createSelect({}, state);
+
+        return (
+          <button {...triggerProps} data-testid="trigger">
+            {selectedItem()?.value?.label || 'None'}
+          </button>
+        );
+      });
+
+      const trigger = getByRole('combobox');
+      expect(trigger.textContent).toBe('Apple');
+
+      fireEvent.keyDown(trigger, { key: 'ArrowRight' });
+      expect(trigger.textContent).toBe('Banana');
+
+      unmount();
+    });
+
+    it('selects previous option on ArrowLeft when closed', () => {
+      const { getByRole, unmount } = render(() => {
+        const state = createTestState({ defaultSelectedKey: 'c' });
+        const { triggerProps, selectedItem } = createSelect({}, state);
+
+        return (
+          <button {...triggerProps} data-testid="trigger">
+            {selectedItem()?.value?.label || 'None'}
+          </button>
+        );
+      });
+
+      const trigger = getByRole('combobox');
+      expect(trigger.textContent).toBe('Cherry');
+
+      fireEvent.keyDown(trigger, { key: 'ArrowLeft' });
+      expect(trigger.textContent).toBe('Banana');
+
+      unmount();
+    });
+
+    it('selects first option on Home when closed', () => {
+      const { getByRole, unmount } = render(() => {
+        const state = createTestState({ defaultSelectedKey: 'c' });
+        const { triggerProps, selectedItem } = createSelect({}, state);
+
+        return (
+          <button {...triggerProps} data-testid="trigger">
+            {selectedItem()?.value?.label || 'None'}
+          </button>
+        );
+      });
+
+      const trigger = getByRole('combobox');
+      expect(trigger.textContent).toBe('Cherry');
+
+      fireEvent.keyDown(trigger, { key: 'Home' });
+      expect(trigger.textContent).toBe('Apple');
+
+      unmount();
+    });
+
+    it('selects last option on End when closed', () => {
+      const { getByRole, unmount } = render(() => {
+        const state = createTestState({ defaultSelectedKey: 'a' });
+        const { triggerProps, selectedItem } = createSelect({}, state);
+
+        return (
+          <button {...triggerProps} data-testid="trigger">
+            {selectedItem()?.value?.label || 'None'}
+          </button>
+        );
+      });
+
+      const trigger = getByRole('combobox');
+      expect(trigger.textContent).toBe('Apple');
+
+      fireEvent.keyDown(trigger, { key: 'End' });
+      expect(trigger.textContent).toBe('Cherry');
+
+      unmount();
+    });
+
+    it('skips disabled items when navigating with ArrowRight', () => {
+      const { getByRole, unmount } = render(() => {
+        const state = createTestState({
+          defaultSelectedKey: 'a',
+          disabledKeys: ['b']
+        });
+        const { triggerProps, selectedItem } = createSelect({}, state);
+
+        return (
+          <button {...triggerProps} data-testid="trigger">
+            {selectedItem()?.value?.label || 'None'}
+          </button>
+        );
+      });
+
+      const trigger = getByRole('combobox');
+      expect(trigger.textContent).toBe('Apple');
+
+      // ArrowRight should skip 'b' (Banana is disabled) and go to 'c'
+      fireEvent.keyDown(trigger, { key: 'ArrowRight' });
+      expect(trigger.textContent).toBe('Cherry');
+
+      unmount();
+    });
   });
 
   describe('focus handling', () => {
