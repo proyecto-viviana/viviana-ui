@@ -60,6 +60,12 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
   const isLink = elementType === 'a';
   const disabled = isDisabledValue(props.isDisabled);
 
+  // Handle allowFocusWhenDisabled - set tabIndex to -1 when disabled but focusable
+  // This allows tooltips to be shown on disabled buttons
+  if (props.allowFocusWhenDisabled && disabled) {
+    (focusableProps as Record<string, unknown>).tabIndex = -1;
+  }
+
   // Build base props based on element type
   let additionalProps: Record<string, unknown> = {};
 
@@ -120,12 +126,24 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
     ariaProps['aria-current'] = props['aria-current'];
   }
 
+  // Handle onClick passthrough
+  // This chains with any internal click handling from pressProps
+  const clickProps: Record<string, unknown> = {};
+  if (props.onClick) {
+    clickProps.onClick = (e: MouseEvent) => {
+      if (!disabled) {
+        props.onClick?.(e);
+      }
+    };
+  }
+
   const buttonProps = mergeProps(
     filterDOMProps(props as Record<string, unknown>, { labelable: true }),
     additionalProps,
     ariaProps,
     focusableProps as Record<string, unknown>,
-    pressProps as Record<string, unknown>
+    pressProps as Record<string, unknown>,
+    clickProps
   );
 
   return {

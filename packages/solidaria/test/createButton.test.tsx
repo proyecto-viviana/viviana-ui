@@ -404,6 +404,112 @@ describe('createButton', () => {
       expect(buttonProps.tabIndex).toBe(-1);
     });
   });
+
+  describe('onClick passthrough', () => {
+    it('calls onClick when clicked', async () => {
+      const user = setupUser();
+      const onClick = vi.fn();
+      const { buttonProps } = createButton({ onClick });
+
+      render(() => <button {...buttonProps}>Click me</button>);
+      await user.click(screen.getByText('Click me'));
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls both onClick and onPress when clicked', async () => {
+      const user = setupUser();
+      const onClick = vi.fn();
+      const onPress = vi.fn();
+      const { buttonProps } = createButton({ onClick, onPress });
+
+      render(() => <button {...buttonProps}>Click me</button>);
+      await user.click(screen.getByText('Click me'));
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+      expect(onPress).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not call onClick when disabled', async () => {
+      const user = setupUser();
+      const onClick = vi.fn();
+      const { buttonProps } = createButton({ onClick, isDisabled: true });
+
+      render(() => <button {...buttonProps}>Click me</button>);
+      await user.click(screen.getByText('Click me'));
+
+      expect(onClick).not.toHaveBeenCalled();
+    });
+
+    it('passes MouseEvent to onClick handler', async () => {
+      const user = setupUser();
+      const onClick = vi.fn();
+      const { buttonProps } = createButton({ onClick });
+
+      render(() => <button {...buttonProps}>Click me</button>);
+      await user.click(screen.getByText('Click me'));
+
+      expect(onClick).toHaveBeenCalledWith(expect.any(MouseEvent));
+    });
+  });
+
+  describe('allowFocusWhenDisabled', () => {
+    it('sets tabIndex=-1 when disabled and allowFocusWhenDisabled is true', () => {
+      const { buttonProps } = createButton({
+        isDisabled: true,
+        allowFocusWhenDisabled: true,
+      });
+      expect(buttonProps.tabIndex).toBe(-1);
+    });
+
+    it('allows button to be focused when disabled with allowFocusWhenDisabled', async () => {
+      const user = setupUser();
+      const { buttonProps } = createButton({
+        isDisabled: true,
+        allowFocusWhenDisabled: true,
+      });
+
+      render(() => <button {...buttonProps}>Disabled but focusable</button>);
+      const button = screen.getByText('Disabled but focusable');
+
+      button.focus();
+      expect(document.activeElement).toBe(button);
+    });
+
+    it('still prevents interactions when disabled with allowFocusWhenDisabled', async () => {
+      const user = setupUser();
+      const onPress = vi.fn();
+      const { buttonProps } = createButton({
+        isDisabled: true,
+        allowFocusWhenDisabled: true,
+        onPress,
+      });
+
+      render(() => <button {...buttonProps}>Disabled but focusable</button>);
+      await user.click(screen.getByText('Disabled but focusable'));
+
+      expect(onPress).not.toHaveBeenCalled();
+    });
+
+    it('does not affect tabIndex when not disabled', () => {
+      const { buttonProps } = createButton({
+        isDisabled: false,
+        allowFocusWhenDisabled: true,
+      });
+      // When not disabled, tabIndex is set to 0 for focusability (from createFocusable)
+      expect(buttonProps.tabIndex).toBe(0);
+    });
+
+    it('works with non-native button elements', () => {
+      const { buttonProps } = createButton({
+        elementType: 'div',
+        isDisabled: true,
+        allowFocusWhenDisabled: true,
+      });
+      expect(buttonProps.tabIndex).toBe(-1);
+      expect(buttonProps['aria-disabled']).toBe(true);
+    });
+  });
 });
 
 describe('createToggleButton', () => {

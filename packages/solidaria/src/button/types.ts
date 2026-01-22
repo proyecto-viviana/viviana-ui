@@ -14,8 +14,19 @@ export interface AriaButtonProps {
   onPressUp?: (e: PressEvent) => void;
   /** Handler called when the press state changes. */
   onPressChange?: (isPressed: boolean) => void;
+  /**
+   * A native click handler, useful for form submission.
+   * Note: `onPress` is preferred for cross-device compatibility.
+   */
+  onClick?: (e: MouseEvent) => void;
   /** Whether the button should not receive focus on press. */
   preventFocusOnPress?: boolean;
+  /**
+   * Whether to allow focus on the button when it is disabled.
+   * This enables showing tooltips on disabled buttons.
+   * When true, the button gets `tabIndex=-1` instead of being removed from tab order.
+   */
+  allowFocusWhenDisabled?: boolean;
   /** Whether the element should receive focus on render. */
   autoFocus?: boolean;
   /** The HTML element type to use for the button. */
