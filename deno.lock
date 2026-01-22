@@ -26,6 +26,7 @@
     "npm:typescript@^5.9.3": "5.9.3",
     "npm:vite-plugin-solid@^2.11.10": "2.11.10_@testing-library+jest-dom@6.9.1_solid-js@1.9.10__seroval@1.3.2_vite@7.3.1__picomatch@4.0.3_@babel+core@7.28.6",
     "npm:vite-tsconfig-paths@^6.0.3": "6.0.4_vite@7.3.1__picomatch@4.0.3_typescript@5.9.3",
+    "npm:vite@*": "7.3.1_picomatch@4.0.3",
     "npm:vite@^7.3.0": "7.3.1_picomatch@4.0.3",
     "npm:vitest@*": "4.0.17_jsdom@27.4.0_vite@7.3.1__picomatch@4.0.3",
     "npm:vitest@^4.0.16": "4.0.17_jsdom@27.4.0_vite@7.3.1__picomatch@4.0.3",
@@ -3600,6 +3601,10 @@
     "members": {
       "apps/web": {
         "dependencies": [
+          "jsr:@proyecto-viviana/solid-stately@^0.0.7",
+          "jsr:@proyecto-viviana/solidaria-components@^0.0.7",
+          "jsr:@proyecto-viviana/solidaria@^0.0.7",
+          "jsr:@proyecto-viviana/ui@~0.1.8",
           "npm:@tanstack/solid-router@1.142.8",
           "npm:@tanstack/solid-start@1.142.8",
           "npm:solid-icons@^1.1.0",

@@ -13,10 +13,10 @@
     "@tanstack/solid-router": "npm:@tanstack/solid-router@1.142.8",
     "@tanstack/solid-start": "npm:@tanstack/solid-start@1.142.8",
     "solid-icons/": "npm:solid-icons@^1.1.0/",
-    "@proyecto-viviana/solidaria": "../../packages/solidaria/src/index.ts",
-    "@proyecto-viviana/ui": "../../packages/ui/src/index.ts",
-    "@proyecto-viviana/solidaria-components": "../../packages/solidaria-components/src/index.ts",
-    "@proyecto-viviana/solid-stately": "../../packages/solid-stately/src/index.ts"
+    "@proyecto-viviana/solidaria": "jsr:@proyecto-viviana/solidaria@^0.0.7",
+    "@proyecto-viviana/ui": "jsr:@proyecto-viviana/ui@^0.1.8",
+    "@proyecto-viviana/solidaria-components": "jsr:@proyecto-viviana/solidaria-components@^0.0.7",
+    "@proyecto-viviana/solid-stately": "jsr:@proyecto-viviana/solid-stately@^0.0.7"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
