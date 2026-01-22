@@ -22,6 +22,7 @@ import {
   createOption,
   createHover,
   createInteractOutside,
+  FocusScope,
   type AriaSelectProps,
   type AriaOptionProps,
 } from '@proyecto-viviana/solidaria';
@@ -578,28 +579,30 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
 
   return (
     <Show when={isOpen()}>
-      <ul
-        ref={(el) => (listBoxRef = el)}
-        {...cleanMenuProps()}
-        {...cleanListBoxProps()}
-        class={renderProps.class()}
-        style={renderProps.style()}
-        data-focused={state.isFocused() || undefined}
-      >
-        <Show when={local.children} fallback={
-          <For each={items()}>
-            {(node) => (
-              <SelectOption id={node.key}>
-                {node.textValue}
-              </SelectOption>
-            )}
-          </For>
-        }>
-          <For each={items()}>
-            {(node) => node.value != null ? local.children!(node.value) : null}
-          </For>
-        </Show>
-      </ul>
+      <FocusScope restoreFocus autoFocus>
+        <ul
+          ref={(el) => (listBoxRef = el)}
+          {...cleanMenuProps()}
+          {...cleanListBoxProps()}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          data-focused={state.isFocused() || undefined}
+        >
+          <Show when={local.children} fallback={
+            <For each={items()}>
+              {(node) => (
+                <SelectOption id={node.key}>
+                  {node.textValue}
+                </SelectOption>
+              )}
+            </For>
+          }>
+            <For each={items()}>
+              {(node) => node.value != null ? local.children!(node.value) : null}
+            </For>
+          </Show>
+        </ul>
+      </FocusScope>
     </Show>
   );
 }

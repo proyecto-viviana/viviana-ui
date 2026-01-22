@@ -22,6 +22,7 @@ import {
   createHover,
   createButton,
   createInteractOutside,
+  FocusScope,
   type AriaMenuProps,
   type AriaMenuItemProps,
   type AriaMenuTriggerProps,
@@ -415,23 +416,33 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   // If standalone (no trigger context), always render
   const shouldRender = () => triggerContext ? triggerContext.state.isOpen() : true;
 
+  // Only use FocusScope when inside a MenuTrigger (for popover behavior)
+  // Standalone menus don't need focus restoration
+  const menuContent = () => (
+    <MenuContext.Provider value={{ state }}>
+      <MenuStateContext.Provider value={state}>
+        <ul
+          ref={(el) => (menuRef = el)}
+          {...cleanMenuProps()}
+          {...cleanTriggerMenuProps()}
+          {...cleanFocusProps()}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          data-focused={state.isFocused() || undefined}
+        >
+          <For each={stateProps.items}>{(item) => local.children(item)}</For>
+        </ul>
+      </MenuStateContext.Provider>
+    </MenuContext.Provider>
+  );
+
   return (
     <Show when={shouldRender()}>
-      <MenuContext.Provider value={{ state }}>
-        <MenuStateContext.Provider value={state}>
-          <ul
-            ref={(el) => (menuRef = el)}
-            {...cleanMenuProps()}
-            {...cleanTriggerMenuProps()}
-            {...cleanFocusProps()}
-            class={renderProps.class()}
-            style={renderProps.style()}
-            data-focused={state.isFocused() || undefined}
-          >
-            <For each={stateProps.items}>{(item) => local.children(item)}</For>
-          </ul>
-        </MenuStateContext.Provider>
-      </MenuContext.Provider>
+      <Show when={triggerContext} fallback={menuContent()}>
+        <FocusScope restoreFocus autoFocus>
+          {menuContent()}
+        </FocusScope>
+      </Show>
     </Show>
   );
 }
