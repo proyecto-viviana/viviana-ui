@@ -21,7 +21,7 @@
     "typecheck": "deno check packages/*/src/**/*.ts packages/*/src/**/*.tsx",
     "version:set": "deno run -A scripts/version.ts",
     "publish:npm": "cd packages/solid-stately && npm publish && cd ../solidaria && npm publish && cd ../solidaria-components && npm publish && cd ../ui && npm publish",
-    "publish:jsr": "cd packages/solid-stately && deno publish && cd ../solidaria && deno publish && cd ../solidaria-components && deno publish && cd ../ui && deno publish",
+    "publish:jsr": "deno publish --allow-slow-types -c packages/solid-stately/deno.json && deno publish --allow-slow-types -c packages/solidaria/deno.json && deno publish --allow-slow-types -c packages/solidaria-components/deno.json && deno publish --allow-slow-types -c packages/ui/deno.json",
     "release": "deno task build && deno task publish:npm && deno task publish:jsr"
   },
   "imports": {
