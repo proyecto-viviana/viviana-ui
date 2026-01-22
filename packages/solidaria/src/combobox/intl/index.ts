@@ -6,8 +6,8 @@
 import type { LocalizedStrings } from '@internationalized/string';
 
 // Import locale files
-import enUS from './en-US.json';
-import esES from './es-ES.json';
+import enUS from './en-US.json' with { type: 'json' };
+import esES from './es-ES.json' with { type: 'json' };
 
 export type ComboBoxIntlStrings = {
   focusAnnouncement: string;
