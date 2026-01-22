@@ -70,3 +70,11 @@ export {
 
 // Environment detection
 export { isTestEnv, isDevEnv, isProdEnv } from './env';
+
+// Description utility for aria-describedby
+export {
+  createDescription,
+  type DescriptionProps,
+  getDescriptionNodeCount,
+  clearDescriptionNodes,
+} from './createDescription';
