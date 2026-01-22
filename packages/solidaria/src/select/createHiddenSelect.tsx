@@ -3,9 +3,13 @@
  * Based on @react-aria/select useHiddenSelect.
  */
 
-import { type JSX, For } from 'solid-js';
+import { type JSX, type Accessor, For, createEffect, onCleanup } from 'solid-js';
 import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { SelectState, Key } from '@proyecto-viviana/solid-stately';
+import { createFormReset } from '../form/createFormReset';
+import { createFormValidation } from '../form/createFormValidation';
+import type { SelectState, Key, FormValidationState } from '@proyecto-viviana/solid-stately';
+
+export type ValidationBehavior = 'aria' | 'native';
 
 export interface AriaHiddenSelectProps<T> {
   /** The state object for the select. */
@@ -14,8 +18,18 @@ export interface AriaHiddenSelectProps<T> {
   name?: string;
   /** Whether the select is disabled. */
   isDisabled?: boolean;
+  /** Whether the select is required. */
+  isRequired?: boolean;
   /** Describes the type of autocomplete functionality the select should provide. */
   autoComplete?: string;
+  /** The `form` attribute to associate the select with a form by ID. */
+  form?: string;
+  /** Validation behavior: 'aria' for realtime, 'native' for on submit. */
+  validationBehavior?: ValidationBehavior;
+  /** A ref to the trigger element for focus on validation error. */
+  triggerRef?: Accessor<HTMLElement | null>;
+  /** Form validation state (optional, for native validation). */
+  validationState?: FormValidationState;
 }
 
 export interface HiddenSelectAria {
@@ -36,6 +50,45 @@ export function createHiddenSelect<T>(
 ): HiddenSelectAria {
   const getProps = () => access(props);
 
+  // Track the select element for form reset/validation
+  let selectRef: HTMLSelectElement | undefined;
+
+  // Set up form reset handler
+  createEffect(() => {
+    const p = getProps();
+    if (!selectRef) return;
+
+    const form = selectRef.form;
+    if (!form) return;
+
+    const handleReset = () => {
+      // Reset to default selected key (first key or null)
+      const defaultKey = p.state.collection().getFirstKey();
+      p.state.setSelectedKey(defaultKey);
+    };
+
+    form.addEventListener('reset', handleReset);
+
+    onCleanup(() => {
+      form.removeEventListener('reset', handleReset);
+    });
+  });
+
+  // Set up form validation handler for native validation
+  createEffect(() => {
+    const p = getProps();
+    if (!selectRef || p.validationBehavior !== 'native' || !p.validationState) return;
+
+    createFormValidation(
+      {
+        validationBehavior: p.validationBehavior,
+        focus: () => p.triggerRef?.()?.focus(),
+      },
+      p.validationState,
+      () => selectRef
+    );
+  });
+
   return {
     get containerProps() {
       return {
@@ -47,12 +100,17 @@ export function createHiddenSelect<T>(
       const p = getProps();
       const state = p.state;
       const selectedKey = state.selectedKey();
+      const validationBehavior = p.validationBehavior ?? 'aria';
 
       return {
+        ref: (el: HTMLSelectElement) => { selectRef = el; },
         tabIndex: -1,
         autoComplete: p.autoComplete,
         disabled: p.isDisabled ?? state.isDisabled,
         name: p.name,
+        form: p.form,
+        // Add required attribute for native form validation
+        required: validationBehavior === 'native' && p.isRequired,
         value: selectedKey != null ? String(selectedKey) : '',
         onChange: (e: Event) => {
           const target = e.target as HTMLSelectElement;
@@ -78,12 +136,20 @@ export function createHiddenSelect<T>(
       const p = getProps();
       const state = p.state;
       const selectedKey = state.selectedKey();
+      const validationBehavior = p.validationBehavior ?? 'aria';
+
+      // For native validation with required, use type="text" with display:none
+      // so the browser will validate it on form submit
+      const useTextInput = validationBehavior === 'native' && p.isRequired;
 
       return {
-        type: 'hidden',
+        type: useTextInput ? 'text' : 'hidden',
         name: p.name,
+        form: p.form,
         value: selectedKey != null ? String(selectedKey) : '',
         disabled: p.isDisabled ?? state.isDisabled,
+        required: useTextInput ? p.isRequired : undefined,
+        style: useTextInput ? { display: 'none' } : undefined,
       } as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
   };
@@ -96,12 +162,20 @@ export interface HiddenSelectProps<T> {
   name?: string;
   /** Whether the select is disabled. */
   isDisabled?: boolean;
+  /** Whether the select is required. */
+  isRequired?: boolean;
   /** A ref to the trigger element. */
   triggerRef?: () => HTMLElement | null;
   /** Label for the select. */
   label?: string;
   /** Describes the type of autocomplete functionality the select should provide. */
   autoComplete?: string;
+  /** The `form` attribute to associate the select with a form by ID. */
+  form?: string;
+  /** Validation behavior: 'aria' for realtime, 'native' for on submit. */
+  validationBehavior?: ValidationBehavior;
+  /** Form validation state (optional, for native validation). */
+  validationState?: FormValidationState;
 }
 
 /**
@@ -119,8 +193,23 @@ export function HiddenSelect<T>(props: HiddenSelectProps<T>): JSX.Element {
     get isDisabled() {
       return props.isDisabled;
     },
+    get isRequired() {
+      return props.isRequired;
+    },
     get autoComplete() {
       return props.autoComplete;
+    },
+    get form() {
+      return props.form;
+    },
+    get validationBehavior() {
+      return props.validationBehavior;
+    },
+    get triggerRef() {
+      return props.triggerRef;
+    },
+    get validationState() {
+      return props.validationState;
     },
   });
 
@@ -129,16 +218,19 @@ export function HiddenSelect<T>(props: HiddenSelectProps<T>): JSX.Element {
 
   return (
     <div {...containerProps}>
-      <select {...selectProps}>
-        <option />
-        <For each={Array.from(collection())}>
-          {(item) => (
-            <option value={String(item.key)} selected={item.key === selectedKey()}>
-              {item.textValue}
-            </option>
-          )}
-        </For>
-      </select>
+      <label>
+        {props.label}
+        <select {...selectProps}>
+          <option />
+          <For each={Array.from(collection())}>
+            {(item) => (
+              <option value={String(item.key)} selected={item.key === selectedKey()}>
+                {item.textValue}
+              </option>
+            )}
+          </For>
+        </select>
+      </label>
     </div>
   );
 }
