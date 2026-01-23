@@ -39,6 +39,7 @@
 
 /* ===== BUTTON COMPONENT ===== */
 .vui-button {
+  position: relative;
   font-family: 'Jost', sans-serif;
   display: inline-flex;
   align-items: center;
@@ -48,15 +49,37 @@
   font-weight: 500;
   text-transform: uppercase;
   border-radius: 0.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
   border: none;
   outline: none;
+  overflow: hidden;
+}
+
+/* Shimmer overlay for hover effect */
+.vui-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.vui-button:hover::before {
+  transform: translateX(100%);
 }
 
 .vui-button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-bg-400), 0 0 0 4px var(--color-accent-300);
+  box-shadow: 0 0 0 2px var(--color-bg-400),
+              0 0 0 4px var(--color-accent-300),
+              0 0 20px rgba(223, 92, 154, 0.3);
 }
 
 .vui-button:disabled {
@@ -64,8 +87,12 @@
   cursor: not-allowed;
 }
 
+.vui-button:disabled::before {
+  display: none;
+}
+
 .vui-button.is-pressed {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 /* Size variants */
@@ -108,6 +135,11 @@
 .vui-button--fill.vui-button--accent {
   background: var(--color-accent);
   color: white;
+}
+
+.vui-button--fill.vui-button--accent:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(223, 92, 154, 0.4),
+              0 4px 12px rgba(223, 92, 154, 0.3);
 }
 
 /* Positive = bg-success-600, text-success-100, border-success-400 */
@@ -441,22 +473,48 @@
 
 /* ===== SIDEBAR ===== */
 .sidebar-link {
+  position: relative;
   display: block;
   padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  color: var(--color-primary-300);
-  transition: all 0.15s;
+  border-radius: 0.5rem;
+  color: var(--color-primary-400);
+  font-size: 0.875rem;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sidebar-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: var(--color-accent);
+  border-radius: 0 2px 2px 0;
+  transition: height 0.2s ease;
 }
 
 .sidebar-link:hover {
-  background: var(--color-bg-300);
-  color: var(--color-primary-100);
+  background: rgba(117, 171, 199, 0.08);
+  color: var(--color-primary-200);
+  padding-left: 1.25rem;
+}
+
+.sidebar-link:hover::before {
+  height: 60%;
 }
 
 .sidebar-link.active {
-  background: var(--color-primary-700);
-  color: var(--color-primary-100);
+  background: rgba(223, 92, 154, 0.1);
+  color: var(--color-accent-200);
   font-weight: 500;
+  padding-left: 1.25rem;
+}
+
+.sidebar-link.active::before {
+  height: 70%;
+  box-shadow: 0 0 8px rgba(223, 92, 154, 0.5);
 }
 
 /* ===== LOGO COMPONENT ===== */
@@ -616,7 +674,7 @@
 
 /* Use this modifier for pages with fixed header where content shouldn't go behind it */
 .vui-page--with-header {
-  padding-top: 70px;
+  padding-top: 4rem; /* 64px - matches h-16 header */
 }
 
 .vui-page h1,

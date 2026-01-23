@@ -249,7 +249,7 @@ const SectionVisibilityContext = createContext<{
   hideAll: () => void;
 }>();
 
-// Section control panel component
+// Section control panel component with enhanced styling
 function SectionControlPanel(props: {
   visibleSections: Accessor<Set<SectionId>>;
   setVisibleSections: (fn: (prev: Set<SectionId>) => Set<SectionId>) => void;
@@ -274,20 +274,38 @@ function SectionControlPanel(props: {
     props.setVisibleSections(() => new Set());
   };
 
+  const jumpToSection = (id: SectionId) => {
+    // First enable the section if not visible
+    if (!props.visibleSections().has(id)) {
+      toggle(id);
+    }
+    // Then scroll to it
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
   return (
-    <div class="mb-8 p-4 rounded-xl border border-primary-600 bg-bg-300">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-primary-200">Section Visibility</h3>
+    <div class="mb-8 rounded-2xl border border-primary-700/30 bg-bg-300/50 backdrop-blur-sm overflow-hidden">
+      {/* Header */}
+      <div class="flex items-center justify-between p-4 border-b border-primary-700/30 bg-bg-400/50">
+        <div class="flex items-center gap-3">
+          <div class="w-2 h-8 rounded-full bg-linear-to-b from-accent to-primary-500" />
+          <div>
+            <h3 class="font-jost text-lg font-semibold text-primary-200">Component Sections</h3>
+            <p class="text-xs text-primary-500">{props.visibleSections().size} of {SECTION_IDS.length} visible</p>
+          </div>
+        </div>
         <div class="flex gap-2">
           <button
-            class="px-3 py-1 text-sm rounded bg-primary-600 text-primary-100 hover:bg-primary-500"
+            class="px-4 py-2 text-sm font-medium rounded-lg bg-accent/20 text-accent-200 hover:bg-accent/30 transition-colors"
             onClick={showAll}
             data-testid="show-all-sections"
           >
             Show All
           </button>
           <button
-            class="px-3 py-1 text-sm rounded bg-primary-600 text-primary-100 hover:bg-primary-500"
+            class="px-4 py-2 text-sm font-medium rounded-lg bg-primary-700/30 text-primary-300 hover:bg-primary-700/50 transition-colors"
             onClick={hideAll}
             data-testid="hide-all-sections"
           >
@@ -295,23 +313,26 @@ function SectionControlPanel(props: {
           </button>
         </div>
       </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-        <For each={SECTION_IDS as unknown as SectionId[]}>
-          {(id) => (
-            <label
-              class="flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-bg-400 transition-colors"
-              data-testid={`section-toggle-${id}`}
-            >
-              <input
-                type="checkbox"
-                checked={props.visibleSections().has(id)}
-                onChange={() => toggle(id)}
-                class="w-4 h-4 accent-accent"
-              />
-              <span class="text-sm text-primary-300 truncate">{SECTION_NAMES[id]}</span>
-            </label>
-          )}
-        </For>
+
+      {/* Section chips */}
+      <div class="p-4">
+        <div class="flex flex-wrap gap-2">
+          <For each={SECTION_IDS as unknown as SectionId[]}>
+            {(id) => (
+              <button
+                onClick={() => jumpToSection(id)}
+                class={`px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
+                  props.visibleSections().has(id)
+                    ? 'bg-accent/20 text-accent-200 border border-accent/40 hover:bg-accent/30'
+                    : 'bg-bg-400/50 text-primary-500 border border-transparent hover:border-primary-600 hover:text-primary-300'
+                }`}
+                data-testid={`section-toggle-${id}`}
+              >
+                {SECTION_NAMES[id]}
+              </button>
+            )}
+          </For>
+        </div>
       </div>
     </div>
   );
@@ -386,17 +407,57 @@ function Playground() {
       <Header />
 
       <div class="mx-auto max-w-6xl px-6 py-12">
-        <header class="mb-8">
-          <h1 class="text-4xl font-bold text-primary-100">Component Playground</h1>
-          <p class="mt-2 text-lg text-primary-300">
-            Interactive showcase of proyecto-viviana-ui components
-          </p>
-          <p class="mt-1 text-sm text-primary-400">Last action: {lastAction()}</p>
+        {/* Enhanced header */}
+        <header class="mb-10 relative">
+          {/* Background decoration */}
+          <div class="absolute -top-4 -left-4 w-24 h-24 rounded-full bg-accent/10 blur-2xl" />
+          <div class="absolute top-8 right-0 w-32 h-32 rounded-full bg-primary-500/10 blur-3xl" />
+
+          <div class="relative">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 mb-4">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+              </span>
+              <span class="text-xs font-medium text-accent-200">Interactive Demo</span>
+            </div>
+
+            <h1 class="font-jost text-4xl sm:text-5xl font-bold text-primary-100 mb-4">
+              Component{' '}
+              <span class="gradient-text-animated">Playground</span>
+            </h1>
+            <p class="text-lg text-primary-300 max-w-2xl">
+              Explore and interact with all 60+ components from the Proyecto Viviana UI library.
+              Toggle sections, customize themes, and see everything in action.
+            </p>
+
+            <div class="flex items-center gap-4 mt-6 text-sm text-primary-500">
+              <span class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-success-400" />
+                Last action: {lastAction()}
+              </span>
+            </div>
+          </div>
         </header>
 
         {/* Theme Creator */}
-        <div class="mb-8 p-4 rounded-xl border border-primary-600 bg-bg-300">
-          <ThemeCreator onThemeChange={setThemeVars} />
+        <div class="mb-8 rounded-2xl border border-primary-700/30 bg-bg-300/50 backdrop-blur-sm overflow-hidden">
+          <div class="p-4 border-b border-primary-700/30 bg-bg-400/50">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-linear-to-br from-accent to-primary-500 flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.78-.07 2.58-.2.4-.07.74-.3.96-.63.22-.33.3-.74.21-1.13-.13-.56-.07-1.16.17-1.69.3-.67.94-1.15 1.68-1.26.12-.02.25-.03.37-.03.46 0 .91.14 1.29.41.54.39 1.21.53 1.85.39.54-.12 1-.5 1.23-1.03.22-.52.22-1.11-.01-1.62A10 10 0 0012 2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-jost text-lg font-semibold text-primary-200">Theme Creator</h3>
+                <p class="text-xs text-primary-500">Customize colors in real-time</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-4">
+            <ThemeCreator onThemeChange={setThemeVars} />
+          </div>
         </div>
 
         {/* Theme Preview Area */}
