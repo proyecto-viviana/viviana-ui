@@ -1,124 +1,450 @@
 /**
- * Tests for createListBox and createOption hooks
+ * Comprehensive tests for createListBox and createOption hooks.
+ *
+ * Tests ARIA attributes, keyboard navigation, selection modes, and type-to-select.
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { createRoot } from 'solid-js';
-import { render, fireEvent, screen, cleanup } from '@solidjs/testing-library';
+import { cleanup } from '@solidjs/testing-library';
 import { createListState, createListCollection } from '../../solid-stately/src';
 import { createListBox, createOption } from '../src/listbox';
+
+// Helper to create a mock keyboard event with proper currentTarget
+function createMockKeyboardEvent(key: string, options: Partial<KeyboardEvent> = {}) {
+  const mockElement = document.createElement('div');
+  const event = new KeyboardEvent('keydown', { key, ...options });
+  Object.defineProperty(event, 'preventDefault', { value: vi.fn() });
+  Object.defineProperty(event, 'currentTarget', { value: mockElement });
+  Object.defineProperty(event, 'target', { value: mockElement });
+  return event;
+}
+
+// Helper to create basic list state
+function createBasicListState(options: {
+  selectionMode?: 'none' | 'single' | 'multiple';
+  defaultSelectedKeys?: Iterable<string>;
+  disabledKeys?: Iterable<string>;
+  disallowEmptySelection?: boolean;
+} = {}) {
+  const items = [
+    { key: 'a', label: 'Apple' },
+    { key: 'b', label: 'Banana' },
+    { key: 'c', label: 'Cherry' },
+    { key: 'd', label: 'Date' },
+    { key: 'e', label: 'Elderberry' },
+  ];
+
+  return createListState({
+    items,
+    getKey: (item) => item.key,
+    selectionMode: options.selectionMode ?? 'single',
+    defaultSelectedKeys: options.defaultSelectedKeys,
+    disabledKeys: options.disabledKeys,
+    disallowEmptySelection: options.disallowEmptySelection,
+  });
+}
 
 describe('createListBox', () => {
   afterEach(() => {
     cleanup();
   });
 
-  it('returns listbox props with role="listbox"', () => {
-    createRoot((dispose) => {
-      const items = [
-        { key: 'a', label: 'Apple' },
-        { key: 'b', label: 'Banana' },
-      ];
+  describe('ARIA attributes', () => {
+    it('returns listBoxProps with role="listbox"', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({}, state);
 
-      const state = createListState({
-        items,
-        getKey: (item) => item.key,
-        selectionMode: 'single',
+        expect(listBoxProps.role).toBe('listbox');
+        dispose();
       });
+    });
 
-      const { listBoxProps } = createListBox({}, state);
+    it('sets aria-multiselectable for multiple selection', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ selectionMode: 'multiple' });
+        const { listBoxProps } = createListBox({}, state);
 
-      expect(listBoxProps.role).toBe('listbox');
-      dispose();
+        expect(listBoxProps['aria-multiselectable']).toBe(true);
+        dispose();
+      });
+    });
+
+    it('does not set aria-multiselectable for single selection', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ selectionMode: 'single' });
+        const { listBoxProps } = createListBox({}, state);
+
+        expect(listBoxProps['aria-multiselectable']).toBeUndefined();
+        dispose();
+      });
+    });
+
+    it('sets aria-disabled when disabled', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({ isDisabled: true }, state);
+
+        expect(listBoxProps['aria-disabled']).toBe(true);
+        dispose();
+      });
+    });
+
+    it('has tabIndex 0 when not disabled', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({}, state);
+
+        expect(listBoxProps.tabIndex).toBe(0);
+        dispose();
+      });
+    });
+
+    it('removes tabIndex when disabled', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({ isDisabled: true }, state);
+
+        expect(listBoxProps.tabIndex).toBeUndefined();
+        dispose();
+      });
+    });
+
+    it('passes through aria-label', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({ 'aria-label': 'Fruit selection' }, state);
+
+        expect(listBoxProps['aria-label']).toBe('Fruit selection');
+        dispose();
+      });
+    });
+
+    it('passes through aria-labelledby', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({ 'aria-labelledby': 'heading-id' }, state);
+
+        expect(listBoxProps['aria-labelledby']).toBe('heading-id');
+        dispose();
+      });
+    });
+
+    it('passes through aria-describedby', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({ 'aria-describedby': 'desc-id' }, state);
+
+        expect(listBoxProps['aria-describedby']).toBe('desc-id');
+        dispose();
+      });
     });
   });
 
-  it('sets aria-multiselectable for multiple selection', () => {
-    createRoot((dispose) => {
-      const items = [
-        { key: 'a', label: 'Apple' },
-        { key: 'b', label: 'Banana' },
-      ];
+  describe('keyboard navigation', () => {
+    it('handles ArrowDown to move focus to next item', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({}, state);
 
-      const state = createListState({
-        items,
-        getKey: (item) => item.key,
-        selectionMode: 'multiple',
+        state.setFocusedKey('a');
+
+        const event = createMockKeyboardEvent('ArrowDown');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('b');
+        dispose();
       });
+    });
 
-      const { listBoxProps } = createListBox({}, state);
+    it('handles ArrowUp to move focus to previous item', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({}, state);
 
-      expect(listBoxProps['aria-multiselectable']).toBe(true);
-      dispose();
+        state.setFocusedKey('c');
+
+        const event = createMockKeyboardEvent('ArrowUp');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('b');
+        dispose();
+      });
+    });
+
+    it('handles Home to move focus to first item', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({}, state);
+
+        state.setFocusedKey('d');
+
+        const event = createMockKeyboardEvent('Home');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('a');
+        dispose();
+      });
+    });
+
+    it('handles End to move focus to last item', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({}, state);
+
+        state.setFocusedKey('a');
+
+        const event = createMockKeyboardEvent('End');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('e');
+        dispose();
+      });
+    });
+
+    it('handles Space to toggle selection', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ selectionMode: 'multiple' });
+        const { listBoxProps } = createListBox({}, state);
+
+        state.setFocusedKey('b');
+        expect(state.selectedKeys().has('b')).toBe(false);
+
+        const event = createMockKeyboardEvent(' ');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.selectedKeys().has('b')).toBe(true);
+        dispose();
+      });
+    });
+
+    it('handles Enter to toggle selection and call onAction', () => {
+      createRoot((dispose) => {
+        const onAction = vi.fn();
+        const state = createBasicListState({ selectionMode: 'single' });
+        const { listBoxProps } = createListBox({ onAction }, state);
+
+        state.setFocusedKey('a');
+
+        const event = createMockKeyboardEvent('Enter');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(onAction).toHaveBeenCalledWith('a');
+        dispose();
+      });
+    });
+
+    it('handles Escape to clear selection', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({
+          selectionMode: 'multiple',
+          defaultSelectedKeys: ['a', 'b'],
+        });
+        const { listBoxProps } = createListBox({}, state);
+
+        expect(state.selectedKeys().size).toBe(2);
+
+        const event = createMockKeyboardEvent('Escape');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.selectedKeys().size).toBe(0);
+        dispose();
+      });
+    });
+
+    it('does not clear selection on Escape when disallowEmptySelection is true', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({
+          selectionMode: 'single',
+          defaultSelectedKeys: ['a'],
+          disallowEmptySelection: true,
+        });
+        const { listBoxProps } = createListBox({}, state);
+
+        expect(state.selectedKeys().size).toBe(1);
+
+        const event = createMockKeyboardEvent('Escape');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.selectedKeys().size).toBe(1);
+        dispose();
+      });
+    });
+
+    it('handles Ctrl+A to select all in multiple selection mode', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ selectionMode: 'multiple' });
+        const { listBoxProps } = createListBox({}, state);
+
+        expect(state.selectedKeys()).not.toBe('all');
+
+        const event = createMockKeyboardEvent('a', { ctrlKey: true });
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        // selectAll() sets selection to 'all' special value
+        expect(state.selectedKeys()).toBe('all');
+        dispose();
+      });
+    });
+
+    it('does not select all with Ctrl+A in single selection mode', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ selectionMode: 'single' });
+        const { listBoxProps } = createListBox({}, state);
+
+        const event = createMockKeyboardEvent('a', { ctrlKey: true });
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.selectedKeys().size).toBe(0);
+        dispose();
+      });
+    });
+
+    it('handles Shift+ArrowDown for range selection in multiple mode', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ selectionMode: 'multiple' });
+        const { listBoxProps } = createListBox({}, state);
+
+        state.setFocusedKey('a');
+        state.toggleSelection('a');
+
+        const event = createMockKeyboardEvent('ArrowDown', { shiftKey: true });
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('b');
+        expect(state.selectedKeys().has('a')).toBe(true);
+        expect(state.selectedKeys().has('b')).toBe(true);
+        dispose();
+      });
+    });
+
+    it('does not respond to keyboard when disabled', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({ isDisabled: true }, state);
+
+        state.setFocusedKey('a');
+
+        const event = createMockKeyboardEvent('ArrowDown');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('a'); // Focus should not change
+        dispose();
+      });
+    });
+
+    it('focuses first item when ArrowDown with no focus', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({}, state);
+
+        expect(state.focusedKey()).toBeNull();
+
+        const event = createMockKeyboardEvent('ArrowDown');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('a');
+        dispose();
+      });
+    });
+
+    it('focuses last item when ArrowUp with no focus', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({}, state);
+
+        expect(state.focusedKey()).toBeNull();
+
+        const event = createMockKeyboardEvent('ArrowUp');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('e');
+        dispose();
+      });
     });
   });
 
-  it('sets aria-disabled when disabled', () => {
-    createRoot((dispose) => {
-      const items = [
-        { key: 'a', label: 'Apple' },
-        { key: 'b', label: 'Banana' },
-      ];
+  describe('selection behavior', () => {
+    it('selects on ArrowDown in single selection mode', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ selectionMode: 'single' });
+        const { listBoxProps } = createListBox({}, state);
 
-      const state = createListState({
-        items,
-        getKey: (item) => item.key,
-        selectionMode: 'single',
+        state.setFocusedKey('a');
+
+        const event = createMockKeyboardEvent('ArrowDown');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('b');
+        expect(state.selectedKeys().has('b')).toBe(true);
+        dispose();
       });
+    });
 
-      const { listBoxProps } = createListBox({ isDisabled: true }, state);
+    it('does not select on ArrowDown in multiple selection mode without shift', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ selectionMode: 'multiple' });
+        const { listBoxProps } = createListBox({}, state);
 
-      expect(listBoxProps['aria-disabled']).toBe(true);
-      dispose();
+        state.setFocusedKey('a');
+
+        const event = createMockKeyboardEvent('ArrowDown');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('b');
+        expect(state.selectedKeys().size).toBe(0);
+        dispose();
+      });
+    });
+
+    it('does not modify selection in none selection mode', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ selectionMode: 'none' });
+        const { listBoxProps } = createListBox({}, state);
+
+        state.setFocusedKey('a');
+
+        const event = createMockKeyboardEvent(' ');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.selectedKeys().size).toBe(0);
+        dispose();
+      });
     });
   });
 
-  it('has tabIndex 0 when not disabled', () => {
-    createRoot((dispose) => {
-      const items = [
-        { key: 'a', label: 'Apple' },
-      ];
+  describe('onAction callback', () => {
+    it('calls onAction when Enter is pressed', () => {
+      createRoot((dispose) => {
+        const onAction = vi.fn();
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({ onAction }, state);
 
-      const state = createListState({
-        items,
-        getKey: (item) => item.key,
-        selectionMode: 'single',
+        state.setFocusedKey('c');
+
+        const event = createMockKeyboardEvent('Enter');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(onAction).toHaveBeenCalledWith('c');
+        dispose();
       });
-
-      const { listBoxProps } = createListBox({}, state);
-
-      expect(listBoxProps.tabIndex).toBe(0);
-      dispose();
     });
-  });
 
-  it('calls onAction when action occurs', () => {
-    createRoot((dispose) => {
-      const onAction = vi.fn();
-      const items = [
-        { key: 'a', label: 'Apple' },
-        { key: 'b', label: 'Banana' },
-      ];
+    it('calls onAction when Space is pressed', () => {
+      createRoot((dispose) => {
+        const onAction = vi.fn();
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({ onAction }, state);
 
-      const state = createListState({
-        items,
-        getKey: (item) => item.key,
-        selectionMode: 'single',
+        state.setFocusedKey('b');
+
+        const event = createMockKeyboardEvent(' ');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(onAction).toHaveBeenCalledWith('b');
+        dispose();
       });
-
-      state.setFocusedKey('a');
-
-      const { listBoxProps } = createListBox({ onAction }, state);
-
-      // Simulate Enter key
-      const onKeyDown = listBoxProps.onKeyDown as (e: KeyboardEvent) => void;
-      onKeyDown({
-        key: 'Enter',
-        preventDefault: vi.fn(),
-      } as unknown as KeyboardEvent);
-
-      expect(onAction).toHaveBeenCalledWith('a');
-      dispose();
     });
   });
 });
@@ -128,114 +454,148 @@ describe('createOption', () => {
     cleanup();
   });
 
-  it('returns option props with role="option"', () => {
-    createRoot((dispose) => {
-      const items = [
-        { key: 'a', label: 'Apple' },
-      ];
+  describe('ARIA attributes', () => {
+    it('returns optionProps with role="option"', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { optionProps } = createOption({ key: 'a' }, state);
 
-      const state = createListState({
-        items,
-        getKey: (item) => item.key,
-        selectionMode: 'single',
+        expect(optionProps.role).toBe('option');
+        dispose();
       });
+    });
 
-      const { optionProps } = createOption({ key: 'a' }, state);
+    it('sets aria-selected when selected', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ defaultSelectedKeys: ['a'] });
+        const { optionProps } = createOption({ key: 'a' }, state);
 
-      expect(optionProps.role).toBe('option');
-      dispose();
+        expect(optionProps['aria-selected']).toBe(true);
+        dispose();
+      });
+    });
+
+    it('sets aria-selected false when not selected', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { optionProps } = createOption({ key: 'b' }, state);
+
+        expect(optionProps['aria-selected']).toBe(false);
+        dispose();
+      });
+    });
+
+    it('sets aria-disabled when disabled', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ disabledKeys: ['a'] });
+        const { optionProps, isDisabled } = createOption({ key: 'a' }, state);
+
+        expect(optionProps['aria-disabled']).toBe(true);
+        expect(isDisabled()).toBe(true);
+        dispose();
+      });
+    });
+
+    it('does not set aria-disabled when not disabled', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { optionProps, isDisabled } = createOption({ key: 'a' }, state);
+
+        expect(optionProps['aria-disabled']).toBeUndefined();
+        expect(isDisabled()).toBe(false);
+        dispose();
+      });
     });
   });
 
-  it('sets aria-selected when selected', () => {
-    createRoot((dispose) => {
-      const items = [
-        { key: 'a', label: 'Apple' },
-        { key: 'b', label: 'Banana' },
-      ];
+  describe('state tracking', () => {
+    it('tracks selection state', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { isSelected } = createOption({ key: 'a' }, state);
 
-      const state = createListState({
-        items,
-        getKey: (item) => item.key,
-        selectionMode: 'single',
-        defaultSelectedKeys: ['a'],
+        expect(isSelected()).toBe(false);
+
+        state.select('a');
+        expect(isSelected()).toBe(true);
+
+        state.clearSelection();
+        expect(isSelected()).toBe(false);
+        dispose();
       });
+    });
 
-      const { optionProps: optionPropsA } = createOption({ key: 'a' }, state);
-      const { optionProps: optionPropsB } = createOption({ key: 'b' }, state);
+    it('tracks focused state', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { isFocused: isFocusedA } = createOption({ key: 'a' }, state);
+        const { isFocused: isFocusedB } = createOption({ key: 'b' }, state);
 
-      expect(optionPropsA['aria-selected']).toBe(true);
-      expect(optionPropsB['aria-selected']).toBe(false);
-      dispose();
+        expect(isFocusedA()).toBe(false);
+        expect(isFocusedB()).toBe(false);
+
+        state.setFocusedKey('a');
+        expect(isFocusedA()).toBe(true);
+        expect(isFocusedB()).toBe(false);
+
+        state.setFocusedKey('b');
+        expect(isFocusedA()).toBe(false);
+        expect(isFocusedB()).toBe(true);
+        dispose();
+      });
+    });
+
+    it('tracks disabled state', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ disabledKeys: ['a'] });
+        const { isDisabled: isDisabledA } = createOption({ key: 'a' }, state);
+        const { isDisabled: isDisabledB } = createOption({ key: 'b' }, state);
+
+        expect(isDisabledA()).toBe(true);
+        expect(isDisabledB()).toBe(false);
+        dispose();
+      });
     });
   });
 
-  it('sets aria-disabled when disabled', () => {
-    createRoot((dispose) => {
-      const items = [
-        { key: 'a', label: 'Apple' },
-      ];
+  describe('multiple options', () => {
+    it('correctly differentiates between options', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({
+          selectionMode: 'multiple',
+          defaultSelectedKeys: ['a', 'c'],
+          disabledKeys: ['b'],
+        });
 
-      const state = createListState({
-        items,
-        getKey: (item) => item.key,
-        selectionMode: 'single',
-        disabledKeys: ['a'],
+        state.setFocusedKey('c');
+
+        const optionA = createOption({ key: 'a' }, state);
+        const optionB = createOption({ key: 'b' }, state);
+        const optionC = createOption({ key: 'c' }, state);
+        const optionD = createOption({ key: 'd' }, state);
+
+        // Option A: selected, not focused, not disabled
+        expect(optionA.isSelected()).toBe(true);
+        expect(optionA.isFocused()).toBe(false);
+        expect(optionA.isDisabled()).toBe(false);
+
+        // Option B: not selected, not focused, disabled
+        expect(optionB.isSelected()).toBe(false);
+        expect(optionB.isFocused()).toBe(false);
+        expect(optionB.isDisabled()).toBe(true);
+
+        // Option C: selected, focused, not disabled
+        expect(optionC.isSelected()).toBe(true);
+        expect(optionC.isFocused()).toBe(true);
+        expect(optionC.isDisabled()).toBe(false);
+
+        // Option D: not selected, not focused, not disabled
+        expect(optionD.isSelected()).toBe(false);
+        expect(optionD.isFocused()).toBe(false);
+        expect(optionD.isDisabled()).toBe(false);
+
+        dispose();
       });
-
-      const { optionProps, isDisabled } = createOption({ key: 'a' }, state);
-
-      expect(optionProps['aria-disabled']).toBe(true);
-      expect(isDisabled()).toBe(true);
-      dispose();
-    });
-  });
-
-  it('tracks selection state', () => {
-    createRoot((dispose) => {
-      const items = [
-        { key: 'a', label: 'Apple' },
-      ];
-
-      const state = createListState({
-        items,
-        getKey: (item) => item.key,
-        selectionMode: 'single',
-      });
-
-      const { isSelected } = createOption({ key: 'a' }, state);
-
-      expect(isSelected()).toBe(false);
-
-      state.select('a');
-      expect(isSelected()).toBe(true);
-      dispose();
-    });
-  });
-
-  it('tracks focused state', () => {
-    createRoot((dispose) => {
-      const items = [
-        { key: 'a', label: 'Apple' },
-        { key: 'b', label: 'Banana' },
-      ];
-
-      const state = createListState({
-        items,
-        getKey: (item) => item.key,
-        selectionMode: 'single',
-      });
-
-      const { isFocused: isFocusedA } = createOption({ key: 'a' }, state);
-      const { isFocused: isFocusedB } = createOption({ key: 'b' }, state);
-
-      expect(isFocusedA()).toBe(false);
-      expect(isFocusedB()).toBe(false);
-
-      state.setFocusedKey('a');
-      expect(isFocusedA()).toBe(true);
-      expect(isFocusedB()).toBe(false);
-      dispose();
     });
   });
 });

@@ -153,4 +153,143 @@ describe('createDialog accessibility', () => {
     const dialog = screen.getByRole('alertdialog', { name: 'Confirm Delete' })
     expect(dialog).toBeInTheDocument()
   })
+
+  it('should support both aria-label and aria-describedby', () => {
+    render(() => (
+      <>
+        <p id="desc">This action cannot be undone.</p>
+        <TestDialog aria-label="Delete Item" aria-describedby="desc" />
+      </>
+    ))
+
+    const dialog = screen.getByRole('dialog', { name: 'Delete Item' })
+    expect(dialog).toHaveAttribute('aria-describedby', 'desc')
+  })
+
+  it('should work with complex labeling scenario', () => {
+    render(() => (
+      <>
+        <h2 id="dialog-title">Edit Profile</h2>
+        <p id="dialog-desc">Update your profile information below.</p>
+        <TestDialog aria-labelledby="dialog-title" aria-describedby="dialog-desc">
+          <input placeholder="Name" />
+          <button>Save</button>
+        </TestDialog>
+      </>
+    ))
+
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveAttribute('aria-labelledby', 'dialog-title')
+    expect(dialog).toHaveAttribute('aria-describedby', 'dialog-desc')
+  })
+})
+
+describe('createDialog titleProps', () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('returns titleProps with generated id when no labels provided', () => {
+    let dialogRef: HTMLDivElement | null = null
+    let capturedTitleProps: any
+
+    render(() => {
+      const { dialogProps, titleProps } = createDialog(
+        () => ({}),
+        () => dialogRef
+      )
+      capturedTitleProps = titleProps()
+      return (
+        <div ref={(el) => (dialogRef = el)} {...dialogProps()} data-testid="dialog">
+          <h2 {...titleProps()}>Title</h2>
+        </div>
+      )
+    })
+
+    expect(capturedTitleProps.id).toBeDefined()
+    expect(typeof capturedTitleProps.id).toBe('string')
+  })
+
+  it('titleProps id matches aria-labelledby when no labels provided', () => {
+    let capturedDialogProps: any
+    let capturedTitleProps: any
+
+    render(() => {
+      let dialogRef: HTMLDivElement | null = null
+      const { dialogProps, titleProps } = createDialog(
+        () => ({}),
+        () => dialogRef
+      )
+      capturedDialogProps = dialogProps()
+      capturedTitleProps = titleProps()
+      return (
+        <div ref={(el) => (dialogRef = el)} {...dialogProps()} data-testid="dialog">
+          <h2 {...titleProps()}>Title</h2>
+        </div>
+      )
+    })
+
+    expect(capturedDialogProps['aria-labelledby']).toBe(capturedTitleProps.id)
+  })
+})
+
+describe('createDialog edge cases', () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('should handle undefined ref gracefully', () => {
+    let capturedProps: any
+
+    render(() => {
+      const { dialogProps } = createDialog(
+        () => ({ 'aria-label': 'Test' }),
+        () => undefined
+      )
+      capturedProps = dialogProps()
+      return <div {...dialogProps()} data-testid="dialog" />
+    })
+
+    expect(capturedProps.role).toBe('dialog')
+  })
+
+  it('should include onBlur handler for focus management', () => {
+    let capturedProps: any
+
+    render(() => {
+      let dialogRef: HTMLDivElement | null = null
+      const { dialogProps } = createDialog(
+        () => ({ 'aria-label': 'Test' }),
+        () => dialogRef
+      )
+      capturedProps = dialogProps()
+      return <div ref={(el) => (dialogRef = el)} {...dialogProps()} data-testid="dialog" />
+    })
+
+    expect(typeof capturedProps.onBlur).toBe('function')
+  })
+
+  it('should be focusable via keyboard', () => {
+    render(() => <TestDialog aria-label="Test" />)
+    const dialog = screen.getByTestId('dialog')
+
+    dialog.focus()
+    expect(document.activeElement).toBe(dialog)
+  })
+
+  it('should render complex children structures', () => {
+    render(() => (
+      <TestDialog aria-label="Form Dialog">
+        <form>
+          <label>Name</label>
+          <input type="text" data-testid="name-input" />
+          <button type="submit">Submit</button>
+        </form>
+      </TestDialog>
+    ))
+
+    expect(screen.getByText('Name')).toBeInTheDocument()
+    expect(screen.getByTestId('name-input')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
+  })
 })
