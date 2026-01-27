@@ -91,4 +91,88 @@ describe('ProgressBar', () => {
     const percentage = progressbar.querySelector('.percentage');
     expect(percentage).toHaveTextContent('50');
   });
+
+  it('should clamp value to min/max range', () => {
+    render(() => (
+      <ProgressBar value={150} minValue={0} maxValue={100}>
+        {(renderProps) => <span class="percentage">{renderProps.percentage}</span>}
+      </ProgressBar>
+    ));
+
+    const progressbar = screen.getByRole('progressbar');
+    const percentage = progressbar.querySelector('.percentage');
+    expect(percentage).toHaveTextContent('100');
+  });
+
+  it('should handle zero progress', () => {
+    render(() => (
+      <ProgressBar value={0}>
+        {(renderProps) => <span class="percentage">{renderProps.percentage}</span>}
+      </ProgressBar>
+    ));
+
+    const progressbar = screen.getByRole('progressbar');
+    expect(progressbar).toHaveAttribute('aria-valuenow', '0');
+    const percentage = progressbar.querySelector('.percentage');
+    expect(percentage).toHaveTextContent('0');
+  });
+
+  it('should handle full progress', () => {
+    render(() => (
+      <ProgressBar value={100}>
+        {(renderProps) => <span class="percentage">{renderProps.percentage}</span>}
+      </ProgressBar>
+    ));
+
+    const progressbar = screen.getByRole('progressbar');
+    expect(progressbar).toHaveAttribute('aria-valuenow', '100');
+    const percentage = progressbar.querySelector('.percentage');
+    expect(percentage).toHaveTextContent('100');
+  });
+
+  it('should support custom min and max values', () => {
+    render(() => <ProgressBar value={50} minValue={0} maxValue={200} />);
+
+    const progressbar = screen.getByRole('progressbar');
+    expect(progressbar).toHaveAttribute('aria-valuenow', '50');
+    expect(progressbar).toHaveAttribute('aria-valuemin', '0');
+    expect(progressbar).toHaveAttribute('aria-valuemax', '200');
+  });
+
+  it('should support style as a function', () => {
+    render(() => (
+      <ProgressBar
+        value={75}
+        style={(renderProps) => ({
+          opacity: renderProps.isIndeterminate ? '0.5' : '1',
+        })}
+      >
+        Loading
+      </ProgressBar>
+    ));
+
+    const progressbar = screen.getByRole('progressbar') as HTMLElement;
+    expect(progressbar.style.opacity).toBe('1');
+  });
+
+  it('should support class as a function for determinate state', () => {
+    render(() => (
+      <ProgressBar
+        value={50}
+        class={(renderProps) => `progress ${renderProps.isIndeterminate ? 'loading' : 'determinate'}`}
+      >
+        Loading
+      </ProgressBar>
+    ));
+
+    const progressbar = screen.getByRole('progressbar');
+    expect(progressbar).toHaveClass('determinate');
+  });
+
+  it('should render as div element', () => {
+    render(() => <ProgressBar value={50} aria-label="Progress" />);
+
+    const progressbar = screen.getByRole('progressbar');
+    expect(progressbar.tagName).toBe('DIV');
+  });
 });

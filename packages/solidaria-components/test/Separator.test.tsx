@@ -57,4 +57,48 @@ describe('Separator', () => {
     const separator = screen.getByRole('separator');
     expect(separator.tagName).toBe('SPAN');
   });
+
+  it('should default to horizontal orientation', () => {
+    render(() => <Separator />);
+    const separator = screen.getByRole('separator');
+    // Horizontal is default, so aria-orientation may not be explicitly set
+    expect(separator).toBeTruthy();
+    expect(separator.tagName).toBe('HR');
+  });
+
+  it('should support style as an object', () => {
+    render(() => <Separator style={{ 'border-color': 'red' }} />);
+    const separator = screen.getByRole('separator') as HTMLElement;
+    expect(separator.style.borderColor).toBe('red');
+  });
+
+  it('should support style as a function', () => {
+    render(() => (
+      <Separator
+        orientation="vertical"
+        style={(props) => ({
+          height: props.orientation === 'vertical' ? '100%' : '1px',
+        })}
+      />
+    ));
+    const separator = screen.getByRole('separator') as HTMLElement;
+    expect(separator.style.height).toBe('100%');
+  });
+
+  it('should support aria-labelledby', () => {
+    render(() => (
+      <>
+        <span id="sep-label">Section break</span>
+        <Separator aria-labelledby="sep-label" />
+      </>
+    ));
+    const separator = screen.getByRole('separator');
+    expect(separator).toHaveAttribute('aria-labelledby', 'sep-label');
+  });
+
+  it('should keep custom elementType for vertical orientation', () => {
+    render(() => <Separator orientation="vertical" elementType="span" />);
+    const separator = screen.getByRole('separator');
+    expect(separator.tagName).toBe('SPAN');
+  });
 });

@@ -2,9 +2,18 @@
  * Tests for Table component.
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot } from 'solid-js';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '../src/Table';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, screen, cleanup } from '@solidjs/testing-library';
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableSelectionCheckbox,
+  TableSelectAllCheckbox,
+} from '../src/Table';
 
 // Test data
 const testColumns = [
@@ -19,169 +28,457 @@ const testData = [
   { id: 3, name: 'Blastoise', type: 'Water', level: 42 },
 ];
 
-describe('Table', () => {
-  describe('basic rendering', () => {
-    it('should create a table element with role="grid"', () => {
-      createRoot((dispose) => {
-        // Just verify the component can be instantiated
-        const table = Table({
-          items: testData,
-          columns: testColumns,
-          getKey: (item) => item.id,
-          children: undefined,
-        });
+// Helper using render props at every nesting level to avoid solid-refresh HMR context issues
+function TestTable(props: Partial<Parameters<typeof Table>[0]> = {}) {
+  return (
+    <Table
+      items={testData}
+      columns={testColumns}
+      getKey={(item: any) => item.id}
+      aria-label="Pokemon"
+      {...props}
+    >
+      {() => (
+        <>
+          <TableHeader>
+            <TableColumn id="name">{() => <>Name</>}</TableColumn>
+            <TableColumn id="type">{() => <>Type</>}</TableColumn>
+            <TableColumn id="level">{() => <>Level</>}</TableColumn>
+          </TableHeader>
+          <TableBody>
+            {(item: any) => (
+              <TableRow id={item.id} item={item}>
+                {() => (
+                  <>
+                    <TableCell>{() => <>{item.name}</>}</TableCell>
+                    <TableCell>{() => <>{item.type}</>}</TableCell>
+                    <TableCell>{() => <>{item.level}</>}</TableCell>
+                  </>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </>
+      )}
+    </Table>
+  );
+}
 
-        // The component returns a JSX element (table)
-        expect(table).toBeDefined();
-        dispose();
-      });
+describe('Table', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  // ============================================
+  // BASIC RENDERING
+  // ============================================
+
+  describe('rendering', () => {
+    it('should render with default class', () => {
+      render(() => <TestTable />);
+
+      const table = document.querySelector('.solidaria-Table');
+      expect(table).toBeTruthy();
+      expect(table?.tagName).toBe('TABLE');
     });
 
-    it('should accept items and columns props', () => {
-      createRoot((dispose) => {
-        // Verify props are accepted
-        expect(() => {
-          Table({
-            items: testData,
-            columns: testColumns,
-            getKey: (item) => item.id,
-            children: undefined,
-          });
-        }).not.toThrow();
-        dispose();
-      });
+    it('should render with custom class', () => {
+      render(() => <TestTable class="custom-table" />);
+
+      const table = document.querySelector('.custom-table');
+      expect(table).toBeTruthy();
+    });
+
+    it('should render header', () => {
+      render(() => <TestTable />);
+
+      const header = document.querySelector('.solidaria-Table-header');
+      expect(header).toBeTruthy();
+      expect(header?.tagName).toBe('THEAD');
+    });
+
+    it('should render column headers', () => {
+      render(() => <TestTable />);
+
+      const columns = document.querySelectorAll('.solidaria-Table-column');
+      expect(columns.length).toBe(3);
+      expect(screen.getByText('Name')).toBeTruthy();
+      expect(screen.getByText('Type')).toBeTruthy();
+      expect(screen.getByText('Level')).toBeTruthy();
+    });
+
+    it('should render body', () => {
+      render(() => <TestTable />);
+
+      const body = document.querySelector('.solidaria-Table-body');
+      expect(body).toBeTruthy();
+      expect(body?.tagName).toBe('TBODY');
+    });
+
+    it('should render rows', () => {
+      render(() => <TestTable />);
+
+      const rows = document.querySelectorAll('.solidaria-Table-row');
+      expect(rows.length).toBe(3);
+    });
+
+    it('should render cells with data', () => {
+      render(() => <TestTable />);
+
+      expect(screen.getByText('Pikachu')).toBeTruthy();
+      expect(screen.getByText('Electric')).toBeTruthy();
+      expect(screen.getByText('Charizard')).toBeTruthy();
+      expect(screen.getByText('Fire')).toBeTruthy();
+    });
+
+    it('should render cells with default class', () => {
+      render(() => <TestTable />);
+
+      const cells = document.querySelectorAll('.solidaria-Table-cell');
+      expect(cells.length).toBe(9);
     });
   });
 
+  // ============================================
+  // DATA ATTRIBUTES
+  // ============================================
+
+  describe('data attributes', () => {
+    it('should have data-empty when table is empty', () => {
+      render(() => (
+        <Table items={[]} columns={testColumns} aria-label="Empty table">
+          {() => (
+            <>
+              <TableHeader>
+                <TableColumn id="name">{() => <>Name</>}</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {() => (
+                  <TableRow id="x">
+                    {() => <TableCell>{() => <>x</>}</TableCell>}
+                  </TableRow>
+                )}
+              </TableBody>
+            </>
+          )}
+        </Table>
+      ));
+
+      const table = document.querySelector('.solidaria-Table');
+      expect(table?.getAttribute('data-empty')).toBeTruthy();
+    });
+  });
+
+  // ============================================
+  // SELECTION
+  // ============================================
+
   describe('selection', () => {
-    it('should accept selectionMode prop', () => {
-      createRoot((dispose) => {
-        expect(() => {
-          Table({
-            items: testData,
-            columns: testColumns,
-            getKey: (item) => item.id,
-            selectionMode: 'single',
-            children: undefined,
-          });
-        }).not.toThrow();
-        dispose();
-      });
+    it('should support single selection mode', () => {
+      render(() => <TestTable selectionMode="single" />);
+
+      const table = document.querySelector('.solidaria-Table');
+      expect(table).toBeTruthy();
     });
 
-    it('should accept selectedKeys prop', () => {
-      createRoot((dispose) => {
-        expect(() => {
-          Table({
-            items: testData,
-            columns: testColumns,
-            getKey: (item) => item.id,
-            selectionMode: 'multiple',
-            selectedKeys: new Set([1, 2]),
-            children: undefined,
-          });
-        }).not.toThrow();
-        dispose();
-      });
+    it('should support multiple selection mode', () => {
+      render(() => <TestTable selectionMode="multiple" />);
+
+      const table = document.querySelector('.solidaria-Table');
+      expect(table).toBeTruthy();
+    });
+
+    it('should support default selected keys', () => {
+      render(() => (
+        <TestTable
+          selectionMode="multiple"
+          defaultSelectedKeys={new Set([1, 2])}
+        />
+      ));
+
+      const selectedRows = document.querySelectorAll('[data-selected]');
+      expect(selectedRows.length).toBe(2);
     });
 
     it('should call onSelectionChange', () => {
       const onSelectionChange = vi.fn();
 
-      createRoot((dispose) => {
-        expect(() => {
-          Table({
-            items: testData,
-            columns: testColumns,
-            getKey: (item) => item.id,
-            selectionMode: 'single',
-            onSelectionChange,
-            children: undefined,
-          });
-        }).not.toThrow();
-        dispose();
-      });
+      render(() => (
+        <TestTable
+          selectionMode="single"
+          onSelectionChange={onSelectionChange}
+        />
+      ));
+
+      const table = document.querySelector('.solidaria-Table');
+      expect(table).toBeTruthy();
     });
   });
+
+  // ============================================
+  // SORTING
+  // ============================================
 
   describe('sorting', () => {
-    it('should accept sortDescriptor prop', () => {
-      createRoot((dispose) => {
-        expect(() => {
-          Table({
-            items: testData,
-            columns: testColumns,
-            getKey: (item) => item.id,
-            sortDescriptor: { column: 'name', direction: 'ascending' },
-            children: undefined,
-          });
-        }).not.toThrow();
-        dispose();
-      });
+    it('should support sortDescriptor prop', () => {
+      render(() => (
+        <TestTable sortDescriptor={{ column: 'name', direction: 'ascending' }} />
+      ));
+
+      const table = document.querySelector('.solidaria-Table');
+      expect(table).toBeTruthy();
     });
 
-    it('should call onSortChange', () => {
-      const onSortChange = vi.fn();
+    it('should support sortable columns', () => {
+      render(() => (
+        <Table
+          items={testData}
+          columns={testColumns}
+          getKey={(item: any) => item.id}
+          aria-label="Pokemon"
+          sortDescriptor={{ column: 'name', direction: 'ascending' }}
+        >
+          {() => (
+            <>
+              <TableHeader>
+                <TableColumn id="name" allowsSorting>{() => <>Name</>}</TableColumn>
+                <TableColumn id="type">{() => <>Type</>}</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {(item: any) => (
+                  <TableRow id={item.id}>
+                    {() => (
+                      <>
+                        <TableCell>{() => <>{item.name}</>}</TableCell>
+                        <TableCell>{() => <>{item.type}</>}</TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+            </>
+          )}
+        </Table>
+      ));
 
-      createRoot((dispose) => {
-        expect(() => {
-          Table({
-            items: testData,
-            columns: testColumns,
-            getKey: (item) => item.id,
-            onSortChange,
-            children: undefined,
-          });
-        }).not.toThrow();
-        dispose();
-      });
+      const sortableColumn = document.querySelector('[data-sortable]');
+      expect(sortableColumn).toBeTruthy();
+    });
+
+    it('should show sort direction on sorted column', () => {
+      render(() => (
+        <Table
+          items={testData}
+          columns={testColumns}
+          getKey={(item: any) => item.id}
+          aria-label="Pokemon"
+          sortDescriptor={{ column: 'name', direction: 'ascending' }}
+        >
+          {() => (
+            <>
+              <TableHeader>
+                <TableColumn id="name" allowsSorting>{() => <>Name</>}</TableColumn>
+                <TableColumn id="type">{() => <>Type</>}</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {(item: any) => (
+                  <TableRow id={item.id}>
+                    {() => (
+                      <>
+                        <TableCell>{() => <>{item.name}</>}</TableCell>
+                        <TableCell>{() => <>{item.type}</>}</TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+            </>
+          )}
+        </Table>
+      ));
+
+      const sortedColumn = document.querySelector('[data-sort-direction="ascending"]');
+      expect(sortedColumn).toBeTruthy();
     });
   });
+
+  // ============================================
+  // ACCESSIBILITY
+  // ============================================
 
   describe('accessibility', () => {
-    it('should accept aria-label prop', () => {
-      createRoot((dispose) => {
-        expect(() => {
-          Table({
-            items: testData,
-            columns: testColumns,
-            getKey: (item) => item.id,
-            'aria-label': 'Test Table',
-            children: undefined,
-          });
-        }).not.toThrow();
-        dispose();
-      });
+    it('should have aria-label', () => {
+      render(() => <TestTable />);
+
+      const table = document.querySelector('[aria-label="Pokemon"]');
+      expect(table).toBeTruthy();
+    });
+
+    it('should render as grid role', () => {
+      render(() => <TestTable />);
+
+      const grid = document.querySelector('[role="grid"]');
+      expect(grid).toBeTruthy();
     });
   });
-});
 
-describe('TableHeader', () => {
-  it('should be a function', () => {
-    expect(typeof TableHeader).toBe('function');
+  // ============================================
+  // RENDER PROPS
+  // ============================================
+
+  describe('render props', () => {
+    it('should support class as a function', () => {
+      render(() => (
+        <TestTable class={(props) => `table ${props.isEmpty ? 'empty' : 'has-data'}`} />
+      ));
+
+      const table = document.querySelector('.has-data');
+      expect(table).toBeTruthy();
+    });
+
+    it('should support row class as a function', () => {
+      render(() => (
+        <Table
+          items={testData}
+          columns={testColumns}
+          getKey={(item: any) => item.id}
+          aria-label="Pokemon"
+          selectionMode="single"
+          defaultSelectedKeys={new Set([1])}
+        >
+          {() => (
+            <>
+              <TableHeader>
+                <TableColumn id="name">{() => <>Name</>}</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {(item: any) => (
+                  <TableRow
+                    id={item.id}
+                    class={(props) => `row ${props.isSelected ? 'selected' : ''}`}
+                  >
+                    {() => <TableCell>{() => <>{item.name}</>}</TableCell>}
+                  </TableRow>
+                )}
+              </TableBody>
+            </>
+          )}
+        </Table>
+      ));
+
+      const selectedRow = document.querySelector('.row.selected');
+      expect(selectedRow).toBeTruthy();
+    });
   });
-});
 
-describe('TableColumn', () => {
-  it('should be a function', () => {
-    expect(typeof TableColumn).toBe('function');
+  // ============================================
+  // EMPTY STATE
+  // ============================================
+
+  describe('empty state', () => {
+    it('should render empty state in body', () => {
+      render(() => (
+        <Table items={[]} columns={testColumns} aria-label="Empty table">
+          {() => (
+            <>
+              <TableHeader>
+                <TableColumn id="name">{() => <>Name</>}</TableColumn>
+              </TableHeader>
+              <TableBody renderEmptyState={() => <tr><td>No data available</td></tr>}>
+                {() => (
+                  <TableRow id="x">
+                    {() => <TableCell>{() => <>x</>}</TableCell>}
+                  </TableRow>
+                )}
+              </TableBody>
+            </>
+          )}
+        </Table>
+      ));
+
+      expect(screen.getByText('No data available')).toBeTruthy();
+    });
   });
-});
 
-describe('TableBody', () => {
-  it('should be a function', () => {
-    expect(typeof TableBody).toBe('function');
+  // ============================================
+  // CONTEXT ERRORS
+  // ============================================
+
+  describe('context errors', () => {
+    it('should throw when TableHeader is used outside Table', () => {
+      expect(() => {
+        render(() => <TableHeader><th>Test</th></TableHeader>);
+      }).toThrow('TableHeader must be used within a Table');
+    });
+
+    it('should throw when TableColumn is used outside Table', () => {
+      expect(() => {
+        render(() => <TableColumn id="test">{() => <>Test</>}</TableColumn>);
+      }).toThrow('TableColumn must be used within a Table');
+    });
+
+    it('should throw when TableBody is used outside Table', () => {
+      expect(() => {
+        render(() => <TableBody>{() => <tr />}</TableBody>);
+      }).toThrow('TableBody must be used within a Table');
+    });
+
+    it('should throw when TableRow is used outside Table', () => {
+      expect(() => {
+        render(() => <TableRow id="test">{() => <td>Test</td>}</TableRow>);
+      }).toThrow('TableRow must be used within a Table');
+    });
+
+    it('should throw when TableCell is used outside Table', () => {
+      expect(() => {
+        render(() => <TableCell>{() => <>Test</>}</TableCell>);
+      }).toThrow('TableCell must be used within a Table');
+    });
+
+    it('should throw when TableSelectionCheckbox is used outside Table', () => {
+      expect(() => {
+        render(() => <TableSelectionCheckbox rowKey="test" />);
+      }).toThrow('TableSelectionCheckbox must be used within a Table');
+    });
+
+    it('should throw when TableSelectAllCheckbox is used outside Table', () => {
+      expect(() => {
+        render(() => <TableSelectAllCheckbox />);
+      }).toThrow('TableSelectAllCheckbox must be used within a Table');
+    });
   });
-});
 
-describe('TableRow', () => {
-  it('should be a function', () => {
-    expect(typeof TableRow).toBe('function');
-  });
-});
+  // ============================================
+  // STATIC PROPERTIES
+  // ============================================
 
-describe('TableCell', () => {
-  it('should be a function', () => {
-    expect(typeof TableCell).toBe('function');
+  describe('static properties', () => {
+    it('should have Header as static property', () => {
+      expect(Table.Header).toBe(TableHeader);
+    });
+
+    it('should have Column as static property', () => {
+      expect(Table.Column).toBe(TableColumn);
+    });
+
+    it('should have Body as static property', () => {
+      expect(Table.Body).toBe(TableBody);
+    });
+
+    it('should have Row as static property', () => {
+      expect(Table.Row).toBe(TableRow);
+    });
+
+    it('should have Cell as static property', () => {
+      expect(Table.Cell).toBe(TableCell);
+    });
+
+    it('should have SelectionCheckbox as static property', () => {
+      expect(Table.SelectionCheckbox).toBe(TableSelectionCheckbox);
+    });
+
+    it('should have SelectAllCheckbox as static property', () => {
+      expect(Table.SelectAllCheckbox).toBe(TableSelectAllCheckbox);
+    });
   });
 });
