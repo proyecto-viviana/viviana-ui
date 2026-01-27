@@ -154,4 +154,66 @@ describe('Link', () => {
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
+
+  it('should render as span when disabled with href', () => {
+    render(() => (
+      <Link href="https://example.com" isDisabled>
+        Test
+      </Link>
+    ));
+    const link = screen.getByRole('link');
+    expect(link.tagName).toBe('SPAN');
+  });
+
+  it('should support slot prop', () => {
+    render(() => <Link slot="nav-link">Test</Link>);
+    const link = screen.getByRole('link');
+    expect(link).toBeTruthy();
+  });
+
+  it('should support style as an object', () => {
+    render(() => (
+      <Link style={{ color: 'blue' }}>Test</Link>
+    ));
+    const link = screen.getByRole('link') as HTMLElement;
+    expect(link.style.color).toBe('blue');
+  });
+
+  it('should support style as a function', () => {
+    render(() => (
+      <Link style={(props) => ({ opacity: props.isDisabled ? '0.5' : '1' })}>
+        Test
+      </Link>
+    ));
+    const link = screen.getByRole('link') as HTMLElement;
+    expect(link.style.opacity).toBe('1');
+  });
+
+  it('should call onPress handler', async () => {
+    const onPress = vi.fn();
+    render(() => <Link onPress={onPress}>Test</Link>);
+    const link = screen.getByRole('link');
+
+    await userEvent.click(link);
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not call onPress when disabled', async () => {
+    const onPress = vi.fn();
+    render(() => (
+      <Link isDisabled onPress={onPress}>
+        Test
+      </Link>
+    ));
+    const link = screen.getByRole('link');
+
+    await userEvent.click(link);
+    expect(onPress).not.toHaveBeenCalled();
+  });
+
+  it('should support aria-label', () => {
+    render(() => <Link aria-label="Go home">🏠</Link>);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('aria-label', 'Go home');
+  });
 });

@@ -13,6 +13,9 @@ import {
   ToastProvider,
   ToastTitle,
   ToastDescription,
+  globalToastQueue,
+  addToast,
+  useToastContext,
 } from '../src/Toast';
 
 // User event instance - created per test
@@ -148,6 +151,98 @@ describe('Toast', () => {
 
       expect(screen.getByText('Notification')).toBeInTheDocument();
       expect(screen.getByText('You have a new message')).toBeInTheDocument();
+    });
+  });
+
+  // ============================================
+  // GLOBAL TOAST QUEUE
+  // ============================================
+
+  describe('globalToastQueue', () => {
+    it('should be a ToastQueue instance', () => {
+      expect(globalToastQueue).toBeTruthy();
+      expect(typeof globalToastQueue.add).toBe('function');
+    });
+
+    it('should support adding toasts', () => {
+      const key = globalToastQueue.add({ title: 'Test' });
+      expect(key).toBeTruthy();
+      expect(typeof key).toBe('string');
+      // Clean up
+      globalToastQueue.close(key);
+    });
+  });
+
+  // ============================================
+  // ADD TOAST UTILITY
+  // ============================================
+
+  describe('addToast', () => {
+    it('should add a toast to global queue and return key', () => {
+      const key = addToast({ title: 'Hello' });
+      expect(key).toBeTruthy();
+      expect(typeof key).toBe('string');
+      // Clean up
+      globalToastQueue.close(key);
+    });
+
+    it('should support toast with description', () => {
+      const key = addToast({ title: 'Title', description: 'Description' });
+      expect(key).toBeTruthy();
+      globalToastQueue.close(key);
+    });
+
+    it('should support toast with type', () => {
+      const key = addToast({ title: 'Success', type: 'success' });
+      expect(key).toBeTruthy();
+      globalToastQueue.close(key);
+    });
+
+    it('should support toast with options', () => {
+      const key = addToast({ title: 'Quick' }, { timeout: 3000 });
+      expect(key).toBeTruthy();
+      globalToastQueue.close(key);
+    });
+  });
+
+  // ============================================
+  // TOAST PROVIDER OPTIONS
+  // ============================================
+
+  describe('ToastProvider options', () => {
+    it('should support useGlobalQueue option', () => {
+      render(() => (
+        <ToastProvider useGlobalQueue>
+          <div data-testid="child">Content</div>
+        </ToastProvider>
+      ));
+
+      expect(screen.getByTestId('child')).toBeInTheDocument();
+    });
+
+    it('should support custom queueOptions', () => {
+      render(() => (
+        <ToastProvider queueOptions={{ maxVisibleToasts: 3 }}>
+          <div data-testid="child">Content</div>
+        </ToastProvider>
+      ));
+
+      expect(screen.getByTestId('child')).toBeInTheDocument();
+    });
+  });
+
+  // ============================================
+  // CONTEXT ERROR
+  // ============================================
+
+  describe('context error', () => {
+    it('useToastContext should throw outside provider', () => {
+      expect(() => {
+        render(() => {
+          useToastContext();
+          return <div />;
+        });
+      }).toThrow('Toast components must be used within a ToastProvider');
     });
   });
 });

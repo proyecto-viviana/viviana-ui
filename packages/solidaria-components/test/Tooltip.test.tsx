@@ -181,4 +181,77 @@ describe('Tooltip', () => {
     expect(screen.getByTestId('tooltip')).toBeInTheDocument();
     expect(screen.getByText('Standalone tooltip')).toBeInTheDocument();
   });
+
+  it('should not render standalone tooltip when isOpen is false', () => {
+    render(() => (
+      <Tooltip isOpen={false} data-testid="tooltip">
+        Hidden tooltip
+      </Tooltip>
+    ));
+
+    expect(screen.queryByTestId('tooltip')).not.toBeInTheDocument();
+  });
+
+  it('should default placement to top', () => {
+    render(() => (
+      <TooltipTrigger isOpen>
+        <Button>Hover me</Button>
+        <Tooltip data-testid="tooltip">Content</Tooltip>
+      </TooltipTrigger>
+    ));
+
+    expect(screen.getByTestId('tooltip')).toHaveAttribute('data-placement', 'top');
+  });
+
+  it('should support left placement', () => {
+    render(() => (
+      <TooltipTrigger isOpen>
+        <Button>Hover me</Button>
+        <Tooltip data-testid="tooltip" placement="left">Content</Tooltip>
+      </TooltipTrigger>
+    ));
+
+    expect(screen.getByTestId('tooltip')).toHaveAttribute('data-placement', 'left');
+  });
+
+  it('should support right placement', () => {
+    render(() => (
+      <TooltipTrigger isOpen>
+        <Button>Hover me</Button>
+        <Tooltip data-testid="tooltip" placement="right">Content</Tooltip>
+      </TooltipTrigger>
+    ));
+
+    expect(screen.getByTestId('tooltip')).toHaveAttribute('data-placement', 'right');
+  });
+
+  it('should render with default class', () => {
+    render(() => (
+      <TooltipTrigger isOpen>
+        <Button>Hover me</Button>
+        <Tooltip data-testid="tooltip">Content</Tooltip>
+      </TooltipTrigger>
+    ));
+
+    expect(screen.getByTestId('tooltip')).toHaveClass('solidaria-Tooltip');
+  });
+
+  it('should support style as a function', () => {
+    render(() => (
+      <TooltipTrigger isOpen>
+        <Button>Hover me</Button>
+        <Tooltip
+          data-testid="tooltip"
+          style={({ placement }) => ({
+            'background-color': placement === 'top' ? 'black' : 'gray',
+          })}
+        >
+          Content
+        </Tooltip>
+      </TooltipTrigger>
+    ));
+
+    const tooltip = screen.getByTestId('tooltip') as HTMLElement;
+    expect(tooltip.style.backgroundColor).toBe('black');
+  });
 });

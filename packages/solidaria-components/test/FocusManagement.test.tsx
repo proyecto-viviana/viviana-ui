@@ -352,4 +352,68 @@ describe('FocusScope Behavior', () => {
     const menu = screen.getByRole('menu');
     expect(document.activeElement).toBe(menu);
   });
+
+  it('should not move focus to menu trigger when menu is not open', () => {
+    render(() => (
+      <>
+        <button data-testid="other">Other</button>
+        <MenuTrigger>
+          <MenuButton>Open Menu</MenuButton>
+          <Menu<TestItem>
+            aria-label="Test"
+            items={testItems}
+            getKey={(item) => item.id}
+          >
+            {(item) => <MenuItem id={item.id}>{item.name}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      </>
+    ));
+
+    const other = screen.getByTestId('other');
+    other.focus();
+    expect(document.activeElement).toBe(other);
+    // Menu is not open, so focus stays on other button
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('should support multiple menu triggers independently', async () => {
+    render(() => (
+      <>
+        <MenuTrigger>
+          <MenuButton>Menu 1</MenuButton>
+          <Menu<TestItem>
+            aria-label="First menu"
+            items={testItems}
+            getKey={(item) => item.id}
+          >
+            {(item) => <MenuItem id={item.id}>{item.name}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+        <MenuTrigger>
+          <MenuButton>Menu 2</MenuButton>
+          <Menu<TestItem>
+            aria-label="Second menu"
+            items={[{ id: 'x', name: 'X' }]}
+            getKey={(item) => item.id}
+          >
+            {(item) => <MenuItem id={item.id}>{item.name}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      </>
+    ));
+
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.length).toBe(2);
+
+    // Open first menu
+    await user.click(buttons[0]);
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+
+    // Close it
+    await user.keyboard('{Escape}');
+    await waitFor(() => {
+      expect(document.activeElement).toBe(buttons[0]);
+    });
+  });
 });
