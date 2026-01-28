@@ -144,6 +144,13 @@ export {
   type Orientation,
 } from './separator';
 
+// Toolbar
+export {
+  createToolbar,
+  type AriaToolbarProps,
+  type ToolbarAria,
+} from './toolbar';
+
 // Overlays
 export {
   // Scroll prevention

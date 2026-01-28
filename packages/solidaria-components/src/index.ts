@@ -110,6 +110,15 @@ export {
   type SeparatorRenderProps,
 } from './Separator';
 
+// Toolbar
+export {
+  Toolbar,
+  ToolbarContext,
+  type ToolbarProps,
+  type ToolbarRenderProps,
+  type ToolbarContextValue,
+} from './Toolbar';
+
 // ListBox
 export {
   ListBox,

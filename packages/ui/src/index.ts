@@ -62,6 +62,10 @@ export type { ProgressBarProps, ProgressBarSize, ProgressBarVariant } from './pr
 export { Separator } from './separator';
 export type { SeparatorProps, SeparatorVariant, SeparatorSize } from './separator';
 
+// Toolbar
+export { Toolbar } from './toolbar';
+export type { ToolbarProps, ToolbarSize, ToolbarVariant } from './toolbar';
+
 // Select
 export { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from './select';
 export type { SelectProps, SelectTriggerProps, SelectValueProps, SelectListBoxProps, SelectOptionProps, SelectSize } from './select';
