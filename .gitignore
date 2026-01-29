@@ -32,7 +32,8 @@ npm-debug.log*
 .env.local
 .env.*.local
 
-# Bun
+# Bun (only used for test runtime)
+bun.lock
 bun.lockb
 
 # TanStack
@@ -48,3 +49,5 @@ CLAUDE.md
 # Local
 .DS_Store
 .mcp.json
+react-aria-tests.txt
+solidaria-tests.txt

@@ -306,8 +306,8 @@ function CustomCheckbox(props) {
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) >= 1.0
-- Node.js >= 18
+- [Deno](https://deno.com/) >= 2.0 (primary runtime)
+- [Bun](https://bun.sh/) >= 1.0 (used only as runtime for tests)
 
 ### Setup
 
@@ -317,25 +317,26 @@ git clone https://github.com/proyecto-viviana/proyecto-viviana.git
 cd proyecto-viviana
 
 # Install dependencies
-bun install
+deno task install
 
 # Build all packages
-bun run build
+deno task build
 
 # Start development server
-bun run dev
+deno task dev
 ```
 
 ### Scripts
 
 | Command | Description |
 |---------|-------------|
-| `bun run build` | Build all packages |
-| `bun run dev` | Start development server (playground) |
-| `bun run test` | Run tests in watch mode |
-| `bun run test:run` | Run tests once |
-| `bun run typecheck` | TypeScript type checking |
-| `bun run release` | Build and publish packages |
+| `deno task install` | Install npm dependencies |
+| `deno task build` | Build all packages |
+| `deno task dev` | Start development server (playground) |
+| `deno task test` | Run tests once (uses Bun runtime) |
+| `deno task test:watch` | Run tests in watch mode (uses Bun runtime) |
+| `deno task typecheck` | TypeScript type checking |
+| `deno task release` | Build and publish packages |
 
 ### Project Structure
 

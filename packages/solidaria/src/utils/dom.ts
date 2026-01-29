@@ -122,7 +122,7 @@ export function isValidKeyboardEvent(event: KeyboardEvent, currentTarget: Elemen
   }
 
   // Links should only respond to Enter, not Space
-  const isLink = tagName === 'a' || role === 'link';
+  const isLink = role === 'link' || (!role && isHTMLAnchorLink(element));
   if (isLink && key !== 'Enter') {
     return false;
   }

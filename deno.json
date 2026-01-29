@@ -9,6 +9,7 @@
     "./apps/web"
   ],
   "tasks": {
+    "install": "npm install",
     "build": "deno task build:stately && deno task build:solidaria && deno task build:components && deno task build:ui",
     "build:stately": "deno run -A scripts/build.ts solid-stately",
     "build:solidaria": "deno run -A scripts/build.ts solidaria",

@@ -119,6 +119,20 @@ export {
   type ToolbarContextValue,
 } from './Toolbar';
 
+// Autocomplete
+export {
+  Autocomplete,
+  AutocompleteContext,
+  AutocompleteStateContext,
+  AutocompleteCollectionContext,
+  useAutocompleteInput,
+  useAutocompleteState,
+  useAutocompleteCollection,
+  type AutocompleteProps,
+  type AutocompleteContextValue,
+  type AutocompleteCollectionContextValue,
+} from './Autocomplete';
+
 // ListBox
 export {
   ListBox,

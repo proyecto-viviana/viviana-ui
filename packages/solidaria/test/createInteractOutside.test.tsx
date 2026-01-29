@@ -22,6 +22,20 @@ function pointerEvent(type: string, opts: Partial<PointerEventInit> = {}) {
   return evt;
 }
 
+const originalPointerEvent = typeof PointerEvent !== 'undefined' ? PointerEvent : undefined;
+
+function disablePointerEvents() {
+  try {
+    delete (globalThis as any).PointerEvent;
+  } catch {
+    (globalThis as any).PointerEvent = undefined;
+  }
+}
+
+function restorePointerEvents() {
+  (globalThis as any).PointerEvent = originalPointerEvent;
+}
+
 // Test component that uses createInteractOutside
 interface ExampleProps {
   onInteractOutside?: (e: PointerEvent) => void;

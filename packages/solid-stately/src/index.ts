@@ -5,6 +5,13 @@ export {
   type ToggleState,
 } from './toggle';
 
+// Autocomplete
+export {
+  createAutocompleteState,
+  type AutocompleteState,
+  type AutocompleteStateOptions,
+} from './autocomplete';
+
 // TextField
 export {
   createTextFieldState,

@@ -24,6 +24,7 @@ import {
   openLink,
   isMac,
   createGlobalListeners,
+  setEventTarget,
 } from '../utils';
 
 // Re-export PressEvent types
@@ -170,18 +171,20 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     return shouldStopPropagation;
   };
 
-  const triggerPressEnd = (originalEvent: Event, pointerType: PointerType, wasPressed = true): void => {
+  const triggerPressEnd = (originalEvent: Event, pointerType: PointerType, wasPressed = true): boolean => {
     if (!pressState.didFirePressStart) {
-      return;
+      return true;
     }
 
     pressState.ignoreClickAfterPress = true;
     pressState.didFirePressStart = false;
     pressState.isTriggeringEvent = true;
 
+    let shouldStopPropagation = true;
     if (props.onPressEnd) {
       const event = createPressEvent('pressend', pointerType, originalEvent, pressState.target!);
       props.onPressEnd(event);
+      shouldStopPropagation = event.shouldStopPropagation;
     }
 
     if (props.onPressChange) {
@@ -198,11 +201,13 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     }
 
     pressState.isTriggeringEvent = false;
+
+    return shouldStopPropagation;
   };
 
-  const triggerPressUp = (originalEvent: Event, pointerType: PointerType): void => {
+  const triggerPressUp = (originalEvent: Event, pointerType: PointerType): boolean => {
     if (isDisabledValue(props.isDisabled)) {
-      return;
+      return true;
     }
 
     if (props.onPressUp) {
@@ -210,6 +215,21 @@ export function createPress(props: CreatePressProps = {}): PressResult {
       const event = createPressEvent('pressup', pointerType, originalEvent, pressState.target!);
       props.onPressUp(event);
       pressState.isTriggeringEvent = false;
+      return event.shouldStopPropagation;
+    }
+
+    return true;
+  };
+
+  const triggerSyntheticClick = (originalEvent: KeyboardEvent | TouchEvent, target: HTMLElement): void => {
+    if (isDisabledValue(props.isDisabled)) {
+      return;
+    }
+
+    if (props.onClick) {
+      const event = new MouseEvent('click', originalEvent as MouseEventInit);
+      setEventTarget(event, target);
+      props.onClick(event);
     }
   };
 
@@ -218,8 +238,8 @@ export function createPress(props: CreatePressProps = {}): PressResult {
       return;
     }
 
-    if (pressState.isOverTarget && pressState.target) {
-      triggerPressEnd(originalEvent, pressState.pointerType ?? 'mouse', false);
+    if (pressState.target && pressState.didFirePressStart && pressState.pointerType != null) {
+      triggerPressEnd(originalEvent, pressState.pointerType, false);
     }
 
     pressState.isPressed = false;
@@ -375,6 +395,26 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     }
   };
 
+  // --- Touch Event Helpers ---
+
+  const createTouchEvent = (target: Element, event: TouchEvent): Event => {
+    let clientX = 0;
+    let clientY = 0;
+    if (event.targetTouches && event.targetTouches.length === 1) {
+      clientX = event.targetTouches[0].clientX;
+      clientY = event.targetTouches[0].clientY;
+    }
+    return {
+      currentTarget: target,
+      shiftKey: event.shiftKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      altKey: event.altKey,
+      clientX,
+      clientY,
+    } as Event;
+  };
+
   // --- Touch Event Handlers (fallback for testing/older browsers) ---
 
   const onTouchStart: JSX.EventHandler<HTMLElement, TouchEvent> = (e) => {
@@ -403,7 +443,7 @@ export function createPress(props: CreatePressProps = {}): PressResult {
       disableTextSelection(pressState.target as HTMLElement);
     }
 
-    const shouldStopPropagation = triggerPressStart(e, 'touch');
+    const shouldStopPropagation = triggerPressStart(createTouchEvent(pressState.target, e), 'touch');
     if (shouldStopPropagation) {
       e.stopPropagation();
     }
@@ -427,12 +467,12 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     if (isOverTarget !== pressState.isOverTarget) {
       pressState.isOverTarget = isOverTarget;
       if (isOverTarget) {
-        triggerPressStart(e, 'touch');
+        triggerPressStart(createTouchEvent(target, e), 'touch');
       } else {
-        triggerPressEnd(e, 'touch', false);
+        triggerPressEnd(createTouchEvent(target, e), 'touch', false);
 
         if (props.shouldCancelOnPointerExit) {
-          cancel(e);
+          cancel(createTouchEvent(target, e));
         }
       }
     }
@@ -452,10 +492,10 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     const isOverTarget = isPointOverTarget(touch, target);
 
     if (isOverTarget) {
-      triggerPressUp(e, 'touch');
+      triggerPressUp(createTouchEvent(target, e), 'touch');
     }
 
-    triggerPressEnd(e, 'touch', isOverTarget && pressState.isOverTarget);
+    triggerPressEnd(createTouchEvent(target, e), 'touch', isOverTarget && pressState.isOverTarget);
 
     pressState.isPressed = false;
     pressState.isOverTarget = false;
@@ -470,7 +510,11 @@ export function createPress(props: CreatePressProps = {}): PressResult {
   };
 
   const onTouchCancel: JSX.EventHandler<HTMLElement, TouchEvent> = (e) => {
-    cancel(e);
+    if (pressState.target) {
+      cancel(createTouchEvent(pressState.target, e));
+    } else {
+      cancel(e);
+    }
   };
 
   const onScroll = (e: Event): void => {
@@ -622,8 +666,8 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     }
 
     const target = pressState.target!;
-    triggerPressUp(e, 'keyboard');
-    triggerPressEnd(e, 'keyboard', pressState.isOverTarget);
+    const shouldStopPropagation = triggerPressUp(e, 'keyboard');
+    const shouldStopPropagationEnd = triggerPressEnd(e, 'keyboard', pressState.isOverTarget);
 
     pressState.isPressed = false;
     pressState.pointerType = null;
@@ -632,6 +676,11 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
     // Prevent default to avoid triggering native action
     e.preventDefault();
+
+    // Fire synthetic click for keyboard activation
+    if (pressState.isOverTarget && pressState.target) {
+      triggerSyntheticClick(e, pressState.target as HTMLElement);
+    }
 
     // Handle link activation with non-Enter keys (Space)
     // Native links only respond to Enter, but we want Space to work too
@@ -649,6 +698,10 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     if (e.key === ' ') {
       pressState.ignoreClickAfterPress = true;
     }
+
+    if (shouldStopPropagation && shouldStopPropagationEnd) {
+      e.stopPropagation();
+    }
   };
 
   // --- Click Event Handler ---
@@ -661,6 +714,11 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
     // Only process left clicks that aren't from our own event triggers
     if (e.button === 0 && !pressState.isTriggeringEvent) {
+      if (pressState.ignoreClickAfterPress) {
+        pressState.ignoreClickAfterPress = false;
+        return;
+      }
+
       if (isDisabledValue(props.isDisabled)) {
         e.preventDefault();
         return;
@@ -672,28 +730,34 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
       // If triggered from a screen reader or by using element.click(),
       // trigger as if it were a keyboard/virtual click.
+      let shouldStopPropagation = true;
+
       if (
         !pressState.ignoreEmulatedMouseEvents &&
         !pressState.isPressed &&
         (pressState.pointerType === 'virtual' || isVirtualClick(e))
       ) {
         pressState.target = e.currentTarget;
-        triggerPressStart(e, 'virtual');
-        triggerPressUp(e, 'virtual');
-        triggerPressEnd(e, 'virtual', true);
+        shouldStopPropagation = triggerPressStart(e, 'virtual');
+        shouldStopPropagation = triggerPressUp(e, 'virtual') && shouldStopPropagation;
+        shouldStopPropagation = triggerPressEnd(e, 'virtual', true) && shouldStopPropagation;
       } else if (pressState.isPressed && pressState.pointerType !== 'keyboard') {
         // Complete the press sequence for pointer/touch/mouse events
         const pointerType =
           pressState.pointerType ||
           ((e as unknown as PointerEvent).pointerType as PointerType) ||
           'virtual';
-        triggerPressUp(e, pointerType);
-        triggerPressEnd(e, pointerType, true);
+        shouldStopPropagation = triggerPressUp(e, pointerType);
+        shouldStopPropagation = triggerPressEnd(e, pointerType, true) && shouldStopPropagation;
         pressState.isOverTarget = false;
         cancel(e);
       }
 
       pressState.ignoreEmulatedMouseEvents = false;
+
+      if (shouldStopPropagation) {
+        e.stopPropagation();
+      }
     }
   };
 
@@ -740,6 +804,7 @@ export function createPress(props: CreatePressProps = {}): PressResult {
           onDragStart,
           // Mouse events (fallback when PointerEvent not available)
           onMouseDown: onMouseDownFallback,
+          onMouseUp: onMouseUpFallback,
           onMouseEnter: onMouseEnterFallback,
           onMouseLeave: onMouseLeaveFallback,
           // Touch events (always included)

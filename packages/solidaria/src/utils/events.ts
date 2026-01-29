@@ -3,38 +3,25 @@
  * Based on @react-aria/utils event utilities.
  */
 
+import { isAndroid } from './platform';
+
 /**
  * Checks if a click event was generated from a virtual source like a screen reader.
  * Virtual clicks typically have detail of 0 and may have zero coordinates.
  */
 export function isVirtualClick(event: MouseEvent | PointerEvent): boolean {
-  // The detail property is 0 for non-mouse clicks (keyboard, screen reader)
-  // However, we need to be careful about actual clicks at (0,0) or events
-  // that have been re-dispatched
-  if ((event as any).mozInputSource === 0 && event.isTrusted) {
-    // Firefox bug: clicks from screen readers have mozInputSource = 0
+  // JAWS/NVDA with Firefox.
+  if ((event as PointerEvent).pointerType === '' && event.isTrusted) {
     return true;
   }
 
-  // Android TalkBack fires click events with detail=1 but offsetX/offsetY = 0
-  if (isAndroidTalkBackClick(event)) {
-    return true;
+  // Android TalkBack's detail value varies depending on the event listener providing the event.
+  // If pointerType is defined, event is from a click listener.
+  if (isAndroid() && (event as PointerEvent).pointerType) {
+    return event.type === 'click' && (event as MouseEvent).buttons === 1;
   }
 
-  // Screen readers on Safari/Chrome have detail = 0
   return event.detail === 0 && !(event as PointerEvent).pointerType;
-}
-
-/**
- * Detects Android TalkBack clicks which have detail=1 but zero offsets.
- */
-function isAndroidTalkBackClick(event: MouseEvent | PointerEvent): boolean {
-  // TalkBack on Android sends click events with detail=1 but offsetX/Y = 0
-  return (
-    event.detail === 1 &&
-    (event as MouseEvent).offsetX === 0 &&
-    (event as MouseEvent).offsetY === 0
-  );
 }
 
 /**
@@ -43,17 +30,17 @@ function isAndroidTalkBackClick(event: MouseEvent | PointerEvent): boolean {
  * These events have zero width/height.
  */
 export function isVirtualPointerEvent(event: PointerEvent): boolean {
-  // Virtual events typically have no dimensions
-  // iOS VoiceOver fires pointer events with width=0, height=0
+  // If the pointer size is zero, then we assume it's from a screen reader.
+  // Android TalkBack double tap will sometimes return a event with width and height of 1
+  // and pointerType === 'mouse' so we need to check for a specific combination of event attributes.
+  // Cannot use "event.pressure === 0" as the sole check due to Safari pointer events always returning pressure === 0.
   return (
-    (event.width === 0 && event.height === 0) ||
-    // Some screen readers send events with pointerType but no actual pointer
-    (event.pointerType === 'mouse' &&
-      event.width === 1 &&
+    (!isAndroid() && event.width === 0 && event.height === 0) ||
+    (event.width === 1 &&
       event.height === 1 &&
       event.pressure === 0 &&
       event.detail === 0 &&
-      event.buttons === 0)
+      event.pointerType === 'mouse')
   );
 }
 

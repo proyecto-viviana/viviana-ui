@@ -53,11 +53,12 @@ export class PressEvent implements IPressEvent {
     type: PressEventType,
     pointerType: PointerType,
     originalEvent: Event | null,
-    target: Element
+    target: Element | null
   ) {
     this.type = type;
     this.pointerType = pointerType;
-    this.target = target;
+    const eventTarget = target ?? ((originalEvent as any)?.currentTarget as Element | undefined);
+    this.target = eventTarget as Element;
 
     // Extract modifier keys from the original event
     const e = originalEvent as MouseEvent | KeyboardEvent | null;
@@ -70,13 +71,13 @@ export class PressEvent implements IPressEvent {
     this.x = 0;
     this.y = 0;
 
-    if (originalEvent && 'clientX' in originalEvent && target) {
-      const rect = target.getBoundingClientRect();
+    if (originalEvent && 'clientX' in originalEvent && eventTarget) {
+      const rect = eventTarget.getBoundingClientRect();
       this.x = (originalEvent as MouseEvent).clientX - rect.left;
       this.y = (originalEvent as MouseEvent).clientY - rect.top;
-    } else if (target) {
+    } else if (eventTarget) {
       // For keyboard events, use center of element
-      const rect = target.getBoundingClientRect();
+      const rect = eventTarget.getBoundingClientRect();
       this.x = rect.width / 2;
       this.y = rect.height / 2;
     }
@@ -106,7 +107,7 @@ export function createPressEvent(
   type: PressEventType,
   pointerType: PointerType,
   originalEvent: Event | null,
-  target: Element
+  target: Element | null
 ): PressEvent {
   return new PressEvent(type, pointerType, originalEvent, target);
 }

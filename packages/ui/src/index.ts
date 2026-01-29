@@ -66,6 +66,10 @@ export type { SeparatorProps, SeparatorVariant, SeparatorSize } from './separato
 export { Toolbar } from './toolbar';
 export type { ToolbarProps, ToolbarSize, ToolbarVariant } from './toolbar';
 
+// Autocomplete
+export { SearchAutocomplete } from './autocomplete';
+export type { SearchAutocompleteProps, SearchAutocompleteItem, SearchAutocompleteSize } from './autocomplete';
+
 // Select
 export { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from './select';
 export type { SelectProps, SelectTriggerProps, SelectValueProps, SelectListBoxProps, SelectOptionProps, SelectSize } from './select';
