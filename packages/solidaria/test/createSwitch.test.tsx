@@ -1,13 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import { createSwitch, createToggleState } from '../src';
-
-// Pointer map for realistic pointer dimensions
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-];
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // Test component that uses createSwitch
 function TestSwitch(props: {
@@ -87,7 +81,7 @@ describe('createSwitch', () => {
 
   describe('uncontrolled mode', () => {
     it('toggles on click', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSwitch aria-label="Test switch" onChange={onChange} />);
 
@@ -126,7 +120,7 @@ describe('createSwitch', () => {
     });
 
     it('calls onChange but does not change internal state in controlled mode', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSwitch aria-label="Test switch" isSelected={false} onChange={onChange} />);
 
@@ -141,7 +135,7 @@ describe('createSwitch', () => {
 
   describe('disabled state', () => {
     it('does not toggle when disabled', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSwitch aria-label="Test switch" isDisabled onChange={onChange} />);
 
@@ -155,7 +149,7 @@ describe('createSwitch', () => {
 
   describe('readonly state', () => {
     it('does not toggle when readonly', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSwitch aria-label="Test switch" isReadOnly onChange={onChange} />);
 
@@ -169,7 +163,7 @@ describe('createSwitch', () => {
 
   describe('keyboard interaction', () => {
     it('toggles on Space key', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSwitch aria-label="Test switch" onChange={onChange} />);
 

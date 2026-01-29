@@ -114,7 +114,7 @@ export const TimeFieldContext = createContext<TimeFieldState<TimeValue> | null>(
 export function useTimeFieldContext(): TimeFieldState<TimeValue> {
   const context = useContext(TimeFieldContext);
   if (!context) {
-    throw new Error('useTimeFieldContext must be used within a TimeField');
+    throw new Error('TimeField components must be used within a TimeField');
   }
   return context;
 }
@@ -216,7 +216,7 @@ function TimeFieldInner<T extends TimeValue = TimeValue>(
         data-required={dataAttr(state.isRequired())}
         data-invalid={dataAttr(state.isInvalid())}
       >
-        {local.children as JSX.Element}
+        {props.children as JSX.Element}
       </div>
     </TimeFieldContext.Provider>
   );

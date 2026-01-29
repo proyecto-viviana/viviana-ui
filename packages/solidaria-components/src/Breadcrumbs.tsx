@@ -152,7 +152,7 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
           <For each={items()}>
             {(item) => (
               <li style={{ display: 'flex', 'align-items': 'center' }}>
-                {local.children(item)}
+                {props.children(item)}
               </li>
             )}
           </For>
@@ -167,7 +167,6 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
  */
 export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -232,7 +231,7 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-BreadcrumbItem',

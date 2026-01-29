@@ -116,7 +116,7 @@ export const DateFieldContext = createContext<DateFieldState<DateValue> | null>(
 export function useDateFieldContext(): DateFieldState<DateValue> {
   const context = useContext(DateFieldContext);
   if (!context) {
-    throw new Error('useDateFieldContext must be used within a DateField');
+    throw new Error('DateField components must be used within a DateField');
   }
   return context;
 }
@@ -221,7 +221,7 @@ function DateFieldInner<T extends DateValue = CalendarDate>(
         data-required={dataAttr(state.isRequired())}
         data-invalid={dataAttr(state.isInvalid())}
       >
-        {local.children as JSX.Element}
+        {props.children as JSX.Element}
       </div>
     </DateFieldContext.Provider>
   );

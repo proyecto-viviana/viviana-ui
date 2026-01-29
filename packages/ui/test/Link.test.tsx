@@ -3,8 +3,8 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import { Link } from '../src/link';
+import { setupUser } from '@proyecto-viviana/ui-test-utils';
 
 describe('Link (ui)', () => {
   it('should render a link with default styling', () => {
@@ -35,6 +35,7 @@ describe('Link (ui)', () => {
   });
 
   it('should support quiet style with standalone', async () => {
+    const user = setupUser();
     render(() => <Link isStandalone isQuiet>Test</Link>);
     const link = screen.getByRole('link');
 
@@ -42,7 +43,7 @@ describe('Link (ui)', () => {
     expect(link).toHaveClass('no-underline');
 
     // Underline on hover
-    await userEvent.hover(link);
+    await user.hover(link);
     expect(link).toHaveClass('underline');
   });
 
@@ -61,34 +62,38 @@ describe('Link (ui)', () => {
   });
 
   it('should call onPress when clicked', async () => {
+    const user = setupUser();
     const onPress = vi.fn();
     render(() => <Link onPress={onPress}>Test</Link>);
     const link = screen.getByRole('link');
 
-    await userEvent.click(link);
+    await user.click(link);
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
   it('should not call onPress when disabled', async () => {
+    const user = setupUser();
     const onPress = vi.fn();
     render(() => <Link isDisabled onPress={onPress}>Test</Link>);
     const link = screen.getByRole('link');
 
-    await userEvent.click(link);
+    await user.click(link);
     expect(onPress).not.toHaveBeenCalled();
   });
 
   it('should support focus visible styling', async () => {
+    const user = setupUser();
     render(() => <Link>Test</Link>);
     const link = screen.getByRole('link');
 
-    await userEvent.tab();
+    await user.tab();
     expect(document.activeElement).toBe(link);
     expect(link).toHaveClass('ring-2');
     expect(link).toHaveClass('ring-accent-300');
   });
 
   it('should support hover events', async () => {
+    const user = setupUser();
     const onHoverStart = vi.fn();
     const onHoverEnd = vi.fn();
 
@@ -99,10 +104,10 @@ describe('Link (ui)', () => {
     ));
     const link = screen.getByRole('link');
 
-    await userEvent.hover(link);
+    await user.hover(link);
     expect(onHoverStart).toHaveBeenCalledTimes(1);
 
-    await userEvent.unhover(link);
+    await user.unhover(link);
     expect(onHoverEnd).toHaveBeenCalledTimes(1);
   });
 

@@ -358,7 +358,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
           {isEmpty() && local.renderEmptyState ? (
             local.renderEmptyState()
           ) : (
-            <For each={stateProps.items}>{(item) => local.children(item)}</For>
+            <For each={stateProps.items}>{(item) => props.children(item)}</For>
           )}
         </ul>
       </GridListStateContext.Provider>
@@ -371,7 +371,6 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
  */
 export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX.Element {
   const [local] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -446,7 +445,7 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-GridList-item',

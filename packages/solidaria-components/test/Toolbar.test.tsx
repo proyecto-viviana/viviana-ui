@@ -7,7 +7,7 @@ import { Toolbar, ToolbarContext } from '../src/Toolbar'
 import { Button } from '../src/Button'
 import { Separator } from '../src/Separator'
 import { I18nProvider } from '@proyecto-viviana/solidaria'
-import userEvent from '@testing-library/user-event'
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils'
 
 describe('Toolbar', () => {
   it('renders with role="toolbar"', () => {
@@ -119,7 +119,7 @@ describe('Toolbar', () => {
   })
 
   it('supports keyboard navigation horizontal', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
 
     render(() => (
       <>
@@ -190,7 +190,7 @@ describe('Toolbar', () => {
   })
 
   it('supports keyboard navigation vertical', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
 
     render(() => (
       <>
@@ -248,7 +248,7 @@ describe('Toolbar', () => {
   })
 
   it('supports RTL', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
 
     render(() => (
       <I18nProvider locale="he-IL">

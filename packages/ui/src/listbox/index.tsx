@@ -94,7 +94,6 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     'class',
     'label',
     'description',
-    'children',
     'renderEmptyState',
   ])
 
@@ -138,7 +137,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
           {...headlessProps}
           class={getClassName}
           renderEmptyState={local.renderEmptyState ?? defaultEmptyState}
-          children={local.children}
+          children={props.children}
         />
         <Show when={local.description}>
           <span class="text-primary-400 text-sm">{local.description}</span>
@@ -157,7 +156,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
  * SSR-compatible - renders icon, check, content, and description directly without render props.
  */
 export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children', 'description', 'icon'])
+  const [local, headlessProps] = splitProps(props, ['class', 'description', 'icon'])
   const size = useContext(ListBoxSizeContext)
   const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''
@@ -196,7 +195,7 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
       {local.icon && <span class={`shrink-0 ${sizeStyle.icon}`}>{local.icon()}</span>}
       <CheckIcon class={`shrink-0 ${sizeStyle.icon} text-accent hidden data-selected:block`} />
       <div class="flex flex-col flex-1 min-w-0">
-        <span class="truncate">{local.children as JSX.Element}</span>
+        <span class="truncate">{props.children as JSX.Element}</span>
         {local.description && (
           <span class={`text-primary-400 truncate ${sizeStyle.description}`}>
             {local.description}

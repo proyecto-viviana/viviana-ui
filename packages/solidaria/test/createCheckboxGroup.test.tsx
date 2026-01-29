@@ -7,7 +7,6 @@
 
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { render, screen, waitFor } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import { createSignal, createEffect } from 'solid-js';
 import {
   createCheckboxGroup,
@@ -17,16 +16,7 @@ import {
   type AriaCheckboxGroupItemProps,
   type CheckboxGroupState,
 } from '../src/checkbox';
-
-// Pointer map for realistic pointer dimensions
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'MouseRight', pointerType: 'mouse', button: 'secondary' },
-  { name: 'MouseMiddle', pointerType: 'mouse', button: 'auxiliary' },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-  { name: 'TouchB', pointerType: 'touch' },
-  { name: 'TouchC', pointerType: 'touch' },
-];
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // Test components
 function Checkbox(props: AriaCheckboxGroupItemProps & { checkboxGroupState: CheckboxGroupState }) {
@@ -106,10 +96,10 @@ function CheckboxGroup(props: {
 }
 
 describe('createCheckboxGroup', () => {
-  let user: ReturnType<typeof userEvent.setup>;
+  let user: ReturnType<typeof setupUser>;
 
   beforeAll(() => {
-    user = userEvent.setup({ delay: null, pointerMap });
+    user = setupUser();
   });
 
   it('basic checkbox sanity check', async () => {

@@ -170,7 +170,7 @@ export const TabsStateContext = createContext<TabListState<unknown> | null>(null
 export function Tabs<T>(props: TabsProps<T>): JSX.Element {
   const [local, stateProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
+    ['class', 'style', 'slot'],
     ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'selectedKey', 'defaultSelectedKey', 'onSelectionChange', 'isDisabled', 'keyboardActivation', 'orientation']
   );
 
@@ -222,7 +222,7 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      children: local.children,
+      children: props.children,
       defaultClassName: 'solidaria-Tabs',
     },
     renderValues
@@ -241,7 +241,7 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
           data-orientation={state.orientation()}
           data-disabled={state.isDisabled() || undefined}
         >
-          {local.children as JSX.Element}
+          {props.children as JSX.Element}
         </div>
       </TabsStateContext.Provider>
     </TabsContext.Provider>
@@ -253,7 +253,6 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
  */
 export function TabList<T>(props: TabListProps<T>): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -267,7 +266,14 @@ export function TabList<T>(props: TabListProps<T>): JSX.Element {
       when={context}
       fallback={<div class="solidaria-TabList" role="tablist" />}
     >
-      {(ctx) => <TabListInner context={ctx()} local={local} ariaProps={ariaProps} />}
+      {(ctx) => (
+        <TabListInner
+          context={ctx()}
+          local={local}
+          ariaProps={ariaProps}
+          children={props.children}
+        />
+      )}
     </Show>
   );
 }
@@ -275,8 +281,9 @@ export function TabList<T>(props: TabListProps<T>): JSX.Element {
 /** Inner TabList component that has access to context */
 function TabListInner<T>(props: {
   context: TabsContextValue<unknown>;
-  local: { children: (item: T) => JSX.Element; class?: ClassNameOrFunction<TabListRenderProps>; style?: StyleOrFunction<TabListRenderProps>; slot?: string };
+  local: { class?: ClassNameOrFunction<TabListRenderProps>; style?: StyleOrFunction<TabListRenderProps>; slot?: string };
   ariaProps: Omit<TabListProps<T>, 'children' | 'class' | 'style' | 'slot'>;
+  children?: (item: T) => JSX.Element;
 }): JSX.Element {
   const state = props.context.state as TabListState<T>;
   const items = props.context.items as T[];
@@ -350,7 +357,7 @@ function TabListInner<T>(props: {
       data-orientation={state.orientation()}
       data-disabled={state.isDisabled() || undefined}
     >
-      <For each={items}>{(item) => props.local.children(item)}</For>
+      <For each={items}>{(item) => props.children?.(item)}</For>
     </div>
   );
 }
@@ -360,7 +367,6 @@ function TabListInner<T>(props: {
  */
 export function Tab(props: TabProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -375,7 +381,14 @@ export function Tab(props: TabProps): JSX.Element {
       when={context}
       fallback={<div class="solidaria-Tab" role="tab" />}
     >
-      {(state) => <TabInner state={state()} local={local} ariaProps={ariaProps} />}
+      {(state) => (
+        <TabInner
+          state={state()}
+          local={local}
+          ariaProps={ariaProps}
+          children={props.children}
+        />
+      )}
     </Show>
   );
 }
@@ -383,8 +396,9 @@ export function Tab(props: TabProps): JSX.Element {
 /** Inner Tab component that has access to context */
 function TabInner(props: {
   state: TabListState<unknown>;
-  local: { children?: RenderChildren<TabRenderProps>; class?: ClassNameOrFunction<TabRenderProps>; style?: StyleOrFunction<TabRenderProps>; slot?: string; id: Key };
+  local: { class?: ClassNameOrFunction<TabRenderProps>; style?: StyleOrFunction<TabRenderProps>; slot?: string; id: Key };
   ariaProps: Omit<TabProps, 'children' | 'class' | 'style' | 'slot' | 'id'>;
+  children?: RenderChildren<TabRenderProps>;
 }): JSX.Element {
   // Create tab aria props
   const tabAria = createTab<unknown>(
@@ -420,7 +434,7 @@ function TabInner(props: {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: props.local.children,
+      children: props.children,
       class: props.local.class,
       style: props.local.style,
       defaultClassName: 'solidaria-Tab',
@@ -462,7 +476,6 @@ function TabInner(props: {
  */
 export function TabPanel(props: TabPanelProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -488,7 +501,7 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-TabPanel',

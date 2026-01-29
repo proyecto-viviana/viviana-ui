@@ -7,50 +7,14 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
-import { PointerEventsCheckLevel } from '@testing-library/user-event';
 import { createPress, type PressEvent } from '../src/interactions/createPress';
 import { Dynamic } from 'solid-js/web';
 import type { JSX, Component } from 'solid-js';
+import { setupUser, createPointerEvent } from '@proyecto-viviana/solidaria-test-utils';
 
-// Pointer map matching react-spectrum's test setup
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'MouseRight', pointerType: 'mouse', button: 'secondary' },
-  { name: 'MouseMiddle', pointerType: 'mouse', button: 'auxiliary' },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-  { name: 'TouchB', pointerType: 'touch' },
-  { name: 'TouchC', pointerType: 'touch' },
-];
-
-function setupUser() {
-  return userEvent.setup({
-    delay: null,
-    pointerMap: pointerMap as any,
-    pointerEventsCheck: PointerEventsCheckLevel.Never,
-  });
-}
-
-// Helper to create a pointer event (JSDOM compatible)
-// Based on React Aria's test pattern - must include width, height, pressure to avoid virtual detection
-function pointerEvent(type: string, opts: Partial<PointerEventInit> & { clientX?: number; clientY?: number } = {}) {
-  const evt = new PointerEvent(type, {
-    bubbles: true,
-    cancelable: true,
-    composed: true,
-    ctrlKey: false,
-    metaKey: false,
-    shiftKey: false,
-    altKey: false,
-    button: opts.button ?? 0,
-    buttons: opts.buttons ?? 1, // Primary button pressed
-    width: opts.width ?? 1,
-    height: opts.height ?? 1,
-    pressure: opts.pressure ?? 0.5, // Must be > 0 to not be virtual
-    ...opts,
-  });
-  return evt;
-}
+// setupUser and pointer helpers are consolidated in solidaria-test-utils.
+// Note: createPointerEvent includes width/height/pressure defaults to avoid virtual detection.
+const pointerEvent = createPointerEvent;
 
 // Test component that uses createPress
 interface ExampleProps extends JSX.HTMLAttributes<HTMLElement> {

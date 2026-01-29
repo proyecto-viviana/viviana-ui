@@ -12,7 +12,6 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import {
   Calendar,
   CalendarHeading,
@@ -21,9 +20,10 @@ import {
   CalendarCell,
 } from '../src/Calendar';
 import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // User event instance - created per test
-let user: ReturnType<typeof userEvent.setup>;
+let user: ReturnType<typeof setupUser>;
 
 // Helper to wait for calendar to hydrate (it uses client-only rendering)
 async function waitForCalendarHydration() {
@@ -53,7 +53,7 @@ function TestCalendar(props: {
 
 describe('Calendar', () => {
   beforeEach(() => {
-    user = userEvent.setup();
+    user = setupUser();
   });
 
   afterEach(() => {
@@ -465,8 +465,9 @@ describe('Calendar', () => {
       ));
       await waitForCalendarHydration();
 
-      const todayCell = screen.getByText(todayDate.day.toString());
-      expect(todayCell).toHaveAttribute('data-today');
+      const todayCells = document.querySelectorAll('[data-today]');
+      expect(todayCells.length).toBe(1);
+      expect(todayCells[0]).toHaveTextContent(todayDate.day.toString());
     });
   });
 

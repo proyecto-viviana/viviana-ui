@@ -256,7 +256,7 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-SearchField',
@@ -395,7 +395,7 @@ export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
  * The clear button for a search field.
  */
 export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(SearchFieldContext);
   if (!context) {
@@ -432,7 +432,7 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-SearchField-clear',

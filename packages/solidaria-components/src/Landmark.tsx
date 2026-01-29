@@ -178,7 +178,7 @@ export function Landmark(props: LandmarkProps): JSX.Element {
       style={resolvedStyle()}
       slot={local.slot}
     >
-      {local.children}
+      {props.children}
     </Dynamic>
   );
 }

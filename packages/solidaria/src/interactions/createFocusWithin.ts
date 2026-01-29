@@ -24,6 +24,63 @@ export interface FocusWithinResult {
   focusWithinProps: JSX.HTMLAttributes<HTMLElement>;
 }
 
+function getActiveElement(doc: Document): Element | null {
+  let activeElement = doc.activeElement;
+  while (activeElement && (activeElement as Element).shadowRoot?.activeElement) {
+    activeElement = (activeElement as Element).shadowRoot?.activeElement ?? null;
+  }
+  return activeElement;
+}
+
+function createSyntheticBlurHandler(
+  onBlurWithin: ((e: FocusEvent) => void) | undefined
+): (_e: FocusEvent, target: Element) => (() => void) | undefined {
+  let isFocused = false;
+  let observer: MutationObserver | null = null;
+
+  return (_e: FocusEvent, target: Element) => {
+    if (
+      target instanceof HTMLButtonElement ||
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target instanceof HTMLSelectElement
+    ) {
+      isFocused = true;
+
+      const onBlurHandler = () => {
+        isFocused = false;
+
+        if (observer) {
+          observer.disconnect();
+          observer = null;
+        }
+      };
+
+      target.addEventListener('focusout', onBlurHandler, { once: true });
+
+      observer = new MutationObserver(() => {
+        if (isFocused && (target as HTMLButtonElement).disabled) {
+          observer?.disconnect();
+          const relatedTarget = target === document.activeElement ? null : document.activeElement;
+          target.dispatchEvent(new FocusEvent('blur', { relatedTarget }));
+          target.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget }));
+        }
+      });
+
+      observer.observe(target, { attributes: true, attributeFilter: ['disabled'] });
+
+      return () => {
+        if (observer) {
+          observer.disconnect();
+          observer = null;
+        }
+      };
+    }
+
+    return undefined;
+  };
+}
+
 /**
  * Handles focus events for the target and its descendants.
  *
@@ -37,9 +94,12 @@ export function createFocusWithin(props: FocusWithinProps = {}): FocusWithinResu
 
   // Global listeners manager
   const { addGlobalListener, removeAllGlobalListeners } = createGlobalListeners();
+  const syntheticBlurHandler = createSyntheticBlurHandler(onBlurWithin);
+  let cleanupRef: (() => void) | undefined;
 
   // Cleanup on unmount
   onCleanup(() => {
+    cleanupRef?.();
     removeAllGlobalListeners();
   });
 
@@ -55,6 +115,8 @@ export function createFocusWithin(props: FocusWithinProps = {}): FocusWithinResu
     if (isFocusWithin && !e.currentTarget.contains(e.relatedTarget as Node)) {
       isFocusWithin = false;
       removeAllGlobalListeners();
+      cleanupRef?.();
+      cleanupRef = undefined;
 
       if (onBlurWithin) {
         onBlurWithin(e);
@@ -75,7 +137,7 @@ export function createFocusWithin(props: FocusWithinProps = {}): FocusWithinResu
     // Double check that document.activeElement actually matches e.target
     // in case a previously chained focus handler already moved focus somewhere else.
     const ownerDocument = getOwnerDocument(e.target);
-    const activeElement = ownerDocument?.activeElement;
+    const activeElement = ownerDocument ? getActiveElement(ownerDocument) : null;
 
     if (!isFocusWithin && activeElement === getEventTarget(e)) {
       if (onFocusWithin) {
@@ -87,6 +149,7 @@ export function createFocusWithin(props: FocusWithinProps = {}): FocusWithinResu
       }
 
       isFocusWithin = true;
+      cleanupRef = syntheticBlurHandler(e, e.target);
 
       // Browsers don't fire blur events when elements are removed from the DOM.
       // However, if a focus event occurs outside the element we're tracking, we
@@ -115,6 +178,8 @@ export function createFocusWithin(props: FocusWithinProps = {}): FocusWithinResu
               if (onFocusWithinChange) {
                 onFocusWithinChange(false);
               }
+              cleanupRef?.();
+              cleanupRef = undefined;
             }
           }
         },

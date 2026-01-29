@@ -127,7 +127,6 @@ export const CheckboxContext = createContext<CheckboxProps | null>(null);
  */
 export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -160,7 +159,7 @@ export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Eleme
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-CheckboxGroup',
@@ -178,10 +177,10 @@ export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Eleme
   };
 
   // Resolve children - we need to pass render props if children is a function
-  // but we use local.children directly (not renderProps.renderChildren())
+  // but we use props.children directly (not renderProps.renderChildren())
   // to preserve SolidJS context propagation for nested components like Checkbox
   const resolvedChildren = () => {
-    const children = local.children;
+    const children = props.children;
     if (typeof children === 'function') {
       return children(renderValues());
     }
@@ -232,7 +231,6 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
   let inputRef: HTMLInputElement | null = null;
 
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -257,7 +255,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
       () => ({
         ...ariaProps,
         value: ariaProps.value ?? '',
-        children: typeof local.children === 'function' ? true : local.children,
+        children: typeof props.children === 'function' ? true : props.children,
       }),
       groupState,
       () => inputRef
@@ -283,7 +281,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
       () => ({
         ...ariaProps,
         isIndeterminate: local.isIndeterminate,
-        children: typeof local.children === 'function' ? true : local.children,
+        children: typeof props.children === 'function' ? true : props.children,
       }),
       state,
       () => inputRef
@@ -324,7 +322,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Checkbox',

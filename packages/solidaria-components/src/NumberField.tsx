@@ -219,7 +219,7 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-NumberField',
@@ -382,7 +382,7 @@ export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
  * The increment button for a number field.
  */
 export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(NumberFieldContext);
   if (!context) {
@@ -418,7 +418,7 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-NumberField-increment',
@@ -460,7 +460,7 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
  * The decrement button for a number field.
  */
 export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(NumberFieldContext);
   if (!context) {
@@ -496,7 +496,7 @@ export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProp
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-NumberField-decrement',

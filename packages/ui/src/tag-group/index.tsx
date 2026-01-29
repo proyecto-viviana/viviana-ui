@@ -133,7 +133,6 @@ export function TagGroup<T extends { id?: Key; key?: Key }>(props: TagGroupProps
   const [local] = splitProps(props, [
     'label',
     'items',
-    'children',
     'getKey',
     'onRemove',
     'size',
@@ -198,7 +197,7 @@ export function TagGroup<T extends { id?: Key; key?: Key }>(props: TagGroupProps
           >
             {(renderProps) => (
               <>
-                <span>{local.children(item)}</span>
+                <span>{props.children(item)}</span>
                 <Show when={renderProps.allowsRemoving}>
                   <button
                     type="button"

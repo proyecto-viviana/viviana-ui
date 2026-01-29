@@ -2,6 +2,17 @@
 export { createPress, type CreatePressProps, type PressResult } from './createPress';
 export { PressEvent, type IPressEvent, type PointerType, type PressEventType } from './PressEvent';
 
+// Long press interactions
+export {
+  createLongPress,
+  type LongPressProps,
+  type LongPressResult,
+  type LongPressEvent,
+} from './createLongPress';
+
+// Move interactions
+export { createMove, type MoveEvents, type MoveResult, type MoveStartEvent, type MoveMoveEvent, type MoveEndEvent } from './createMove';
+
 // Focus interactions
 export { createFocus, type CreateFocusProps, type FocusResult, type FocusEvents } from './createFocus';
 export {
@@ -29,12 +40,21 @@ export {
 // Interaction modality
 export {
   createInteractionModality,
+  createFocusVisible,
+  createFocusVisibleListener,
+  addWindowFocusTracking,
+  isFocusVisible,
   getInteractionModality,
   setInteractionModality,
+  getPointerType,
   setupGlobalFocusListeners,
   addModalityListener,
   useIsKeyboardFocused,
   type Modality,
+  type PointerType,
+  type FocusVisibleProps,
+  type FocusVisibleResult,
+  type FocusVisibleHandler,
   type InteractionModalityResult,
 } from './createInteractionModality';
 

@@ -130,7 +130,7 @@ export const CalendarContext = createContext<CalendarState<DateValue> | null>(nu
 export function useCalendarContext(): CalendarState<DateValue> {
   const context = useContext(CalendarContext);
   if (!context) {
-    throw new Error('useCalendarContext must be used within a Calendar');
+    throw new Error('Calendar components must be used within a Calendar');
   }
   return context;
 }
@@ -234,7 +234,7 @@ function CalendarInner<T extends DateValue = CalendarDate>(
         data-disabled={dataAttr(state.isDisabled())}
         data-readonly={dataAttr(state.isReadOnly())}
       >
-        {local.children}
+        {props.children}
       </div>
     </CalendarContext.Provider>
   );

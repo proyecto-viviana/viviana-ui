@@ -281,12 +281,28 @@ export const FocusScope: ParentComponent<FocusScopeProps> = (props) => {
     setScopeElements(nodes)
   })
 
-  // Save the currently focused element for restoration
-  createEffect(() => {
-    if (props.restoreFocus) {
-      const doc = getOwnerDocument(scopeElements()[0])
-      nodeToRestore = getActiveElement(doc)
+  // Save the currently focused element for restoration (must happen before autoFocus/contain effects run).
+  onMount(() => {
+    if (!props.restoreFocus) return
+
+    // Focus can be in the main document, or inside this iframe's document.
+    const scopeDoc = startRef ? getOwnerDocument(startRef) : document
+    const scopeActive = getActiveElement(scopeDoc)
+    const topActive = getActiveElement(document)
+
+    // If the scope is in an iframe and that iframe is currently focused, prefer the iframe document's active element.
+    if (
+      scopeDoc !== document &&
+      document.activeElement instanceof HTMLIFrameElement &&
+      document.activeElement.contentDocument === scopeDoc &&
+      scopeActive &&
+      scopeActive !== scopeDoc.body
+    ) {
+      nodeToRestore = scopeActive
+      return
     }
+
+    nodeToRestore = topActive
   })
 
   // Auto-focus first element
@@ -368,10 +384,13 @@ export const FocusScope: ParentComponent<FocusScopeProps> = (props) => {
   // Restore focus on unmount
   onCleanup(() => {
     if (props.restoreFocus && nodeToRestore && (nodeToRestore as HTMLElement).focus) {
+      const doc = getOwnerDocument(nodeToRestore as Element)
+      const win = doc.defaultView ?? window
+
       // Use requestAnimationFrame to ensure the element is still in the DOM
-      requestAnimationFrame(() => {
-        if (nodeToRestore && document.body.contains(nodeToRestore)) {
-          (nodeToRestore as HTMLElement).focus()
+      win.requestAnimationFrame(() => {
+        if (nodeToRestore && doc.body.contains(nodeToRestore as Node)) {
+          ;(nodeToRestore as HTMLElement).focus()
         }
       })
     }

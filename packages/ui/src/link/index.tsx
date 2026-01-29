@@ -67,7 +67,6 @@ export function Link(props: LinkProps): JSX.Element {
     'isStandalone',
     'isQuiet',
     'class',
-    'children',
   ]);
 
   const variant = local.variant ?? 'primary';
@@ -125,7 +124,7 @@ export function Link(props: LinkProps): JSX.Element {
       {...headlessProps}
       class={getClassName}
     >
-      {local.children}
+      {props.children}
     </HeadlessLink>
   );
 }

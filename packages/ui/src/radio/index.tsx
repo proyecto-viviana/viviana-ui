@@ -85,7 +85,6 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
     'label',
     'description',
     'errorMessage',
-    'children',
   ])
 
   const size = local.size ?? 'md'
@@ -111,7 +110,7 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
         <Show when={local.label}>
           <span class="text-primary-200 font-medium mb-1">{local.label}</span>
         </Show>
-        {local.children as JSX.Element}
+        {props.children as JSX.Element}
         <Show when={local.description}>
           <span class="text-primary-400 text-sm [&:has(~[data-invalid])]:hidden">{local.description}</span>
         </Show>
@@ -140,7 +139,7 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
  * Built on solidaria-components Radio for full accessibility support.
  */
 export function Radio(props: RadioProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const sizeFromContext = useContext(RadioSizeContext)
   const sizeStyle = sizeStyles[sizeFromContext]
   const customClass = local.class ?? ''
@@ -166,8 +165,8 @@ export function Radio(props: RadioProps): JSX.Element {
       <span class={circleClass}>
         <span class={dotClass} />
       </span>
-      <Show when={local.children}>
-        <span class={labelClass}>{local.children as JSX.Element}</span>
+      <Show when={props.children}>
+        <span class={labelClass}>{props.children as JSX.Element}</span>
       </Show>
     </HeadlessRadio>
   )

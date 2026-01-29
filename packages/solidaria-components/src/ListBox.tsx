@@ -244,7 +244,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
         >
           {isEmpty() && local.renderEmptyState
             ? local.renderEmptyState()
-            : <For each={stateProps.items}>{(item) => local.children(item)}</For>
+            : <For each={stateProps.items}>{(item) => props.children(item)}</For>
           }
         </ul>
       </ListBoxStateContext.Provider>
@@ -257,7 +257,6 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
  */
 export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -307,7 +306,7 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ListBox-option',

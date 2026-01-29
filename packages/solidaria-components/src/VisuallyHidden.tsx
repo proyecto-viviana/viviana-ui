@@ -44,7 +44,7 @@ const visuallyHiddenStyles: JSX.CSSProperties = {
  * VisuallyHidden hides its children visually, while keeping content visible to screen readers.
  */
 export function VisuallyHidden(props: VisuallyHiddenProps): JSX.Element {
-  const [local, others] = splitProps(props, ['elementType', 'children', 'isFocusable']);
+  const [local, others] = splitProps(props, ['elementType', 'isFocusable']);
 
   const elementType = () => local.elementType ?? 'span';
 
@@ -54,7 +54,7 @@ export function VisuallyHidden(props: VisuallyHiddenProps): JSX.Element {
       style={visuallyHiddenStyles}
       {...others}
     >
-      {local.children}
+      {props.children}
     </Dynamic>
   );
 }

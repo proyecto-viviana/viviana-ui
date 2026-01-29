@@ -3,26 +3,15 @@
  */
 import { describe, it, expect, afterEach } from 'vitest'
 import { render, screen, cleanup } from '@solidjs/testing-library'
-import userEvent from '@testing-library/user-event'
-import { PointerEventsCheckLevel } from '@testing-library/user-event'
 import { useContext } from 'solid-js'
 import { DialogTriggerContext } from '../src/contexts'
 import { DialogTrigger } from '../src/Dialog'
 import { Modal, ModalOverlay } from '../src/Modal'
 import { Dialog } from '../src/Dialog'
 import { Button } from '../src/Button'
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils'
 
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-]
-
-function setupUser() {
-  return userEvent.setup({
-    delay: null,
-    pointerMap: pointerMap as any,
-    pointerEventsCheck: PointerEventsCheckLevel.Never,
-  })
-}
+// setupUser is consolidated in solidaria-test-utils.
 
 describe('DialogTrigger Debug', () => {
   afterEach(() => {

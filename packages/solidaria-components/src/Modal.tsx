@@ -403,7 +403,7 @@ function ModalContent(props: ModalProps & { internalContext: InternalModalContex
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Modal',

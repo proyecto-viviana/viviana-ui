@@ -3,8 +3,8 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import { Link } from '../src/Link';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 describe('Link', () => {
   it('should render a link with default class', () => {
@@ -34,6 +34,7 @@ describe('Link', () => {
   });
 
   it('should support render props', async () => {
+    const user = setupUser();
     render(() => (
       <Link>
         {(renderProps) => (renderProps.isHovered ? 'Hovered' : 'Test')}
@@ -42,11 +43,12 @@ describe('Link', () => {
     const link = screen.getByRole('link');
     expect(link).toHaveTextContent('Test');
 
-    await userEvent.hover(link);
+    await user.hover(link);
     expect(link).toHaveTextContent('Hovered');
   });
 
   it('should support hover state', async () => {
+    const user = setupUser();
     const hoverStartSpy = vi.fn();
     const hoverChangeSpy = vi.fn();
     const hoverEndSpy = vi.fn();
@@ -66,13 +68,13 @@ describe('Link', () => {
     expect(link).not.toHaveAttribute('data-hovered');
     expect(link).not.toHaveClass('hover');
 
-    await userEvent.hover(link);
+    await user.hover(link);
     expect(link).toHaveAttribute('data-hovered', 'true');
     expect(link).toHaveClass('hover');
     expect(hoverStartSpy).toHaveBeenCalledTimes(1);
     expect(hoverChangeSpy).toHaveBeenCalledTimes(1);
 
-    await userEvent.unhover(link);
+    await user.unhover(link);
     expect(link).not.toHaveAttribute('data-hovered');
     expect(link).not.toHaveClass('hover');
     expect(hoverEndSpy).toHaveBeenCalledTimes(1);
@@ -80,6 +82,7 @@ describe('Link', () => {
   });
 
   it('should support focus ring', async () => {
+    const user = setupUser();
     render(() => (
       <Link class={(renderProps) => (renderProps.isFocusVisible ? 'focus' : '')}>
         Test
@@ -90,17 +93,18 @@ describe('Link', () => {
     expect(link).not.toHaveAttribute('data-focus-visible');
     expect(link).not.toHaveClass('focus');
 
-    await userEvent.tab();
+    await user.tab();
     expect(document.activeElement).toBe(link);
     expect(link).toHaveAttribute('data-focus-visible', 'true');
     expect(link).toHaveClass('focus');
 
-    await userEvent.tab();
+    await user.tab();
     expect(link).not.toHaveAttribute('data-focus-visible');
     expect(link).not.toHaveClass('focus');
   });
 
   it('should support press state', async () => {
+    const user = setupUser();
     const onPress = vi.fn();
     render(() => (
       <Link
@@ -116,7 +120,7 @@ describe('Link', () => {
     expect(link).not.toHaveClass('pressed');
 
     // Use click which is more reliable than pointer events in jsdom
-    await userEvent.click(link);
+    await user.click(link);
 
     // After click completes, press state should be cleared and onPress called
     expect(link).not.toHaveAttribute('data-pressed');
@@ -190,15 +194,17 @@ describe('Link', () => {
   });
 
   it('should call onPress handler', async () => {
+    const user = setupUser();
     const onPress = vi.fn();
     render(() => <Link onPress={onPress}>Test</Link>);
     const link = screen.getByRole('link');
 
-    await userEvent.click(link);
+    await user.click(link);
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
   it('should not call onPress when disabled', async () => {
+    const user = setupUser();
     const onPress = vi.fn();
     render(() => (
       <Link isDisabled onPress={onPress}>
@@ -207,7 +213,7 @@ describe('Link', () => {
     ));
     const link = screen.getByRole('link');
 
-    await userEvent.click(link);
+    await user.click(link);
     expect(onPress).not.toHaveBeenCalled();
   });
 

@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@solidjs/testing-library';
+import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
 import { createFocusRing } from '../src/interactions/createFocusRing';
 import type { Component } from 'solid-js';
 
@@ -109,9 +109,8 @@ describe('createFocusRing', () => {
       render(() => <Example autoFocus />);
 
       const el = screen.getByTestId('example');
-      // autoFocus sets initial isFocusVisible to true, but depends on focus state
-      // When not actually focused, it will be false because isFocused && isFocusVisible logic
-      // The autoFocus flag just sets the initial modality hint
+      el.focus();
+      expect(el.dataset.focusVisible).toBe('true');
     });
 
     it('should hide focus ring when element loses focus', () => {
@@ -130,6 +129,26 @@ describe('createFocusRing', () => {
   // ============================================
 
   describe('keyboard vs mouse interaction', () => {
+    it('should show focus ring when focused after keyboard interaction', () => {
+      render(() => <Example />);
+
+      const el = screen.getByTestId('example');
+      fireEvent.keyDown(document.body, { key: 'Tab' });
+      el.focus();
+
+      expect(el.dataset.focusVisible).toBe('true');
+    });
+
+    it('should not show focus ring when focused after pointer interaction', () => {
+      render(() => <Example />);
+
+      const el = screen.getByTestId('example');
+      fireEvent.pointerDown(document.body, { pointerType: 'mouse' });
+      el.focus();
+
+      expect(el.dataset.focusVisible).toBe('false');
+    });
+
     it('should track focus state regardless of interaction method', () => {
       render(() => <Example />);
 
@@ -176,6 +195,32 @@ describe('createFocusRing', () => {
 
       input.blur();
       expect(input.dataset.focused).toBe('false');
+    });
+
+    it('should not show focus ring for text inputs after pointer interaction', () => {
+      const TextInputExample: Component = () => {
+        const { isFocused, isFocusVisible, focusProps } = createFocusRing({
+          isTextInput: true,
+        });
+
+        return (
+          <input
+            type="text"
+            {...focusProps}
+            data-testid="input-visible"
+            data-focused={isFocused()}
+            data-focus-visible={isFocusVisible()}
+          />
+        );
+      };
+
+      render(() => <TextInputExample />);
+
+      const input = screen.getByTestId('input-visible');
+      fireEvent.pointerDown(document.body, { pointerType: 'mouse' });
+      input.focus();
+
+      expect(input.dataset.focusVisible).toBe('false');
     });
   });
 
@@ -296,6 +341,47 @@ describe('createFocusRing', () => {
       // Element should be focusable and respond to focus events
       el.focus();
       expect(el.dataset.focused).toBe('true');
+    });
+  });
+
+  // ============================================
+  // WITHIN MODE
+  // ============================================
+
+  describe('within', () => {
+    it('should track focus within child elements', () => {
+      let focusPropsRef: ReturnType<typeof createFocusRing>['focusProps'] | undefined;
+
+      const WithinExample: Component = () => {
+        const { isFocused, isFocusVisible, focusProps } = createFocusRing({ within: true });
+        focusPropsRef = focusProps;
+
+        return (
+          <div
+            tabIndex={0}
+            {...focusProps}
+            data-testid="within"
+            data-focused={isFocused()}
+            data-focus-visible={isFocusVisible()}
+          >
+            <button data-testid="within-button">Inner</button>
+          </div>
+        );
+      };
+
+      render(() => <WithinExample />);
+
+      const button = screen.getByTestId('within-button');
+      fireEvent.keyDown(document.body, { key: 'Tab' });
+      button.focus();
+      const container = screen.getByTestId('within');
+      focusPropsRef?.onFocus?.({
+        currentTarget: container,
+        target: button,
+      } as unknown as FocusEvent);
+
+      expect(container.dataset.focused).toBe('true');
+      expect(container.dataset.focusVisible).toBe('true');
     });
   });
 

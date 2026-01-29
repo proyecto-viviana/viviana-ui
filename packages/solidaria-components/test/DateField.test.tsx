@@ -11,12 +11,12 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import { DateField, DateInput, DateSegment } from '../src/DateField';
 import { CalendarDate } from '@internationalized/date';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // User event instance - created per test
-let user: ReturnType<typeof userEvent.setup>;
+let user: ReturnType<typeof setupUser>;
 
 // Helper to wait for DateField to hydrate (it uses client-only rendering)
 async function waitForDateFieldHydration() {
@@ -41,7 +41,7 @@ function TestDateField(props: {
 
 describe('DateField', () => {
   beforeEach(() => {
-    user = userEvent.setup();
+    user = setupUser();
   });
 
   afterEach(() => {

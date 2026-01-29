@@ -7,13 +7,13 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import { Menu, MenuItem, MenuTrigger, MenuButton } from '../src/Menu';
 import { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from '../src/Select';
 import type { Key } from '@proyecto-viviana/solid-stately';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // Setup userEvent
-const user = userEvent.setup();
+const user = setupUser();
 
 // Test data
 interface TestItem {

@@ -7,6 +7,13 @@
 
 import { JSX, onCleanup } from 'solid-js';
 import { getOwnerDocument, getEventTarget } from '../utils';
+function getActiveElement(doc: Document): Element | null {
+  let activeElement = doc.activeElement;
+  while (activeElement && (activeElement as Element).shadowRoot?.activeElement) {
+    activeElement = (activeElement as Element).shadowRoot?.activeElement ?? null;
+  }
+  return activeElement;
+}
 
 export interface FocusEvents {
   /** Handler that is called when the element receives focus. */
@@ -48,12 +55,8 @@ function createSyntheticBlurHandler(
     ) {
       isFocused = true;
 
-      const onBlurHandler = (blurEvent: Event) => {
+      const onBlurHandler = (_blurEvent: Event) => {
         isFocused = false;
-
-        if ((target as HTMLButtonElement).disabled && onBlur) {
-          onBlur(blurEvent as FocusEvent);
-        }
 
         if (observer) {
           observer.disconnect();
@@ -116,6 +119,9 @@ export function createFocus(props: CreateFocusProps = {}): FocusResult {
       if (onFocusChange) {
         onFocusChange(false);
       }
+
+      cleanupRef?.();
+      cleanupRef = undefined;
     }
   };
 
@@ -123,7 +129,7 @@ export function createFocus(props: CreateFocusProps = {}): FocusResult {
     // Double check that document.activeElement actually matches e.target
     // in case a previously chained focus handler already moved focus somewhere else.
     const ownerDocument = getOwnerDocument(e.target);
-    const activeElement = ownerDocument?.activeElement;
+    const activeElement = ownerDocument ? getActiveElement(ownerDocument) : null;
 
     if (e.target === e.currentTarget && activeElement === getEventTarget(e)) {
       if (onFocusProp) {

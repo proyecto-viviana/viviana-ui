@@ -11,9 +11,9 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, cleanup } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import { Tree, TreeItem } from '../src/Tree';
 import type { TreeItemData } from '@proyecto-viviana/solid-stately';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 interface TestItem {
   name: string;
@@ -227,7 +227,7 @@ describe('Tree', () => {
 
     it('should call onSelectionChange when selection changes', async () => {
       const onSelectionChange = vi.fn();
-      const user = userEvent.setup();
+      const user = setupUser();
 
       render(() => (
         <Tree
@@ -247,7 +247,7 @@ describe('Tree', () => {
     });
 
     it('should show selected state via data attribute', async () => {
-      const user = userEvent.setup();
+      const user = setupUser();
 
       render(() => (
         <Tree

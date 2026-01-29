@@ -166,7 +166,7 @@ export function Autocomplete<T = unknown>(props: AutocompleteProps<T>): JSX.Elem
     <AutocompleteStateContext.Provider value={state}>
       <AutocompleteContext.Provider value={inputContextValue()}>
         <AutocompleteCollectionContext.Provider value={collectionContextValue()}>
-          {local.children}
+          {props.children}
         </AutocompleteCollectionContext.Provider>
       </AutocompleteContext.Provider>
     </AutocompleteStateContext.Provider>

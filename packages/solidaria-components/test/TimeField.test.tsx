@@ -12,28 +12,11 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, waitFor } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
-import { PointerEventsCheckLevel } from '@testing-library/user-event';
 import { Time } from '@internationalized/date';
 import { TimeField, TimeInput, TimeSegment } from '../src/TimeField';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
-// Pointer map matching react-spectrum's test setup
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'MouseRight', pointerType: 'mouse', button: 'secondary' },
-  { name: 'MouseMiddle', pointerType: 'mouse', button: 'auxiliary' },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-  { name: 'TouchB', pointerType: 'touch' },
-  { name: 'TouchC', pointerType: 'touch' },
-];
-
-function setupUser() {
-  return userEvent.setup({
-    delay: null,
-    pointerMap: pointerMap as any,
-    pointerEventsCheck: PointerEventsCheckLevel.Never,
-  });
-}
+// setupUser is consolidated in solidaria-test-utils.
 
 // Helper to wait for TimeField to hydrate (it uses client-only rendering)
 async function waitForTimeFieldHydration() {

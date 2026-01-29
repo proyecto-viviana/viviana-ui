@@ -28,7 +28,6 @@ export function Button(props: ButtonProps): JSX.Element {
   const merged = solidMergeProps(defaultProps, props);
 
   const [local, headlessProps] = splitProps(merged, [
-    'children',
     'variant',
     'buttonStyle',
     'size',
@@ -69,7 +68,7 @@ export function Button(props: ButtonProps): JSX.Element {
       data-style={local.buttonStyle}
       data-static-color={local.staticColor || undefined}
     >
-      {local.children}
+      {props.children}
     </HeadlessButton>
   );
 }

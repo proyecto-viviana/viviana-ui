@@ -11,28 +11,11 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
-import { PointerEventsCheckLevel } from '@testing-library/user-event';
 import { ListBox, ListBoxOption } from '../src/ListBox';
 import type { Key } from '@proyecto-viviana/solid-stately';
+import { setupUser, firePointerDown, firePointerUp, firePointerClick } from '@proyecto-viviana/solidaria-test-utils';
 
-// Pointer map matching react-spectrum's test setup
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'MouseRight', pointerType: 'mouse', button: 'secondary' },
-  { name: 'MouseMiddle', pointerType: 'mouse', button: 'auxiliary' },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-  { name: 'TouchB', pointerType: 'touch' },
-  { name: 'TouchC', pointerType: 'touch' },
-];
-
-function setupUser() {
-  return userEvent.setup({
-    delay: null,
-    pointerMap: pointerMap as any,
-    pointerEventsCheck: PointerEventsCheckLevel.Never,
-  });
-}
+// setupUser and pointer helpers are consolidated in solidaria-test-utils.
 
 // Test data
 interface TestItem {
@@ -277,8 +260,8 @@ describe('ListBox', () => {
         />
       ));
 
-      await user.click(screen.getByText('Cat'));
-      await user.click(screen.getByText('Dog'));
+      firePointerClick(screen.getByText('Cat'));
+      firePointerClick(screen.getByText('Dog'));
 
       expect(onSelectionChange).toHaveBeenCalledTimes(2);
     });
@@ -297,11 +280,11 @@ describe('ListBox', () => {
       const catOption = screen.getByText('Cat');
 
       // Select
-      await user.click(catOption);
+      firePointerClick(catOption);
       expect(onSelectionChange).toHaveBeenCalledTimes(1);
 
       // Deselect
-      await user.click(catOption);
+      firePointerClick(catOption);
       expect(onSelectionChange).toHaveBeenCalledTimes(2);
     });
 
@@ -622,10 +605,11 @@ describe('ListBox', () => {
 
       const options = screen.getAllByRole('option');
 
-      await user.pointer({ target: options[0], keys: '[MouseLeft>]' });
+      firePointerDown(options[0]);
       expect(options[0]).toHaveAttribute('data-pressed');
 
-      await user.pointer({ target: options[0], keys: '[/MouseLeft]' });
+      firePointerUp(options[0]);
+      fireEvent.click(options[0], { detail: 1 });
       expect(options[0]).not.toHaveAttribute('data-pressed');
     });
   });

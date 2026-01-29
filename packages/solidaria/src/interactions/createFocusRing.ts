@@ -8,13 +8,12 @@
  * Port of @react-aria/focus useFocusRing.
  */
 
-import { type JSX, type Accessor, createSignal, createEffect, onCleanup } from 'solid-js';
+import { type JSX, type Accessor, createSignal, createEffect, onCleanup, createMemo } from 'solid-js';
 import { createFocus } from './createFocus';
+import { createFocusWithin } from './createFocusWithin';
 import {
-  type Modality,
-  getInteractionModality,
-  setupGlobalFocusListeners,
-  addModalityListener,
+  createFocusVisibleListener,
+  isFocusVisible as isGlobalFocusVisible,
 } from './createInteractionModality';
 
 // ============================================
@@ -53,46 +52,38 @@ export interface FocusRingResult {
  * For text inputs, focus rings are always visible when focused.
  */
 export function createFocusRing(props: FocusRingProps = {}): FocusRingResult {
-  const { isTextInput = false, autoFocus = false } = props;
+  const { isTextInput = false, autoFocus = false, within = false } = props;
 
   const [isFocused, setIsFocused] = createSignal(false);
-  const [isFocusVisible, setIsFocusVisible] = createSignal(autoFocus);
-  const [modality, setModality] = createSignal<Modality | null>(getInteractionModality());
+  const [focusVisibleFlag, setFocusVisibleFlag] = createSignal(
+    autoFocus || isGlobalFocusVisible()
+  );
+  const isFocusVisible = createMemo(() => isFocused() && focusVisibleFlag());
 
-  // Setup global listeners
   createEffect(() => {
-    setupGlobalFocusListeners();
-
-    const cleanup = addModalityListener((newModality: Modality) => {
-      setModality(newModality);
-    });
-
+    const cleanup = createFocusVisibleListener((visible) => {
+      setFocusVisibleFlag(visible);
+    }, { isTextInput });
     onCleanup(cleanup);
   });
 
-  // Update focus visible based on modality and focus state
-  createEffect(() => {
-    const focused = isFocused();
-    const mod = modality();
+  const onFocusChange = (focused: boolean) => {
+    setIsFocused(focused);
+  };
 
-    if (focused) {
-      // Text inputs always show focus ring when focused
-      // Otherwise, only show if last interaction was keyboard
-      setIsFocusVisible(isTextInput || mod === 'keyboard');
-    } else {
-      setIsFocusVisible(false);
-    }
+  const focusResult = createFocus({
+    isDisabled: within,
+    onFocusChange,
   });
 
-  // Use createFocus to track focus state
-  const focusResult = createFocus({
-    onFocus: () => setIsFocused(true),
-    onBlur: () => setIsFocused(false),
+  const focusWithinResult = createFocusWithin({
+    isDisabled: !within,
+    onFocusWithinChange: onFocusChange,
   });
 
   return {
     isFocused,
     isFocusVisible,
-    focusProps: focusResult.focusProps as JSX.HTMLAttributes<HTMLElement>,
+    focusProps: (within ? focusWithinResult.focusWithinProps : focusResult.focusProps) as JSX.HTMLAttributes<HTMLElement>,
   };
 }

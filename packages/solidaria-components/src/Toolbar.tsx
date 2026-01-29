@@ -135,7 +135,7 @@ export function Toolbar(props: ToolbarProps): JSX.Element {
 
   // Resolve children (support render props)
   const resolvedChildren = createMemo(() => {
-    const children = local.children
+    const children = props.children
     if (typeof children === 'function') {
       return (children as (props: ToolbarRenderProps) => JSX.Element)(renderValues())
     }

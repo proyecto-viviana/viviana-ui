@@ -12,14 +12,14 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import { DatePicker, DatePickerButton, DatePickerContent } from '../src/DatePicker';
 import { DateInput, DateSegment } from '../src/DateField';
 import { Calendar, CalendarGrid, CalendarCell, CalendarButton, CalendarHeading } from '../src/Calendar';
 import { CalendarDate } from '@internationalized/date';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // User event instance - created per test
-let user: ReturnType<typeof userEvent.setup>;
+let user: ReturnType<typeof setupUser>;
 
 // Helper to wait for DatePicker to hydrate (it uses client-only rendering)
 async function waitForDatePickerHydration() {
@@ -57,7 +57,7 @@ function TestDatePicker(props: {
 
 describe('DatePicker', () => {
   beforeEach(() => {
-    user = userEvent.setup();
+    user = setupUser();
   });
 
   afterEach(() => {

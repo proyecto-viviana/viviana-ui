@@ -54,8 +54,15 @@ class FakePointerEvent extends MouseEvent {
     return this._init.height ?? 1;
   }
 
+  get detail(): number {
+    return this._init.detail ?? 1;
+  }
+
   get pressure(): number {
-    return this._init.pressure ?? 0;
+    if (this._init.pressure !== undefined) {
+      return this._init.pressure;
+    }
+    return this.pointerType === 'mouse' ? 0.5 : 0;
   }
 
   get tiltX(): number {

@@ -139,7 +139,6 @@ export function PopoverTrigger(props: PopoverTriggerProps): JSX.Element {
  */
 export function Popover(props: PopoverProps): JSX.Element {
   const [local, rest] = splitProps(props, [
-    'children',
     'placement',
     'size',
     'class',
@@ -170,7 +169,7 @@ export function Popover(props: PopoverProps): JSX.Element {
           <Show when={local.showArrow}>
             <PopoverArrow placement={renderProps.placement} />
           </Show>
-          {local.children}
+          {props.children}
         </>
       )}
     </HeadlessPopover>

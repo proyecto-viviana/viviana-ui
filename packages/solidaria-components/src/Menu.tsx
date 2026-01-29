@@ -166,7 +166,7 @@ export const MenuTriggerContext = createContext<MenuTriggerContextValue | null>(
  * A menu trigger wraps a button and menu, handling the open/close state.
  */
 export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
-  const [local, stateProps] = splitProps(props, ['children', 'slot']);
+  const [local, stateProps] = splitProps(props, ['slot']);
 
   // Create trigger state
   const state = createMenuTriggerState({
@@ -199,7 +199,7 @@ export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
         menuProps,
       }}
     >
-      {local.children}
+      {props.children}
     </MenuTriggerContext.Provider>
   );
 }
@@ -219,7 +219,7 @@ export interface MenuButtonProps extends SlotProps {
 }
 
 export function MenuButton(props: MenuButtonProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot', 'isDisabled']);
+  const [local] = splitProps(props, ['class', 'style', 'slot', 'isDisabled']);
 
   // Get trigger context
   const context = useContext(MenuTriggerContext);
@@ -261,7 +261,7 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-MenuButton',
@@ -430,7 +430,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
           style={renderProps.style()}
           data-focused={state.isFocused() || undefined}
         >
-          <For each={stateProps.items}>{(item) => local.children(item)}</For>
+          <For each={stateProps.items}>{(item) => props.children?.(item)}</For>
         </ul>
       </MenuStateContext.Provider>
     </MenuContext.Provider>
@@ -452,7 +452,6 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
  */
 export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -506,7 +505,7 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Menu-item',

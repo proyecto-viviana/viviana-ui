@@ -246,7 +246,6 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
 export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element {
   const [local, headlessProps] = splitProps(props, [
     'class',
-    'children',
     'description',
     'icon',
   ])
@@ -316,9 +315,9 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
           {/* Content */}
           <div class="flex flex-col flex-1 min-w-0">
             <span class="truncate">
-              {typeof local.children === 'function'
-                ? local.children(renderProps)
-                : local.children}
+              {typeof props.children === 'function'
+                ? props.children(renderProps)
+                : props.children}
             </span>
             <Show when={local.description}>
               <span class={`text-primary-400 truncate ${sizeStyle.description}`}>
@@ -345,7 +344,7 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
  * A button to expand/collapse a tree item.
  */
 export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const context = useContext(TreeSizeContext)
   const sizeStyle = sizeStyles[context.size]
   const customClass = local.class ?? ''
@@ -362,7 +361,7 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
       {...headlessProps}
       class={className}
     >
-      {local.children ?? (({ isExpanded }: { isExpanded: boolean }) => (
+      {props.children ?? (({ isExpanded }: { isExpanded: boolean }) => (
         <ChevronIcon
           class={`${sizeStyle.expandButton} transition-transform duration-150 ${
             isExpanded ? 'rotate-90' : ''

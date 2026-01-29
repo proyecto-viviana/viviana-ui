@@ -11,6 +11,9 @@ export {
   pointerMap,
   createPointerEvent,
   pointerEvent,
+  firePointerDown,
+  firePointerUp,
+  firePointerClick,
   type PointerMapEntry,
   type PointerEventOptions,
 } from './pointer';

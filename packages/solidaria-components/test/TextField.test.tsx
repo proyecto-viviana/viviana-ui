@@ -9,27 +9,15 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
-import { PointerEventsCheckLevel } from '@testing-library/user-event';
 import {
   TextField,
   Input,
   Label,
   type TextFieldRenderProps,
 } from '../src/TextField';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-];
-
-function setupUser() {
-  return userEvent.setup({
-    delay: null,
-    pointerMap: pointerMap as any,
-    pointerEventsCheck: PointerEventsCheckLevel.Never,
-  });
-}
+// setupUser is consolidated in solidaria-test-utils.
 
 describe('TextField', () => {
   let user: ReturnType<typeof setupUser>;

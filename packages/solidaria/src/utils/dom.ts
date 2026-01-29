@@ -225,6 +225,7 @@ export function shouldPreventDefaultUp(target: Element): boolean {
  */
 export function openLink(target: HTMLAnchorElement, event: Event, allowOpener = false): void {
   const { href, target: linkTarget, rel } = target;
+  (openLink as { isOpening?: boolean }).isOpening = true;
 
   // Handle modifier keys for open-in-new-tab behavior
   const keyEvent = event as KeyboardEvent;
@@ -241,7 +242,11 @@ export function openLink(target: HTMLAnchorElement, event: Event, allowOpener = 
   } else {
     window.location.href = href;
   }
+
+  (openLink as { isOpening?: boolean }).isOpening = false;
 }
+
+(openLink as { isOpening?: boolean }).isOpening = false;
 
 // ============================================
 // Scroll utilities

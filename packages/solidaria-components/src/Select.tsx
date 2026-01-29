@@ -217,7 +217,7 @@ export const SelectStateContext = createContext<SelectState<unknown> | null>(nul
 export function Select<T>(props: SelectProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
+    ['class', 'style', 'slot'],
     ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'selectedKey', 'defaultSelectedKey', 'onSelectionChange', 'isOpen', 'defaultOpen', 'onOpenChange', 'name']
   );
 
@@ -362,7 +362,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
               </For>
             </select>
           </div>
-          {local.children}
+          {props.children}
         </div>
       </SelectStateContext.Provider>
     </SelectContext.Provider>
@@ -373,7 +373,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
  * The trigger button for a select.
  */
 export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   // Get context
   const context = useContext(SelectContext);
@@ -401,7 +401,7 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Select-trigger',
@@ -446,7 +446,7 @@ function defaultSelectValueChildren<T>(values: SelectValueRenderProps<T>) {
  * Displays the selected value in a select.
  */
 export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot', 'placeholder']);
+  const [local] = splitProps(props, ['class', 'style', 'slot', 'placeholder']);
 
   // Get context
   const context = useContext(SelectContext);
@@ -473,7 +473,7 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children ?? defaultSelectValueChildren,
+      children: props.children ?? defaultSelectValueChildren,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Select-value',
@@ -497,7 +497,7 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
  * The listbox popup for a select.
  */
 export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   // Get context
   const context = useContext(SelectContext);
@@ -588,7 +588,7 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
           style={renderProps.style()}
           data-focused={state.isFocused() || undefined}
         >
-          <Show when={local.children} fallback={
+          <Show when={props.children} fallback={
             <For each={items()}>
               {(node) => (
                 <SelectOption id={node.key}>
@@ -598,7 +598,7 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
             </For>
           }>
             <For each={items()}>
-              {(node) => node.value != null ? local.children!(node.value) : null}
+              {(node) => node.value != null ? props.children!(node.value) : null}
             </For>
           </Show>
         </ul>
@@ -612,7 +612,6 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
  */
 export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -692,7 +691,7 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Select-option',

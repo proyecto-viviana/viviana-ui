@@ -166,16 +166,16 @@ describe('createInteractionModality', () => {
       setupGlobalFocusListeners();
     });
 
-    it('should set modality to pointer on mousedown', () => {
+    it('should set modality to pointer on pointerdown (mouse)', () => {
       setInteractionModality('keyboard'); // Reset first
-      const event = new MouseEvent('mousedown', { bubbles: true });
+      const event = new PointerEvent('pointerdown', { bubbles: true, pointerType: 'mouse' });
       document.dispatchEvent(event);
       expect(getInteractionModality()).toBe('pointer');
     });
 
-    it('should set modality to pointer on pointerdown', () => {
+    it('should set modality to pointer on pointerdown (pen)', () => {
       setInteractionModality('keyboard'); // Reset first
-      const event = new PointerEvent('pointerdown', { bubbles: true });
+      const event = new PointerEvent('pointerdown', { bubbles: true, pointerType: 'pen' });
       document.dispatchEvent(event);
       expect(getInteractionModality()).toBe('pointer');
     });

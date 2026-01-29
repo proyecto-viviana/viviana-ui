@@ -104,7 +104,7 @@ export const ToastContext = createContext<ToastState<ToastContent> | null>(null)
 export function useToastContext(): ToastState<ToastContent> {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('Toast components must be used within a ToastProvider or with explicit state');
+    throw new Error('Toast components must be used within a ToastProvider');
   }
   return context;
 }
@@ -225,7 +225,7 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ToastRegion',
@@ -354,7 +354,7 @@ export function Toast(props: ToastProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Toast',

@@ -3,23 +3,12 @@
  */
 import { describe, it, expect, afterEach } from 'vitest'
 import { render, screen, cleanup, waitFor } from '@solidjs/testing-library'
-import userEvent from '@testing-library/user-event'
-import { PointerEventsCheckLevel } from '@testing-library/user-event'
 import { Popover, PopoverTrigger, usePopoverTrigger } from '../src/Popover'
 import { Button } from '../src/Button'
 import { createSignal } from 'solid-js'
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils'
 
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-]
-
-function setupUser() {
-  return userEvent.setup({
-    delay: null,
-    pointerMap: pointerMap as any,
-    pointerEventsCheck: PointerEventsCheckLevel.Never,
-  })
-}
+// setupUser is consolidated in solidaria-test-utils.
 
 describe('Popover', () => {
   afterEach(() => {

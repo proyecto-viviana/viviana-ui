@@ -5,9 +5,9 @@
  */
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
+import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
 import { createFocusWithin, type FocusWithinProps } from '../src/interactions/createFocusWithin';
-import type { Component, JSX } from 'solid-js';
+import { createSignal, type Component, type JSX } from 'solid-js';
 
 // Test component that uses createFocusWithin
 interface ExampleProps extends FocusWithinProps {
@@ -28,6 +28,23 @@ const Example: Component<ExampleProps> = (props) => {
     </div>
   );
 };
+
+function createFocusEvent(currentTarget: Element, target: Element, relatedTarget: Element | null = null) {
+  const event: any = {
+    currentTarget,
+    target,
+    relatedTarget,
+    cancelBubble: false,
+    composedPath: () => [target, currentTarget],
+    stopPropagation() {
+      event.cancelBubble = true;
+    },
+    stopImmediatePropagation() {
+      event.cancelBubble = true;
+    },
+  };
+  return event as FocusEvent;
+}
 
 describe('createFocusWithin', () => {
   afterEach(() => {
@@ -103,6 +120,195 @@ describe('createFocusWithin', () => {
     child.blur();
 
     expect(events).toEqual([]);
+  });
+
+  it('events do not bubble when stopPropagation is called', () => {
+    const onWrapperFocus = vi.fn();
+    const onWrapperBlur = vi.fn();
+    const onInnerFocus = vi.fn((event: FocusEvent) => event.stopPropagation());
+    const onInnerBlur = vi.fn((event: FocusEvent) => event.stopPropagation());
+    let focusWithinPropsRef: ReturnType<typeof createFocusWithin>['focusWithinProps'] | undefined;
+
+    const Test: Component = () => {
+      const { focusWithinProps } = createFocusWithin({
+        onFocusWithin: onInnerFocus,
+        onBlurWithin: onInnerBlur,
+      });
+      focusWithinPropsRef = focusWithinProps;
+      return (
+        <div tabIndex={-1} {...focusWithinProps} data-testid="example">
+          <div data-testid="child" tabIndex={0} />
+        </div>
+      );
+    };
+
+    render(() => (
+      <div onFocusIn={onWrapperFocus} onFocusOut={onWrapperBlur}>
+        <Test />
+      </div>
+    ));
+
+    const container = screen.getByTestId('example');
+    const child = screen.getByTestId('child');
+    child.focus();
+    onInnerFocus.mockClear();
+    onInnerBlur.mockClear();
+    onWrapperFocus.mockClear();
+    onWrapperBlur.mockClear();
+
+    const focusEvent = createFocusEvent(container, child);
+    focusWithinPropsRef?.onFocus?.(focusEvent);
+    if (!focusEvent.cancelBubble) {
+      onWrapperFocus(focusEvent);
+    }
+
+    const blurEvent = createFocusEvent(container, child, null);
+    focusWithinPropsRef?.onBlur?.(blurEvent);
+    if (!blurEvent.cancelBubble) {
+      onWrapperBlur(blurEvent);
+    }
+
+    expect(onInnerFocus).toHaveBeenCalledTimes(1);
+    expect(onInnerBlur).toHaveBeenCalledTimes(1);
+    expect(onWrapperFocus).not.toHaveBeenCalled();
+    expect(onWrapperBlur).not.toHaveBeenCalled();
+  });
+
+  it('events bubble by default', () => {
+    const onWrapperFocus = vi.fn();
+    const onWrapperBlur = vi.fn();
+    const onInnerFocus = vi.fn();
+    const onInnerBlur = vi.fn();
+    let focusWithinPropsRef: ReturnType<typeof createFocusWithin>['focusWithinProps'] | undefined;
+
+    const Test: Component = () => {
+      const { focusWithinProps } = createFocusWithin({
+        onFocusWithin: onInnerFocus,
+        onBlurWithin: onInnerBlur,
+      });
+      focusWithinPropsRef = focusWithinProps;
+      return (
+        <div tabIndex={-1} {...focusWithinProps} data-testid="example">
+          <div data-testid="child" tabIndex={0} />
+        </div>
+      );
+    };
+
+    render(() => (
+      <div onFocusIn={onWrapperFocus} onFocusOut={onWrapperBlur}>
+        <Test />
+      </div>
+    ));
+
+    const container = screen.getByTestId('example');
+    const child = screen.getByTestId('child');
+    child.focus();
+    onInnerFocus.mockClear();
+    onInnerBlur.mockClear();
+    onWrapperFocus.mockClear();
+    onWrapperBlur.mockClear();
+
+    const focusEvent = createFocusEvent(container, child);
+    focusWithinPropsRef?.onFocus?.(focusEvent);
+    if (!focusEvent.cancelBubble) {
+      onWrapperFocus(focusEvent);
+    }
+
+    const blurEvent = createFocusEvent(container, child, null);
+    focusWithinPropsRef?.onBlur?.(blurEvent);
+    if (!blurEvent.cancelBubble) {
+      onWrapperBlur(blurEvent);
+    }
+
+    expect(onInnerFocus).toHaveBeenCalledTimes(1);
+    expect(onInnerBlur).toHaveBeenCalledTimes(1);
+    expect(onWrapperFocus).toHaveBeenCalledTimes(1);
+    expect(onWrapperBlur).toHaveBeenCalledTimes(1);
+  });
+
+  it('should fire onBlurWithin when a focused element is disabled', async () => {
+    const onFocus = vi.fn();
+    const onBlur = vi.fn();
+    const [isDisabled, setIsDisabled] = createSignal(false);
+    let focusWithinPropsRef: ReturnType<typeof createFocusWithin>['focusWithinProps'] | undefined;
+
+    const ButtonExample: Component = () => {
+      const { focusWithinProps } = createFocusWithin({
+        onFocusWithin: onFocus,
+        onBlurWithin: onBlur,
+      });
+      focusWithinPropsRef = focusWithinProps;
+
+      return (
+        <div {...focusWithinProps}>
+          <button disabled={isDisabled()} data-testid="button">Button</button>
+        </div>
+      );
+    };
+
+    render(() => <ButtonExample />);
+
+    const container = screen.getByTestId('button').parentElement as HTMLElement;
+    const button = screen.getByTestId('button');
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    const focusEvent = createFocusEvent(container, button);
+    focusWithinPropsRef?.onFocus?.(focusEvent);
+
+    expect(onFocus).toHaveBeenCalledTimes(1);
+
+    setIsDisabled(true);
+
+    await waitFor(() => {
+      const blurEvent = createFocusEvent(container, button, null);
+      focusWithinPropsRef?.onBlur?.(blurEvent);
+      expect(onBlur).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('should fire onBlurWithin when focus occurs outside', async () => {
+    const events: any[] = [];
+    const addEvent = (e: FocusEvent) => events.push({ type: e.type, target: e.target });
+    let focusWithinPropsRef: ReturnType<typeof createFocusWithin>['focusWithinProps'] | undefined;
+
+    const Test: Component = () => {
+      const { focusWithinProps } = createFocusWithin({
+        onFocusWithin: addEvent,
+        onBlurWithin: addEvent,
+        onFocusWithinChange: (isFocused) => events.push({ type: 'focuschange', isFocused }),
+      });
+      focusWithinPropsRef = focusWithinProps;
+
+      return (
+        <div {...focusWithinProps} data-testid="test">
+          <button data-testid="toggle">hide</button>
+        </div>
+      );
+    };
+
+    render(() => (
+      <>
+        <Test />
+        <input data-testid="outer" />
+      </>
+    ));
+
+    const container = screen.getByTestId('test');
+    const button = screen.getByTestId('toggle');
+    button.focus();
+
+    const focusEvent = createFocusEvent(container, button);
+    focusWithinPropsRef?.onFocus?.(focusEvent);
+
+    const outer = screen.getByTestId('outer');
+    outer.focus();
+    outer.dispatchEvent(new FocusEvent('focus', { bubbles: false }));
+
+    await waitFor(() => {
+      expect(events.some((e) => e.type === 'blur')).toBe(true);
+      expect(events.some((e) => e.type === 'focuschange' && e.isFocused === false)).toBe(true);
+    });
   });
 
   it('should fire onFocusWithin when a descendant receives focus', () => {

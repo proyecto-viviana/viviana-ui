@@ -177,7 +177,7 @@ export const TreeItemContext = createContext<TreeItemContextValue<object> | null
 export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'renderEmptyState'],
+    ['class', 'style', 'slot', 'renderEmptyState'],
     [
       'items',
       'disabledKeys',
@@ -266,7 +266,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     state,
     collection: state.collection,
     isDisabled: ariaProps.isDisabled ?? false,
-    renderItem: local.children,
+    renderItem: props.children,
   }));
 
   // Render visible rows (flat list based on expansion state)
@@ -310,7 +310,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
                   isExpandable: node.isExpandable ?? false,
                   level: node.level,
                 };
-                return local.children(itemData, itemState);
+                return props.children(itemData, itemState);
               }}
             </For>
           )}
@@ -325,7 +325,6 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
  */
 export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element {
   const [local] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -415,7 +414,7 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Tree-item',
@@ -479,7 +478,7 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
   // Get item context
   const itemContext = useContext(TreeItemContext);
   if (!itemContext) {
-    throw new Error('TreeExpandButton must be used within a TreeItem');
+    throw new Error('TreeExpandButton must be used within a Tree');
   }
 
   // Get state context

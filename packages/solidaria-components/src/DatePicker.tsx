@@ -111,7 +111,7 @@ export const DatePickerContext = createContext<DatePickerContextValue | null>(nu
 export function useDatePickerContext(): DatePickerContextValue {
   const context = useContext(DatePickerContext);
   if (!context) {
-    throw new Error('useDatePickerContext must be used within a DatePicker');
+    throw new Error('DatePicker components must be used within a DatePicker');
   }
   return context;
 }
@@ -276,7 +276,7 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
           data-invalid={dataAttr(fieldState.isInvalid())}
           data-open={dataAttr(overlayState.isOpen)}
         >
-          {local.children}
+          {props.children}
         </div>
       </DateFieldContext.Provider>
     </DatePickerContext.Provider>

@@ -173,7 +173,6 @@ export function useTagGroupContext(): TagGroupContextValue | null {
  */
 export function TagGroup(props: TagGroupProps): JSX.Element {
   const [local] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -186,7 +185,7 @@ export function TagGroup(props: TagGroupProps): JSX.Element {
       style={typeof local.style === 'object' ? local.style : undefined}
       slot={local.slot}
     >
-      {local.children}
+      {props.children}
     </div>
   );
 }
@@ -201,7 +200,6 @@ export function TagGroup(props: TagGroupProps): JSX.Element {
 export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T>): JSX.Element {
   const [local] = splitProps(props, [
     'items',
-    'children',
     'class',
     'style',
     'slot',
@@ -301,7 +299,7 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
             fallback={local.renderEmptyState?.()}
           >
             <For each={local.items}>
-              {(item) => local.children(item)}
+              {(item) => props.children(item)}
             </For>
           </Show>
         </div>
@@ -320,7 +318,6 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
 export function Tag(props: TagProps): JSX.Element {
   const [local, rest] = splitProps(props, [
     'id',
-    'children',
     'class',
     'style',
     'slot',
@@ -357,7 +354,7 @@ export function Tag(props: TagProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Tag',

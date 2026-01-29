@@ -12,7 +12,7 @@ export interface PageLayoutProps extends JSX.HTMLAttributes<HTMLDivElement> {
  * Use this as the root wrapper for all pages.
  */
 export function PageLayout(props: PageLayoutProps) {
-  const [local, rest] = splitProps(props, ['children', 'class', 'withHeader'])
+  const [local, rest] = splitProps(props, ['class', 'withHeader'])
 
   const classes = () => {
     const base = 'vui-page'
@@ -23,7 +23,7 @@ export function PageLayout(props: PageLayoutProps) {
 
   return (
     <div class={classes()} {...rest}>
-      {local.children}
+      {props.children}
     </div>
   )
 }

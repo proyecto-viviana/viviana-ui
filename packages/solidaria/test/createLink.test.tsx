@@ -3,9 +3,9 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import { Dynamic } from 'solid-js/web';
 import { createLink } from '../src/link';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // Test component that uses createLink
 function TestLink(props: {
@@ -70,20 +70,22 @@ describe('createLink', () => {
   });
 
   it('should call onPress when clicked', async () => {
+    const user = setupUser();
     const onPress = vi.fn();
     render(() => <TestLink onPress={onPress} />);
     const link = screen.getByRole('link');
 
-    await userEvent.click(link);
+    await user.click(link);
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
   it('should not call onPress when disabled', async () => {
+    const user = setupUser();
     const onPress = vi.fn();
     render(() => <TestLink isDisabled onPress={onPress} />);
     const link = screen.getByRole('link');
 
-    await userEvent.click(link);
+    await user.click(link);
     expect(onPress).not.toHaveBeenCalled();
   });
 
@@ -94,12 +96,13 @@ describe('createLink', () => {
   });
 
   it('should support keyboard activation with Enter', async () => {
+    const user = setupUser();
     const onPress = vi.fn();
     render(() => <TestLink onPress={onPress} />);
     const link = screen.getByRole('link');
 
     link.focus();
-    await userEvent.keyboard('{Enter}');
+    await user.keyboard('{Enter}');
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 

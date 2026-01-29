@@ -110,7 +110,6 @@ export function TooltipTrigger(props: TooltipTriggerProps): JSX.Element {
  */
 export function Tooltip(props: TooltipProps): JSX.Element {
   const [local, rest] = splitProps(props, [
-    'children',
     'placement',
     'variant',
     'class',
@@ -135,7 +134,7 @@ export function Tooltip(props: TooltipProps): JSX.Element {
     >
       {(renderProps: TooltipRenderProps) => (
         <>
-          {local.children}
+          {props.children}
           <Show when={local.showArrow}>
             <div
               class={[

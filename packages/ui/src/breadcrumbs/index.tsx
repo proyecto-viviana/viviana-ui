@@ -104,7 +104,6 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
     'variant',
     'showSeparator',
     'class',
-    'children',
   ])
 
   const size = local.size ?? 'md'
@@ -124,7 +123,7 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
       <HeadlessBreadcrumbs
         {...headlessProps}
         class={getClassName}
-        children={local.children}
+        children={props.children}
       />
     </BreadcrumbsSizeContext.Provider>
   )
@@ -138,7 +137,7 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
  * A BreadcrumbItem represents an individual breadcrumb in the navigation trail.
  */
 export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const ctx = useContext(BreadcrumbsSizeContext)
   const customClass = local.class ?? ''
 
@@ -173,7 +172,7 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     <>
       {/* Separator shows before items except first and current */}
       {ctx.showSeparator && <ChevronIcon class={separatorClass} />}
-      {local.children as JSX.Element}
+      {props.children as JSX.Element}
     </>
   )
 

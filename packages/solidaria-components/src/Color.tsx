@@ -195,7 +195,7 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorSlider',
@@ -243,7 +243,7 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
  * The track element of a color slider.
  */
 export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(ColorSliderContext);
   if (!context) {
@@ -261,7 +261,7 @@ export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorSlider-track',
@@ -300,7 +300,7 @@ export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
  * The thumb element of a color slider.
  */
 export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(ColorSliderContext);
   if (!context) {
@@ -331,7 +331,7 @@ export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorSlider-thumb',
@@ -528,7 +528,7 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorArea',
@@ -588,7 +588,7 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
  * The gradient background of a color area.
  */
 export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(ColorAreaContext);
   if (!context) {
@@ -605,7 +605,7 @@ export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorArea-gradient',
@@ -642,7 +642,7 @@ export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
  * The thumb element of a color area.
  */
 export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(ColorAreaContext);
   if (!context) {
@@ -673,7 +673,7 @@ export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorArea-thumb',
@@ -859,7 +859,7 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorWheel',
@@ -901,7 +901,7 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
  * The track element of a color wheel.
  */
 export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(ColorWheelContext);
   if (!context) {
@@ -919,7 +919,7 @@ export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorWheel-track',
@@ -958,7 +958,7 @@ export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
  * The thumb element of a color wheel.
  */
 export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(ColorWheelContext);
   if (!context) {
@@ -989,7 +989,7 @@ export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorWheel-thumb',
@@ -1165,7 +1165,7 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorField',
@@ -1207,7 +1207,7 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
  * The input element of a color field.
  */
 export function ColorFieldInput(props: ColorFieldInputProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(ColorFieldContext);
   if (!context) {
@@ -1239,7 +1239,7 @@ export function ColorFieldInput(props: ColorFieldInputProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorField-input',
@@ -1333,7 +1333,7 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ColorSwatch',

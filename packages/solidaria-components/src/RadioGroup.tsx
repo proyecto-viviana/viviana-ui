@@ -127,7 +127,6 @@ export const RadioContext = createContext<RadioProps | null>(null);
  */
 export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -163,7 +162,7 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-RadioGroup',
@@ -181,10 +180,10 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   };
 
   // Resolve children - we need to pass render props if children is a function
-  // but we use local.children directly (not renderProps.renderChildren())
+  // but we use props.children directly (not renderProps.renderChildren())
   // to preserve SolidJS context propagation for nested components like Radio
   const resolvedChildren = () => {
-    const children = local.children;
+    const children = props.children;
     if (typeof children === 'function') {
       return children(renderValues());
     }
@@ -222,18 +221,13 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
   let inputRef: HTMLInputElement | null = null;
   const { radioProps, state } = props;
 
-  const [local, ariaProps] = splitProps(radioProps, [
-    'children',
-    'class',
-    'style',
-    'slot',
-  ]);
+  const [local, ariaProps] = splitProps(radioProps, ['class', 'style', 'slot']);
 
   // Create radio aria props
   const radioAria = createRadio(
     () => ({
       ...ariaProps,
-      children: typeof local.children === 'function' ? true : local.children,
+      children: typeof radioProps.children === 'function' ? true : radioProps.children,
     }),
     state,
     () => inputRef
@@ -265,7 +259,7 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: radioProps.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Radio',

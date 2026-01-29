@@ -68,7 +68,6 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   const [local, headlessProps] = splitProps(merged, [
     'size',
     'class',
-    'children',
   ]);
 
   const size = () => sizeStyles[local.size!];
@@ -105,7 +104,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
               ].join(' ')}
             />
           </span>
-          {local.children && <span class="text-primary-200">{local.children}</span>}
+          {props.children && <span class="text-primary-200">{props.children}</span>}
         </>
       )}
     </HeadlessToggleSwitch>

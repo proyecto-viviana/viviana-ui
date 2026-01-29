@@ -114,7 +114,6 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     'description',
     'errorMessage',
     'isInvalid',
-    'children',
   ])
 
   const size = local.size ?? 'md'
@@ -137,7 +136,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
             {local.label}
           </label>
         </Show>
-        {local.children}
+        {props.children}
         <Show when={local.description && !local.isInvalid}>
           <span class="text-primary-400 text-sm">{local.description}</span>
         </Show>
@@ -158,7 +157,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
  * SSR-compatible - renders children and chevron icon directly without render props.
  */
 export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const size = useContext(SelectSizeContext)
   const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''
@@ -190,7 +189,7 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
       {...headlessProps}
       class={getClassName}
     >
-      {local.children as JSX.Element}
+      {props.children as JSX.Element}
       {/* Chevron rotates via CSS based on data-open attribute from headless component */}
       <ChevronIcon class={`${sizeStyle.icon} transition-transform duration-200 data-open:rotate-180`} />
     </HeadlessSelectTrigger>
@@ -205,7 +204,7 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
  * Displays the selected value in a select.
  */
 export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const customClass = local.class ?? ''
 
   const getClassName = (renderProps: SelectValueRenderProps<T>): string => {
@@ -218,7 +217,7 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
     <HeadlessSelectValue
       {...headlessProps}
       class={getClassName}
-      children={local.children}
+      children={props.children}
     />
   )
 }
@@ -231,7 +230,7 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
  * The listbox popup for a select.
  */
 export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const customClass = local.class ?? ''
 
   const getClassName = (_renderProps: SelectListBoxRenderProps): string => {
@@ -243,7 +242,7 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
     <HeadlessSelectListBox
       {...headlessProps}
       class={getClassName}
-      children={local.children}
+      children={props.children}
     />
   )
 }
@@ -264,7 +263,7 @@ const paddingStyles = {
  * SSR-compatible - renders check icon and content directly without render props.
  */
 export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const size = useContext(SelectSizeContext)
   const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''
@@ -302,7 +301,7 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
       {/* Check icon shows only when selected via data-selected attribute */}
       <CheckIcon class={iconClass} />
       <span class={`flex-1 data-selected:pl-0 ${paddingClass}`}>
-        {local.children as JSX.Element}
+        {props.children as JSX.Element}
       </span>
     </HeadlessSelectOption>
   )

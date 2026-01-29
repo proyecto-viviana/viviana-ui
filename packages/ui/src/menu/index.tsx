@@ -105,14 +105,14 @@ const buttonVariants = {
  * A menu trigger wraps a button and menu, handling the open/close state.
  */
 export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['size', 'class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['size', 'class'])
   const size = local.size ?? 'md'
 
   return (
     <MenuSizeContext.Provider value={size}>
       <div class={`relative inline-block ${local.class ?? ''}`}>
         <HeadlessMenuTrigger {...headlessProps}>
-          {local.children}
+          {props.children}
         </HeadlessMenuTrigger>
       </div>
     </MenuSizeContext.Provider>
@@ -128,7 +128,7 @@ export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
  * SSR-compatible - renders children and chevron icon directly without render props.
  */
 export function MenuButton(props: MenuButtonProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children', 'variant'])
+  const [local, headlessProps] = splitProps(props, ['class', 'variant'])
   const size = useContext(MenuSizeContext)
   const sizeStyle = sizeStyles[size]
   const variant = local.variant ?? 'secondary'
@@ -160,7 +160,7 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
       {...headlessProps}
       class={getClassName}
     >
-      {local.children as JSX.Element}
+      {props.children as JSX.Element}
       {/* Chevron rotates via CSS based on data-open attribute */}
       <ChevronIcon class={`${sizeStyle.icon} transition-transform duration-200 data-open:rotate-180`} />
     </HeadlessMenuButton>
@@ -175,7 +175,7 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
  * A menu displays a list of actions or options for the user to choose from.
  */
 export function Menu<T>(props: MenuProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const size = useContext(MenuSizeContext)
   const styles = () => sizeStyles[size]
   const customClass = local.class ?? ''
@@ -190,7 +190,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     <HeadlessMenu
       {...headlessProps}
       class={getClassName}
-      children={local.children}
+      children={props.children}
     />
   )
 }
@@ -204,7 +204,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
  * SSR-compatible - renders icon, content, and shortcut directly without render props.
  */
 export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children', 'icon', 'shortcut', 'isDestructive'])
+  const [local, headlessProps] = splitProps(props, ['class', 'icon', 'shortcut', 'isDestructive'])
   const size = useContext(MenuSizeContext)
   const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''
@@ -243,7 +243,7 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
       class={getClassName}
     >
       {local.icon && <span class={`shrink-0 ${sizeStyle.icon}`}>{local.icon()}</span>}
-      <span class="flex-1">{local.children as JSX.Element}</span>
+      <span class="flex-1">{props.children as JSX.Element}</span>
       {local.shortcut && <span class="text-primary-500 text-sm ml-auto">{local.shortcut}</span>}
     </HeadlessMenuItem>
   )

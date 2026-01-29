@@ -176,7 +176,6 @@ export function createPress(props: CreatePressProps = {}): PressResult {
       return true;
     }
 
-    pressState.ignoreClickAfterPress = true;
     pressState.didFirePressStart = false;
     pressState.isTriggeringEvent = true;
 
@@ -264,7 +263,8 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
   const onPointerDown: JSX.EventHandler<HTMLElement, PointerEvent> = (e) => {
     // Only handle left clicks, and ignore events that bubbled through portals
-    if (e.button !== 0 || !nodeContains(e.currentTarget, getEventTarget(e))) {
+    const button = e.button ?? 0;
+    if (button !== 0 || !nodeContains(e.currentTarget, getEventTarget(e))) {
       return;
     }
 
@@ -315,7 +315,8 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
   const onPointerUp = (e: PointerEvent): void => {
     // Only handle events for our active pointer
-    if (e.pointerId !== pressState.activePointerId || !pressState.isPressed || e.button !== 0 || !pressState.target) {
+    const button = e.button ?? 0;
+    if (e.pointerId !== pressState.activePointerId || !pressState.isPressed || button !== 0 || !pressState.target) {
       return;
     }
 

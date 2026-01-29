@@ -5,6 +5,8 @@
  * in tests, compatible with userEvent's pointerMap.
  */
 
+import { fireEvent } from '@solidjs/testing-library';
+
 /**
  * Pointer map entry for userEvent configuration
  */
@@ -195,6 +197,29 @@ export function createPressSequence(
     createPointerEvent('pointerdown', { ...baseOptions, buttons: 1 }),
     createPointerEvent('pointerup', { ...baseOptions, buttons: 0 }),
   ];
+}
+
+/**
+ * Fire a pointerdown event on a target with defaults.
+ */
+export function firePointerDown(target: Element, options: PointerEventOptions = {}): void {
+  fireEvent(target, createPointerEvent('pointerdown', options));
+}
+
+/**
+ * Fire a pointerup event on a target with defaults.
+ */
+export function firePointerUp(target: Element, options: PointerEventOptions = {}): void {
+  fireEvent(target, createPointerEvent('pointerup', { buttons: 0, ...options }));
+}
+
+/**
+ * Fire a full pointer click sequence (down, up, click).
+ */
+export function firePointerClick(target: Element, options: PointerEventOptions = {}): void {
+  firePointerDown(target, options);
+  firePointerUp(target, options);
+  fireEvent.click(target, { detail: 1 });
 }
 
 /**

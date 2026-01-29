@@ -236,7 +236,7 @@ export const ComboBoxStateContext = createContext<ComboBoxState<unknown> | null>
 export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
+    ['class', 'style', 'slot'],
     [
       'items',
       'getKey',
@@ -418,7 +418,7 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
               value={state.selectedKey()?.toString() ?? ''}
             />
           </Show>
-          {local.children}
+          {props.children}
         </div>
       </ComboBoxStateContext.Provider>
     </ComboBoxContext.Provider>
@@ -429,7 +429,7 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
  * The text input for a combobox.
  */
 export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   // Get context
   const context = useContext(ComboBoxContext);
@@ -458,7 +458,7 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ComboBox-input',
@@ -497,7 +497,7 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
  * The trigger button for a combobox.
  */
 export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   // Get context
   const context = useContext(ComboBoxContext);
@@ -528,7 +528,7 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ComboBox-button',
@@ -567,7 +567,7 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
  * The listbox popup for a combobox.
  */
 export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   // Get context
   const context = useContext(ComboBoxContext);
@@ -683,7 +683,7 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
         style={renderProps.style()}
         data-focused={state.isFocused() || undefined}
       >
-        <Show when={local.children} fallback={
+        <Show when={props.children} fallback={
           <For each={items()}>
             {(node) => (
               <ComboBoxOption id={node.key}>
@@ -693,7 +693,7 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
           </For>
         }>
           <For each={items()}>
-            {(node) => node.value != null ? local.children!(node.value) : null}
+            {(node) => node.value != null ? props.children!(node.value) : null}
           </For>
         </Show>
       </ul>
@@ -706,7 +706,6 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
  */
 export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -779,7 +778,7 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ComboBox-option',

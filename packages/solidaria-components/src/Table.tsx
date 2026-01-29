@@ -241,7 +241,7 @@ export const TableRowContext = createContext<TableRowContextValue | null>(null);
 export function Table<T extends object>(props: TableProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'renderEmptyState'],
+    ['class', 'style', 'slot', 'renderEmptyState'],
     [
       'items',
       'columns',
@@ -315,7 +315,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Table',
@@ -373,7 +373,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
  * A header row in a table containing column headers.
  */
 export function TableHeader(props: TableHeaderProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
 
   // Get context
   const context = useContext(TableContext);
@@ -405,7 +405,7 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
 
   return (
     <thead {...cleanRowGroupProps()} class={renderProps.class()} style={renderProps.style()}>
-      <tr role="row">{local.children}</tr>
+      <tr role="row">{props.children}</tr>
     </thead>
   );
 }
@@ -414,7 +414,7 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
  * A column header in a table.
  */
 export function TableColumn(props: TableColumnProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot', 'id', 'allowsSorting']);
+  const [local] = splitProps(props, ['class', 'style', 'slot', 'id', 'allowsSorting']);
 
   // Get context
   const context = useContext(TableContext);
@@ -484,7 +484,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Table-column',
@@ -529,7 +529,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
  * The body of a table containing data rows.
  */
 export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['children', 'items', 'class', 'style', 'slot', 'renderEmptyState']);
+  const [local] = splitProps(props, ['items', 'class', 'style', 'slot', 'renderEmptyState']);
 
   // Get context
   const context = useContext(TableContext);
@@ -566,7 +566,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
 
   return (
     <tbody {...cleanRowGroupProps()} class={renderProps.class()} style={renderProps.style()}>
-      <Show when={isEmpty() && local.renderEmptyState} fallback={<For each={items()}>{(item) => local.children?.(item)}</For>}>
+      <Show when={isEmpty() && local.renderEmptyState} fallback={<For each={items()}>{(item) => props.children?.(item)}</For>}>
         {local.renderEmptyState?.()}
       </Show>
     </tbody>
@@ -577,7 +577,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
  * A row in a table.
  */
 export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot', 'id', 'item', 'onAction']);
+  const [local] = splitProps(props, ['class', 'style', 'slot', 'id', 'item', 'onAction']);
 
   // Get context
   const context = useContext(TableContext);
@@ -644,7 +644,7 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Table-row',
@@ -697,7 +697,7 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
  * A cell in a table row.
  */
 export function TableCell(props: TableCellProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'class', 'style', 'slot', 'id']);
+  const [local] = splitProps(props, ['class', 'style', 'slot', 'id']);
 
   // Get context
   const tableContext = useContext(TableContext);
@@ -707,7 +707,7 @@ export function TableCell(props: TableCellProps): JSX.Element {
     throw new Error('TableCell must be used within a Table');
   }
   if (!rowContext) {
-    throw new Error('TableCell must be used within a TableRow');
+    throw new Error('TableCell must be used within a Table');
   }
 
   const { state, collection } = tableContext;
@@ -770,7 +770,7 @@ export function TableCell(props: TableCellProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Table-cell',

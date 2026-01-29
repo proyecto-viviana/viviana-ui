@@ -194,8 +194,8 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
                 <CheckIcon class={iconClasses()} />
               </Show>
             </span>
-            <Show when={local.children}>
-              <span class={labelClasses()}>{local.children}</span>
+            <Show when={props.children}>
+              <span class={labelClasses()}>{props.children}</span>
             </Show>
           </>
         )
@@ -216,7 +216,6 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
 export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
   const [local, headlessProps] = splitProps(props, [
     'class',
-    'children',
     'label',
     'description',
     'errorMessage',
@@ -237,7 +236,7 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
         <span class="text-sm font-medium text-primary-200">{local.label}</span>
       </Show>
       <div class="flex flex-col gap-2">
-        {local.children}
+        {props.children}
       </div>
       <Show when={local.description && !renderProps.isInvalid}>
         <span class="text-sm text-primary-400">{local.description}</span>

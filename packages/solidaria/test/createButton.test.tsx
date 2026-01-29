@@ -1,28 +1,10 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
-import { PointerEventsCheckLevel } from '@testing-library/user-event';
 import { createSignal } from 'solid-js';
 import { createButton, createToggleButton } from '../src/button';
+import { setupUser, firePointerDown, firePointerUp } from '@proyecto-viviana/solidaria-test-utils';
 
-// Pointer map matching react-spectrum's test setup
-// Ensures pointer events have realistic dimensions so they aren't mistaken for virtual clicks
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'MouseRight', pointerType: 'mouse', button: 'secondary' },
-  { name: 'MouseMiddle', pointerType: 'mouse', button: 'auxiliary' },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-  { name: 'TouchB', pointerType: 'touch' },
-  { name: 'TouchC', pointerType: 'touch' },
-];
-
-function setupUser() {
-  return userEvent.setup({
-    delay: null,
-    pointerMap: pointerMap as any,
-    pointerEventsCheck: PointerEventsCheckLevel.Never,
-  });
-}
+// setupUser and pointer helpers are consolidated in solidaria-test-utils.
 
 afterEach(() => {
   cleanup();
@@ -163,7 +145,7 @@ describe('createButton', () => {
       render(() => <button {...buttonProps}>Press me</button>);
       const button = screen.getByText('Press me');
 
-      await user.pointer({ keys: '[MouseLeft>]', target: button });
+      firePointerDown(button);
 
       expect(onPressStart).toHaveBeenCalledTimes(1);
     });
@@ -325,7 +307,7 @@ describe('createButton', () => {
       render(() => <button {...buttonProps}>Click me</button>);
       const button = screen.getByText('Click me');
 
-      await user.pointer({ keys: '[MouseLeft>]', target: button });
+      firePointerDown(button, { clientX: 10, clientY: 15 });
 
       expect(onPressStart).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -373,10 +355,8 @@ describe('createButton', () => {
       const button = screen.getByText('Press me');
       const outside = screen.getByTestId('outside');
 
-      await user.pointer([
-        { keys: '[MouseLeft>]', target: button },
-        { keys: '[/MouseLeft]', target: outside },
-      ]);
+      firePointerDown(button, { pointerId: 1 });
+      firePointerUp(outside, { pointerId: 1 });
 
       expect(onPressEnd).toHaveBeenCalled();
       expect(onPress).not.toHaveBeenCalled();

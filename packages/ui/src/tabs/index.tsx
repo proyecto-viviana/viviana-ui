@@ -130,7 +130,6 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
     'size',
     'variant',
     'class',
-    'children',
   ])
 
   const size = local.size ?? 'md'
@@ -149,7 +148,7 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
       <HeadlessTabs
         {...headlessProps}
         class={getClassName}
-        children={local.children}
+        children={props.children}
       />
     </TabsSizeContext.Provider>
   )
@@ -163,7 +162,7 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
  * A TabList contains Tab elements that represent the available tabs.
  */
 export function TabList<T>(props: TabListProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const ctx = useContext(TabsSizeContext)
   const customClass = local.class ?? ''
 
@@ -184,7 +183,7 @@ export function TabList<T>(props: TabListProps<T>): JSX.Element {
     <HeadlessTabList
       {...headlessProps}
       class={getClassName}
-      children={local.children}
+      children={props.children}
     />
   )
 }
@@ -197,7 +196,7 @@ export function TabList<T>(props: TabListProps<T>): JSX.Element {
  * A Tab represents an individual tab in a TabList.
  */
 export function Tab(props: TabProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const ctx = useContext(TabsSizeContext)
   const customClass = local.class ?? ''
 
@@ -228,7 +227,7 @@ export function Tab(props: TabProps): JSX.Element {
     <HeadlessTab
       {...headlessProps}
       class={getClassName}
-      children={local.children}
+      children={props.children}
     />
   )
 }
@@ -241,7 +240,7 @@ export function Tab(props: TabProps): JSX.Element {
  * A TabPanel displays the content for a selected Tab.
  */
 export function TabPanel(props: TabPanelProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const ctx = useContext(TabsSizeContext)
   const customClass = local.class ?? ''
 
@@ -260,7 +259,7 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
     <HeadlessTabPanel
       {...headlessProps}
       class={getClassName}
-      children={local.children}
+      children={props.children}
     />
   )
 }

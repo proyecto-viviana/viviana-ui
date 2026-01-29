@@ -124,7 +124,7 @@ export const RangeCalendarContext = createContext<RangeCalendarState<DateValue> 
 export function useRangeCalendarContext(): RangeCalendarState<DateValue> {
   const context = useContext(RangeCalendarContext);
   if (!context) {
-    throw new Error('useRangeCalendarContext must be used within a RangeCalendar');
+    throw new Error('RangeCalendar components must be used within a RangeCalendar');
   }
   return context;
 }
@@ -229,7 +229,7 @@ function RangeCalendarInner<T extends DateValue = CalendarDate>(
         data-readonly={dataAttr(state.isReadOnly())}
         data-dragging={dataAttr(state.isDragging())}
       >
-        {local.children}
+        {props.children}
       </div>
     </RangeCalendarContext.Provider>
   );

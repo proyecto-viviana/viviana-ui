@@ -9,28 +9,11 @@
  * - Full accessibility
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
-import { PointerEventsCheckLevel } from '@testing-library/user-event';
+import { render, screen, fireEvent } from '@solidjs/testing-library';
 import { Button, type ButtonRenderProps } from '../src/Button';
+import { setupUser, firePointerDown, firePointerUp } from '@proyecto-viviana/solidaria-test-utils';
 
-// Pointer map matching react-spectrum's test setup
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'MouseRight', pointerType: 'mouse', button: 'secondary' },
-  { name: 'MouseMiddle', pointerType: 'mouse', button: 'auxiliary' },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-  { name: 'TouchB', pointerType: 'touch' },
-  { name: 'TouchC', pointerType: 'touch' },
-];
-
-function setupUser() {
-  return userEvent.setup({
-    delay: null,
-    pointerMap: pointerMap as any,
-    pointerEventsCheck: PointerEventsCheckLevel.Never,
-  });
-}
+// setupUser and pointer helpers are consolidated in solidaria-test-utils.
 
 describe('Button', () => {
   let user: ReturnType<typeof setupUser>;
@@ -82,11 +65,12 @@ describe('Button', () => {
       expect(screen.getByText('Not Pressed')).toBeInTheDocument();
 
       // Press and hold
-      await user.pointer({ target: button, keys: '[MouseLeft>]' });
+      firePointerDown(button);
       expect(screen.getByText('Pressed')).toBeInTheDocument();
 
       // Release
-      await user.pointer({ target: button, keys: '[/MouseLeft]' });
+      firePointerUp(button);
+      fireEvent.click(button, { detail: 1 });
       expect(screen.getByText('Not Pressed')).toBeInTheDocument();
     });
 
@@ -100,10 +84,11 @@ describe('Button', () => {
       const button = screen.getByRole('button');
       expect(button).toHaveClass('not-pressed');
 
-      await user.pointer({ target: button, keys: '[MouseLeft>]' });
+      firePointerDown(button);
       expect(button).toHaveClass('pressed');
 
-      await user.pointer({ target: button, keys: '[/MouseLeft]' });
+      firePointerUp(button);
+      fireEvent.click(button, { detail: 1 });
       expect(button).toHaveClass('not-pressed');
     });
 
@@ -143,10 +128,11 @@ describe('Button', () => {
 
       expect(button).not.toHaveAttribute('data-pressed');
 
-      await user.pointer({ target: button, keys: '[MouseLeft>]' });
+      firePointerDown(button);
       expect(button).toHaveAttribute('data-pressed');
 
-      await user.pointer({ target: button, keys: '[/MouseLeft]' });
+      firePointerUp(button);
+      fireEvent.click(button, { detail: 1 });
       expect(button).not.toHaveAttribute('data-pressed');
     });
 

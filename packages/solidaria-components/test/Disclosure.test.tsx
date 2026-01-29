@@ -10,21 +10,21 @@
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
+import { render, screen, cleanup, waitFor } from '@solidjs/testing-library';
 import {
   Disclosure,
   DisclosureTrigger,
   DisclosurePanel,
   DisclosureGroup,
 } from '../src/Disclosure';
+import { firePointerClick, setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // User event instance - created per test
-let user: ReturnType<typeof userEvent.setup>;
+let user: ReturnType<typeof setupUser>;
 
 describe('Disclosure', () => {
   beforeEach(() => {
-    user = userEvent.setup();
+    user = setupUser();
   });
 
   afterEach(() => {
@@ -60,7 +60,7 @@ describe('Disclosure', () => {
       ));
 
       const trigger = screen.getByRole('button', { name: 'Show more' });
-      await user.click(trigger);
+      firePointerClick(trigger);
 
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
       const panel = screen.getByRole('region');
@@ -78,7 +78,7 @@ describe('Disclosure', () => {
       const trigger = screen.getByRole('button', { name: 'Show more' });
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
 
-      await user.click(trigger);
+      firePointerClick(trigger);
 
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
     });

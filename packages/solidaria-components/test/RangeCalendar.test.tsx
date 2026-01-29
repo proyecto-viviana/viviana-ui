@@ -11,7 +11,6 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, waitFor } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import {
   RangeCalendar,
   RangeCalendarHeading,
@@ -20,9 +19,10 @@ import {
   RangeCalendarCell,
 } from '../src/RangeCalendar';
 import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // User event instance - created per test
-let user: ReturnType<typeof userEvent.setup>;
+let user: ReturnType<typeof setupUser>;
 
 // Helper to wait for range calendar to hydrate (it uses client-only rendering)
 async function waitForRangeCalendarHydration() {
@@ -52,7 +52,7 @@ function TestRangeCalendar(props: {
 
 describe('RangeCalendar', () => {
   beforeEach(() => {
-    user = userEvent.setup();
+    user = setupUser();
   });
 
   afterEach(() => {

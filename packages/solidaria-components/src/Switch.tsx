@@ -101,7 +101,6 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
 
   // Split props
   const [local, ariaProps] = splitProps(props, [
-    'children',
     'class',
     'style',
     'slot',
@@ -120,7 +119,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   const switchAria = createSwitch(
     () => ({
       ...ariaProps,
-      children: typeof local.children === 'function' ? true : local.children,
+      children: typeof props.children === 'function' ? true : props.children,
     }),
     state,
     () => inputRef
@@ -151,7 +150,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ToggleSwitch',

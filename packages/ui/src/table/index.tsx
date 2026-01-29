@@ -206,7 +206,6 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     'class',
     'title',
     'description',
-    'children',
   ])
 
   const size = () => local.size ?? 'md'
@@ -244,7 +243,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
         </Show>
         <div class={variantStyle().wrapper}>
           <HeadlessTable {...headlessProps} class={getClassName}>
-            {local.children}
+            {props.children}
           </HeadlessTable>
         </div>
       </div>
@@ -260,7 +259,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
  * A header row in a table containing column headers.
  */
 export function TableHeader(props: TableHeaderProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const context = useContext(TableSizeContext)
   const variantStyle = variantStyles[context.variant]
   const customClass = local.class ?? ''
@@ -269,7 +268,7 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
 
   return (
     <HeadlessTableHeader {...headlessProps} class={className}>
-      {local.children}
+      {props.children}
     </HeadlessTableHeader>
   )
 }
@@ -282,7 +281,7 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
  * A column header in a table.
  */
 export function TableColumn(props: TableColumnProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children', 'align', 'width'])
+  const [local, headlessProps] = splitProps(props, ['class', 'align', 'width'])
   const context = useContext(TableSizeContext)
   const sizeStyle = sizeStyles[context.size]
   const customClass = local.class ?? ''
@@ -319,9 +318,9 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
       {(renderProps: TableColumnRenderProps) => (
         <div class="flex items-center gap-2">
           <span class="flex-1">
-            {typeof local.children === 'function'
-              ? local.children(renderProps)
-              : local.children}
+            {typeof props.children === 'function'
+              ? props.children(renderProps)
+              : props.children}
           </span>
           <Show when={renderProps.isSortable && renderProps.sortDirection}>
             <SortIcon direction={renderProps.sortDirection!} class="w-4 h-4" />
@@ -340,7 +339,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
  * The body of a table containing data rows.
  */
 export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children', 'renderEmptyState'])
+  const [local, headlessProps] = splitProps(props, ['class', 'renderEmptyState'])
   const customClass = local.class ?? ''
 
   const defaultEmptyState = () => (
@@ -360,7 +359,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
       class={customClass}
       renderEmptyState={local.renderEmptyState ?? defaultEmptyState}
     >
-      {local.children}
+      {props.children}
     </HeadlessTableBody>
   )
 }
@@ -373,7 +372,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
  * A row in a table.
  */
 export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class'])
   const context = useContext(TableSizeContext)
   const variantStyle = variantStyles[context.variant]
   const customClass = local.class ?? ''
@@ -404,7 +403,7 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
 
   return (
     <HeadlessTableRow {...headlessProps} class={getClassName}>
-      {local.children}
+      {props.children}
     </HeadlessTableRow>
   )
 }
@@ -417,7 +416,7 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
  * A cell in a table row.
  */
 export function TableCell(props: TableCellProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children', 'align'])
+  const [local, headlessProps] = splitProps(props, ['class', 'align'])
   const context = useContext(TableSizeContext)
   const sizeStyle = sizeStyles[context.size]
   const customClass = local.class ?? ''
@@ -436,7 +435,7 @@ export function TableCell(props: TableCellProps): JSX.Element {
 
   return (
     <HeadlessTableCell {...headlessProps} class={getClassName}>
-      {local.children}
+      {props.children}
     </HeadlessTableCell>
   )
 }

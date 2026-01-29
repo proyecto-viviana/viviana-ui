@@ -5,8 +5,6 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, cleanup, within } from '@solidjs/testing-library'
-import userEvent from '@testing-library/user-event'
-import { PointerEventsCheckLevel } from '@testing-library/user-event'
 import { createSignal } from 'solid-js'
 import {
   Dialog,
@@ -16,24 +14,9 @@ import {
 } from '../src/Dialog'
 import { Modal, ModalOverlay } from '../src/Modal'
 import { Button } from '../src/Button'
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils'
 
-// Pointer map matching react-spectrum's test setup
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'MouseRight', pointerType: 'mouse', button: 'secondary' },
-  { name: 'MouseMiddle', pointerType: 'mouse', button: 'auxiliary' },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-  { name: 'TouchB', pointerType: 'touch' },
-  { name: 'TouchC', pointerType: 'touch' },
-]
-
-function setupUser() {
-  return userEvent.setup({
-    delay: null,
-    pointerMap: pointerMap as any,
-    pointerEventsCheck: PointerEventsCheckLevel.Never,
-  })
-}
+// setupUser is consolidated in solidaria-test-utils.
 
 describe('Dialog', () => {
   let user: ReturnType<typeof setupUser>

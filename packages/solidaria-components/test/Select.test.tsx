@@ -12,7 +12,6 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import {
   Select,
   SelectTrigger,
@@ -21,9 +20,10 @@ import {
   SelectOption,
 } from '../src/Select';
 import type { Key } from '@proyecto-viviana/solid-stately';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // Setup userEvent
-const user = userEvent.setup();
+const user = setupUser();
 
 // Test data
 interface TestItem {

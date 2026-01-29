@@ -89,7 +89,6 @@ export function Dialog(props: DialogProps): JSX.Element {
     'isDismissable',
     'class',
     'title',
-    'children',
     'onClose',
     'role',
     'aria-label',
@@ -140,7 +139,7 @@ export function Dialog(props: DialogProps): JSX.Element {
           </div>
         </Show>
         <div class="text-primary-200">
-          {local.children}
+          {props.children}
         </div>
       </div>
     </DialogContext.Provider>

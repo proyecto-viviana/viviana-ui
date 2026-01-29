@@ -387,7 +387,7 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
   const context = useContext(DisclosureContext);
   const panelRefSetter = useContext(DisclosurePanelRefContext);
 
-  const [local, rest] = splitProps(props, ['children', 'class', 'style']);
+  const [local, rest] = splitProps(props, ['class', 'style']);
 
   // Reactive accessors
   const isExpanded = () => context?.state.isExpanded() ?? false;
@@ -402,7 +402,7 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-DisclosurePanel',

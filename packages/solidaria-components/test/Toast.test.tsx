@@ -8,7 +8,6 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import {
   ToastProvider,
   ToastTitle,
@@ -17,13 +16,14 @@ import {
   addToast,
   useToastContext,
 } from '../src/Toast';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // User event instance - created per test
-let user: ReturnType<typeof userEvent.setup>;
+let user: ReturnType<typeof setupUser>;
 
 describe('Toast', () => {
   beforeEach(() => {
-    user = userEvent.setup();
+    user = setupUser();
   });
 
   afterEach(() => {

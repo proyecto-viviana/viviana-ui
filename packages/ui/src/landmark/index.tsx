@@ -82,7 +82,7 @@ const roleColors: Record<AriaLandmarkRole, string> = {
  * ```
  */
 export function Landmark(props: LandmarkProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'showLabel', 'children'])
+  const [local, headlessProps] = splitProps(props, ['class', 'showLabel'])
   const customClass = local.class ?? ''
 
   const role = () => headlessProps.role
@@ -107,7 +107,7 @@ export function Landmark(props: LandmarkProps): JSX.Element {
           </Show>
         </div>
       </Show>
-      {local.children}
+      {props.children}
     </HeadlessLandmark>
   )
 }

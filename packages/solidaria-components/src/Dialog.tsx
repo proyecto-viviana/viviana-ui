@@ -85,7 +85,7 @@ export { DialogTriggerContext, useDialogTrigger } from './contexts'
  * Children should include a trigger element (e.g. Button) and the dialog content.
  */
 export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'isOpen', 'defaultOpen', 'onOpenChange'])
+  const [local] = splitProps(props, ['isOpen', 'defaultOpen', 'onOpenChange'])
 
   // Create overlay trigger state
   const state = createOverlayTriggerState({
@@ -135,7 +135,7 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
 export function Dialog(props: DialogProps): JSX.Element {
   const [local, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'onClose'],
+    ['class', 'style', 'slot', 'onClose'],
     ['role', 'aria-label', 'aria-labelledby', 'aria-describedby']
   )
 
@@ -184,7 +184,7 @@ export function Dialog(props: DialogProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: local.children,
+      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Dialog',

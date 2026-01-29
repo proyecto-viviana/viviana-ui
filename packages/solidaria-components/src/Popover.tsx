@@ -157,7 +157,7 @@ export const PopoverContext = createContext<{ placement: () => PlacementAxis | n
  * Children should include a trigger element (e.g. Button) and the Popover.
  */
 export function PopoverTrigger(props: PopoverTriggerProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'isOpen', 'defaultOpen', 'onOpenChange'])
+  const [local] = splitProps(props, ['isOpen', 'defaultOpen', 'onOpenChange'])
 
   // Create overlay trigger state
   const state = createOverlayTriggerState({
@@ -212,11 +212,11 @@ export function PopoverTrigger(props: PopoverTriggerProps): JSX.Element {
   // detect the context and use it for open state.
   //
   // IMPORTANT: In SolidJS, JSX children are lazily evaluated when they're part
-  // of JSX expression. So {local.children} here means the children (Button, Popover)
+  // of JSX expression. So {props.children} here means the children (Button, Popover)
   // will be evaluated inside the Provider context.
   return (
     <PopoverTriggerContext.Provider value={contextValue()}>
-      {local.children}
+      {props.children}
     </PopoverTriggerContext.Provider>
   )
 }

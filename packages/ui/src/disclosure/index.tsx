@@ -161,7 +161,6 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
     'size',
     'variant',
     'class',
-    'children',
   ]);
 
   const size = local.size ?? 'md';
@@ -179,7 +178,7 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
       <HeadlessDisclosureGroup
         {...headlessProps}
         class={getClassName}
-        children={local.children}
+        children={props.children}
       />
     </DisclosureSizeContext.Provider>
   );
@@ -205,7 +204,6 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
     'size',
     'variant',
     'class',
-    'children',
   ]);
 
   const parentCtx = useContext(DisclosureSizeContext);
@@ -224,7 +222,7 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
         {...headlessProps}
         class={getClassName}
       >
-        {local.children}
+        {props.children}
       </HeadlessDisclosure>
     </DisclosureSizeContext.Provider>
   );
@@ -239,7 +237,7 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
  * The chevron rotates based on the data-expanded attribute using Tailwind's group class.
  */
 export function DisclosureTrigger(props: DisclosureTriggerProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children', 'hideIcon']);
+  const [local, headlessProps] = splitProps(props, ['class', 'hideIcon']);
   const ctx = useContext(DisclosureSizeContext);
   const customClass = local.class ?? '';
 
@@ -253,7 +251,7 @@ export function DisclosureTrigger(props: DisclosureTriggerProps): JSX.Element {
         customClass,
       ].filter(Boolean).join(' ')}
     >
-      {local.children}
+      {props.children}
       <Show when={!local.hideIcon}>
         <svg
           class={[
@@ -284,7 +282,7 @@ export function DisclosureTrigger(props: DisclosureTriggerProps): JSX.Element {
  * DisclosurePanel contains the content that is shown/hidden.
  */
 export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children']);
+  const [local, headlessProps] = splitProps(props, ['class']);
   const ctx = useContext(DisclosureSizeContext);
   const customClass = local.class ?? '';
 
@@ -298,7 +296,7 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
     <HeadlessDisclosurePanel
       {...headlessProps}
       class={getClassName}
-      children={local.children}
+      children={props.children}
     />
   );
 }

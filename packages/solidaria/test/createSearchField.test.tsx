@@ -5,15 +5,9 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import userEvent from '@testing-library/user-event';
 import { createSearchField } from '../src/searchfield/createSearchField';
 import { createSearchFieldState } from '@proyecto-viviana/solid-stately';
-
-// Pointer map for realistic pointer dimensions
-const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-];
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // Test component that uses createSearchField
 function TestSearchField(props: {
@@ -114,7 +108,7 @@ describe('createSearchField', () => {
     });
 
     it('should update value on input', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSearchField aria-label="Search" onChange={onChange} />);
 
@@ -135,7 +129,7 @@ describe('createSearchField', () => {
 
   describe('keyboard behavior', () => {
     it('should call onSubmit on Enter', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onSubmit = vi.fn();
       render(() => <TestSearchField aria-label="Search" defaultValue="query" onSubmit={onSubmit} />);
 
@@ -147,7 +141,7 @@ describe('createSearchField', () => {
     });
 
     it('should not call onSubmit on Enter if not provided', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       render(() => <TestSearchField aria-label="Search" defaultValue="query" />);
 
       const input = screen.getByTestId('search-input');
@@ -158,7 +152,7 @@ describe('createSearchField', () => {
     });
 
     it('should clear value and call onClear on Escape when value exists', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onClear = vi.fn();
       render(() => <TestSearchField aria-label="Search" defaultValue="query" onClear={onClear} />);
 
@@ -171,7 +165,7 @@ describe('createSearchField', () => {
     });
 
     it('should not call onClear on Escape when value is empty', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onClear = vi.fn();
       render(() => <TestSearchField aria-label="Search" defaultValue="" onClear={onClear} />);
 
@@ -183,7 +177,7 @@ describe('createSearchField', () => {
     });
 
     it('should not have onKeyDown behavior when disabled', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onSubmit = vi.fn();
       const onClear = vi.fn();
       render(() => <TestSearchField aria-label="Search" defaultValue="query" isDisabled onSubmit={onSubmit} onClear={onClear} />);
@@ -200,7 +194,7 @@ describe('createSearchField', () => {
 
   describe('clear button', () => {
     it('should clear value and focus input on click', async () => {
-      const user = userEvent.setup({ pointerMap });
+      const user = setupUser();
       const onClear = vi.fn();
       render(() => <TestSearchField aria-label="Search" defaultValue="query" onClear={onClear} />);
 
@@ -272,7 +266,7 @@ describe('createSearchField edge cases', () => {
   });
 
   it('should handle rapid clear and type', async () => {
-    const user = userEvent.setup({ pointerMap });
+    const user = setupUser();
     const onChange = vi.fn();
     render(() => <TestSearchField aria-label="Search" onChange={onChange} />);
 

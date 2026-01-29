@@ -5,6 +5,8 @@
     "./packages/solid-stately",
     "./packages/solidaria",
     "./packages/solidaria-components",
+    "./packages/solidaria-test-utils",
+    "./packages/ui-test-utils",
     "./packages/ui",
     "./apps/web"
   ],
@@ -36,7 +38,9 @@
     "@proyecto-viviana/solid-stately": "./packages/solid-stately/src/index.ts",
     "@proyecto-viviana/solidaria": "./packages/solidaria/src/index.ts",
     "@proyecto-viviana/solidaria-components": "./packages/solidaria-components/src/index.ts",
-    "@proyecto-viviana/ui": "./packages/ui/src/index.ts"
+    "@proyecto-viviana/ui": "./packages/ui/src/index.ts",
+    "@proyecto-viviana/solidaria-test-utils": "./packages/solidaria-test-utils/src/index.ts",
+    "@proyecto-viviana/ui-test-utils": "./packages/ui-test-utils/src/index.ts"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

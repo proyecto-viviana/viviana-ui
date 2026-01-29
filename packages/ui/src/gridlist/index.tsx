@@ -257,7 +257,6 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
 export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX.Element {
   const [local, headlessProps] = splitProps(props, [
     'class',
-    'children',
     'description',
     'icon',
     'image',
@@ -325,9 +324,9 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
           {/* Content */}
           <div class="flex flex-col flex-1 min-w-0">
             <span class="truncate">
-              {typeof local.children === 'function'
-                ? local.children(renderProps)
-                : local.children}
+              {typeof props.children === 'function'
+                ? props.children(renderProps)
+                : props.children}
             </span>
             <Show when={local.description}>
               <span class={`text-primary-400 truncate ${sizeStyle.description}`}>
