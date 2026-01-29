@@ -43,11 +43,7 @@ bun.lockb
 .wrangler/
 
 react-spectrum
-.claude
-CLAUDE.md
 
 # Local
 .DS_Store
 .mcp.json
-react-aria-tests.txt
-solidaria-tests.txt
