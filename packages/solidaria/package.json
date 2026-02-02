@@ -1,6 +1,6 @@
 {
   "name": "@proyecto-viviana/solidaria",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "A 1-1 SolidJS port of React Aria - accessible UI primitives",
   "type": "module",
   "main": "./dist/index.js",
@@ -25,7 +25,7 @@
     "prepublishOnly": "echo 'Use deno task release from root'"
   },
   "dependencies": {
-    "@proyecto-viviana/solid-stately": "workspace:*",
+    "@proyecto-viviana/solid-stately": "^0.2.4",
     "@internationalized/string": "^3.2.5"
   },
   "peerDependencies": {

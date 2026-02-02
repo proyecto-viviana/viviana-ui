@@ -1,6 +1,6 @@
 {
   "name": "@proyecto-viviana/solidaria-test-utils",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Testing utilities for solidaria patterns",
   "private": true,
   "type": "module",

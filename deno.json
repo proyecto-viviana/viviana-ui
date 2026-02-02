@@ -23,11 +23,8 @@
     "dev": "cd apps/web && deno task dev",
     "typecheck": "deno check packages/*/src/**/*.ts packages/*/src/**/*.tsx packages/*/test-utils/**/*.ts",
     "version:set": "deno run -A scripts/version.ts",
-    "publish:stately": "(npm publish --workspace=packages/solid-stately || true) && (deno publish --allow-slow-types -c packages/solid-stately/deno.json || true)",
-    "publish:solidaria": "(npm publish --workspace=packages/solidaria || true) && (deno publish --allow-slow-types -c packages/solidaria/deno.json || true)",
-    "publish:components": "(npm publish --workspace=packages/solidaria-components || true) && (deno publish --allow-slow-types -c packages/solidaria-components/deno.json || true)",
-    "publish:ui": "(npm publish --workspace=packages/ui || true) && (deno publish --allow-slow-types -c packages/ui/deno.json || true)",
-    "release": "deno task build && deno task publish:stately && deno task publish:solidaria && deno task publish:components && deno task publish:ui"
+    "publish": "deno run -A scripts/publish.ts",
+    "release": "deno task build && deno task publish"
   },
   "imports": {
     "solid-js": "npm:solid-js@^1.9.0",
