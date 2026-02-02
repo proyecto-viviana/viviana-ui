@@ -6,7 +6,7 @@
  */
 
 import { createSignal, JSX, Accessor, onCleanup } from 'solid-js';
-import { PressEvent, PointerType, createPressEvent } from './PressEvent';
+import { PressEvent, PointerType, createPressEvent, type PressEventSource } from './PressEvent';
 import {
   nodeContains,
   getEventTarget,
@@ -146,7 +146,7 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
   // --- Event Triggers ---
 
-  const triggerPressStart = (originalEvent: Event, pointerType: PointerType): boolean => {
+  const triggerPressStart = (originalEvent: PressEventSource, pointerType: PointerType): boolean => {
     if (isDisabledValue(props.isDisabled) || pressState.didFirePressStart) {
       return false;
     }
@@ -171,7 +171,7 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     return shouldStopPropagation;
   };
 
-  const triggerPressEnd = (originalEvent: Event, pointerType: PointerType, wasPressed = true): boolean => {
+  const triggerPressEnd = (originalEvent: PressEventSource, pointerType: PointerType, wasPressed = true): boolean => {
     if (!pressState.didFirePressStart) {
       return true;
     }
@@ -204,7 +204,7 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     return shouldStopPropagation;
   };
 
-  const triggerPressUp = (originalEvent: Event, pointerType: PointerType): boolean => {
+  const triggerPressUp = (originalEvent: PressEventSource, pointerType: PointerType): boolean => {
     if (isDisabledValue(props.isDisabled)) {
       return true;
     }
@@ -232,7 +232,7 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     }
   };
 
-  const cancel = (originalEvent: Event): void => {
+  const cancel = (originalEvent: PressEventSource): void => {
     if (!pressState.isPressed) {
       return;
     }
@@ -398,7 +398,7 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
   // --- Touch Event Helpers ---
 
-  const createTouchEvent = (target: Element, event: TouchEvent): Event => {
+  const createTouchEvent = (target: Element, event: TouchEvent): PressEventSource => {
     let clientX = 0;
     let clientY = 0;
     if (event.targetTouches && event.targetTouches.length === 1) {
@@ -413,7 +413,7 @@ export function createPress(props: CreatePressProps = {}): PressResult {
       altKey: event.altKey,
       clientX,
       clientY,
-    } as Event;
+    };
   };
 
   // --- Touch Event Handlers (fallback for testing/older browsers) ---

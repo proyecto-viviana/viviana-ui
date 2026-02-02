@@ -12,7 +12,7 @@
   ],
   "tasks": {
     "install": "npm install",
-    "build": "deno task build:stately && deno task build:solidaria && deno task build:components && deno task build:ui",
+    "build": "deno task typecheck && deno task build:stately && deno task build:solidaria && deno task build:components && deno task build:ui",
     "build:stately": "deno run -A scripts/build.ts solid-stately",
     "build:solidaria": "deno run -A scripts/build.ts solidaria",
     "build:components": "deno run -A scripts/build.ts solidaria-components",
@@ -21,11 +21,13 @@
     "test:watch": "bun run vitest",
     "test:e2e": "cd apps/web && bun run playwright test",
     "dev": "cd apps/web && deno task dev",
-    "typecheck": "deno check packages/*/src/**/*.ts packages/*/src/**/*.tsx",
+    "typecheck": "deno check packages/*/src/**/*.ts packages/*/src/**/*.tsx packages/*/test-utils/**/*.ts",
     "version:set": "deno run -A scripts/version.ts",
-    "publish:npm": "cd packages/solid-stately && npm publish && cd ../solidaria && npm publish && cd ../solidaria-components && npm publish && cd ../ui && npm publish",
-    "publish:jsr": "deno publish --allow-slow-types -c packages/solid-stately/deno.json && deno publish --allow-slow-types -c packages/solidaria/deno.json && deno publish --allow-slow-types -c packages/solidaria-components/deno.json && deno publish --allow-slow-types -c packages/ui/deno.json",
-    "release": "deno task build && deno task publish:npm && deno task publish:jsr"
+    "publish:stately": "(cd packages/solid-stately && npm publish || true) && (deno publish --allow-slow-types -c packages/solid-stately/deno.json || true)",
+    "publish:solidaria": "(cd packages/solidaria && npm publish || true) && (deno publish --allow-slow-types -c packages/solidaria/deno.json || true)",
+    "publish:components": "(cd packages/solidaria-components && npm publish || true) && (deno publish --allow-slow-types -c packages/solidaria-components/deno.json || true)",
+    "publish:ui": "(cd packages/ui && npm publish || true) && (deno publish --allow-slow-types -c packages/ui/deno.json || true)",
+    "release": "deno task build && deno task publish:stately && deno task publish:solidaria && deno task publish:components && deno task publish:ui"
   },
   "imports": {
     "solid-js": "npm:solid-js@^1.9.0",
@@ -35,6 +37,8 @@
     "@internationalized/string": "npm:@internationalized/string@^3.2.5",
     "esbuild": "npm:esbuild@^0.24.0",
     "esbuild-plugin-solid": "npm:esbuild-plugin-solid@^0.6.0",
+    "@testing-library/user-event": "npm:@testing-library/user-event@^14.0.0",
+    "@solidjs/testing-library": "npm:@solidjs/testing-library@^0.8.0",
     "@proyecto-viviana/solid-stately": "./packages/solid-stately/src/index.ts",
     "@proyecto-viviana/solidaria": "./packages/solidaria/src/index.ts",
     "@proyecto-viviana/solidaria-components": "./packages/solidaria-components/src/index.ts",

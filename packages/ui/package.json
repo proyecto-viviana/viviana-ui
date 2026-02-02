@@ -1,9 +1,9 @@
 {
   "name": "@proyecto-viviana/ui",
-  "version": "0.1.7",
+  "version": "0.3.3",
   "description": "Styled UI components for SolidJS - inspired by React Spectrum",
   "type": "module",
-  "main": "./dist/index.ssr.js",
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -36,7 +36,7 @@
   "scripts": {
     "build": "tsup && rm -f tsconfig.build.tsbuildinfo && tsc -p tsconfig.build.json",
     "dev": "tsup --watch",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "echo 'Use deno task release from root'"
   },
   "dependencies": {
     "@proyecto-viviana/solidaria": "workspace:*",

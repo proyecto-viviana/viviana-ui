@@ -1,6 +1,6 @@
 // Press interactions
 export { createPress, type CreatePressProps, type PressResult } from './createPress';
-export { PressEvent, type IPressEvent, type PointerType, type PressEventType } from './PressEvent';
+export { PressEvent, type IPressEvent, type PressEventType } from './PressEvent';
 
 // Long press interactions
 export {

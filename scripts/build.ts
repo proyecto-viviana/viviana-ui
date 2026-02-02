@@ -154,7 +154,11 @@ async function buildPackage(config: PackageConfig) {
   const tscResult = await tscCommand.output();
   if (!tscResult.success) {
     const stderr = new TextDecoder().decode(tscResult.stderr);
-    console.warn(`    ⚠ TypeScript declaration generation had issues: ${stderr}`);
+    const stdout = new TextDecoder().decode(tscResult.stdout);
+    console.error(`    ✗ TypeScript declaration generation failed:`);
+    if (stderr) console.error(stderr);
+    if (stdout) console.error(stdout);
+    throw new Error(`Type declaration generation failed for ${config.name}`);
   } else {
     console.log(`    ✓ Type declarations generated`);
   }

@@ -22,7 +22,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "echo 'Use deno task release from root'"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"

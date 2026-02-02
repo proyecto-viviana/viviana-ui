@@ -6,6 +6,20 @@
 export type PointerType = 'mouse' | 'pen' | 'touch' | 'keyboard' | 'virtual';
 export type PressEventType = 'pressstart' | 'pressend' | 'pressup' | 'press';
 
+/**
+ * Minimal event data needed to create a PressEvent.
+ * Allows both native Event objects and synthetic event-like objects.
+ */
+export interface PressEventSource {
+  currentTarget?: EventTarget | null;
+  shiftKey?: boolean;
+  ctrlKey?: boolean;
+  metaKey?: boolean;
+  altKey?: boolean;
+  clientX?: number;
+  clientY?: number;
+}
+
 export interface IPressEvent {
   /** The type of press event being fired. */
   type: PressEventType;
@@ -52,29 +66,28 @@ export class PressEvent implements IPressEvent {
   constructor(
     type: PressEventType,
     pointerType: PointerType,
-    originalEvent: Event | null,
+    originalEvent: PressEventSource | null,
     target: Element | null
   ) {
     this.type = type;
     this.pointerType = pointerType;
-    const eventTarget = target ?? ((originalEvent as any)?.currentTarget as Element | undefined);
+    const eventTarget = target ?? (originalEvent?.currentTarget as Element | undefined);
     this.target = eventTarget as Element;
 
     // Extract modifier keys from the original event
-    const e = originalEvent as MouseEvent | KeyboardEvent | null;
-    this.shiftKey = e?.shiftKey ?? false;
-    this.ctrlKey = e?.ctrlKey ?? false;
-    this.metaKey = e?.metaKey ?? false;
-    this.altKey = e?.altKey ?? false;
+    this.shiftKey = originalEvent?.shiftKey ?? false;
+    this.ctrlKey = originalEvent?.ctrlKey ?? false;
+    this.metaKey = originalEvent?.metaKey ?? false;
+    this.altKey = originalEvent?.altKey ?? false;
 
     // Calculate position relative to target
     this.x = 0;
     this.y = 0;
 
-    if (originalEvent && 'clientX' in originalEvent && eventTarget) {
+    if (originalEvent && originalEvent.clientX !== undefined && eventTarget) {
       const rect = eventTarget.getBoundingClientRect();
-      this.x = (originalEvent as MouseEvent).clientX - rect.left;
-      this.y = (originalEvent as MouseEvent).clientY - rect.top;
+      this.x = originalEvent.clientX - rect.left;
+      this.y = (originalEvent.clientY ?? 0) - rect.top;
     } else if (eventTarget) {
       // For keyboard events, use center of element
       const rect = eventTarget.getBoundingClientRect();
@@ -101,12 +114,12 @@ export class PressEvent implements IPressEvent {
 }
 
 /**
- * Creates a PressEvent from a native event.
+ * Creates a PressEvent from a native event or event-like source.
  */
 export function createPressEvent(
   type: PressEventType,
   pointerType: PointerType,
-  originalEvent: Event | null,
+  originalEvent: PressEventSource | null,
   target: Element | null
 ): PressEvent {
   return new PressEvent(type, pointerType, originalEvent, target);

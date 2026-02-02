@@ -224,7 +224,7 @@ export function waitForFocus(
       reject(new Error(`Element did not receive focus within ${timeout}ms`));
     }, timeout);
 
-    const handleFocus = (event: FocusEvent) => {
+    const handleFocus = (event: Event) => {
       if (event.target === element) {
         cleanup();
         resolve();
@@ -260,7 +260,7 @@ export function waitForFocusWithin(
       reject(new Error(`Focus did not move within container within ${timeout}ms`));
     }, timeout);
 
-    const handleFocusIn = (event: FocusEvent) => {
+    const handleFocusIn = (event: Event) => {
       cleanup();
       resolve(event.target as Element);
     };

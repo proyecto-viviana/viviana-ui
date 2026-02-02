@@ -138,6 +138,8 @@ export function createPointerEvent(
     ...rest
   } = options;
 
+  // Note: pageX/pageY are read-only computed properties based on clientX/clientY + scroll
+  // They cannot be set via PointerEventInit, but will be correctly computed by the browser
   return new PointerEvent(type, {
     bubbles: true,
     cancelable: true,
@@ -150,8 +152,6 @@ export function createPointerEvent(
     clientY,
     screenX: clientX,
     screenY: clientY,
-    pageX: clientX,
-    pageY: clientY,
     button,
     buttons,
     width,
@@ -266,6 +266,49 @@ export function createLeaveSequence(
 }
 
 /**
+ * Properties required to create a mock Touch object for testing.
+ * This mirrors the Touch interface but allows construction.
+ */
+interface MockTouchInit {
+  identifier: number;
+  target: EventTarget;
+  clientX: number;
+  clientY: number;
+  screenX: number;
+  screenY: number;
+  pageX: number;
+  pageY: number;
+  radiusX: number;
+  radiusY: number;
+  rotationAngle: number;
+  force: number;
+}
+
+/**
+ * Create a mock Touch object for testing.
+ * Touch objects are normally only created by the browser, so we need
+ * to create a mock that satisfies the interface for testing purposes.
+ */
+function createMockTouch(init: MockTouchInit): Touch {
+  // Create a frozen object that implements all Touch properties as readonly
+  const mockTouch: Touch = Object.freeze({
+    identifier: init.identifier,
+    target: init.target,
+    clientX: init.clientX,
+    clientY: init.clientY,
+    screenX: init.screenX,
+    screenY: init.screenY,
+    pageX: init.pageX,
+    pageY: init.pageY,
+    radiusX: init.radiusX,
+    radiusY: init.radiusY,
+    rotationAngle: init.rotationAngle,
+    force: init.force,
+  });
+  return mockTouch;
+}
+
+/**
  * Create touch events for testing touch interactions.
  */
 export function createTouchEvent(
@@ -279,7 +322,7 @@ export function createTouchEvent(
 ): TouchEvent {
   const { identifier = 0, clientX = 0, clientY = 0, target } = options;
 
-  const touch = {
+  const touch = createMockTouch({
     identifier,
     clientX,
     clientY,
@@ -292,7 +335,7 @@ export function createTouchEvent(
     radiusY: 1,
     rotationAngle: 0,
     force: 0.5,
-  } as Touch;
+  });
 
   const isEnd = type === 'touchend' || type === 'touchcancel';
 

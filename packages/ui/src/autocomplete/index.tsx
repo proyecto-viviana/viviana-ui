@@ -124,7 +124,7 @@ function AutocompleteInput(props: {
       aria-autocomplete={ctx.inputProps['aria-autocomplete']}
       autocomplete={ctx.inputProps.autoComplete}
       autocorrect={ctx.inputProps.autoCorrect}
-      spellcheck={ctx.inputProps.spellCheck === 'true'}
+      spellcheck={ctx.inputProps.spellCheck !== 'false'}
       class={[
         'w-full rounded-md border border-bg-200 bg-bg-50',
         'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500',

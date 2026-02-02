@@ -68,7 +68,7 @@ export function createTable<T extends object>(
   ref: Accessor<HTMLTableElement | null>
 ): TableAria {
   const id = createId(props().id);
-  const { direction } = useLocale();
+  const locale = useLocale();
 
   // Track previous sort descriptor for announcements
   let prevSortDescriptor: { column: Key; direction: 'ascending' | 'descending' } | null = null;
@@ -126,7 +126,7 @@ export function createTable<T extends object>(
     const collection = s.collection;
     const p = props();
     const focusMode = p.focusMode ?? 'row';
-    const isRTL = direction() === 'rtl';
+    const isRTL = locale().direction === 'rtl';
 
     if (s.isKeyboardNavigationDisabled) {
       return;

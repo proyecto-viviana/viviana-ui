@@ -4,14 +4,20 @@
  * Higher-level helpers for simulating user interactions in tests.
  */
 
-import userEvent from '@testing-library/user-event';
-import { PointerEventsCheckLevel } from '@testing-library/user-event';
+import userEvent, { type UserEvent, PointerEventsCheckLevel } from '@testing-library/user-event';
 import { pointerMap } from './pointer';
 
 /**
  * Type for the userEvent instance
  */
-export type UserEventInstance = ReturnType<typeof userEvent.setup>;
+export type UserEventInstance = UserEvent;
+
+// Type for userEvent v14+ setup function
+type UserEventSetup = (options?: {
+  delay?: number | null;
+  pointerMap?: readonly unknown[];
+  pointerEventsCheck?: PointerEventsCheckLevel;
+}) => UserEvent;
 
 /**
  * Setup userEvent with recommended configuration for solidaria components.
@@ -23,9 +29,11 @@ export type UserEventInstance = ReturnType<typeof userEvent.setup>;
  * ```
  */
 export function setupUser(): UserEventInstance {
-  return userEvent.setup({
+  // userEvent.setup exists in v14+ but types may not expose it correctly
+  const setup = (userEvent as unknown as { setup: UserEventSetup }).setup;
+  return setup({
     delay: null,
-    pointerMap: pointerMap as any,
+    pointerMap: pointerMap,
     pointerEventsCheck: PointerEventsCheckLevel.Never,
   });
 }

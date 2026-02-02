@@ -25,7 +25,7 @@ export interface ButtonTester {
   /** The button element */
   element: HTMLElement;
   /** Check if button is pressed (for toggle buttons) */
-  isPressed(): boolean | null;
+  isPressed(): boolean | 'mixed' | null;
   /** Check if button is disabled */
   isDisabled(): boolean;
   /** Click the button */

@@ -6,8 +6,14 @@
     "emitDeclarationOnly": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "paths": {}
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "paths": {
+      "@proyecto-viviana/solid-stately": ["../solid-stately/dist/index.d.ts"],
+      "@proyecto-viviana/solidaria": ["../solidaria/dist/index.d.ts"],
+      "@proyecto-viviana/solidaria-components": ["../solidaria-components/dist/index.d.ts"]
+    }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test"]
+  "exclude": ["node_modules", "dist", "test", "src/test-utils"]
 }

@@ -146,7 +146,7 @@ export function createHover(props: MaybeAccessor<CreateHoverProps> = {}): HoverR
     state.pointerType = pointerType;
 
     const isOverTarget = eventTarget instanceof Element ? target.contains(eventTarget) : true;
-    if (p.isDisabled || pointerType === 'touch' || state.isHovered || !isOverTarget) {
+    if (p.isDisabled || state.isHovered || !isOverTarget) {
       return;
     }
 
@@ -174,7 +174,7 @@ export function createHover(props: MaybeAccessor<CreateHoverProps> = {}): HoverR
     state.pointerType = '';
     state.target = null;
 
-    if (pointerType === 'touch' || !state.isHovered || !target) {
+    if (!state.isHovered || !target) {
       return;
     }
 

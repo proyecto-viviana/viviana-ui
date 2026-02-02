@@ -1,5 +1,4 @@
-import userEvent from '@testing-library/user-event';
-import { PointerEventsCheckLevel } from '@testing-library/user-event';
+import userEvent, { type UserEvent, PointerEventsCheckLevel } from '@testing-library/user-event';
 
 /**
  * Pointer map matching react-spectrum's test setup.
@@ -14,16 +13,25 @@ export const pointerMap = [
   { name: 'TouchC', pointerType: 'touch' },
 ];
 
+// Type for userEvent v14+ setup function
+type UserEventSetup = (options?: {
+  delay?: number | null;
+  pointerMap?: readonly unknown[];
+  pointerEventsCheck?: PointerEventsCheckLevel;
+}) => UserEvent;
+
 /**
  * Set up userEvent with react-spectrum's configuration.
  * - delay: null - No artificial delays between actions
  * - pointerMap - Realistic pointer event dimensions
  * - pointerEventsCheck: Never - Skip pointer-events CSS check (jsdom doesn't handle this well)
  */
-export function setupUser() {
-  return userEvent.setup({
+export function setupUser(): UserEvent {
+  // userEvent.setup exists in v14+ but types may not expose it correctly
+  const setup = (userEvent as unknown as { setup: UserEventSetup }).setup;
+  return setup({
     delay: null,
-    pointerMap: pointerMap as any,
+    pointerMap: pointerMap,
     pointerEventsCheck: PointerEventsCheckLevel.Never,
   });
 }
