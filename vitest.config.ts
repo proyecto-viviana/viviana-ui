@@ -12,7 +12,7 @@ export default defineConfig({
     globals: true,
     pool: 'vmThreads',
     setupFiles: ['./vitest.setup.ts'],
-    include: ['packages/**/test/**/*.test.{ts,tsx}'],
+    include: ['packages/**/test/**/*.test.{ts,tsx}', 'benchmarks/**/*.bench.{ts,tsx}'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

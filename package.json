@@ -24,6 +24,13 @@
     "publish:packages": "npm publish --workspace=packages/solid-stately && npm publish --workspace=packages/solidaria && npm publish --workspace=packages/solidaria-components && npm publish --workspace=packages/ui",
     "release": "bun run build && bun run publish:packages"
   },
+  "dependencies": {
+    "@adobe/react-spectrum": "^3.46.1",
+    "brotli-size": "^4.0.0",
+    "gzip-size": "^7.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.10",
     "@testing-library/jest-dom": "^6.9.1",

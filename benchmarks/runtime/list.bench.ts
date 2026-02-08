@@ -1,0 +1,86 @@
+/**
+ * List Rendering Benchmarks - Common performance scenario
+ *
+ * Measures rendering and updating large lists
+ */
+
+import { describe, it, expect } from 'vitest';
+import { render, cleanup } from '@solidjs/testing-library';
+import { createSignal, For } from 'solid-js';
+import { ListBox, ListBoxOption } from '@proyecto-viviana/ui';
+
+describe('List Performance (PV)', () => {
+  const ITERATIONS = 5; // Fewer iterations for large lists
+  const ITEM_COUNT = 1000;
+
+  it('render list with 1000 items', () => {
+    const timings: number[] = [];
+    const items = Array.from({ length: ITEM_COUNT }, (_, i) => ({
+      id: `item-${i}`,
+      label: `Item ${i}`,
+    }));
+
+    for (let i = 0; i < ITERATIONS; i++) {
+      const start = performance.now();
+
+      const result = render(() => (
+        <ListBox aria-label="Items">
+          <For each={items}>
+            {(item) => (
+              <ListBoxOption id={item.id}>{item.label}</ListBoxOption>
+            )}
+          </For>
+        </ListBox>
+      ));
+
+      const end = performance.now();
+      timings.push(end - start);
+
+      cleanup();
+    }
+
+    const median = timings.sort((a, b) => a - b)[Math.floor(ITERATIONS / 2)];
+
+    console.log(`PV List render (${ITEM_COUNT} items): median=${median.toFixed(2)}ms`);
+
+    // Sanity check: should complete reasonably fast
+    expect(median).toBeLessThan(2000);
+  });
+
+  it('filter list from 1000 to 100 items', () => {
+    const timings: number[] = [];
+    const allItems = Array.from({ length: ITEM_COUNT }, (_, i) => ({
+      id: `item-${i}`,
+      label: `Item ${i}`,
+    }));
+
+    for (let i = 0; i < ITERATIONS; i++) {
+      const [items, setItems] = createSignal(allItems);
+
+      const result = render(() => (
+        <ListBox aria-label="Items">
+          <For each={items()}>
+            {(item) => (
+              <ListBoxOption id={item.id}>{item.label}</ListBoxOption>
+            )}
+          </For>
+        </ListBox>
+      ));
+
+      // Measure filter time (represents common search/filter operation)
+      const start = performance.now();
+      setItems(allItems.slice(0, 100));
+      const end = performance.now();
+
+      timings.push(end - start);
+      cleanup();
+    }
+
+    const median = timings.sort((a, b) => a - b)[Math.floor(ITERATIONS / 2)];
+
+    console.log(`PV List filter (${ITEM_COUNT} → 100): median=${median.toFixed(2)}ms`);
+
+    // Fine-grained reactivity should handle this efficiently
+    expect(median).toBeLessThan(500);
+  });
+});

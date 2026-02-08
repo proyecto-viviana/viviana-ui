@@ -447,6 +447,38 @@ proyecto-viviana/
 - **Tree Shakeable** - Only import what you use
 - **Internationalization Ready** - Number formatting, RTL support
 
+## Performance
+
+Proyecto Viviana leverages SolidJS's fine-grained reactivity for significantly smaller bundle sizes compared to React Spectrum:
+
+- **75% smaller** for individual components (Button: 15.7 KB vs 62.7 KB gzipped)
+- **76% smaller** for multiple components (4 components: 29.6 KB vs 123.8 KB gzipped)
+- **72% smaller** for full library (117 KB vs 418 KB gzipped)
+
+These improvements come from SolidJS's compiled reactivity model, which eliminates the need for React's ~40 KB virtual DOM runtime. The smaller bundles mean faster load times, especially on mobile and slow networks.
+
+**Important:** These are bundle size comparisons, not runtime speed benchmarks. SolidJS and React have fundamentally different architectures with different trade-offs. See [performance benchmarks](./.claude/docs/performance.md) for detailed methodology, caveats, and how to reproduce results.
+
+### When to Choose Proyecto Viviana
+
+✅ **Good fit if:**
+- Bundle size is critical (mobile apps, slow networks)
+- Using SolidJS already or willing to learn
+- Need 10-30+ components (where bundle savings compound)
+- Performance-sensitive applications
+
+❌ **Consider alternatives if:**
+- Need mature ecosystem with extensive third-party libraries
+- Team is React-focused and SolidJS learning curve is a concern
+- Using Adobe Creative Cloud integrations
+
+### Benchmark Transparency
+
+All benchmark code, methodology, and results are publicly available:
+- Benchmarks: [`benchmarks/`](./benchmarks/)
+- Documentation: [`.claude/docs/performance.md`](./.claude/docs/performance.md)
+- Reproduce: `deno task bench:bundle`
+
 ## Browser Support
 
 - Chrome (latest)

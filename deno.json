@@ -24,7 +24,11 @@
     "typecheck": "deno check packages/*/src/**/*.ts packages/*/src/**/*.tsx packages/*/test-utils/**/*.ts",
     "version:set": "deno run -A scripts/version.ts",
     "publish": "deno run -A scripts/publish.ts",
-    "release": "deno task build && deno task publish"
+    "release": "deno task build && deno task publish",
+    "bench:bundle": "deno run -A benchmarks/bundle-size/analyze.ts",
+    "bench:runtime": "bun run vitest run benchmarks/runtime",
+    "bench:vitals": "cd benchmarks/web-vitals && bun run playwright test",
+    "bench:all": "deno task bench:bundle && deno task bench:runtime && deno task bench:vitals"
   },
   "imports": {
     "solid-js": "npm:solid-js@^1.9.0",
