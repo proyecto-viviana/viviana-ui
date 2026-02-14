@@ -5,6 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@solidjs/testing-library';
 import { createMemo, type JSX } from 'solid-js';
 import {
+  GridLayout,
   Virtualizer,
   type VirtualizerLayout,
   useVirtualizerContext,
@@ -100,5 +101,55 @@ describe('Virtualizer', () => {
     expect(screen.getByText('Item 4')).toBeInTheDocument();
     expect(screen.getByText('Item 6')).toBeInTheDocument();
     expect(screen.queryByText('Item 0')).not.toBeInTheDocument();
+  });
+
+  it('uses custom layout getVisibleRange when provided', () => {
+    const calls: Array<{ itemCount: number; scrollOffset: number; viewportSize: number; overscan: number }> = [];
+    const layout: VirtualizerLayout = {
+      getVisibleRange(ctx) {
+        calls.push(ctx);
+        return {
+          start: 10,
+          end: 11,
+          offsetTop: 200,
+          offsetBottom: 0,
+        };
+      },
+    };
+    const items = Array.from({ length: 20 }, (_, i) => ({
+      id: `item-${i}`,
+      label: `Item ${i}`,
+    }));
+
+    render(() => (
+      <Virtualizer
+        layout={layout}
+        layoutOptions={{ viewportSize: 60 }}
+        style={{ height: '60px', overflow: 'auto' }}
+      >
+        <ListBox
+          aria-label="Custom layout list"
+          items={items}
+          getKey={(item) => item.id}
+        >
+          {(item) => <ListBoxOption id={item.id}>{item.label}</ListBoxOption>}
+        </ListBox>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByText('Item 10')).toBeInTheDocument();
+    expect(screen.queryByText('Item 0')).not.toBeInTheDocument();
+    expect(calls.length).toBeGreaterThan(0);
+  });
+
+  it('grid layout computes range by rows and columns', () => {
+    const layout = new GridLayout();
+    const range = layout.getVisibleRange(
+      { itemCount: 100, scrollOffset: 80, viewportSize: 60, overscan: 0 },
+      { rowHeight: 20, columnCount: 4 }
+    );
+    expect(range.start).toBe(16);
+    expect(range.end).toBe(28);
+    expect(range.offsetTop).toBe(80);
   });
 });

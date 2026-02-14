@@ -1,0 +1,133 @@
+/**
+ * Layout primitives for solidaria-components Virtualizer.
+ *
+ * These are lightweight parity contracts inspired by RAC virtualizer layout APIs.
+ */
+
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export interface Size {
+  width: number;
+  height: number;
+}
+
+export interface Rect extends Point, Size {}
+
+export interface LayoutInfo {
+  key: string;
+  rect: Rect;
+  index: number;
+}
+
+export interface VirtualizerVisibleRange {
+  start: number;
+  end: number;
+  offsetTop: number;
+  offsetBottom: number;
+}
+
+export interface VirtualizerRangeContext {
+  itemCount: number;
+  scrollOffset: number;
+  viewportSize: number;
+  overscan: number;
+}
+
+export interface DefaultVirtualizerLayoutOptions {
+  itemSize?: number;
+  overscan?: number;
+  viewportSize?: number;
+}
+
+export interface GridLayoutOptions extends DefaultVirtualizerLayoutOptions {
+  rowHeight?: number;
+  columnCount?: number;
+}
+
+export interface WaterfallLayoutOptions extends GridLayoutOptions {
+  minColumnWidth?: number;
+  viewportWidth?: number;
+  gap?: number;
+}
+
+function clampRange(itemCount: number, start: number, end: number, itemSize: number): VirtualizerVisibleRange {
+  const safeStart = Math.max(0, Math.min(start, itemCount));
+  const safeEnd = Math.max(safeStart, Math.min(end, itemCount));
+  return {
+    start: safeStart,
+    end: safeEnd,
+    offsetTop: safeStart * itemSize,
+    offsetBottom: Math.max(0, (itemCount - safeEnd) * itemSize),
+  };
+}
+
+export function calculateLinearVisibleRange(
+  itemCount: number,
+  scrollOffset: number,
+  viewportSize: number,
+  itemSize: number,
+  overscan: number
+): VirtualizerVisibleRange {
+  if (itemCount <= 0) return { start: 0, end: 0, offsetTop: 0, offsetBottom: 0 };
+  const safeItemSize = Math.max(1, itemSize);
+  const safeViewport = Math.max(1, viewportSize);
+  const safeOverscan = Math.max(0, overscan);
+  const start = Math.floor(scrollOffset / safeItemSize) - safeOverscan;
+  const visibleCount = Math.ceil(safeViewport / safeItemSize) + safeOverscan * 2;
+  return clampRange(itemCount, start, start + visibleCount, safeItemSize);
+}
+
+export class ListLayout {
+  getVisibleRange(
+    ctx: VirtualizerRangeContext,
+    options?: DefaultVirtualizerLayoutOptions
+  ): VirtualizerVisibleRange {
+    return calculateLinearVisibleRange(
+      ctx.itemCount,
+      ctx.scrollOffset,
+      ctx.viewportSize,
+      options?.itemSize ?? 40,
+      options?.overscan ?? ctx.overscan
+    );
+  }
+}
+
+export class TableLayout extends ListLayout {}
+
+export class GridLayout {
+  getVisibleRange(ctx: VirtualizerRangeContext, options?: GridLayoutOptions): VirtualizerVisibleRange {
+    if (ctx.itemCount <= 0) return { start: 0, end: 0, offsetTop: 0, offsetBottom: 0 };
+    const rowHeight = Math.max(1, options?.rowHeight ?? options?.itemSize ?? 40);
+    const columns = Math.max(1, options?.columnCount ?? 1);
+    const safeViewport = Math.max(1, ctx.viewportSize);
+    const safeOverscan = Math.max(0, options?.overscan ?? ctx.overscan);
+
+    const startRow = Math.max(0, Math.floor(ctx.scrollOffset / rowHeight) - safeOverscan);
+    const visibleRows = Math.ceil(safeViewport / rowHeight) + safeOverscan * 2;
+    const endRow = startRow + visibleRows;
+
+    const start = startRow * columns;
+    const end = Math.min(ctx.itemCount, endRow * columns);
+
+    const totalRows = Math.ceil(ctx.itemCount / columns);
+    const clampedStartRow = Math.floor(start / columns);
+    const renderedRows = Math.ceil((end - start) / columns);
+    const offsetTop = clampedStartRow * rowHeight;
+    const offsetBottom = Math.max(0, (totalRows - clampedStartRow - renderedRows) * rowHeight);
+
+    return { start, end, offsetTop, offsetBottom };
+  }
+}
+
+export class WaterfallLayout extends GridLayout {
+  override getVisibleRange(ctx: VirtualizerRangeContext, options?: WaterfallLayoutOptions): VirtualizerVisibleRange {
+    const width = Math.max(1, options?.viewportWidth ?? 320);
+    const minColumnWidth = Math.max(1, options?.minColumnWidth ?? 200);
+    const gap = Math.max(0, options?.gap ?? 0);
+    const columnCount = Math.max(1, Math.floor((width + gap) / (minColumnWidth + gap)));
+    return super.getVisibleRange(ctx, { ...options, columnCount });
+  }
+}

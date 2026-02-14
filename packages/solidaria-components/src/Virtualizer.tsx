@@ -17,12 +17,33 @@ import {
 } from 'solid-js';
 import { CollectionRendererContext, type CollectionRendererContextValue } from './Collection';
 import { filterDOMProps } from './utils';
+import {
+  GridLayout,
+  ListLayout,
+  TableLayout,
+  WaterfallLayout,
+  calculateLinearVisibleRange,
+  type DefaultVirtualizerLayoutOptions,
+  type GridLayoutOptions,
+  type LayoutInfo,
+  type Point,
+  type Rect,
+  type Size,
+  type VirtualizerRangeContext,
+  type VirtualizerVisibleRange,
+  type WaterfallLayoutOptions,
+} from './VirtualizerLayouts';
 
 export interface LayoutOptionsDelegate<O> {
   useLayoutOptions?(): O;
 }
 
-export interface VirtualizerLayout<O = unknown> extends LayoutOptionsDelegate<O> {}
+export interface VirtualizerLayout<O = unknown> extends LayoutOptionsDelegate<O> {
+  getVisibleRange?(
+    context: VirtualizerRangeContext,
+    options?: O
+  ): VirtualizerVisibleRange;
+}
 
 export interface VirtualizerLayoutClass<O> {
   new (): VirtualizerLayout<O>;
@@ -53,48 +74,11 @@ export interface VirtualizerProps<O>
   style?: string | JSX.CSSProperties;
 }
 
-export interface DefaultVirtualizerLayoutOptions {
-  itemSize?: number;
-  overscan?: number;
-  viewportSize?: number;
-}
-
-export interface VirtualizerVisibleRange {
-  start: number;
-  end: number;
-  offsetTop: number;
-  offsetBottom: number;
-}
-
 function getObjectValue<T extends object, K extends keyof T>(
   value: T | undefined,
   key: K
 ): T[K] | undefined {
   return value?.[key];
-}
-
-function calculateVisibleRange(
-  itemCount: number,
-  scrollOffset: number,
-  viewportSize: number,
-  itemSize: number,
-  overscan: number
-): VirtualizerVisibleRange {
-  if (itemCount <= 0) return { start: 0, end: 0, offsetTop: 0, offsetBottom: 0 };
-  const safeItemSize = Math.max(1, itemSize);
-  const safeViewport = Math.max(1, viewportSize);
-  const safeOverscan = Math.max(0, overscan);
-
-  const start = Math.max(0, Math.floor(scrollOffset / safeItemSize) - safeOverscan);
-  const visibleCount = Math.ceil(safeViewport / safeItemSize) + safeOverscan * 2;
-  const end = Math.min(itemCount, start + visibleCount);
-
-  return {
-    start,
-    end,
-    offsetTop: start * safeItemSize,
-    offsetBottom: Math.max(0, (itemCount - end) * safeItemSize),
-  };
 }
 
 /**
@@ -113,9 +97,12 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     }
     return local.layout;
   });
+  const resolvedLayout = createMemo<VirtualizerLayout<O>>(() => {
+    return layout() ?? (new ListLayout() as VirtualizerLayout<O>);
+  });
 
   const resolvedLayoutOptions = createMemo<O | undefined>(() => {
-    const fromLayout = layout().useLayoutOptions?.();
+    const fromLayout = resolvedLayout().useLayoutOptions?.();
     if (local.layoutOptions && fromLayout) {
       return { ...local.layoutOptions, ...fromLayout };
     }
@@ -130,11 +117,19 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   );
 
   const getVisibleRange = (itemCount: number): VirtualizerVisibleRange => {
-    return calculateVisibleRange(itemCount, scrollOffset(), viewportSize(), itemSize(), overscan());
+    const ctx: VirtualizerRangeContext = {
+      itemCount,
+      scrollOffset: scrollOffset(),
+      viewportSize: viewportSize(),
+      overscan: overscan(),
+    };
+    const layoutResult = resolvedLayout().getVisibleRange?.(ctx, resolvedLayoutOptions());
+    if (layoutResult) return layoutResult;
+    return calculateLinearVisibleRange(itemCount, ctx.scrollOffset, ctx.viewportSize, itemSize(), ctx.overscan);
   };
 
   const contextValue = createMemo<VirtualizerContextValue<O>>(() => ({
-    layout: layout(),
+    layout: resolvedLayout(),
     layoutOptions: resolvedLayoutOptions(),
     isVirtualized: true,
     getVisibleRange,
@@ -142,7 +137,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     renderItem: (item) => item as JSX.Element,
     isVirtualized: true,
-    layoutDelegate: layout(),
+    layoutDelegate: resolvedLayout(),
   }));
 
   const filteredDomProps = createMemo(() => filterDOMProps(domProps, { global: true }));
@@ -184,3 +179,22 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     </CollectionRendererContext.Provider>
   );
 }
+
+export {
+  ListLayout,
+  GridLayout,
+  WaterfallLayout,
+  TableLayout,
+};
+
+export type {
+  VirtualizerVisibleRange,
+  VirtualizerRangeContext,
+  DefaultVirtualizerLayoutOptions,
+  GridLayoutOptions,
+  WaterfallLayoutOptions,
+  LayoutInfo,
+  Rect,
+  Size,
+  Point,
+};
