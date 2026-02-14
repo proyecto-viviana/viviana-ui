@@ -13,6 +13,7 @@ import {
   useContext,
 } from 'solid-js';
 import type { Key } from '@proyecto-viviana/solid-stately';
+import type { Point, VirtualizerDropTarget } from './VirtualizerLayouts';
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -30,6 +31,10 @@ export interface CollectionPrimitiveRenderProps {
   hasChildren: boolean;
 }
 
+export interface CollectionDropTargetDelegate {
+  getDropTargetFromPoint(point: Point, itemCount: number): VirtualizerDropTarget | null;
+}
+
 export interface CollectionRendererContextValue<T> {
   /** Render function used by collection parents to render each item node. */
   renderItem: (item: T) => JSX.Element;
@@ -37,6 +42,8 @@ export interface CollectionRendererContextValue<T> {
   isVirtualized?: boolean;
   /** Optional layout delegate used by virtualized renderers. */
   layoutDelegate?: unknown;
+  /** Optional drop target delegate used by DnD-aware collection paths. */
+  dropTargetDelegate?: CollectionDropTargetDelegate;
   /** Optional drop indicator renderer for DnD-aware collection paths. */
   renderDropIndicator?: (index: number, position: 'before' | 'after' | 'on') => JSX.Element | undefined;
 }

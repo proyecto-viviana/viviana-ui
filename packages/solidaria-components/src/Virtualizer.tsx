@@ -234,6 +234,9 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     renderItem: (item) => item as JSX.Element,
     isVirtualized: true,
     layoutDelegate: resolvedLayout(),
+    dropTargetDelegate: {
+      getDropTargetFromPoint,
+    },
     renderDropIndicator: local.renderDropIndicator,
   }));
 

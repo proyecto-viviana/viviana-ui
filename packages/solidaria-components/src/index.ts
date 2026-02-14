@@ -317,6 +317,7 @@ export {
   type GroupProps,
   type CollectionEntry,
   type CollectionSection,
+  type CollectionDropTargetDelegate,
   type CollectionRendererContextValue,
   type CollectionPrimitiveRenderProps,
 } from './Collection';

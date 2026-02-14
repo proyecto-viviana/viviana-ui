@@ -54,6 +54,8 @@ describe('Virtualizer', () => {
             dropTargetEmpty: ctx()?.getDropTargetFromPoint({ x: 2, y: 2 }, 0) ?? null,
             rendererVirtualized: collection()?.isVirtualized ?? false,
             hasLayoutDelegate: Boolean(collection()?.layoutDelegate),
+            hasDropTargetDelegate: Boolean(collection()?.dropTargetDelegate),
+            delegateTarget: collection()?.dropTargetDelegate?.getDropTargetFromPoint({ x: 2, y: 2 }, 10) ?? null,
           })}
         </output>
       );
@@ -75,6 +77,8 @@ describe('Virtualizer', () => {
     expect(parsed.dropTargetEmpty?.type).toBe('root');
     expect(parsed.rendererVirtualized).toBe(true);
     expect(parsed.hasLayoutDelegate).toBe(true);
+    expect(parsed.hasDropTargetDelegate).toBe(true);
+    expect(parsed.delegateTarget?.index).toBe(0);
     expect(instances).toBeGreaterThan(0);
   });
 
