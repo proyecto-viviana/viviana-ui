@@ -17,12 +17,12 @@ const REQUIRED_SYMBOLS = [
   'CollectionRendererContext',
   'ToggleButton',
   'Keyboard',
+  'Form',
+  'FieldError',
  ] as const;
 
 const BACKLOG_SYMBOLS = [
   'Virtualizer',
-  'FieldError',
-  'Form',
   'ToggleButtonGroup',
   'DropZone',
   'FileTrigger',
