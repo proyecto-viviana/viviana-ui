@@ -299,6 +299,14 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     if (!range) return visibleRows();
     return visibleRows().slice(range.start, range.end);
   });
+  const shouldRenderAfterIndicator = (absoluteIndex: number): boolean => {
+    const rows = visibleRows();
+    const current = rows[absoluteIndex];
+    const next = rows[absoluteIndex + 1];
+    if (!current || !next) return true;
+    // Avoid rendering "after" inside an expanded branch. Keep boundaries between sibling/ancestor levels.
+    return next.level <= current.level;
+  };
 
   return (
     <TreeContext.Provider value={contextValue() as unknown as TreeContextValue<object>}>
@@ -327,7 +335,10 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
                 const itemIndex = () => (virtualRange()?.start ?? 0) + index();
                 const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
                 const onIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'on');
-                const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
+                const afterIndicator = () =>
+                  shouldRenderAfterIndicator(itemIndex())
+                    ? parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after')
+                    : undefined;
                 // Find the original item data to pass to render function
                 const itemData: TreeItemData<T> = {
                   key: node.key,

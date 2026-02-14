@@ -97,6 +97,26 @@ function getObjectValue<T extends object, K extends keyof T>(
   return value?.[key];
 }
 
+function isSameRange(a: VirtualizerVisibleRange, b: VirtualizerVisibleRange): boolean {
+  return (
+    a.start === b.start &&
+    a.end === b.end &&
+    a.offsetTop === b.offsetTop &&
+    a.offsetBottom === b.offsetBottom
+  );
+}
+
+function isSameLayoutInfo(a: LayoutInfo, b: LayoutInfo): boolean {
+  return (
+    a.key === b.key &&
+    a.index === b.index &&
+    a.rect.x === b.rect.x &&
+    a.rect.y === b.rect.y &&
+    a.rect.width === b.rect.width &&
+    a.rect.height === b.rect.height
+  );
+}
+
 /**
  * A Virtualizer renders collection content under a virtualized layout contract.
  * Current implementation supports fixed-size visible range virtualization.
@@ -115,6 +135,8 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   const [measuredViewportWidth, setMeasuredViewportWidth] = createSignal(0);
   let containerRef: HTMLDivElement | undefined;
   const fallbackLayout = new ListLayout();
+  const visibleRangeCache = new Map<number, VirtualizerVisibleRange>();
+  const layoutInfoCache = new Map<number, LayoutInfo>();
 
   const layout = createMemo<VirtualizerLayout<O>>(() => {
     if (typeof local.layout === 'function') {
@@ -150,16 +172,22 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       viewportWidth: measuredViewportWidth(),
     };
     const layoutResult = resolvedLayout().getVisibleRange?.(ctx, resolvedLayoutOptions());
-    if (layoutResult) return layoutResult;
-    return calculateLinearVisibleRange(itemCount, ctx.scrollOffset, ctx.viewportSize, itemSize(), ctx.overscan);
+    const nextRange =
+      layoutResult ??
+      calculateLinearVisibleRange(itemCount, ctx.scrollOffset, ctx.viewportSize, itemSize(), ctx.overscan);
+    const cachedRange = visibleRangeCache.get(itemCount);
+    if (cachedRange && isSameRange(cachedRange, nextRange)) {
+      return cachedRange;
+    }
+    visibleRangeCache.set(itemCount, nextRange);
+    return nextRange;
   };
   const getLayoutInfo = (index: number): LayoutInfo => {
     const ctx: VirtualizerLayoutInfoContext = {
       viewportWidth: measuredViewportWidth(),
     };
     const layoutResult = resolvedLayout().getLayoutInfo?.(index, ctx, resolvedLayoutOptions());
-    if (layoutResult) return layoutResult;
-    return {
+    const nextInfo = layoutResult ?? {
       key: String(index),
       index,
       rect: {
@@ -169,6 +197,12 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
         height: itemSize(),
       },
     };
+    const cachedInfo = layoutInfoCache.get(index);
+    if (cachedInfo && isSameLayoutInfo(cachedInfo, nextInfo)) {
+      return cachedInfo;
+    }
+    layoutInfoCache.set(index, nextInfo);
+    return nextInfo;
   };
   const getDropTargetFromPoint = (point: Point, itemCount: number): VirtualizerDropTarget | null => {
     return resolvedLayout().getDropTargetFromPoint?.(point, itemCount, resolvedLayoutOptions()) ??

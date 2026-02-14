@@ -116,6 +116,42 @@ describe('Virtualizer', () => {
     expect(screen.queryByText('Item 0')).not.toBeInTheDocument();
   });
 
+  it('reuses visible range result when scroll stays within same item window', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 1;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
+    const items = Array.from({ length: 20 }, (_, i) => ({
+      id: `item-${i}`,
+      label: `Item ${i}`,
+    }));
+    let renderCalls = 0;
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <ListBox aria-label="Stable window list" items={items} getKey={(item) => item.id}>
+          {(item) => {
+            renderCalls += 1;
+            return <ListBoxOption id={item.id}>{item.label}</ListBoxOption>;
+          }}
+        </ListBox>
+      </Virtualizer>
+    ));
+
+    const initialRenderCalls = renderCalls;
+    const container = document.querySelector('[data-virtualizer]') as HTMLDivElement;
+    container.scrollTop = 5;
+    fireEvent.scroll(container);
+
+    expect(renderCalls).toBe(initialRenderCalls);
+  });
+
   it('uses custom layout getVisibleRange when provided', () => {
     const calls: Array<{ itemCount: number; scrollOffset: number; viewportSize: number; overscan: number }> = [];
     const layout: VirtualizerLayout = {
@@ -287,5 +323,38 @@ describe('Virtualizer', () => {
     expect(screen.getByText('Node 0')).toBeInTheDocument();
     expect(screen.getByText('Node 1')).toBeInTheDocument();
     expect(screen.queryByText('Node 6')).not.toBeInTheDocument();
+  });
+
+  it('renders tree after-drop indicators at branch boundaries only', () => {
+    const items = [
+      {
+        key: 'parent',
+        value: { name: 'Parent' },
+        textValue: 'Parent',
+        children: [
+          { key: 'child', value: { name: 'Child' }, textValue: 'Child' },
+        ],
+      },
+      { key: 'sibling', value: { name: 'Sibling' }, textValue: 'Sibling' },
+    ];
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 80, overscan: 0 }}
+        style={{ height: '80px', overflow: 'auto' }}
+        renderDropIndicator={(index, position) => (
+          <li role="presentation" data-testid={`tree-drop-${position}-${index}`} />
+        )}
+      >
+        <Tree items={items} defaultExpandedKeys={['parent']} aria-label="Tree DnD indicators">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      </Virtualizer>
+    ));
+
+    expect(screen.queryByTestId('tree-drop-after-0')).not.toBeInTheDocument();
+    expect(screen.getByTestId('tree-drop-after-1')).toBeInTheDocument();
+    expect(screen.getByTestId('tree-drop-after-2')).toBeInTheDocument();
   });
 });
