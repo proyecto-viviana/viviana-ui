@@ -137,12 +137,14 @@ export {
 export {
   ListBox,
   ListBoxOption,
+  ListBoxLoadMoreItem,
   ListBoxContext,
   ListBoxStateContext,
   type ListBoxProps,
   type ListBoxRenderProps,
   type ListBoxOptionProps,
   type ListBoxOptionRenderProps,
+  type ListBoxLoadMoreItemProps,
 } from './ListBox';
 
 // Menu
@@ -201,6 +203,14 @@ export {
   type TabPanelProps,
   type TabPanelRenderProps,
 } from './Tabs';
+
+// SelectionIndicator
+export {
+  SelectionIndicator,
+  SelectionIndicatorContext,
+  type SelectionIndicatorProps,
+  type SelectionIndicatorRenderProps,
+} from './SelectionIndicator';
 
 // Breadcrumbs
 export {
@@ -277,6 +287,9 @@ export {
 export {
   ComboBox,
   ComboBoxInput,
+  ComboBoxLabel,
+  ComboBoxDescription,
+  ComboBoxErrorMessage,
   ComboBoxButton,
   ComboBoxListBox,
   ComboBoxOption,
@@ -287,6 +300,9 @@ export {
   type ComboBoxRenderProps,
   type ComboBoxInputProps,
   type ComboBoxInputRenderProps,
+  type ComboBoxLabelProps,
+  type ComboBoxDescriptionProps,
+  type ComboBoxErrorMessageProps,
   type ComboBoxButtonProps,
   type ComboBoxButtonRenderProps,
   type ComboBoxListBoxProps,
@@ -455,6 +471,9 @@ export {
 // DateField
 export {
   DateField,
+  DateFieldLabel,
+  DateFieldDescription,
+  DateFieldErrorMessage,
   DateInput,
   DateSegment,
   DateFieldContext,
@@ -465,6 +484,10 @@ export {
   type DateInputRenderProps,
   type DateSegmentProps,
   type DateSegmentRenderProps,
+  type DateFieldLabelProps,
+  type DateFieldDescriptionProps,
+  type DateFieldErrorMessageProps,
+  type DateFieldContextValue,
   type DateFieldState,
   type DateSegmentType,
 } from './DateField';
@@ -508,6 +531,7 @@ export {
   TableHeader,
   TableColumn,
   TableBody,
+  TableLoadMoreItem,
   TableRow,
   TableCell,
   TableSelectionCheckbox,
@@ -523,6 +547,7 @@ export {
   type TableColumnRenderProps,
   type TableBodyProps,
   type TableBodyRenderProps,
+  type TableLoadMoreItemProps,
   type TableRowProps,
   type TableRowRenderProps,
   type TableCellProps,
@@ -534,12 +559,14 @@ export {
   GridList,
   GridListItem,
   GridListSelectionCheckbox,
+  GridListLoadMoreItem,
   GridListContext,
   GridListStateContext,
   type GridListProps,
   type GridListRenderProps,
   type GridListItemProps,
   type GridListItemRenderProps,
+  type GridListLoadMoreItemProps,
 } from './GridList';
 
 // Tree
@@ -548,6 +575,7 @@ export {
   TreeItem,
   TreeExpandButton,
   TreeSelectionCheckbox,
+  TreeLoadMoreItem,
   TreeContext,
   TreeStateContext,
   TreeItemContext,
@@ -557,6 +585,7 @@ export {
   type TreeItemProps,
   type TreeItemRenderProps,
   type TreeExpandButtonProps,
+  type TreeLoadMoreItemProps,
 } from './Tree';
 
 // Color

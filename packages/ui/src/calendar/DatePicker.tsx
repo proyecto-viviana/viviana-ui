@@ -269,7 +269,7 @@ export function DatePicker<T extends DateValue = CalendarDate>(
 function DatePickerPopup(props: { size: DatePickerSize }): JSX.Element {
   return (
     <DatePickerContent
-      class="absolute top-full left-0 z-50 mt-1 shadow-lg rounded-lg"
+      class="z-50 shadow-lg rounded-lg"
     >
       <Calendar size={props.size} />
     </DatePickerContent>

@@ -165,6 +165,21 @@ describe('DatePicker', () => {
       });
     });
 
+    it('should render content outside picker container (portal)', async () => {
+      render(() => <TestDatePicker />);
+      await waitForDatePickerHydration();
+
+      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      await user.click(button);
+
+      await waitFor(() => {
+        const picker = document.querySelector('.solidaria-DatePicker');
+        const content = document.querySelector('.solidaria-DatePickerContent');
+        expect(content).toBeInTheDocument();
+        expect(picker?.contains(content as Node)).toBe(false);
+      });
+    });
+
     it('should close calendar on Escape', async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();

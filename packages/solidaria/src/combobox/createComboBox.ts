@@ -50,6 +50,12 @@ export interface AriaComboBoxProps {
   'aria-labelledby'?: string;
   /** The ID of an element that describes the combobox. */
   'aria-describedby'?: string;
+  /** Description text for assistive technology and form help. */
+  description?: string;
+  /** Error message text for assistive technology and validation feedback. */
+  errorMessage?: string;
+  /** Whether the current value is invalid. */
+  isInvalid?: boolean;
   /** Placeholder text for the input when no value is entered. */
   placeholder?: string;
   /** Whether the combobox should be auto-focused. */
@@ -137,6 +143,21 @@ export function createComboBox<T>(
   const listBoxId = `${id}-listbox`;
   const descriptionId = `${id}-description`;
   const errorMessageId = `${id}-error`;
+
+  const getAriaDescribedBy = () => {
+    const p = getProps();
+    const ids: string[] = [];
+    if (p['aria-describedby']) {
+      ids.push(p['aria-describedby']);
+    }
+    if (p.description) {
+      ids.push(descriptionId);
+    }
+    if (p.isInvalid && p.errorMessage) {
+      ids.push(errorMessageId);
+    }
+    return ids.length > 0 ? ids.join(' ') : undefined;
+  };
 
   // Set up global pointerdown listener to track clicks inside listbox
   // This is needed because the option's createPress stops propagation
@@ -577,7 +598,8 @@ export function createComboBox<T>(
             : undefined,
           'aria-disabled': isDisabled || undefined,
           'aria-required': p.isRequired || undefined,
-          'aria-describedby': p['aria-describedby'] || undefined,
+          'aria-invalid': p.isInvalid || undefined,
+          'aria-describedby': getAriaDescribedBy(),
           name: p.name,
           onInput: onInputChange,
           onKeyDown: onInputKeyDown,
@@ -637,6 +659,7 @@ export function createComboBox<T>(
     get errorMessageProps() {
       return {
         id: errorMessageId,
+        role: 'alert',
       } as JSX.HTMLAttributes<HTMLElement>;
     },
     isFocused,

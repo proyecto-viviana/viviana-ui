@@ -8,15 +8,17 @@
 import {
   type JSX,
   createContext,
+  createEffect,
   createMemo,
   createSignal,
   splitProps,
   useContext,
   Show,
 } from 'solid-js';
+import { Portal } from 'solid-js/web';
 import {
   createDatePicker,
-  createInteractOutside,
+  createPopover,
   FocusScope,
   type AriaDatePickerProps,
   type DatePickerState as AriaDatePickerState,
@@ -68,6 +70,8 @@ export interface DatePickerContextValue {
     close: () => void;
     toggle: () => void;
   };
+  triggerRef: () => HTMLElement | null;
+  setTriggerRef: (element: HTMLElement | null) => void;
   pickerAria: ReturnType<typeof createDatePicker>;
 }
 
@@ -195,6 +199,7 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
 
   // Create overlay trigger state
   const [isOpen, setIsOpen] = createSignal(false);
+  let triggerRef: HTMLElement | null = null;
 
   const overlayState = {
     get isOpen() { return isOpen(); },
@@ -247,6 +252,13 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
     fieldState: fieldState as unknown as DateFieldState<DateValue>,
     calendarState: calendarState as unknown as CalendarState<DateValue>,
     overlayState,
+    triggerRef: () => triggerRef,
+    setTriggerRef: (element) => {
+      if (!element) return;
+      if (!triggerRef || !triggerRef.isConnected) {
+        triggerRef = element;
+      }
+    },
     pickerAria,
   };
 
@@ -311,6 +323,7 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
  */
 export function DatePickerButton(props: DatePickerButtonProps): JSX.Element {
   const context = useDatePickerContext();
+  let buttonRef: HTMLButtonElement | undefined;
 
   // Render props values
   const renderValues = createMemo<DatePickerButtonRenderProps>(() => ({
@@ -339,6 +352,10 @@ export function DatePickerButton(props: DatePickerButtonProps): JSX.Element {
 
   return (
     <button
+      ref={(el) => {
+        buttonRef = el;
+        context.setTriggerRef(el);
+      }}
       {...context.pickerAria.buttonProps}
       class={renderProps.class()}
       style={renderProps.style()}
@@ -371,35 +388,67 @@ export function DatePickerContent(props: DatePickerContentProps): JSX.Element {
   const context = useDatePickerContext();
   let contentRef: HTMLDivElement | undefined;
 
-  createInteractOutside({
-    ref: () => contentRef ?? null,
-    onInteractOutside: () => {
-      context.overlayState.close();
+  const popoverAria = createPopover(
+    {
+      triggerRef: context.triggerRef,
+      popoverRef: () => contentRef ?? null,
+      placement: 'bottom start',
+      offset: 8,
+      isNonModal: false,
+      isKeyboardDismissDisabled: false,
     },
-    get isDisabled() {
-      return !context.overlayState.isOpen;
-    },
+    {
+      isOpen: () => context.overlayState.isOpen,
+      open: context.overlayState.open,
+      close: context.overlayState.close,
+      toggle: context.overlayState.toggle,
+    }
+  );
+
+  const cleanPopoverProps = () => {
+    const { style: _style, ref: _ref, ...rest } = popoverAria.popoverProps as Record<string, unknown>;
+    return rest;
+  };
+
+  const mergedStyle = (): JSX.CSSProperties => {
+    const popoverStyle = (popoverAria.popoverProps as Record<string, unknown>).style as JSX.CSSProperties | undefined;
+    return {
+      ...(popoverStyle ?? {}),
+      ...(props.style ?? {}),
+    };
+  };
+
+  createEffect(() => {
+    if (!context.overlayState.isOpen || !contentRef) return;
+    if (document.activeElement !== contentRef) {
+      contentRef.focus();
+    }
   });
 
   return (
     <Show when={context.overlayState.isOpen}>
-      <FocusScope restoreFocus autoFocus>
-        <div
-          ref={contentRef}
-          {...context.pickerAria.dialogProps}
-          class={props.class ?? 'solidaria-DatePickerContent'}
-          style={props.style}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') {
-              e.preventDefault();
-              e.stopPropagation();
-              context.overlayState.close();
-            }
-          }}
-        >
-          {props.children}
-        </div>
-      </FocusScope>
+      <Portal>
+        <FocusScope contain restoreFocus autoFocus>
+          <div
+            ref={contentRef}
+            {...cleanPopoverProps()}
+            {...context.pickerAria.dialogProps}
+            tabIndex={-1}
+            class={props.class ?? 'solidaria-DatePickerContent'}
+            style={mergedStyle()}
+            data-placement={popoverAria.placement() ?? undefined}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                event.preventDefault();
+                event.stopPropagation();
+                context.overlayState.close();
+              }
+            }}
+          >
+            {props.children}
+          </div>
+        </FocusScope>
+      </Portal>
     </Show>
   );
 }

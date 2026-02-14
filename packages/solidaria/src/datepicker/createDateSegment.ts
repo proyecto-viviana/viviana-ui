@@ -47,6 +47,7 @@ export function createDateSegment<T extends DateFieldState>(
   const getProps = () => access(props);
   const [isFocused, setIsFocused] = createSignal(false);
   const [enteredKeys, setEnteredKeys] = createSignal('');
+  const [isComposing, setIsComposing] = createSignal(false);
   const locale = useLocale();
 
   // Get the segment from props
@@ -98,6 +99,7 @@ export function createDateSegment<T extends DateFieldState>(
   // Handle keyboard input
   const handleKeyDown = (e: KeyboardEvent) => {
     if (!isEditable()) return;
+    if (isComposing()) return;
 
     const seg = segment();
     const type = seg.type;
@@ -144,9 +146,10 @@ export function createDateSegment<T extends DateFieldState>(
         break;
       default:
         // Handle numeric input
-        if (/^\d$/.test(e.key)) {
+        const normalizedDigit = normalizeDigit(e.key);
+        if (normalizedDigit) {
           e.preventDefault();
-          handleNumericInput(e.key, type, seg);
+          handleNumericInput(normalizedDigit, type, seg);
         }
         break;
     }
@@ -162,6 +165,7 @@ export function createDateSegment<T extends DateFieldState>(
     const numValue = parseInt(newKeys, 10);
     const maxValue = seg.maxValue ?? 99;
     const minValue = seg.minValue ?? 0;
+    const maxDigits = String(maxValue).length;
 
     // Check if we should accept more digits
     if (numValue <= maxValue) {
@@ -169,9 +173,9 @@ export function createDateSegment<T extends DateFieldState>(
 
       // If entering more digits wouldn't make sense, clear entered keys
       const potentialNextValue = parseInt(newKeys + '0', 10);
-      if (potentialNextValue > maxValue || newKeys.length >= String(maxValue).length) {
+      if (potentialNextValue > maxValue || newKeys.length >= maxDigits) {
         setEnteredKeys('');
-        // Move to next segment (would need focus management)
+        focusSegment('next');
       } else {
         setEnteredKeys(newKeys);
       }
@@ -181,8 +185,9 @@ export function createDateSegment<T extends DateFieldState>(
       if (singleValue >= minValue && singleValue <= maxValue) {
         state.setSegment(type, singleValue);
         const potentialNextValue = parseInt(key + '0', 10);
-        if (potentialNextValue > maxValue || key.length >= String(maxValue).length) {
+        if (potentialNextValue > maxValue || key.length >= maxDigits) {
           setEnteredKeys('');
+          focusSegment('next');
         } else {
           setEnteredKeys(key);
         }
@@ -194,6 +199,7 @@ export function createDateSegment<T extends DateFieldState>(
 
   const handleBeforeInput = (e: InputEvent) => {
     if (!isEditable()) return;
+    if (isComposing()) return;
 
     const seg = segment();
     if (seg.type === 'literal') return;
@@ -204,9 +210,32 @@ export function createDateSegment<T extends DateFieldState>(
       return;
     }
 
-    if (e.inputType === 'insertText' && e.data && /^\d$/.test(e.data)) {
+    if (e.inputType === 'insertText' && e.data) {
+      const normalizedDigit = normalizeDigit(e.data);
+      if (!normalizedDigit) return;
       e.preventDefault();
-      handleNumericInput(e.data, seg.type, seg);
+      handleNumericInput(normalizedDigit, seg.type, seg);
+    }
+  };
+
+  const handleCompositionStart = () => {
+    if (!isEditable()) return;
+    setIsComposing(true);
+    setEnteredKeys('');
+  };
+
+  const handleCompositionEnd = (e: CompositionEvent) => {
+    if (!isEditable()) return;
+    setIsComposing(false);
+
+    const seg = segment();
+    if (seg.type === 'literal') return;
+
+    const digits = extractNormalizedDigits(e.data ?? '');
+    if (digits.length === 0) return;
+
+    for (const digit of digits) {
+      handleNumericInput(digit, seg.type, seg);
     }
   };
 
@@ -255,6 +284,8 @@ export function createDateSegment<T extends DateFieldState>(
       onFocus: handleFocus,
       onBlur: handleBlur,
       onBeforeInput: handleBeforeInput,
+      onCompositionStart: handleCompositionStart,
+      onCompositionEnd: handleCompositionEnd,
       onMouseDown: (e: MouseEvent) => {
         // Prevent cursor positioning in the middle of the segment
         e.preventDefault();
@@ -322,4 +353,31 @@ function getSegmentLabel(type: DateSegmentType, locale: string): string {
   const language = locale.toLowerCase().split('-')[0] ?? 'en';
   const labels = SEGMENT_LABELS[language] ?? SEGMENT_LABELS.en;
   return labels[type];
+}
+
+function normalizeDigit(input: string): string | null {
+  if (/^[0-9]$/.test(input)) {
+    return input;
+  }
+
+  const codePoint = input.codePointAt(0);
+  if (codePoint == null) return null;
+
+  // Full-width digits ０-９
+  if (codePoint >= 0xff10 && codePoint <= 0xff19) {
+    return String(codePoint - 0xff10);
+  }
+
+  return null;
+}
+
+function extractNormalizedDigits(value: string): string[] {
+  const digits: string[] = [];
+  for (const char of value) {
+    const normalized = normalizeDigit(char);
+    if (normalized) {
+      digits.push(normalized);
+    }
+  }
+  return digits;
 }

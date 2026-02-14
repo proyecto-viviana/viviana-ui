@@ -9,6 +9,9 @@ import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js'
 import {
   ComboBox as HeadlessComboBox,
   ComboBoxInput as HeadlessComboBoxInput,
+  ComboBoxLabel as HeadlessComboBoxLabel,
+  ComboBoxDescription as HeadlessComboBoxDescription,
+  ComboBoxErrorMessage as HeadlessComboBoxErrorMessage,
   ComboBoxButton as HeadlessComboBoxButton,
   ComboBoxListBox as HeadlessComboBoxListBox,
   ComboBoxOption as HeadlessComboBoxOption,
@@ -136,19 +139,27 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
     <ComboBoxSizeContext.Provider value={size}>
       <HeadlessComboBox
         {...headlessProps}
+        label={local.label}
+        description={local.isInvalid ? undefined : local.description}
+        errorMessage={local.isInvalid ? local.errorMessage : undefined}
+        isInvalid={local.isInvalid}
         class={getClassName}
       >
         <Show when={local.label}>
-          <label class={`text-primary-200 font-medium ${sizeStyles[size].label}`}>
+          <HeadlessComboBoxLabel class={`text-primary-200 font-medium ${sizeStyles[size].label}`}>
             {local.label}
-          </label>
+          </HeadlessComboBoxLabel>
         </Show>
         {props.children}
         <Show when={local.description && !local.isInvalid}>
-          <span class="text-primary-400 text-sm">{local.description}</span>
+          <HeadlessComboBoxDescription class="text-primary-400 text-sm">
+            {local.description}
+          </HeadlessComboBoxDescription>
         </Show>
         <Show when={local.errorMessage && local.isInvalid}>
-          <span class="text-danger-400 text-sm">{local.errorMessage}</span>
+          <HeadlessComboBoxErrorMessage class="text-danger-400 text-sm">
+            {local.errorMessage}
+          </HeadlessComboBoxErrorMessage>
         </Show>
       </HeadlessComboBox>
     </ComboBoxSizeContext.Provider>

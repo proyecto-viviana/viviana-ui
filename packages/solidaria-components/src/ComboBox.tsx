@@ -40,6 +40,10 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import {
+  SelectionIndicatorContext,
+  type SelectionIndicatorContextValue,
+} from './SelectionIndicator';
 
 // ============================================
 // TYPES
@@ -135,6 +139,33 @@ export interface ComboBoxInputProps extends SlotProps {
   style?: StyleOrFunction<ComboBoxInputRenderProps>;
 }
 
+export interface ComboBoxLabelProps extends SlotProps {
+  /** The children of the label element. */
+  children?: JSX.Element;
+  /** The CSS className for the element. */
+  class?: string;
+  /** The inline style for the element. */
+  style?: JSX.CSSProperties;
+}
+
+export interface ComboBoxDescriptionProps extends SlotProps {
+  /** The children of the description element. */
+  children?: JSX.Element;
+  /** The CSS className for the element. */
+  class?: string;
+  /** The inline style for the element. */
+  style?: JSX.CSSProperties;
+}
+
+export interface ComboBoxErrorMessageProps extends SlotProps {
+  /** The children of the error message element. */
+  children?: JSX.Element;
+  /** The CSS className for the element. */
+  class?: string;
+  /** The inline style for the element. */
+  style?: JSX.CSSProperties;
+}
+
 export interface ComboBoxButtonRenderProps {
   /** Whether the combobox is open. */
   isOpen: boolean;
@@ -213,6 +244,8 @@ interface ComboBoxContextValue<T> {
   buttonProps: JSX.HTMLAttributes<HTMLElement>;
   listBoxProps: JSX.HTMLAttributes<HTMLElement>;
   labelProps: JSX.HTMLAttributes<HTMLElement>;
+  descriptionProps: JSX.HTMLAttributes<HTMLElement>;
+  errorMessageProps: JSX.HTMLAttributes<HTMLElement>;
   isOpen: Accessor<boolean>;
   isFocused: Accessor<boolean>;
   isFocusVisible: Accessor<boolean>;
@@ -387,6 +420,8 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
         buttonProps: comboBoxAria.buttonProps,
         listBoxProps: comboBoxAria.listBoxProps,
         labelProps: comboBoxAria.labelProps,
+        descriptionProps: comboBoxAria.descriptionProps,
+        errorMessageProps: comboBoxAria.errorMessageProps,
         isOpen: comboBoxAria.isOpen,
         isFocused: comboBoxAria.isFocused,
         isFocusVisible: comboBoxAria.isFocusVisible,
@@ -422,6 +457,87 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
         </div>
       </ComboBoxStateContext.Provider>
     </ComboBoxContext.Provider>
+  );
+}
+
+/**
+ * Label element for a combobox.
+ */
+export function ComboBoxLabel(props: ComboBoxLabelProps): JSX.Element {
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
+
+  const context = useContext(ComboBoxContext);
+  if (!context) {
+    throw new Error('ComboBoxLabel must be used within a ComboBox');
+  }
+
+  const cleanLabelProps = () => {
+    const { ref: _ref, ...rest } = context.labelProps as Record<string, unknown>;
+    return rest;
+  };
+
+  return (
+    <label
+      {...cleanLabelProps()}
+      class={local.class}
+      style={local.style}
+    >
+      {props.children}
+    </label>
+  );
+}
+
+/**
+ * Description element for a combobox.
+ */
+export function ComboBoxDescription(props: ComboBoxDescriptionProps): JSX.Element {
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
+
+  const context = useContext(ComboBoxContext);
+  if (!context) {
+    throw new Error('ComboBoxDescription must be used within a ComboBox');
+  }
+
+  const cleanDescriptionProps = () => {
+    const { ref: _ref, ...rest } = context.descriptionProps as Record<string, unknown>;
+    return rest;
+  };
+
+  return (
+    <div
+      {...cleanDescriptionProps()}
+      class={local.class}
+      style={local.style}
+    >
+      {props.children}
+    </div>
+  );
+}
+
+/**
+ * Error message element for a combobox.
+ */
+export function ComboBoxErrorMessage(props: ComboBoxErrorMessageProps): JSX.Element {
+  const [local] = splitProps(props, ['class', 'style', 'slot']);
+
+  const context = useContext(ComboBoxContext);
+  if (!context) {
+    throw new Error('ComboBoxErrorMessage must be used within a ComboBox');
+  }
+
+  const cleanErrorMessageProps = () => {
+    const { ref: _ref, ...rest } = context.errorMessageProps as Record<string, unknown>;
+    return rest;
+  };
+
+  return (
+    <div
+      {...cleanErrorMessageProps()}
+      class={local.class}
+      style={local.style}
+    >
+      {props.children}
+    </div>
   );
 }
 
@@ -786,6 +902,10 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
     renderValues
   );
 
+  const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
+    isSelected: optionAria.isSelected,
+  }));
+
   // Remove ref from spread props
   const cleanOptionProps = () => {
     const { ref: _ref1, ...rest } = optionAria.optionProps as Record<string, unknown>;
@@ -797,20 +917,22 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
   };
 
   return (
-    <li
-      {...cleanOptionProps()}
-      {...cleanHoverProps()}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-selected={optionAria.isSelected() || undefined}
-      data-focused={optionAria.isFocused() || undefined}
-      data-focus-visible={optionAria.isFocusVisible() || undefined}
-      data-pressed={optionAria.isPressed() || undefined}
-      data-hovered={isHovered() || undefined}
-      data-disabled={optionAria.isDisabled() || undefined}
-    >
-      {renderProps.renderChildren()}
-    </li>
+    <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
+      <li
+        {...cleanOptionProps()}
+        {...cleanHoverProps()}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-selected={optionAria.isSelected() || undefined}
+        data-focused={optionAria.isFocused() || undefined}
+        data-focus-visible={optionAria.isFocusVisible() || undefined}
+        data-pressed={optionAria.isPressed() || undefined}
+        data-hovered={isHovered() || undefined}
+        data-disabled={optionAria.isDisabled() || undefined}
+      >
+        {renderProps.renderChildren()}
+      </li>
+    </SelectionIndicatorContext.Provider>
   );
 }
 
@@ -819,6 +941,9 @@ ComboBox.Input = ComboBoxInput;
 ComboBox.Button = ComboBoxButton;
 ComboBox.ListBox = ComboBoxListBox;
 ComboBox.Option = ComboBoxOption;
+ComboBox.Label = ComboBoxLabel;
+ComboBox.Description = ComboBoxDescription;
+ComboBox.ErrorMessage = ComboBoxErrorMessage;
 
 // Re-export filter function for convenience
 export { defaultContainsFilter };

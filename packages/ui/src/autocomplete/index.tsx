@@ -5,7 +5,7 @@
  * UI layer owns styling only; behavior lives in solidaria layers.
  */
 
-import { type JSX, Show, splitProps } from 'solid-js'
+import { type JSX, splitProps } from 'solid-js'
 import {
   ComboBox,
   ComboBoxInput,
@@ -68,15 +68,12 @@ export interface SearchAutocompleteProps<T extends SearchAutocompleteItem = Sear
 const sizeStyles = {
   sm: {
     container: 'text-sm',
-    label: 'text-xs mb-1',
   },
   md: {
     container: 'text-base',
-    label: 'text-sm mb-1.5',
   },
   lg: {
     container: 'text-lg',
-    label: 'text-base mb-2',
   },
 }
 
@@ -123,16 +120,12 @@ export function SearchAutocomplete<T extends SearchAutocompleteItem = SearchAuto
 
   return (
     <div class={['vui-search-autocomplete relative', styles().container, local.class].filter(Boolean).join(' ')}>
-      <Show when={local.label}>
-        <label class={['block font-medium text-text-700', styles().label].join(' ')}>
-          {local.label}
-        </label>
-      </Show>
-
       <ComboBox<T>
         {...comboBoxProps}
         items={local.items}
         size={size()}
+        label={local.label}
+        description={local.description}
         aria-label={local['aria-label']}
         placeholder={local.placeholder}
         isDisabled={local.isDisabled}
@@ -153,10 +146,6 @@ export function SearchAutocomplete<T extends SearchAutocompleteItem = SearchAuto
           )}
         </ComboBoxListBox>
       </ComboBox>
-
-      <Show when={local.description}>
-        <p class="mt-1 text-sm text-text-500">{local.description}</p>
-      </Show>
     </div>
   )
 }

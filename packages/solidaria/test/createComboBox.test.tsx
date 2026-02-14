@@ -99,6 +99,35 @@ describe('createComboBox', () => {
       });
     });
 
+    it('should compose aria-describedby from description and invalid error', () => {
+      createRoot((dispose) => {
+        let inputRef: HTMLInputElement | null = null;
+
+        const state = createComboBoxState({
+          items,
+          getKey: (item) => item.id,
+          getTextValue: (item) => item.name,
+        });
+
+        const comboBox = createComboBox(
+          {
+            description: 'Pick a fruit',
+            errorMessage: 'Required',
+            isInvalid: true,
+          },
+          state,
+          () => inputRef
+        );
+
+        const describedBy = comboBox.inputProps['aria-describedby'];
+        expect(typeof describedBy).toBe('string');
+        expect(describedBy).toContain(comboBox.descriptionProps.id as string);
+        expect(describedBy).toContain(comboBox.errorMessageProps.id as string);
+        expect(comboBox.inputProps['aria-invalid']).toBe(true);
+        dispose();
+      });
+    });
+
     it('should set aria-disabled when disabled', () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
