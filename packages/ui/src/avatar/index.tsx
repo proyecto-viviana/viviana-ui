@@ -1,4 +1,4 @@
-import { Show } from 'solid-js'
+import { Show, type JSX } from 'solid-js'
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
@@ -61,7 +61,7 @@ export function Avatar(props: AvatarProps) {
 }
 
 export interface AvatarGroupProps {
-  children: any
+  children: JSX.Element
   max?: number
   size?: AvatarSize
 }

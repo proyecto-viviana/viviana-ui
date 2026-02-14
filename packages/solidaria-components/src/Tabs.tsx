@@ -39,6 +39,18 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import {
+  SelectionIndicator,
+  SelectionIndicatorContext,
+  type SelectionIndicatorContextValue,
+} from './SelectionIndicator';
+
+export {
+  SelectionIndicator,
+  SelectionIndicatorContext,
+  type SelectionIndicatorProps,
+  type SelectionIndicatorRenderProps,
+} from './SelectionIndicator';
 
 // ============================================
 // TYPES
@@ -314,14 +326,20 @@ function TabListInner<T>(props: {
 
   // Helper to safely call event handlers that may be bound tuples
   const callHandler = <E extends Event>(
-    handler: ((e: E) => void) | [object, (e: E) => void] | undefined,
+    handler: JSX.EventHandlerUnion<HTMLElement, E> | undefined,
     event: E
   ) => {
     if (!handler) return;
     if (Array.isArray(handler)) {
       handler[1].call(handler[0], event);
-    } else {
-      handler(event);
+      return;
+    }
+    if (typeof handler === 'function') {
+      (handler as (evt: E) => void)(event);
+      return;
+    }
+    if (typeof handler === 'object' && 'handleEvent' in handler && typeof handler.handleEvent === 'function') {
+      (handler.handleEvent as (evt: E) => void)(event);
     }
   };
 
@@ -332,12 +350,12 @@ function TabListInner<T>(props: {
 
   const handleFocus = (e: FocusEvent) => {
     tabListProps.onFocus(e);
-    callHandler(focusProps.onFocus as any, e);
+    callHandler(focusProps.onFocus, e);
   };
 
   const handleBlur = (e: FocusEvent) => {
     tabListProps.onBlur(e);
-    callHandler(focusProps.onBlur as any, e);
+    callHandler(focusProps.onBlur, e);
   };
 
   return (
@@ -442,32 +460,38 @@ function TabInner(props: {
     renderValues
   );
 
+  const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
+    isSelected: tabAria.isSelected,
+  }));
+
   return (
-    <div
-      id={tabAria.tabProps.id}
-      role={tabAria.tabProps.role}
-      aria-selected={tabAria.isSelected()}
-      aria-disabled={tabAria.isDisabled() || undefined}
-      aria-controls={tabAria.isSelected() ? tabAria.tabProps['aria-controls'] : undefined}
-      aria-label={tabAria.tabProps['aria-label']}
-      tabIndex={tabAria.isSelected() && !tabAria.isDisabled() ? 0 : -1}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      onKeyDown={tabAria.tabProps.onKeyDown}
-      onMouseDown={tabAria.tabProps.onMouseDown}
-      onPointerDown={tabAria.tabProps.onPointerDown}
-      onClick={tabAria.tabProps.onClick}
-      onFocus={tabAria.tabProps.onFocus}
-      {...hoverProps}
-      data-selected={tabAria.isSelected() || undefined}
-      data-focused={tabAria.isFocused() || undefined}
-      data-focus-visible={tabAria.isFocusVisible() || undefined}
-      data-pressed={tabAria.isPressed() || undefined}
-      data-hovered={isHovered() || undefined}
-      data-disabled={tabAria.isDisabled() || undefined}
-    >
-      {renderProps.renderChildren()}
-    </div>
+    <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
+      <div
+        id={tabAria.tabProps.id}
+        role={tabAria.tabProps.role}
+        aria-selected={tabAria.isSelected()}
+        aria-disabled={tabAria.isDisabled() || undefined}
+        aria-controls={tabAria.isSelected() ? tabAria.tabProps['aria-controls'] : undefined}
+        aria-label={tabAria.tabProps['aria-label']}
+        tabIndex={tabAria.isSelected() && !tabAria.isDisabled() ? 0 : -1}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        onKeyDown={tabAria.tabProps.onKeyDown}
+        onMouseDown={tabAria.tabProps.onMouseDown}
+        onPointerDown={tabAria.tabProps.onPointerDown}
+        onClick={tabAria.tabProps.onClick}
+        onFocus={tabAria.tabProps.onFocus}
+        {...hoverProps}
+        data-selected={tabAria.isSelected() || undefined}
+        data-focused={tabAria.isFocused() || undefined}
+        data-focus-visible={tabAria.isFocusVisible() || undefined}
+        data-pressed={tabAria.isPressed() || undefined}
+        data-hovered={isHovered() || undefined}
+        data-disabled={tabAria.isDisabled() || undefined}
+      >
+        {renderProps.renderChildren()}
+      </div>
+    </SelectionIndicatorContext.Provider>
   );
 }
 
@@ -550,3 +574,4 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
 Tabs.List = TabList;
 Tabs.Tab = Tab;
 Tabs.Panel = TabPanel;
+Tabs.SelectionIndicator = SelectionIndicator;

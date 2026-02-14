@@ -17,6 +17,7 @@ import {
   createFocusRing,
   createHover,
   type AriaButtonProps,
+  type PressEvent,
 } from '@proyecto-viviana/solidaria';
 import {
   type RenderChildren,
@@ -109,28 +110,25 @@ export function Button(props: ButtonProps): JSX.Element {
     return !!disabled;
   };
 
-  // Determine if this button should act as a dialog/popover trigger
-  // We only toggle if:
-  // 1. We have DialogTriggerContext or PopoverTriggerContext (we're inside a trigger)
-  // 2. AND there is NO onPress handler (the trigger button typically has no onPress,
-  //    while close buttons inside dialogs have onPress={close})
-  // This heuristic works because:
-  // - Trigger buttons: don't have onPress, should toggle
-  // - Close buttons: have onPress={close}, should NOT toggle (just call onPress)
-  const isDialogTrigger = () => dialogTriggerContext && !ariaProps.onPress;
-  const isPopoverTrigger = () => popoverTriggerContext && !ariaProps.onPress;
+  let buttonEl: HTMLButtonElement | undefined;
+
+  // Explicit trigger ownership: a button toggles overlays only when it is the
+  // registered trigger element for the surrounding trigger context.
+  const isDialogTrigger = () =>
+    !!dialogTriggerContext && !!buttonEl && dialogTriggerContext.triggerRef() === buttonEl;
+  const isPopoverTrigger = () =>
+    !!popoverTriggerContext && !!buttonEl && popoverTriggerContext.triggerRef() === buttonEl;
 
   // Wrap onPress to also toggle dialog/popover if this is a trigger button
-  const handlePress = (e: any) => {
+  const handlePress = (e: PressEvent) => {
     // Call original onPress if provided
     if (typeof ariaProps.onPress === 'function') {
       ariaProps.onPress(e);
     }
-    // Toggle dialog only if this is a trigger button (has no onPress handler)
+    // Toggle only when this exact button is the registered trigger element.
     if (isDialogTrigger()) {
       dialogTriggerContext!.state.toggle();
     }
-    // Toggle popover only if this is a trigger button (has no onPress handler)
     if (isPopoverTrigger()) {
       popoverTriggerContext!.state.toggle();
     }
@@ -206,13 +204,18 @@ export function Button(props: ButtonProps): JSX.Element {
 
   // Ref callback that combines all refs
   const handleRef = (el: HTMLButtonElement) => {
+    buttonEl = el;
+
     // Call the focusable ref for autoFocus support
     buttonPropsRef?.(el);
     focusPropsRef?.(el);
     hoverPropsRef?.(el);
 
-    // If this button is a popover trigger, register it
-    if (isPopoverTrigger() && popoverTriggerContext?.setTriggerRef) {
+    // Register trigger ownership for surrounding trigger contexts.
+    if (dialogTriggerContext?.setTriggerRef) {
+      dialogTriggerContext.setTriggerRef(el);
+    }
+    if (popoverTriggerContext?.setTriggerRef) {
       popoverTriggerContext.setTriggerRef(el);
     }
   };
