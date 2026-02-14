@@ -31,6 +31,7 @@ import {
   type Size,
   type VirtualizerRangeContext,
   type VirtualizerLayoutInfoContext,
+  type VirtualizerDropTarget,
   type VirtualizerVisibleRange,
   type WaterfallLayoutOptions,
 } from './VirtualizerLayouts';
@@ -49,6 +50,11 @@ export interface VirtualizerLayout<O = unknown> extends LayoutOptionsDelegate<O>
     context: VirtualizerLayoutInfoContext,
     options?: O
   ): LayoutInfo;
+  getDropTargetFromPoint?(
+    point: Point,
+    itemCount: number,
+    options?: O
+  ): VirtualizerDropTarget | null;
 }
 
 export interface VirtualizerLayoutClass<O> {
@@ -61,6 +67,7 @@ export interface VirtualizerContextValue<O = unknown> {
   isVirtualized: boolean;
   getVisibleRange: (itemCount: number) => VirtualizerVisibleRange;
   getLayoutInfo: (index: number) => LayoutInfo;
+  getDropTargetFromPoint: (point: Point, itemCount: number) => VirtualizerDropTarget | null;
 }
 
 export const VirtualizerContext = createContext<VirtualizerContextValue<unknown> | null>(null);
@@ -107,6 +114,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   const [measuredViewportSize, setMeasuredViewportSize] = createSignal(0);
   const [measuredViewportWidth, setMeasuredViewportWidth] = createSignal(0);
   let containerRef: HTMLDivElement | undefined;
+  const fallbackLayout = new ListLayout();
 
   const layout = createMemo<VirtualizerLayout<O>>(() => {
     if (typeof local.layout === 'function') {
@@ -162,6 +170,10 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       },
     };
   };
+  const getDropTargetFromPoint = (point: Point, itemCount: number): VirtualizerDropTarget | null => {
+    return resolvedLayout().getDropTargetFromPoint?.(point, itemCount, resolvedLayoutOptions()) ??
+      fallbackLayout.getDropTargetFromPoint(point, itemCount);
+  };
 
   const contextValue = createMemo<VirtualizerContextValue<O>>(() => ({
     layout: resolvedLayout(),
@@ -169,6 +181,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     isVirtualized: true,
     getVisibleRange,
     getLayoutInfo,
+    getDropTargetFromPoint,
   }));
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     renderItem: (item) => item as JSX.Element,
@@ -181,8 +194,10 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
 
   const updateViewportSize = () => {
     if (!containerRef) return;
-    setMeasuredViewportSize(containerRef.clientHeight);
-    setMeasuredViewportWidth(containerRef.clientWidth);
+    const nextHeight = containerRef.clientHeight;
+    const nextWidth = containerRef.clientWidth;
+    if (nextHeight !== measuredViewportSize()) setMeasuredViewportSize(nextHeight);
+    if (nextWidth !== measuredViewportWidth()) setMeasuredViewportWidth(nextWidth);
   };
 
   onMount(() => {
@@ -215,7 +230,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
             if (scrollFrame != null) cancelAnimationFrame(scrollFrame);
             scrollFrame = requestAnimationFrame(() => {
               scrollFrame = undefined;
-              setScrollOffset(target.scrollTop);
+              if (target.scrollTop !== scrollOffset()) setScrollOffset(target.scrollTop);
               updateViewportSize();
             });
           }}
@@ -240,6 +255,7 @@ export type {
   DefaultVirtualizerLayoutOptions,
   GridLayoutOptions,
   WaterfallLayoutOptions,
+  VirtualizerDropTarget,
   LayoutInfo,
   Rect,
   Size,

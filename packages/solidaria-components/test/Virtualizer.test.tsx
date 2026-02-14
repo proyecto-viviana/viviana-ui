@@ -50,6 +50,7 @@ describe('Virtualizer', () => {
             hasLayout: Boolean(ctx()?.layout),
             options: ctx()?.layoutOptions ?? null,
             layoutInfo0: ctx()?.getLayoutInfo(0) ?? null,
+            dropTarget0: ctx()?.getDropTargetFromPoint({ x: 2, y: 2 }, 10) ?? null,
             rendererVirtualized: collection()?.isVirtualized ?? false,
             hasLayoutDelegate: Boolean(collection()?.layoutDelegate),
           })}
@@ -68,6 +69,7 @@ describe('Virtualizer', () => {
     expect(parsed.hasLayout).toBe(true);
     expect(parsed.options).toEqual({ a: 1, b: 2 });
     expect(parsed.layoutInfo0?.index).toBe(0);
+    expect(parsed.dropTarget0?.index).toBe(0);
     expect(parsed.rendererVirtualized).toBe(true);
     expect(parsed.hasLayoutDelegate).toBe(true);
     expect(instances).toBeGreaterThan(0);

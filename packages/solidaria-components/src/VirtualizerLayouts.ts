@@ -58,6 +58,11 @@ export interface VirtualizerLayoutInfoContext {
   viewportWidth: number;
 }
 
+export interface VirtualizerDropTarget {
+  index: number;
+  position: 'before' | 'on' | 'after';
+}
+
 function clampRange(itemCount: number, start: number, end: number, itemSize: number): VirtualizerVisibleRange {
   const safeStart = Math.max(0, Math.min(start, itemCount));
   const safeEnd = Math.max(safeStart, Math.min(end, itemCount));
@@ -116,6 +121,26 @@ export class ListLayout {
       },
     };
   }
+
+  getDropTargetFromPoint(
+    point: Point,
+    itemCount: number,
+    options?: DefaultVirtualizerLayoutOptions
+  ): VirtualizerDropTarget | null {
+    if (itemCount <= 0) return null;
+    const itemHeight = Math.max(1, options?.itemSize ?? 40);
+    const rawIndex = Math.floor(Math.max(0, point.y) / itemHeight);
+    const index = Math.max(0, Math.min(rawIndex, itemCount - 1));
+    const offsetWithinItem = Math.max(0, point.y - index * itemHeight);
+    const threshold = itemHeight / 3;
+    const position: VirtualizerDropTarget['position'] =
+      offsetWithinItem < threshold
+        ? 'before'
+        : offsetWithinItem > threshold * 2
+          ? 'after'
+          : 'on';
+    return { index, position };
+  }
 }
 
 export class TableLayout extends ListLayout {}
@@ -162,6 +187,26 @@ export class GridLayout {
       },
     };
   }
+
+  getDropTargetFromPoint(
+    point: Point,
+    itemCount: number,
+    options?: GridLayoutOptions
+  ): VirtualizerDropTarget | null {
+    if (itemCount <= 0) return null;
+    const rowHeight = Math.max(1, options?.rowHeight ?? options?.itemSize ?? 40);
+    const columns = Math.max(1, options?.columnCount ?? 1);
+    const width = Math.max(1, options?.viewportSize ?? 320);
+    const cellWidth = width / columns;
+    const row = Math.max(0, Math.floor(point.y / rowHeight));
+    const col = Math.max(0, Math.min(columns - 1, Math.floor(Math.max(0, point.x) / cellWidth)));
+    const index = Math.max(0, Math.min(itemCount - 1, row * columns + col));
+    const withinRow = Math.max(0, point.y - row * rowHeight);
+    const threshold = rowHeight / 3;
+    const position: VirtualizerDropTarget['position'] =
+      withinRow < threshold ? 'before' : withinRow > threshold * 2 ? 'after' : 'on';
+    return { index, position };
+  }
 }
 
 export class WaterfallLayout extends GridLayout {
@@ -179,5 +224,17 @@ export class WaterfallLayout extends GridLayout {
     const gap = Math.max(0, options?.gap ?? 0);
     const columnCount = Math.max(1, Math.floor((width + gap) / (minColumnWidth + gap)));
     return super.getLayoutInfo(index, context, { ...options, columnCount });
+  }
+
+  override getDropTargetFromPoint(
+    point: Point,
+    itemCount: number,
+    options?: WaterfallLayoutOptions
+  ): VirtualizerDropTarget | null {
+    const width = Math.max(1, options?.viewportWidth ?? 320);
+    const minColumnWidth = Math.max(1, options?.minColumnWidth ?? 200);
+    const gap = Math.max(0, options?.gap ?? 0);
+    const columnCount = Math.max(1, Math.floor((width + gap) / (minColumnWidth + gap)));
+    return super.getDropTargetFromPoint(point, itemCount, { ...options, columnCount });
   }
 }
