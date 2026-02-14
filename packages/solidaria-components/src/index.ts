@@ -52,6 +52,17 @@ export {
   type ToggleButtonRenderProps,
 } from './ToggleButton';
 
+// ToggleButtonGroup
+export {
+  ToggleButtonGroup,
+  ToggleButtonGroupContext,
+  ToggleButtonGroupStateContext,
+  useToggleButtonGroupStateContext,
+  type ToggleButtonGroupProps,
+  type ToggleButtonGroupRenderProps,
+  type ToggleButtonGroupStateContextValue,
+} from './ToggleButtonGroup';
+
 // Checkbox
 export {
   Checkbox,

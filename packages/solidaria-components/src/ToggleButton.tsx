@@ -17,6 +17,7 @@ import {
   createHover,
   type AriaToggleButtonProps,
 } from '@proyecto-viviana/solidaria';
+import type { Key } from '@proyecto-viviana/solid-stately';
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -25,6 +26,7 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { useToggleButtonGroupStateContext } from './ToggleButtonGroup';
 
 export interface ToggleButtonRenderProps {
   isHovered: boolean;
@@ -38,6 +40,8 @@ export interface ToggleButtonRenderProps {
 export interface ToggleButtonProps
   extends Omit<AriaToggleButtonProps, 'children'>,
     SlotProps {
+  /** Key used when inside ToggleButtonGroup selection state. */
+  toggleKey?: Key;
   children?: RenderChildren<ToggleButtonRenderProps>;
   class?: ClassNameOrFunction<ToggleButtonRenderProps>;
   style?: StyleOrFunction<ToggleButtonRenderProps>;
@@ -46,7 +50,8 @@ export interface ToggleButtonProps
 export const ToggleButtonContext = createContext<ToggleButtonProps | null>(null);
 
 export function ToggleButton(props: ToggleButtonProps): JSX.Element {
-  const [local, ariaProps] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local, ariaProps] = splitProps(props, ['children', 'class', 'style', 'slot', 'toggleKey']);
+  const groupState = useToggleButtonGroupStateContext();
 
   const resolveDisabled = (): boolean => {
     const disabled = ariaProps.isDisabled;
@@ -54,10 +59,33 @@ export function ToggleButton(props: ToggleButtonProps): JSX.Element {
     return !!disabled;
   };
 
+  const resolvedGroupKey = createMemo<Key | null>(() => {
+    if (!groupState) return null;
+    if (local.toggleKey != null) return local.toggleKey;
+    return null;
+  });
+
+  const isSelectedFromGroup = () => {
+    const key = resolvedGroupKey();
+    if (!groupState || key == null) return undefined;
+    return groupState.isSelected(key);
+  };
+
   const toggleAria = createToggleButton({
     ...ariaProps,
+    get isSelected() {
+      const selected = isSelectedFromGroup();
+      return selected === undefined ? ariaProps.isSelected : selected;
+    },
+    onChange(isSelected) {
+      const key = resolvedGroupKey();
+      if (groupState && key != null) {
+        groupState.toggleKey(key);
+      }
+      ariaProps.onChange?.(isSelected);
+    },
     get isDisabled() {
-      return resolveDisabled();
+      return resolveDisabled() || !!groupState?.isDisabled();
     },
   });
 

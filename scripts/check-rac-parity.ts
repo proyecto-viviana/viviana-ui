@@ -19,11 +19,11 @@ const REQUIRED_SYMBOLS = [
   'Keyboard',
   'Form',
   'FieldError',
+  'ToggleButtonGroup',
  ] as const;
 
 const BACKLOG_SYMBOLS = [
   'Virtualizer',
-  'ToggleButtonGroup',
   'DropZone',
   'FileTrigger',
   'SharedElementTransition',
