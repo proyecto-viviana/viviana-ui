@@ -30,6 +30,7 @@ import {
   type Rect,
   type Size,
   type VirtualizerRangeContext,
+  type VirtualizerLayoutInfoContext,
   type VirtualizerVisibleRange,
   type WaterfallLayoutOptions,
 } from './VirtualizerLayouts';
@@ -43,6 +44,11 @@ export interface VirtualizerLayout<O = unknown> extends LayoutOptionsDelegate<O>
     context: VirtualizerRangeContext,
     options?: O
   ): VirtualizerVisibleRange;
+  getLayoutInfo?(
+    index: number,
+    context: VirtualizerLayoutInfoContext,
+    options?: O
+  ): LayoutInfo;
 }
 
 export interface VirtualizerLayoutClass<O> {
@@ -54,6 +60,7 @@ export interface VirtualizerContextValue<O = unknown> {
   layoutOptions?: O;
   isVirtualized: boolean;
   getVisibleRange: (itemCount: number) => VirtualizerVisibleRange;
+  getLayoutInfo: (index: number) => LayoutInfo;
 }
 
 export const VirtualizerContext = createContext<VirtualizerContextValue<unknown> | null>(null);
@@ -98,6 +105,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   ]);
   const [scrollOffset, setScrollOffset] = createSignal(0);
   const [measuredViewportSize, setMeasuredViewportSize] = createSignal(0);
+  const [measuredViewportWidth, setMeasuredViewportWidth] = createSignal(0);
   let containerRef: HTMLDivElement | undefined;
 
   const layout = createMemo<VirtualizerLayout<O>>(() => {
@@ -131,10 +139,28 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       scrollOffset: scrollOffset(),
       viewportSize: viewportSize(),
       overscan: overscan(),
+      viewportWidth: measuredViewportWidth(),
     };
     const layoutResult = resolvedLayout().getVisibleRange?.(ctx, resolvedLayoutOptions());
     if (layoutResult) return layoutResult;
     return calculateLinearVisibleRange(itemCount, ctx.scrollOffset, ctx.viewportSize, itemSize(), ctx.overscan);
+  };
+  const getLayoutInfo = (index: number): LayoutInfo => {
+    const ctx: VirtualizerLayoutInfoContext = {
+      viewportWidth: measuredViewportWidth(),
+    };
+    const layoutResult = resolvedLayout().getLayoutInfo?.(index, ctx, resolvedLayoutOptions());
+    if (layoutResult) return layoutResult;
+    return {
+      key: String(index),
+      index,
+      rect: {
+        x: 0,
+        y: index * itemSize(),
+        width: Math.max(0, measuredViewportWidth()),
+        height: itemSize(),
+      },
+    };
   };
 
   const contextValue = createMemo<VirtualizerContextValue<O>>(() => ({
@@ -142,6 +168,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     layoutOptions: resolvedLayoutOptions(),
     isVirtualized: true,
     getVisibleRange,
+    getLayoutInfo,
   }));
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     renderItem: (item) => item as JSX.Element,
@@ -155,6 +182,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   const updateViewportSize = () => {
     if (!containerRef) return;
     setMeasuredViewportSize(containerRef.clientHeight);
+    setMeasuredViewportWidth(containerRef.clientWidth);
   };
 
   onMount(() => {

@@ -323,7 +323,11 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
                 ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
                 : null}
               <For each={virtualizedVisibleRows()}>
-              {(node) => {
+              {(node, index) => {
+                const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
+                const onIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'on');
+                const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
                 // Find the original item data to pass to render function
                 const itemData: TreeItemData<T> = {
                   key: node.key,
@@ -342,7 +346,14 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
                   isExpandable: node.isExpandable ?? false,
                   level: node.level,
                 };
-                return props.children(itemData, itemState);
+                return (
+                  <>
+                    {beforeIndicator()}
+                    {onIndicator()}
+                    {props.children(itemData, itemState)}
+                    {afterIndicator()}
+                  </>
+                );
               }}
               </For>
               {virtualRange()?.offsetBottom

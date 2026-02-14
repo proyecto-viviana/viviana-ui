@@ -49,6 +49,7 @@ describe('Virtualizer', () => {
             isVirtualized: ctx()?.isVirtualized ?? false,
             hasLayout: Boolean(ctx()?.layout),
             options: ctx()?.layoutOptions ?? null,
+            layoutInfo0: ctx()?.getLayoutInfo(0) ?? null,
             rendererVirtualized: collection()?.isVirtualized ?? false,
             hasLayoutDelegate: Boolean(collection()?.layoutDelegate),
           })}
@@ -66,6 +67,7 @@ describe('Virtualizer', () => {
     expect(parsed.isVirtualized).toBe(true);
     expect(parsed.hasLayout).toBe(true);
     expect(parsed.options).toEqual({ a: 1, b: 2 });
+    expect(parsed.layoutInfo0?.index).toBe(0);
     expect(parsed.rendererVirtualized).toBe(true);
     expect(parsed.hasLayoutDelegate).toBe(true);
     expect(instances).toBeGreaterThan(0);
@@ -191,6 +193,7 @@ describe('Virtualizer', () => {
     ));
 
     expect(screen.getByTestId('drop-before-0')).toBeInTheDocument();
+    expect(screen.getByTestId('drop-on-0')).toBeInTheDocument();
     expect(screen.getByTestId('drop-after-1')).toBeInTheDocument();
     expect(screen.queryByTestId('drop-before-4')).not.toBeInTheDocument();
   });

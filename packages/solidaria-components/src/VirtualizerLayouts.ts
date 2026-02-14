@@ -34,6 +34,7 @@ export interface VirtualizerRangeContext {
   scrollOffset: number;
   viewportSize: number;
   overscan: number;
+  viewportWidth?: number;
 }
 
 export interface DefaultVirtualizerLayoutOptions {
@@ -51,6 +52,10 @@ export interface WaterfallLayoutOptions extends GridLayoutOptions {
   minColumnWidth?: number;
   viewportWidth?: number;
   gap?: number;
+}
+
+export interface VirtualizerLayoutInfoContext {
+  viewportWidth: number;
 }
 
 function clampRange(itemCount: number, start: number, end: number, itemSize: number): VirtualizerVisibleRange {
@@ -93,6 +98,24 @@ export class ListLayout {
       options?.overscan ?? ctx.overscan
     );
   }
+
+  getLayoutInfo(
+    index: number,
+    context: VirtualizerLayoutInfoContext,
+    options?: DefaultVirtualizerLayoutOptions
+  ): LayoutInfo {
+    const itemHeight = Math.max(1, options?.itemSize ?? 40);
+    return {
+      key: String(index),
+      index,
+      rect: {
+        x: 0,
+        y: index * itemHeight,
+        width: Math.max(0, context.viewportWidth),
+        height: itemHeight,
+      },
+    };
+  }
 }
 
 export class TableLayout extends ListLayout {}
@@ -120,6 +143,25 @@ export class GridLayout {
 
     return { start, end, offsetTop, offsetBottom };
   }
+
+  getLayoutInfo(index: number, context: VirtualizerLayoutInfoContext, options?: GridLayoutOptions): LayoutInfo {
+    const rowHeight = Math.max(1, options?.rowHeight ?? options?.itemSize ?? 40);
+    const columns = Math.max(1, options?.columnCount ?? 1);
+    const row = Math.floor(index / columns);
+    const col = index % columns;
+    const width = Math.max(1, context.viewportWidth);
+    const cellWidth = Math.floor(width / columns);
+    return {
+      key: String(index),
+      index,
+      rect: {
+        x: col * cellWidth,
+        y: row * rowHeight,
+        width: cellWidth,
+        height: rowHeight,
+      },
+    };
+  }
 }
 
 export class WaterfallLayout extends GridLayout {
@@ -129,5 +171,13 @@ export class WaterfallLayout extends GridLayout {
     const gap = Math.max(0, options?.gap ?? 0);
     const columnCount = Math.max(1, Math.floor((width + gap) / (minColumnWidth + gap)));
     return super.getVisibleRange(ctx, { ...options, columnCount });
+  }
+
+  override getLayoutInfo(index: number, context: VirtualizerLayoutInfoContext, options?: WaterfallLayoutOptions): LayoutInfo {
+    const width = Math.max(1, options?.viewportWidth ?? context.viewportWidth);
+    const minColumnWidth = Math.max(1, options?.minColumnWidth ?? 200);
+    const gap = Math.max(0, options?.gap ?? 0);
+    const columnCount = Math.max(1, Math.floor((width + gap) / (minColumnWidth + gap)));
+    return super.getLayoutInfo(index, context, { ...options, columnCount });
   }
 }

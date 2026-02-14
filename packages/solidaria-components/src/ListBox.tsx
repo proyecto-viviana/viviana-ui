@@ -335,10 +335,12 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
                       {(item, index) => {
                         const itemIndex = () => (virtualRange()?.start ?? 0) + index();
                         const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
+                        const onIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'on');
                         const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
                         return (
                           <>
                             {beforeIndicator()}
+                            {onIndicator()}
                             {props.children(item as T)}
                             {afterIndicator()}
                           </>
