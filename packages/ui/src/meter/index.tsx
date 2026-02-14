@@ -1,12 +1,15 @@
 /**
  * Meter component for proyecto-viviana-ui
  *
- * Styled meter component built on top of the solidaria hook directly.
+ * Styled meter component built on top of solidaria-components.
  * Meters represent a quantity within a known range (unlike progress bars which show progress toward a goal).
  */
 
-import { type JSX, splitProps, Show, createMemo } from 'solid-js';
-import { createMeter } from '@proyecto-viviana/solidaria';
+import { type JSX, splitProps, Show } from 'solid-js';
+import {
+  Meter as HeadlessMeter,
+  type MeterRenderProps as HeadlessMeterRenderProps,
+} from '@proyecto-viviana/solidaria-components';
 
 // ============================================
 // TYPES
@@ -67,14 +70,6 @@ const variantStyles = {
 };
 
 // ============================================
-// UTILITIES
-// ============================================
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
-// ============================================
 // METER COMPONENT
 // ============================================
 
@@ -95,7 +90,7 @@ function clamp(value: number, min: number, max: number): number {
  * ```
  */
 export function Meter(props: MeterProps): JSX.Element {
-  const [local, ariaProps] = splitProps(props, [
+  const [local, headlessProps] = splitProps(props, [
     'size',
     'variant',
     'label',
@@ -105,59 +100,38 @@ export function Meter(props: MeterProps): JSX.Element {
 
   const size = () => local.size ?? 'md';
   const variant = () => local.variant ?? 'primary';
-  const showValueLabel = () => local.showValueLabel ?? true;
-
-  // Create meter aria props
-  const meterAria = createMeter({
-    get value() { return ariaProps.value; },
-    get minValue() { return ariaProps.minValue; },
-    get maxValue() { return ariaProps.maxValue; },
-    get valueLabel() { return ariaProps.valueLabel; },
-    get label() { return local.label; },
-    get 'aria-label'() { return ariaProps['aria-label']; },
-  });
-
-  // Calculate percentage
-  const percentage = createMemo(() => {
-    const value = ariaProps.value ?? 0;
-    const minValue = ariaProps.minValue ?? 0;
-    const maxValue = ariaProps.maxValue ?? 100;
-    const clampedValue = clamp(value, minValue, maxValue);
-    return ((clampedValue - minValue) / (maxValue - minValue)) * 100;
-  });
-
-  // Get value text from aria props
-  const valueText = () => meterAria.meterProps['aria-valuetext'] as string | undefined;
-
   const sizeConfig = () => sizeStyles[size()];
+  const renderChildren = ({ valueText, percentage }: HeadlessMeterRenderProps) => {
+    const showValueLabel = local.showValueLabel ?? true;
+    return (
+      <>
+        <Show when={local.label || showValueLabel}>
+          <div class={`flex justify-between items-center mb-1 ${sizeConfig().text}`}>
+            <Show when={local.label}>
+              <span class="text-primary-200 font-medium">{local.label}</span>
+            </Show>
+            <Show when={showValueLabel}>
+              <span class="text-primary-300">{valueText}</span>
+            </Show>
+          </div>
+        </Show>
+
+        <div class={`w-full ${sizeConfig().track} bg-bg-300 rounded-full overflow-hidden`}>
+          <div
+            class={`h-full rounded-full transition-all duration-300 ${variantStyles[variant()]}`}
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
+      </>
+    );
+  };
 
   return (
-    <div
-      {...meterAria.meterProps}
+    <HeadlessMeter
+      {...headlessProps}
+      label={local.label}
       class={`w-full ${local.class ?? ''}`}
-    >
-      {/* Label and value row */}
-      <Show when={local.label || showValueLabel()}>
-        <div class={`flex justify-between items-center mb-1 ${sizeConfig().text}`}>
-          <Show when={local.label}>
-            <span class="text-primary-200 font-medium">{local.label}</span>
-          </Show>
-          <Show when={showValueLabel()}>
-            <span class="text-primary-300">{valueText()}</span>
-          </Show>
-        </div>
-      </Show>
-
-      {/* Track */}
-      <div class={`w-full ${sizeConfig().track} bg-bg-300 rounded-full overflow-hidden`}>
-        {/* Fill */}
-        <div
-          class={`h-full rounded-full transition-all duration-300 ${variantStyles[variant()]}`}
-          style={{
-            width: `${percentage()}%`,
-          }}
-        />
-      </div>
-    </div>
+      children={renderChildren as unknown as JSX.Element}
+    />
   );
 }

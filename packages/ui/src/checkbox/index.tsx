@@ -246,12 +246,11 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
       </Show>
     </>
   )
-
   return (
     <HeadlessCheckboxGroup
       {...headlessProps}
       class={getClassName}
-      children={renderChildren as any}
+      children={renderChildren as unknown as JSX.Element}
     />
   )
 }

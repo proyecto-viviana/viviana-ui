@@ -1,11 +1,14 @@
 /**
  * ProgressBar component for proyecto-viviana-ui
  *
- * Styled progress bar component built on top of the solidaria hook directly.
+ * Styled progress bar component built on top of solidaria-components.
  */
 
-import { type JSX, splitProps, Show, createMemo } from 'solid-js';
-import { createProgressBar } from '@proyecto-viviana/solidaria';
+import { type JSX, splitProps, Show } from 'solid-js';
+import {
+  ProgressBar as HeadlessProgressBar,
+  type ProgressBarRenderProps as HeadlessProgressBarRenderProps,
+} from '@proyecto-viviana/solidaria-components';
 
 // ============================================
 // TYPES
@@ -67,14 +70,6 @@ const variantStyles = {
 };
 
 // ============================================
-// UTILITIES
-// ============================================
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
-// ============================================
 // PROGRESSBAR COMPONENT
 // ============================================
 
@@ -94,7 +89,7 @@ function clamp(value: number, min: number, max: number): number {
  * ```
  */
 export function ProgressBar(props: ProgressBarProps): JSX.Element {
-  const [local, ariaProps] = splitProps(props, [
+  const [local, headlessProps] = splitProps(props, [
     'size',
     'variant',
     'label',
@@ -104,66 +99,42 @@ export function ProgressBar(props: ProgressBarProps): JSX.Element {
 
   const size = () => local.size ?? 'md';
   const variant = () => local.variant ?? 'primary';
-  const isIndeterminate = () => ariaProps.isIndeterminate ?? false;
-  const showValueLabel = () => local.showValueLabel ?? !isIndeterminate();
-
-  // Create progress bar aria props
-  const progressAria = createProgressBar({
-    get value() { return ariaProps.value; },
-    get minValue() { return ariaProps.minValue; },
-    get maxValue() { return ariaProps.maxValue; },
-    get valueLabel() { return ariaProps.valueLabel; },
-    get isIndeterminate() { return ariaProps.isIndeterminate; },
-    get label() { return local.label; },
-    get 'aria-label'() { return ariaProps['aria-label']; },
-  });
-
-  // Calculate percentage
-  const percentage = createMemo(() => {
-    if (isIndeterminate()) {
-      return undefined;
-    }
-    const value = ariaProps.value ?? 0;
-    const minValue = ariaProps.minValue ?? 0;
-    const maxValue = ariaProps.maxValue ?? 100;
-    const clampedValue = clamp(value, minValue, maxValue);
-    return ((clampedValue - minValue) / (maxValue - minValue)) * 100;
-  });
-
-  // Get value text from aria props
-  const valueText = () => progressAria.progressBarProps['aria-valuetext'] as string | undefined;
-
   const sizeConfig = () => sizeStyles[size()];
+  const renderChildren = ({ valueText, percentage, isIndeterminate }: HeadlessProgressBarRenderProps) => {
+    const showValueLabel = local.showValueLabel ?? !isIndeterminate;
+    const fillWidth = isIndeterminate ? '30%' : `${percentage ?? 0}%`;
+
+    return (
+      <>
+        <Show when={local.label || showValueLabel}>
+          <div class={`flex justify-between items-center mb-1 ${sizeConfig().text}`}>
+            <Show when={local.label}>
+              <span class="text-primary-200 font-medium">{local.label}</span>
+            </Show>
+            <Show when={showValueLabel && !isIndeterminate}>
+              <span class="text-primary-300">{valueText}</span>
+            </Show>
+          </div>
+        </Show>
+
+        <div class={`w-full ${sizeConfig().track} bg-bg-300 rounded-full overflow-hidden`}>
+          <div
+            class={`h-full rounded-full transition-all duration-300 ${variantStyles[variant()]} ${
+              isIndeterminate ? 'animate-progress-indeterminate' : ''
+            }`}
+            style={{ width: fillWidth }}
+          />
+        </div>
+      </>
+    );
+  };
 
   return (
-    <div
-      {...progressAria.progressBarProps}
+    <HeadlessProgressBar
+      {...headlessProps}
+      label={local.label}
       class={`w-full ${local.class ?? ''}`}
-    >
-      {/* Label and value row */}
-      <Show when={local.label || showValueLabel()}>
-        <div class={`flex justify-between items-center mb-1 ${sizeConfig().text}`}>
-          <Show when={local.label}>
-            <span class="text-primary-200 font-medium">{local.label}</span>
-          </Show>
-          <Show when={showValueLabel() && !isIndeterminate()}>
-            <span class="text-primary-300">{valueText()}</span>
-          </Show>
-        </div>
-      </Show>
-
-      {/* Track */}
-      <div class={`w-full ${sizeConfig().track} bg-bg-300 rounded-full overflow-hidden`}>
-        {/* Fill */}
-        <div
-          class={`h-full rounded-full transition-all duration-300 ${variantStyles[variant()]} ${
-            isIndeterminate() ? 'animate-progress-indeterminate' : ''
-          }`}
-          style={{
-            width: isIndeterminate() ? '30%' : `${percentage()}%`,
-          }}
-        />
-      </div>
-    </div>
+      children={renderChildren as unknown as JSX.Element}
+    />
   );
 }

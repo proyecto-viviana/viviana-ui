@@ -28,6 +28,7 @@ import {
 } from '@proyecto-viviana/solidaria';
 import {
   createSelectState,
+  type ListState,
   type SelectState,
   type Key,
   type CollectionNode,
@@ -40,6 +41,10 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import {
+  SelectionIndicatorContext,
+  type SelectionIndicatorContextValue,
+} from './SelectionIndicator';
 
 // ============================================
 // TYPES
@@ -73,12 +78,20 @@ export interface SelectProps<T>
   getDisabled?: (item: T) => boolean;
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
+  /** Selection mode. */
+  selectionMode?: 'single' | 'multiple';
   /** The currently selected key (controlled). */
   selectedKey?: Key | null;
   /** The default selected key (uncontrolled). */
   defaultSelectedKey?: Key | null;
+  /** Currently selected keys (controlled, for multiple selection). */
+  selectedKeys?: 'all' | Iterable<Key>;
+  /** Default selected keys (uncontrolled, for multiple selection). */
+  defaultSelectedKeys?: 'all' | Iterable<Key>;
   /** Handler called when selection changes. */
   onSelectionChange?: (key: Key | null) => void;
+  /** Handler called when selected keys change. */
+  onSelectionChangeKeys?: (keys: 'all' | Set<Key>) => void;
   /** Whether the select is open (controlled). */
   isOpen?: boolean;
   /** Whether the select is open by default (uncontrolled). */
@@ -218,7 +231,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
     ['class', 'style', 'slot'],
-    ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'selectedKey', 'defaultSelectedKey', 'onSelectionChange', 'isOpen', 'defaultOpen', 'onOpenChange', 'name']
+    ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'selectionMode', 'selectedKey', 'defaultSelectedKey', 'selectedKeys', 'defaultSelectedKeys', 'onSelectionChange', 'onSelectionChangeKeys', 'isOpen', 'defaultOpen', 'onOpenChange', 'name']
   );
 
   // Create select state
@@ -238,14 +251,26 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     get disabledKeys() {
       return stateProps.disabledKeys;
     },
+    get selectionMode() {
+      return stateProps.selectionMode;
+    },
     get selectedKey() {
       return stateProps.selectedKey;
     },
     get defaultSelectedKey() {
       return stateProps.defaultSelectedKey;
     },
+    get selectedKeys() {
+      return stateProps.selectedKeys;
+    },
+    get defaultSelectedKeys() {
+      return stateProps.defaultSelectedKeys;
+    },
     get onSelectionChange() {
       return stateProps.onSelectionChange;
+    },
+    get onSelectionChangeKeys() {
+      return stateProps.onSelectionChangeKeys;
     },
     get isOpen() {
       return stateProps.isOpen;
@@ -284,7 +309,9 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     isFocusVisible: isFocusVisible(),
     isDisabled: !!ariaProps.isDisabled,
     isRequired: !!ariaProps.isRequired,
-    isSelected: state.selectedKey() != null,
+    isSelected: state.selectionMode() === 'multiple'
+      ? state.selectedKeys() === 'all' || (state.selectedKeys() as Set<Key>).size > 0
+      : state.selectedKey() != null,
   }));
 
   // Resolve render props
@@ -351,10 +378,23 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
               <option />
               <For each={stateProps.items}>
                 {(item) => {
-                  const key = stateProps.getKey?.(item) ?? (item as any).key ?? (item as any).id;
-                  const textValue = stateProps.getTextValue?.(item) ?? (item as any).textValue ?? (item as any).label ?? String(item);
+                  const itemRecord = isObjectRecord(item) ? item : null;
+                  const fallbackKey = itemRecord != null
+                    ? toKey(itemRecord.key) ?? toKey(itemRecord.id)
+                    : undefined;
+                  const key = stateProps.getKey?.(item) ?? fallbackKey ?? String(item);
+                  const fallbackTextValue = itemRecord != null
+                    ? toTextValue(itemRecord.textValue) ?? toTextValue(itemRecord.label)
+                    : undefined;
+                  const textValue = stateProps.getTextValue?.(item) ?? fallbackTextValue ?? String(item);
+                  const selectedKeys = state.selectedKeys();
+                  const isSelected = state.selectionMode() === 'multiple'
+                    ? selectedKeys === 'all'
+                      ? true
+                      : (selectedKeys as Set<Key>).has(key)
+                    : key === state.selectedKey();
                   return (
-                    <option value={String(key)} selected={key === state.selectedKey()}>
+                    <option value={String(key)} selected={isSelected}>
                       {textValue}
                     </option>
                   );
@@ -462,10 +502,14 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
   // Render props values
   const renderValues = createMemo<SelectValueRenderProps<T>>(() => {
     const selectedItem = state.selectedItem();
+    const selectedItems = state.selectedItems();
+    const selectedText = state.selectionMode() === 'multiple'
+      ? selectedItems.map((item) => item.textValue).join(', ')
+      : selectedItem?.textValue ?? null;
     return {
       selectedItem,
-      selectedText: selectedItem?.textValue ?? null,
-      isSelected: selectedItem != null,
+      selectedText,
+      isSelected: state.selectionMode() === 'multiple' ? selectedItems.length > 0 : selectedItem != null,
       placeholder: placeholder(),
     };
   });
@@ -533,21 +577,34 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
       isFocused: state.isFocused,
       setFocused: state.setFocused,
       selectedKeys: () => {
-        const key = state.selectedKey();
-        return key != null ? new Set([key]) : new Set();
+        const keys = state.selectedKeys();
+        return keys === 'all' ? new Set(Array.from(state.collection()).map((item) => item.key)) : keys;
       },
-      isSelected: (key: Key) => state.selectedKey() === key,
+      isSelected: (key: Key) => state.selectedKeys() === 'all' || (state.selectedKeys() as Set<Key>).has(key),
       isDisabled: state.isKeyDisabled,
-      selectionMode: () => 'single' as const,
+      selectionMode: () => state.selectionMode(),
       disallowEmptySelection: () => true,
-      select: (key: Key) => state.setSelectedKey(key),
-      toggleSelection: (key: Key) => state.setSelectedKey(key),
+      select: (key: Key) => state.selectionMode() === 'multiple'
+        ? state.setSelectedKeys([...(state.selectedKeys() === 'all' ? [] : state.selectedKeys() as Set<Key>), key])
+        : state.setSelectedKey(key),
+      toggleSelection: (key: Key) => {
+        if (state.selectionMode() !== 'multiple') {
+          state.setSelectedKey(key);
+          return;
+        }
+        const keys = state.selectedKeys();
+        if (keys === 'all') return;
+        const next = new Set(keys);
+        if (next.has(key)) next.delete(key);
+        else next.add(key);
+        state.setSelectedKeys(next);
+      },
       replaceSelection: (key: Key) => state.setSelectedKey(key),
       extendSelection: () => {},
       selectAll: () => {},
-      clearSelection: () => state.setSelectedKey(null),
+      clearSelection: () => state.selectionMode() === 'multiple' ? state.setSelectedKeys([]) : state.setSelectedKey(null),
       childFocusStrategy: () => null,
-    } as any
+    } as unknown as ListState<T>
   );
 
   // Render props values
@@ -645,30 +702,47 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
       isFocused: state.isFocused,
       setFocused: state.setFocused,
       selectedKeys: () => {
-        const key = state.selectedKey();
-        return key != null ? new Set([key]) : new Set();
+        const keys = state.selectedKeys();
+        return keys === 'all' ? new Set(Array.from(state.collection()).map((item) => item.key)) : keys;
       },
-      isSelected: (key: Key) => state.selectedKey() === key,
+      isSelected: (key: Key) => state.selectedKeys() === 'all' || (state.selectedKeys() as Set<Key>).has(key),
       isDisabled: state.isKeyDisabled,
-      selectionMode: () => 'single' as const,
+      selectionMode: () => state.selectionMode(),
       disallowEmptySelection: () => true,
       select: (key: Key) => {
+        if (state.selectionMode() === 'multiple') {
+          const keys = state.selectedKeys();
+          if (keys === 'all') return;
+          state.setSelectedKeys(new Set([...keys, key]));
+          return;
+        }
         state.setSelectedKey(key);
         state.close();
       },
       toggleSelection: (key: Key) => {
+        if (state.selectionMode() === 'multiple') {
+          const keys = state.selectedKeys();
+          if (keys === 'all') return;
+          const next = new Set(keys);
+          if (next.has(key)) next.delete(key);
+          else next.add(key);
+          state.setSelectedKeys(next);
+          return;
+        }
         state.setSelectedKey(key);
         state.close();
       },
       replaceSelection: (key: Key) => {
         state.setSelectedKey(key);
-        state.close();
+        if (state.selectionMode() !== 'multiple') {
+          state.close();
+        }
       },
       extendSelection: () => {},
       selectAll: () => {},
-      clearSelection: () => state.setSelectedKey(null),
+      clearSelection: () => state.selectionMode() === 'multiple' ? state.setSelectedKeys([]) : state.setSelectedKey(null),
       childFocusStrategy: () => null,
-    } as any
+    } as unknown as ListState<T>
   );
 
   // Create hover
@@ -699,6 +773,10 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
     renderValues
   );
 
+  const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
+    isSelected: optionAria.isSelected,
+  }));
+
   // Remove ref from spread props
   const cleanOptionProps = () => {
     const { ref: _ref1, ...rest } = optionAria.optionProps as Record<string, unknown>;
@@ -710,21 +788,41 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
   };
 
   return (
-    <li
-      {...cleanOptionProps()}
-      {...cleanHoverProps()}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-selected={optionAria.isSelected() || undefined}
-      data-focused={optionAria.isFocused() || undefined}
-      data-focus-visible={optionAria.isFocusVisible() || undefined}
-      data-pressed={optionAria.isPressed() || undefined}
-      data-hovered={isHovered() || undefined}
-      data-disabled={optionAria.isDisabled() || undefined}
-    >
-      {renderProps.renderChildren()}
-    </li>
+    <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
+      <li
+        {...cleanOptionProps()}
+        {...cleanHoverProps()}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-selected={optionAria.isSelected() || undefined}
+        data-focused={optionAria.isFocused() || undefined}
+        data-focus-visible={optionAria.isFocusVisible() || undefined}
+        data-pressed={optionAria.isPressed() || undefined}
+        data-hovered={isHovered() || undefined}
+        data-disabled={optionAria.isDisabled() || undefined}
+      >
+        {renderProps.renderChildren()}
+      </li>
+    </SelectionIndicatorContext.Provider>
   );
+}
+
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function toKey(value: unknown): Key | undefined {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return value;
+  }
+  return undefined;
+}
+
+function toTextValue(value: unknown): string | undefined {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return String(value);
+  }
+  return undefined;
 }
 
 // Attach sub-components
