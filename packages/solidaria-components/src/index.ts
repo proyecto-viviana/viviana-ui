@@ -44,6 +44,14 @@ export {
   type ToggleSwitchRenderProps,
 } from './Switch';
 
+// ToggleButton
+export {
+  ToggleButton,
+  ToggleButtonContext,
+  type ToggleButtonProps,
+  type ToggleButtonRenderProps,
+} from './ToggleButton';
+
 // Checkbox
 export {
   Checkbox,

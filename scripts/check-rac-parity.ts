@@ -15,6 +15,7 @@ const REQUIRED_SYMBOLS = [
   'Header',
   'Group',
   'CollectionRendererContext',
+  'ToggleButton',
  ] as const;
 
 const BACKLOG_SYMBOLS = [
@@ -22,7 +23,6 @@ const BACKLOG_SYMBOLS = [
   'FieldError',
   'Form',
   'Keyboard',
-  'ToggleButton',
   'ToggleButtonGroup',
   'DropZone',
   'FileTrigger',
