@@ -5,7 +5,7 @@
  * SSR-compatible - renders children and UI elements directly without render props.
  */
 
-import { type JSX, Show, createContext, useContext, splitProps } from 'solid-js'
+import { type JSX, Show, createContext, useContext, splitProps, createUniqueId } from 'solid-js'
 import {
   RadioGroup as HeadlessRadioGroup,
   Radio as HeadlessRadio,
@@ -89,6 +89,10 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
 
   const size = local.size ?? 'md'
   const customClass = local.class ?? ''
+  const idBase = createUniqueId()
+  const labelId = `${idBase}-label`
+  const descriptionId = `${idBase}-description`
+  const errorId = `${idBase}-error`
 
   // Generate class based on render props
   const getClassName = (renderProps: RadioGroupRenderProps): string => {
@@ -98,24 +102,35 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
     return [base, orientationClass, disabledClass, customClass].filter(Boolean).join(' ')
   }
 
+  const ariaDescribedBy = () => {
+    const ids = [
+      headlessProps['aria-describedby'],
+      local.description ? descriptionId : undefined,
+      local.errorMessage ? errorId : undefined,
+    ].filter(Boolean)
+    return ids.length > 0 ? ids.join(' ') : undefined
+  }
+
   // Pass remaining props through to headless component
   // headlessProps maintains reactivity for controlled values like value/onChange
   return (
     <RadioSizeContext.Provider value={size}>
       <HeadlessRadioGroup
         {...headlessProps}
+        aria-labelledby={headlessProps['aria-labelledby'] ?? (local.label ? labelId : undefined)}
+        aria-describedby={ariaDescribedBy()}
         class={getClassName}
         data-size={size}
       >
         <Show when={local.label}>
-          <span class="text-primary-200 font-medium mb-1">{local.label}</span>
+          <span id={labelId} class="text-primary-200 font-medium mb-1">{local.label}</span>
         </Show>
         {props.children as JSX.Element}
         <Show when={local.description}>
-          <span class="text-primary-400 text-sm [&:has(~[data-invalid])]:hidden">{local.description}</span>
+          <span id={descriptionId} class="text-primary-400 text-sm [&:has(~[data-invalid])]:hidden">{local.description}</span>
         </Show>
         <Show when={local.errorMessage}>
-          <span class="text-danger-400 text-sm hidden [[data-invalid]_&]:block">{local.errorMessage}</span>
+          <span id={errorId} class="text-danger-400 text-sm hidden [[data-invalid]_&]:block">{local.errorMessage}</span>
         </Show>
       </HeadlessRadioGroup>
     </RadioSizeContext.Provider>

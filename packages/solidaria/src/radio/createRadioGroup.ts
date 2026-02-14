@@ -111,7 +111,10 @@ export function createRadioGroup(
 
   // Use field for label, description, error message
   const { labelProps, fieldProps, descriptionProps, errorMessageProps } = createField({
+    get id() { return getProps().id; },
     get label() { return getProps().label; },
+    get 'aria-label'() { return getProps()['aria-label']; },
+    get 'aria-labelledby'() { return getProps()['aria-labelledby']; },
     get description() { return getProps().description; },
     get errorMessage() { return getProps().errorMessage; },
     get isInvalid() { return state.isInvalid; },
