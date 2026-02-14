@@ -223,6 +223,16 @@
   justify-content: center;
 }
 
+.vui-icon--button {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
 .vui-icon__main {
   position: relative;
   z-index: 1;

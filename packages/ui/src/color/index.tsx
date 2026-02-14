@@ -539,6 +539,7 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
     'isSelectable',
     'isSelected',
     'onClick',
+    'aria-label',
   ])
 
   const size = () => local.size ?? 'md'
@@ -562,10 +563,30 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
     }
   }
 
+  if (local.isSelectable && local.onClick) {
+    return (
+      <button
+        type="button"
+        class="inline-flex bg-transparent border-0 p-0 cursor-pointer"
+        onClick={handleClick}
+        aria-pressed={local.isSelected}
+        aria-label={local['aria-label']}
+      >
+        <HeadlessColorSwatch
+          {...headlessProps}
+          aria-label={local['aria-label']}
+          class={getClassName}
+        />
+      </button>
+    )
+  }
+
   return (
-    <div onClick={handleClick}>
-      <HeadlessColorSwatch {...headlessProps} class={getClassName} />
-    </div>
+    <HeadlessColorSwatch
+      {...headlessProps}
+      aria-label={local['aria-label']}
+      class={getClassName}
+    />
   )
 }
 

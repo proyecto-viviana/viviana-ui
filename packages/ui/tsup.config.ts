@@ -35,7 +35,7 @@ export default defineConfig([
     clean: true,
     outDir: 'dist',
     esbuildPlugins: [solidPlugin({ solid: { generate: 'dom', hydratable: true } })],
-    external: ['solid-js', 'solid-js/web', 'solid-js/store', '@proyecto-viviana/solidaria', '@proyecto-viviana/solidaria-components'],
+    external: ['solid-js', 'solid-js/web', 'solid-js/store', '@proyecto-viviana/solidaria-components'],
     onSuccess: async () => {
       copyCssFiles();
     },
@@ -50,7 +50,6 @@ export default defineConfig([
     splitting: false,
     outDir: 'dist',
     esbuildPlugins: [solidPlugin({ solid: { generate: 'ssr' } })],
-    external: ['solid-js', 'solid-js/web', 'solid-js/store', '@proyecto-viviana/solidaria', '@proyecto-viviana/solidaria-components'],
+    external: ['solid-js', 'solid-js/web', 'solid-js/store', '@proyecto-viviana/solidaria-components'],
   },
 ]);
-

@@ -10,7 +10,6 @@
     "noUnusedParameters": false,
     "paths": {
       "@proyecto-viviana/solid-stately": ["../solid-stately/dist/index.d.ts"],
-      "@proyecto-viviana/solidaria": ["../solidaria/dist/index.d.ts"],
       "@proyecto-viviana/solidaria-components": ["../solidaria-components/dist/index.d.ts"]
     }
   },

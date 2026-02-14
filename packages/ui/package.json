@@ -39,7 +39,6 @@
     "prepublishOnly": "echo 'Use deno task release from root'"
   },
   "dependencies": {
-    "@proyecto-viviana/solidaria": "workspace:*",
     "@proyecto-viviana/solidaria-components": "workspace:*"
   },
   "peerDependencies": {

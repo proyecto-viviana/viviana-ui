@@ -13,6 +13,10 @@ export interface IconProps {
   class?: string
   /** Click handler */
   onClick?: () => void
+  /** Accessible label for interactive icons. */
+  'aria-label'?: string
+  /** ID of an element that labels this icon. */
+  'aria-labelledby'?: string
 }
 
 /**
@@ -25,22 +29,37 @@ export function Icon(props: IconProps): JSX.Element {
   const size = () => props.size ?? 24
   const color = () => props.color ?? 'var(--color-primary-500)'
   const IconComponent = props.icon
+  const className = () =>
+    `vui-icon ${props.withShadow ? 'vui-icon--with-shadow' : ''} ${props.class ?? ''}`
 
-  return (
-    <div
-      class={`vui-icon ${props.withShadow ? 'vui-icon--with-shadow' : ''} ${props.class ?? ''}`}
-      onClick={props.onClick}
-    >
+  const iconContent = () => (
+    <>
       {props.withShadow && (
-        <div class="vui-icon__shadow">
+        <div class="vui-icon__shadow" aria-hidden="true">
           <IconComponent size={size()} color="var(--color-accent)" />
         </div>
       )}
       <div class="vui-icon__main">
         <IconComponent size={size()} color={color()} />
       </div>
-    </div>
+    </>
   )
+
+  if (props.onClick) {
+    return (
+      <button
+        type="button"
+        class={`${className()} vui-icon--button`}
+        onClick={props.onClick}
+        aria-label={props['aria-label']}
+        aria-labelledby={props['aria-labelledby']}
+      >
+        {iconContent()}
+      </button>
+    )
+  }
+
+  return <span class={className()}>{iconContent()}</span>
 }
 
 // Re-export common icons

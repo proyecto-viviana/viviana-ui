@@ -15,13 +15,14 @@ import {
   type PopoverTriggerProps as HeadlessPopoverTriggerProps,
   type PopoverRenderProps,
 } from '@proyecto-viviana/solidaria-components'
-import type { Placement, PlacementAxis } from '@proyecto-viviana/solidaria'
 
 // ============================================
 // TYPES
 // ============================================
 
-export type PopoverPlacement = Placement
+export type PopoverPlacement = NonNullable<HeadlessPopoverProps['placement']>
+export type Placement = PopoverPlacement
+export type PlacementAxis = NonNullable<PopoverRenderProps['placement']>
 export type PopoverSize = 'sm' | 'md' | 'lg'
 
 export interface PopoverTriggerProps extends HeadlessPopoverTriggerProps {
@@ -257,4 +258,4 @@ export function PopoverFooter(props: PopoverFooterProps): JSX.Element {
 }
 
 // Re-export types
-export type { PopoverRenderProps, Placement, PlacementAxis }
+export type { PopoverRenderProps }
