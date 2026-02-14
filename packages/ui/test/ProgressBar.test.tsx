@@ -85,4 +85,11 @@ describe('ProgressBar (ui)', () => {
     const valueSpan = progressbar.querySelector('.text-primary-300');
     expect(valueSpan).not.toBeInTheDocument();
   });
+
+  it('should handle equal min and max without NaN', () => {
+    render(() => <ProgressBar value={10} minValue={10} maxValue={10} />);
+    const progressbar = screen.getByRole('progressbar');
+    expect(progressbar).toHaveAttribute('aria-valuetext');
+    expect(progressbar.getAttribute('aria-valuetext')).not.toContain('NaN');
+  });
 });
