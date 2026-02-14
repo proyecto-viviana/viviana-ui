@@ -159,6 +159,8 @@ export function useCalendarContext(): CalendarState<DateValue> {
 export function Calendar<T extends DateValue = CalendarDate>(
   props: CalendarProps<T>
 ): JSX.Element {
+  const inheritedState = useContext(CalendarContext);
+
   // Use hydration-safe pattern for client-only rendering
   const isHydrated = useIsHydrated();
 
@@ -167,8 +169,74 @@ export function Calendar<T extends DateValue = CalendarDate>(
       when={isHydrated()}
       fallback={<div class="solidaria-Calendar solidaria-Calendar--placeholder" aria-hidden="true" />}
     >
-      <CalendarInner {...props} />
+      <Show
+        when={inheritedState}
+        fallback={<CalendarInner {...props} />}
+      >
+        <CalendarWithState
+          state={inheritedState as CalendarState<DateValue>}
+          {...props}
+        />
+      </Show>
     </Show>
+  );
+}
+
+function CalendarWithState<T extends DateValue = CalendarDate>(
+  props: CalendarProps<T> & { state: CalendarState<DateValue> }
+): JSX.Element {
+  const [local, _stateProps, rest] = splitProps(
+    props,
+    ['children', 'class', 'style', 'slot', 'state'],
+    [
+      'value',
+      'defaultValue',
+      'onChange',
+      'minValue',
+      'maxValue',
+      'isDisabled',
+      'isReadOnly',
+      'autoFocus',
+      'focusedValue',
+      'defaultFocusedValue',
+      'onFocusChange',
+      'locale',
+      'isDateUnavailable',
+      'visibleMonths',
+      'isDateDisabled',
+      'validationState',
+      'errorMessage',
+      'firstDayOfWeek',
+    ]
+  );
+
+  const state = () => props.state;
+  const calendarAria = createCalendar(rest, state());
+
+  const renderValues = createMemo<CalendarRenderProps>(() => ({
+    isDisabled: state().isDisabled(),
+    isReadOnly: state().isReadOnly(),
+  }));
+
+  const renderProps = useRenderProps(
+    {
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-Calendar',
+    },
+    renderValues
+  );
+
+  return (
+    <div
+      {...calendarAria.calendarProps}
+      class={renderProps.class()}
+      style={renderProps.style()}
+      data-disabled={dataAttr(state().isDisabled())}
+      data-readonly={dataAttr(state().isReadOnly())}
+    >
+      {props.children}
+    </div>
   );
 }
 

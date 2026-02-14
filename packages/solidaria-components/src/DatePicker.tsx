@@ -38,6 +38,7 @@ import {
   useIsHydrated,
 } from './utils';
 import { DateFieldContext } from './DateField';
+import { CalendarContext } from './Calendar';
 
 // ============================================
 // TYPES
@@ -229,7 +230,11 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
 
   // Create date picker ARIA props
   const pickerAria = createDatePicker(
-    rest,
+    () => ({
+      ...(rest as Record<string, unknown>),
+      description: stateProps.description,
+      errorMessage: stateProps.errorMessage,
+    }),
     fieldState as unknown as DateFieldState<DateValue>,
     overlayState as AriaDatePickerState,
     calendarState as unknown as CalendarState<DateValue>
@@ -265,19 +270,31 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
   return (
     <DatePickerContext.Provider value={contextValue}>
       {/* Also provide DateFieldContext so DateInput/DateSegment work inside DatePicker */}
-      <DateFieldContext.Provider value={fieldState as unknown as DateFieldState<DateValue>}>
-        <div
-          {...pickerAria.groupProps}
-          class={renderProps.class()}
-          style={renderProps.style()}
-          data-disabled={dataAttr(fieldState.isDisabled())}
-          data-readonly={dataAttr(fieldState.isReadOnly())}
-          data-required={dataAttr(fieldState.isRequired())}
-          data-invalid={dataAttr(fieldState.isInvalid())}
-          data-open={dataAttr(overlayState.isOpen)}
-        >
-          {props.children}
-        </div>
+      <DateFieldContext.Provider
+        value={{
+          state: fieldState as unknown as DateFieldState<DateValue>,
+          aria: {
+            labelProps: pickerAria.labelProps,
+            inputProps: pickerAria.fieldProps,
+            descriptionProps: pickerAria.descriptionProps,
+            errorMessageProps: pickerAria.errorMessageProps,
+          },
+        }}
+      >
+        <CalendarContext.Provider value={calendarState as unknown as CalendarState<DateValue>}>
+          <div
+            {...pickerAria.groupProps}
+            class={renderProps.class()}
+            style={renderProps.style()}
+            data-disabled={dataAttr(fieldState.isDisabled())}
+            data-readonly={dataAttr(fieldState.isReadOnly())}
+            data-required={dataAttr(fieldState.isRequired())}
+            data-invalid={dataAttr(fieldState.isInvalid())}
+            data-open={dataAttr(overlayState.isOpen)}
+          >
+            {props.children}
+          </div>
+        </CalendarContext.Provider>
       </DateFieldContext.Provider>
     </DatePickerContext.Provider>
   );
