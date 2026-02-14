@@ -15,6 +15,7 @@ import {
   splitProps,
   useContext,
 } from 'solid-js';
+import type { DragTypes, DropOperation, DropTarget, ItemDropTarget } from '@proyecto-viviana/solid-stately';
 import { CollectionRendererContext, type CollectionRendererContextValue } from './Collection';
 import { filterDOMProps } from './utils';
 import {
@@ -69,6 +70,7 @@ export interface VirtualizerContextValue<O = unknown> {
   getLayoutInfo: (index: number) => LayoutInfo;
   getDropTargetFromPoint: (point: Point, itemCount: number) => VirtualizerDropTarget | null;
   setDropTargetResolver: ((resolver: VirtualizerDropTargetResolver | undefined) => void);
+  setDropTargetItemCountResolver: ((resolver: (() => number) | undefined) => void);
 }
 
 export type VirtualizerDropTargetResolver = (target: VirtualizerDropTarget) => VirtualizerDropTarget;
@@ -137,6 +139,9 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   const [measuredViewportSize, setMeasuredViewportSize] = createSignal(0);
   const [measuredViewportWidth, setMeasuredViewportWidth] = createSignal(0);
   const [dropTargetResolver, setDropTargetResolver] = createSignal<VirtualizerDropTargetResolver | undefined>(
+    undefined
+  );
+  const [dropTargetItemCountResolver, setDropTargetItemCountResolver] = createSignal<(() => number) | undefined>(
     undefined
   );
   let containerRef: HTMLDivElement | undefined;
@@ -220,6 +225,43 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   const assignDropTargetResolver = (resolver: VirtualizerDropTargetResolver | undefined): void => {
     setDropTargetResolver(() => resolver);
   };
+  const assignDropTargetItemCountResolver = (resolver: (() => number) | undefined): void => {
+    setDropTargetItemCountResolver(() => resolver);
+  };
+  const toCollectionDropTarget = (target: VirtualizerDropTarget): DropTarget => {
+    if (target.type === 'root') return { type: 'root' };
+    const key = target.key ?? target.index;
+    return {
+      type: 'item',
+      key,
+      dropPosition: target.position,
+    } as ItemDropTarget;
+  };
+  const getCollectionDropTargetFromPoint = (
+    x: number,
+    y: number,
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null => {
+    const itemCount = dropTargetItemCountResolver()?.() ?? 0;
+    const virtualTarget = getDropTargetFromPoint({ x, y }, itemCount);
+    if (!virtualTarget) return null;
+    const mappedTarget = toCollectionDropTarget(virtualTarget);
+    if (isValidDropTarget(mappedTarget)) return mappedTarget;
+    if (mappedTarget.type === 'item') {
+      const rootTarget: DropTarget = { type: 'root' };
+      if (isValidDropTarget(rootTarget)) return rootTarget;
+    }
+    return null;
+  };
+  const getCollectionDropOperation = (
+    _target: DropTarget,
+    _types: DragTypes,
+    allowedOperations: DropOperation[]
+  ): DropOperation => {
+    if (allowedOperations.includes('move')) return 'move';
+    if (allowedOperations.includes('copy')) return 'copy';
+    return allowedOperations.find((operation) => operation !== 'cancel') ?? 'cancel';
+  };
 
   const contextValue = createMemo<VirtualizerContextValue<O>>(() => ({
     layout: resolvedLayout(),
@@ -229,13 +271,15 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     getLayoutInfo,
     getDropTargetFromPoint,
     setDropTargetResolver: assignDropTargetResolver,
+    setDropTargetItemCountResolver: assignDropTargetItemCountResolver,
   }));
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     renderItem: (item) => item as JSX.Element,
     isVirtualized: true,
     layoutDelegate: resolvedLayout(),
     dropTargetDelegate: {
-      getDropTargetFromPoint,
+      getDropTargetFromPoint: getCollectionDropTargetFromPoint,
+      getDropOperation: getCollectionDropOperation,
     },
     renderDropIndicator: local.renderDropIndicator,
   }));

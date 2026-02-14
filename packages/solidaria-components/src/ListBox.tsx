@@ -279,6 +279,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   });
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized || hasSections()) return;
+    virtualizer.setDropTargetItemCountResolver(() => state.collection().size);
     virtualizer.setDropTargetResolver((target) => {
       const node = Array.from(state.collection())[target.index];
       if (!node) return target;
@@ -288,6 +289,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
       };
     });
     onCleanup(() => {
+      virtualizer.setDropTargetItemCountResolver(undefined);
       virtualizer.setDropTargetResolver(undefined);
     });
   });

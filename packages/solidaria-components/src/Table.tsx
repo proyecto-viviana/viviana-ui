@@ -590,6 +590,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
   });
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
+    virtualizer.setDropTargetItemCountResolver(() => items().length);
     virtualizer.setDropTargetResolver((target) => {
       const rowNodes = Array.from(context.collection).filter((node) => node.type === 'item');
       const node = rowNodes[target.index];
@@ -600,6 +601,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
       };
     });
     onCleanup(() => {
+      virtualizer.setDropTargetItemCountResolver(undefined);
       virtualizer.setDropTargetResolver(undefined);
     });
   });

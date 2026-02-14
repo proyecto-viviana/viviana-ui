@@ -359,6 +359,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
   });
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
+    virtualizer.setDropTargetItemCountResolver(() => state.collection.size);
     virtualizer.setDropTargetResolver((target) => {
       const node = Array.from(state.collection)[target.index];
       if (!node) return target;
@@ -368,6 +369,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
       };
     });
     onCleanup(() => {
+      virtualizer.setDropTargetItemCountResolver(undefined);
       virtualizer.setDropTargetResolver(undefined);
     });
   });

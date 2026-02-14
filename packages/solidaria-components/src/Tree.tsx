@@ -302,6 +302,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   });
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
+    virtualizer.setDropTargetItemCountResolver(() => visibleRows().length);
     virtualizer.setDropTargetResolver((target) => {
       const node = visibleRows()[target.index];
       if (!node) return target;
@@ -318,6 +319,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
       };
     });
     onCleanup(() => {
+      virtualizer.setDropTargetItemCountResolver(undefined);
       virtualizer.setDropTargetResolver(undefined);
     });
   });

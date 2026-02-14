@@ -13,7 +13,7 @@ import {
   useContext,
 } from 'solid-js';
 import type { Key } from '@proyecto-viviana/solid-stately';
-import type { Point, VirtualizerDropTarget } from './VirtualizerLayouts';
+import type { DragTypes, DropOperation, DropTarget } from '@proyecto-viviana/solid-stately';
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -32,7 +32,16 @@ export interface CollectionPrimitiveRenderProps {
 }
 
 export interface CollectionDropTargetDelegate {
-  getDropTargetFromPoint(point: Point, itemCount: number): VirtualizerDropTarget | null;
+  getDropTargetFromPoint(
+    x: number,
+    y: number,
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null;
+  getDropOperation(
+    target: DropTarget,
+    types: DragTypes,
+    allowedOperations: DropOperation[]
+  ): DropOperation;
 }
 
 export interface CollectionRendererContextValue<T> {

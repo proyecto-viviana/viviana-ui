@@ -55,7 +55,14 @@ describe('Virtualizer', () => {
             rendererVirtualized: collection()?.isVirtualized ?? false,
             hasLayoutDelegate: Boolean(collection()?.layoutDelegate),
             hasDropTargetDelegate: Boolean(collection()?.dropTargetDelegate),
-            delegateTarget: collection()?.dropTargetDelegate?.getDropTargetFromPoint({ x: 2, y: 2 }, 10) ?? null,
+            delegateTarget:
+              collection()?.dropTargetDelegate?.getDropTargetFromPoint(2, 2, () => true) ?? null,
+            delegateOperation:
+              collection()?.dropTargetDelegate?.getDropOperation(
+                { type: 'item', key: 0, dropPosition: 'on' },
+                { has: () => true },
+                ['copy', 'move']
+              ) ?? null,
           })}
         </output>
       );
@@ -78,7 +85,8 @@ describe('Virtualizer', () => {
     expect(parsed.rendererVirtualized).toBe(true);
     expect(parsed.hasLayoutDelegate).toBe(true);
     expect(parsed.hasDropTargetDelegate).toBe(true);
-    expect(parsed.delegateTarget?.index).toBe(0);
+    expect(parsed.delegateTarget?.type).toBe('root');
+    expect(parsed.delegateOperation).toBe('move');
     expect(instances).toBeGreaterThan(0);
   });
 
