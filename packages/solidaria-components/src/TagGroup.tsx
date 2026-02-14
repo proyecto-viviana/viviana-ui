@@ -39,6 +39,10 @@ import {
   filterDOMProps,
   dataAttr,
 } from './utils';
+import {
+  SelectionIndicatorContext,
+  type SelectionIndicatorContextValue,
+} from './SelectionIndicator';
 
 // ============================================
 // TYPES
@@ -362,26 +366,32 @@ export function Tag(props: TagProps): JSX.Element {
     renderValues
   );
 
+  const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
+    isSelected: () => tagAria.isSelected,
+  }));
+
   // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest, { global: true }));
 
   return (
-    <div
-      ref={setTagRef}
-      {...domProps()}
-      {...tagAria.rowProps}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-selected={dataAttr(tagAria.isSelected)}
-      data-disabled={dataAttr(tagAria.isDisabled)}
-      data-focused={dataAttr(tagAria.isFocused)}
-      data-pressed={dataAttr(tagAria.isPressed)}
-      data-allows-removing={dataAttr(tagAria.allowsRemoving)}
-    >
-      <div {...tagAria.gridCellProps} style={{ display: 'contents' }}>
-        {renderProps.renderChildren()}
+    <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
+      <div
+        ref={setTagRef}
+        {...domProps()}
+        {...tagAria.rowProps}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-selected={dataAttr(tagAria.isSelected)}
+        data-disabled={dataAttr(tagAria.isDisabled)}
+        data-focused={dataAttr(tagAria.isFocused)}
+        data-pressed={dataAttr(tagAria.isPressed)}
+        data-allows-removing={dataAttr(tagAria.allowsRemoving)}
+      >
+        <div {...tagAria.gridCellProps} style={{ display: 'contents' }}>
+          {renderProps.renderChildren()}
+        </div>
       </div>
-    </div>
+    </SelectionIndicatorContext.Provider>
   );
 }
 

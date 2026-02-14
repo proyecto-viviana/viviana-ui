@@ -16,6 +16,8 @@ import {
 } from 'solid-js';
 import {
   createDatePicker,
+  createInteractOutside,
+  FocusScope,
   type AriaDatePickerProps,
   type DatePickerState as AriaDatePickerState,
 } from '@proyecto-viviana/solidaria';
@@ -367,16 +369,37 @@ export interface DatePickerContentProps extends SlotProps {
  */
 export function DatePickerContent(props: DatePickerContentProps): JSX.Element {
   const context = useDatePickerContext();
+  let contentRef: HTMLDivElement | undefined;
+
+  createInteractOutside({
+    ref: () => contentRef ?? null,
+    onInteractOutside: () => {
+      context.overlayState.close();
+    },
+    get isDisabled() {
+      return !context.overlayState.isOpen;
+    },
+  });
 
   return (
     <Show when={context.overlayState.isOpen}>
-      <div
-        {...context.pickerAria.dialogProps}
-        class={props.class ?? 'solidaria-DatePickerContent'}
-        style={props.style}
-      >
-        {props.children}
-      </div>
+      <FocusScope restoreFocus autoFocus>
+        <div
+          ref={contentRef}
+          {...context.pickerAria.dialogProps}
+          class={props.class ?? 'solidaria-DatePickerContent'}
+          style={props.style}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              e.stopPropagation();
+              context.overlayState.close();
+            }
+          }}
+        >
+          {props.children}
+        </div>
+      </FocusScope>
     </Show>
   );
 }

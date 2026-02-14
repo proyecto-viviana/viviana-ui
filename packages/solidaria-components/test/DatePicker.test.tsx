@@ -85,13 +85,13 @@ describe('DatePicker', () => {
       expect(segments.length).toBe(3); // month, day, year
     });
 
-    it('should render DateInput with presentation role', async () => {
+    it('should wire DateInput with datepicker field ARIA props', async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
       const input = document.querySelector('.solidaria-DateInput');
       expect(input).toBeInTheDocument();
-      expect(input).toHaveAttribute('role', 'presentation');
+      expect(input).toHaveAttribute('aria-haspopup', 'dialog');
     });
 
     it('should render picker button', async () => {
@@ -162,6 +162,52 @@ describe('DatePicker', () => {
       await waitFor(() => {
         const grid = document.querySelector('[role="grid"]');
         expect(grid).toBeInTheDocument();
+      });
+    });
+
+    it('should close calendar on Escape', async () => {
+      render(() => <TestDatePicker />);
+      await waitForDatePickerHydration();
+
+      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      await user.click(button);
+
+      await waitFor(() => {
+        const content = document.querySelector('.solidaria-DatePickerContent');
+        expect(content).toBeInTheDocument();
+      });
+
+      const content = document.querySelector('.solidaria-DatePickerContent') as HTMLElement;
+      fireEvent.keyDown(content, { key: 'Escape' });
+
+      await waitFor(() => {
+        const popup = document.querySelector('.solidaria-DatePickerContent');
+        expect(popup).not.toBeInTheDocument();
+      });
+    });
+
+    it('should close calendar on outside click', async () => {
+      render(() => (
+        <div>
+          <TestDatePicker />
+          <button data-testid="outside">outside</button>
+        </div>
+      ));
+      await waitForDatePickerHydration();
+
+      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      await user.click(button);
+
+      await waitFor(() => {
+        const content = document.querySelector('.solidaria-DatePickerContent');
+        expect(content).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByTestId('outside'));
+
+      await waitFor(() => {
+        const popup = document.querySelector('.solidaria-DatePickerContent');
+        expect(popup).not.toBeInTheDocument();
       });
     });
   });

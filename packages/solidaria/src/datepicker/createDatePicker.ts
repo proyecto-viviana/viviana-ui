@@ -10,6 +10,7 @@ import { createId } from '../ssr';
 import { createLabel } from '../label/createLabel';
 import { access, type MaybeAccessor } from '../utils/reactivity';
 import { mergeProps } from '../utils/mergeProps';
+import { useLocale } from '../i18n';
 import type { DateFieldState, CalendarState } from '@proyecto-viviana/solid-stately';
 
 // ============================================
@@ -39,6 +40,12 @@ export interface AriaDatePickerProps {
   description?: string;
   /** Error message. */
   errorMessage?: string;
+  /** Accessible label for the calendar trigger button. */
+  buttonAriaLabel?: string;
+  /** Accessible label for the calendar dialog. */
+  dialogAriaLabel?: string;
+  /** Accessible label for the calendar grid region. */
+  calendarAriaLabel?: string;
 }
 
 export interface DatePickerState {
@@ -84,6 +91,7 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
   overlayState: DatePickerState,
   _calendarState?: C
 ): DatePickerAria {
+  const locale = useLocale();
   const getProps = () => access(props);
   const id = createId(getProps().id);
   const descriptionId = createId();
@@ -137,9 +145,10 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
   const buttonProps = createMemo(() => {
     const p = getProps();
     const isDisabled = p.isDisabled || state.isDisabled();
+    const defaults = getDatePickerLabelDefaults(locale().locale);
 
     return {
-      'aria-label': 'Open calendar',
+      'aria-label': p.buttonAriaLabel ?? defaults.button,
       'aria-haspopup': 'dialog' as const,
       'aria-expanded': overlayState.isOpen,
       'aria-controls': overlayState.isOpen ? dialogId : undefined,
@@ -154,17 +163,23 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
   });
 
   // Dialog props
-  const dialogProps = createMemo(() => ({
-    id: dialogId,
-    role: 'dialog',
-    'aria-modal': true,
-    'aria-label': 'Calendar',
-  }));
+  const dialogProps = createMemo(() => {
+    const defaults = getDatePickerLabelDefaults(locale().locale);
+    return {
+      id: dialogId,
+      role: 'dialog',
+      'aria-modal': true,
+      'aria-label': getProps().dialogAriaLabel ?? defaults.dialog,
+    };
+  });
 
   // Calendar props
-  const calendarProps = createMemo(() => ({
-    'aria-label': 'Calendar',
-  }));
+  const calendarProps = createMemo(() => {
+    const defaults = getDatePickerLabelDefaults(locale().locale);
+    return {
+      'aria-label': getProps().calendarAriaLabel ?? getProps().dialogAriaLabel ?? defaults.calendar,
+    };
+  });
 
   // Description props
   const descriptionProps = createMemo(() => ({
@@ -202,5 +217,27 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
     get errorMessageProps() {
       return errorMessageProps();
     },
+  };
+}
+
+function getDatePickerLabelDefaults(locale: string): {
+  button: string;
+  dialog: string;
+  calendar: string;
+} {
+  const language = locale.toLowerCase().split('-')[0] ?? 'en';
+
+  if (language === 'es') {
+    return {
+      button: 'Abrir calendario',
+      dialog: 'Calendario',
+      calendar: 'Calendario',
+    };
+  }
+
+  return {
+    button: 'Open calendar',
+    dialog: 'Calendar',
+    calendar: 'Calendar',
   };
 }
