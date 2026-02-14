@@ -150,6 +150,15 @@ export {
   type DropZoneRenderProps,
 } from './DropZone';
 
+// SharedElementTransition
+export {
+  SharedElementTransition,
+  SharedElement,
+  type SharedElementTransitionProps,
+  type SharedElementProps,
+  type SharedElementRenderProps,
+} from './SharedElementTransition';
+
 // ProgressBar
 export {
   ProgressBar,

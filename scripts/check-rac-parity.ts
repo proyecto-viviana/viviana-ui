@@ -22,11 +22,11 @@ const REQUIRED_SYMBOLS = [
   'ToggleButtonGroup',
   'FileTrigger',
   'DropZone',
+  'SharedElementTransition',
  ] as const;
 
 const BACKLOG_SYMBOLS = [
   'Virtualizer',
-  'SharedElementTransition',
 ] as const;
 
 const TRACKED_SYMBOLS = [...REQUIRED_SYMBOLS, ...BACKLOG_SYMBOLS] as const;
