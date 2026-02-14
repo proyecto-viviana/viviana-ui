@@ -41,6 +41,7 @@ import {
   type SlotProps,
   useRenderProps,
 } from './utils';
+import { Section, Header, Group, type CollectionSection } from './Collection';
 
 // ============================================
 // TYPES
@@ -57,7 +58,7 @@ export interface MenuProps<T>
   extends Omit<AriaMenuProps, 'children'>,
     SlotProps {
   /** The items to render in the menu. */
-  items: T[];
+  items: Array<T | CollectionSection<T>>;
   /** Function to get the key from an item. */
   getKey?: (item: T) => Key;
   /** Function to get the text value from an item. */
@@ -324,10 +325,25 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   // Ref for the menu element (for click outside detection)
   let menuRef: HTMLUListElement | undefined;
 
+  const isCollectionSection = (item: T | CollectionSection<T>): item is CollectionSection<T> => {
+    return typeof item === 'object' && item !== null && Array.isArray((item as CollectionSection<T>).items);
+  };
+
+  const flatItems = createMemo<T[]>(() => {
+    const flattened: T[] = [];
+    for (const item of stateProps.items) {
+      if (isCollectionSection(item)) flattened.push(...item.items);
+      else flattened.push(item);
+    }
+    return flattened;
+  });
+
+  const hasSections = createMemo(() => stateProps.items.some((item) => isCollectionSection(item)));
+
   // Create menu state
   const state = createMenuState<T>({
     get items() {
-      return stateProps.items;
+      return flatItems();
     },
     get getKey() {
       return stateProps.getKey;
@@ -430,7 +446,30 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
           style={renderProps.style()}
           data-focused={state.isFocused() || undefined}
         >
-          <For each={stateProps.items}>{(item) => props.children?.(item)}</For>
+          {hasSections()
+            ? (
+              <For each={stateProps.items}>
+                {(entry) =>
+                  isCollectionSection(entry)
+                    ? (
+                      <li role="presentation" data-section-wrapper>
+                        <Section class="solidaria-Menu-section">
+                          {entry.title != null && (
+                            <Header class="solidaria-Menu-sectionHeader">{entry.title}</Header>
+                          )}
+                          <Group class="solidaria-Menu-sectionGroup">
+                            <ul role="group" aria-label={entry['aria-label']}>
+                              <For each={entry.items}>{(item) => props.children?.(item)}</For>
+                            </ul>
+                          </Group>
+                        </Section>
+                      </li>
+                    )
+                    : props.children?.(entry)
+                }
+              </For>
+            )
+            : <For each={stateProps.items}>{(item) => props.children?.(item as T)}</For>}
         </ul>
       </MenuStateContext.Provider>
     </MenuContext.Provider>

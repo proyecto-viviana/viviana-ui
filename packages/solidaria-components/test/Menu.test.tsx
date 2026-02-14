@@ -133,6 +133,28 @@ describe('Menu', () => {
       expect(screen.getByText('Dog')).toBeInTheDocument();
       expect(screen.getByText('Kangaroo')).toBeInTheDocument();
     });
+
+    it('should render sectioned collections', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={[
+            {
+              title: <span>Mammals</span>,
+              'aria-label': 'Mammals actions',
+              items: testItems,
+            },
+          ]}
+          getKey={(item) => item.id}
+        >
+          {(item) => <MenuItem id={item.id}>{item.name}</MenuItem>}
+        </Menu>
+      ));
+
+      expect(screen.getByText('Mammals')).toBeInTheDocument();
+      expect(screen.getByRole('group', { name: 'Mammals actions' })).toBeInTheDocument();
+      expect(screen.getAllByRole('menuitem')).toHaveLength(3);
+    });
   });
 
   // ============================================

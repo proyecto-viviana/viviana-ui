@@ -6,6 +6,7 @@
  */
 
 import { type JSX, createMemo, splitProps } from 'solid-js';
+import type { Key } from '@proyecto-viviana/solid-stately';
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -21,6 +22,17 @@ import {
 export interface CollectionPrimitiveRenderProps {
   /** Whether the primitive has visible children content. */
   hasChildren: boolean;
+}
+
+export interface CollectionSection<T> {
+  /** Optional unique key for the section wrapper. */
+  key?: Key;
+  /** Optional section header title. */
+  title?: JSX.Element;
+  /** Optional aria-label for section grouping. */
+  'aria-label'?: string;
+  /** Items contained in the section. */
+  items: T[];
 }
 
 export interface SectionProps extends SlotProps {

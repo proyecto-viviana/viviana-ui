@@ -11,7 +11,8 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { ListBox, ListBoxOption } from '../src/ListBox';
+import { ListBox, ListBoxOption, ListBoxLoadMoreItem } from '../src/ListBox';
+import { SelectionIndicator } from '../src/SelectionIndicator';
 import type { Key } from '@proyecto-viviana/solid-stately';
 import { setupUser, firePointerDown, firePointerUp, firePointerClick } from '@proyecto-viviana/solidaria-test-utils';
 
@@ -120,6 +121,30 @@ describe('ListBox', () => {
       expect(screen.getByText('Kangaroo')).toBeInTheDocument();
     });
 
+    it('should render sectioned collections', () => {
+      render(() => (
+        <ListBox<TestItem>
+          aria-label="Test"
+          items={[
+            {
+              title: <span>Mammals</span>,
+              'aria-label': 'Mammals group',
+              items: testItems,
+            },
+          ]}
+          getKey={(item) => item.id}
+        >
+          {(item) => (
+            <ListBoxOption id={item.id}>{item.name}</ListBoxOption>
+          )}
+        </ListBox>
+      ));
+
+      expect(screen.getByText('Mammals')).toBeInTheDocument();
+      expect(screen.getByRole('group', { name: 'Mammals group' })).toBeInTheDocument();
+      expect(screen.getAllByRole('option')).toHaveLength(3);
+    });
+
     it('should render empty state when no items', () => {
       render(() => (
         <TestListBox
@@ -136,6 +161,31 @@ describe('ListBox', () => {
       render(() => <TestListBox items={[]} />);
       const listbox = screen.getByRole('listbox');
       expect(listbox).toHaveAttribute('data-empty');
+    });
+
+    it('should render load more sentinel when hasMore is true', () => {
+      render(() => (
+        <TestListBox
+          listBoxProps={{
+            hasMore: true,
+            onLoadMore: vi.fn(),
+          }}
+        />
+      ));
+
+      expect(screen.getByText('Load more')).toBeInTheDocument();
+    });
+
+    it('should trigger onLoadMore when load more sentinel is visible', async () => {
+      const onLoadMore = vi.fn();
+      render(() => (
+        <ul role="listbox" aria-label="Load test">
+          <ListBoxLoadMoreItem onLoadMore={onLoadMore} />
+        </ul>
+      ));
+
+      fireEvent.focus(screen.getByRole('option'));
+      expect(onLoadMore).toHaveBeenCalled();
     });
   });
 
@@ -241,6 +291,33 @@ describe('ListBox', () => {
       const options = screen.getAllByRole('option');
       const catOption = options.find((o) => o.textContent === 'Cat');
       expect(catOption).toHaveAttribute('data-selected');
+    });
+
+    it('should render SelectionIndicator only for selected option', async () => {
+      render(() => (
+        <ListBox<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+          selectionMode="single"
+          defaultSelectedKeys={['cat']}
+        >
+          {(item) => (
+            <ListBoxOption id={item.id}>
+              {() => (
+                <>
+                  {item.name}
+                  <SelectionIndicator>Selected</SelectionIndicator>
+                </>
+              )}
+            </ListBoxOption>
+          )}
+        </ListBox>
+      ));
+
+      expect(screen.getAllByText('Selected')).toHaveLength(1);
+      await user.click(screen.getByText('Dog'));
+      expect(screen.getAllByText('Selected')).toHaveLength(1);
     });
   });
 

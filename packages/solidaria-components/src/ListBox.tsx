@@ -8,7 +8,9 @@
 import {
   type JSX,
   createContext,
+  createEffect,
   createMemo,
+  createSignal,
   splitProps,
   useContext,
   For,
@@ -34,6 +36,11 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import {
+  SelectionIndicatorContext,
+  type SelectionIndicatorContextValue,
+} from './SelectionIndicator';
+import { Section, Header, Group, type CollectionSection } from './Collection';
 
 // ============================================
 // TYPES
@@ -54,7 +61,7 @@ export interface ListBoxProps<T>
   extends Omit<AriaListBoxProps, 'children'>,
     SlotProps {
   /** The items to render in the listbox. */
-  items: T[];
+  items: Array<T | CollectionSection<T>>;
   /** Function to get the key from an item. */
   getKey?: (item: T) => Key;
   /** Function to get the text value from an item. */
@@ -79,6 +86,12 @@ export interface ListBoxProps<T>
   style?: StyleOrFunction<ListBoxRenderProps>;
   /** A function to render when the listbox is empty. */
   renderEmptyState?: () => JSX.Element;
+  /** Whether there are more items to load. */
+  hasMore?: boolean;
+  /** Whether additional items are currently loading. */
+  isLoading?: boolean;
+  /** Called when the load more sentinel becomes visible. */
+  onLoadMore?: () => void | Promise<void>;
 }
 
 export interface ListBoxOptionRenderProps {
@@ -113,6 +126,19 @@ export interface ListBoxOptionProps<T>
   textValue?: string;
 }
 
+export interface ListBoxLoadMoreItemProps extends SlotProps {
+  /** Called when the sentinel becomes visible. */
+  onLoadMore: () => void | Promise<void>;
+  /** Whether additional items are currently loading. */
+  isLoading?: boolean;
+  /** Content for the load more row. */
+  children?: JSX.Element;
+  /** The CSS className for the element. */
+  class?: ClassNameOrFunction<{ isLoading: boolean }>;
+  /** The inline style for the element. */
+  style?: StyleOrFunction<{ isLoading: boolean }>;
+}
+
 // ============================================
 // CONTEXT
 // ============================================
@@ -134,14 +160,29 @@ export const ListBoxStateContext = createContext<ListState<unknown> | null>(null
 export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'renderEmptyState'],
+    ['children', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore'],
     ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'selectionMode', 'selectedKeys', 'defaultSelectedKeys', 'onSelectionChange']
   );
+
+  const isCollectionSection = (item: T | CollectionSection<T>): item is CollectionSection<T> => {
+    return typeof item === 'object' && item !== null && Array.isArray((item as CollectionSection<T>).items);
+  };
+
+  const flatItems = createMemo<T[]>(() => {
+    const flattened: T[] = [];
+    for (const item of stateProps.items) {
+      if (isCollectionSection(item)) flattened.push(...item.items);
+      else flattened.push(item);
+    }
+    return flattened;
+  });
+
+  const hasSections = createMemo(() => stateProps.items.some((item) => isCollectionSection(item)));
 
   // Create list state
   const state = createListState<T>({
     get items() {
-      return stateProps.items;
+      return flatItems();
     },
     get getKey() {
       return stateProps.getKey;
@@ -244,8 +285,37 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
         >
           {isEmpty() && local.renderEmptyState
             ? local.renderEmptyState()
-            : <For each={stateProps.items}>{(item) => props.children(item)}</For>
+            : hasSections()
+              ? (
+                <For each={stateProps.items}>
+                  {(entry, sectionIndex) =>
+                    isCollectionSection(entry)
+                      ? (
+                        <li role="presentation" data-section-wrapper>
+                          <Section class="solidaria-ListBox-section">
+                            {entry.title != null && (
+                              <Header class="solidaria-ListBox-sectionHeader">{entry.title}</Header>
+                            )}
+                            <Group class="solidaria-ListBox-sectionGroup">
+                              <ul role="group" aria-label={entry['aria-label']}>
+                                <For each={entry.items}>{(item) => props.children(item)}</For>
+                              </ul>
+                            </Group>
+                          </Section>
+                        </li>
+                      )
+                      : props.children(entry as T)
+                  }
+                </For>
+              )
+              : <For each={stateProps.items}>{(item) => props.children(item as T)}</For>
           }
+          {local.hasMore && local.onLoadMore && (
+            <ListBoxLoadMoreItem
+              onLoadMore={local.onLoadMore}
+              isLoading={local.isLoading}
+            />
+          )}
         </ul>
       </ListBoxStateContext.Provider>
     </ListBoxContext.Provider>
@@ -314,6 +384,10 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     renderValues
   );
 
+  const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
+    isSelected: optionAria.isSelected,
+  }));
+
   // Remove ref from spread props
   const cleanOptionProps = () => {
     const { ref: _ref1, ...rest } = optionAria.optionProps as Record<string, unknown>;
@@ -325,17 +399,80 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   };
 
   return (
+    <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
+      <li
+        {...cleanOptionProps()}
+        {...cleanHoverProps()}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-selected={optionAria.isSelected() || undefined}
+        data-focused={optionAria.isFocused() || undefined}
+        data-focus-visible={optionAria.isFocusVisible() || undefined}
+        data-pressed={optionAria.isPressed() || undefined}
+        data-hovered={isHovered() || undefined}
+        data-disabled={optionAria.isDisabled() || undefined}
+      >
+        {renderProps.renderChildren()}
+      </li>
+    </SelectionIndicatorContext.Provider>
+  );
+}
+
+/**
+ * Load more sentinel item for listbox collections.
+ */
+export function ListBoxLoadMoreItem(props: ListBoxLoadMoreItemProps): JSX.Element {
+  let ref: HTMLLIElement | undefined;
+  const [isPending, setIsPending] = createSignal(false);
+
+  const isLoading = () => !!props.isLoading || isPending();
+
+  const triggerLoadMore = async () => {
+    if (isLoading()) return;
+    setIsPending(true);
+    try {
+      await props.onLoadMore();
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  createEffect(() => {
+    if (!ref || typeof IntersectionObserver !== 'function') return;
+
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry?.isIntersecting) {
+        void triggerLoadMore();
+      }
+    });
+
+    observer.observe(ref);
+    return () => observer.disconnect();
+  });
+
+  const renderProps = useRenderProps(
+    {
+      children: props.children ?? (() => (isLoading() ? 'Loading more...' : 'Load more')),
+      class: props.class,
+      style: props.style,
+      defaultClassName: 'solidaria-ListBox-loadMore',
+    },
+    () => ({ isLoading: isLoading() })
+  );
+
+  return (
     <li
-      {...cleanOptionProps()}
-      {...cleanHoverProps()}
+      ref={ref}
+      role="option"
+      aria-disabled={true}
+      tabIndex={0}
+      onFocus={() => {
+        void triggerLoadMore();
+      }}
       class={renderProps.class()}
       style={renderProps.style()}
-      data-selected={optionAria.isSelected() || undefined}
-      data-focused={optionAria.isFocused() || undefined}
-      data-focus-visible={optionAria.isFocusVisible() || undefined}
-      data-pressed={optionAria.isPressed() || undefined}
-      data-hovered={isHovered() || undefined}
-      data-disabled={optionAria.isDisabled() || undefined}
+      data-loading={isLoading() || undefined}
     >
       {renderProps.renderChildren()}
     </li>
@@ -344,3 +481,4 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
 
 // Attach Option as a static property
 ListBox.Option = ListBoxOption;
+ListBox.LoadMoreItem = ListBoxLoadMoreItem;
