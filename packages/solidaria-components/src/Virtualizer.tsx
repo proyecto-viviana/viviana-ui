@@ -70,6 +70,8 @@ export interface VirtualizerProps<O>
   layout: VirtualizerLayoutClass<O> | VirtualizerLayout<O>;
   /** Layout options consumed by the layout implementation. */
   layoutOptions?: O;
+  /** Optional renderer for collection drop indicators in virtualized flows. */
+  renderDropIndicator?: (index: number, position: 'before' | 'after' | 'on') => JSX.Element | undefined;
   class?: string;
   style?: string | JSX.CSSProperties;
 }
@@ -86,7 +88,14 @@ function getObjectValue<T extends object, K extends keyof T>(
  * Current implementation supports fixed-size visible range virtualization.
  */
 export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
-  const [local, domProps] = splitProps(props, ['children', 'layout', 'layoutOptions', 'class', 'style']);
+  const [local, domProps] = splitProps(props, [
+    'children',
+    'layout',
+    'layoutOptions',
+    'renderDropIndicator',
+    'class',
+    'style',
+  ]);
   const [scrollOffset, setScrollOffset] = createSignal(0);
   const [measuredViewportSize, setMeasuredViewportSize] = createSignal(0);
   let containerRef: HTMLDivElement | undefined;
@@ -138,6 +147,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     renderItem: (item) => item as JSX.Element,
     isVirtualized: true,
     layoutDelegate: resolvedLayout(),
+    renderDropIndicator: local.renderDropIndicator,
   }));
 
   const filteredDomProps = createMemo(() => filterDOMProps(domProps, { global: true }));
@@ -156,6 +166,11 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     });
   });
 
+  let scrollFrame: number | undefined;
+  onCleanup(() => {
+    if (scrollFrame != null) cancelAnimationFrame(scrollFrame);
+  });
+
   return (
     <CollectionRendererContext.Provider value={collectionRenderer()}>
       <VirtualizerContext.Provider value={contextValue()}>
@@ -169,8 +184,12 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
           data-virtualizer
           onScroll={(e) => {
             const target = e.currentTarget as HTMLDivElement;
-            setScrollOffset(target.scrollTop);
-            updateViewportSize();
+            if (scrollFrame != null) cancelAnimationFrame(scrollFrame);
+            scrollFrame = requestAnimationFrame(() => {
+              scrollFrame = undefined;
+              setScrollOffset(target.scrollTop);
+              updateViewportSize();
+            });
           }}
         >
           {local.children}

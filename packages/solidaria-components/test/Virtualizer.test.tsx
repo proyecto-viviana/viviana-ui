@@ -1,7 +1,7 @@
 /**
  * Tests for solidaria-components Virtualizer
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@solidjs/testing-library';
 import { createMemo, type JSX } from 'solid-js';
 import {
@@ -69,6 +69,12 @@ describe('Virtualizer', () => {
   });
 
   it('renders only visible range for listbox when virtualized', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 1;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
     const items = Array.from({ length: 100 }, (_, i) => ({
       id: `item-${i}`,
       label: `Item ${i}`,
@@ -151,5 +157,38 @@ describe('Virtualizer', () => {
     expect(range.start).toBe(16);
     expect(range.end).toBe(28);
     expect(range.offsetTop).toBe(80);
+  });
+
+  it('propagates virtualized drop indicator renderer into listbox flow', () => {
+    const items = Array.from({ length: 6 }, (_, i) => ({
+      id: `item-${i}`,
+      label: `Item ${i}`,
+    }));
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+        renderDropIndicator={(index, position) => (
+          <li
+            role="presentation"
+            data-testid={`drop-${position}-${index}`}
+          />
+        )}
+      >
+        <ListBox
+          aria-label="DnD virtualized list"
+          items={items}
+          getKey={(item) => item.id}
+        >
+          {(item) => <ListBoxOption id={item.id}>{item.label}</ListBoxOption>}
+        </ListBox>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByTestId('drop-before-0')).toBeInTheDocument();
+    expect(screen.getByTestId('drop-after-1')).toBeInTheDocument();
+    expect(screen.queryByTestId('drop-before-4')).not.toBeInTheDocument();
   });
 });

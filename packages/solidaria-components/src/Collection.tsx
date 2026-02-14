@@ -37,6 +37,8 @@ export interface CollectionRendererContextValue<T> {
   isVirtualized?: boolean;
   /** Optional layout delegate used by virtualized renderers. */
   layoutDelegate?: unknown;
+  /** Optional drop indicator renderer for DnD-aware collection paths. */
+  renderDropIndicator?: (index: number, position: 'before' | 'after' | 'on') => JSX.Element | undefined;
 }
 
 export type CollectionEntry<T> = T | CollectionSection<T>;

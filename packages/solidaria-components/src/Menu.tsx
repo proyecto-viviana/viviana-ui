@@ -492,7 +492,20 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
                   {virtualRange()?.offsetTop
                     ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
                     : null}
-                  <For each={visibleItems()}>{(item) => props.children?.(item as T)}</For>
+                  <For each={visibleItems()}>
+                    {(item, index) => {
+                      const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                      const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
+                      const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
+                      return (
+                        <>
+                          {beforeIndicator()}
+                          {props.children?.(item as T)}
+                          {afterIndicator()}
+                        </>
+                      );
+                    }}
+                  </For>
                   {virtualRange()?.offsetBottom
                     ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
                     : null}
