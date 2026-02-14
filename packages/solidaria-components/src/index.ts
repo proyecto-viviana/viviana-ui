@@ -159,6 +159,18 @@ export {
   type SharedElementRenderProps,
 } from './SharedElementTransition';
 
+// Virtualizer
+export {
+  Virtualizer,
+  VirtualizerContext,
+  useVirtualizerContext,
+  type VirtualizerProps,
+  type VirtualizerLayout,
+  type VirtualizerLayoutClass,
+  type VirtualizerContextValue,
+  type LayoutOptionsDelegate,
+} from './Virtualizer';
+
 // ProgressBar
 export {
   ProgressBar,

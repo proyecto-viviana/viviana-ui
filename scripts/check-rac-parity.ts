@@ -23,11 +23,10 @@ const REQUIRED_SYMBOLS = [
   'FileTrigger',
   'DropZone',
   'SharedElementTransition',
+  'Virtualizer',
  ] as const;
 
-const BACKLOG_SYMBOLS = [
-  'Virtualizer',
-] as const;
+const BACKLOG_SYMBOLS = [] as const;
 
 const TRACKED_SYMBOLS = [...REQUIRED_SYMBOLS, ...BACKLOG_SYMBOLS] as const;
 
