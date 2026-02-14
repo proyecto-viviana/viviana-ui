@@ -142,6 +142,14 @@ export {
   type FileTriggerProps,
 } from './FileTrigger';
 
+// DropZone
+export {
+  DropZone,
+  DropZoneContext,
+  type DropZoneProps,
+  type DropZoneRenderProps,
+} from './DropZone';
+
 // ProgressBar
 export {
   ProgressBar,
