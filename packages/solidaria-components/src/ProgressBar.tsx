@@ -7,7 +7,6 @@
 
 import {
   type JSX,
-  type ParentProps,
   createContext,
   createMemo,
   splitProps,
@@ -89,7 +88,7 @@ function getSafeRange(min: number, max: number): number {
  * </ProgressBar>
  * ```
  */
-export function ProgressBar(props: ParentProps<ProgressBarProps>): JSX.Element {
+export function ProgressBar(props: ProgressBarProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
     'children',
     'class',

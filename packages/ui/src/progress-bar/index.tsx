@@ -134,7 +134,7 @@ export function ProgressBar(props: ProgressBarProps): JSX.Element {
       {...headlessProps}
       label={local.label}
       class={`w-full ${local.class ?? ''}`}
-      children={renderChildren as unknown as JSX.Element}
+      children={renderChildren}
     />
   );
 }

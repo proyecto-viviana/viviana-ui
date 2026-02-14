@@ -10,7 +10,6 @@
 
 import {
   type JSX,
-  type ParentProps,
   createContext,
   createMemo,
   splitProps,
@@ -90,7 +89,7 @@ function getSafeRange(min: number, max: number): number {
  * </Meter>
  * ```
  */
-export function Meter(props: ParentProps<MeterProps>): JSX.Element {
+export function Meter(props: MeterProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
     'children',
     'class',

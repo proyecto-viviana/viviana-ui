@@ -8,7 +8,6 @@
 import {
   type JSX,
   type Accessor,
-  type ParentProps,
   createContext,
   useContext,
   createMemo,
@@ -125,7 +124,7 @@ export const CheckboxContext = createContext<CheckboxProps | null>(null);
  * </CheckboxGroup>
  * ```
  */
-export function CheckboxGroup(props: ParentProps<CheckboxGroupProps>): JSX.Element {
+export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
     'class',
     'style',

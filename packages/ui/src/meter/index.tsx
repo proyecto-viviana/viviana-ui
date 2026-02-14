@@ -131,7 +131,7 @@ export function Meter(props: MeterProps): JSX.Element {
       {...headlessProps}
       label={local.label}
       class={`w-full ${local.class ?? ''}`}
-      children={renderChildren as unknown as JSX.Element}
+      children={renderChildren}
     />
   );
 }

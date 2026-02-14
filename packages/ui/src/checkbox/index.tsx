@@ -250,7 +250,7 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
     <HeadlessCheckboxGroup
       {...headlessProps}
       class={getClassName}
-      children={renderChildren as unknown as JSX.Element}
+      children={renderChildren}
     />
   )
 }
