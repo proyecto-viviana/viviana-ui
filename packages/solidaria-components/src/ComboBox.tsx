@@ -28,6 +28,7 @@ import {
   createComboBoxState,
   defaultContainsFilter,
   type ComboBoxState,
+  type ListState,
   type Key,
   type FilterFn,
   type MenuTriggerAction,
@@ -718,30 +719,7 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
   // Create listbox aria props using ComboBoxState's ListState-compatible interface
   const { listBoxProps } = createListBox(
     {},
-    {
-      collection: state.collection,
-      focusedKey: state.focusedKey,
-      setFocusedKey: state.setFocusedKey,
-      isFocused: state.isFocused,
-      setFocused: state.setFocused,
-      // Use state's built-in methods
-      selectionMode: state.selectionMode,
-      select: state.select,
-      isSelected: state.isSelected,
-      isDisabled: state.isKeyDisabled,
-      // Additional ListState interface requirements
-      selectedKeys: () => {
-        const key = state.selectedKey();
-        return key != null ? new Set([key]) : new Set();
-      },
-      disallowEmptySelection: () => true,
-      toggleSelection: state.select,
-      replaceSelection: state.select,
-      extendSelection: () => {},
-      selectAll: () => {},
-      clearSelection: () => state.setSelectedKey(null),
-      childFocusStrategy: () => null,
-    } as any
+    createComboBoxListStateAdapter(state)
   );
 
   // Render props values
@@ -848,30 +826,7 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
         return ariaProps['aria-label'];
       },
     },
-    {
-      collection: state.collection,
-      focusedKey: state.focusedKey,
-      setFocusedKey: state.setFocusedKey,
-      isFocused: state.isFocused,
-      setFocused: state.setFocused,
-      // Use state's built-in methods
-      selectionMode: state.selectionMode,
-      select: state.select,
-      isSelected: state.isSelected,
-      isDisabled: state.isKeyDisabled,
-      // Additional ListState interface requirements
-      selectedKeys: () => {
-        const key = state.selectedKey();
-        return key != null ? new Set([key]) : new Set();
-      },
-      disallowEmptySelection: () => true,
-      toggleSelection: state.select,
-      replaceSelection: state.select,
-      extendSelection: () => {},
-      selectAll: () => {},
-      clearSelection: () => state.setSelectedKey(null),
-      childFocusStrategy: () => null,
-    } as any
+    createComboBoxListStateAdapter(state)
   );
 
   // Create hover
@@ -947,3 +902,47 @@ ComboBox.ErrorMessage = ComboBoxErrorMessage;
 
 // Re-export filter function for convenience
 export { defaultContainsFilter };
+
+function createComboBoxListStateAdapter<T>(state: ComboBoxState<T>): ListState<T> {
+  const selectedKeys = () => {
+    const key = state.selectedKey();
+    return key != null ? new Set<Key>([key]) : new Set<Key>();
+  };
+
+  return {
+    collection: state.collection,
+    isFocused: state.isFocused,
+    setFocused: state.setFocused,
+    focusedKey: state.focusedKey,
+    setFocusedKey: (key) => state.setFocusedKey(key ?? null),
+    childFocusStrategy: () => null,
+    selectionMode: state.selectionMode,
+    selectionBehavior: () => 'replace',
+    disallowEmptySelection: () => true,
+    selectedKeys,
+    disabledKeys: () => {
+      const keys = new Set<Key>();
+      for (const node of state.collection()) {
+        if (node.isDisabled) keys.add(node.key);
+      }
+      return keys;
+    },
+    disabledBehavior: () => 'all',
+    isEmpty: () => selectedKeys().size === 0,
+    isSelectAll: () => false,
+    isSelected: state.isSelected,
+    isDisabled: state.isKeyDisabled,
+    setSelectionBehavior: () => {},
+    toggleSelection: (key) => state.select(key),
+    replaceSelection: (key) => state.select(key),
+    setSelectedKeys: (keys) => {
+      const first = keys[Symbol.iterator]().next().value as Key | undefined;
+      state.setSelectedKey(first ?? null);
+    },
+    selectAll: () => {},
+    clearSelection: () => state.setSelectedKey(null),
+    toggleSelectAll: () => {},
+    extendSelection: (toKey) => state.select(toKey),
+    select: (key) => state.select(key),
+  };
+}
