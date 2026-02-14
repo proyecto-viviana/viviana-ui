@@ -47,6 +47,7 @@ import {
   Group,
   type CollectionEntry,
   type CollectionRendererContextValue,
+  useCollectionRenderer,
   isCollectionSection,
   flattenCollectionEntries,
 } from './Collection';
@@ -268,7 +269,9 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   };
 
   const isEmpty = () => stateProps.items.length === 0;
+  const parentCollectionRenderer = useCollectionRenderer<unknown>();
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
+    ...parentCollectionRenderer,
     renderItem: (item) => props.children(item as T),
   }));
 

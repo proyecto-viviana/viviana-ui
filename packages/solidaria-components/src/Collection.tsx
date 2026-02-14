@@ -33,6 +33,10 @@ export interface CollectionPrimitiveRenderProps {
 export interface CollectionRendererContextValue<T> {
   /** Render function used by collection parents to render each item node. */
   renderItem: (item: T) => JSX.Element;
+  /** Whether collection rendering is currently virtualized. */
+  isVirtualized?: boolean;
+  /** Optional layout delegate used by virtualized renderers. */
+  layoutDelegate?: unknown;
 }
 
 export type CollectionEntry<T> = T | CollectionSection<T>;

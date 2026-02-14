@@ -9,6 +9,7 @@ import {
   type VirtualizerLayout,
   useVirtualizerContext,
 } from '../src/Virtualizer';
+import { useCollectionRenderer } from '../src/Collection';
 
 describe('Virtualizer', () => {
   it('renders children in virtualizer container', () => {
@@ -36,12 +37,15 @@ describe('Virtualizer', () => {
 
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext<{ a?: number; b?: number }>());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
       return (
         <output data-testid="ctx">
           {JSON.stringify({
             isVirtualized: ctx()?.isVirtualized ?? false,
             hasLayout: Boolean(ctx()?.layout),
             options: ctx()?.layoutOptions ?? null,
+            rendererVirtualized: collection()?.isVirtualized ?? false,
+            hasLayoutDelegate: Boolean(collection()?.layoutDelegate),
           })}
         </output>
       );
@@ -57,7 +61,8 @@ describe('Virtualizer', () => {
     expect(parsed.isVirtualized).toBe(true);
     expect(parsed.hasLayout).toBe(true);
     expect(parsed.options).toEqual({ a: 1, b: 2 });
+    expect(parsed.rendererVirtualized).toBe(true);
+    expect(parsed.hasLayoutDelegate).toBe(true);
     expect(instances).toBeGreaterThan(0);
   });
 });
-

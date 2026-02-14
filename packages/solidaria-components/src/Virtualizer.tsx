@@ -12,6 +12,7 @@ import {
   splitProps,
   useContext,
 } from 'solid-js';
+import { CollectionRendererContext, type CollectionRendererContextValue } from './Collection';
 import { filterDOMProps } from './utils';
 
 export interface LayoutOptionsDelegate<O> {
@@ -75,20 +76,26 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     layoutOptions: resolvedLayoutOptions(),
     isVirtualized: true,
   }));
+  const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
+    renderItem: (item) => item as JSX.Element,
+    isVirtualized: true,
+    layoutDelegate: layout(),
+  }));
 
   const filteredDomProps = createMemo(() => filterDOMProps(domProps, { global: true }));
 
   return (
-    <VirtualizerContext.Provider value={contextValue()}>
-      <div
-        {...filteredDomProps()}
-        class={local.class}
-        style={local.style}
-        data-virtualizer
-      >
-        {local.children}
-      </div>
-    </VirtualizerContext.Provider>
+    <CollectionRendererContext.Provider value={collectionRenderer()}>
+      <VirtualizerContext.Provider value={contextValue()}>
+        <div
+          {...filteredDomProps()}
+          class={local.class}
+          style={local.style}
+          data-virtualizer
+        >
+          {local.children}
+        </div>
+      </VirtualizerContext.Provider>
+    </CollectionRendererContext.Provider>
   );
 }
-

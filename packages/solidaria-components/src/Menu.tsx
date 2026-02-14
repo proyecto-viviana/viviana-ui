@@ -48,6 +48,7 @@ import {
   Group,
   type CollectionEntry,
   type CollectionRendererContextValue,
+  useCollectionRenderer,
   flattenCollectionEntries,
   isCollectionSection,
 } from './Collection';
@@ -431,7 +432,9 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   // If inside a MenuTrigger, only render when open
   // If standalone (no trigger context), always render
   const shouldRender = () => triggerContext ? triggerContext.state.isOpen() : true;
+  const parentCollectionRenderer = useCollectionRenderer<unknown>();
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
+    ...parentCollectionRenderer,
     renderItem: (item) => props.children(item as T),
   }));
 
