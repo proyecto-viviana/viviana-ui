@@ -136,6 +136,12 @@ export {
   type FieldErrorRenderProps,
 } from './FieldError';
 
+// FileTrigger
+export {
+  FileTrigger,
+  type FileTriggerProps,
+} from './FileTrigger';
+
 // ProgressBar
 export {
   ProgressBar,

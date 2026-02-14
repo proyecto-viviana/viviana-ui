@@ -20,12 +20,12 @@ const REQUIRED_SYMBOLS = [
   'Form',
   'FieldError',
   'ToggleButtonGroup',
+  'FileTrigger',
  ] as const;
 
 const BACKLOG_SYMBOLS = [
   'Virtualizer',
   'DropZone',
-  'FileTrigger',
   'SharedElementTransition',
 ] as const;
 
