@@ -40,6 +40,7 @@ import {
   SelectionIndicatorContext,
   type SelectionIndicatorContextValue,
 } from './SelectionIndicator';
+import { useVirtualizerContext } from './Virtualizer';
 import {
   CollectionRendererContext,
   Section,
@@ -270,6 +271,16 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
 
   const isEmpty = () => stateProps.items.length === 0;
   const parentCollectionRenderer = useCollectionRenderer<unknown>();
+  const virtualizer = useVirtualizerContext();
+  const virtualRange = createMemo(() => {
+    if (!virtualizer || !parentCollectionRenderer?.isVirtualized || hasSections()) return null;
+    return virtualizer.getVisibleRange(stateProps.items.length);
+  });
+  const visibleItems = createMemo(() => {
+    const range = virtualRange();
+    if (!range) return stateProps.items;
+    return stateProps.items.slice(range.start, range.end);
+  });
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     ...parentCollectionRenderer,
     renderItem: (item) => props.children(item as T),
@@ -315,7 +326,17 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
                     }
                   </For>
                 )
-                : <For each={stateProps.items}>{(item) => props.children(item as T)}</For>
+                : (
+                  <>
+                    {virtualRange()?.offsetTop
+                      ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
+                      : null}
+                    <For each={visibleItems()}>{(item) => props.children(item as T)}</For>
+                    {virtualRange()?.offsetBottom
+                      ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
+                      : null}
+                  </>
+                )
             }
             {local.hasMore && local.onLoadMore && (
               <ListBoxLoadMoreItem

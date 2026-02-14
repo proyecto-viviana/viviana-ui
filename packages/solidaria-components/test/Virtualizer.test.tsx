@@ -2,7 +2,7 @@
  * Tests for solidaria-components Virtualizer
  */
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
+import { render, screen, fireEvent } from '@solidjs/testing-library';
 import { createMemo, type JSX } from 'solid-js';
 import {
   Virtualizer,
@@ -10,6 +10,7 @@ import {
   useVirtualizerContext,
 } from '../src/Virtualizer';
 import { useCollectionRenderer } from '../src/Collection';
+import { ListBox, ListBoxOption } from '../src/ListBox';
 
 describe('Virtualizer', () => {
   it('renders children in virtualizer container', () => {
@@ -64,5 +65,40 @@ describe('Virtualizer', () => {
     expect(parsed.rendererVirtualized).toBe(true);
     expect(parsed.hasLayoutDelegate).toBe(true);
     expect(instances).toBeGreaterThan(0);
+  });
+
+  it('renders only visible range for listbox when virtualized', () => {
+    const items = Array.from({ length: 100 }, (_, i) => ({
+      id: `item-${i}`,
+      label: `Item ${i}`,
+    }));
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 60, overscan: 0 }}
+        style={{ height: '60px', overflow: 'auto' }}
+      >
+        <ListBox
+          aria-label="Virtualized list"
+          items={items}
+          getKey={(item) => item.id}
+        >
+          {(item) => <ListBoxOption id={item.id}>{item.label}</ListBoxOption>}
+        </ListBox>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByText('Item 0')).toBeInTheDocument();
+    expect(screen.getByText('Item 2')).toBeInTheDocument();
+    expect(screen.queryByText('Item 5')).not.toBeInTheDocument();
+
+    const container = document.querySelector('[data-virtualizer]') as HTMLDivElement;
+    container.scrollTop = 80;
+    fireEvent.scroll(container);
+
+    expect(screen.getByText('Item 4')).toBeInTheDocument();
+    expect(screen.getByText('Item 6')).toBeInTheDocument();
+    expect(screen.queryByText('Item 0')).not.toBeInTheDocument();
   });
 });
