@@ -59,6 +59,7 @@ export interface VirtualizerLayoutInfoContext {
 }
 
 export interface VirtualizerDropTarget {
+  type: 'item' | 'root';
   index: number;
   position: 'before' | 'on' | 'after';
   key?: string | number;
@@ -130,7 +131,7 @@ export class ListLayout {
     itemCount: number,
     options?: DefaultVirtualizerLayoutOptions
   ): VirtualizerDropTarget | null {
-    if (itemCount <= 0) return null;
+    if (itemCount <= 0) return { type: 'root', index: -1, position: 'on' };
     const itemHeight = Math.max(1, options?.itemSize ?? 40);
     const rawIndex = Math.floor(Math.max(0, point.y) / itemHeight);
     const index = Math.max(0, Math.min(rawIndex, itemCount - 1));
@@ -142,7 +143,7 @@ export class ListLayout {
         : offsetWithinItem > threshold * 2
           ? 'after'
           : 'on';
-    return { index, position };
+    return { type: 'item', index, position };
   }
 }
 
@@ -196,7 +197,7 @@ export class GridLayout {
     itemCount: number,
     options?: GridLayoutOptions
   ): VirtualizerDropTarget | null {
-    if (itemCount <= 0) return null;
+    if (itemCount <= 0) return { type: 'root', index: -1, position: 'on' };
     const rowHeight = Math.max(1, options?.rowHeight ?? options?.itemSize ?? 40);
     const columns = Math.max(1, options?.columnCount ?? 1);
     const width = Math.max(1, options?.viewportSize ?? 320);
@@ -208,7 +209,7 @@ export class GridLayout {
     const threshold = rowHeight / 3;
     const position: VirtualizerDropTarget['position'] =
       withinRow < threshold ? 'before' : withinRow > threshold * 2 ? 'after' : 'on';
-    return { index, position };
+    return { type: 'item', index, position };
   }
 }
 
