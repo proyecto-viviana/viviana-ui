@@ -22,6 +22,7 @@ import {
   createHover,
   createInteractOutside,
   type AriaComboBoxProps,
+  type AriaListBoxProps,
   type AriaOptionProps,
 } from '@proyecto-viviana/solidaria';
 import {
@@ -718,7 +719,7 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
 
   // Create listbox aria props using ComboBoxState's ListState-compatible interface
   const { listBoxProps } = createListBox(
-    {},
+    contextListBoxProps as unknown as AriaListBoxProps,
     createComboBoxListStateAdapter(state)
   );
 

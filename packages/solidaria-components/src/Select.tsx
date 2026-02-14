@@ -24,6 +24,7 @@ import {
   createInteractOutside,
   FocusScope,
   type AriaSelectProps,
+  type AriaListBoxProps,
   type AriaOptionProps,
 } from '@proyecto-viviana/solidaria';
 import {
@@ -569,7 +570,7 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
 
   // Create listbox aria props - reuse select's internal list state via collection
   const { listBoxProps } = createListBox(
-    {},
+    menuProps as unknown as AriaListBoxProps,
     createSelectListStateAdapter(state)
   );
 

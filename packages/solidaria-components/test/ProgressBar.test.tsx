@@ -7,19 +7,19 @@ import { ProgressBar } from '../src/ProgressBar';
 
 describe('ProgressBar', () => {
   it('should render with default class', () => {
-    render(() => <ProgressBar value={25}>Loading...</ProgressBar>);
+    render(() => <ProgressBar value={25} aria-label="Progress">Loading...</ProgressBar>);
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toHaveClass('solidaria-ProgressBar');
   });
 
   it('should render with custom class', () => {
-    render(() => <ProgressBar value={25} class="test">Loading...</ProgressBar>);
+    render(() => <ProgressBar value={25} class="test" aria-label="Progress">Loading...</ProgressBar>);
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toHaveClass('test');
   });
 
   it('should have correct aria attributes', () => {
-    render(() => <ProgressBar value={25} />);
+    render(() => <ProgressBar value={25} aria-label="Progress" />);
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toHaveAttribute('aria-valuenow', '25');
     expect(progressbar).toHaveAttribute('aria-valuemin', '0');
@@ -28,7 +28,7 @@ describe('ProgressBar', () => {
 
   it('should support render props', () => {
     render(() => (
-      <ProgressBar value={25}>
+      <ProgressBar value={25} aria-label="Progress">
         {(renderProps) => (
           <>
             <span class="value">{renderProps.valueText}</span>
@@ -51,6 +51,7 @@ describe('ProgressBar', () => {
     render(() => (
       <ProgressBar
         isIndeterminate
+        aria-label="Progress"
         class={(renderProps) => `progressbar ${renderProps.isIndeterminate ? 'indeterminate' : ''}`}
       >
         Loading...
@@ -75,14 +76,14 @@ describe('ProgressBar', () => {
   });
 
   it('should support slot prop', () => {
-    render(() => <ProgressBar value={50} slot="test" />);
+    render(() => <ProgressBar value={50} slot="test" aria-label="Progress" />);
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toHaveAttribute('slot', 'test');
   });
 
   it('should calculate percentage correctly', () => {
     render(() => (
-      <ProgressBar value={5} minValue={0} maxValue={10}>
+      <ProgressBar value={5} minValue={0} maxValue={10} aria-label="Progress">
         {(renderProps) => <span class="percentage">{renderProps.percentage}</span>}
       </ProgressBar>
     ));
@@ -94,7 +95,7 @@ describe('ProgressBar', () => {
 
   it('should clamp value to min/max range', () => {
     render(() => (
-      <ProgressBar value={150} minValue={0} maxValue={100}>
+      <ProgressBar value={150} minValue={0} maxValue={100} aria-label="Progress">
         {(renderProps) => <span class="percentage">{renderProps.percentage}</span>}
       </ProgressBar>
     ));
@@ -106,7 +107,7 @@ describe('ProgressBar', () => {
 
   it('should handle zero progress', () => {
     render(() => (
-      <ProgressBar value={0}>
+      <ProgressBar value={0} aria-label="Progress">
         {(renderProps) => <span class="percentage">{renderProps.percentage}</span>}
       </ProgressBar>
     ));
@@ -119,7 +120,7 @@ describe('ProgressBar', () => {
 
   it('should handle full progress', () => {
     render(() => (
-      <ProgressBar value={100}>
+      <ProgressBar value={100} aria-label="Progress">
         {(renderProps) => <span class="percentage">{renderProps.percentage}</span>}
       </ProgressBar>
     ));
@@ -131,7 +132,7 @@ describe('ProgressBar', () => {
   });
 
   it('should support custom min and max values', () => {
-    render(() => <ProgressBar value={50} minValue={0} maxValue={200} />);
+    render(() => <ProgressBar value={50} minValue={0} maxValue={200} aria-label="Progress" />);
 
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toHaveAttribute('aria-valuenow', '50');
@@ -141,7 +142,7 @@ describe('ProgressBar', () => {
 
   it('should handle equal min and max without NaN percentage', () => {
     render(() => (
-      <ProgressBar value={10} minValue={10} maxValue={10}>
+      <ProgressBar value={10} minValue={10} maxValue={10} aria-label="Progress">
         {(renderProps) => <span class="percentage">{renderProps.percentage}</span>}
       </ProgressBar>
     ));
@@ -155,6 +156,7 @@ describe('ProgressBar', () => {
     render(() => (
       <ProgressBar
         value={75}
+        aria-label="Progress"
         style={(renderProps) => ({
           opacity: renderProps.isIndeterminate ? '0.5' : '1',
         })}
@@ -171,6 +173,7 @@ describe('ProgressBar', () => {
     render(() => (
       <ProgressBar
         value={50}
+        aria-label="Progress"
         class={(renderProps) => `progress ${renderProps.isIndeterminate ? 'loading' : 'determinate'}`}
       >
         Loading

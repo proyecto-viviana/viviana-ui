@@ -7,13 +7,13 @@ import { ProgressBar } from '../src/progress-bar';
 
 describe('ProgressBar (ui)', () => {
   it('should render with role="progressbar"', () => {
-    render(() => <ProgressBar value={25} />);
+    render(() => <ProgressBar value={25} aria-label="Progress" />);
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toBeInTheDocument();
   });
 
   it('should have correct aria attributes', () => {
-    render(() => <ProgressBar value={25} />);
+    render(() => <ProgressBar value={25} aria-label="Progress" />);
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toHaveAttribute('aria-valuenow', '25');
     expect(progressbar).toHaveAttribute('aria-valuemin', '0');
@@ -42,25 +42,25 @@ describe('ProgressBar (ui)', () => {
   });
 
   it('should support custom valueLabel', () => {
-    render(() => <ProgressBar value={25} valueLabel="Step 1 of 4" />);
+    render(() => <ProgressBar value={25} valueLabel="Step 1 of 4" aria-label="Progress" />);
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toHaveAttribute('aria-valuetext', 'Step 1 of 4');
   });
 
   it('should support size prop', () => {
-    const { container } = render(() => <ProgressBar value={50} size="lg" />);
+    const { container } = render(() => <ProgressBar value={50} size="lg" aria-label="Progress" />);
     // Large size should have h-3 class on track
     expect(container.querySelector('.h-3')).toBeInTheDocument();
   });
 
   it('should support variant prop', () => {
-    const { container } = render(() => <ProgressBar value={50} variant="success" />);
+    const { container } = render(() => <ProgressBar value={50} variant="success" aria-label="Progress" />);
     // Success variant should have green background
     expect(container.querySelector('.bg-green-500')).toBeInTheDocument();
   });
 
   it('should support custom class', () => {
-    render(() => <ProgressBar value={50} class="my-custom-class" />);
+    render(() => <ProgressBar value={50} class="my-custom-class" aria-label="Progress" />);
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toHaveClass('my-custom-class');
   });
@@ -72,7 +72,7 @@ describe('ProgressBar (ui)', () => {
   });
 
   it('should clamp value between min and max', () => {
-    render(() => <ProgressBar value={150} minValue={0} maxValue={100} />);
+    render(() => <ProgressBar value={150} minValue={0} maxValue={100} aria-label="Progress" />);
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toHaveAttribute('aria-valuenow', '100');
   });
@@ -87,7 +87,7 @@ describe('ProgressBar (ui)', () => {
   });
 
   it('should handle equal min and max without NaN', () => {
-    render(() => <ProgressBar value={10} minValue={10} maxValue={10} />);
+    render(() => <ProgressBar value={10} minValue={10} maxValue={10} aria-label="Progress" />);
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar).toHaveAttribute('aria-valuetext');
     expect(progressbar.getAttribute('aria-valuetext')).not.toContain('NaN');
