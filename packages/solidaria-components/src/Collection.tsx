@@ -5,7 +5,13 @@
  * Section / Header / Group.
  */
 
-import { type JSX, createMemo, splitProps } from 'solid-js';
+import {
+  type JSX,
+  createContext,
+  createMemo,
+  splitProps,
+  useContext,
+} from 'solid-js';
 import type { Key } from '@proyecto-viviana/solid-stately';
 import {
   type ClassNameOrFunction,
@@ -23,6 +29,13 @@ export interface CollectionPrimitiveRenderProps {
   /** Whether the primitive has visible children content. */
   hasChildren: boolean;
 }
+
+export interface CollectionRendererContextValue<T> {
+  /** Render function used by collection parents to render each item node. */
+  renderItem: (item: T) => JSX.Element;
+}
+
+export type CollectionEntry<T> = T | CollectionSection<T>;
 
 export interface CollectionSection<T> {
   /** Optional unique key for the section wrapper. */
@@ -62,6 +75,33 @@ export interface GroupProps extends SlotProps {
   class?: ClassNameOrFunction<CollectionPrimitiveRenderProps>;
   /** The inline style for the element. */
   style?: StyleOrFunction<CollectionPrimitiveRenderProps>;
+}
+
+// ============================================
+// CONTEXT
+// ============================================
+
+export const CollectionRendererContext = createContext<CollectionRendererContextValue<unknown> | null>(null);
+
+export function useCollectionRenderer<T>(): CollectionRendererContextValue<T> | null {
+  return useContext(CollectionRendererContext) as CollectionRendererContextValue<T> | null;
+}
+
+// ============================================
+// HELPERS
+// ============================================
+
+export function isCollectionSection<T>(entry: CollectionEntry<T>): entry is CollectionSection<T> {
+  return typeof entry === 'object' && entry !== null && Array.isArray((entry as CollectionSection<T>).items);
+}
+
+export function flattenCollectionEntries<T>(entries: CollectionEntry<T>[]): T[] {
+  const flattened: T[] = [];
+  for (const entry of entries) {
+    if (isCollectionSection(entry)) flattened.push(...entry.items);
+    else flattened.push(entry);
+  }
+  return flattened;
 }
 
 // ============================================

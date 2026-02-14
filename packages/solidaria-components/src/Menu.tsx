@@ -41,7 +41,16 @@ import {
   type SlotProps,
   useRenderProps,
 } from './utils';
-import { Section, Header, Group, type CollectionSection } from './Collection';
+import {
+  CollectionRendererContext,
+  Section,
+  Header,
+  Group,
+  type CollectionEntry,
+  type CollectionRendererContextValue,
+  flattenCollectionEntries,
+  isCollectionSection,
+} from './Collection';
 
 // ============================================
 // TYPES
@@ -58,7 +67,7 @@ export interface MenuProps<T>
   extends Omit<AriaMenuProps, 'children'>,
     SlotProps {
   /** The items to render in the menu. */
-  items: Array<T | CollectionSection<T>>;
+  items: CollectionEntry<T>[];
   /** Function to get the key from an item. */
   getKey?: (item: T) => Key;
   /** Function to get the text value from an item. */
@@ -325,17 +334,8 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   // Ref for the menu element (for click outside detection)
   let menuRef: HTMLUListElement | undefined;
 
-  const isCollectionSection = (item: T | CollectionSection<T>): item is CollectionSection<T> => {
-    return typeof item === 'object' && item !== null && Array.isArray((item as CollectionSection<T>).items);
-  };
-
   const flatItems = createMemo<T[]>(() => {
-    const flattened: T[] = [];
-    for (const item of stateProps.items) {
-      if (isCollectionSection(item)) flattened.push(...item.items);
-      else flattened.push(item);
-    }
-    return flattened;
+    return flattenCollectionEntries(stateProps.items);
   });
 
   const hasSections = createMemo(() => stateProps.items.some((item) => isCollectionSection(item)));
@@ -431,46 +431,51 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   // If inside a MenuTrigger, only render when open
   // If standalone (no trigger context), always render
   const shouldRender = () => triggerContext ? triggerContext.state.isOpen() : true;
+  const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
+    renderItem: (item) => props.children(item as T),
+  }));
 
   // Only use FocusScope when inside a MenuTrigger (for popover behavior)
   // Standalone menus don't need focus restoration
   const menuContent = () => (
     <MenuContext.Provider value={{ state }}>
       <MenuStateContext.Provider value={state}>
-        <ul
-          ref={(el) => (menuRef = el)}
-          {...cleanMenuProps()}
-          {...cleanTriggerMenuProps()}
-          {...cleanFocusProps()}
-          class={renderProps.class()}
-          style={renderProps.style()}
-          data-focused={state.isFocused() || undefined}
-        >
-          {hasSections()
-            ? (
-              <For each={stateProps.items}>
-                {(entry) =>
-                  isCollectionSection(entry)
-                    ? (
-                      <li role="presentation" data-section-wrapper>
-                        <Section class="solidaria-Menu-section">
-                          {entry.title != null && (
-                            <Header class="solidaria-Menu-sectionHeader">{entry.title}</Header>
-                          )}
-                          <Group class="solidaria-Menu-sectionGroup">
-                            <ul role="group" aria-label={entry['aria-label']}>
-                              <For each={entry.items}>{(item) => props.children?.(item)}</For>
-                            </ul>
-                          </Group>
-                        </Section>
-                      </li>
-                    )
-                    : props.children?.(entry)
-                }
-              </For>
-            )
-            : <For each={stateProps.items}>{(item) => props.children?.(item as T)}</For>}
-        </ul>
+        <CollectionRendererContext.Provider value={collectionRenderer()}>
+          <ul
+            ref={(el) => (menuRef = el)}
+            {...cleanMenuProps()}
+            {...cleanTriggerMenuProps()}
+            {...cleanFocusProps()}
+            class={renderProps.class()}
+            style={renderProps.style()}
+            data-focused={state.isFocused() || undefined}
+          >
+            {hasSections()
+              ? (
+                <For each={stateProps.items}>
+                  {(entry) =>
+                    isCollectionSection(entry)
+                      ? (
+                        <li role="presentation" data-section-wrapper>
+                          <Section class="solidaria-Menu-section">
+                            {entry.title != null && (
+                              <Header class="solidaria-Menu-sectionHeader">{entry.title}</Header>
+                            )}
+                            <Group class="solidaria-Menu-sectionGroup">
+                              <ul role="group" aria-label={entry['aria-label']}>
+                                <For each={entry.items}>{(item) => props.children?.(item)}</For>
+                              </ul>
+                            </Group>
+                          </Section>
+                        </li>
+                      )
+                      : props.children?.(entry as T)
+                  }
+                </For>
+              )
+              : <For each={stateProps.items}>{(item) => props.children?.(item as T)}</For>}
+          </ul>
+        </CollectionRendererContext.Provider>
       </MenuStateContext.Provider>
     </MenuContext.Provider>
   );

@@ -40,7 +40,16 @@ import {
   SelectionIndicatorContext,
   type SelectionIndicatorContextValue,
 } from './SelectionIndicator';
-import { Section, Header, Group, type CollectionSection } from './Collection';
+import {
+  CollectionRendererContext,
+  Section,
+  Header,
+  Group,
+  type CollectionEntry,
+  type CollectionRendererContextValue,
+  isCollectionSection,
+  flattenCollectionEntries,
+} from './Collection';
 
 // ============================================
 // TYPES
@@ -61,7 +70,7 @@ export interface ListBoxProps<T>
   extends Omit<AriaListBoxProps, 'children'>,
     SlotProps {
   /** The items to render in the listbox. */
-  items: Array<T | CollectionSection<T>>;
+  items: CollectionEntry<T>[];
   /** Function to get the key from an item. */
   getKey?: (item: T) => Key;
   /** Function to get the text value from an item. */
@@ -164,17 +173,8 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'selectionMode', 'selectedKeys', 'defaultSelectedKeys', 'onSelectionChange']
   );
 
-  const isCollectionSection = (item: T | CollectionSection<T>): item is CollectionSection<T> => {
-    return typeof item === 'object' && item !== null && Array.isArray((item as CollectionSection<T>).items);
-  };
-
   const flatItems = createMemo<T[]>(() => {
-    const flattened: T[] = [];
-    for (const item of stateProps.items) {
-      if (isCollectionSection(item)) flattened.push(...item.items);
-      else flattened.push(item);
-    }
-    return flattened;
+    return flattenCollectionEntries(stateProps.items);
   });
 
   const hasSections = createMemo(() => stateProps.items.some((item) => isCollectionSection(item)));
@@ -268,55 +268,60 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   };
 
   const isEmpty = () => stateProps.items.length === 0;
+  const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
+    renderItem: (item) => props.children(item as T),
+  }));
 
   return (
     <ListBoxContext.Provider value={{ state }}>
       <ListBoxStateContext.Provider value={state}>
-        <ul
-          {...domProps()}
-          {...cleanListBoxProps()}
-          {...cleanFocusProps()}
-          class={renderProps.class()}
-          style={renderProps.style()}
-          data-focused={state.isFocused() || undefined}
-          data-focus-visible={isFocusVisible() || undefined}
-          data-disabled={resolveDisabled() || undefined}
-          data-empty={isEmpty() || undefined}
-        >
-          {isEmpty() && local.renderEmptyState
-            ? local.renderEmptyState()
-            : hasSections()
-              ? (
-                <For each={stateProps.items}>
-                  {(entry, sectionIndex) =>
-                    isCollectionSection(entry)
-                      ? (
-                        <li role="presentation" data-section-wrapper>
-                          <Section class="solidaria-ListBox-section">
-                            {entry.title != null && (
-                              <Header class="solidaria-ListBox-sectionHeader">{entry.title}</Header>
-                            )}
-                            <Group class="solidaria-ListBox-sectionGroup">
-                              <ul role="group" aria-label={entry['aria-label']}>
-                                <For each={entry.items}>{(item) => props.children(item)}</For>
-                              </ul>
-                            </Group>
-                          </Section>
-                        </li>
-                      )
-                      : props.children(entry as T)
-                  }
-                </For>
-              )
-              : <For each={stateProps.items}>{(item) => props.children(item as T)}</For>
-          }
-          {local.hasMore && local.onLoadMore && (
-            <ListBoxLoadMoreItem
-              onLoadMore={local.onLoadMore}
-              isLoading={local.isLoading}
-            />
-          )}
-        </ul>
+        <CollectionRendererContext.Provider value={collectionRenderer()}>
+          <ul
+            {...domProps()}
+            {...cleanListBoxProps()}
+            {...cleanFocusProps()}
+            class={renderProps.class()}
+            style={renderProps.style()}
+            data-focused={state.isFocused() || undefined}
+            data-focus-visible={isFocusVisible() || undefined}
+            data-disabled={resolveDisabled() || undefined}
+            data-empty={isEmpty() || undefined}
+          >
+            {isEmpty() && local.renderEmptyState
+              ? local.renderEmptyState()
+              : hasSections()
+                ? (
+                  <For each={stateProps.items}>
+                    {(entry) =>
+                      isCollectionSection(entry)
+                        ? (
+                          <li role="presentation" data-section-wrapper>
+                            <Section class="solidaria-ListBox-section">
+                              {entry.title != null && (
+                                <Header class="solidaria-ListBox-sectionHeader">{entry.title}</Header>
+                              )}
+                              <Group class="solidaria-ListBox-sectionGroup">
+                                <ul role="group" aria-label={entry['aria-label']}>
+                                  <For each={entry.items}>{(item) => props.children(item)}</For>
+                                </ul>
+                              </Group>
+                            </Section>
+                          </li>
+                        )
+                        : props.children(entry as T)
+                    }
+                  </For>
+                )
+                : <For each={stateProps.items}>{(item) => props.children(item as T)}</For>
+            }
+            {local.hasMore && local.onLoadMore && (
+              <ListBoxLoadMoreItem
+                onLoadMore={local.onLoadMore}
+                isLoading={local.isLoading}
+              />
+            )}
+          </ul>
+        </CollectionRendererContext.Provider>
       </ListBoxStateContext.Provider>
     </ListBoxContext.Provider>
   );

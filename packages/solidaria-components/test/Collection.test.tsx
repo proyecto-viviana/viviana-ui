@@ -3,7 +3,15 @@
  */
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
-import { Group, Header, Section } from '../src/Collection';
+import {
+  CollectionRendererContext,
+  Group,
+  Header,
+  Section,
+  flattenCollectionEntries,
+  isCollectionSection,
+  useCollectionRenderer,
+} from '../src/Collection';
 
 describe('Collection primitives', () => {
   it('renders Section with default class', () => {
@@ -43,5 +51,37 @@ describe('Collection primitives', () => {
     const section = document.querySelector('.has-children') as HTMLElement;
     expect(section).toBeInTheDocument();
     expect(section.style.opacity).toBe('1');
+  });
+
+  it('detects section entries and flattens sectioned collections', () => {
+    const entries = [
+      { id: 'one' },
+      {
+        title: <span>Group</span>,
+        items: [{ id: 'two' }, { id: 'three' }],
+      },
+    ];
+
+    expect(isCollectionSection(entries[1])).toBe(true);
+    expect(flattenCollectionEntries(entries).map((item) => item.id)).toEqual(['one', 'two', 'three']);
+  });
+
+  it('provides collection renderer context to descendants', () => {
+    function Consumer() {
+      const renderer = useCollectionRenderer<{ label: string }>();
+      return <div>{renderer?.renderItem({ label: 'Hello' })}</div>;
+    }
+
+    render(() => (
+      <CollectionRendererContext.Provider
+        value={{
+          renderItem: (item: { label: string }) => <span>{item.label}</span>,
+        }}
+      >
+        <Consumer />
+      </CollectionRendererContext.Provider>
+    ));
+
+    expect(screen.getByText('Hello')).toBeInTheDocument();
   });
 });

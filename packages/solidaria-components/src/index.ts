@@ -214,12 +214,18 @@ export {
 
 // Collection primitives
 export {
+  CollectionRendererContext,
   Section,
   Header,
   Group,
+  isCollectionSection,
+  flattenCollectionEntries,
   type SectionProps,
   type HeaderProps,
   type GroupProps,
+  type CollectionEntry,
+  type CollectionSection,
+  type CollectionRendererContextValue,
   type CollectionPrimitiveRenderProps,
 } from './Collection';
 
