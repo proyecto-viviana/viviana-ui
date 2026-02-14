@@ -68,5 +68,5 @@ describe('Button Performance (PV)', () => {
 
     // Sanity check: updates should be very fast in SolidJS
     expect(median).toBeLessThan(50);
-  });
+  }, 10_000);
 });

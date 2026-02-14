@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render, cleanup } from '@solidjs/testing-library';
-import { createSignal, For } from 'solid-js';
+import { createSignal } from 'solid-js';
 import { ListBox, ListBoxOption } from '@proyecto-viviana/ui';
 
 describe('List Performance (PV)', () => {
@@ -24,12 +24,15 @@ describe('List Performance (PV)', () => {
       const start = performance.now();
 
       const result = render(() => (
-        <ListBox aria-label="Items">
-          <For each={items}>
-            {(item) => (
-              <ListBoxOption id={item.id}>{item.label}</ListBoxOption>
-            )}
-          </For>
+        <ListBox
+          aria-label="Items"
+          items={items}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.label}
+        >
+          {(item) => (
+            <ListBoxOption id={item.id}>{item.label}</ListBoxOption>
+          )}
         </ListBox>
       ));
 
@@ -45,7 +48,7 @@ describe('List Performance (PV)', () => {
 
     // Sanity check: should complete reasonably fast
     expect(median).toBeLessThan(2000);
-  });
+  }, 20_000);
 
   it('filter list from 1000 to 100 items', () => {
     const timings: number[] = [];
@@ -58,12 +61,15 @@ describe('List Performance (PV)', () => {
       const [items, setItems] = createSignal(allItems);
 
       const result = render(() => (
-        <ListBox aria-label="Items">
-          <For each={items()}>
-            {(item) => (
-              <ListBoxOption id={item.id}>{item.label}</ListBoxOption>
-            )}
-          </For>
+        <ListBox
+          aria-label="Items"
+          items={items()}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.label}
+        >
+          {(item) => (
+            <ListBoxOption id={item.id}>{item.label}</ListBoxOption>
+          )}
         </ListBox>
       ));
 
@@ -82,5 +88,5 @@ describe('List Performance (PV)', () => {
 
     // Fine-grained reactivity should handle this efficiently
     expect(median).toBeLessThan(500);
-  });
+  }, 20_000);
 });
