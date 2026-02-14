@@ -102,6 +102,13 @@ export {
   type LinkRenderProps,
 } from './Link';
 
+// Keyboard
+export {
+  Keyboard,
+  KeyboardContext,
+  type KeyboardProps,
+} from './Keyboard';
+
 // ProgressBar
 export {
   ProgressBar,
