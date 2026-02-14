@@ -212,6 +212,17 @@ export {
   type SelectionIndicatorRenderProps,
 } from './SelectionIndicator';
 
+// Collection primitives
+export {
+  Section,
+  Header,
+  Group,
+  type SectionProps,
+  type HeaderProps,
+  type GroupProps,
+  type CollectionPrimitiveRenderProps,
+} from './Collection';
+
 // Breadcrumbs
 export {
   Breadcrumbs,
