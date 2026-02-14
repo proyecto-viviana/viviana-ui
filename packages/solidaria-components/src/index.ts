@@ -175,6 +175,7 @@ export {
   type LayoutOptionsDelegate,
   type VirtualizerVisibleRange,
   type VirtualizerDropTarget,
+  type VirtualizerDropTargetResolver,
   type VirtualizerRangeContext,
   type DefaultVirtualizerLayoutOptions,
   type GridLayoutOptions,

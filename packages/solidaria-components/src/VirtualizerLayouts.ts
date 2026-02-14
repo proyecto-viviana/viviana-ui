@@ -61,6 +61,9 @@ export interface VirtualizerLayoutInfoContext {
 export interface VirtualizerDropTarget {
   index: number;
   position: 'before' | 'on' | 'after';
+  key?: string | number;
+  parentKey?: string | number | null;
+  level?: number;
 }
 
 function clampRange(itemCount: number, start: number, end: number, itemSize: number): VirtualizerVisibleRange {

@@ -325,6 +325,47 @@ describe('Virtualizer', () => {
     expect(screen.queryByText('Node 6')).not.toBeInTheDocument();
   });
 
+  it('enriches tree drop targets with hierarchical metadata', () => {
+    const items = [
+      {
+        key: 'parent',
+        value: { name: 'Parent' },
+        textValue: 'Parent',
+        children: [
+          { key: 'child', value: { name: 'Child' }, textValue: 'Child' },
+        ],
+      },
+      { key: 'sibling', value: { name: 'Sibling' }, textValue: 'Sibling' },
+    ];
+
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const target = createMemo(() => ctx()?.getDropTargetFromPoint({ x: 1, y: 1 }, 3) ?? null);
+      return <output data-testid="tree-target">{JSON.stringify(target())}</output>;
+    }
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 80, overscan: 0 }}
+        style={{ height: '80px', overflow: 'auto' }}
+      >
+        <>
+          <Tree items={items} defaultExpandedKeys={['parent']} aria-label="Tree drop metadata">
+            {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+          </Tree>
+          <Consumer />
+        </>
+      </Virtualizer>
+    ));
+
+    const target = JSON.parse(screen.getByTestId('tree-target').textContent || '{}');
+    expect(target.index).toBe(0);
+    expect(target.key).toBe('parent');
+    expect(target.parentKey).toBeNull();
+    expect(target.level).toBe(0);
+  });
+
   it('renders tree after-drop indicators at branch boundaries only', () => {
     const items = [
       {

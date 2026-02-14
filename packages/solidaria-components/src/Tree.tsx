@@ -10,6 +10,7 @@
 
 import {
   type JSX,
+  onCleanup,
   createContext,
   createEffect,
   createMemo,
@@ -298,6 +299,27 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const range = virtualRange();
     if (!range) return visibleRows();
     return visibleRows().slice(range.start, range.end);
+  });
+  createEffect(() => {
+    if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
+    virtualizer.setDropTargetResolver((target) => {
+      const node = visibleRows()[target.index];
+      if (!node) return target;
+      return {
+        ...target,
+        key: typeof node.key === 'string' || typeof node.key === 'number' ? node.key : undefined,
+        parentKey:
+          typeof node.parentKey === 'string' || typeof node.parentKey === 'number'
+            ? node.parentKey
+            : node.parentKey == null
+              ? null
+              : undefined,
+        level: typeof node.level === 'number' ? node.level : undefined,
+      };
+    });
+    onCleanup(() => {
+      virtualizer.setDropTargetResolver(undefined);
+    });
   });
   const rowIndexByKey = createMemo(() => {
     const map = new Map<Key, number>();

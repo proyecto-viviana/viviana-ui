@@ -68,7 +68,10 @@ export interface VirtualizerContextValue<O = unknown> {
   getVisibleRange: (itemCount: number) => VirtualizerVisibleRange;
   getLayoutInfo: (index: number) => LayoutInfo;
   getDropTargetFromPoint: (point: Point, itemCount: number) => VirtualizerDropTarget | null;
+  setDropTargetResolver: ((resolver: VirtualizerDropTargetResolver | undefined) => void);
 }
+
+export type VirtualizerDropTargetResolver = (target: VirtualizerDropTarget) => VirtualizerDropTarget;
 
 export const VirtualizerContext = createContext<VirtualizerContextValue<unknown> | null>(null);
 
@@ -133,6 +136,9 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   const [scrollOffset, setScrollOffset] = createSignal(0);
   const [measuredViewportSize, setMeasuredViewportSize] = createSignal(0);
   const [measuredViewportWidth, setMeasuredViewportWidth] = createSignal(0);
+  const [dropTargetResolver, setDropTargetResolver] = createSignal<VirtualizerDropTargetResolver | undefined>(
+    undefined
+  );
   let containerRef: HTMLDivElement | undefined;
   const fallbackLayout = new ListLayout();
   const visibleRangeCache = new Map<number, VirtualizerVisibleRange>();
@@ -205,8 +211,14 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     return nextInfo;
   };
   const getDropTargetFromPoint = (point: Point, itemCount: number): VirtualizerDropTarget | null => {
-    return resolvedLayout().getDropTargetFromPoint?.(point, itemCount, resolvedLayoutOptions()) ??
+    const target = resolvedLayout().getDropTargetFromPoint?.(point, itemCount, resolvedLayoutOptions()) ??
       fallbackLayout.getDropTargetFromPoint(point, itemCount);
+    if (!target) return null;
+    const resolver = dropTargetResolver();
+    return resolver ? resolver(target) : target;
+  };
+  const assignDropTargetResolver = (resolver: VirtualizerDropTargetResolver | undefined): void => {
+    setDropTargetResolver(() => resolver);
   };
 
   const contextValue = createMemo<VirtualizerContextValue<O>>(() => ({
@@ -216,6 +228,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     getVisibleRange,
     getLayoutInfo,
     getDropTargetFromPoint,
+    setDropTargetResolver: assignDropTargetResolver,
   }));
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     renderItem: (item) => item as JSX.Element,
