@@ -299,13 +299,39 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     if (!range) return visibleRows();
     return visibleRows().slice(range.start, range.end);
   });
-  const shouldRenderAfterIndicator = (absoluteIndex: number): boolean => {
+  const rowIndexByKey = createMemo(() => {
+    const map = new Map<Key, number>();
+    const rows = visibleRows();
+    for (let i = 0; i < rows.length; i += 1) {
+      map.set(rows[i].key, i);
+    }
+    return map;
+  });
+  const getAfterIndicatorIndexes = (absoluteIndex: number): number[] => {
     const rows = visibleRows();
     const current = rows[absoluteIndex];
+    if (!current) return [];
     const next = rows[absoluteIndex + 1];
-    if (!current || !next) return true;
-    // Avoid rendering "after" inside an expanded branch. Keep boundaries between sibling/ancestor levels.
-    return next.level <= current.level;
+    // "after" is equivalent to next sibling's "before" when next row is at same or deeper level.
+    if (next && next.level >= current.level) {
+      return [];
+    }
+
+    const result: number[] = [];
+    let cursorIndex: number | null = absoluteIndex;
+
+    // Emit after indicators for current and ancestor boundary levels, matching RAC branch exit semantics.
+    while (cursorIndex != null) {
+      const cursor: TreeNode<T> | undefined = rows[cursorIndex];
+      if (!cursor) break;
+      const shouldRender =
+        !next || (cursor.parentKey !== next.parentKey && next.level < cursor.level);
+      if (!shouldRender) break;
+      result.push(cursorIndex);
+      if (cursor.parentKey == null) break;
+      cursorIndex = rowIndexByKey().get(cursor.parentKey) ?? null;
+    }
+    return result;
   };
 
   return (
@@ -335,10 +361,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
                 const itemIndex = () => (virtualRange()?.start ?? 0) + index();
                 const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
                 const onIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'on');
-                const afterIndicator = () =>
-                  shouldRenderAfterIndicator(itemIndex())
-                    ? parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after')
-                    : undefined;
+                const afterIndicatorIndexes = () => getAfterIndicatorIndexes(itemIndex());
                 // Find the original item data to pass to render function
                 const itemData: TreeItemData<T> = {
                   key: node.key,
@@ -362,7 +385,9 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
                     {beforeIndicator()}
                     {onIndicator()}
                     {props.children(itemData, itemState)}
-                    {afterIndicator()}
+                    <For each={afterIndicatorIndexes()}>
+                      {(afterIndex) => parentCollectionRenderer?.renderDropIndicator?.(afterIndex, 'after')}
+                    </For>
                   </>
                 );
               }}

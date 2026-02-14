@@ -357,4 +357,69 @@ describe('Virtualizer', () => {
     expect(screen.getByTestId('tree-drop-after-1')).toBeInTheDocument();
     expect(screen.getByTestId('tree-drop-after-2')).toBeInTheDocument();
   });
+
+  it('skips duplicate tree after-drop indicators for same-level siblings', () => {
+    const items = [
+      { key: 'a', value: { name: 'A' }, textValue: 'A' },
+      { key: 'b', value: { name: 'B' }, textValue: 'B' },
+    ];
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 80, overscan: 0 }}
+        style={{ height: '80px', overflow: 'auto' }}
+        renderDropIndicator={(index, position) => (
+          <li role="presentation" data-testid={`tree-flat-drop-${position}-${index}`} />
+        )}
+      >
+        <Tree items={items} aria-label="Flat tree indicators">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      </Virtualizer>
+    ));
+
+    expect(screen.queryByTestId('tree-flat-drop-after-0')).not.toBeInTheDocument();
+    expect(screen.getByTestId('tree-flat-drop-after-1')).toBeInTheDocument();
+  });
+
+  it('renders ancestor chain after-drop indicators when closing deep branch', () => {
+    const items = [
+      {
+        key: 'parent',
+        value: { name: 'Parent' },
+        textValue: 'Parent',
+        children: [
+          {
+            key: 'child',
+            value: { name: 'Child' },
+            textValue: 'Child',
+            children: [
+              { key: 'grandchild', value: { name: 'Grandchild' }, textValue: 'Grandchild' },
+            ],
+          },
+        ],
+      },
+      { key: 'sibling', value: { name: 'Sibling' }, textValue: 'Sibling' },
+    ];
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 120, overscan: 0 }}
+        style={{ height: '120px', overflow: 'auto' }}
+        renderDropIndicator={(index, position) => (
+          <li role="presentation" data-testid={`tree-deep-drop-${position}-${index}`} />
+        )}
+      >
+        <Tree items={items} defaultExpandedKeys={['parent', 'child']} aria-label="Deep tree indicators">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByTestId('tree-deep-drop-after-2')).toBeInTheDocument();
+    expect(screen.getByTestId('tree-deep-drop-after-1')).toBeInTheDocument();
+    expect(screen.queryByTestId('tree-deep-drop-after-0')).not.toBeInTheDocument();
+  });
 });
