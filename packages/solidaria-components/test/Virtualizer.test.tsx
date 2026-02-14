@@ -12,6 +12,9 @@ import {
 } from '../src/Virtualizer';
 import { useCollectionRenderer } from '../src/Collection';
 import { ListBox, ListBoxOption } from '../src/ListBox';
+import { GridList, GridListItem } from '../src/GridList';
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '../src/Table';
+import { Tree, TreeItem } from '../src/Tree';
 
 describe('Virtualizer', () => {
   it('renders children in virtualizer container', () => {
@@ -190,5 +193,94 @@ describe('Virtualizer', () => {
     expect(screen.getByTestId('drop-before-0')).toBeInTheDocument();
     expect(screen.getByTestId('drop-after-1')).toBeInTheDocument();
     expect(screen.queryByTestId('drop-before-4')).not.toBeInTheDocument();
+  });
+
+  it('virtualizes GridList item rendering', () => {
+    const items = Array.from({ length: 20 }, (_, i) => ({ id: i, name: `Grid ${i}` }));
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <GridList
+          items={items}
+          getKey={(item) => item.id}
+          aria-label="Virtualized grid list"
+        >
+          {(item) => <GridListItem id={item.id}>{item.name}</GridListItem>}
+        </GridList>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByText('Grid 0')).toBeInTheDocument();
+    expect(screen.getByText('Grid 1')).toBeInTheDocument();
+    expect(screen.queryByText('Grid 5')).not.toBeInTheDocument();
+  });
+
+  it('virtualizes Table body rows', () => {
+    const columns = [{ key: 'name', name: 'Name' }];
+    const items = Array.from({ length: 30 }, (_, i) => ({ id: i, name: `Row ${i}` }));
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <Table
+          items={items}
+          columns={columns}
+          getKey={(item) => item.id}
+          aria-label="Virtualized table"
+        >
+          {() => (
+            <>
+              <TableHeader>
+                <TableColumn id="name">{() => <>Name</>}</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {(item) => (
+                  <TableRow id={item.id} item={item}>
+                    {() => (
+                      <TableCell>{() => <>{item.name}</>}</TableCell>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+            </>
+          )}
+        </Table>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByText('Row 0')).toBeInTheDocument();
+    expect(screen.getByText('Row 1')).toBeInTheDocument();
+    expect(screen.queryByText('Row 6')).not.toBeInTheDocument();
+  });
+
+  it('virtualizes Tree visible rows', () => {
+    const items = Array.from({ length: 20 }, (_, i) => ({
+      key: `node-${i}`,
+      value: { name: `Node ${i}` },
+      textValue: `Node ${i}`,
+    }));
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <Tree items={items} aria-label="Virtualized tree">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByText('Node 0')).toBeInTheDocument();
+    expect(screen.getByText('Node 1')).toBeInTheDocument();
+    expect(screen.queryByText('Node 6')).not.toBeInTheDocument();
   });
 });

@@ -11,6 +11,7 @@
 import {
   type JSX,
   createContext,
+  createEffect,
   createMemo,
   createSignal,
   splitProps,
@@ -40,6 +41,8 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { useCollectionRenderer } from './Collection';
+import { useVirtualizerContext } from './Virtualizer';
 
 // ============================================
 // TYPES
@@ -83,6 +86,12 @@ export interface GridListProps<T extends object> extends Omit<AriaGridListProps,
   style?: StyleOrFunction<GridListRenderProps>;
   /** A function to render when the grid list is empty. */
   renderEmptyState?: () => JSX.Element;
+  /** Whether there are more items to load. */
+  hasMore?: boolean;
+  /** Whether additional items are currently loading. */
+  isLoading?: boolean;
+  /** Called when the load more sentinel becomes visible. */
+  onLoadMore?: () => void | Promise<void>;
 }
 
 export interface GridListItemRenderProps {
@@ -115,6 +124,14 @@ export interface GridListItemProps<T extends object> extends SlotProps {
   textValue?: string;
   /** Handler called when the item is activated. */
   onAction?: () => void;
+}
+
+export interface GridListLoadMoreItemProps extends SlotProps {
+  onLoadMore: () => void | Promise<void>;
+  isLoading?: boolean;
+  children?: JSX.Element;
+  class?: ClassNameOrFunction<{ isLoading: boolean }>;
+  style?: StyleOrFunction<{ isLoading: boolean }>;
 }
 
 // ============================================
@@ -222,7 +239,7 @@ function buildGridCollection<T extends object>(
 export function GridList<T extends object>(props: GridListProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'renderEmptyState'],
+    ['children', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore'],
     [
       'items',
       'getKey',
@@ -333,6 +350,17 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
   };
 
   const isEmpty = () => stateProps.items.length === 0;
+  const virtualizer = useVirtualizerContext();
+  const parentCollectionRenderer = useCollectionRenderer<T>();
+  const virtualRange = createMemo(() => {
+    if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return null;
+    return virtualizer.getVisibleRange(stateProps.items.length);
+  });
+  const visibleItems = createMemo(() => {
+    const range = virtualRange();
+    if (!range) return stateProps.items;
+    return stateProps.items.slice(range.start, range.end);
+  });
 
   const contextValue = createMemo<GridListContextValue<T>>(() => ({
     state,
@@ -358,7 +386,31 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
           {isEmpty() && local.renderEmptyState ? (
             local.renderEmptyState()
           ) : (
-            <For each={stateProps.items}>{(item) => props.children(item)}</For>
+            <>
+              {virtualRange()?.offsetTop
+                ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
+                : null}
+              <For each={visibleItems()}>
+                {(item, index) => {
+                  const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                  const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
+                  const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
+                  return (
+                    <>
+                      {beforeIndicator()}
+                      {props.children(item)}
+                      {afterIndicator()}
+                    </>
+                  );
+                }}
+              </For>
+              {virtualRange()?.offsetBottom
+                ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
+                : null}
+            </>
+          )}
+          {local.hasMore && local.onLoadMore && (
+            <GridListLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
           )}
         </ul>
       </GridListStateContext.Provider>
@@ -506,6 +558,60 @@ export function GridListSelectionCheckbox(props: { itemKey: Key }): JSX.Element 
   return <input {...checkboxProps} />;
 }
 
+export function GridListLoadMoreItem(props: GridListLoadMoreItemProps): JSX.Element {
+  let ref: HTMLLIElement | undefined;
+  const [isPending, setIsPending] = createSignal(false);
+  const isLoading = () => !!props.isLoading || isPending();
+
+  const triggerLoadMore = async () => {
+    if (isLoading()) return;
+    setIsPending(true);
+    try {
+      await props.onLoadMore();
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  createEffect(() => {
+    if (!ref || typeof IntersectionObserver !== 'function') return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        void triggerLoadMore();
+      }
+    });
+    observer.observe(ref);
+    return () => observer.disconnect();
+  });
+
+  const renderProps = useRenderProps(
+    {
+      children: props.children ?? (() => (isLoading() ? 'Loading more...' : 'Load more')),
+      class: props.class,
+      style: props.style,
+      defaultClassName: 'solidaria-GridList-loadMore',
+    },
+    () => ({ isLoading: isLoading() })
+  );
+
+  return (
+    <li
+      ref={ref}
+      role="row"
+      tabIndex={0}
+      onFocus={() => {
+        void triggerLoadMore();
+      }}
+      class={renderProps.class()}
+      style={renderProps.style()}
+      data-loading={isLoading() || undefined}
+    >
+      {renderProps.renderChildren()}
+    </li>
+  );
+}
+
 // Attach Item and SelectionCheckbox as static properties
 GridList.Item = GridListItem;
 GridList.SelectionCheckbox = GridListSelectionCheckbox;
+GridList.LoadMoreItem = GridListLoadMoreItem;

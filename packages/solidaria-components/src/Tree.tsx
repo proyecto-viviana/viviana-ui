@@ -11,6 +11,7 @@
 import {
   type JSX,
   createContext,
+  createEffect,
   createMemo,
   createSignal,
   splitProps,
@@ -43,6 +44,8 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { useCollectionRenderer } from './Collection';
+import { useVirtualizerContext } from './Virtualizer';
 
 // ============================================
 // TYPES
@@ -86,6 +89,12 @@ export interface TreeProps<T extends object> extends Omit<AriaTreeProps, 'childr
   style?: StyleOrFunction<TreeRenderProps>;
   /** A function to render when the tree is empty. */
   renderEmptyState?: () => JSX.Element;
+  /** Whether there are more items to load. */
+  hasMore?: boolean;
+  /** Whether additional items are currently loading. */
+  isLoading?: boolean;
+  /** Called when the load more sentinel becomes visible. */
+  onLoadMore?: () => void | Promise<void>;
 }
 
 export interface TreeRenderItemState {
@@ -144,6 +153,14 @@ export interface TreeExpandButtonProps {
   children?: JSX.Element | ((props: { isExpanded: boolean }) => JSX.Element);
 }
 
+export interface TreeLoadMoreItemProps extends SlotProps {
+  onLoadMore: () => void | Promise<void>;
+  isLoading?: boolean;
+  children?: JSX.Element;
+  class?: ClassNameOrFunction<{ isLoading: boolean }>;
+  style?: StyleOrFunction<{ isLoading: boolean }>;
+}
+
 // ============================================
 // CONTEXT
 // ============================================
@@ -177,7 +194,7 @@ export const TreeItemContext = createContext<TreeItemContextValue<object> | null
 export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['class', 'style', 'slot', 'renderEmptyState'],
+    ['class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore'],
     [
       'items',
       'disabledKeys',
@@ -271,6 +288,17 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
 
   // Render visible rows (flat list based on expansion state)
   const visibleRows = createMemo(() => state.collection.rows);
+  const virtualizer = useVirtualizerContext();
+  const parentCollectionRenderer = useCollectionRenderer<TreeItemData<T>>();
+  const virtualRange = createMemo(() => {
+    if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return null;
+    return virtualizer.getVisibleRange(visibleRows().length);
+  });
+  const virtualizedVisibleRows = createMemo(() => {
+    const range = virtualRange();
+    if (!range) return visibleRows();
+    return visibleRows().slice(range.start, range.end);
+  });
 
   return (
     <TreeContext.Provider value={contextValue() as unknown as TreeContextValue<object>}>
@@ -290,7 +318,11 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
           {isEmpty() && local.renderEmptyState ? (
             local.renderEmptyState()
           ) : (
-            <For each={visibleRows()}>
+            <>
+              {virtualRange()?.offsetTop
+                ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
+                : null}
+              <For each={virtualizedVisibleRows()}>
               {(node) => {
                 // Find the original item data to pass to render function
                 const itemData: TreeItemData<T> = {
@@ -312,7 +344,14 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
                 };
                 return props.children(itemData, itemState);
               }}
-            </For>
+              </For>
+              {virtualRange()?.offsetBottom
+                ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
+                : null}
+            </>
+          )}
+          {local.hasMore && local.onLoadMore && (
+            <TreeLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
           )}
         </div>
       </TreeStateContext.Provider>
@@ -545,7 +584,62 @@ export function TreeSelectionCheckbox(props: { itemKey: Key }): JSX.Element {
   return <input {...checkboxProps} class="solidaria-Tree-checkbox" />;
 }
 
+export function TreeLoadMoreItem(props: TreeLoadMoreItemProps): JSX.Element {
+  let ref: HTMLDivElement | undefined;
+  const [isPending, setIsPending] = createSignal(false);
+  const isLoading = () => !!props.isLoading || isPending();
+
+  const triggerLoadMore = async () => {
+    if (isLoading()) return;
+    setIsPending(true);
+    try {
+      await props.onLoadMore();
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  createEffect(() => {
+    if (!ref || typeof IntersectionObserver !== 'function') return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        void triggerLoadMore();
+      }
+    });
+    observer.observe(ref);
+    return () => observer.disconnect();
+  });
+
+  const renderProps = useRenderProps(
+    {
+      children: props.children ?? (() => (isLoading() ? 'Loading more...' : 'Load more')),
+      class: props.class,
+      style: props.style,
+      defaultClassName: 'solidaria-Tree-loadMore',
+    },
+    () => ({ isLoading: isLoading() })
+  );
+
+  return (
+    <div
+      ref={ref}
+      role="treeitem"
+      tabIndex={0}
+      aria-disabled={true}
+      onFocus={() => {
+        void triggerLoadMore();
+      }}
+      class={renderProps.class()}
+      style={renderProps.style()}
+      data-loading={isLoading() || undefined}
+    >
+      {renderProps.renderChildren()}
+    </div>
+  );
+}
+
 // Attach static properties
 Tree.Item = TreeItem;
 Tree.ExpandButton = TreeExpandButton;
 Tree.SelectionCheckbox = TreeSelectionCheckbox;
+Tree.LoadMoreItem = TreeLoadMoreItem;

@@ -8,6 +8,7 @@
 import {
   type JSX,
   createContext,
+  createEffect,
   createMemo,
   createSignal,
   splitProps,
@@ -45,6 +46,8 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { useCollectionRenderer } from './Collection';
+import { useVirtualizerContext } from './Virtualizer';
 
 // ============================================
 // TYPES
@@ -152,6 +155,12 @@ export interface TableBodyProps<T> extends SlotProps {
   style?: StyleOrFunction<TableBodyRenderProps>;
   /** A function to render when the body is empty. */
   renderEmptyState?: () => JSX.Element;
+  /** Whether there are more rows to load. */
+  hasMore?: boolean;
+  /** Whether additional rows are currently loading. */
+  isLoading?: boolean;
+  /** Called when the load more sentinel becomes visible. */
+  onLoadMore?: () => void | Promise<void>;
 }
 
 export interface TableRowRenderProps {
@@ -204,6 +213,15 @@ export interface TableCellProps extends SlotProps {
   class?: ClassNameOrFunction<TableCellRenderProps>;
   /** The inline style for the element. */
   style?: StyleOrFunction<TableCellRenderProps>;
+}
+
+export interface TableLoadMoreItemProps extends SlotProps {
+  onLoadMore: () => void | Promise<void>;
+  isLoading?: boolean;
+  colSpan?: number;
+  children?: JSX.Element;
+  class?: ClassNameOrFunction<{ isLoading: boolean }>;
+  style?: StyleOrFunction<{ isLoading: boolean }>;
 }
 
 // ============================================
@@ -529,7 +547,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
  * The body of a table containing data rows.
  */
 export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['items', 'class', 'style', 'slot', 'renderEmptyState']);
+  const [local] = splitProps(props, ['items', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore']);
 
   // Get context
   const context = useContext(TableContext);
@@ -563,13 +581,116 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
   };
 
   const isEmpty = () => items().length === 0;
+  const virtualizer = useVirtualizerContext();
+  const parentCollectionRenderer = useCollectionRenderer<T>();
+  const virtualRange = createMemo(() => {
+    if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return null;
+    return virtualizer.getVisibleRange(items().length);
+  });
+  const visibleItems = createMemo(() => {
+    const range = virtualRange();
+    if (!range) return items();
+    return items().slice(range.start, range.end);
+  });
+  const spacerColSpan = () => context.columns.length + (context.showSelectionCheckboxes ? 1 : 0);
 
   return (
     <tbody {...cleanRowGroupProps()} class={renderProps.class()} style={renderProps.style()}>
-      <Show when={isEmpty() && local.renderEmptyState} fallback={<For each={items()}>{(item) => props.children?.(item)}</For>}>
+      <Show when={isEmpty() && local.renderEmptyState} fallback={
+        <>
+          {virtualRange()?.offsetTop
+            ? (
+              <tr role="presentation" aria-hidden="true" data-virtualizer-spacer="top">
+                <td colSpan={spacerColSpan()} style={{ height: `${virtualRange()!.offsetTop}px`, padding: '0', border: '0' }} />
+              </tr>
+            )
+            : null}
+          <For each={visibleItems()}>
+            {(item, index) => {
+              const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+              const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
+              const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
+              return (
+                <>
+                  {beforeIndicator()}
+                  {props.children?.(item)}
+                  {afterIndicator()}
+                </>
+              );
+            }}
+          </For>
+          {virtualRange()?.offsetBottom
+            ? (
+              <tr role="presentation" aria-hidden="true" data-virtualizer-spacer="bottom">
+                <td colSpan={spacerColSpan()} style={{ height: `${virtualRange()!.offsetBottom}px`, padding: '0', border: '0' }} />
+              </tr>
+            )
+            : null}
+        </>
+      }>
         {local.renderEmptyState?.()}
       </Show>
+      <Show when={local.hasMore && local.onLoadMore}>
+        <TableLoadMoreItem
+          onLoadMore={local.onLoadMore!}
+          isLoading={local.isLoading}
+          colSpan={spacerColSpan()}
+        />
+      </Show>
     </tbody>
+  );
+}
+
+export function TableLoadMoreItem(props: TableLoadMoreItemProps): JSX.Element {
+  let ref: HTMLTableRowElement | undefined;
+  const [isPending, setIsPending] = createSignal(false);
+  const isLoading = () => !!props.isLoading || isPending();
+
+  const triggerLoadMore = async () => {
+    if (isLoading()) return;
+    setIsPending(true);
+    try {
+      await props.onLoadMore();
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  createEffect(() => {
+    if (!ref || typeof IntersectionObserver !== 'function') return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        void triggerLoadMore();
+      }
+    });
+    observer.observe(ref);
+    return () => observer.disconnect();
+  });
+
+  const renderProps = useRenderProps(
+    {
+      children: props.children ?? (() => (isLoading() ? 'Loading more...' : 'Load more')),
+      class: props.class,
+      style: props.style,
+      defaultClassName: 'solidaria-Table-loadMore',
+    },
+    () => ({ isLoading: isLoading() })
+  );
+
+  return (
+    <tr
+      ref={ref}
+      role="row"
+      tabIndex={0}
+      onFocus={() => {
+        void triggerLoadMore();
+      }}
+      class={renderProps.class()}
+      style={renderProps.style()}
+      data-loading={isLoading() || undefined}
+    >
+      <td colSpan={props.colSpan ?? 1}>{renderProps.renderChildren()}</td>
+    </tr>
   );
 }
 
@@ -851,6 +972,7 @@ export function TableSelectAllCheckbox(): JSX.Element {
 Table.Header = TableHeader;
 Table.Column = TableColumn;
 Table.Body = TableBody;
+Table.LoadMoreItem = TableLoadMoreItem;
 Table.Row = TableRow;
 Table.Cell = TableCell;
 Table.SelectionCheckbox = TableSelectionCheckbox;
