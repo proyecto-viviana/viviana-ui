@@ -570,41 +570,7 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
   // Create listbox aria props - reuse select's internal list state via collection
   const { listBoxProps } = createListBox(
     {},
-    {
-      collection: state.collection,
-      focusedKey: state.focusedKey,
-      setFocusedKey: state.setFocusedKey,
-      isFocused: state.isFocused,
-      setFocused: state.setFocused,
-      selectedKeys: () => {
-        const keys = state.selectedKeys();
-        return keys === 'all' ? new Set(Array.from(state.collection()).map((item) => item.key)) : keys;
-      },
-      isSelected: (key: Key) => state.selectedKeys() === 'all' || (state.selectedKeys() as Set<Key>).has(key),
-      isDisabled: state.isKeyDisabled,
-      selectionMode: () => state.selectionMode(),
-      disallowEmptySelection: () => true,
-      select: (key: Key) => state.selectionMode() === 'multiple'
-        ? state.setSelectedKeys([...(state.selectedKeys() === 'all' ? [] : state.selectedKeys() as Set<Key>), key])
-        : state.setSelectedKey(key),
-      toggleSelection: (key: Key) => {
-        if (state.selectionMode() !== 'multiple') {
-          state.setSelectedKey(key);
-          return;
-        }
-        const keys = state.selectedKeys();
-        if (keys === 'all') return;
-        const next = new Set(keys);
-        if (next.has(key)) next.delete(key);
-        else next.add(key);
-        state.setSelectedKeys(next);
-      },
-      replaceSelection: (key: Key) => state.setSelectedKey(key),
-      extendSelection: () => {},
-      selectAll: () => {},
-      clearSelection: () => state.selectionMode() === 'multiple' ? state.setSelectedKeys([]) : state.setSelectedKey(null),
-      childFocusStrategy: () => null,
-    } as unknown as ListState<T>
+    createSelectListStateAdapter(state)
   );
 
   // Render props values
@@ -696,19 +662,7 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
       },
     },
     {
-      collection: state.collection,
-      focusedKey: state.focusedKey,
-      setFocusedKey: state.setFocusedKey,
-      isFocused: state.isFocused,
-      setFocused: state.setFocused,
-      selectedKeys: () => {
-        const keys = state.selectedKeys();
-        return keys === 'all' ? new Set(Array.from(state.collection()).map((item) => item.key)) : keys;
-      },
-      isSelected: (key: Key) => state.selectedKeys() === 'all' || (state.selectedKeys() as Set<Key>).has(key),
-      isDisabled: state.isKeyDisabled,
-      selectionMode: () => state.selectionMode(),
-      disallowEmptySelection: () => true,
+      ...createSelectListStateAdapter(state),
       select: (key: Key) => {
         if (state.selectionMode() === 'multiple') {
           const keys = state.selectedKeys();
@@ -738,11 +692,7 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
           state.close();
         }
       },
-      extendSelection: () => {},
-      selectAll: () => {},
-      clearSelection: () => state.selectionMode() === 'multiple' ? state.setSelectedKeys([]) : state.setSelectedKey(null),
-      childFocusStrategy: () => null,
-    } as unknown as ListState<T>
+    }
   );
 
   // Create hover
@@ -823,6 +773,62 @@ function toTextValue(value: unknown): string | undefined {
     return String(value);
   }
   return undefined;
+}
+
+function createSelectListStateAdapter<T>(state: SelectState<T>): ListState<T> {
+  const selectedKeys = () => {
+    const keys = state.selectedKeys();
+    return keys === 'all'
+      ? new Set(Array.from(state.collection()).map((item) => item.key))
+      : keys;
+  };
+
+  return {
+    collection: state.collection,
+    isFocused: state.isFocused,
+    setFocused: state.setFocused,
+    focusedKey: state.focusedKey,
+    setFocusedKey: (key) => state.setFocusedKey(key ?? null),
+    childFocusStrategy: () => null,
+    selectionMode: () => state.selectionMode(),
+    selectionBehavior: () => 'replace',
+    disallowEmptySelection: () => true,
+    selectedKeys,
+    disabledKeys: () => {
+      const keys = new Set<Key>();
+      for (const node of state.collection()) {
+        if (node.isDisabled) keys.add(node.key);
+      }
+      return keys;
+    },
+    disabledBehavior: () => 'all',
+    isEmpty: () => selectedKeys().size === 0,
+    isSelectAll: () => state.selectedKeys() === 'all',
+    isSelected: (key) => selectedKeys().has(key),
+    isDisabled: state.isKeyDisabled,
+    setSelectionBehavior: () => {},
+    toggleSelection: (key) => {
+      if (state.selectionMode() !== 'multiple') {
+        state.setSelectedKey(key);
+        return;
+      }
+      const keys = state.selectedKeys();
+      if (keys === 'all') return;
+      const next = new Set(keys);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      state.setSelectedKeys(next);
+    },
+    replaceSelection: (key) => state.setSelectedKey(key),
+    setSelectedKeys: (keys) => state.setSelectedKeys(keys),
+    selectAll: () => {},
+    clearSelection: () => state.selectionMode() === 'multiple' ? state.setSelectedKeys([]) : state.setSelectedKey(null),
+    toggleSelectAll: () => {},
+    extendSelection: (toKey) => state.setSelectedKey(toKey),
+    select: (key) => state.selectionMode() === 'multiple'
+      ? state.setSelectedKeys([...(state.selectedKeys() === 'all' ? [] : state.selectedKeys() as Set<Key>), key])
+      : state.setSelectedKey(key),
+  };
 }
 
 // Attach sub-components
