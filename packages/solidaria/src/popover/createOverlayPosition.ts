@@ -6,6 +6,7 @@
  */
 
 import { createEffect, createSignal, onCleanup, type JSX } from 'solid-js';
+import { useLocale } from '../i18n';
 import {
   calculatePosition,
   getRect,
@@ -122,7 +123,8 @@ function translateRTL(position: string, direction: string): string {
  * element, and updating the position when the window resizes.
  */
 export function createOverlayPosition(props: AriaPositionProps): PositionAria {
-  const direction = 'ltr'; // TODO: get from locale context
+  const locale = useLocale();
+  const direction = () => locale().direction;
 
   const arrowSize = () => props.arrowSize ?? 0;
   const targetRef = () => props.targetRef();
@@ -178,7 +180,7 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
     }
 
     const result = calculatePosition({
-      placement: translateRTL(placement(), direction) as Placement,
+      placement: translateRTL(placement(), direction()) as Placement,
       overlayNode,
       targetNode,
       scrollNode: scrollNode || overlayNode,

@@ -8,6 +8,7 @@ import { createFocusRing } from '../interactions';
 import { createPress } from '../interactions';
 import { createHover } from '../interactions';
 import { createId } from '../ssr';
+import { useLocale } from '../i18n';
 import type { Key, Collection, CollectionNode } from '@proyecto-viviana/solid-stately';
 
 // ============================================
@@ -227,6 +228,7 @@ export function createTabList<T>(
   props: AriaTabListProps,
   state: TabListState<T>
 ): TabListAria {
+  const locale = useLocale();
   const orientation = () => props.orientation ?? state.orientation() ?? 'horizontal';
   const keyboardActivation = () => props.keyboardActivation ?? state.keyboardActivation() ?? 'automatic';
 
@@ -238,17 +240,17 @@ export function createTabList<T>(
 
     let nextKey: Key | null = null;
     const isHorizontal = orientation() === 'horizontal';
+    const isRTL = locale().direction === 'rtl';
 
     switch (e.key) {
       case 'ArrowLeft':
         if (isHorizontal) {
-          // TODO: RTL support
-          nextKey = getPreviousKey(state, currentKey);
+          nextKey = isRTL ? getNextKey(state, currentKey) : getPreviousKey(state, currentKey);
         }
         break;
       case 'ArrowRight':
         if (isHorizontal) {
-          nextKey = getNextKey(state, currentKey);
+          nextKey = isRTL ? getPreviousKey(state, currentKey) : getNextKey(state, currentKey);
         }
         break;
       case 'ArrowUp':

@@ -63,6 +63,11 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
+function getSafeRange(min: number, max: number): number {
+  const range = max - min;
+  return Number.isFinite(range) && range > 0 ? range : 1;
+}
+
 // ============================================
 // PROGRESSBAR COMPONENT
 // ============================================
@@ -119,7 +124,7 @@ export function ProgressBar(props: ParentProps<ProgressBarProps>): JSX.Element {
       return undefined;
     }
     const clampedValue = clamp(value(), minValue(), maxValue());
-    return ((clampedValue - minValue()) / (maxValue() - minValue())) * 100;
+    return ((clampedValue - minValue()) / getSafeRange(minValue(), maxValue())) * 100;
   });
 
   // Get value text from aria props

@@ -57,6 +57,11 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
+function getSafeRange(min: number, max: number): number {
+  const range = max - min;
+  return Number.isFinite(range) && range > 0 ? range : 1;
+}
+
 // ============================================
 // IMPLEMENTATION
 // ============================================
@@ -91,7 +96,7 @@ export function createProgressBar(
     const formatOptions = p.formatOptions ?? { style: 'percent' as const };
 
     const clampedValue = clamp(value, minValue, maxValue);
-    const percentage = (clampedValue - minValue) / (maxValue - minValue);
+    const percentage = (clampedValue - minValue) / getSafeRange(minValue, maxValue);
 
     // Format value label
     let valueLabel = p.valueLabel;

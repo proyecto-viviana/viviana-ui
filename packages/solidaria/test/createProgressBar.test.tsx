@@ -102,4 +102,11 @@ describe('createProgressBar', () => {
     // 5/10 = 50% - format may vary by locale
     expect(progressbar.getAttribute('aria-valuetext')).toMatch(/50\s?%/);
   });
+
+  it('should handle equal min and max values without NaN', () => {
+    render(() => <TestProgressBar value={10} minValue={10} maxValue={10} />);
+    const progressbar = screen.getByRole('progressbar');
+    expect(progressbar).toHaveAttribute('aria-valuenow', '10');
+    expect(progressbar.getAttribute('aria-valuetext')).toMatch(/0\s?%/);
+  });
 });

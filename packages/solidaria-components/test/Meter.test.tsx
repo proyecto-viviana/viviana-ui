@@ -171,6 +171,20 @@ describe('Meter', () => {
 
       expect(percentage).toBe(100);
     });
+
+    it('should handle equal min and max without NaN percentage', () => {
+      let percentage: number | undefined;
+      render(() => (
+        <Meter aria-label="Test Meter" value={10} minValue={10} maxValue={10}>
+          {(props) => {
+            percentage = props.percentage;
+            return null;
+          }}
+        </Meter>
+      ));
+
+      expect(percentage).toBe(0);
+    });
   });
 
   // ============================================

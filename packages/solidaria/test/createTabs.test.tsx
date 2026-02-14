@@ -16,6 +16,7 @@ import {
   type TabListState,
 } from '../src/tabs';
 import { createTabListState, type TabListStateProps } from '@proyecto-viviana/solid-stately';
+import { I18nProvider } from '../src/i18n';
 
 // Default tab items for tests
 const defaultItems = [
@@ -248,6 +249,29 @@ describe('createTabs', () => {
       fireEvent.keyDown(tabs[1], { key: 'ArrowLeft' });
 
       expect(onSelectionChange).toHaveBeenCalledWith('tab1');
+    });
+
+    it('reverses ArrowLeft/ArrowRight behavior in RTL', () => {
+      const onSelectionChange = vi.fn();
+      render(() => (
+        <I18nProvider locale="he-IL">
+          <TestTabs
+            aria-label="Test Tabs"
+            orientation="horizontal"
+            defaultSelectedKey="tab2"
+            onSelectionChange={onSelectionChange}
+          />
+        </I18nProvider>
+      ));
+
+      const tabs = screen.getAllByRole('tab');
+      tabs[1].focus();
+
+      fireEvent.keyDown(tabs[1], { key: 'ArrowLeft' });
+      expect(onSelectionChange).toHaveBeenCalledWith('tab3');
+
+      fireEvent.keyDown(tabs[2], { key: 'ArrowRight' });
+      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
     });
 
     it('ArrowUp/ArrowDown do not change selection in horizontal mode', () => {

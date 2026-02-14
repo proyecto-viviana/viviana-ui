@@ -139,6 +139,18 @@ describe('ProgressBar', () => {
     expect(progressbar).toHaveAttribute('aria-valuemax', '200');
   });
 
+  it('should handle equal min and max without NaN percentage', () => {
+    render(() => (
+      <ProgressBar value={10} minValue={10} maxValue={10}>
+        {(renderProps) => <span class="percentage">{renderProps.percentage}</span>}
+      </ProgressBar>
+    ));
+
+    const progressbar = screen.getByRole('progressbar');
+    const percentage = progressbar.querySelector('.percentage');
+    expect(percentage).toHaveTextContent('0');
+  });
+
   it('should support style as a function', () => {
     render(() => (
       <ProgressBar
