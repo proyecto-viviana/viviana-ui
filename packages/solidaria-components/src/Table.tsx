@@ -11,6 +11,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  onCleanup,
   splitProps,
   useContext,
   For,
@@ -586,6 +587,21 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
   const virtualRange = createMemo(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return null;
     return virtualizer.getVisibleRange(items().length);
+  });
+  createEffect(() => {
+    if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
+    virtualizer.setDropTargetResolver((target) => {
+      const rowNodes = Array.from(context.collection).filter((node) => node.type === 'item');
+      const node = rowNodes[target.index];
+      if (!node) return target;
+      return {
+        ...target,
+        key: typeof node.key === 'string' || typeof node.key === 'number' ? node.key : undefined,
+      };
+    });
+    onCleanup(() => {
+      virtualizer.setDropTargetResolver(undefined);
+    });
   });
   const visibleItems = createMemo(() => {
     const range = virtualRange();

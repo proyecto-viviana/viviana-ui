@@ -236,6 +236,38 @@ describe('Virtualizer', () => {
     expect(screen.queryByTestId('drop-before-4')).not.toBeInTheDocument();
   });
 
+  it('enriches listbox drop targets with item key metadata', () => {
+    const items = Array.from({ length: 6 }, (_, i) => ({
+      id: `item-${i}`,
+      label: `Item ${i}`,
+    }));
+
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const target = createMemo(() => ctx()?.getDropTargetFromPoint({ x: 1, y: 1 }, items.length) ?? null);
+      return <output data-testid="listbox-target">{JSON.stringify(target())}</output>;
+    }
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <>
+          <ListBox aria-label="Listbox drop metadata" items={items} getKey={(item) => item.id}>
+            {(item) => <ListBoxOption id={item.id}>{item.label}</ListBoxOption>}
+          </ListBox>
+          <Consumer />
+        </>
+      </Virtualizer>
+    ));
+
+    const target = JSON.parse(screen.getByTestId('listbox-target').textContent || '{}');
+    expect(target.index).toBe(0);
+    expect(target.key).toBe('item-0');
+  });
+
   it('virtualizes GridList item rendering', () => {
     const items = Array.from({ length: 20 }, (_, i) => ({ id: i, name: `Grid ${i}` }));
 
@@ -258,6 +290,35 @@ describe('Virtualizer', () => {
     expect(screen.getByText('Grid 0')).toBeInTheDocument();
     expect(screen.getByText('Grid 1')).toBeInTheDocument();
     expect(screen.queryByText('Grid 5')).not.toBeInTheDocument();
+  });
+
+  it('enriches gridlist drop targets with item key metadata', () => {
+    const items = Array.from({ length: 6 }, (_, i) => ({ id: i, name: `Grid ${i}` }));
+
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const target = createMemo(() => ctx()?.getDropTargetFromPoint({ x: 1, y: 1 }, items.length) ?? null);
+      return <output data-testid="grid-target">{JSON.stringify(target())}</output>;
+    }
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <>
+          <GridList items={items} getKey={(item) => item.id} aria-label="Grid drop metadata">
+            {(item) => <GridListItem id={item.id}>{item.name}</GridListItem>}
+          </GridList>
+          <Consumer />
+        </>
+      </Virtualizer>
+    ));
+
+    const target = JSON.parse(screen.getByTestId('grid-target').textContent || '{}');
+    expect(target.index).toBe(0);
+    expect(target.key).toBe(0);
   });
 
   it('virtualizes Table body rows', () => {
@@ -299,6 +360,51 @@ describe('Virtualizer', () => {
     expect(screen.getByText('Row 0')).toBeInTheDocument();
     expect(screen.getByText('Row 1')).toBeInTheDocument();
     expect(screen.queryByText('Row 6')).not.toBeInTheDocument();
+  });
+
+  it('enriches table drop targets with row key metadata', () => {
+    const columns = [{ key: 'name', name: 'Name' }];
+    const items = Array.from({ length: 6 }, (_, i) => ({ id: i, name: `Row ${i}` }));
+
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const target = createMemo(() => ctx()?.getDropTargetFromPoint({ x: 1, y: 1 }, items.length) ?? null);
+      return <output data-testid="table-target">{JSON.stringify(target())}</output>;
+    }
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <>
+          <Table items={items} columns={columns} getKey={(item) => item.id} aria-label="Table drop metadata">
+            {() => (
+              <>
+                <TableHeader>
+                  <TableColumn id="name">{() => <>Name</>}</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {(item) => (
+                    <TableRow id={item.id} item={item}>
+                      {() => (
+                        <TableCell>{() => <>{item.name}</>}</TableCell>
+                      )}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </>
+            )}
+          </Table>
+          <Consumer />
+        </>
+      </Virtualizer>
+    ));
+
+    const target = JSON.parse(screen.getByTestId('table-target').textContent || '{}');
+    expect(target.index).toBe(0);
+    expect(target.key).toBe(0);
   });
 
   it('virtualizes Tree visible rows', () => {

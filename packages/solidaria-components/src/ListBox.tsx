@@ -11,6 +11,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  onCleanup,
   splitProps,
   useContext,
   For,
@@ -275,6 +276,20 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   const virtualRange = createMemo(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized || hasSections()) return null;
     return virtualizer.getVisibleRange(stateProps.items.length);
+  });
+  createEffect(() => {
+    if (!virtualizer || !parentCollectionRenderer?.isVirtualized || hasSections()) return;
+    virtualizer.setDropTargetResolver((target) => {
+      const node = Array.from(state.collection())[target.index];
+      if (!node) return target;
+      return {
+        ...target,
+        key: typeof node.key === 'string' || typeof node.key === 'number' ? node.key : undefined,
+      };
+    });
+    onCleanup(() => {
+      virtualizer.setDropTargetResolver(undefined);
+    });
   });
   const visibleItems = createMemo(() => {
     const range = virtualRange();
