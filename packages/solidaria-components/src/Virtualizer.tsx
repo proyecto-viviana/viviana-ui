@@ -413,6 +413,20 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       const nextTarget = toCollectionDropTarget({ ...virtualTarget, position });
       return isValidDropTarget(nextTarget) ? nextTarget : null;
     };
+    const scanFromIndex = (startIndex: number, step: number): DropTarget | null => {
+      const insertionOrder: Array<'before' | 'after'> = step > 0
+        ? ['before', 'after']
+        : ['after', 'before'];
+      for (let index = startIndex; index >= 0 && index < itemCount; index += step) {
+        const onTarget = tryTarget(index, 'on');
+        if (onTarget) return onTarget;
+        for (const position of insertionOrder) {
+          const insertionTarget = tryTarget(index, position);
+          if (insertionTarget) return insertionTarget;
+        }
+      }
+      return null;
+    };
     const directTransition = tryCurrentItemTransition(target);
     if (directTransition) return directTransition;
     const currentIndex = getCurrentIndex(target);
@@ -478,6 +492,20 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       const nextTarget = toCollectionDropTarget({ ...virtualTarget, position });
       return isValidDropTarget(nextTarget) ? nextTarget : null;
     };
+    const scanFromIndex = (startIndex: number, step: number): DropTarget | null => {
+      const insertionOrder: Array<'before' | 'after'> = step > 0
+        ? ['before', 'after']
+        : ['after', 'before'];
+      for (let index = startIndex; index >= 0 && index < itemCount; index += step) {
+        const onTarget = tryTarget(index, 'on');
+        if (onTarget) return onTarget;
+        for (const position of insertionOrder) {
+          const insertionTarget = tryTarget(index, position);
+          if (insertionTarget) return insertionTarget;
+        }
+      }
+      return null;
+    };
     if (nextStart < 0 || nextStart >= itemCount) {
       if (direction === 'next') {
         const endBoundaryTarget = tryTarget(itemCount - 1, 'after')
@@ -498,17 +526,10 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       const rootTarget: DropTarget = { type: 'root' };
       return isValidDropTarget(rootTarget) ? rootTarget : null;
     }
-    for (let index = clampedStart; index >= 0 && index < itemCount; index += delta) {
-      const onTarget = tryTarget(index, 'on');
-      if (onTarget) return onTarget;
-      const insertionOrder: Array<'before' | 'after'> = direction === 'next'
-        ? ['before', 'after']
-        : ['after', 'before'];
-      for (const position of insertionOrder) {
-        const insertionTarget = tryTarget(index, position);
-        if (insertionTarget) return insertionTarget;
-      }
-    }
+    const primaryTarget = scanFromIndex(clampedStart, delta);
+    if (primaryTarget) return primaryTarget;
+    const oppositeTarget = scanFromIndex(clampedStart - delta, -delta);
+    if (oppositeTarget) return oppositeTarget;
 
     const rootTarget: DropTarget = { type: 'root' };
     return isValidDropTarget(rootTarget) ? rootTarget : null;

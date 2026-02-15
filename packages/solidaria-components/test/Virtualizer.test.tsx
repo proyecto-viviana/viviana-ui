@@ -521,6 +521,43 @@ describe('Virtualizer', () => {
     expect(parsed).toMatchObject({ type: 'root' });
   });
 
+  it('keyboard page delegate falls back to opposite direction when forward scan has no valid targets', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 10);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-page-opposite-fallback">
+          {JSON.stringify({
+            nextFallback:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 2, dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && target.dropPosition === 'on' && Number(target.key) <= 4
+              ) ?? null,
+            previousFallback:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 7, dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on' && Number(target.key) >= 5
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20, viewportSize: 80 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-page-opposite-fallback').textContent || '{}');
+    expect(parsed.nextFallback).toMatchObject({ type: 'item', key: 4, dropPosition: 'on' });
+    expect(parsed.previousFallback).toMatchObject({ type: 'item', key: 5, dropPosition: 'on' });
+  });
+
   it('renders only visible range for listbox when virtualized', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       cb(0);
