@@ -280,6 +280,57 @@ describe('Virtualizer', () => {
     expect(parsed.rootFallback).toMatchObject({ type: 'root' });
   });
 
+  it('keyboard delegate transitions through same-item drop positions before advancing index', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 4);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-position-transitions">
+          {JSON.stringify({
+            nextFromBefore:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 1, dropPosition: 'before' },
+                'next',
+                (target) => target.type === 'item'
+              ) ?? null,
+            nextFromOn:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 1, dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item'
+              ) ?? null,
+            previousFromAfter:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 2, dropPosition: 'after' },
+                'previous',
+                (target) => target.type === 'item'
+              ) ?? null,
+            previousFromOn:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 2, dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-position-transitions').textContent || '{}');
+    expect(parsed.nextFromBefore).toMatchObject({ type: 'item', key: 1, dropPosition: 'on' });
+    expect(parsed.nextFromOn).toMatchObject({ type: 'item', key: 1, dropPosition: 'after' });
+    expect(parsed.previousFromAfter).toMatchObject({ type: 'item', key: 2, dropPosition: 'on' });
+    expect(parsed.previousFromOn).toMatchObject({ type: 'item', key: 2, dropPosition: 'before' });
+  });
+
   it('keyboard page delegate advances by viewport-sized steps', () => {
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext());
@@ -1017,5 +1068,49 @@ describe('Virtualizer', () => {
     expect(screen.getByTestId('tree-deep-drop-after-2')).toBeInTheDocument();
     expect(screen.getByTestId('tree-deep-drop-after-1')).toBeInTheDocument();
     expect(screen.queryByTestId('tree-deep-drop-after-0')).not.toBeInTheDocument();
+  });
+
+  it('does not render offscreen ancestor after-drop indicators in virtualized tree window', () => {
+    const items = [
+      {
+        key: 'parent',
+        value: { name: 'Parent' },
+        textValue: 'Parent',
+        children: [
+          {
+            key: 'child',
+            value: { name: 'Child' },
+            textValue: 'Child',
+            children: [
+              { key: 'grandchild', value: { name: 'Grandchild' }, textValue: 'Grandchild' },
+            ],
+          },
+        ],
+      },
+      { key: 'sibling', value: { name: 'Sibling' }, textValue: 'Sibling' },
+    ];
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 20, overscan: 0 }}
+        style={{ height: '20px', overflow: 'auto' }}
+        renderDropIndicator={(index, position) => (
+          <li role="presentation" data-testid={`tree-offscreen-drop-${position}-${index}`} />
+        )}
+      >
+        <Tree items={items} defaultExpandedKeys={['parent', 'child']} aria-label="Deep tree offscreen indicators">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      </Virtualizer>
+    ));
+
+    const container = document.querySelector('[data-virtualizer]') as HTMLDivElement;
+    fireEvent.scroll(container, { target: { scrollTop: 40 } }); // center grandchild row
+
+    // Current row indicator remains.
+    expect(screen.getByTestId('tree-offscreen-drop-after-2')).toBeInTheDocument();
+    // Ancestor row is offscreen and should not be in current virtual window.
+    expect(screen.queryByTestId('tree-offscreen-drop-after-1')).not.toBeInTheDocument();
   });
 });

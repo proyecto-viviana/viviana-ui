@@ -464,7 +464,10 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     }
     return map;
   });
-  const getAfterIndicatorIndexes = (absoluteIndex: number): number[] => {
+  const getAfterIndicatorIndexes = (
+    absoluteIndex: number,
+    renderRange?: { start: number; end: number } | null
+  ): number[] => {
     const rows = visibleRows();
     const current = rows[absoluteIndex];
     if (!current) return [];
@@ -488,7 +491,8 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
       if (cursor.parentKey == null) break;
       cursorIndex = rowIndexByKey().get(cursor.parentKey) ?? null;
     }
-    return result;
+    if (!renderRange) return result;
+    return result.filter((index) => index >= renderRange.start && index < renderRange.end);
   };
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     ...parentCollectionRenderer,
@@ -529,7 +533,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
                   const itemIndex = () => (virtualRange()?.start ?? 0) + index();
                   const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
                   const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
-                  const afterIndicatorIndexes = () => getAfterIndicatorIndexes(itemIndex());
+                  const afterIndicatorIndexes = () => getAfterIndicatorIndexes(itemIndex(), virtualRange());
                   // Find the original item data to pass to render function
                   const itemData: TreeItemData<T> = {
                     key: node.key,
