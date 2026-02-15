@@ -295,9 +295,26 @@ export function createDroppableCollection(
       if (opts.isDisabled) return;
       const isValidDropTarget = (target: DropTarget) =>
         state.getDropOperation(target, { has: () => true }, ['copy', 'move', 'link']) !== 'cancel';
-      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && opts.dropTargetDelegate.getKeyboardNavigationTarget) {
-        const direction = e.key === 'ArrowDown' ? 'next' : 'previous';
-        const nextTarget = opts.dropTargetDelegate.getKeyboardNavigationTarget(state.target, direction, isValidDropTarget);
+      if (
+        (e.key === 'ArrowDown' ||
+          e.key === 'ArrowUp' ||
+          e.key === 'ArrowRight' ||
+          e.key === 'ArrowLeft' ||
+          e.key === 'Home' ||
+          e.key === 'End') &&
+        opts.dropTargetDelegate.getKeyboardNavigationTarget
+      ) {
+        const direction = e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'Home'
+          ? 'next'
+          : 'previous';
+        const navigationStart = e.key === 'Home' || e.key === 'End'
+          ? ({ type: 'root' } as DropTarget)
+          : state.target;
+        const nextTarget = opts.dropTargetDelegate.getKeyboardNavigationTarget(
+          navigationStart,
+          direction,
+          isValidDropTarget
+        );
         if (nextTarget) {
           e.preventDefault();
           state.setTarget(nextTarget);
