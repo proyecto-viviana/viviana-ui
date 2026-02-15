@@ -133,7 +133,14 @@ export class ListLayout {
   ): VirtualizerDropTarget | null {
     if (itemCount <= 0) return { type: 'root', index: -1, position: 'on' };
     const itemHeight = Math.max(1, options?.itemSize ?? 40);
-    const rawIndex = Math.floor(Math.max(0, point.y) / itemHeight);
+    if (point.y < 0) {
+      return { type: 'item', index: 0, position: 'before' };
+    }
+    const totalHeight = itemCount * itemHeight;
+    if (point.y >= totalHeight) {
+      return { type: 'item', index: itemCount - 1, position: 'after' };
+    }
+    const rawIndex = Math.floor(point.y / itemHeight);
     const index = Math.max(0, Math.min(rawIndex, itemCount - 1));
     const offsetWithinItem = Math.max(0, point.y - index * itemHeight);
     const threshold = itemHeight / 3;

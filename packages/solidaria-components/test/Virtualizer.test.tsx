@@ -6,6 +6,7 @@ import { render, screen, fireEvent } from '@solidjs/testing-library';
 import { createMemo, type JSX } from 'solid-js';
 import {
   GridLayout,
+  ListLayout,
   Virtualizer,
   type VirtualizerLayout,
   useVirtualizerContext,
@@ -387,6 +388,14 @@ describe('Virtualizer', () => {
     expect(range.start).toBe(16);
     expect(range.end).toBe(28);
     expect(range.offsetTop).toBe(80);
+  });
+
+  it('list layout drop targets clamp to before-first and after-last at boundaries', () => {
+    const layout = new ListLayout();
+    const before = layout.getDropTargetFromPoint({ x: 0, y: -10 }, 4, { itemSize: 20 });
+    const after = layout.getDropTargetFromPoint({ x: 0, y: 200 }, 4, { itemSize: 20 });
+    expect(before).toMatchObject({ type: 'item', index: 0, position: 'before' });
+    expect(after).toMatchObject({ type: 'item', index: 3, position: 'after' });
   });
 
   it('propagates virtualized drop indicator renderer into listbox flow', () => {
