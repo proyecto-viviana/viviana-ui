@@ -13,7 +13,14 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
 import { Tree, TreeItem } from '../src/Tree';
 import { useDragAndDrop } from '../src/useDragAndDrop';
-import type { TreeItemData } from '@proyecto-viviana/solid-stately';
+import type {
+  TreeItemData,
+  DraggableCollectionState,
+  DroppableCollectionState,
+  DropTarget,
+  DragTypes,
+  DropOperation,
+} from '@proyecto-viviana/solid-stately';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 interface TestItem {
@@ -148,6 +155,66 @@ describe('Tree', () => {
 
       const rows = screen.getAllByRole('row');
       expect(rows[0]).toHaveAttribute('draggable', 'true');
+    });
+
+    it('should prevent self/descendant on-drops for internal tree drags', () => {
+      const dragState: DraggableCollectionState = {
+        isDragging: true,
+        draggingKeys: new Set(['item-1']),
+        isDisabled: false,
+        preview: undefined,
+        startDrag: () => {},
+        moveDrag: () => {},
+        endDrag: () => {},
+        cancelDrag: () => {},
+        getItems: () => [],
+        getAllowedDropOperations: () => ['move'],
+      };
+      const dropState: DroppableCollectionState = {
+        isDropTarget: false,
+        target: null,
+        isDisabled: false,
+        setTarget: () => {},
+        isAccepted: () => true,
+        enterTarget: () => {},
+        moveToTarget: () => {},
+        exitTarget: () => {},
+        activateTarget: () => {},
+        drop: () => {},
+        shouldAcceptItemDrop: () => true,
+        getDropOperation: () => 'move',
+      };
+
+      const dragAndDropHooks = {
+        useDraggableCollectionState: () => dragState,
+        useDraggableCollection: () => ({ state: dragState }),
+        useDraggableItem: () => ({ dragProps: {}, dragButtonProps: {}, isDragging: false }),
+        useDroppableCollectionState: () => dropState,
+        useDroppableCollection: () => ({ collectionProps: {} }),
+        useDroppableItem: () => ({ dropProps: {}, dropButtonProps: {}, isDropTarget: false }),
+        dropTargetDelegate: {
+          getDropTargetFromPoint: () => null,
+        },
+      };
+
+      render(() => (
+        <Tree
+          items={createTestItems()}
+          aria-label="Test Tree"
+          defaultExpandedKeys={['item-1']}
+          dragAndDropHooks={dragAndDropHooks as any}
+        >
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const alwaysAccepted: DragTypes = { has: () => true };
+      const allowed: DropOperation[] = ['move'];
+      const selfTarget: DropTarget = { type: 'item', key: 'item-1', dropPosition: 'on' };
+      const descendantTarget: DropTarget = { type: 'item', key: 'item-1-1', dropPosition: 'on' };
+
+      expect(dropState.getDropOperation(selfTarget, alwaysAccepted, allowed)).toBe('cancel');
+      expect(dropState.getDropOperation(descendantTarget, alwaysAccepted, allowed)).toBe('cancel');
     });
   });
 

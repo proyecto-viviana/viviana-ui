@@ -320,6 +320,36 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     return local.dragAndDropHooks?.useDroppableCollectionState?.({});
   });
   createEffect(() => {
+    const activeDropState = dropState();
+    if (!activeDropState) return;
+    const originalGetDropOperation = activeDropState.getDropOperation.bind(activeDropState);
+
+    activeDropState.getDropOperation = (target, types, allowedOperations) => {
+      const currentDraggingKeys = dragState()?.draggingKeys ?? new Set<string | number>();
+      if (target.type === 'item' && currentDraggingKeys.size > 0) {
+        if (currentDraggingKeys.has(target.key) && target.dropPosition === 'on') {
+          return 'cancel';
+        }
+
+        let currentKey: Key | null = target.key;
+        while (currentKey != null) {
+          const item = state.collection.getItem(currentKey);
+          const parentKey = item?.parentKey;
+          if (parentKey != null && currentDraggingKeys.has(parentKey)) {
+            return 'cancel';
+          }
+          currentKey = parentKey ?? null;
+        }
+      }
+
+      return originalGetDropOperation(target, types, allowedOperations);
+    };
+
+    onCleanup(() => {
+      activeDropState.getDropOperation = originalGetDropOperation;
+    });
+  });
+  createEffect(() => {
     if (!hasDraggableDnd()) return;
     const hooks = local.dragAndDropHooks;
     const activeDragState = dragState();
