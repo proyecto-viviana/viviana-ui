@@ -906,6 +906,58 @@ describe('Virtualizer', () => {
     expect(screen.getByText('Grid 119')).toBeInTheDocument();
   });
 
+  it('retains far active drop target in virtualized gridlist when bounded retention is enabled', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 1;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
+    const items = Array.from({ length: 120 }, (_, i) => ({ id: i, name: `Grid ${i}` }));
+
+    const dropState = {
+      isDropTarget: true,
+      target: { type: 'item' as const, key: 100, dropPosition: 'before' as const },
+      isDisabled: false,
+      setTarget: () => {},
+      isAccepted: () => true,
+      enterTarget: () => {},
+      moveToTarget: () => {},
+      exitTarget: () => {},
+      activateTarget: () => {},
+      drop: () => {},
+      shouldAcceptItemDrop: () => true,
+      getDropOperation: () => 'move' as const,
+    };
+    const dragAndDropHooks = {
+      useDroppableCollectionState: () => dropState,
+      useDroppableCollection: () => ({ collectionProps: {} }),
+      dropTargetDelegate: {
+        getDropTargetFromPoint: () => null,
+      },
+    };
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 60, overscan: 0 }}
+        style={{ height: '60px', overflow: 'auto' }}
+      >
+        <GridList
+          items={items}
+          getKey={(item) => item.id}
+          aria-label="Drop target retention grid"
+          dragAndDropHooks={dragAndDropHooks as any}
+        >
+          {(item) => <GridListItem id={item.id}>{item.name}</GridListItem>}
+        </GridList>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByText('Grid 100')).toBeInTheDocument();
+    expect(screen.queryByText('Grid 115')).not.toBeInTheDocument();
+  });
+
   it('enriches gridlist drop targets with item key metadata', () => {
     const items = Array.from({ length: 6 }, (_, i) => ({ id: i, name: `Grid ${i}` }));
 
@@ -1075,6 +1127,57 @@ describe('Virtualizer', () => {
     fireEvent.keyDown(tree, { key: 'End' });
 
     expect(screen.getByText('Node 119')).toBeInTheDocument();
+  });
+
+  it('retains far active drop target in virtualized tree when bounded retention is enabled', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 1;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
+    const items = Array.from({ length: 120 }, (_, i) => ({
+      key: `node-${i}`,
+      value: { name: `Node ${i}` },
+      textValue: `Node ${i}`,
+    }));
+
+    const dropState = {
+      isDropTarget: true,
+      target: { type: 'item' as const, key: 'node-100', dropPosition: 'before' as const },
+      isDisabled: false,
+      setTarget: () => {},
+      isAccepted: () => true,
+      enterTarget: () => {},
+      moveToTarget: () => {},
+      exitTarget: () => {},
+      activateTarget: () => {},
+      drop: () => {},
+      shouldAcceptItemDrop: () => true,
+      getDropOperation: () => 'move' as const,
+    };
+    const dragAndDropHooks = {
+      useDroppableCollectionState: () => dropState,
+      useDroppableCollection: () => ({ collectionProps: {} }),
+      dropTargetDelegate: {
+        getDropTargetFromPoint: () => null,
+      },
+    };
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 60, overscan: 0 }}
+        style={{ height: '60px', overflow: 'auto' }}
+      >
+        <Tree items={items} aria-label="Drop target retention tree" dragAndDropHooks={dragAndDropHooks as any}>
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByText('Node 100')).toBeInTheDocument();
+    expect(screen.queryByText('Node 115')).not.toBeInTheDocument();
   });
 
   it('enriches tree drop targets with hierarchical metadata', () => {
