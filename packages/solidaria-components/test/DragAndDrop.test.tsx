@@ -9,6 +9,7 @@ import {
   DropIndicatorContext,
   getNormalizedDropTargetKey,
   mergePersistedKeysIntoVirtualRange,
+  useRenderDropIndicator,
   useDndPersistedKeys,
 } from '../src/DragAndDrop';
 
@@ -205,5 +206,42 @@ describe('DragAndDrop parity primitives', () => {
     );
 
     expect(normalized).toBe('b');
+  });
+
+  it('useRenderDropIndicator renders during virtual dragging even when target is not active', () => {
+    function Probe() {
+      const renderDropIndicator = useRenderDropIndicator(
+        { isVirtualDragging: () => true },
+        { isDropTarget: () => false }
+      );
+      return (
+        <div data-testid="virtual-drag-indicator">
+          {renderDropIndicator?.({ type: 'item', key: 'x', dropPosition: 'before' }) ?? null}
+        </div>
+      );
+    }
+
+    render(() => <Probe />);
+    expect(screen.getByTestId('virtual-drag-indicator').querySelector('[role="option"]')).toBeTruthy();
+  });
+
+  it('useRenderDropIndicator uses hook-provided renderer when available', () => {
+    function Probe() {
+      const renderDropIndicator = useRenderDropIndicator(
+        {
+          renderDropIndicator: (target) => <div data-testid={`custom-${target.key}`} />,
+          isVirtualDragging: () => true,
+        },
+        { isDropTarget: () => false }
+      );
+      return (
+        <div>
+          {renderDropIndicator?.({ type: 'item', key: 'x', dropPosition: 'before' }) ?? null}
+        </div>
+      );
+    }
+
+    render(() => <Probe />);
+    expect(screen.getByTestId('custom-x')).toBeInTheDocument();
   });
 });

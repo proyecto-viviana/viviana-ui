@@ -93,16 +93,40 @@ export function DropIndicator(props: DropIndicatorProps): JSX.Element {
 }
 
 export function useRenderDropIndicator(
-  dropState?: {
+  hooksOrDropState?:
+    | Pick<DragAndDropHooks<unknown>, 'renderDropIndicator' | 'isVirtualDragging'>
+    | {
+      target?: DropTarget | null;
+      isDropTarget?: (target: DropTarget) => boolean;
+    },
+  maybeDropState?: {
     target?: DropTarget | null;
     isDropTarget?: (target: DropTarget) => boolean;
   }
 ): ((target: ItemDropTarget) => JSX.Element | undefined) | undefined {
-  if (!dropState) return undefined;
+  const looksLikeDropState = (
+    value: unknown
+  ): value is { target?: DropTarget | null; isDropTarget?: (target: DropTarget) => boolean } => {
+    return Boolean(
+      value &&
+      typeof value === 'object' &&
+      ('isDropTarget' in (value as Record<string, unknown>) || 'target' in (value as Record<string, unknown>))
+    );
+  };
+
+  const dragAndDropHooks = looksLikeDropState(hooksOrDropState)
+    ? undefined
+    : hooksOrDropState;
+  const dropState = looksLikeDropState(hooksOrDropState) ? hooksOrDropState : maybeDropState;
+  if (!dropState && !dragAndDropHooks?.renderDropIndicator) return undefined;
+
   return (target: ItemDropTarget) => {
-    const isTarget = dropState.isDropTarget?.(target) ?? false;
-    if (!isTarget) return undefined;
-    return <DropIndicator target={target} />;
+    const isTarget = dropState?.isDropTarget?.(target) ?? false;
+    const isVirtualDragging = dragAndDropHooks?.isVirtualDragging?.() ?? false;
+    if (!isTarget && !isVirtualDragging) return undefined;
+    return dragAndDropHooks?.renderDropIndicator
+      ? dragAndDropHooks.renderDropIndicator(target)
+      : <DropIndicator target={target} />;
   };
 }
 
