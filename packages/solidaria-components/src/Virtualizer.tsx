@@ -533,6 +533,8 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
           ?? tryTarget(itemCount - 1, 'on')
           ?? tryTarget(itemCount - 1, 'before');
         if (endBoundaryTarget) return endBoundaryTarget;
+        const backwardFallback = scanFromIndex(itemCount - 1, -1);
+        if (backwardFallback) return backwardFallback;
       } else {
         if (currentIndex <= 0) {
           const rootTarget: DropTarget = { type: 'root' };
@@ -542,6 +544,8 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
           ?? tryTarget(0, 'on')
           ?? tryTarget(0, 'after');
         if (startBoundaryTarget) return startBoundaryTarget;
+        const forwardFallback = scanFromIndex(0, 1);
+        if (forwardFallback) return forwardFallback;
       }
 
       const rootTarget: DropTarget = { type: 'root' };

@@ -632,6 +632,43 @@ describe('Virtualizer', () => {
     expect(parsed).toMatchObject({ type: 'root' });
   });
 
+  it('keyboard page delegate scans for valid targets when out-of-range boundary targets are invalid', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 6);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-page-out-of-range-fallback">
+          {JSON.stringify({
+            nextFromLast:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 5, dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && Number(target.key) <= 3 && target.dropPosition === 'on'
+              ) ?? null,
+            previousFromFirst:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 0, dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && Number(target.key) >= 2 && target.dropPosition === 'on'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20, viewportSize: 240 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-page-out-of-range-fallback').textContent || '{}');
+    expect(parsed.nextFromLast).toMatchObject({ type: 'item', key: 3, dropPosition: 'on' });
+    expect(parsed.previousFromFirst).toMatchObject({ type: 'item', key: 2, dropPosition: 'on' });
+  });
+
   it('keyboard page delegate falls back to opposite direction when forward scan has no valid targets', () => {
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext());
