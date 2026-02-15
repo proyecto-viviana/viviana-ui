@@ -418,6 +418,49 @@ describe('Virtualizer', () => {
     expect(target.key).toBe('item-0');
   });
 
+  it('enriches sectioned listbox drop targets with item key metadata', () => {
+    const items = [
+      {
+        key: 'sec-a',
+        title: 'Section A',
+        items: [
+          { id: 'item-0', label: 'Item 0' },
+          { id: 'item-1', label: 'Item 1' },
+        ],
+      },
+      {
+        key: 'sec-b',
+        title: 'Section B',
+        items: [{ id: 'item-2', label: 'Item 2' }],
+      },
+    ];
+
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const target = createMemo(() => ctx()?.getDropTargetFromPoint({ x: 1, y: 1 }, 3) ?? null);
+      return <output data-testid="section-listbox-target">{JSON.stringify(target())}</output>;
+    }
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <>
+          <ListBox aria-label="Sectioned listbox drop metadata" items={items as unknown[]}>
+            {(item) => <ListBoxOption id={(item as { id: string }).id}>{(item as { label: string }).label}</ListBoxOption>}
+          </ListBox>
+          <Consumer />
+        </>
+      </Virtualizer>
+    ));
+
+    const target = JSON.parse(screen.getByTestId('section-listbox-target').textContent || '{}');
+    expect(target.index).toBe(0);
+    expect(target.key).toBe('item-0');
+  });
+
   it('virtualizes GridList item rendering', () => {
     const items = Array.from({ length: 20 }, (_, i) => ({ id: i, name: `Grid ${i}` }));
 

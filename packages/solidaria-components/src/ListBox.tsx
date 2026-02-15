@@ -278,15 +278,15 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     return virtualizer.getVisibleRange(stateProps.items.length);
   });
   createEffect(() => {
-    if (!virtualizer || !parentCollectionRenderer?.isVirtualized || hasSections()) return;
-    virtualizer.setDropTargetItemCountResolver(() => state.collection().size);
+    if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
+    const getItemNodes = () => Array.from(state.collection()).filter((node) => node.type === 'item');
+    virtualizer.setDropTargetItemCountResolver(() => getItemNodes().length);
     virtualizer.setDropTargetIndexResolver((key) => {
-      const entries = Array.from(state.collection());
-      const index = entries.findIndex((node) => node.key === key);
+      const index = getItemNodes().findIndex((node) => node.key === key);
       return index >= 0 ? index : null;
     });
     virtualizer.setDropTargetResolver((target) => {
-      const node = Array.from(state.collection())[target.index];
+      const node = getItemNodes()[target.index];
       if (!node) return target;
       return {
         ...target,
