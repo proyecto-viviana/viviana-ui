@@ -331,6 +331,43 @@ describe('Virtualizer', () => {
     expect(parsed.previousFromOn).toMatchObject({ type: 'item', key: 2, dropPosition: 'before' });
   });
 
+  it('keyboard delegate falls back to opposite direction when forward scan has no valid targets', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 10);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-opposite-fallback">
+          {JSON.stringify({
+            nextFallback:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 2, dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && target.dropPosition === 'on' && Number(target.key) <= 4
+              ) ?? null,
+            previousFallback:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 7, dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on' && Number(target.key) >= 5
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-opposite-fallback').textContent || '{}');
+    expect(parsed.nextFallback).toMatchObject({ type: 'item', key: 3, dropPosition: 'on' });
+    expect(parsed.previousFallback).toMatchObject({ type: 'item', key: 6, dropPosition: 'on' });
+  });
+
   it('keyboard page delegate advances by viewport-sized steps', () => {
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext());

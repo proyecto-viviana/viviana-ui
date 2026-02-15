@@ -368,6 +368,29 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
 
       return null;
     };
+    const scanFromIndex = (
+      startIndex: number,
+      step: number,
+      directionForInsertion: 'next' | 'previous'
+    ): DropTarget | null => {
+      for (
+        let index = startIndex;
+        index >= 0 && index < itemCount;
+        index += step
+      ) {
+        const onTarget = tryTarget(index, 'on');
+        if (onTarget) return onTarget;
+
+        const insertionOrder: Array<'before' | 'after'> = directionForInsertion === 'next'
+          ? ['before', 'after']
+          : ['after', 'before'];
+        for (const position of insertionOrder) {
+          const insertionTarget = tryTarget(index, position);
+          if (insertionTarget) return insertionTarget;
+        }
+      }
+      return null;
+    };
     const findNavigationTarget = (currentIndex: number, step = 1): DropTarget | null => {
       const delta = direction === 'next' ? 1 : -1;
       const stepSize = Math.max(1, step);
@@ -377,22 +400,11 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
         const rootTarget: DropTarget = { type: 'root' };
         return isValidDropTarget(rootTarget) ? rootTarget : null;
       }
-      for (
-        let index = clampedStart;
-        index >= 0 && index < itemCount;
-        index += delta
-      ) {
-        const onTarget = tryTarget(index, 'on');
-        if (onTarget) return onTarget;
-
-        const insertionOrder: Array<'before' | 'after'> = direction === 'next'
-          ? ['before', 'after']
-          : ['after', 'before'];
-        for (const position of insertionOrder) {
-          const insertionTarget = tryTarget(index, position);
-          if (insertionTarget) return insertionTarget;
-        }
-      }
+      const primaryTarget = scanFromIndex(clampedStart, delta, direction);
+      if (primaryTarget) return primaryTarget;
+      const oppositeDirection: 'next' | 'previous' = direction === 'next' ? 'previous' : 'next';
+      const oppositeTarget = scanFromIndex(clampedStart - delta, -delta, oppositeDirection);
+      if (oppositeTarget) return oppositeTarget;
 
       const rootTarget: DropTarget = { type: 'root' };
       return isValidDropTarget(rootTarget) ? rootTarget : null;
@@ -412,20 +424,6 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       if (!virtualTarget || virtualTarget.type === 'root') return null;
       const nextTarget = toCollectionDropTarget({ ...virtualTarget, position });
       return isValidDropTarget(nextTarget) ? nextTarget : null;
-    };
-    const scanFromIndex = (startIndex: number, step: number): DropTarget | null => {
-      const insertionOrder: Array<'before' | 'after'> = step > 0
-        ? ['before', 'after']
-        : ['after', 'before'];
-      for (let index = startIndex; index >= 0 && index < itemCount; index += step) {
-        const onTarget = tryTarget(index, 'on');
-        if (onTarget) return onTarget;
-        for (const position of insertionOrder) {
-          const insertionTarget = tryTarget(index, position);
-          if (insertionTarget) return insertionTarget;
-        }
-      }
-      return null;
     };
     const directTransition = tryCurrentItemTransition(target);
     if (directTransition) return directTransition;

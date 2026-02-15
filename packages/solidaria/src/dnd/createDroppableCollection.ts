@@ -408,7 +408,7 @@ export function createDroppableCollection(
           navigationStart,
           direction,
           isValidDropTarget
-        );
+        ) ?? resolveFallbackKeyboardTarget(e.key);
         if (nextTarget) {
           e.preventDefault();
           state.setTarget(nextTarget);
