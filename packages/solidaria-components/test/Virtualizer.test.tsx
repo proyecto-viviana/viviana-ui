@@ -455,6 +455,72 @@ describe('Virtualizer', () => {
     expect(parsed.pagePrevious).toMatchObject({ type: 'item', key: 4, dropPosition: 'on' });
   });
 
+  it('keyboard page delegate prefers boundary item targets before root on out-of-range jumps', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 6);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-page-boundary-targets">
+          {JSON.stringify({
+            nextFromLast:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 5, dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item'
+              ) ?? null,
+            previousFromMiddle:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 3, dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20, viewportSize: 240 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-page-boundary-targets').textContent || '{}');
+    expect(parsed.nextFromLast).toMatchObject({ type: 'item', key: 5, dropPosition: 'after' });
+    expect(parsed.previousFromMiddle).toMatchObject({ type: 'item', key: 0, dropPosition: 'before' });
+  });
+
+  it('keyboard page delegate falls back to root when paging above first item', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 6);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-page-root-above-first">
+          {JSON.stringify(
+            collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+              { type: 'item', key: 0, dropPosition: 'on' },
+              'previous',
+              (target) => target.type === 'item' || target.type === 'root'
+            ) ?? null
+          )}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20, viewportSize: 240 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-page-root-above-first').textContent || '{}');
+    expect(parsed).toMatchObject({ type: 'root' });
+  });
+
   it('renders only visible range for listbox when virtualized', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       cb(0);

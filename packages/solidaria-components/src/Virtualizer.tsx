@@ -338,6 +338,36 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       if (typeof currentTarget.key === 'number') return currentTarget.key;
       return direction === 'next' ? -1 : itemCount;
     };
+    const tryCurrentItemTransition = (currentTarget: DropTarget | null): DropTarget | null => {
+      if (!currentTarget || currentTarget.type !== 'item') return null;
+      const tryPosition = (position: 'before' | 'on' | 'after'): DropTarget | null => {
+        if (currentTarget.dropPosition === position) return null;
+        const nextTarget: DropTarget = {
+          type: 'item',
+          key: currentTarget.key,
+          dropPosition: position,
+        };
+        return isValidDropTarget(nextTarget) ? nextTarget : null;
+      };
+
+      if (direction === 'next') {
+        if (currentTarget.dropPosition === 'before') {
+          return tryPosition('on') ?? tryPosition('after');
+        }
+        if (currentTarget.dropPosition === 'on') {
+          return tryPosition('after');
+        }
+      } else {
+        if (currentTarget.dropPosition === 'after') {
+          return tryPosition('on') ?? tryPosition('before');
+        }
+        if (currentTarget.dropPosition === 'on') {
+          return tryPosition('before');
+        }
+      }
+
+      return null;
+    };
     const findNavigationTarget = (currentIndex: number, step = 1): DropTarget | null => {
       const delta = direction === 'next' ? 1 : -1;
       const stepSize = Math.max(1, step);
@@ -383,6 +413,8 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       const nextTarget = toCollectionDropTarget({ ...virtualTarget, position });
       return isValidDropTarget(nextTarget) ? nextTarget : null;
     };
+    const directTransition = tryCurrentItemTransition(target);
+    if (directTransition) return directTransition;
     const currentIndex = getCurrentIndex(target);
     return findNavigationTarget(currentIndex, 1);
   };
@@ -447,6 +479,22 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       return isValidDropTarget(nextTarget) ? nextTarget : null;
     };
     if (nextStart < 0 || nextStart >= itemCount) {
+      if (direction === 'next') {
+        const endBoundaryTarget = tryTarget(itemCount - 1, 'after')
+          ?? tryTarget(itemCount - 1, 'on')
+          ?? tryTarget(itemCount - 1, 'before');
+        if (endBoundaryTarget) return endBoundaryTarget;
+      } else {
+        if (currentIndex <= 0) {
+          const rootTarget: DropTarget = { type: 'root' };
+          if (isValidDropTarget(rootTarget)) return rootTarget;
+        }
+        const startBoundaryTarget = tryTarget(0, 'before')
+          ?? tryTarget(0, 'on')
+          ?? tryTarget(0, 'after');
+        if (startBoundaryTarget) return startBoundaryTarget;
+      }
+
       const rootTarget: DropTarget = { type: 'root' };
       return isValidDropTarget(rootTarget) ? rootTarget : null;
     }
