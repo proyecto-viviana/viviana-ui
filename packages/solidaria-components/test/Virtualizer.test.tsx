@@ -59,7 +59,13 @@ describe('Virtualizer', () => {
               collection()?.dropTargetDelegate?.getDropTargetFromPoint(2, 2, () => true) ?? null,
             delegateOperation:
               collection()?.dropTargetDelegate?.getDropOperation(
-                { type: 'item', key: 0, dropPosition: 'on' },
+                { type: 'item', key: 0, dropPosition: 'before' },
+                { has: () => true },
+                ['copy', 'move']
+              ) ?? null,
+            delegateRootOperation:
+              collection()?.dropTargetDelegate?.getDropOperation(
+                { type: 'root' },
                 { has: () => true },
                 ['copy', 'move']
               ) ?? null,
@@ -87,6 +93,7 @@ describe('Virtualizer', () => {
     expect(parsed.hasDropTargetDelegate).toBe(true);
     expect(parsed.delegateTarget?.type).toBe('root');
     expect(parsed.delegateOperation).toBe('move');
+    expect(parsed.delegateRootOperation).toBe('copy');
     expect(instances).toBeGreaterThan(0);
   });
 

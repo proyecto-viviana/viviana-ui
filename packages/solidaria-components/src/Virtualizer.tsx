@@ -275,8 +275,18 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   ): DropOperation => {
     const resolver = dropOperationResolver() ?? local.getDropOperation;
     if (resolver) return resolver(target, types, allowedOperations);
-    if (allowedOperations.includes('move')) return 'move';
-    if (allowedOperations.includes('copy')) return 'copy';
+    if (allowedOperations.length === 0) return 'cancel';
+    if (target.type === 'root') {
+      if (allowedOperations.includes('copy')) return 'copy';
+      if (allowedOperations.includes('move')) return 'move';
+    } else if (target.dropPosition === 'on') {
+      if (allowedOperations.includes('copy')) return 'copy';
+      if (allowedOperations.includes('move')) return 'move';
+    } else {
+      if (allowedOperations.includes('move')) return 'move';
+      if (allowedOperations.includes('copy')) return 'copy';
+    }
+    if (allowedOperations.includes('link')) return 'link';
     return allowedOperations.find((operation) => operation !== 'cancel') ?? 'cancel';
   };
 
