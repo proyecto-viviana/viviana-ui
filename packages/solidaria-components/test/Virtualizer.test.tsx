@@ -405,6 +405,43 @@ describe('Virtualizer', () => {
     expect(parsed.previousFromRoot).toMatchObject({ type: 'item', key: 3, dropPosition: 'after' });
   });
 
+  it('keyboard delegate wraps to boundary insertion targets when moving past edges and root is invalid', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 4);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-wrap-boundary">
+          {JSON.stringify({
+            nextFromEnd:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 3, dropPosition: 'after' },
+                'next',
+                (target) => target.type === 'item'
+              ) ?? null,
+            previousFromStart:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 0, dropPosition: 'before' },
+                'previous',
+                (target) => target.type === 'item'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-wrap-boundary').textContent || '{}');
+    expect(parsed.nextFromEnd).toMatchObject({ type: 'item', key: 0, dropPosition: 'before' });
+    expect(parsed.previousFromStart).toMatchObject({ type: 'item', key: 3, dropPosition: 'after' });
+  });
+
   it('keyboard page delegate advances by viewport-sized steps', () => {
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext());

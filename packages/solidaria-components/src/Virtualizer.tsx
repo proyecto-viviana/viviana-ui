@@ -425,21 +425,34 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       const nextTarget = toCollectionDropTarget({ ...virtualTarget, position });
       return isValidDropTarget(nextTarget) ? nextTarget : null;
     };
-    const directTransition = tryCurrentItemTransition(target);
-    if (directTransition) return directTransition;
-    if (!target || target.type === 'root') {
-      const boundaryIndex = direction === 'next' ? 0 : itemCount - 1;
-      const boundaryOrder: Array<'before' | 'on' | 'after'> = direction === 'next'
+    const tryBoundaryTarget = (boundaryDirection: 'next' | 'previous'): DropTarget | null => {
+      const boundaryIndex = boundaryDirection === 'next' ? 0 : itemCount - 1;
+      const boundaryOrder: Array<'before' | 'on' | 'after'> = boundaryDirection === 'next'
         ? ['before', 'on', 'after']
         : ['after', 'on', 'before'];
       for (const position of boundaryOrder) {
-        const boundaryTarget = tryTarget(boundaryIndex, position);
-        if (boundaryTarget) return boundaryTarget;
+        const candidate = tryTarget(boundaryIndex, position);
+        if (candidate) return candidate;
       }
+      return null;
+    };
+    const directTransition = tryCurrentItemTransition(target);
+    if (directTransition) return directTransition;
+    if (!target || target.type === 'root') {
+      const boundaryTarget = tryBoundaryTarget(direction);
+      if (boundaryTarget) return boundaryTarget;
       const rootTarget: DropTarget = { type: 'root' };
       return isValidDropTarget(rootTarget) ? rootTarget : null;
     }
     const currentIndex = getCurrentIndex(target);
+    const nextStart = currentIndex + (direction === 'next' ? 1 : -1);
+    if (nextStart < 0 || nextStart >= itemCount) {
+      const rootTarget: DropTarget = { type: 'root' };
+      if (isValidDropTarget(rootTarget)) return rootTarget;
+      const wrappedBoundary = tryBoundaryTarget(direction);
+      if (wrappedBoundary) return wrappedBoundary;
+      return null;
+    }
     return findNavigationTarget(currentIndex, 1);
   };
   const getKeyboardPageNavigationTarget = (
