@@ -2,13 +2,18 @@ import { describe, it, expect } from 'vitest';
 import { render, fireEvent, screen, cleanup } from '@solidjs/testing-library';
 import { afterEach } from 'vitest';
 import { createDroppableCollection } from '../src/dnd/createDroppableCollection';
-import { setGlobalDraggingCollectionRef, setGlobalDraggingKeys } from '../src/dnd/createDraggableCollection';
+import {
+  setGlobalDraggingCollectionRef,
+  setGlobalDraggingKeys,
+  setGlobalDraggingTypes,
+} from '../src/dnd/createDraggableCollection';
 import { setGlobalAllowedDropOperations, DROP_OPERATION } from '../src/dnd/utils';
 import type { DropTarget, DroppableCollectionState } from '@proyecto-viviana/solid-stately';
 
 afterEach(() => {
   setGlobalDraggingCollectionRef(null);
   setGlobalDraggingKeys(new Set());
+  setGlobalDraggingTypes(new Set());
   setGlobalAllowedDropOperations(DROP_OPERATION.none);
   document.dir = '';
   cleanup();
@@ -776,6 +781,86 @@ describe('createDroppableCollection keyboard behavior', () => {
 
     fireEvent.keyDown(root, { key: 'ArrowDown' });
     expect(calls.at(-1)).toBe('set:item:2:on');
+  });
+
+  it('respects global dragging types when validating keyboard targets', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'root' };
+    setGlobalDraggingTypes(new Set(['application/json']));
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}:${target.dropPosition}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation(_target: DropTarget, types: { has: (type: string) => boolean }) {
+        return types.has('text/plain') ? 'move' as const : 'cancel' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-drag-types') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+            getKeyboardNavigationTarget(target, direction) {
+              if (direction !== 'next') return null;
+              if (!target || target.type === 'root') {
+                return { type: 'item', key: 1, dropPosition: 'on' };
+              }
+              return null;
+            },
+          },
+          keyboardDelegate: {
+            getKeyBelow: (key) => (key < 1 ? key + 1 : null),
+          },
+        }),
+        state
+      );
+
+      return (
+        <div
+          id="drop-root-drag-types"
+          tabIndex={0}
+          data-testid="drop-root-drag-types"
+          {...collectionProps}
+        />
+      );
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-drag-types');
+
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
+    expect(calls).toHaveLength(0);
+
+    setGlobalDraggingTypes(new Set(['text/plain']));
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
+    expect(calls.at(-1)).toBe('set:item:1:on');
   });
 
   it('falls back to step-wise scanning when page target is invalid', () => {

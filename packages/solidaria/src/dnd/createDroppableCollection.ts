@@ -15,7 +15,11 @@ import type {
   DragTypes,
 } from '@proyecto-viviana/solid-stately';
 import { createDrop } from './createDrop';
-import { getGlobalDraggingCollectionRef, getGlobalDraggingKeys } from './createDraggableCollection';
+import {
+  getGlobalDraggingCollectionRef,
+  getGlobalDraggingKeys,
+  getGlobalDraggingTypes,
+} from './createDraggableCollection';
 import { getGlobalAllowedDropOperations, DROP_OPERATION } from './utils';
 
 // Global state for tracking the drop collection
@@ -342,8 +346,17 @@ export function createDroppableCollection(
         if (allowedBits & DROP_OPERATION.link) allowed.push('link');
         return allowed.length > 0 ? allowed : ['copy', 'move', 'link'];
       };
+      const getKeyboardDragTypes = (): DragTypes => {
+        const draggingTypes = getGlobalDraggingTypes();
+        if (draggingTypes.size === 0) {
+          return { has: () => true };
+        }
+        return {
+          has: (type: string | symbol) => typeof type === 'string' && draggingTypes.has(type),
+        };
+      };
       const isValidDropTarget = (target: DropTarget) =>
-        state.getDropOperation(target, { has: () => true }, getKeyboardAllowedOperations()) !== 'cancel';
+        state.getDropOperation(target, getKeyboardDragTypes(), getKeyboardAllowedOperations()) !== 'cancel';
       const targetsEqual = (a: DropTarget, b: DropTarget): boolean => {
         if (a.type !== b.type) return false;
         if (a.type === 'root' && b.type === 'root') return true;

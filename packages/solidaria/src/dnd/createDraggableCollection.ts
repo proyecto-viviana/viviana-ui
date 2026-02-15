@@ -7,10 +7,12 @@
 
 import { createMemo, createEffect, onCleanup, type Accessor } from 'solid-js';
 import type { DraggableCollectionState } from '@proyecto-viviana/solid-stately';
+import { getTypes } from './utils';
 
 // Global state for tracking the dragging collection
 let globalDraggingCollectionRef: HTMLElement | null = null;
 let globalDraggingKeys: Set<string | number> = new Set();
+let globalDraggingTypes: Set<string> = new Set();
 
 export function setGlobalDraggingCollectionRef(ref: HTMLElement | null): void {
   globalDraggingCollectionRef = ref;
@@ -26,6 +28,14 @@ export function setGlobalDraggingKeys(keys: Set<string | number>): void {
 
 export function getGlobalDraggingKeys(): Set<string | number> {
   return new Set(globalDraggingKeys);
+}
+
+export function setGlobalDraggingTypes(types: Set<string>): void {
+  globalDraggingTypes = new Set(types);
+}
+
+export function getGlobalDraggingTypes(): Set<string> {
+  return new Set(globalDraggingTypes);
 }
 
 export interface DraggableCollectionOptions {
@@ -59,6 +69,7 @@ export function createDraggableCollection(
         setGlobalDraggingCollectionRef(currentRef);
       }
       setGlobalDraggingKeys(state.draggingKeys);
+      setGlobalDraggingTypes(getTypes(state.getItems(state.draggingKeys)));
       return;
     }
 
@@ -66,6 +77,7 @@ export function createDraggableCollection(
     if (globalDraggingCollectionRef === currentRef) {
       setGlobalDraggingCollectionRef(null);
       setGlobalDraggingKeys(new Set());
+      setGlobalDraggingTypes(new Set());
     }
   });
 
@@ -74,6 +86,7 @@ export function createDraggableCollection(
     if (globalDraggingCollectionRef === ref()) {
       setGlobalDraggingCollectionRef(null);
       setGlobalDraggingKeys(new Set());
+      setGlobalDraggingTypes(new Set());
     }
   });
 
