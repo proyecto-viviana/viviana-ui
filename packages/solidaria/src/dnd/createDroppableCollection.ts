@@ -213,7 +213,11 @@ export function createDroppableCollection(
     },
     onDropActivate: (e) => {
       const opts = getOptions();
-      if (state.target?.type === 'item' && typeof opts.onDropActivate === 'function') {
+      if (
+        state.target?.type === 'item' &&
+        state.target.dropPosition === 'on' &&
+        typeof opts.onDropActivate === 'function'
+      ) {
         opts.onDropActivate({
           target: state.target,
           x: e.x,
