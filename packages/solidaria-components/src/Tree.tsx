@@ -38,6 +38,7 @@ import {
   type TreeItemData,
   type Key,
   type DropTarget,
+  type ItemDropTarget,
 } from '@proyecto-viviana/solid-stately';
 import {
   type RenderChildren,
@@ -185,6 +186,294 @@ interface TreeContextValue<T extends object> {
   dragAndDropHooks?: DragAndDropHooks<T>;
   dragState?: unknown;
   dropState?: unknown;
+}
+
+interface TreeDropTargetDelegate {
+  getDropTargetFromPoint: (
+    x: number,
+    y: number,
+    isValidDropTarget: (target: DropTarget) => boolean
+  ) => DropTarget | null;
+  getKeyboardNavigationTarget?: (
+    target: DropTarget | null,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ) => DropTarget | null;
+  getKeyboardPageNavigationTarget?: (
+    target: DropTarget | null,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ) => DropTarget | null;
+}
+
+interface PointerTrackingState {
+  lastY: number;
+  lastX: number;
+  yDirection: 'up' | 'down' | null;
+  xDirection: 'left' | 'right' | null;
+  boundaryContext: {
+    parentKey: Key;
+    lastSwitchY: number;
+    lastSwitchX: number;
+    preferredTargetIndex?: number;
+  } | null;
+}
+
+const X_SWITCH_THRESHOLD = 10;
+const Y_SWITCH_THRESHOLD = 5;
+
+function resolveTreeDirection(element: HTMLElement | null): 'ltr' | 'rtl' {
+  if (element) {
+    const dir = element.closest('[dir]')?.getAttribute('dir');
+    if (dir === 'rtl') return 'rtl';
+    if (dir === 'ltr') return 'ltr';
+  }
+  if (typeof document !== 'undefined') {
+    return document.dir === 'rtl' ? 'rtl' : 'ltr';
+  }
+  return 'ltr';
+}
+
+function createTreeDropTargetDelegate<T extends object>(
+  delegate: TreeDropTargetDelegate,
+  state: TreeState<T, TreeCollection<T>>,
+  direction: 'ltr' | 'rtl'
+): TreeDropTargetDelegate {
+  const pointerTracking: PointerTrackingState = {
+    lastY: 0,
+    lastX: 0,
+    yDirection: null,
+    xDirection: null,
+    boundaryContext: null,
+  };
+
+  const getPotentialTargets = (
+    originalTarget: ItemDropTarget,
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): ItemDropTarget[] => {
+    if (originalTarget.dropPosition === 'on') return [originalTarget];
+
+    const collection = state.collection;
+    const getNodeNextKey = (node: TreeNode<T> | null | undefined): Key | null => {
+      if (!node) return null;
+      const declaredNextKey = (node as TreeNode<T> & { nextKey?: Key | null }).nextKey;
+      return declaredNextKey ?? null;
+    };
+    const target: ItemDropTarget = { ...originalTarget };
+    let currentItem = collection.getItem(target.key);
+    while (currentItem && currentItem.type !== 'item') {
+      const nextKey = getNodeNextKey(currentItem);
+      if (nextKey == null) break;
+      target.key = nextKey;
+      currentItem = collection.getItem(nextKey);
+    }
+
+    const potentialTargets: ItemDropTarget[] = [target];
+
+    if (
+      currentItem &&
+      currentItem.hasChildNodes &&
+      state.expandedKeys.has(currentItem.key) &&
+      target.dropPosition === 'after'
+    ) {
+      let firstChildItemNode: TreeNode<T> | null = null;
+      for (const child of collection.getChildren(currentItem.key)) {
+        if (child.type === 'item') {
+          firstChildItemNode = child;
+          break;
+        }
+      }
+
+      if (firstChildItemNode) {
+        const beforeFirstChildTarget: ItemDropTarget = {
+          type: 'item',
+          key: firstChildItemNode.key,
+          dropPosition: 'before',
+        };
+
+        if (isValidDropTarget(beforeFirstChildTarget)) {
+          return [beforeFirstChildTarget];
+        }
+        return [];
+      }
+    }
+
+    if (getNodeNextKey(currentItem) != null) {
+      return [originalTarget];
+    }
+
+    let parentKey = currentItem?.parentKey ?? null;
+    const ancestorTargets: ItemDropTarget[] = [];
+    while (parentKey != null) {
+      const parentItem = collection.getItem(parentKey);
+      const nextKey = getNodeNextKey(parentItem);
+      const nextItem = nextKey != null ? collection.getItem(nextKey) : null;
+      const isLastChildAtLevel = !nextItem || nextItem.parentKey !== parentKey;
+
+      if (isLastChildAtLevel) {
+        const afterParentTarget: ItemDropTarget = {
+          type: 'item',
+          key: parentKey,
+          dropPosition: 'after',
+        };
+
+        if (isValidDropTarget(afterParentTarget)) {
+          ancestorTargets.push(afterParentTarget);
+        }
+        if (nextItem) break;
+      }
+
+      parentKey = parentItem?.parentKey ?? null;
+    }
+
+    if (ancestorTargets.length > 0) {
+      potentialTargets.push(...ancestorTargets);
+    }
+
+    if (potentialTargets.length === 1) {
+      const nextKey = collection.getKeyAfter(target.key);
+      const nextNode = nextKey != null ? collection.getItem(nextKey) : null;
+      if (
+        nextKey != null &&
+        nextNode &&
+        currentItem &&
+        nextNode.level != null &&
+        currentItem.level != null &&
+        nextNode.level > currentItem.level
+      ) {
+        const beforeTarget: ItemDropTarget = {
+          type: 'item',
+          key: nextKey,
+          dropPosition: 'before',
+        };
+        if (isValidDropTarget(beforeTarget)) return [beforeTarget];
+      }
+    }
+
+    return potentialTargets.filter((candidate) => isValidDropTarget(candidate));
+  };
+
+  const selectTarget = (
+    potentialTargets: ItemDropTarget[],
+    originalTarget: ItemDropTarget,
+    x: number,
+    y: number,
+    currentYMovement: 'up' | 'down' | null,
+    currentXMovement: 'left' | 'right' | null
+  ): ItemDropTarget => {
+    if (potentialTargets.length < 2) return potentialTargets[0];
+
+    const currentItem = state.collection.getItem(originalTarget.key);
+    const parentKey = currentItem?.parentKey;
+    if (parentKey == null) return potentialTargets[0];
+
+    if (!pointerTracking.boundaryContext || pointerTracking.boundaryContext.parentKey !== parentKey) {
+      const initialTargetIndex = pointerTracking.yDirection === 'up' ? potentialTargets.length - 1 : 0;
+      pointerTracking.boundaryContext = {
+        parentKey,
+        preferredTargetIndex: initialTargetIndex,
+        lastSwitchY: y,
+        lastSwitchX: x,
+      };
+    }
+
+    const boundaryContext = pointerTracking.boundaryContext;
+    const distanceFromLastXSwitch = Math.abs(x - boundaryContext.lastSwitchX);
+    const distanceFromLastYSwitch = Math.abs(y - boundaryContext.lastSwitchY);
+
+    if (distanceFromLastYSwitch > Y_SWITCH_THRESHOLD && currentYMovement) {
+      const currentIndex = boundaryContext.preferredTargetIndex ?? 0;
+      if (currentYMovement === 'down' && currentIndex === 0) {
+        boundaryContext.preferredTargetIndex = potentialTargets.length - 1;
+      } else if (currentYMovement === 'up' && currentIndex === potentialTargets.length - 1) {
+        boundaryContext.preferredTargetIndex = 0;
+      }
+      pointerTracking.xDirection = null;
+    }
+
+    if (distanceFromLastXSwitch > X_SWITCH_THRESHOLD && currentXMovement) {
+      const currentTargetIndex = boundaryContext.preferredTargetIndex ?? 0;
+
+      if (currentXMovement === 'left') {
+        if (direction === 'ltr') {
+          if (currentTargetIndex < potentialTargets.length - 1) {
+            boundaryContext.preferredTargetIndex = currentTargetIndex + 1;
+            boundaryContext.lastSwitchX = x;
+          }
+        } else if (currentTargetIndex > 0) {
+          boundaryContext.preferredTargetIndex = currentTargetIndex - 1;
+          boundaryContext.lastSwitchX = x;
+        }
+      } else if (currentXMovement === 'right') {
+        if (direction === 'ltr') {
+          if (currentTargetIndex > 0) {
+            boundaryContext.preferredTargetIndex = currentTargetIndex - 1;
+            boundaryContext.lastSwitchX = x;
+          }
+        } else if (currentTargetIndex < potentialTargets.length - 1) {
+          boundaryContext.preferredTargetIndex = currentTargetIndex + 1;
+          boundaryContext.lastSwitchX = x;
+        }
+      }
+
+      pointerTracking.yDirection = null;
+    }
+
+    const targetIndex = Math.max(
+      0,
+      Math.min(boundaryContext.preferredTargetIndex ?? 0, potentialTargets.length - 1)
+    );
+    return potentialTargets[targetIndex];
+  };
+
+  return {
+    getDropTargetFromPoint(x, y, isValidDropTarget) {
+      const baseTarget = delegate.getDropTargetFromPoint(x, y, isValidDropTarget);
+      if (!baseTarget || baseTarget.type === 'root') return baseTarget;
+
+      const deltaY = y - pointerTracking.lastY;
+      const deltaX = x - pointerTracking.lastX;
+      let currentYMovement: 'up' | 'down' | null = pointerTracking.yDirection;
+      let currentXMovement: 'left' | 'right' | null = pointerTracking.xDirection;
+
+      if (Math.abs(deltaY) > Y_SWITCH_THRESHOLD) {
+        currentYMovement = deltaY > 0 ? 'down' : 'up';
+        pointerTracking.yDirection = currentYMovement;
+        pointerTracking.lastY = y;
+      }
+
+      if (Math.abs(deltaX) > X_SWITCH_THRESHOLD) {
+        currentXMovement = deltaX > 0 ? 'right' : 'left';
+        pointerTracking.xDirection = currentXMovement;
+        pointerTracking.lastX = x;
+      }
+
+      let target: ItemDropTarget = baseTarget;
+      if (target.dropPosition === 'before') {
+        const keyBefore = state.collection.getKeyBefore(target.key);
+        if (keyBefore != null) {
+          const normalized: ItemDropTarget = {
+            type: 'item',
+            key: keyBefore,
+            dropPosition: 'after',
+          };
+          if (isValidDropTarget(normalized)) target = normalized;
+        }
+      }
+
+      const potentialTargets = getPotentialTargets(target, isValidDropTarget);
+      if (potentialTargets.length === 0) return { type: 'root' };
+
+      if (potentialTargets.length > 1) {
+        return selectTarget(potentialTargets, target, x, y, currentYMovement, currentXMovement);
+      }
+
+      pointerTracking.boundaryContext = null;
+      return potentialTargets[0];
+    },
+    getKeyboardNavigationTarget: delegate.getKeyboardNavigationTarget?.bind(delegate),
+    getKeyboardPageNavigationTarget: delegate.getKeyboardPageNavigationTarget?.bind(delegate),
+  };
 }
 
 interface TreeItemContextValue<T extends object> {
@@ -376,8 +665,13 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const hooks = local.dragAndDropHooks;
     const activeDropState = dropState();
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
-    const dropTargetDelegate = hooks.dropTargetDelegate ?? parentCollectionRenderer?.dropTargetDelegate;
-    if (!dropTargetDelegate) return undefined;
+    const baseDropTargetDelegate = hooks.dropTargetDelegate ?? parentCollectionRenderer?.dropTargetDelegate;
+    if (!baseDropTargetDelegate) return undefined;
+    const dropTargetDelegate = createTreeDropTargetDelegate(
+      baseDropTargetDelegate as TreeDropTargetDelegate,
+      state,
+      resolveTreeDirection(ref())
+    );
     return hooks.useDroppableCollection(
       {
         dropTargetDelegate,
