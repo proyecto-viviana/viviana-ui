@@ -462,13 +462,13 @@ describe('Virtualizer', () => {
               collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
                 null,
                 'next',
-                (target) => target.type === 'item' && target.dropPosition === 'on'
+                (target) => target.type === 'item'
               ) ?? null,
             previousFromNull:
               collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
                 null,
                 'previous',
-                (target) => target.type === 'item' && target.dropPosition === 'on'
+                (target) => target.type === 'item'
               ) ?? null,
           })}
         </output>
@@ -482,8 +482,8 @@ describe('Virtualizer', () => {
     ));
 
     const parsed = JSON.parse(screen.getByTestId('keyboard-page-null-target').textContent || '{}');
-    expect(parsed.nextFromNull).toMatchObject({ type: 'item', key: 0, dropPosition: 'on' });
-    expect(parsed.previousFromNull).toMatchObject({ type: 'item', key: 7, dropPosition: 'on' });
+    expect(parsed.nextFromNull).toMatchObject({ type: 'item', key: 0, dropPosition: 'before' });
+    expect(parsed.previousFromNull).toMatchObject({ type: 'item', key: 7, dropPosition: 'after' });
   });
 
   it('keyboard delegates fall back to directional boundaries when target key is unmapped', () => {

@@ -455,6 +455,9 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     if (!target || target.type === 'root') {
       const startIndex = direction === 'next' ? 0 : itemCount - 1;
       const delta = direction === 'next' ? 1 : -1;
+      const boundaryOrder: Array<'before' | 'on' | 'after'> = direction === 'next'
+        ? ['before', 'on', 'after']
+        : ['after', 'on', 'before'];
       for (let index = startIndex; index >= 0 && index < itemCount; index += delta) {
         const layoutInfo = getLayoutInfo(index);
         const virtualTarget = getDropTargetFromPoint(
@@ -465,14 +468,9 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
           itemCount
         );
         if (!virtualTarget || virtualTarget.type === 'root') continue;
-        const onTarget = toCollectionDropTarget({ ...virtualTarget, position: 'on' });
-        if (isValidDropTarget(onTarget)) return onTarget;
-        const insertionOrder: Array<'before' | 'after'> = direction === 'next'
-          ? ['before', 'after']
-          : ['after', 'before'];
-        for (const position of insertionOrder) {
-          const insertionTarget = toCollectionDropTarget({ ...virtualTarget, position });
-          if (isValidDropTarget(insertionTarget)) return insertionTarget;
+        for (const position of boundaryOrder) {
+          const candidate = toCollectionDropTarget({ ...virtualTarget, position });
+          if (isValidDropTarget(candidate)) return candidate;
         }
       }
       const rootTarget: DropTarget = { type: 'root' };
