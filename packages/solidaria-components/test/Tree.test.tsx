@@ -339,6 +339,155 @@ describe('Tree', () => {
       expect(innerTarget).toMatchObject({ type: 'item', key: 'item-1-2', dropPosition: 'after' });
       expect(outerTarget).toMatchObject({ type: 'item', key: 'item-1', dropPosition: 'after' });
     });
+
+    it('should switch ambiguous boundary target using vertical pointer movement', () => {
+      const dropState: DroppableCollectionState = {
+        isDropTarget: false,
+        target: null,
+        isDisabled: false,
+        setTarget: () => {},
+        isAccepted: () => true,
+        enterTarget: () => {},
+        moveToTarget: () => {},
+        exitTarget: () => {},
+        activateTarget: () => {},
+        drop: () => {},
+        shouldAcceptItemDrop: () => true,
+        getDropOperation: () => 'move',
+      };
+
+      let wrappedDelegate:
+        | {
+          getDropTargetFromPoint: (
+            x: number,
+            y: number,
+            isValidDropTarget: (target: DropTarget) => boolean
+          ) => DropTarget | null;
+        }
+        | undefined;
+      const dragAndDropHooks = {
+        useDroppableCollectionState: () => dropState,
+        useDroppableCollection: (props: {
+          dropTargetDelegate: {
+            getDropTargetFromPoint: (
+              x: number,
+              y: number,
+              isValidDropTarget: (target: DropTarget) => boolean
+            ) => DropTarget | null;
+          };
+        }) => {
+          wrappedDelegate = props.dropTargetDelegate;
+          return { collectionProps: {} };
+        },
+        useDroppableItem: () => ({ dropProps: {}, dropButtonProps: {}, isDropTarget: false }),
+        dropTargetDelegate: {
+          getDropTargetFromPoint: () =>
+            ({ type: 'item', key: 'item-1-2', dropPosition: 'after' } as const),
+        },
+      };
+
+      render(() => (
+        <Tree
+          items={createTestItems()}
+          aria-label="Vertical boundary tree"
+          defaultExpandedKeys={['item-1']}
+          dragAndDropHooks={dragAndDropHooks as any}
+        >
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const isValidDropTarget = (target: DropTarget) =>
+        target.type === 'item' &&
+        (
+          (target.key === 'item-1-2' && target.dropPosition === 'after') ||
+          (target.key === 'item-1' && target.dropPosition === 'after')
+        );
+
+      const initialTarget = wrappedDelegate!.getDropTargetFromPoint(30, 50, isValidDropTarget);
+      const switchedByY = wrappedDelegate!.getDropTargetFromPoint(30, 70, isValidDropTarget);
+
+      expect(initialTarget).toMatchObject({ type: 'item', key: 'item-1-2', dropPosition: 'after' });
+      expect(switchedByY).toMatchObject({ type: 'item', key: 'item-1', dropPosition: 'after' });
+    });
+
+    it('should reverse horizontal boundary switching direction in rtl', () => {
+      const originalDir = document.dir;
+      document.dir = 'rtl';
+
+      const dropState: DroppableCollectionState = {
+        isDropTarget: false,
+        target: null,
+        isDisabled: false,
+        setTarget: () => {},
+        isAccepted: () => true,
+        enterTarget: () => {},
+        moveToTarget: () => {},
+        exitTarget: () => {},
+        activateTarget: () => {},
+        drop: () => {},
+        shouldAcceptItemDrop: () => true,
+        getDropOperation: () => 'move',
+      };
+
+      let wrappedDelegate:
+        | {
+          getDropTargetFromPoint: (
+            x: number,
+            y: number,
+            isValidDropTarget: (target: DropTarget) => boolean
+          ) => DropTarget | null;
+        }
+        | undefined;
+      const dragAndDropHooks = {
+        useDroppableCollectionState: () => dropState,
+        useDroppableCollection: (props: {
+          dropTargetDelegate: {
+            getDropTargetFromPoint: (
+              x: number,
+              y: number,
+              isValidDropTarget: (target: DropTarget) => boolean
+            ) => DropTarget | null;
+          };
+        }) => {
+          wrappedDelegate = props.dropTargetDelegate;
+          return { collectionProps: {} };
+        },
+        useDroppableItem: () => ({ dropProps: {}, dropButtonProps: {}, isDropTarget: false }),
+        dropTargetDelegate: {
+          getDropTargetFromPoint: () =>
+            ({ type: 'item', key: 'item-1-2', dropPosition: 'after' } as const),
+        },
+      };
+
+      try {
+        render(() => (
+          <Tree
+            items={createTestItems()}
+            aria-label="RTL boundary tree"
+            defaultExpandedKeys={['item-1']}
+            dragAndDropHooks={dragAndDropHooks as any}
+          >
+            {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+          </Tree>
+        ));
+
+        const isValidDropTarget = (target: DropTarget) =>
+          target.type === 'item' &&
+          (
+            (target.key === 'item-1-2' && target.dropPosition === 'after') ||
+            (target.key === 'item-1' && target.dropPosition === 'after')
+          );
+
+        const initialTarget = wrappedDelegate!.getDropTargetFromPoint(30, 50, isValidDropTarget);
+        const switchedByRight = wrappedDelegate!.getDropTargetFromPoint(50, 50, isValidDropTarget);
+
+        expect(initialTarget).toMatchObject({ type: 'item', key: 'item-1-2', dropPosition: 'after' });
+        expect(switchedByRight).toMatchObject({ type: 'item', key: 'item-1', dropPosition: 'after' });
+      } finally {
+        document.dir = originalDir;
+      }
+    });
   });
 
   describe('expansion', () => {
