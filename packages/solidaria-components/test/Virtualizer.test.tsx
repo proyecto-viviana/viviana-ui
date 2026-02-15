@@ -496,6 +496,37 @@ describe('Virtualizer', () => {
     expect(screen.queryByText('Item 0')).not.toBeInTheDocument();
   });
 
+  it('retains focused item in virtualized listbox when no drop target is active', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 1;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
+    const items = Array.from({ length: 120 }, (_, i) => ({
+      id: `item-${i}`,
+      label: `Item ${i}`,
+    }));
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 60, overscan: 0 }}
+        style={{ height: '60px', overflow: 'auto' }}
+      >
+        <ListBox aria-label="Focused retention list" items={items} getKey={(item) => item.id}>
+          {(item) => <ListBoxOption id={item.id}>{item.label}</ListBoxOption>}
+        </ListBox>
+      </Virtualizer>
+    ));
+
+    const listbox = screen.getByRole('listbox');
+    fireEvent.focus(listbox);
+    fireEvent.keyDown(listbox, { key: 'End' });
+
+    expect(screen.getByText('Item 119')).toBeInTheDocument();
+  });
+
   it('reuses visible range result when scroll stays within same item window', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       cb(0);
