@@ -97,16 +97,19 @@ export function useRenderDropIndicator(
     | Pick<DragAndDropHooks<unknown>, 'renderDropIndicator' | 'isVirtualDragging'>
     | {
       target?: DropTarget | null;
-      isDropTarget?: (target: DropTarget) => boolean;
+      isDropTarget?: ((target: DropTarget) => boolean) | boolean;
     },
   maybeDropState?: {
     target?: DropTarget | null;
-    isDropTarget?: (target: DropTarget) => boolean;
+    isDropTarget?: ((target: DropTarget) => boolean) | boolean;
   }
 ): ((target: ItemDropTarget) => JSX.Element | undefined) | undefined {
   const looksLikeDropState = (
     value: unknown
-  ): value is { target?: DropTarget | null; isDropTarget?: (target: DropTarget) => boolean } => {
+  ): value is {
+    target?: DropTarget | null;
+    isDropTarget?: ((target: DropTarget) => boolean) | boolean;
+  } => {
     return Boolean(
       value &&
       typeof value === 'object' &&
@@ -120,8 +123,21 @@ export function useRenderDropIndicator(
   const dropState = looksLikeDropState(hooksOrDropState) ? hooksOrDropState : maybeDropState;
   if (!dropState && !dragAndDropHooks?.renderDropIndicator) return undefined;
 
+  const targetsEqual = (a: DropTarget | null | undefined, b: DropTarget): boolean => {
+    if (!a) return false;
+    if (a.type !== b.type) return false;
+    if (a.type === 'root' && b.type === 'root') return true;
+    if (a.type !== 'item' || b.type !== 'item') return false;
+    return a.key === b.key && a.dropPosition === b.dropPosition;
+  };
+
   return (target: ItemDropTarget) => {
-    const isTarget = dropState?.isDropTarget?.(target) ?? false;
+    const stateIsDropTarget = dropState?.isDropTarget;
+    const isTarget = typeof stateIsDropTarget === 'function'
+      ? stateIsDropTarget(target)
+      : stateIsDropTarget === true
+        ? targetsEqual(dropState?.target, target)
+        : false;
     const isVirtualDragging = dragAndDropHooks?.isVirtualDragging?.() ?? false;
     if (!isTarget && !isVirtualDragging) return undefined;
     return dragAndDropHooks?.renderDropIndicator

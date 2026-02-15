@@ -59,7 +59,12 @@ import {
   isCollectionSection,
 } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
-import { getNormalizedDropTargetKey, mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
+import {
+  getNormalizedDropTargetKey,
+  mergePersistedKeysIntoVirtualRange,
+  useDndPersistedKeys,
+  useRenderDropIndicator,
+} from './DragAndDrop';
 
 // ============================================
 // TYPES
@@ -540,10 +545,11 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   const isRootDropTarget = createMemo(() => {
     return Boolean(dropState()?.target?.type === 'root');
   });
+  const dndRenderDropIndicator = createMemo(() => useRenderDropIndicator(stateProps.dragAndDropHooks, dropState()));
   const dndDropIndicator = (index: number, position: 'before' | 'after' | 'on') => {
     const target = getDropTargetByIndex(index, position);
     if (!target || target.type !== 'item') return undefined;
-    return stateProps.dragAndDropHooks?.renderDropIndicator?.(target);
+    return dndRenderDropIndicator()?.(target);
   };
   const sectionedRenderEntries = createMemo(() => {
     let globalIndex = 0;

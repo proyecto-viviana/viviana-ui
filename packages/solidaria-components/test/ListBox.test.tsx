@@ -11,8 +11,9 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { ListBox, ListBoxOption, ListBoxLoadMoreItem } from '../src/ListBox';
+import { ListBox, ListBoxOption, ListBoxSection, ListBoxLoadMoreItem } from '../src/ListBox';
 import { SelectionIndicator } from '../src/SelectionIndicator';
+import { useDragAndDrop } from '../src/useDragAndDrop';
 import type { Key } from '@proyecto-viviana/solid-stately';
 import { setupUser, firePointerDown, firePointerUp, firePointerClick } from '@proyecto-viviana/solidaria-test-utils';
 
@@ -68,6 +69,11 @@ describe('ListBox', () => {
   // ============================================
 
   describe('rendering', () => {
+    it('should render ListBoxSection as a collection section primitive', () => {
+      const { container } = render(() => <ListBoxSection>Section</ListBoxSection>);
+      expect(container.querySelector('[data-section]')).toBeInTheDocument();
+    });
+
     it('should render with listbox role', () => {
       render(() => <TestListBox />);
       const listbox = screen.getByRole('listbox');
@@ -174,6 +180,62 @@ describe('ListBox', () => {
       ));
 
       expect(screen.getByText('Load more')).toBeInTheDocument();
+    });
+
+    it('should apply draggable item semantics when drag hooks are provided', () => {
+      const { dragAndDropHooks } = useDragAndDrop<TestItem>({
+        items: testItems,
+        getItems: (keys, items) =>
+          items
+            .filter((item) => keys.has(item.id))
+            .map((item) => ({ 'text/plain': item.name })),
+      });
+
+      render(() => (
+        <TestListBox
+          listBoxProps={{
+            dragAndDropHooks,
+          }}
+        />
+      ));
+
+      const options = screen.getAllByRole('option');
+      expect(options[0]).toHaveAttribute('draggable', 'true');
+    });
+
+    it('should render default drop indicator for active target without custom renderer', () => {
+      const dropState = {
+        isDropTarget: true,
+        target: { type: 'item', key: 'cat', dropPosition: 'before' as const },
+        isDisabled: false,
+        setTarget: () => {},
+        isAccepted: () => true,
+        enterTarget: () => {},
+        moveToTarget: () => {},
+        exitTarget: () => {},
+        activateTarget: () => {},
+        drop: () => {},
+        shouldAcceptItemDrop: () => true,
+        getDropOperation: () => 'move' as const,
+      };
+      const dragAndDropHooks = {
+        useDroppableCollectionState: () => dropState,
+        useDroppableCollection: () => ({ collectionProps: {} }),
+        dropTargetDelegate: {
+          getDropTargetFromPoint: () => null,
+          getDropOperation: () => 'move' as const,
+        },
+      };
+
+      const { container } = render(() => (
+        <TestListBox
+          listBoxProps={{
+            dragAndDropHooks: dragAndDropHooks as any,
+          }}
+        />
+      ));
+
+      expect(container.querySelector('.solidaria-DropIndicator')).toBeInTheDocument();
     });
 
     it('should trigger onLoadMore when load more sentinel is visible', async () => {

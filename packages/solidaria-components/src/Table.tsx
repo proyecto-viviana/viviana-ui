@@ -52,7 +52,12 @@ import {
 import { type DragAndDropHooks } from './useDragAndDrop';
 import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
-import { getNormalizedDropTargetKey, mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
+import {
+  getNormalizedDropTargetKey,
+  mergePersistedKeysIntoVirtualRange,
+  useDndPersistedKeys,
+  useRenderDropIndicator,
+} from './DragAndDrop';
 
 // ============================================
 // TYPES
@@ -421,10 +426,11 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
   const isRootDropTarget = createMemo(() => {
     return Boolean(dropState()?.target?.type === 'root');
   });
+  const dndRenderDropIndicator = createMemo(() => useRenderDropIndicator(local.dragAndDropHooks, dropState()));
   const dndDropIndicator = (index: number, position: 'before' | 'after' | 'on') => {
     const target = getDropTargetByIndex(index, position);
     if (!target || target.type !== 'item') return undefined;
-    return local.dragAndDropHooks?.renderDropIndicator?.(target);
+    return dndRenderDropIndicator()?.(target);
   };
 
   const contextValue = createMemo<TableContextValue<T>>(() => ({
