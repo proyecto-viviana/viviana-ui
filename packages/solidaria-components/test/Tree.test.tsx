@@ -216,6 +216,55 @@ describe('Tree', () => {
       expect(dropState.getDropOperation(selfTarget, alwaysAccepted, allowed)).toBe('cancel');
       expect(dropState.getDropOperation(descendantTarget, alwaysAccepted, allowed)).toBe('cancel');
     });
+
+    it('should expand a collapsed branch on drop activate', () => {
+      const dropState: DroppableCollectionState = {
+        isDropTarget: false,
+        target: null,
+        isDisabled: false,
+        setTarget: () => {},
+        isAccepted: () => true,
+        enterTarget: () => {},
+        moveToTarget: () => {},
+        exitTarget: () => {},
+        activateTarget: () => {},
+        drop: () => {},
+        shouldAcceptItemDrop: () => true,
+        getDropOperation: () => 'move',
+      };
+
+      const dragAndDropHooks = {
+        useDroppableCollectionState: () => dropState,
+        useDroppableCollection: (props: {
+          onDropActivate?: (event: { target: DropTarget; x: number; y: number }) => void;
+        }) => {
+          props.onDropActivate?.({
+            target: { type: 'item', key: 'item-1', dropPosition: 'on' },
+            x: 0,
+            y: 0,
+          });
+          return { collectionProps: {} };
+        },
+        useDroppableItem: () => ({ dropProps: {}, dropButtonProps: {}, isDropTarget: false }),
+        dropTargetDelegate: {
+          getDropTargetFromPoint: () => null,
+        },
+      };
+
+      render(() => (
+        <Tree
+          items={createTestItems()}
+          aria-label="Test Tree"
+          dragAndDropHooks={dragAndDropHooks as any}
+        >
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      // Item 1 is expanded by drop-activate, so children become visible.
+      expect(screen.getByText('Item 1.1')).toBeInTheDocument();
+      expect(screen.getByText('Item 1.2')).toBeInTheDocument();
+    });
   });
 
   describe('expansion', () => {

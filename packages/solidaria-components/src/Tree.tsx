@@ -375,6 +375,15 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     return hooks.useDroppableCollection(
       {
         dropTargetDelegate,
+        onDropActivate: (event) => {
+          if (event.target.type !== 'item') return;
+          const key = event.target.key;
+          const item = state.collection.getItem(key);
+          const isExpanded = state.isExpanded(key);
+          if (item?.hasChildNodes && (!isExpanded || hooks.isVirtualDragging?.())) {
+            state.toggleKey(key);
+          }
+        },
       },
       activeDropState,
       () => ref()
