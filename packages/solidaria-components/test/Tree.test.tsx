@@ -10,8 +10,9 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, cleanup } from '@solidjs/testing-library';
+import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
 import { Tree, TreeItem } from '../src/Tree';
+import { useDragAndDrop } from '../src/useDragAndDrop';
 import type { TreeItemData } from '@proyecto-viviana/solid-stately';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
@@ -109,6 +110,44 @@ describe('Tree', () => {
       ));
 
       expect(screen.getByTestId('empty')).toHaveTextContent('No items');
+    });
+
+    it('should trigger onLoadMore from load more sentinel', () => {
+      const onLoadMore = vi.fn();
+      render(() => (
+        <Tree
+          items={createTestItems()}
+          aria-label="Test Tree"
+          hasMore
+          onLoadMore={onLoadMore}
+        >
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      fireEvent.focus(screen.getByText('Load more'));
+      expect(onLoadMore).toHaveBeenCalled();
+    });
+
+    it('should apply draggable item semantics when drag hooks are provided', () => {
+      const items = createTestItems();
+      const dndItems = items.map((item) => ({ key: String(item.key), name: item.value.name }));
+      const { dragAndDropHooks } = useDragAndDrop<{ key: string; name: string }>({
+        items: dndItems,
+        getItems: (keys, sourceItems) =>
+          sourceItems
+            .filter((item) => keys.has(item.key))
+            .map((item) => ({ 'text/plain': item.name })),
+      });
+
+      render(() => (
+        <Tree items={items} aria-label="Test Tree" dragAndDropHooks={dragAndDropHooks}>
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const rows = screen.getAllByRole('row');
+      expect(rows[0]).toHaveAttribute('draggable', 'true');
     });
   });
 

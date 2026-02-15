@@ -26,6 +26,7 @@ import {
   createTreeSelectionCheckbox,
   createFocusRing,
   createHover,
+  mergeProps,
   type AriaTreeProps,
 } from '@proyecto-viviana/solidaria';
 import {
@@ -36,6 +37,7 @@ import {
   type TreeNode,
   type TreeItemData,
   type Key,
+  type DropTarget,
 } from '@proyecto-viviana/solid-stately';
 import {
   type RenderChildren,
@@ -45,7 +47,8 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
-import { useCollectionRenderer } from './Collection';
+import { type DragAndDropHooks } from './useDragAndDrop';
+import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
 
 // ============================================
@@ -96,6 +99,8 @@ export interface TreeProps<T extends object> extends Omit<AriaTreeProps, 'childr
   isLoading?: boolean;
   /** Called when the load more sentinel becomes visible. */
   onLoadMore?: () => void | Promise<void>;
+  /** Drag and drop hooks from `useDragAndDrop`. */
+  dragAndDropHooks?: DragAndDropHooks<T>;
 }
 
 export interface TreeRenderItemState {
@@ -171,6 +176,9 @@ interface TreeContextValue<T extends object> {
   collection: TreeCollection<T>;
   isDisabled: boolean;
   renderItem: (item: TreeItemData<T>, state: TreeRenderItemState) => JSX.Element;
+  dragAndDropHooks?: DragAndDropHooks<T>;
+  dragState?: unknown;
+  dropState?: unknown;
 }
 
 interface TreeItemContextValue<T extends object> {
@@ -195,7 +203,7 @@ export const TreeItemContext = createContext<TreeItemContextValue<object> | null
 export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore'],
+    ['class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore', 'dragAndDropHooks'],
     [
       'items',
       'disabledKeys',
@@ -280,17 +288,76 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
 
   const isEmpty = () => stateProps.items.length === 0;
 
+  // Render visible rows (flat list based on expansion state)
+  const visibleRows = createMemo(() => state.collection.rows);
+  const virtualizer = useVirtualizerContext();
+  const parentCollectionRenderer = useCollectionRenderer<TreeItemData<T>>();
+  const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
+    const node = visibleRows()[index];
+    if (!node) return null;
+    return { type: 'item', key: node.key, dropPosition: position };
+  };
+  const hasDroppableDnd = createMemo(() => {
+    const hooks = local.dragAndDropHooks;
+    return Boolean(
+      hooks?.useDroppableCollectionState &&
+      hooks.useDroppableCollection &&
+      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate)
+    );
+  });
+  const hasDraggableDnd = createMemo(() => {
+    const hooks = local.dragAndDropHooks;
+    return Boolean(hooks?.useDraggableCollectionState && hooks.useDraggableCollection);
+  });
+  const dragState = createMemo(() => {
+    if (!hasDraggableDnd()) return undefined;
+    return local.dragAndDropHooks?.useDraggableCollectionState?.({
+      items: visibleRows().map((node) => node.value as T),
+    });
+  });
+  const dropState = createMemo(() => {
+    if (!hasDroppableDnd()) return undefined;
+    return local.dragAndDropHooks?.useDroppableCollectionState?.({});
+  });
+  createEffect(() => {
+    if (!hasDraggableDnd()) return;
+    const hooks = local.dragAndDropHooks;
+    const activeDragState = dragState();
+    if (!hooks?.useDraggableCollection || !activeDragState) return;
+    hooks.useDraggableCollection({}, activeDragState, () => ref());
+  });
   const contextValue = createMemo<TreeContextValue<T>>(() => ({
     state,
     collection: state.collection,
     isDisabled: ariaProps.isDisabled ?? false,
     renderItem: props.children,
+    dragAndDropHooks: local.dragAndDropHooks,
+    dragState: dragState(),
+    dropState: dropState(),
   }));
-
-  // Render visible rows (flat list based on expansion state)
-  const visibleRows = createMemo(() => state.collection.rows);
-  const virtualizer = useVirtualizerContext();
-  const parentCollectionRenderer = useCollectionRenderer<TreeItemData<T>>();
+  const droppableCollection = createMemo(() => {
+    if (!hasDroppableDnd()) return undefined;
+    const hooks = local.dragAndDropHooks;
+    const activeDropState = dropState();
+    if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
+    const dropTargetDelegate = hooks.dropTargetDelegate ?? parentCollectionRenderer?.dropTargetDelegate;
+    if (!dropTargetDelegate) return undefined;
+    return hooks.useDroppableCollection(
+      {
+        dropTargetDelegate,
+      },
+      activeDropState,
+      () => ref()
+    );
+  });
+  const isRootDropTarget = createMemo(() => {
+    return Boolean(dropState()?.target?.type === 'root');
+  });
+  const dndDropIndicator = (index: number, position: 'before' | 'after' | 'on') => {
+    const target = getDropTargetByIndex(index, position);
+    if (!target || target.type !== 'item') return undefined;
+    return local.dragAndDropHooks?.renderDropIndicator?.(target);
+  };
   const virtualRange = createMemo(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return null;
     return virtualizer.getVisibleRange(visibleRows().length);
@@ -363,74 +430,86 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     }
     return result;
   };
+  const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
+    ...parentCollectionRenderer,
+    renderItem: (item) => item as JSX.Element,
+    renderDropIndicator: (index: number, position: 'before' | 'after' | 'on') =>
+      dndDropIndicator(index, position) ?? parentCollectionRenderer?.renderDropIndicator?.(index, position),
+  }));
 
   return (
     <TreeContext.Provider value={contextValue() as unknown as TreeContextValue<object>}>
       <TreeStateContext.Provider value={state as unknown as TreeState<object, TreeCollection<object>>}>
-        <div
-          ref={setRef}
-          {...domProps()}
-          {...cleanTreeProps()}
-          {...cleanFocusProps()}
-          class={renderProps.class()}
-          style={renderProps.style()}
-          data-focused={state.isFocused || undefined}
-          data-focus-visible={isFocusVisible() || undefined}
-          data-disabled={ariaProps.isDisabled || undefined}
-          data-empty={isEmpty() || undefined}
-        >
-          {isEmpty() && local.renderEmptyState ? (
-            local.renderEmptyState()
-          ) : (
-            <>
-              {virtualRange()?.offsetTop
-                ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
-                : null}
-              <For each={virtualizedVisibleRows()}>
-              {(node, index) => {
-                const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-                const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
-                const onIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'on');
-                const afterIndicatorIndexes = () => getAfterIndicatorIndexes(itemIndex());
-                // Find the original item data to pass to render function
-                const itemData: TreeItemData<T> = {
-                  key: node.key,
-                  value: node.value as T,
-                  textValue: node.textValue,
-                  children: node.hasChildNodes
-                    ? node.childNodes.map((child) => ({
-                        key: child.key,
-                        value: child.value as T,
-                        textValue: child.textValue,
-                      }))
-                    : undefined,
-                };
-                const itemState: TreeRenderItemState = {
-                  isExpanded: node.isExpanded ?? false,
-                  isExpandable: node.isExpandable ?? false,
-                  level: node.level,
-                };
-                return (
-                  <>
-                    {beforeIndicator()}
-                    {onIndicator()}
-                    {props.children(itemData, itemState)}
-                    <For each={afterIndicatorIndexes()}>
-                      {(afterIndex) => parentCollectionRenderer?.renderDropIndicator?.(afterIndex, 'after')}
-                    </For>
-                  </>
-                );
-              }}
-              </For>
-              {virtualRange()?.offsetBottom
-                ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
-                : null}
-            </>
-          )}
-          {local.hasMore && local.onLoadMore && (
-            <TreeLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
-          )}
-        </div>
+        <CollectionRendererContext.Provider value={collectionRenderer()}>
+          <div
+            ref={setRef}
+            {...mergeProps(
+              domProps(),
+              cleanTreeProps(),
+              cleanFocusProps(),
+              (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
+            )}
+            class={renderProps.class()}
+            style={renderProps.style()}
+            data-focused={state.isFocused || undefined}
+            data-focus-visible={isFocusVisible() || undefined}
+            data-disabled={ariaProps.isDisabled || undefined}
+            data-empty={isEmpty() || undefined}
+            data-drop-target={isRootDropTarget() || undefined}
+          >
+            {isEmpty() && local.renderEmptyState ? (
+              local.renderEmptyState()
+            ) : (
+              <>
+                {virtualRange()?.offsetTop
+                  ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
+                  : null}
+                <For each={virtualizedVisibleRows()}>
+                {(node, index) => {
+                  const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                  const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
+                  const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
+                  const afterIndicatorIndexes = () => getAfterIndicatorIndexes(itemIndex());
+                  // Find the original item data to pass to render function
+                  const itemData: TreeItemData<T> = {
+                    key: node.key,
+                    value: node.value as T,
+                    textValue: node.textValue,
+                    children: node.hasChildNodes
+                      ? node.childNodes.map((child) => ({
+                          key: child.key,
+                          value: child.value as T,
+                          textValue: child.textValue,
+                        }))
+                      : undefined,
+                  };
+                  const itemState: TreeRenderItemState = {
+                    isExpanded: node.isExpanded ?? false,
+                    isExpandable: node.isExpandable ?? false,
+                    level: node.level,
+                  };
+                  return (
+                    <>
+                      {beforeIndicator()}
+                      {onIndicator()}
+                      {props.children(itemData, itemState)}
+                      <For each={afterIndicatorIndexes()}>
+                        {(afterIndex) => collectionRenderer().renderDropIndicator?.(afterIndex, 'after')}
+                      </For>
+                    </>
+                  );
+                }}
+                </For>
+                {virtualRange()?.offsetBottom
+                  ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
+                  : null}
+              </>
+            )}
+            {local.hasMore && local.onLoadMore && (
+              <TreeLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
+            )}
+          </div>
+        </CollectionRendererContext.Provider>
       </TreeStateContext.Provider>
     </TreeContext.Provider>
   );
@@ -456,6 +535,7 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
     throw new Error('TreeItem must be used within a Tree');
   }
   const state = context as TreeState<T, TreeCollection<T>>;
+  const treeContext = useContext(TreeContext) as TreeContextValue<T> | null;
 
   // Create ref signal
   const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
@@ -513,6 +593,25 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
 
   // Check if focused
   const isFocused = createMemo(() => state.focusedKey === local.id);
+  const draggableItem = createMemo(() => {
+    if (!treeContext?.dragAndDropHooks?.useDraggableItem || !treeContext.dragState) return undefined;
+    return treeContext.dragAndDropHooks.useDraggableItem(
+      {
+        key: local.id as string | number,
+      },
+      treeContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>['useDraggableItem']>>[1]
+    );
+  });
+  const droppableItem = createMemo(() => {
+    if (!treeContext?.dragAndDropHooks?.useDroppableItem || !treeContext.dropState) return undefined;
+    return treeContext.dragAndDropHooks.useDroppableItem(
+      {
+        key: local.id as string | number,
+      },
+      treeContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>['useDroppableItem']>>[1],
+      () => ref()
+    );
+  });
 
   // Render props values
   const renderValues = createMemo<TreeItemRenderProps>(() => ({
@@ -561,12 +660,16 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
   }));
 
   return (
-    <TreeItemContext.Provider value={itemContextValue() as TreeItemContextValue<object>}>
+    <TreeItemContext.Provider value={itemContextValue() as unknown as TreeItemContextValue<object>}>
       <div
         ref={setRef}
-        {...cleanRowProps()}
-        {...cleanHoverProps()}
-        {...cleanFocusProps()}
+        {...mergeProps(
+          cleanRowProps(),
+          cleanHoverProps(),
+          cleanFocusProps(),
+          (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
+          (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
+        )}
         class={renderProps.class()}
         style={renderProps.style()}
         data-selected={isSelected || undefined}
@@ -578,6 +681,8 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
         data-expanded={isExpanded || undefined}
         data-expandable={isExpandable || undefined}
         data-level={level}
+        data-dragging={draggableItem()?.isDragging || undefined}
+        data-drop-target={droppableItem()?.isDropTarget || undefined}
       >
         <div {...gridCellProps} class="solidaria-Tree-item-content">
           {renderProps.renderChildren()}
@@ -713,6 +818,13 @@ export function TreeLoadMoreItem(props: TreeLoadMoreItemProps): JSX.Element {
       {renderProps.renderChildren()}
     </div>
   );
+}
+
+export interface TreeItemContentProps<T extends object> extends TreeItemProps<T> {}
+export type TreeItemContentRenderProps = TreeItemRenderProps;
+
+export function TreeItemContent<T extends object>(props: TreeItemContentProps<T>): JSX.Element {
+  return <TreeItem {...props} />;
 }
 
 // Attach static properties
