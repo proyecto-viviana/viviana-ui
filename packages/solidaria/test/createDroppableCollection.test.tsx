@@ -3,11 +3,13 @@ import { render, fireEvent, screen, cleanup } from '@solidjs/testing-library';
 import { afterEach } from 'vitest';
 import { createDroppableCollection } from '../src/dnd/createDroppableCollection';
 import { setGlobalDraggingCollectionRef, setGlobalDraggingKeys } from '../src/dnd/createDraggableCollection';
+import { setGlobalAllowedDropOperations, DROP_OPERATION } from '../src/dnd/utils';
 import type { DropTarget, DroppableCollectionState } from '@proyecto-viviana/solid-stately';
 
 afterEach(() => {
   setGlobalDraggingCollectionRef(null);
   setGlobalDraggingKeys(new Set());
+  setGlobalAllowedDropOperations(DROP_OPERATION.none);
   document.dir = '';
   cleanup();
 });
@@ -688,6 +690,92 @@ describe('createDroppableCollection keyboard behavior', () => {
 
     fireEvent.keyDown(root, { key: 'ArrowDown' });
     expect(calls.at(-1)).toBe('set:item:3:on');
+  });
+
+  it('respects global allowed drop operations when validating keyboard targets', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'root' };
+    setGlobalAllowedDropOperations(DROP_OPERATION.copy);
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}:${target.dropPosition}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation(target: DropTarget, _types: { has: (type: string) => boolean }, allowedOperations: Array<'copy' | 'move' | 'link'>) {
+        if (target.type !== 'item') return 'cancel' as const;
+        if (target.key === 1) {
+          return allowedOperations.includes('move') ? 'move' as const : 'cancel' as const;
+        }
+        if (target.key === 2) {
+          return allowedOperations.includes('copy') ? 'copy' as const : 'cancel' as const;
+        }
+        return 'cancel' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-allowed-ops') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+            getKeyboardNavigationTarget(target, direction) {
+              if (direction !== 'next') return null;
+              if (!target || target.type === 'root') {
+                return { type: 'item', key: 1, dropPosition: 'on' };
+              }
+              if (target.type === 'item' && target.key === 1) {
+                return { type: 'item', key: 2, dropPosition: 'on' };
+              }
+              return null;
+            },
+          },
+          keyboardDelegate: {
+            getKeyBelow: (key) => (key < 2 ? key + 1 : null),
+          },
+        }),
+        state
+      );
+
+      return (
+        <div
+          id="drop-root-allowed-ops"
+          tabIndex={0}
+          data-testid="drop-root-allowed-ops"
+          {...collectionProps}
+        />
+      );
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-allowed-ops');
+
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
+    expect(calls.at(-1)).toBe('set:item:2:on');
   });
 
   it('uses rtl-aware horizontal direction for delegate keyboard navigation', () => {

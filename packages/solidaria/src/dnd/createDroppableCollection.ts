@@ -16,6 +16,7 @@ import type {
 } from '@proyecto-viviana/solid-stately';
 import { createDrop } from './createDrop';
 import { getGlobalDraggingCollectionRef, getGlobalDraggingKeys } from './createDraggableCollection';
+import { getGlobalAllowedDropOperations, DROP_OPERATION } from './utils';
 
 // Global state for tracking the drop collection
 let globalDropCollectionRef: HTMLElement | null = null;
@@ -328,8 +329,17 @@ export function createDroppableCollection(
       const forwardHorizontalKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
       const backwardHorizontalKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
       const callUserOnKeyDown = () => opts.onKeyDown?.(e);
+      const getKeyboardAllowedOperations = (): DropOperation[] => {
+        const allowedBits = getGlobalAllowedDropOperations();
+        if (!allowedBits) return ['copy', 'move', 'link'];
+        const allowed: DropOperation[] = [];
+        if (allowedBits & DROP_OPERATION.copy) allowed.push('copy');
+        if (allowedBits & DROP_OPERATION.move) allowed.push('move');
+        if (allowedBits & DROP_OPERATION.link) allowed.push('link');
+        return allowed.length > 0 ? allowed : ['copy', 'move', 'link'];
+      };
       const isValidDropTarget = (target: DropTarget) =>
-        state.getDropOperation(target, { has: () => true }, ['copy', 'move', 'link']) !== 'cancel';
+        state.getDropOperation(target, { has: () => true }, getKeyboardAllowedOperations()) !== 'cancel';
       const targetsEqual = (a: DropTarget, b: DropTarget): boolean => {
         if (a.type !== b.type) return false;
         if (a.type === 'root' && b.type === 'root') return true;
