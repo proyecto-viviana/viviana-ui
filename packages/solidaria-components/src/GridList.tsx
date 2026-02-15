@@ -25,6 +25,7 @@ import {
   createGridListSelectionCheckbox,
   createFocusRing,
   createHover,
+  mergeProps,
   type AriaGridListProps,
 } from '@proyecto-viviana/solidaria';
 import {
@@ -33,6 +34,7 @@ import {
   type GridCollection,
   type GridNode,
   type Key,
+  type DropTarget,
 } from '@proyecto-viviana/solid-stately';
 import {
   type RenderChildren,
@@ -42,7 +44,14 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
-import { useCollectionRenderer } from './Collection';
+import { type DragAndDropHooks } from './useDragAndDrop';
+import {
+  CollectionRendererContext,
+  type CollectionRendererContextValue,
+  Section,
+  type SectionProps,
+  useCollectionRenderer,
+} from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
 
 // ============================================
@@ -93,6 +102,8 @@ export interface GridListProps<T extends object> extends Omit<AriaGridListProps,
   isLoading?: boolean;
   /** Called when the load more sentinel becomes visible. */
   onLoadMore?: () => void | Promise<void>;
+  /** Drag and drop hooks from `useDragAndDrop`. */
+  dragAndDropHooks?: DragAndDropHooks<T>;
 }
 
 export interface GridListItemRenderProps {
@@ -135,6 +146,13 @@ export interface GridListLoadMoreItemProps extends SlotProps {
   style?: StyleOrFunction<{ isLoading: boolean }>;
 }
 
+export interface GridListSectionProps extends SectionProps {}
+export interface GridListHeaderProps extends SlotProps {
+  children?: JSX.Element;
+  class?: string;
+  style?: JSX.CSSProperties;
+}
+
 // ============================================
 // CONTEXT
 // ============================================
@@ -143,10 +161,14 @@ interface GridListContextValue<T extends object> {
   state: GridState<T, GridCollection<T>>;
   collection: GridCollection<T>;
   isDisabled: boolean;
+  dragAndDropHooks?: DragAndDropHooks<T>;
+  dragState?: unknown;
+  dropState?: unknown;
 }
 
 export const GridListContext = createContext<GridListContextValue<object> | null>(null);
 export const GridListStateContext = createContext<GridState<object, GridCollection<object>> | null>(null);
+export const GridListHeaderContext = createContext<null>(null);
 
 // ============================================
 // HELPER: Build GridCollection from items
@@ -240,7 +262,7 @@ function buildGridCollection<T extends object>(
 export function GridList<T extends object>(props: GridListProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore'],
+    ['children', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore', 'dragAndDropHooks'],
     [
       'items',
       'getKey',
@@ -353,6 +375,64 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
   const isEmpty = () => stateProps.items.length === 0;
   const virtualizer = useVirtualizerContext();
   const parentCollectionRenderer = useCollectionRenderer<T>();
+  const getItemNodes = () => Array.from(state.collection).filter((node) => node.type === 'item');
+  const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
+    const node = getItemNodes()[index];
+    if (!node) return null;
+    return { type: 'item', key: node.key, dropPosition: position };
+  };
+  const hasDroppableDnd = createMemo(() => {
+    const hooks = local.dragAndDropHooks;
+    return Boolean(
+      hooks?.useDroppableCollectionState &&
+      hooks.useDroppableCollection &&
+      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate)
+    );
+  });
+  const hasDraggableDnd = createMemo(() => {
+    const hooks = local.dragAndDropHooks;
+    return Boolean(hooks?.useDraggableCollectionState && hooks.useDraggableCollection);
+  });
+  const dragState = createMemo(() => {
+    if (!hasDraggableDnd()) return undefined;
+    return local.dragAndDropHooks?.useDraggableCollectionState?.({
+      items: stateProps.items,
+    });
+  });
+  const dropState = createMemo(() => {
+    if (!hasDroppableDnd()) return undefined;
+    return local.dragAndDropHooks?.useDroppableCollectionState?.({});
+  });
+  createEffect(() => {
+    if (!hasDraggableDnd()) return;
+    const hooks = local.dragAndDropHooks;
+    const activeDragState = dragState();
+    if (!hooks?.useDraggableCollection || !activeDragState) return;
+    hooks.useDraggableCollection({}, activeDragState, () => ref());
+  });
+  const droppableCollection = createMemo(() => {
+    if (!hasDroppableDnd()) return undefined;
+    const hooks = local.dragAndDropHooks;
+    const activeDropState = dropState();
+    if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
+    const dropTargetDelegate = hooks.dropTargetDelegate ?? parentCollectionRenderer?.dropTargetDelegate;
+    if (!dropTargetDelegate) return undefined;
+    return hooks.useDroppableCollection(
+      {
+        dropTargetDelegate,
+      },
+      activeDropState,
+      () => ref()
+    );
+  });
+  const isRootDropTarget = createMemo(() => {
+    return Boolean(dropState()?.target?.type === 'root');
+  });
+  const dndDropIndicator = (index: number, position: 'before' | 'after' | 'on') => {
+    const target = getDropTargetByIndex(index, position);
+    if (!target || target.type !== 'item') return undefined;
+    return local.dragAndDropHooks?.renderDropIndicator?.(target);
+  };
   const virtualRange = createMemo(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return null;
     return virtualizer.getVisibleRange(stateProps.items.length);
@@ -389,55 +469,70 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     state,
     collection: collection(),
     isDisabled: ariaProps.isDisabled ?? false,
+    dragAndDropHooks: local.dragAndDropHooks,
+    dragState: dragState(),
+    dropState: dropState(),
+  }));
+  const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
+    ...parentCollectionRenderer,
+    renderItem: (item) => props.children(item as T),
+    renderDropIndicator: (index: number, position: 'before' | 'after' | 'on') =>
+      dndDropIndicator(index, position) ?? parentCollectionRenderer?.renderDropIndicator?.(index, position),
   }));
 
   return (
-    <GridListContext.Provider value={contextValue() as GridListContextValue<object>}>
+    <GridListContext.Provider value={contextValue() as unknown as GridListContextValue<object>}>
       <GridListStateContext.Provider value={state as unknown as GridState<object, GridCollection<object>>}>
-        <ul
-          ref={setRef}
-          {...domProps()}
-          {...cleanGridProps()}
-          {...cleanFocusProps()}
-          class={renderProps.class()}
-          style={renderProps.style()}
-          data-focused={state.isFocused || undefined}
-          data-focus-visible={isFocusVisible() || undefined}
-          data-disabled={ariaProps.isDisabled || undefined}
-          data-empty={isEmpty() || undefined}
-        >
-          {isEmpty() && local.renderEmptyState ? (
-            local.renderEmptyState()
-          ) : (
-            <>
-              {virtualRange()?.offsetTop
-                ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
-                : null}
-              <For each={visibleItems()}>
-                {(item, index) => {
-                  const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-                  const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
-                  const onIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'on');
-                  const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
-                  return (
-                    <>
-                      {beforeIndicator()}
-                      {onIndicator()}
-                      {props.children(item)}
-                      {afterIndicator()}
-                    </>
-                  );
-                }}
-              </For>
-              {virtualRange()?.offsetBottom
-                ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
-                : null}
-            </>
-          )}
-          {local.hasMore && local.onLoadMore && (
-            <GridListLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
-          )}
-        </ul>
+        <CollectionRendererContext.Provider value={collectionRenderer()}>
+          <ul
+            ref={setRef}
+            {...mergeProps(
+              domProps(),
+              cleanGridProps(),
+              cleanFocusProps(),
+              (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
+            )}
+            class={renderProps.class()}
+            style={renderProps.style()}
+            data-focused={state.isFocused || undefined}
+            data-focus-visible={isFocusVisible() || undefined}
+            data-disabled={ariaProps.isDisabled || undefined}
+            data-empty={isEmpty() || undefined}
+            data-drop-target={isRootDropTarget() || undefined}
+          >
+            {isEmpty() && local.renderEmptyState ? (
+              local.renderEmptyState()
+            ) : (
+              <>
+                {virtualRange()?.offsetTop
+                  ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
+                  : null}
+                <For each={visibleItems()}>
+                  {(item, index) => {
+                    const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                    const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
+                    const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
+                    const afterIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'after');
+                    return (
+                      <>
+                        {beforeIndicator()}
+                        {onIndicator()}
+                        {props.children(item)}
+                        {afterIndicator()}
+                      </>
+                    );
+                  }}
+                </For>
+                {virtualRange()?.offsetBottom
+                  ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
+                  : null}
+              </>
+            )}
+            {local.hasMore && local.onLoadMore && (
+              <GridListLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
+            )}
+          </ul>
+        </CollectionRendererContext.Provider>
       </GridListStateContext.Provider>
     </GridListContext.Provider>
   );
@@ -463,6 +558,7 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
     throw new Error('GridListItem must be used within a GridList');
   }
   const state = context as GridState<T, GridCollection<T>>;
+  const listContext = useContext(GridListContext) as GridListContextValue<T> | null;
 
   // Create ref signal
   const [ref, setRef] = createSignal<HTMLLIElement | null>(null);
@@ -508,6 +604,25 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
 
   // Check if focused
   const isFocused = createMemo(() => state.focusedKey === local.id);
+  const draggableItem = createMemo(() => {
+    if (!listContext?.dragAndDropHooks?.useDraggableItem || !listContext.dragState) return undefined;
+    return listContext.dragAndDropHooks.useDraggableItem(
+      {
+        key: local.id as string | number,
+      },
+      listContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>['useDraggableItem']>>[1]
+    );
+  });
+  const droppableItem = createMemo(() => {
+    if (!listContext?.dragAndDropHooks?.useDroppableItem || !listContext.dropState) return undefined;
+    return listContext.dragAndDropHooks.useDroppableItem(
+      {
+        key: local.id as string | number,
+      },
+      listContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>['useDroppableItem']>>[1],
+      () => ref()
+    );
+  });
 
   // Render props values
   const renderValues = createMemo<GridListItemRenderProps>(() => ({
@@ -547,9 +662,13 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
   return (
     <li
       ref={setRef}
-      {...cleanRowProps()}
-      {...cleanHoverProps()}
-      {...cleanFocusProps()}
+      {...mergeProps(
+        cleanRowProps(),
+        cleanHoverProps(),
+        cleanFocusProps(),
+        (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
+        (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
+      )}
       class={renderProps.class()}
       style={renderProps.style()}
       data-selected={isSelected || undefined}
@@ -558,6 +677,8 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
       data-pressed={isPressed || undefined}
       data-hovered={isHovered() || undefined}
       data-disabled={isDisabled || undefined}
+      data-dragging={draggableItem()?.isDragging || undefined}
+      data-drop-target={droppableItem()?.isDropTarget || undefined}
     >
       <div {...gridCellProps}>{renderProps.renderChildren()}</div>
     </li>
@@ -634,6 +755,21 @@ export function GridListLoadMoreItem(props: GridListLoadMoreItemProps): JSX.Elem
       {renderProps.renderChildren()}
     </li>
   );
+}
+
+export function GridListHeader(props: GridListHeaderProps): JSX.Element {
+  return (
+    <div class={props.class ?? 'solidaria-GridListHeader'} style={props.style}>
+      {props.children}
+    </div>
+  );
+}
+
+/**
+ * Section primitive alias for GridList composition parity.
+ */
+export function GridListSection(props: GridListSectionProps): JSX.Element {
+  return <Section {...props} />;
 }
 
 // Attach Item and SelectionCheckbox as static properties

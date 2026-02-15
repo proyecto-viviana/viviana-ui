@@ -3,8 +3,9 @@
  */
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@solidjs/testing-library';
-import { GridList, GridListItem, GridListSelectionCheckbox } from '../src/GridList';
+import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
+import { GridList, GridListItem, GridListSection, GridListSelectionCheckbox } from '../src/GridList';
+import { useDragAndDrop } from '../src/useDragAndDrop';
 
 // Test data
 const testItems = [
@@ -23,6 +24,11 @@ describe('GridList', () => {
   // ============================================
 
   describe('rendering', () => {
+    it('should render GridListSection as a collection section primitive', () => {
+      const { container } = render(() => <GridListSection>Section</GridListSection>);
+      expect(container.querySelector('[data-section]')).toBeInTheDocument();
+    });
+
     it('should render with default class', () => {
       render(() => (
         <GridList
@@ -115,6 +121,56 @@ describe('GridList', () => {
 
       expect(screen.getByTestId('empty')).toBeTruthy();
       expect(screen.getByText('No items')).toBeTruthy();
+    });
+
+    it('should trigger onLoadMore from load more sentinel', () => {
+      const onLoadMore = vi.fn();
+      render(() => (
+        <GridList
+          items={testItems}
+          getKey={(item) => item.id}
+          aria-label="Fruits"
+          hasMore
+          onLoadMore={onLoadMore}
+        >
+          {(item) => (
+            <GridListItem id={item.id} textValue={item.name}>
+              {item.name}
+            </GridListItem>
+          )}
+        </GridList>
+      ));
+
+      fireEvent.focus(screen.getByText('Load more'));
+      expect(onLoadMore).toHaveBeenCalled();
+    });
+
+    it('should apply draggable item semantics when drag hooks are provided', () => {
+      const { dragAndDropHooks } = useDragAndDrop<(typeof testItems)[number]>({
+        items: testItems,
+        getItems: (keys, items) =>
+          items
+            .filter((item) => keys.has(item.id))
+            .map((item) => ({ 'text/plain': item.name })),
+      });
+
+      render(() => (
+        <GridList
+          items={testItems}
+          getKey={(item) => item.id}
+          aria-label="Fruits"
+          dragAndDropHooks={dragAndDropHooks}
+        >
+          {(item) => (
+            <GridListItem id={item.id} textValue={item.name}>
+              {item.name}
+            </GridListItem>
+          )}
+        </GridList>
+      ));
+
+      const rows = screen.getAllByRole('row');
+      expect(rows[0]).toHaveAttribute('draggable', 'true');
     });
   });
 
