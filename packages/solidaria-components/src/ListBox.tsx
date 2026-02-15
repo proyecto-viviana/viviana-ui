@@ -21,6 +21,7 @@ import {
   createOption,
   createFocusRing,
   createHover,
+  mergeProps,
   type AriaListBoxProps,
   type AriaOptionProps,
 } from '@proyecto-viviana/solidaria';
@@ -28,6 +29,7 @@ import {
   createListState,
   type ListState,
   type Key,
+  type DropTarget,
 } from '@proyecto-viviana/solid-stately';
 import {
   type RenderChildren,
@@ -42,6 +44,8 @@ import {
   type SelectionIndicatorContextValue,
 } from './SelectionIndicator';
 import { useVirtualizerContext } from './Virtualizer';
+import { type DragAndDropHooks } from './useDragAndDrop';
+import { useDndPersistedKeys } from './DragAndDrop';
 import {
   CollectionRendererContext,
   Section,
@@ -49,6 +53,7 @@ import {
   Group,
   type CollectionEntry,
   type CollectionRendererContextValue,
+  type SectionProps,
   useCollectionRenderer,
   isCollectionSection,
   flattenCollectionEntries,
@@ -104,6 +109,8 @@ export interface ListBoxProps<T>
   isLoading?: boolean;
   /** Called when the load more sentinel becomes visible. */
   onLoadMore?: () => void | Promise<void>;
+  /** Drag and drop hooks from `useDragAndDrop`. */
+  dragAndDropHooks?: DragAndDropHooks<T>;
 }
 
 export interface ListBoxOptionRenderProps {
@@ -151,16 +158,22 @@ export interface ListBoxLoadMoreItemProps extends SlotProps {
   style?: StyleOrFunction<{ isLoading: boolean }>;
 }
 
+export interface ListBoxSectionProps extends SectionProps {}
+
 // ============================================
 // CONTEXT
 // ============================================
 
 interface ListBoxContextValue<T> {
   state: ListState<T>;
+  dragAndDropHooks?: DragAndDropHooks<unknown>;
+  dragState?: unknown;
+  dropState?: unknown;
 }
 
 export const ListBoxContext = createContext<ListBoxContextValue<unknown> | null>(null);
 export const ListBoxStateContext = createContext<ListState<unknown> | null>(null);
+export const ListStateContext = ListBoxStateContext;
 
 // ============================================
 // COMPONENTS
@@ -172,7 +185,7 @@ export const ListBoxStateContext = createContext<ListState<unknown> | null>(null
 export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore'],
+    ['children', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore', 'dragAndDropHooks'],
     ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'selectionMode', 'selectedKeys', 'defaultSelectedKeys', 'onSelectionChange']
   );
 
@@ -269,13 +282,100 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     const { ref: _ref2, ...rest } = focusProps as Record<string, unknown>;
     return rest;
   };
+  const [listRef, setListRef] = createSignal<HTMLElement | null>(null);
 
   const isEmpty = () => stateProps.items.length === 0;
   const parentCollectionRenderer = useCollectionRenderer<unknown>();
+  const getItemNodes = () => Array.from(state.collection()).filter((node) => node.type === 'item');
+  const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
+    const node = getItemNodes()[index];
+    if (!node) return null;
+    return { type: 'item', key: node.key, dropPosition: position };
+  };
+  const hasDroppableDnd = createMemo(() => {
+    const hooks = local.dragAndDropHooks;
+    return Boolean(
+      hooks?.useDroppableCollectionState &&
+      hooks.useDroppableCollection &&
+      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate)
+    );
+  });
+  const dropState = createMemo(() => {
+    if (!hasDroppableDnd()) return undefined;
+    return local.dragAndDropHooks?.useDroppableCollectionState?.({});
+  });
+  const hasDraggableDnd = createMemo(() => {
+    const hooks = local.dragAndDropHooks;
+    return Boolean(hooks?.useDraggableCollectionState && hooks.useDraggableCollection);
+  });
+  const dragState = createMemo(() => {
+    if (!hasDraggableDnd()) return undefined;
+    return local.dragAndDropHooks?.useDraggableCollectionState?.({
+      items: flatItems(),
+    });
+  });
+  createEffect(() => {
+    if (!hasDraggableDnd()) return;
+    const hooks = local.dragAndDropHooks;
+    const activeDragState = dragState();
+    if (!hooks?.useDraggableCollection || !activeDragState) return;
+    hooks.useDraggableCollection({}, activeDragState, () => listRef());
+  });
+  const droppableCollection = createMemo(() => {
+    if (!hasDroppableDnd()) return undefined;
+    const hooks = local.dragAndDropHooks;
+    const activeDropState = dropState();
+    if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
+    const dropTargetDelegate = hooks.dropTargetDelegate ?? parentCollectionRenderer?.dropTargetDelegate;
+    if (!dropTargetDelegate) return undefined;
+    return hooks.useDroppableCollection(
+      {
+        dropTargetDelegate,
+      },
+      activeDropState,
+      () => listRef()
+    );
+  });
+  const isRootDropTarget = createMemo(() => {
+    return Boolean(dropState()?.target?.type === 'root');
+  });
+  const dndDropIndicator = (index: number, position: 'before' | 'after' | 'on') => {
+    const target = getDropTargetByIndex(index, position);
+    if (!target || target.type !== 'item') return undefined;
+    return local.dragAndDropHooks?.renderDropIndicator?.(target);
+  };
   const virtualizer = useVirtualizerContext();
+  const persistedKeys = useDndPersistedKeys(
+    { focusedKey: state.focusedKey },
+    local.dragAndDropHooks,
+    dropState(),
+    state.collection()
+  );
   const virtualRange = createMemo(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized || hasSections()) return null;
-    return virtualizer.getVisibleRange(stateProps.items.length);
+    const baseRange = virtualizer.getVisibleRange(stateProps.items.length);
+    const itemNodes = getItemNodes();
+    const persistedIndexes = Array.from(persistedKeys())
+      .map((key) => itemNodes.findIndex((node) => node.key === key))
+      .filter((index) => index >= 0);
+    if (persistedIndexes.length === 0) return baseRange;
+
+    const nextStart = Math.min(baseRange.start, ...persistedIndexes);
+    const nextEnd = Math.max(baseRange.end, ...persistedIndexes.map((index) => index + 1));
+    if (nextStart === baseRange.start && nextEnd === baseRange.end) return baseRange;
+
+    const startRect = nextStart > 0 ? virtualizer.getLayoutInfo(nextStart).rect : { y: 0 };
+    const lastRect = stateProps.items.length > 0
+      ? virtualizer.getLayoutInfo(stateProps.items.length - 1).rect
+      : { y: 0, height: 0 };
+    const endRect = nextEnd > 0 ? virtualizer.getLayoutInfo(nextEnd - 1).rect : { y: 0, height: 0 };
+
+    return {
+      start: nextStart,
+      end: nextEnd,
+      offsetTop: Math.max(0, startRect.y),
+      offsetBottom: Math.max(0, (lastRect.y + lastRect.height) - (endRect.y + endRect.height)),
+    };
   });
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
@@ -331,22 +431,38 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     ...parentCollectionRenderer,
     renderItem: (item) => props.children(item as T),
+    renderDropIndicator: (index, position) =>
+      dndDropIndicator(index, position) ?? parentCollectionRenderer?.renderDropIndicator?.(index, position),
   }));
 
   return (
-    <ListBoxContext.Provider value={{ state }}>
+    <ListBoxContext.Provider
+      value={{
+        state,
+        dragAndDropHooks: local.dragAndDropHooks as DragAndDropHooks<unknown> | undefined,
+        dragState: dragState(),
+        dropState: dropState(),
+      }}
+    >
       <ListBoxStateContext.Provider value={state}>
         <CollectionRendererContext.Provider value={collectionRenderer()}>
           <ul
-            {...domProps()}
-            {...cleanListBoxProps()}
-            {...cleanFocusProps()}
+            {...mergeProps(
+              domProps(),
+              cleanListBoxProps(),
+              cleanFocusProps(),
+              (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
+            )}
+            ref={(el) => {
+              setListRef(el);
+            }}
             class={renderProps.class()}
             style={renderProps.style()}
             data-focused={state.isFocused() || undefined}
             data-focus-visible={isFocusVisible() || undefined}
             data-disabled={resolveDisabled() || undefined}
             data-empty={isEmpty() || undefined}
+            data-drop-target={isRootDropTarget() || undefined}
           >
             {isEmpty() && local.renderEmptyState
               ? local.renderEmptyState()
@@ -366,10 +482,10 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
                                   <For each={entry.items}>
                                     {(indexedItem) => (
                                       <>
-                                        {parentCollectionRenderer?.renderDropIndicator?.(indexedItem.index, 'before')}
-                                        {parentCollectionRenderer?.renderDropIndicator?.(indexedItem.index, 'on')}
+                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'before')}
+                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'on')}
                                         {props.children(indexedItem.item)}
-                                        {parentCollectionRenderer?.renderDropIndicator?.(indexedItem.index, 'after')}
+                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'after')}
                                       </>
                                     )}
                                   </For>
@@ -380,10 +496,10 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
                         )
                         : (
                           <>
-                            {parentCollectionRenderer?.renderDropIndicator?.(entry.item.index, 'before')}
-                            {parentCollectionRenderer?.renderDropIndicator?.(entry.item.index, 'on')}
+                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'before')}
+                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'on')}
                             {props.children(entry.item.item)}
-                            {parentCollectionRenderer?.renderDropIndicator?.(entry.item.index, 'after')}
+                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'after')}
                           </>
                         )
                     }
@@ -397,9 +513,9 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
                     <For each={visibleItems()}>
                       {(item, index) => {
                         const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-                        const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
-                        const onIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'on');
-                        const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
+                        const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
+                        const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
+                        const afterIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'after');
                         return (
                           <>
                             {beforeIndicator()}
@@ -448,6 +564,8 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     throw new Error('ListBoxOption must be used within a ListBox');
   }
   const state = context as ListState<T>;
+  const listContext = useContext(ListBoxContext) as ListBoxContextValue<T> | null;
+  const [ref, setRef] = createSignal<HTMLLIElement | null>(null);
 
   // Create option aria props
   const optionAria = createOption<T>(
@@ -494,6 +612,25 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
     isSelected: optionAria.isSelected,
   }));
+  const draggableItem = createMemo(() => {
+    if (!listContext?.dragAndDropHooks?.useDraggableItem || !listContext.dragState) return undefined;
+    return listContext.dragAndDropHooks.useDraggableItem(
+      {
+        key: local.id as string | number,
+      },
+      listContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>['useDraggableItem']>>[1]
+    );
+  });
+  const droppableItem = createMemo(() => {
+    if (!listContext?.dragAndDropHooks?.useDroppableItem || !listContext.dropState) return undefined;
+    return listContext.dragAndDropHooks.useDroppableItem(
+      {
+        key: local.id as string | number,
+      },
+      listContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>['useDroppableItem']>>[1],
+      () => ref()
+    );
+  });
 
   // Remove ref from spread props
   const cleanOptionProps = () => {
@@ -508,8 +645,13 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   return (
     <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
       <li
-        {...cleanOptionProps()}
-        {...cleanHoverProps()}
+        ref={setRef}
+        {...mergeProps(
+          cleanOptionProps(),
+          cleanHoverProps(),
+          (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
+          (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
+        )}
         class={renderProps.class()}
         style={renderProps.style()}
         data-selected={optionAria.isSelected() || undefined}
@@ -518,6 +660,8 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
         data-pressed={optionAria.isPressed() || undefined}
         data-hovered={isHovered() || undefined}
         data-disabled={optionAria.isDisabled() || undefined}
+        data-dragging={draggableItem()?.isDragging || undefined}
+        data-drop-target={droppableItem()?.isDropTarget || undefined}
       >
         {renderProps.renderChildren()}
       </li>
@@ -584,6 +728,13 @@ export function ListBoxLoadMoreItem(props: ListBoxLoadMoreItemProps): JSX.Elemen
       {renderProps.renderChildren()}
     </li>
   );
+}
+
+/**
+ * Section primitive alias for ListBox composition parity.
+ */
+export function ListBoxSection(props: ListBoxSectionProps): JSX.Element {
+  return <Section {...props} />;
 }
 
 // Attach Option as a static property

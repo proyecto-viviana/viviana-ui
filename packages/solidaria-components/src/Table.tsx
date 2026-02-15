@@ -52,6 +52,7 @@ import {
 import { type DragAndDropHooks } from './useDragAndDrop';
 import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
+import { useDndPersistedKeys } from './DragAndDrop';
 
 // ============================================
 // TYPES
@@ -667,21 +668,46 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
   const isEmpty = () => items().length === 0;
   const virtualizer = useVirtualizerContext();
   const parentCollectionRenderer = useCollectionRenderer<T>();
+  const rowNodes = createMemo(() => Array.from(context.collection).filter((node) => node.type === 'item'));
+  const persistedKeys = useDndPersistedKeys(
+    { focusedKey: () => context.state.focusedKey },
+    context.dragAndDropHooks,
+    context.dropState as { target?: DropTarget | null } | undefined,
+    context.collection
+  );
   const virtualRange = createMemo(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return null;
-    return virtualizer.getVisibleRange(items().length);
+    const rowCount = items().length;
+    const baseRange = virtualizer.getVisibleRange(rowCount);
+    const persistedIndexes = Array.from(persistedKeys())
+      .map((key) => rowNodes().findIndex((node) => node.key === key))
+      .filter((index) => index >= 0);
+    if (persistedIndexes.length === 0) return baseRange;
+
+    const nextStart = Math.min(baseRange.start, ...persistedIndexes);
+    const nextEnd = Math.max(baseRange.end, ...persistedIndexes.map((index) => index + 1));
+    if (nextStart === baseRange.start && nextEnd === baseRange.end) return baseRange;
+
+    const startRect = nextStart > 0 ? virtualizer.getLayoutInfo(nextStart).rect : { y: 0 };
+    const lastRect = rowCount > 0 ? virtualizer.getLayoutInfo(rowCount - 1).rect : { y: 0, height: 0 };
+    const endRect = nextEnd > 0 ? virtualizer.getLayoutInfo(nextEnd - 1).rect : { y: 0, height: 0 };
+
+    return {
+      start: nextStart,
+      end: nextEnd,
+      offsetTop: Math.max(0, startRect.y),
+      offsetBottom: Math.max(0, (lastRect.y + lastRect.height) - (endRect.y + endRect.height)),
+    };
   });
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
     virtualizer.setDropTargetItemCountResolver(() => items().length);
     virtualizer.setDropTargetIndexResolver((key) => {
-      const rowNodes = Array.from(context.collection).filter((node) => node.type === 'item');
-      const index = rowNodes.findIndex((node) => node.key === key);
+      const index = rowNodes().findIndex((node) => node.key === key);
       return index >= 0 ? index : null;
     });
     virtualizer.setDropTargetResolver((target) => {
-      const rowNodes = Array.from(context.collection).filter((node) => node.type === 'item');
-      const node = rowNodes[target.index];
+      const node = rowNodes()[target.index];
       if (!node) return target;
       return {
         ...target,
