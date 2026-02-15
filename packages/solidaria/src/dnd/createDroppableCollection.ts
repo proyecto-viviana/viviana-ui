@@ -404,6 +404,20 @@ export function createDroppableCollection(
         }
         return null;
       };
+      const resolveBoundaryTargetForDirection = (
+        key: string | number | null,
+        direction: 'next' | 'previous'
+      ): DropTarget | null => {
+        if (key == null) return null;
+        const boundaryOrder: Array<'before' | 'on' | 'after'> = direction === 'next'
+          ? ['before', 'on', 'after']
+          : ['after', 'on', 'before'];
+        for (const position of boundaryOrder) {
+          const candidate: DropTarget = { type: 'item', key, dropPosition: position };
+          if (isValidDropTarget(candidate)) return candidate;
+        }
+        return null;
+      };
       const resolveFallbackKeyboardTarget = (
         keyName: string,
         currentTarget: DropTarget | null = state.target
@@ -420,7 +434,7 @@ export function createDroppableCollection(
             const boundaryKey = direction === 'next'
               ? keyboardDelegate.getFirstKey?.()
               : keyboardDelegate.getLastKey?.();
-            return resolveTargetForKey(boundaryKey ?? null, direction);
+            return resolveBoundaryTargetForDirection(boundaryKey ?? null, direction);
           }
           return resolveTargetForKey(getter(currentKey), direction);
         };
@@ -433,8 +447,8 @@ export function createDroppableCollection(
         if (keyName === backwardHorizontalKey) {
           return keyForDirection('previous', isRtl ? keyboardDelegate.getKeyRightOf : keyboardDelegate.getKeyLeftOf);
         }
-        if (keyName === 'Home') return resolveTargetForKey(keyboardDelegate.getFirstKey?.() ?? null, 'next');
-        if (keyName === 'End') return resolveTargetForKey(keyboardDelegate.getLastKey?.() ?? null, 'previous');
+        if (keyName === 'Home') return resolveBoundaryTargetForDirection(keyboardDelegate.getFirstKey?.() ?? null, 'next');
+        if (keyName === 'End') return resolveBoundaryTargetForDirection(keyboardDelegate.getLastKey?.() ?? null, 'previous');
         if (keyName === 'PageDown') {
           if (currentKey != null && keyboardDelegate.getKeyPageBelow) {
             return resolveTargetForKey(keyboardDelegate.getKeyPageBelow(currentKey), 'next');

@@ -659,13 +659,92 @@ describe('createDroppableCollection keyboard behavior', () => {
     const root = screen.getByTestId('drop-root-kbd-fallback');
 
     fireEvent.keyDown(root, { key: 'ArrowDown' });
-    expect(calls.at(-1)).toBe('set:item:1:on');
+    expect(calls.at(-1)).toBe('set:item:1:before');
 
     fireEvent.keyDown(root, { key: 'PageDown' });
-    expect(calls.at(-1)).toBe('set:item:3:on');
+    expect(calls.at(-1)).toBe('set:item:2:before');
 
     fireEvent.keyDown(root, { key: 'End' });
-    expect(calls.at(-1)).toBe('set:item:3:on');
+    expect(calls.at(-1)).toBe('set:item:3:after');
+  });
+
+  it('prefers boundary insertion targets for fallback start navigation', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'root' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}:${target.dropPosition}`);
+        } else {
+          calls.push(`set:${target?.type ?? 'null'}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-boundary-fallback') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+          },
+          keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 3,
+            getKeyBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyAbove: (key) => (key > 1 ? key - 1 : null),
+            getKeyPageBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyPageAbove: (key) => (key > 1 ? key - 1 : null),
+          },
+        }),
+        state
+      );
+
+      return (
+        <div
+          id="drop-root-boundary-fallback"
+          tabIndex={0}
+          data-testid="drop-root-boundary-fallback"
+          {...collectionProps}
+        />
+      );
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-boundary-fallback');
+
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
+    expect(calls.at(-1)).toBe('set:item:1:before');
+
+    currentTarget = { type: 'root' };
+    fireEvent.keyDown(root, { key: 'ArrowUp' });
+    expect(calls.at(-1)).toBe('set:item:3:after');
   });
 
   it('falls back to keyboardDelegate when delegate keyboard method returns null', () => {
@@ -1146,7 +1225,7 @@ describe('createDroppableCollection keyboard behavior', () => {
     const root = screen.getByTestId('drop-root-page-boundary-start');
 
     fireEvent.keyDown(root, { key: 'PageDown' });
-    expect(calls.at(-1)).toBe('set:item:1:on');
+    expect(calls.at(-1)).toBe('set:item:1:before');
   });
 
   it('uses rtl-aware horizontal direction for delegate keyboard navigation', () => {
