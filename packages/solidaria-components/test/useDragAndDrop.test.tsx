@@ -107,4 +107,70 @@ describe('useDragAndDrop', () => {
       dispose();
     });
   });
+
+  it('forwards onDrop through droppable collection adapter', () => {
+    createRoot((dispose) => {
+      const onDrop = vi.fn();
+      const { dragAndDropHooks } = useDragAndDrop({
+        onDrop,
+      });
+
+      const dropState = dragAndDropHooks.useDroppableCollectionState?.({});
+      expect(dropState).toBeDefined();
+      if (!dropState || !dragAndDropHooks.useDroppableCollection) {
+        dispose();
+        return;
+      }
+
+      const root = document.createElement('div');
+      root.setAttribute('id', 'adapter-drop-root');
+      document.body.append(root);
+
+      const droppableCollection = dragAndDropHooks.useDroppableCollection(
+        {
+          dropTargetDelegate: {
+            getDropTargetFromPoint: () => ({ type: 'item', key: 'row-1', dropPosition: 'on' }),
+          },
+        },
+        dropState,
+        () => root
+      );
+
+      const dataTransfer = {
+        effectAllowed: 'all',
+        dropEffect: 'none',
+        items: [{ kind: 'string', type: 'text/plain' }],
+        types: ['text/plain'],
+        getData: () => 'payload',
+      } as unknown as DataTransfer;
+
+      const onDragEnter = droppableCollection.collectionProps.onDragEnter as ((e: DragEvent) => void) | undefined;
+      const onDragOver = droppableCollection.collectionProps.onDragOver as ((e: DragEvent) => void) | undefined;
+      const onDropHandler = droppableCollection.collectionProps.onDrop as ((e: DragEvent) => void) | undefined;
+
+      const makeEvent = (x: number, y: number): DragEvent => ({
+        preventDefault: () => {},
+        stopPropagation: () => {},
+        currentTarget: root,
+        target: root,
+        clientX: x,
+        clientY: y,
+        dataTransfer,
+      } as unknown as DragEvent);
+
+      onDragEnter?.(makeEvent(1, 1));
+      onDragOver?.(makeEvent(2, 2));
+      onDropHandler?.(makeEvent(2, 2));
+
+      expect(onDrop).toHaveBeenCalledTimes(1);
+      expect(onDrop).toHaveBeenCalledWith(expect.objectContaining({
+        type: 'drop',
+        target: { type: 'item', key: 'row-1', dropPosition: 'on' },
+        dropOperation: 'move',
+      }));
+
+      root.remove();
+      dispose();
+    });
+  });
 });

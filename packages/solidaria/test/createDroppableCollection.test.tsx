@@ -1452,4 +1452,79 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(onReorderCalls).toHaveLength(1);
     expect(onReorderCalls[0]).toEqual(draggingKeys);
   });
+
+  it('forwards generic onDrop callback with resolved target payload', () => {
+    const onDropCalls: Array<{ target: DropTarget; dropOperation: string }> = [];
+    const dropTarget: DropTarget = { type: 'item', key: 'b', dropPosition: 'on' };
+    let currentTarget: DropTarget | null = null;
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+      },
+      activateTarget() {},
+      exitTarget() {
+        currentTarget = null;
+      },
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-generic-drop') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return dropTarget;
+            },
+          },
+          onDrop: (e) => {
+            onDropCalls.push({ target: e.target, dropOperation: e.dropOperation });
+          },
+        }),
+        state
+      );
+
+      return <div id="drop-root-generic-drop" tabIndex={0} data-testid="drop-root-generic-drop" {...collectionProps} />;
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-generic-drop');
+    const dataTransfer = {
+      effectAllowed: 'all',
+      dropEffect: 'none',
+      items: [{ kind: 'string', type: 'text/plain' }],
+      types: ['text/plain'],
+      getData: () => 'payload',
+    } as unknown as DataTransfer;
+
+    fireEvent.dragEnter(root, { dataTransfer, clientX: 1, clientY: 1 });
+    fireEvent.dragOver(root, { dataTransfer, clientX: 2, clientY: 2 });
+    fireEvent.drop(root, { dataTransfer, clientX: 2, clientY: 2 });
+
+    expect(onDropCalls).toHaveLength(1);
+    expect(onDropCalls[0]).toEqual({
+      target: dropTarget,
+      dropOperation: 'move',
+    });
+  });
 });

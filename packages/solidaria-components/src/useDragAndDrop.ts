@@ -229,6 +229,16 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
               y: e.y,
             });
           },
+          onDrop: (e) => {
+            (options.onDrop ?? props.onDrop)?.({
+              type: 'drop',
+              target: e.target,
+              x: e.x,
+              y: e.y,
+              items: e.items,
+              dropOperation: e.dropOperation,
+            });
+          },
           onRootDrop: options.onRootDrop ?? props.onRootDrop,
           onItemDrop: (e) => {
             if (e.target.type === 'item') {

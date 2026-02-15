@@ -103,6 +103,14 @@ export interface DroppableCollectionOptions {
     target: DropTarget;
     dropOperation: DropOperation;
   }) => void;
+  /** Handler called when a drop occurs on any collection target. */
+  onDrop?: (e: {
+    items: DropItem[];
+    target: DropTarget;
+    dropOperation: DropOperation;
+    x: number;
+    y: number;
+  }) => void;
   /** Handler called when the drop target is activated (held over). */
   onDropActivate?: (e: { target: DropTarget; x: number; y: number }) => void;
   /** Optional keyboard delegate used as fallback when drop-target delegates do not provide keyboard navigation methods. */
@@ -234,6 +242,13 @@ export function createDroppableCollection(
       setGlobalDropCollectionRef(opts.ref());
 
       if (state.target) {
+        opts.onDrop?.({
+          items: e.items,
+          target: state.target,
+          dropOperation: e.dropOperation,
+          x: e.x,
+          y: e.y,
+        });
         handleDrop(e.items, state.target, e.dropOperation);
       }
     },
