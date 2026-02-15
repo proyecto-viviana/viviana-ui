@@ -90,6 +90,32 @@ describe('Virtualizer', () => {
     expect(instances).toBeGreaterThan(0);
   });
 
+  it('uses custom drop operation resolver when provided', () => {
+    function Consumer(): JSX.Element {
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      return (
+        <output data-testid="drop-op">
+          {collection()?.dropTargetDelegate?.getDropOperation(
+            { type: 'item', key: 1, dropPosition: 'on' },
+            { has: () => true },
+            ['copy', 'move']
+          ) ?? null}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        getDropOperation={(_target, _types, allowed) => (allowed.includes('copy') ? 'copy' : 'cancel')}
+      >
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    expect(screen.getByTestId('drop-op').textContent).toBe('copy');
+  });
+
   it('renders only visible range for listbox when virtualized', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       cb(0);
