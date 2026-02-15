@@ -106,9 +106,10 @@ export function createDraggableItem(
         (effectAllowed === 'cancel' ? 'none' : effectAllowed) as DataTransfer['effectAllowed'];
     }
 
-    // Handle custom preview
-    if (typeof opts.preview?.current === 'function' && e.dataTransfer) {
-      opts.preview.current(items, (node, userX, userY) => {
+    // Handle custom preview from item options or collection state.
+    const preview = opts.preview ?? state.preview;
+    if (typeof preview?.current === 'function' && e.dataTransfer) {
+      preview.current(items, (node, userX, userY) => {
         if (!node || !e.dataTransfer) return;
 
         const size = node.getBoundingClientRect();
