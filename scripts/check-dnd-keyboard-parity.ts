@@ -45,7 +45,7 @@ results.push({
   ok:
     hasPattern(coreSource, /keyboardDelegate\?:\s*KeyboardDelegateLike/) &&
     hasPattern(coreSource, /const\s+resolveFallbackKeyboardTarget\s*=\s*\(/) &&
-    hasPattern(coreSource, /\?\?\s*resolveFallbackKeyboardTarget\(e\.key\)/),
+    hasPattern(coreSource, /\?\?\s*resolveFallbackKeyboardTarget\(e\.key(?:\s*,\s*target)?\)/),
   detail:
     "contains keyboardDelegate option type and fallback keyboard target resolution in onKeyDown path",
 });
@@ -72,4 +72,3 @@ if (failed.length > 0) {
   console.log(`Failed checks: ${failed.length}`);
   Deno.exit(1);
 }
-

@@ -330,6 +330,37 @@ export function createDroppableCollection(
       const callUserOnKeyDown = () => opts.onKeyDown?.(e);
       const isValidDropTarget = (target: DropTarget) =>
         state.getDropOperation(target, { has: () => true }, ['copy', 'move', 'link']) !== 'cancel';
+      const targetsEqual = (a: DropTarget, b: DropTarget): boolean => {
+        if (a.type !== b.type) return false;
+        if (a.type === 'root' && b.type === 'root') return true;
+        if (a.type !== 'item' || b.type !== 'item') return false;
+        return a.key === b.key && a.dropPosition === b.dropPosition;
+      };
+      const findNextValidTarget = (
+        start: DropTarget | null,
+        getNext: (target: DropTarget | null) => DropTarget | null
+      ): DropTarget | null => {
+        let current = start;
+        let seenRoot = 0;
+        let safety = 0;
+        while (safety < 256) {
+          safety += 1;
+          const next = getNext(current);
+          if (!next) return null;
+          if (current && targetsEqual(current, next)) {
+            return isValidDropTarget(next) ? next : null;
+          }
+          current = next;
+          if (next.type === 'root') {
+            seenRoot += 1;
+            if (seenRoot >= 2) {
+              return isValidDropTarget(next) ? next : null;
+            }
+          }
+          if (isValidDropTarget(next)) return next;
+        }
+        return null;
+      };
       const resolveTargetForKey = (
         key: string | number | null,
         direction: 'next' | 'previous'
@@ -346,10 +377,12 @@ export function createDroppableCollection(
         }
         return null;
       };
-      const resolveFallbackKeyboardTarget = (keyName: string): DropTarget | null => {
+      const resolveFallbackKeyboardTarget = (
+        keyName: string,
+        currentTarget: DropTarget | null = state.target
+      ): DropTarget | null => {
         const keyboardDelegate = opts.keyboardDelegate;
         if (!keyboardDelegate) return null;
-        const currentTarget = state.target;
         const currentKey = currentTarget?.type === 'item' ? currentTarget.key : null;
         const keyForDirection = (
           direction: 'next' | 'previous',
@@ -400,10 +433,12 @@ export function createDroppableCollection(
         const direction = e.key === 'PageDown' ? 'next' : 'previous';
         const pageNavigation = opts.dropTargetDelegate.getKeyboardPageNavigationTarget;
         const stepNavigation = opts.dropTargetDelegate.getKeyboardNavigationTarget;
-        const nextTarget = pageNavigation?.(state.target, direction, isValidDropTarget)
-          ?? stepNavigation?.(state.target, direction, isValidDropTarget)
-          ?? resolveFallbackKeyboardTarget(e.key)
-          ?? null;
+        const nextTarget = findNextValidTarget(state.target, (target) =>
+          pageNavigation?.(target, direction, isValidDropTarget)
+            ?? stepNavigation?.(target, direction, isValidDropTarget)
+            ?? resolveFallbackKeyboardTarget(e.key, target)
+            ?? null
+        );
         if (nextTarget) {
           e.preventDefault();
           state.setTarget(nextTarget);
@@ -433,14 +468,14 @@ export function createDroppableCollection(
         }
         const isForwardKey = e.key === 'ArrowDown' || e.key === forwardHorizontalKey || e.key === 'Home';
         const direction = isForwardKey ? 'next' : 'previous';
-        const navigationStart = e.key === 'Home' || e.key === 'End'
-          ? ({ type: 'root' } as DropTarget)
-          : state.target;
-        const nextTarget = opts.dropTargetDelegate.getKeyboardNavigationTarget(
-          navigationStart,
-          direction,
-          isValidDropTarget
-        ) ?? resolveFallbackKeyboardTarget(e.key);
+        const navigationStart = e.key === 'Home' || e.key === 'End' ? null : state.target;
+        const nextTarget = findNextValidTarget(navigationStart, (target) =>
+          opts.dropTargetDelegate.getKeyboardNavigationTarget?.(
+            target,
+            direction,
+            isValidDropTarget
+          ) ?? resolveFallbackKeyboardTarget(e.key, target)
+        );
         if (nextTarget) {
           e.preventDefault();
           state.setTarget(nextTarget);
@@ -467,7 +502,10 @@ export function createDroppableCollection(
           callUserOnKeyDown();
           return;
         }
-        const nextTarget = resolveFallbackKeyboardTarget(e.key);
+        const navigationStart = e.key === 'Home' || e.key === 'End' ? null : state.target;
+        const nextTarget = findNextValidTarget(navigationStart, (target) =>
+          resolveFallbackKeyboardTarget(e.key, target)
+        );
         if (nextTarget) {
           e.preventDefault();
           state.setTarget(nextTarget);

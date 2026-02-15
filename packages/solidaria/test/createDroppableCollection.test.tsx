@@ -604,6 +604,92 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(calls.at(-1)).toBe('set:item:2:on');
   });
 
+  it('iteratively skips invalid keyboard targets until a valid target is found', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'root' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}:${target.dropPosition}`);
+        } else {
+          calls.push(`set:${target?.type ?? 'null'}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation(target: DropTarget) {
+        if (target.type === 'item' && (target.key === 1 || target.key === 2)) {
+          return 'cancel' as const;
+        }
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-iterative') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+            getKeyboardNavigationTarget(target, direction) {
+              if (direction !== 'next') return null;
+              if (!target || target.type === 'root') {
+                return { type: 'item', key: 1, dropPosition: 'on' };
+              }
+              if (target.type === 'item' && target.key === 1) {
+                return { type: 'item', key: 2, dropPosition: 'on' };
+              }
+              if (target.type === 'item' && target.key === 2) {
+                return { type: 'item', key: 3, dropPosition: 'on' };
+              }
+              return null;
+            },
+          },
+          keyboardDelegate: {
+            getKeyBelow: (key) => (key < 3 ? key + 1 : null),
+          },
+        }),
+        state
+      );
+
+      return (
+        <div
+          id="drop-root-iterative"
+          tabIndex={0}
+          data-testid="drop-root-iterative"
+          {...collectionProps}
+        />
+      );
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-iterative');
+
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
+    expect(calls.at(-1)).toBe('set:item:3:on');
+  });
+
   it('uses rtl-aware horizontal direction for delegate keyboard navigation', () => {
     const calls: string[] = [];
     let currentTarget: DropTarget | null = { type: 'root' };
