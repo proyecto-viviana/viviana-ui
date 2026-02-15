@@ -208,6 +208,31 @@ describe('DragAndDrop parity primitives', () => {
     expect(normalized).toBe('b');
   });
 
+  it('mergePersistedKeysIntoVirtualRange prioritizes forced indexes by provided order', () => {
+    const range = mergePersistedKeysIntoVirtualRange(
+      { start: 90, end: 110, offsetTop: 3600, offsetBottom: 35600 },
+      [],
+      1000,
+      {
+        getLayoutInfo: (index) => ({
+          rect: {
+            y: index * 40,
+            height: 40,
+          },
+        }),
+      },
+      20,
+      {
+        forceIncludeIndexes: [900, 100],
+        forceIncludeMaxSpan: 120,
+      }
+    );
+
+    // Drop target-like forced index (first) wins over closer focused-like index.
+    expect(range.start).toBeLessThanOrEqual(900);
+    expect(range.end).toBeGreaterThan(900);
+  });
+
   it('useRenderDropIndicator renders during virtual dragging even when target is not active', () => {
     function Probe() {
       const renderDropIndicator = useRenderDropIndicator(

@@ -280,7 +280,7 @@ export function mergePersistedKeysIntoVirtualRange(
 
   if (forceIndexes.length > 0) {
     const forceMaxSpan = Math.max(maxSpan, options?.forceIncludeMaxSpan ?? Math.max(maxSpan, 300));
-    for (const index of forceIndexes.sort((a, b) => distanceToBaseRange(a) - distanceToBaseRange(b))) {
+    for (const index of forceIndexes) {
       const nextStart = Math.min(start, index);
       const nextEnd = Math.max(end, index + 1);
       if (nextEnd - nextStart <= forceMaxSpan) {
@@ -292,7 +292,7 @@ export function mergePersistedKeysIntoVirtualRange(
     if (options?.fallbackToForcedWindow !== false) {
       const missingForced = forceIndexes.filter((index) => index < start || index >= end);
       if (missingForced.length > 0) {
-        const nearestForced = missingForced.sort((a, b) => distanceToBaseRange(a) - distanceToBaseRange(b))[0];
+        const nearestForced = missingForced[0];
         const forceMaxSpan = Math.max(maxSpan, options?.forceIncludeMaxSpan ?? Math.max(maxSpan, 300));
         const windowSpan = Math.min(itemCount, Math.max(baseSpan, forceMaxSpan));
         const centeredStart = Math.max(0, Math.min(itemCount - windowSpan, nearestForced - Math.floor(windowSpan / 2)));
