@@ -466,6 +466,7 @@ export function createDroppableCollection(
         ): DropTarget | null =>
           stepNavigation?.(target, navDirection, isValidDropTarget)
           ?? resolveFallbackKeyboardTarget(navDirection === 'next' ? 'ArrowDown' : 'ArrowUp', target)
+          ?? resolveFallbackKeyboardTarget(navDirection === 'next' ? 'Home' : 'End', target)
           ?? null;
         let nextTarget: DropTarget | null = null;
         if (!state.target) {

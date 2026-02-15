@@ -951,6 +951,78 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(calls.at(-1)).toBe('set:item:3:on');
   });
 
+  it('starts page-key navigation from boundaries when only boundary delegates are available', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = null;
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}:${target.dropPosition}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation(target: DropTarget) {
+        if (target.type !== 'item') return 'cancel' as const;
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-page-boundary-start') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+          },
+          keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 3,
+            getKeyPageBelow: (key) => (key < 3 ? key + 1 : 3),
+            getKeyPageAbove: (key) => (key > 1 ? key - 1 : 1),
+          },
+        }),
+        state
+      );
+
+      return (
+        <div
+          id="drop-root-page-boundary-start"
+          tabIndex={0}
+          data-testid="drop-root-page-boundary-start"
+          {...collectionProps}
+        />
+      );
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-page-boundary-start');
+
+    fireEvent.keyDown(root, { key: 'PageDown' });
+    expect(calls.at(-1)).toBe('set:item:1:on');
+  });
+
   it('uses rtl-aware horizontal direction for delegate keyboard navigation', () => {
     const calls: string[] = [];
     let currentTarget: DropTarget | null = { type: 'root' };
