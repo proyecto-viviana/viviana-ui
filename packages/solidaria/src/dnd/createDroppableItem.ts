@@ -99,6 +99,7 @@ export function createDroppableItem(
 
     // Determine drop position based on cursor position
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = e.clientX - rect.x;
     const y = e.clientY - rect.y;
     const height = rect.height;
 
@@ -129,6 +130,7 @@ export function createDroppableItem(
 
     // Update drop position based on cursor
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = e.clientX - rect.x;
     const y = e.clientY - rect.y;
     const height = rect.height;
 
@@ -152,7 +154,7 @@ export function createDroppableItem(
       clearTimeout(dropActivateTimer);
       if (dropPosition === 'on') {
         dropActivateTimer = setTimeout(() => {
-          // Would trigger onDropActivate
+          state.activateTarget(x, y);
         }, DROP_ACTIVATE_TIMEOUT);
       }
     } else {
