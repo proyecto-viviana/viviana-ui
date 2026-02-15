@@ -225,6 +225,43 @@ describe('Virtualizer', () => {
     expect(Number(parsed.previous?.key)).toBeLessThan(49);
   });
 
+  it('keyboard page delegate starts from list boundaries when target is null', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 8);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-page-null-target">
+          {JSON.stringify({
+            nextFromNull:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                null,
+                'next',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+            previousFromNull:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                null,
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20, viewportSize: 80 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-page-null-target').textContent || '{}');
+    expect(parsed.nextFromNull).toMatchObject({ type: 'item', key: 0, dropPosition: 'on' });
+    expect(parsed.previousFromNull).toMatchObject({ type: 'item', key: 7, dropPosition: 'on' });
+  });
+
   it('renders only visible range for listbox when virtualized', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       cb(0);

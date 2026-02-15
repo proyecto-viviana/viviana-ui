@@ -233,7 +233,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   };
   const getDropTargetFromPoint = (point: Point, itemCount: number): VirtualizerDropTarget | null => {
     const target = resolvedLayout().getDropTargetFromPoint?.(point, itemCount, resolvedLayoutOptions()) ??
-      fallbackLayout.getDropTargetFromPoint(point, itemCount);
+      fallbackLayout.getDropTargetFromPoint(point, itemCount, virtualOptions());
     if (!target) return null;
     const resolver = dropTargetResolver();
     return resolver ? resolver(target) : target;
@@ -372,9 +372,33 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       const rootTarget: DropTarget = { type: 'root' };
       return isValidDropTarget(rootTarget) ? rootTarget : null;
     }
-    const currentIndex = !target || target.type === 'root'
-      ? (direction === 'next' ? -1 : itemCount)
-      : (dropTargetIndexResolver()?.(target.key) ?? (typeof target.key === 'number' ? target.key : -1));
+    if (!target || target.type === 'root') {
+      const startIndex = direction === 'next' ? 0 : itemCount - 1;
+      const delta = direction === 'next' ? 1 : -1;
+      for (let index = startIndex; index >= 0 && index < itemCount; index += delta) {
+        const layoutInfo = getLayoutInfo(index);
+        const virtualTarget = getDropTargetFromPoint(
+          {
+            x: layoutInfo.rect.x + 1,
+            y: layoutInfo.rect.y + layoutInfo.rect.height / 2,
+          },
+          itemCount
+        );
+        if (!virtualTarget || virtualTarget.type === 'root') continue;
+        const onTarget = toCollectionDropTarget({ ...virtualTarget, position: 'on' });
+        if (isValidDropTarget(onTarget)) return onTarget;
+        const insertionOrder: Array<'before' | 'after'> = direction === 'next'
+          ? ['before', 'after']
+          : ['after', 'before'];
+        for (const position of insertionOrder) {
+          const insertionTarget = toCollectionDropTarget({ ...virtualTarget, position });
+          if (isValidDropTarget(insertionTarget)) return insertionTarget;
+        }
+      }
+      const rootTarget: DropTarget = { type: 'root' };
+      return isValidDropTarget(rootTarget) ? rootTarget : null;
+    }
+    const currentIndex = dropTargetIndexResolver()?.(target.key) ?? (typeof target.key === 'number' ? target.key : -1);
     const pageSize = Math.max(1, Math.floor(viewportSize() / Math.max(1, itemSize())));
     const delta = direction === 'next' ? 1 : -1;
     const nextStart = currentIndex + delta * pageSize;
