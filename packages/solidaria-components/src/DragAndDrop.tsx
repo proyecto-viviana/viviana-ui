@@ -196,13 +196,18 @@ export function mergePersistedKeysIntoVirtualRange(
   options?: {
     forceIncludeIndexes?: number[];
     forceIncludeMaxSpan?: number;
+    fallbackToForcedWindow?: boolean;
   }
 ): VirtualRangeLike {
   const validPersistedIndexes = Array.from(
     new Set(persistedIndexes.filter((index) => index >= 0 && index < itemCount))
   ).sort((a, b) => a - b);
+  const forceIndexes = Array.from(
+    new Set((options?.forceIncludeIndexes ?? []).filter((index) => index >= 0 && index < itemCount))
+  );
 
-  if (validPersistedIndexes.length === 0 || itemCount <= 0) return baseRange;
+  if (itemCount <= 0) return baseRange;
+  if (validPersistedIndexes.length === 0 && forceIndexes.length === 0) return baseRange;
 
   const baseSpan = Math.max(1, baseRange.end - baseRange.start);
   const maxSpan = Math.max(baseSpan, baseSpan + maxExtraItems);
@@ -225,9 +230,6 @@ export function mergePersistedKeysIntoVirtualRange(
     }
   }
 
-  const forceIndexes = Array.from(
-    new Set((options?.forceIncludeIndexes ?? []).filter((index) => index >= 0 && index < itemCount))
-  );
   if (forceIndexes.length > 0) {
     const forceMaxSpan = Math.max(maxSpan, options?.forceIncludeMaxSpan ?? Math.max(maxSpan, 300));
     for (const index of forceIndexes.sort((a, b) => distanceToBaseRange(a) - distanceToBaseRange(b))) {
@@ -236,6 +238,18 @@ export function mergePersistedKeysIntoVirtualRange(
       if (nextEnd - nextStart <= forceMaxSpan) {
         start = nextStart;
         end = nextEnd;
+      }
+    }
+
+    if (options?.fallbackToForcedWindow !== false) {
+      const missingForced = forceIndexes.filter((index) => index < start || index >= end);
+      if (missingForced.length > 0) {
+        const nearestForced = missingForced.sort((a, b) => distanceToBaseRange(a) - distanceToBaseRange(b))[0];
+        const forceMaxSpan = Math.max(maxSpan, options?.forceIncludeMaxSpan ?? Math.max(maxSpan, 300));
+        const windowSpan = Math.min(itemCount, Math.max(baseSpan, forceMaxSpan));
+        const centeredStart = Math.max(0, Math.min(itemCount - windowSpan, nearestForced - Math.floor(windowSpan / 2)));
+        start = centeredStart;
+        end = Math.min(itemCount, centeredStart + windowSpan);
       }
     }
   }

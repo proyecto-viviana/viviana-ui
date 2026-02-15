@@ -153,4 +153,29 @@ describe('DragAndDrop parity primitives', () => {
     expect(range.start).toBe(0);
     expect(range.end).toBe(60);
   });
+
+  it('mergePersistedKeysIntoVirtualRange recenters to include forced indexes when direct merge would exceed cap', () => {
+    const range = mergePersistedKeysIntoVirtualRange(
+      { start: 900, end: 940, offsetTop: 36000, offsetBottom: 2400 },
+      [],
+      1000,
+      {
+        getLayoutInfo: (index) => ({
+          rect: {
+            y: index * 40,
+            height: 40,
+          },
+        }),
+      },
+      20,
+      {
+        forceIncludeIndexes: [40],
+        forceIncludeMaxSpan: 120,
+      }
+    );
+
+    expect(range.start).toBeLessThanOrEqual(40);
+    expect(range.end).toBeGreaterThan(40);
+    expect(range.end - range.start).toBeLessThanOrEqual(120);
+  });
 });
