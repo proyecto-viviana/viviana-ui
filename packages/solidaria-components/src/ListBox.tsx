@@ -301,7 +301,8 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     const hooks = local.dragAndDropHooks;
     return Boolean(
       hooks?.useDroppableCollectionState &&
-      hooks.useDroppableCollection
+      hooks.useDroppableCollection &&
+      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate || hooks.ListDropTargetDelegate)
     );
   });
   const dropState = createMemo(() => {

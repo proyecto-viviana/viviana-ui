@@ -473,7 +473,8 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     const hooks = stateProps.dragAndDropHooks;
     return Boolean(
       hooks?.useDroppableCollectionState &&
-      hooks.useDroppableCollection
+      hooks.useDroppableCollection &&
+      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate || hooks.ListDropTargetDelegate)
     );
   });
   const hasDraggableDnd = createMemo(() => {

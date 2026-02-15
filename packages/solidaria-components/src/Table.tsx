@@ -383,7 +383,8 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     const hooks = local.dragAndDropHooks;
     return Boolean(
       hooks?.useDroppableCollectionState &&
-      hooks.useDroppableCollection
+      hooks.useDroppableCollection &&
+      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate || hooks.ListDropTargetDelegate)
     );
   });
   const hasDraggableDnd = createMemo(() => {
