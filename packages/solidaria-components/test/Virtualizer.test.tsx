@@ -527,6 +527,61 @@ describe('Virtualizer', () => {
     expect(screen.getByText('Item 119')).toBeInTheDocument();
   });
 
+  it('retains far active drop target in virtualized listbox when bounded retention is enabled', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 1;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
+    const items = Array.from({ length: 120 }, (_, i) => ({
+      id: `item-${i}`,
+      label: `Item ${i}`,
+    }));
+
+    const dropState = {
+      isDropTarget: true,
+      target: { type: 'item' as const, key: 'item-100', dropPosition: 'before' as const },
+      isDisabled: false,
+      setTarget: () => {},
+      isAccepted: () => true,
+      enterTarget: () => {},
+      moveToTarget: () => {},
+      exitTarget: () => {},
+      activateTarget: () => {},
+      drop: () => {},
+      shouldAcceptItemDrop: () => true,
+      getDropOperation: () => 'move' as const,
+    };
+    const dragAndDropHooks = {
+      useDroppableCollectionState: () => dropState,
+      useDroppableCollection: () => ({ collectionProps: {} }),
+      dropTargetDelegate: {
+        getDropTargetFromPoint: () => null,
+      },
+    };
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 60, overscan: 0 }}
+        style={{ height: '60px', overflow: 'auto' }}
+      >
+        <ListBox
+          aria-label="Drop target retention list"
+          items={items}
+          getKey={(item) => item.id}
+          dragAndDropHooks={dragAndDropHooks as any}
+        >
+          {(item) => <ListBoxOption id={item.id}>{item.label}</ListBoxOption>}
+        </ListBox>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByText('Item 100')).toBeInTheDocument();
+    expect(screen.queryByText('Item 115')).not.toBeInTheDocument();
+  });
+
   it('reuses visible range result when scroll stays within same item window', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       cb(0);
