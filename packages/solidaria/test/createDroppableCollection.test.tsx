@@ -778,6 +778,94 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(calls.at(-1)).toBe('set:item:2:on');
   });
 
+  it('falls back to step-wise scanning when page target is invalid', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'item', key: 1, dropPosition: 'on' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}:${target.dropPosition}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation(target: DropTarget) {
+        if (target.type !== 'item') return 'cancel' as const;
+        if (target.key === 3) return 'move' as const;
+        return 'cancel' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-page-scan') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+            getKeyboardPageNavigationTarget(target, direction) {
+              if (target?.type === 'item' && direction === 'next') {
+                return { type: 'item', key: 5, dropPosition: 'on' };
+              }
+              return null;
+            },
+            getKeyboardNavigationTarget(target, direction) {
+              if (direction !== 'next' || target?.type !== 'item') return null;
+              const key = Number(target.key);
+              if (key >= 5) return { type: 'item', key: 4, dropPosition: 'on' };
+              if (key === 4) return { type: 'item', key: 3, dropPosition: 'on' };
+              return null;
+            },
+          },
+          keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 5,
+            getKeyBelow: (key) => (key < 5 ? key + 1 : null),
+            getKeyAbove: (key) => (key > 1 ? key - 1 : null),
+            getKeyPageBelow: (key) => (key < 5 ? key + 4 : 5),
+            getKeyPageAbove: (key) => (key > 1 ? key - 4 : 1),
+          },
+        }),
+        state
+      );
+
+      return (
+        <div
+          id="drop-root-page-scan"
+          tabIndex={0}
+          data-testid="drop-root-page-scan"
+          {...collectionProps}
+        />
+      );
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-page-scan');
+
+    fireEvent.keyDown(root, { key: 'PageDown' });
+    expect(calls.at(-1)).toBe('set:item:3:on');
+  });
+
   it('uses rtl-aware horizontal direction for delegate keyboard navigation', () => {
     const calls: string[] = [];
     let currentTarget: DropTarget | null = { type: 'root' };

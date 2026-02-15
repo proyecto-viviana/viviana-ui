@@ -443,12 +443,31 @@ export function createDroppableCollection(
         const direction = e.key === 'PageDown' ? 'next' : 'previous';
         const pageNavigation = opts.dropTargetDelegate.getKeyboardPageNavigationTarget;
         const stepNavigation = opts.dropTargetDelegate.getKeyboardNavigationTarget;
-        const nextTarget = findNextValidTarget(state.target, (target) =>
-          pageNavigation?.(target, direction, isValidDropTarget)
-            ?? stepNavigation?.(target, direction, isValidDropTarget)
-            ?? resolveFallbackKeyboardTarget(e.key, target)
-            ?? null
-        );
+        const resolveStepTarget = (
+          target: DropTarget | null,
+          navDirection: 'next' | 'previous'
+        ): DropTarget | null =>
+          stepNavigation?.(target, navDirection, isValidDropTarget)
+          ?? resolveFallbackKeyboardTarget(navDirection === 'next' ? 'ArrowDown' : 'ArrowUp', target)
+          ?? null;
+        let nextTarget: DropTarget | null = null;
+        if (!state.target) {
+          nextTarget = findNextValidTarget(null, (target) => resolveStepTarget(target, direction));
+        } else {
+          const pageTarget = pageNavigation?.(state.target, direction, isValidDropTarget)
+            ?? resolveFallbackKeyboardTarget(e.key, state.target)
+            ?? null;
+          if (pageTarget && isValidDropTarget(pageTarget)) {
+            nextTarget = pageTarget;
+          } else {
+            const startTarget = pageTarget ?? state.target;
+            nextTarget = findNextValidTarget(startTarget, (target) => resolveStepTarget(target, direction))
+              ?? findNextValidTarget(
+                startTarget,
+                (target) => resolveStepTarget(target, direction === 'next' ? 'previous' : 'next')
+              );
+          }
+        }
         if (nextTarget) {
           e.preventDefault();
           state.setTarget(nextTarget);
