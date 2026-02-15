@@ -221,6 +221,10 @@ interface PointerTrackingState {
 
 const X_SWITCH_THRESHOLD = 10;
 const Y_SWITCH_THRESHOLD = 5;
+const EXPANSION_KEYS = {
+  expand: { ltr: 'ArrowRight', rtl: 'ArrowLeft' },
+  collapse: { ltr: 'ArrowLeft', rtl: 'ArrowRight' },
+} as const;
 
 function resolveTreeDirection(element: HTMLElement | null): 'ltr' | 'rtl' {
   if (element) {
@@ -672,6 +676,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
       state,
       resolveTreeDirection(ref())
     );
+    const direction = resolveTreeDirection(ref());
     return hooks.useDroppableCollection(
       {
         dropTargetDelegate,
@@ -682,6 +687,19 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
           const isExpanded = state.isExpanded(key);
           if (item?.hasChildNodes && (!isExpanded || hooks.isVirtualDragging?.())) {
             state.toggleKey(key);
+          }
+        },
+        onKeyDown: (event) => {
+          const target = activeDropState.target;
+          if (!target || target.type !== 'item' || target.dropPosition !== 'on') return;
+          const item = state.collection.getItem(target.key);
+          if (!item?.hasChildNodes) return;
+          const expandKey = EXPANSION_KEYS.expand[direction];
+          const collapseKey = EXPANSION_KEYS.collapse[direction];
+          if (event.key === expandKey && !state.isExpanded(target.key)) {
+            state.toggleKey(target.key);
+          } else if (event.key === collapseKey && state.isExpanded(target.key)) {
+            state.toggleKey(target.key);
           }
         },
       },

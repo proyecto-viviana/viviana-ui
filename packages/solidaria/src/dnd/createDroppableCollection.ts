@@ -89,6 +89,8 @@ export interface DroppableCollectionOptions {
   }) => void;
   /** Handler called when the drop target is activated (held over). */
   onDropActivate?: (e: { target: DropTarget; x: number; y: number }) => void;
+  /** Optional keyboard handler composed with internal drop target navigation keys. */
+  onKeyDown?: (e: KeyboardEvent) => void;
   /** Whether the collection is disabled for dropping. */
   isDisabled?: boolean;
   /** Accepted drag types. 'all' accepts any type. */
@@ -301,6 +303,7 @@ export function createDroppableCollection(
       onKeyDownBase?.(e);
       const opts = getOptions();
       if (opts.isDisabled) return;
+      const callUserOnKeyDown = () => opts.onKeyDown?.(e);
       const isValidDropTarget = (target: DropTarget) =>
         state.getDropOperation(target, { has: () => true }, ['copy', 'move', 'link']) !== 'cancel';
       if (e.key === 'PageDown' || e.key === 'PageUp') {
@@ -314,6 +317,7 @@ export function createDroppableCollection(
           e.preventDefault();
           state.setTarget(nextTarget);
         }
+        callUserOnKeyDown();
         return;
       }
       if (
@@ -340,17 +344,22 @@ export function createDroppableCollection(
           e.preventDefault();
           state.setTarget(nextTarget);
         }
+        callUserOnKeyDown();
         return;
       }
       if (e.key === 'Enter' && state.target) {
         e.preventDefault();
         state.activateTarget(0, 0);
+        callUserOnKeyDown();
         return;
       }
       if (e.key === 'Escape' && state.target) {
         e.preventDefault();
         state.exitTarget(0, 0);
+        callUserOnKeyDown();
+        return;
       }
+      callUserOnKeyDown();
     };
     return {
       ...baseDropProps,
