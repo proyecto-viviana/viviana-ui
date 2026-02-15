@@ -25,6 +25,7 @@ describe('useDragAndDrop', () => {
     expect(typeof dragAndDropHooks.useDroppableCollectionState).toBe('function');
     expect(typeof dragAndDropHooks.useDroppableCollection).toBe('function');
     expect(typeof dragAndDropHooks.useDroppableItem).toBe('function');
+    expect(typeof dragAndDropHooks.ListDropTargetDelegate).toBe('function');
   });
 
   it('wires renderDragPreview into draggable collection state when preview is not provided', () => {
@@ -170,6 +171,28 @@ describe('useDragAndDrop', () => {
       }));
 
       root.remove();
+      dispose();
+    });
+  });
+
+  it('provides a usable ListDropTargetDelegate fallback', () => {
+    createRoot((dispose) => {
+      const { dragAndDropHooks } = useDragAndDrop({
+        onInsert: () => {},
+      });
+
+      const root = document.createElement('div');
+      const delegate = new dragAndDropHooks.ListDropTargetDelegate!(
+        [{ type: 'item', key: 'row-1' }],
+        () => root
+      );
+
+      const target = delegate.getDropTargetFromPoint(0, 0, () => true);
+      expect(target.type).toBe('item');
+      if (target.type === 'item') {
+        expect(target.key).toBe('row-1');
+      }
+
       dispose();
     });
   });

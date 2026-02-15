@@ -391,8 +391,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     const hooks = local.dragAndDropHooks;
     return Boolean(
       hooks?.useDroppableCollectionState &&
-      hooks.useDroppableCollection &&
-      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate)
+      hooks.useDroppableCollection
     );
   });
   const hasDraggableDnd = createMemo(() => {
@@ -421,7 +420,23 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     const hooks = local.dragAndDropHooks;
     const activeDropState = dropState();
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
-    const dropTargetDelegate = hooks.dropTargetDelegate ?? parentCollectionRenderer?.dropTargetDelegate;
+    const resolveDirection = (): 'ltr' | 'rtl' => {
+      const el = ref();
+      if (el) {
+        const dir = window.getComputedStyle(el).direction;
+        if (dir === 'rtl') return 'rtl';
+      }
+      return document.dir === 'rtl' ? 'rtl' : 'ltr';
+    };
+    const dropTargetDelegate = hooks.dropTargetDelegate
+      ?? parentCollectionRenderer?.dropTargetDelegate
+      ?? (hooks.ListDropTargetDelegate
+        ? new hooks.ListDropTargetDelegate(
+          () => state.collection,
+          () => ref(),
+          { layout: 'grid', orientation: 'vertical', direction: resolveDirection() }
+        )
+        : undefined);
     if (!dropTargetDelegate) return undefined;
     return hooks.useDroppableCollection(
       {

@@ -6,6 +6,7 @@
  */
 
 import type { Accessor, JSX } from 'solid-js';
+import { ListDropTargetDelegate } from './ListDropTargetDelegate';
 import {
   createDraggableCollection,
   createDraggableItem,
@@ -66,6 +67,7 @@ interface DropHooks {
   ) => DroppableItemAria;
   renderDropIndicator?: (target: DropTarget) => JSX.Element;
   dropTargetDelegate?: AriaDropTargetDelegate;
+  ListDropTargetDelegate?: typeof ListDropTargetDelegate;
 }
 
 export type DragAndDropHooks<T = object> = DragHooks<T> & DropHooks;
@@ -288,6 +290,7 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
     ) => createDroppableItem(() => ({ ...props, ref }), state);
     hooks.renderDropIndicator = renderDropIndicator;
     hooks.dropTargetDelegate = dropTargetDelegate;
+    hooks.ListDropTargetDelegate = ListDropTargetDelegate;
   }
 
   return {

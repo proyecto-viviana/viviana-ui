@@ -600,8 +600,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const hooks = local.dragAndDropHooks;
     return Boolean(
       hooks?.useDroppableCollectionState &&
-      hooks.useDroppableCollection &&
-      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate)
+      hooks.useDroppableCollection
     );
   });
   const hasDraggableDnd = createMemo(() => {
@@ -669,7 +668,15 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const hooks = local.dragAndDropHooks;
     const activeDropState = dropState();
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
-    const baseDropTargetDelegate = hooks.dropTargetDelegate ?? parentCollectionRenderer?.dropTargetDelegate;
+    const baseDropTargetDelegate = hooks.dropTargetDelegate
+      ?? parentCollectionRenderer?.dropTargetDelegate
+      ?? (hooks.ListDropTargetDelegate
+        ? new hooks.ListDropTargetDelegate(
+          () => state.collection,
+          () => ref(),
+          { layout: 'stack', orientation: 'vertical', direction: resolveTreeDirection(ref()) }
+        )
+        : undefined);
     if (!baseDropTargetDelegate) return undefined;
     const dropTargetDelegate = createTreeDropTargetDelegate(
       baseDropTargetDelegate as TreeDropTargetDelegate,

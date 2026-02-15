@@ -473,8 +473,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     const hooks = stateProps.dragAndDropHooks;
     return Boolean(
       hooks?.useDroppableCollectionState &&
-      hooks.useDroppableCollection &&
-      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate)
+      hooks.useDroppableCollection
     );
   });
   const hasDraggableDnd = createMemo(() => {
@@ -535,7 +534,22 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     const hooks = stateProps.dragAndDropHooks;
     const activeDropState = dropState();
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
-    const dropTargetDelegate = hooks.dropTargetDelegate ?? parentCollectionRenderer?.dropTargetDelegate;
+    const resolveDirection = (): 'ltr' | 'rtl' => {
+      if (menuRef) {
+        const dir = window.getComputedStyle(menuRef).direction;
+        if (dir === 'rtl') return 'rtl';
+      }
+      return document.dir === 'rtl' ? 'rtl' : 'ltr';
+    };
+    const dropTargetDelegate = hooks.dropTargetDelegate
+      ?? parentCollectionRenderer?.dropTargetDelegate
+      ?? (hooks.ListDropTargetDelegate
+        ? new hooks.ListDropTargetDelegate(
+          () => state.collection(),
+          () => menuRef ?? null,
+          { layout: 'stack', orientation: 'vertical', direction: resolveDirection() }
+        )
+        : undefined);
     if (!dropTargetDelegate) return undefined;
     return hooks.useDroppableCollection(
       {
