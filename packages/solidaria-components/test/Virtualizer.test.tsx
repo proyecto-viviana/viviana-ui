@@ -132,6 +132,44 @@ describe('Virtualizer', () => {
     expect(screen.getByTestId('drop-op').textContent).toBe('copy');
   });
 
+  it('keyboard delegate skips invalid on-targets and falls back to insertion/root targets', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 3);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-delegate">
+          {JSON.stringify({
+            insertion:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 0, dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && target.dropPosition !== 'on'
+              ) ?? null,
+            rootFallback:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 1, dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'root'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-delegate').textContent || '{}');
+    expect(parsed.insertion?.type).toBe('item');
+    expect(['before', 'after']).toContain(parsed.insertion?.dropPosition);
+    expect(parsed.rootFallback).toMatchObject({ type: 'root' });
+  });
+
   it('renders only visible range for listbox when virtualized', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       cb(0);

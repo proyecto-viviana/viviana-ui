@@ -315,11 +315,42 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       currentIndex = fromResolver ?? (typeof target.key === 'number' ? target.key : -1);
     }
     const delta = direction === 'next' ? 1 : -1;
-    const nextIndex = Math.max(0, Math.min(itemCount - 1, currentIndex + delta));
-    const nextVirtualTarget = getDropTargetFromPoint({ x: 0, y: nextIndex * itemSize() }, itemCount);
-    if (!nextVirtualTarget || nextVirtualTarget.type === 'root') return null;
-    const nextCollectionTarget = toCollectionDropTarget({ ...nextVirtualTarget, position: 'on' });
-    return isValidDropTarget(nextCollectionTarget) ? nextCollectionTarget : null;
+    const tryTarget = (
+      index: number,
+      position: 'on' | 'before' | 'after'
+    ): DropTarget | null => {
+      const layoutInfo = getLayoutInfo(index);
+      const virtualTarget = getDropTargetFromPoint(
+        {
+          x: layoutInfo.rect.x + 1,
+          y: layoutInfo.rect.y + layoutInfo.rect.height / 2,
+        },
+        itemCount
+      );
+      if (!virtualTarget || virtualTarget.type === 'root') return null;
+      const nextTarget = toCollectionDropTarget({ ...virtualTarget, position });
+      return isValidDropTarget(nextTarget) ? nextTarget : null;
+    };
+
+    for (
+      let index = currentIndex + delta;
+      index >= 0 && index < itemCount;
+      index += delta
+    ) {
+      const onTarget = tryTarget(index, 'on');
+      if (onTarget) return onTarget;
+
+      const insertionOrder: Array<'before' | 'after'> = direction === 'next'
+        ? ['before', 'after']
+        : ['after', 'before'];
+      for (const position of insertionOrder) {
+        const insertionTarget = tryTarget(index, position);
+        if (insertionTarget) return insertionTarget;
+      }
+    }
+
+    const rootTarget: DropTarget = { type: 'root' };
+    return isValidDropTarget(rootTarget) ? rootTarget : null;
   };
 
   const contextValue = createMemo<VirtualizerContextValue<O>>(() => ({
