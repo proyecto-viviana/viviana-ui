@@ -320,6 +320,49 @@ describe('Virtualizer', () => {
     expect(parsed.previousFromNull).toMatchObject({ type: 'item', key: 7, dropPosition: 'on' });
   });
 
+  it('keyboard delegates fall back to directional boundaries when target key is unmapped', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 6);
+      return (
+        <output data-testid="keyboard-unmapped-key">
+          {JSON.stringify({
+            next:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 'missing', dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+            previous:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 'missing', dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+            pagePrevious:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 'missing', dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20, viewportSize: 40 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-unmapped-key').textContent || '{}');
+    expect(parsed.next).toMatchObject({ type: 'item', key: 0, dropPosition: 'on' });
+    expect(parsed.previous).toMatchObject({ type: 'item', key: 5, dropPosition: 'on' });
+    expect(parsed.pagePrevious).toMatchObject({ type: 'item', key: 4, dropPosition: 'on' });
+  });
+
   it('renders only visible range for listbox when virtualized', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       cb(0);

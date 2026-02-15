@@ -334,7 +334,9 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
         return direction === 'next' ? -1 : itemCount;
       }
       const fromResolver = dropTargetIndexResolver()?.(currentTarget.key);
-      return fromResolver ?? (typeof currentTarget.key === 'number' ? currentTarget.key : -1);
+      if (fromResolver != null) return fromResolver;
+      if (typeof currentTarget.key === 'number') return currentTarget.key;
+      return direction === 'next' ? -1 : itemCount;
     };
     const findNavigationTarget = (currentIndex: number, step = 1): DropTarget | null => {
       const delta = direction === 'next' ? 1 : -1;
@@ -420,7 +422,10 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       const rootTarget: DropTarget = { type: 'root' };
       return isValidDropTarget(rootTarget) ? rootTarget : null;
     }
-    const currentIndex = dropTargetIndexResolver()?.(target.key) ?? (typeof target.key === 'number' ? target.key : -1);
+    const resolvedIndex = dropTargetIndexResolver()?.(target.key);
+    const currentIndex = resolvedIndex != null
+      ? resolvedIndex
+      : (typeof target.key === 'number' ? target.key : (direction === 'next' ? -1 : itemCount));
     const pageSize = Math.max(1, Math.floor(viewportSize() / Math.max(1, itemSize())));
     const delta = direction === 'next' ? 1 : -1;
     const nextStart = currentIndex + delta * pageSize;
