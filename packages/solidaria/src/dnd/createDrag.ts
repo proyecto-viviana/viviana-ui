@@ -9,6 +9,7 @@ import { createMemo, type Accessor } from 'solid-js';
 import { createDragState } from '@proyecto-viviana/solid-stately';
 import type { AriaDragOptions, DragAria } from './types';
 import {
+  getTypes,
   writeToDataTransfer,
   DROP_OPERATION,
   EFFECT_ALLOWED,
@@ -17,6 +18,7 @@ import {
   setGlobalDropEffect,
   getGlobalDropEffect,
 } from './utils';
+import { setGlobalDraggingTypes } from './createDraggableCollection';
 
 /**
  * Creates ARIA props for a draggable element.
@@ -54,6 +56,7 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
 
     // Get items and write to data transfer
     const items = state.getItems();
+    setGlobalDraggingTypes(getTypes(items));
     e.dataTransfer?.clearData?.();
     if (e.dataTransfer) {
       writeToDataTransfer(e.dataTransfer, items);
@@ -131,6 +134,7 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
     state.endDrag(e.clientX, e.clientY, dropOperation);
 
     setGlobalAllowedDropOperations(DROP_OPERATION.none);
+    setGlobalDraggingTypes(new Set());
     setGlobalDropEffect(undefined);
   };
 
@@ -150,6 +154,17 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
       // This is a simplified version - full implementation needs DragManager
       const rect = (e.target as HTMLElement).getBoundingClientRect();
       state.startDrag(rect.x + rect.width / 2, rect.y + rect.height / 2);
+      const items = state.getItems();
+      setGlobalDraggingTypes(getTypes(items));
+      let allowed = DROP_OPERATION.all;
+      const allowedOps = state.getAllowedDropOperations();
+      if (allowedOps.length > 0) {
+        allowed = DROP_OPERATION.none;
+        for (const op of allowedOps) {
+          allowed |= DROP_OPERATION[op] || DROP_OPERATION.none;
+        }
+      }
+      setGlobalAllowedDropOperations(allowed);
     }
   };
 

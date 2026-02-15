@@ -4,13 +4,16 @@ import {
   createDraggableCollection,
   getGlobalDraggingCollectionRef,
   getGlobalDraggingKeys,
+  getGlobalDraggingTypes,
   setGlobalDraggingCollectionRef,
   setGlobalDraggingKeys,
+  setGlobalDraggingTypes,
 } from '../src/dnd/createDraggableCollection';
 
 afterEach(() => {
   setGlobalDraggingCollectionRef(null);
   setGlobalDraggingKeys(new Set());
+  setGlobalDraggingTypes(new Set());
 });
 
 describe('createDraggableCollection', () => {
@@ -27,22 +30,28 @@ describe('createDraggableCollection', () => {
           get draggingKeys() {
             return draggingKeys();
           },
+          getItems(keys: Set<string | number>) {
+            return Array.from(keys).map((key) => ({ 'text/plain': String(key) }));
+          },
         } as any
       );
 
       expect(getGlobalDraggingCollectionRef()).toBeNull();
       expect(getGlobalDraggingKeys().size).toBe(0);
+      expect(getGlobalDraggingTypes().size).toBe(0);
 
       const nextKeys = new Set<string | number>(['a', 1]);
       setDraggingKeys(nextKeys);
       queueMicrotask(() => {
         expect(getGlobalDraggingCollectionRef()).toBe(refEl);
         expect(getGlobalDraggingKeys()).toEqual(nextKeys);
+        expect(getGlobalDraggingTypes()).toEqual(new Set(['text/plain']));
 
         setDraggingKeys(new Set());
         queueMicrotask(() => {
           expect(getGlobalDraggingCollectionRef()).toBeNull();
           expect(getGlobalDraggingKeys().size).toBe(0);
+          expect(getGlobalDraggingTypes().size).toBe(0);
           dispose();
         });
       });
@@ -64,17 +73,22 @@ describe('createDraggableCollection', () => {
           get draggingKeys() {
             return draggingKeys();
           },
+          getItems(keys: Set<string | number>) {
+            return Array.from(keys).map((key) => ({ 'text/plain': String(key) }));
+          },
         } as any
       );
 
       queueMicrotask(() => {
         expect(getGlobalDraggingCollectionRef()).toBe(refEl);
         expect(getGlobalDraggingKeys()).toEqual(new Set(['z']));
+        expect(getGlobalDraggingTypes()).toEqual(new Set(['text/plain']));
 
         dispose();
 
         expect(getGlobalDraggingCollectionRef()).toBeNull();
         expect(getGlobalDraggingKeys().size).toBe(0);
+        expect(getGlobalDraggingTypes().size).toBe(0);
       });
     });
     await Promise.resolve();

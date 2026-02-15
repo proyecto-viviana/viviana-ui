@@ -11,6 +11,7 @@ import type {
   DragPreviewRenderer,
 } from '@proyecto-viviana/solid-stately';
 import {
+  getTypes,
   writeToDataTransfer,
   DROP_OPERATION,
   EFFECT_ALLOWED,
@@ -19,6 +20,7 @@ import {
   setGlobalDropEffect,
   getGlobalDropEffect,
 } from './utils';
+import { setGlobalDraggingTypes } from './createDraggableCollection';
 
 export interface DraggableItemOptions {
   /** The unique key of the item. */
@@ -84,6 +86,7 @@ export function createDraggableItem(
 
     // Get items and write to data transfer
     const items = state.getItems(keys);
+    setGlobalDraggingTypes(getTypes(items));
     e.dataTransfer?.clearData?.();
     if (e.dataTransfer) {
       writeToDataTransfer(e.dataTransfer, items);
@@ -163,6 +166,7 @@ export function createDraggableItem(
     state.endDrag(e.clientX, e.clientY, dropOperation, isInternal);
 
     setGlobalAllowedDropOperations(DROP_OPERATION.none);
+    setGlobalDraggingTypes(new Set());
     setGlobalDropEffect(undefined);
   };
 
@@ -185,6 +189,17 @@ export function createDraggableItem(
       const keys = getKeysForDrag();
       const rect = (e.target as HTMLElement).getBoundingClientRect();
       state.startDrag(keys, rect.x + rect.width / 2, rect.y + rect.height / 2);
+      const items = state.getItems(keys);
+      setGlobalDraggingTypes(getTypes(items));
+      let allowed = DROP_OPERATION.all;
+      const allowedOps = state.getAllowedDropOperations();
+      if (allowedOps.length > 0) {
+        allowed = DROP_OPERATION.none;
+        for (const op of allowedOps) {
+          allowed |= DROP_OPERATION[op] || DROP_OPERATION.none;
+        }
+      }
+      setGlobalAllowedDropOperations(allowed);
     }
   };
 
