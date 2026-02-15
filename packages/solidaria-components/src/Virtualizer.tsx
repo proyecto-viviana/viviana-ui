@@ -208,7 +208,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       overscan: overscan(),
       viewportWidth: measuredViewportWidth(),
     };
-    const layoutResult = resolvedLayout().getVisibleRange?.(ctx, resolvedLayoutOptions());
+    const layoutResult = resolvedLayout().getVisibleRange?.(ctx, layoutOptionsWithViewport());
     const nextRange =
       layoutResult ??
       calculateLinearVisibleRange(itemCount, ctx.scrollOffset, ctx.viewportSize, itemSize(), ctx.overscan);
@@ -223,7 +223,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     const ctx: VirtualizerLayoutInfoContext = {
       viewportWidth: measuredViewportWidth(),
     };
-    const layoutResult = resolvedLayout().getLayoutInfo?.(index, ctx, resolvedLayoutOptions());
+    const layoutResult = resolvedLayout().getLayoutInfo?.(index, ctx, layoutOptionsWithViewport());
     const nextInfo = layoutResult ?? {
       key: String(index),
       index,

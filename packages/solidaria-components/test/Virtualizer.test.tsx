@@ -172,6 +172,47 @@ describe('Virtualizer', () => {
     expect(typeof capturedViewportWidth).toBe('number');
   });
 
+  it('passes viewport width to layout visible-range and layout-info options', () => {
+    let capturedRangeViewportWidth: unknown;
+    let capturedLayoutViewportWidth: unknown;
+    const layout: VirtualizerLayout<Record<string, unknown>> = {
+      getVisibleRange(_ctx, options) {
+        capturedRangeViewportWidth = options?.viewportWidth;
+        return { start: 0, end: 1, offsetTop: 0, offsetBottom: 0 };
+      },
+      getLayoutInfo(index, _ctx, options) {
+        capturedLayoutViewportWidth = options?.viewportWidth;
+        return {
+          key: String(index),
+          index,
+          rect: { x: 0, y: 0, width: 10, height: 10 },
+        };
+      },
+    };
+
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext<Record<string, unknown>>());
+      return (
+        <output data-testid="viewport-width-range-layout">
+          {JSON.stringify({
+            range: ctx()?.getVisibleRange(1) ?? null,
+            layoutInfo: ctx()?.getLayoutInfo(0) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={layout} style={{ width: '260px' }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    expect(screen.getByTestId('viewport-width-range-layout').textContent).toContain('"start":0');
+    expect(typeof capturedRangeViewportWidth).toBe('number');
+    expect(typeof capturedLayoutViewportWidth).toBe('number');
+  });
+
   it('drop-target delegate falls back to sibling positions before root', () => {
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext());
