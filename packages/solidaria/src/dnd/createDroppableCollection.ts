@@ -414,8 +414,12 @@ export function createDroppableCollection(
         opts.dropTargetDelegate.getKeyboardNavigationTarget
       ) {
         if (
+          (e.key === 'ArrowDown' && !opts.keyboardDelegate?.getKeyBelow) ||
+          (e.key === 'ArrowUp' && !opts.keyboardDelegate?.getKeyAbove) ||
           (e.key === 'ArrowLeft' && !opts.keyboardDelegate?.getKeyLeftOf) ||
-          (e.key === 'ArrowRight' && !opts.keyboardDelegate?.getKeyRightOf)
+          (e.key === 'ArrowRight' && !opts.keyboardDelegate?.getKeyRightOf) ||
+          (e.key === 'Home' && !opts.keyboardDelegate?.getFirstKey) ||
+          (e.key === 'End' && !opts.keyboardDelegate?.getLastKey)
         ) {
           callUserOnKeyDown();
           return;
@@ -446,8 +450,12 @@ export function createDroppableCollection(
         e.key === 'End'
       ) {
         if (
+          (e.key === 'ArrowDown' && !opts.keyboardDelegate?.getKeyBelow) ||
+          (e.key === 'ArrowUp' && !opts.keyboardDelegate?.getKeyAbove) ||
           (e.key === 'ArrowLeft' && !opts.keyboardDelegate?.getKeyLeftOf) ||
-          (e.key === 'ArrowRight' && !opts.keyboardDelegate?.getKeyRightOf)
+          (e.key === 'ArrowRight' && !opts.keyboardDelegate?.getKeyRightOf) ||
+          (e.key === 'Home' && !opts.keyboardDelegate?.getFirstKey) ||
+          (e.key === 'End' && !opts.keyboardDelegate?.getLastKey)
         ) {
           callUserOnKeyDown();
           return;

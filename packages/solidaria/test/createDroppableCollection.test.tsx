@@ -86,6 +86,10 @@ describe('createDroppableCollection keyboard behavior', () => {
             },
           },
           keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 9,
+            getKeyBelow: (key) => (key === 1 ? 2 : null),
+            getKeyAbove: (key) => (key === 2 ? 1 : null),
             getKeyRightOf: (key) => (key === 1 ? 2 : null),
             getKeyLeftOf: (key) => (key === 2 ? 1 : null),
           },
@@ -280,6 +284,89 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(calls).toHaveLength(0);
 
     fireEvent.keyDown(root, { key: 'ArrowDown' });
+    expect(calls.at(-1)).toBe('set:item:1');
+  });
+
+  it('ignores vertical and boundary keys when keyboardDelegate methods are missing', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'root' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}`);
+          return;
+        }
+        calls.push(`set:${target?.type ?? 'null'}`);
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-no-vertical') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+            getKeyboardNavigationTarget(_target, direction) {
+              if (direction === 'next') {
+                return { type: 'item', key: 1, dropPosition: 'on' };
+              }
+              return { type: 'item', key: 9, dropPosition: 'on' };
+            },
+          },
+          keyboardDelegate: {
+            getKeyRightOf: (key) => (key === 1 ? 2 : null),
+            getKeyLeftOf: (key) => (key === 2 ? 1 : null),
+          },
+        }),
+        state
+      );
+
+      return (
+        <div
+          id="drop-root-no-vertical"
+          tabIndex={0}
+          data-testid="drop-root-no-vertical"
+          {...collectionProps}
+        />
+      );
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-no-vertical');
+
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
+    fireEvent.keyDown(root, { key: 'ArrowUp' });
+    fireEvent.keyDown(root, { key: 'Home' });
+    fireEvent.keyDown(root, { key: 'End' });
+    expect(calls).toHaveLength(0);
+
+    fireEvent.keyDown(root, { key: 'ArrowRight' });
     expect(calls.at(-1)).toBe('set:item:1');
   });
 
