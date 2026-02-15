@@ -303,16 +303,13 @@ export function createDroppableCollection(
       if (opts.isDisabled) return;
       const isValidDropTarget = (target: DropTarget) =>
         state.getDropOperation(target, { has: () => true }, ['copy', 'move', 'link']) !== 'cancel';
-      if (
-        (e.key === 'PageDown' || e.key === 'PageUp') &&
-        opts.dropTargetDelegate.getKeyboardPageNavigationTarget
-      ) {
+      if (e.key === 'PageDown' || e.key === 'PageUp') {
         const direction = e.key === 'PageDown' ? 'next' : 'previous';
-        const nextTarget = opts.dropTargetDelegate.getKeyboardPageNavigationTarget(
-          state.target,
-          direction,
-          isValidDropTarget
-        );
+        const pageNavigation = opts.dropTargetDelegate.getKeyboardPageNavigationTarget;
+        const stepNavigation = opts.dropTargetDelegate.getKeyboardNavigationTarget;
+        const nextTarget = pageNavigation?.(state.target, direction, isValidDropTarget)
+          ?? stepNavigation?.(state.target, direction, isValidDropTarget)
+          ?? null;
         if (nextTarget) {
           e.preventDefault();
           state.setTarget(nextTarget);
