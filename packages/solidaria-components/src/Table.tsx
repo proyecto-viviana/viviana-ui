@@ -418,6 +418,14 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     return hooks.useDroppableCollection(
       {
         dropTargetDelegate,
+        keyboardDelegate: {
+          getFirstKey: () => state.collection.getFirstKey?.() ?? null,
+          getLastKey: () => state.collection.getLastKey?.() ?? null,
+          getKeyBelow: (key) => state.collection.getKeyAfter?.(key) ?? null,
+          getKeyAbove: (key) => state.collection.getKeyBefore?.(key) ?? null,
+          getKeyPageBelow: (key) => state.collection.getKeyAfter?.(key) ?? null,
+          getKeyPageAbove: (key) => state.collection.getKeyBefore?.(key) ?? null,
+        },
       },
       activeDropState,
       () => ref()

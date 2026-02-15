@@ -193,6 +193,83 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(calls.at(-1)).toBe('set:item:1');
   });
 
+  it('uses keyboardDelegate fallback when drop target delegate has no keyboard methods', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = null;
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}:${target.dropPosition}`);
+        } else {
+          calls.push(`set:${target?.type ?? 'null'}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation(target: DropTarget) {
+        if (target.type === 'item' && target.key === 2 && target.dropPosition === 'on') {
+          return 'cancel' as const;
+        }
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-kbd-fallback') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+          },
+          keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 3,
+            getKeyBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyAbove: (key) => (key > 1 ? key - 1 : null),
+            getKeyPageBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyPageAbove: (key) => (key > 1 ? key - 1 : null),
+          },
+        }),
+        state
+      );
+
+      return <div id="drop-root-kbd-fallback" tabIndex={0} data-testid="drop-root-kbd-fallback" {...collectionProps} />;
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-kbd-fallback');
+
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
+    expect(calls.at(-1)).toBe('set:item:1:on');
+
+    fireEvent.keyDown(root, { key: 'PageDown' });
+    expect(calls.at(-1)).toBe('set:item:2:before');
+
+    fireEvent.keyDown(root, { key: 'End' });
+    expect(calls.at(-1)).toBe('set:item:3:on');
+  });
+
   it('passes internal dragging keys to onMove for on-item drops', () => {
     const onMoveCalls: Array<Set<string | number>> = [];
     const dropTarget: DropTarget = { type: 'item', key: 'b', dropPosition: 'on' };

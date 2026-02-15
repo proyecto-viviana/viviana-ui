@@ -540,6 +540,14 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     return hooks.useDroppableCollection(
       {
         dropTargetDelegate,
+        keyboardDelegate: {
+          getFirstKey: () => state.collection().getFirstKey(),
+          getLastKey: () => state.collection().getLastKey(),
+          getKeyBelow: (key) => state.collection().getKeyAfter(key),
+          getKeyAbove: (key) => state.collection().getKeyBefore(key),
+          getKeyPageBelow: (key) => state.collection().getKeyAfter(key),
+          getKeyPageAbove: (key) => state.collection().getKeyBefore(key),
+        },
       },
       activeDropState,
       () => menuRef ?? null
