@@ -29,6 +29,7 @@
     "guard:rac-export-gap": "deno run -A scripts/check-rac-export-gap.ts",
     "guard:layer-parity": "deno run -A scripts/check-layer-parity.ts",
     "guard:dnd-keyboard-parity": "deno run -A scripts/check-dnd-keyboard-parity.ts",
+    "watch:rac:new-entry": "deno run -A scripts/new-rac-watch-entry.ts",
     "version:set": "deno run -A scripts/version.ts",
     "publish": "deno run -A scripts/publish.ts",
     "release": "deno task build && deno task publish",
