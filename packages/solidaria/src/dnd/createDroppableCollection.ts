@@ -45,6 +45,14 @@ export interface DropTargetDelegate {
     direction: 'next' | 'previous',
     isValidDropTarget: (target: DropTarget) => boolean
   ): DropTarget | null;
+  /**
+   * Returns the next page-navigable drop target.
+   */
+  getKeyboardPageNavigationTarget?(
+    target: DropTarget | null,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null;
 }
 
 export interface DroppableCollectionOptions {
@@ -295,6 +303,22 @@ export function createDroppableCollection(
       if (opts.isDisabled) return;
       const isValidDropTarget = (target: DropTarget) =>
         state.getDropOperation(target, { has: () => true }, ['copy', 'move', 'link']) !== 'cancel';
+      if (
+        (e.key === 'PageDown' || e.key === 'PageUp') &&
+        opts.dropTargetDelegate.getKeyboardPageNavigationTarget
+      ) {
+        const direction = e.key === 'PageDown' ? 'next' : 'previous';
+        const nextTarget = opts.dropTargetDelegate.getKeyboardPageNavigationTarget(
+          state.target,
+          direction,
+          isValidDropTarget
+        );
+        if (nextTarget) {
+          e.preventDefault();
+          state.setTarget(nextTarget);
+        }
+        return;
+      }
       if (
         (e.key === 'ArrowDown' ||
           e.key === 'ArrowUp' ||

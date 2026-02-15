@@ -58,8 +58,17 @@ describe('Virtualizer', () => {
             delegateTarget:
               collection()?.dropTargetDelegate?.getDropTargetFromPoint(2, 2, () => true) ?? null,
             hasKeyboardNavigationDelegate: Boolean(collection()?.dropTargetDelegate?.getKeyboardNavigationTarget),
+            hasKeyboardPageNavigationDelegate: Boolean(
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget
+            ),
             delegateKeyboardTarget:
               collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'root' },
+                'next',
+                () => true
+              ) ?? null,
+            delegatePageKeyboardTarget:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
                 { type: 'root' },
                 'next',
                 () => true
@@ -100,7 +109,9 @@ describe('Virtualizer', () => {
     expect(parsed.hasDropTargetDelegate).toBe(true);
     expect(parsed.delegateTarget?.type).toBe('root');
     expect(parsed.hasKeyboardNavigationDelegate).toBe(true);
+    expect(parsed.hasKeyboardPageNavigationDelegate).toBe(true);
     expect(parsed.delegateKeyboardTarget?.type).toBe('root');
+    expect(parsed.delegatePageKeyboardTarget?.type).toBe('root');
     expect(parsed.delegateOperation).toBe('move');
     expect(parsed.delegateRootOperation).toBe('copy');
     expect(instances).toBeGreaterThan(0);
@@ -168,6 +179,50 @@ describe('Virtualizer', () => {
     expect(parsed.insertion?.type).toBe('item');
     expect(['before', 'after']).toContain(parsed.insertion?.dropPosition);
     expect(parsed.rootFallback).toMatchObject({ type: 'root' });
+  });
+
+  it('keyboard page delegate advances by viewport-sized steps', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 100);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-page-delegate">
+          {JSON.stringify({
+            next:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 0, dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+            previous:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 50, dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 400 }}
+      >
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-page-delegate').textContent || '{}');
+    expect(parsed.next?.type).toBe('item');
+    expect(parsed.next?.dropPosition).toBe('on');
+    expect(Number(parsed.next?.key)).toBeGreaterThan(1);
+    expect(parsed.previous?.type).toBe('item');
+    expect(parsed.previous?.dropPosition).toBe('on');
+    expect(Number(parsed.previous?.key)).toBeLessThan(49);
   });
 
   it('renders only visible range for listbox when virtualized', () => {

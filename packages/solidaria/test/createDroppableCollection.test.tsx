@@ -59,6 +59,12 @@ describe('createDroppableCollection keyboard behavior', () => {
             getDropTargetFromPoint() {
               return null;
             },
+            getKeyboardPageNavigationTarget(_target, direction) {
+              if (direction === 'next') {
+                return { type: 'item', key: 7, dropPosition: 'on' };
+              }
+              return { type: 'item', key: 3, dropPosition: 'on' };
+            },
             getKeyboardNavigationTarget(target, direction) {
               if (target?.type === 'root' && direction === 'next') {
                 return { type: 'item', key: 1, dropPosition: 'on' };
@@ -102,6 +108,12 @@ describe('createDroppableCollection keyboard behavior', () => {
 
     fireEvent.keyDown(root, { key: 'End' });
     expect(calls.at(-1)).toBe('set:item:9');
+
+    fireEvent.keyDown(root, { key: 'PageDown' });
+    expect(calls.at(-1)).toBe('set:item:7');
+
+    fireEvent.keyDown(root, { key: 'PageUp' });
+    expect(calls.at(-1)).toBe('set:item:3');
 
     fireEvent.keyDown(root, { key: 'Enter' });
     expect(calls.at(-1)).toBe('activate');
