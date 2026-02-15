@@ -71,6 +71,7 @@ export interface VirtualizerContextValue<O = unknown> {
   getDropTargetFromPoint: (point: Point, itemCount: number) => VirtualizerDropTarget | null;
   setDropTargetResolver: ((resolver: VirtualizerDropTargetResolver | undefined) => void);
   setDropTargetItemCountResolver: ((resolver: (() => number) | undefined) => void);
+  setDropTargetIndexResolver: ((resolver: ((key: string | number) => number | null) | undefined) => void);
   setDropOperationResolver: ((resolver: VirtualizerDropOperationResolver | undefined) => void);
 }
 
@@ -153,6 +154,9 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   const [dropTargetItemCountResolver, setDropTargetItemCountResolver] = createSignal<(() => number) | undefined>(
     undefined
   );
+  const [dropTargetIndexResolver, setDropTargetIndexResolver] = createSignal<
+    ((key: string | number) => number | null) | undefined
+  >(undefined);
   const [dropOperationResolver, setDropOperationResolver] = createSignal<VirtualizerDropOperationResolver | undefined>(
     undefined
   );
@@ -240,6 +244,9 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   const assignDropTargetItemCountResolver = (resolver: (() => number) | undefined): void => {
     setDropTargetItemCountResolver(() => resolver);
   };
+  const assignDropTargetIndexResolver = (resolver: ((key: string | number) => number | null) | undefined): void => {
+    setDropTargetIndexResolver(() => resolver);
+  };
   const assignDropOperationResolver = (resolver: VirtualizerDropOperationResolver | undefined): void => {
     setDropOperationResolver(() => resolver);
   };
@@ -289,6 +296,31 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     if (allowedOperations.includes('link')) return 'link';
     return allowedOperations.find((operation) => operation !== 'cancel') ?? 'cancel';
   };
+  const getKeyboardNavigationTarget = (
+    target: DropTarget | null,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null => {
+    const itemCount = dropTargetItemCountResolver()?.() ?? 0;
+    if (itemCount <= 0) {
+      const rootTarget: DropTarget = { type: 'root' };
+      return isValidDropTarget(rootTarget) ? rootTarget : null;
+    }
+
+    let currentIndex: number;
+    if (!target || target.type === 'root') {
+      currentIndex = direction === 'next' ? -1 : itemCount;
+    } else {
+      const fromResolver = dropTargetIndexResolver()?.(target.key);
+      currentIndex = fromResolver ?? (typeof target.key === 'number' ? target.key : -1);
+    }
+    const delta = direction === 'next' ? 1 : -1;
+    const nextIndex = Math.max(0, Math.min(itemCount - 1, currentIndex + delta));
+    const nextVirtualTarget = getDropTargetFromPoint({ x: 0, y: nextIndex * itemSize() }, itemCount);
+    if (!nextVirtualTarget || nextVirtualTarget.type === 'root') return null;
+    const nextCollectionTarget = toCollectionDropTarget({ ...nextVirtualTarget, position: 'on' });
+    return isValidDropTarget(nextCollectionTarget) ? nextCollectionTarget : null;
+  };
 
   const contextValue = createMemo<VirtualizerContextValue<O>>(() => ({
     layout: resolvedLayout(),
@@ -299,6 +331,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     getDropTargetFromPoint,
     setDropTargetResolver: assignDropTargetResolver,
     setDropTargetItemCountResolver: assignDropTargetItemCountResolver,
+    setDropTargetIndexResolver: assignDropTargetIndexResolver,
     setDropOperationResolver: assignDropOperationResolver,
   }));
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
@@ -308,6 +341,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     dropTargetDelegate: {
       getDropTargetFromPoint: getCollectionDropTargetFromPoint,
       getDropOperation: getCollectionDropOperation,
+      getKeyboardNavigationTarget,
     },
     renderDropIndicator: local.renderDropIndicator,
   }));

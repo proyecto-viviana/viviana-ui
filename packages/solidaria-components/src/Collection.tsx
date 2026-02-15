@@ -42,6 +42,11 @@ export interface CollectionDropTargetDelegate {
     types: DragTypes,
     allowedOperations: DropOperation[]
   ): DropOperation;
+  getKeyboardNavigationTarget?(
+    target: DropTarget | null,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null;
 }
 
 export interface CollectionRendererContextValue<T> {

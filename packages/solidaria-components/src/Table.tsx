@@ -591,6 +591,11 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
     virtualizer.setDropTargetItemCountResolver(() => items().length);
+    virtualizer.setDropTargetIndexResolver((key) => {
+      const rowNodes = Array.from(context.collection).filter((node) => node.type === 'item');
+      const index = rowNodes.findIndex((node) => node.key === key);
+      return index >= 0 ? index : null;
+    });
     virtualizer.setDropTargetResolver((target) => {
       const rowNodes = Array.from(context.collection).filter((node) => node.type === 'item');
       const node = rowNodes[target.index];
@@ -601,6 +606,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
       };
     });
     onCleanup(() => {
+      virtualizer.setDropTargetIndexResolver(undefined);
       virtualizer.setDropTargetItemCountResolver(undefined);
       virtualizer.setDropTargetResolver(undefined);
     });

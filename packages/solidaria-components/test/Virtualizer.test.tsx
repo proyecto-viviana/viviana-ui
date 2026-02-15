@@ -57,6 +57,13 @@ describe('Virtualizer', () => {
             hasDropTargetDelegate: Boolean(collection()?.dropTargetDelegate),
             delegateTarget:
               collection()?.dropTargetDelegate?.getDropTargetFromPoint(2, 2, () => true) ?? null,
+            hasKeyboardNavigationDelegate: Boolean(collection()?.dropTargetDelegate?.getKeyboardNavigationTarget),
+            delegateKeyboardTarget:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'root' },
+                'next',
+                () => true
+              ) ?? null,
             delegateOperation:
               collection()?.dropTargetDelegate?.getDropOperation(
                 { type: 'item', key: 0, dropPosition: 'before' },
@@ -92,6 +99,8 @@ describe('Virtualizer', () => {
     expect(parsed.hasLayoutDelegate).toBe(true);
     expect(parsed.hasDropTargetDelegate).toBe(true);
     expect(parsed.delegateTarget?.type).toBe('root');
+    expect(parsed.hasKeyboardNavigationDelegate).toBe(true);
+    expect(parsed.delegateKeyboardTarget?.type).toBe('root');
     expect(parsed.delegateOperation).toBe('move');
     expect(parsed.delegateRootOperation).toBe('copy');
     expect(instances).toBeGreaterThan(0);

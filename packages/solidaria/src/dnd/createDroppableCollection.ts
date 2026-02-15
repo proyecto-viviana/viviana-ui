@@ -37,6 +37,14 @@ export interface DropTargetDelegate {
     y: number,
     isValidDropTarget: (target: DropTarget) => boolean
   ): DropTarget | null;
+  /**
+   * Returns the next keyboard-navigable drop target.
+   */
+  getKeyboardNavigationTarget?(
+    target: DropTarget | null,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null;
 }
 
 export interface DroppableCollectionOptions {
@@ -280,8 +288,35 @@ export function createDroppableCollection(
 
   const collectionProps = createMemo(() => {
     const baseDropProps = drop.dropProps;
+    const onKeyDownBase = baseDropProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined;
+    const onKeyDown = (e: KeyboardEvent): void => {
+      onKeyDownBase?.(e);
+      const opts = getOptions();
+      if (opts.isDisabled) return;
+      const isValidDropTarget = (target: DropTarget) =>
+        state.getDropOperation(target, { has: () => true }, ['copy', 'move', 'link']) !== 'cancel';
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && opts.dropTargetDelegate.getKeyboardNavigationTarget) {
+        const direction = e.key === 'ArrowDown' ? 'next' : 'previous';
+        const nextTarget = opts.dropTargetDelegate.getKeyboardNavigationTarget(state.target, direction, isValidDropTarget);
+        if (nextTarget) {
+          e.preventDefault();
+          state.setTarget(nextTarget);
+        }
+        return;
+      }
+      if (e.key === 'Enter' && state.target) {
+        e.preventDefault();
+        state.activateTarget(0, 0);
+        return;
+      }
+      if (e.key === 'Escape' && state.target) {
+        e.preventDefault();
+        state.exitTarget(0, 0);
+      }
+    };
     return {
       ...baseDropProps,
+      onKeyDown,
     };
   });
 
