@@ -368,6 +368,43 @@ describe('Virtualizer', () => {
     expect(parsed.previousFallback).toMatchObject({ type: 'item', key: 6, dropPosition: 'on' });
   });
 
+  it('keyboard delegate prefers boundary insertion positions when starting from root', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 4);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="keyboard-root-boundary-preference">
+          {JSON.stringify({
+            nextFromRoot:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'root' },
+                'next',
+                (target) => target.type === 'item'
+              ) ?? null,
+            previousFromRoot:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'root' },
+                'previous',
+                (target) => target.type === 'item'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-root-boundary-preference').textContent || '{}');
+    expect(parsed.nextFromRoot).toMatchObject({ type: 'item', key: 0, dropPosition: 'before' });
+    expect(parsed.previousFromRoot).toMatchObject({ type: 'item', key: 3, dropPosition: 'after' });
+  });
+
   it('keyboard page delegate advances by viewport-sized steps', () => {
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext());

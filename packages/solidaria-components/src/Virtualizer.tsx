@@ -427,6 +427,18 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     };
     const directTransition = tryCurrentItemTransition(target);
     if (directTransition) return directTransition;
+    if (!target || target.type === 'root') {
+      const boundaryIndex = direction === 'next' ? 0 : itemCount - 1;
+      const boundaryOrder: Array<'before' | 'on' | 'after'> = direction === 'next'
+        ? ['before', 'on', 'after']
+        : ['after', 'on', 'before'];
+      for (const position of boundaryOrder) {
+        const boundaryTarget = tryTarget(boundaryIndex, position);
+        if (boundaryTarget) return boundaryTarget;
+      }
+      const rootTarget: DropTarget = { type: 'root' };
+      return isValidDropTarget(rootTarget) ? rootTarget : null;
+    }
     const currentIndex = getCurrentIndex(target);
     return findNavigationTarget(currentIndex, 1);
   };
