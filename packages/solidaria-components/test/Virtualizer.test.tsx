@@ -823,6 +823,34 @@ describe('Virtualizer', () => {
     expect(screen.queryByText('Grid 5')).not.toBeInTheDocument();
   });
 
+  it('retains focused item in virtualized gridlist when no drop target is active', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 1;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
+    const items = Array.from({ length: 120 }, (_, i) => ({ id: i, name: `Grid ${i}` }));
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 60, overscan: 0 }}
+        style={{ height: '60px', overflow: 'auto' }}
+      >
+        <GridList items={items} getKey={(item) => item.id} aria-label="Focused retention grid">
+          {(item) => <GridListItem id={item.id}>{item.name}</GridListItem>}
+        </GridList>
+      </Virtualizer>
+    ));
+
+    const grid = screen.getByRole('grid');
+    fireEvent.focus(grid);
+    fireEvent.keyDown(grid, { key: 'End' });
+
+    expect(screen.getByText('Grid 119')).toBeInTheDocument();
+  });
+
   it('enriches gridlist drop targets with item key metadata', () => {
     const items = Array.from({ length: 6 }, (_, i) => ({ id: i, name: `Grid ${i}` }));
 
@@ -960,6 +988,38 @@ describe('Virtualizer', () => {
     expect(screen.getByText('Node 0')).toBeInTheDocument();
     expect(screen.getByText('Node 1')).toBeInTheDocument();
     expect(screen.queryByText('Node 6')).not.toBeInTheDocument();
+  });
+
+  it('retains focused item in virtualized tree when no drop target is active', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 1;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
+    const items = Array.from({ length: 120 }, (_, i) => ({
+      key: `node-${i}`,
+      value: { name: `Node ${i}` },
+      textValue: `Node ${i}`,
+    }));
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 60, overscan: 0 }}
+        style={{ height: '60px', overflow: 'auto' }}
+      >
+        <Tree items={items} aria-label="Focused retention tree">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      </Virtualizer>
+    ));
+
+    const tree = screen.getByRole('treegrid');
+    fireEvent.focus(tree);
+    fireEvent.keyDown(tree, { key: 'End' });
+
+    expect(screen.getByText('Node 119')).toBeInTheDocument();
   });
 
   it('enriches tree drop targets with hierarchical metadata', () => {
