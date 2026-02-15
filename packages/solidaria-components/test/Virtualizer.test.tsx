@@ -386,6 +386,43 @@ describe('Virtualizer', () => {
     expect(screen.queryByTestId('drop-before-4')).not.toBeInTheDocument();
   });
 
+  it('propagates drop indicator renderer into sectioned listbox flow', () => {
+    const items = [
+      {
+        key: 'sec-a',
+        title: 'Section A',
+        items: [
+          { id: 'item-0', label: 'Item 0' },
+          { id: 'item-1', label: 'Item 1' },
+        ],
+      },
+      {
+        key: 'sec-b',
+        title: 'Section B',
+        items: [{ id: 'item-2', label: 'Item 2' }],
+      },
+    ];
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+        renderDropIndicator={(index, position) => (
+          <li role="presentation" data-testid={`section-drop-${position}-${index}`} />
+        )}
+      >
+        <ListBox aria-label="Sectioned DnD list" items={items as unknown[]}>
+          {(item) => <ListBoxOption id={(item as { id: string }).id}>{(item as { label: string }).label}</ListBoxOption>}
+        </ListBox>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByTestId('section-drop-before-0')).toBeInTheDocument();
+    expect(screen.getByTestId('section-drop-on-0')).toBeInTheDocument();
+    expect(screen.getByTestId('section-drop-after-2')).toBeInTheDocument();
+  });
+
   it('enriches listbox drop targets with item key metadata', () => {
     const items = Array.from({ length: 6 }, (_, i) => ({
       id: `item-${i}`,

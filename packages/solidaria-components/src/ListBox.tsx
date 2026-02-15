@@ -304,6 +304,30 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     if (!range) return stateProps.items;
     return stateProps.items.slice(range.start, range.end);
   });
+  const sectionedRenderEntries = createMemo(() => {
+    let globalIndex = 0;
+    return stateProps.items.map((entry) => {
+      if (isCollectionSection(entry)) {
+        const sectionItems = entry.items.map((item) => ({
+          item,
+          index: globalIndex++,
+        }));
+        return {
+          type: 'section' as const,
+          section: entry,
+          items: sectionItems,
+        };
+      }
+      const indexedItem = {
+        item: entry as T,
+        index: globalIndex++,
+      };
+      return {
+        type: 'item' as const,
+        item: indexedItem,
+      };
+    });
+  });
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     ...parentCollectionRenderer,
     renderItem: (item) => props.children(item as T),
@@ -328,24 +352,40 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
               ? local.renderEmptyState()
               : hasSections()
                 ? (
-                  <For each={stateProps.items}>
+                  <For each={sectionedRenderEntries()}>
                     {(entry) =>
-                      isCollectionSection(entry)
+                      entry.type === 'section'
                         ? (
                           <li role="presentation" data-section-wrapper>
                             <Section class="solidaria-ListBox-section">
-                              {entry.title != null && (
-                                <Header class="solidaria-ListBox-sectionHeader">{entry.title}</Header>
+                              {entry.section.title != null && (
+                                <Header class="solidaria-ListBox-sectionHeader">{entry.section.title}</Header>
                               )}
                               <Group class="solidaria-ListBox-sectionGroup">
-                                <ul role="group" aria-label={entry['aria-label']}>
-                                  <For each={entry.items}>{(item) => props.children(item)}</For>
+                                <ul role="group" aria-label={entry.section['aria-label']}>
+                                  <For each={entry.items}>
+                                    {(indexedItem) => (
+                                      <>
+                                        {parentCollectionRenderer?.renderDropIndicator?.(indexedItem.index, 'before')}
+                                        {parentCollectionRenderer?.renderDropIndicator?.(indexedItem.index, 'on')}
+                                        {props.children(indexedItem.item)}
+                                        {parentCollectionRenderer?.renderDropIndicator?.(indexedItem.index, 'after')}
+                                      </>
+                                    )}
+                                  </For>
                                 </ul>
                               </Group>
                             </Section>
                           </li>
                         )
-                        : props.children(entry as T)
+                        : (
+                          <>
+                            {parentCollectionRenderer?.renderDropIndicator?.(entry.item.index, 'before')}
+                            {parentCollectionRenderer?.renderDropIndicator?.(entry.item.index, 'on')}
+                            {props.children(entry.item.item)}
+                            {parentCollectionRenderer?.renderDropIndicator?.(entry.item.index, 'after')}
+                          </>
+                        )
                     }
                   </For>
                 )
