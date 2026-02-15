@@ -957,6 +957,68 @@ describe('Virtualizer', () => {
     expect(target.key).toBe('item-0');
   });
 
+  it('sectioned listbox keyboard page delegate resolves item targets across groups', () => {
+    const items = [
+      {
+        key: 'fruits',
+        title: 'Fruits',
+        items: [
+          { id: 'apple', label: 'Apple' },
+          { id: 'banana', label: 'Banana' },
+        ],
+      },
+      {
+        key: 'vegetables',
+        title: 'Vegetables',
+        items: [
+          { id: 'carrot', label: 'Carrot' },
+          { id: 'daikon', label: 'Daikon' },
+        ],
+      },
+    ];
+
+    function Consumer(): JSX.Element {
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      return (
+        <output data-testid="sectioned-listbox-keyboard-page">
+          {JSON.stringify({
+            next:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 'apple', dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+            previousFallback:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 'carrot', dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on' && target.key !== 'banana'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <>
+          <ListBox aria-label="Sectioned keyboard delegate listbox" items={items as unknown[]}>
+            {(item) => <ListBoxOption id={(item as { id: string }).id}>{(item as { label: string }).label}</ListBoxOption>}
+          </ListBox>
+          <Consumer />
+        </>
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('sectioned-listbox-keyboard-page').textContent || '{}');
+    expect(parsed.next).toMatchObject({ type: 'item', key: 'carrot', dropPosition: 'on' });
+    expect(parsed.previousFallback).toMatchObject({ type: 'item', key: 'apple', dropPosition: 'on' });
+  });
+
   it('virtualizes GridList item rendering', () => {
     const items = Array.from({ length: 20 }, (_, i) => ({ id: i, name: `Grid ${i}` }));
 
