@@ -208,6 +208,14 @@ export class GridLayout {
     if (itemCount <= 0) return { type: 'root', index: -1, position: 'on' };
     const rowHeight = Math.max(1, options?.rowHeight ?? options?.itemSize ?? 40);
     const columns = Math.max(1, options?.columnCount ?? 1);
+    const totalRows = Math.ceil(itemCount / columns);
+    const totalHeight = totalRows * rowHeight;
+    if (point.y < 0) {
+      return { type: 'item', index: 0, position: 'before' };
+    }
+    if (point.y >= totalHeight) {
+      return { type: 'item', index: itemCount - 1, position: 'after' };
+    }
     const width = Math.max(1, options?.viewportWidth ?? 320);
     const cellWidth = width / columns;
     const row = Math.max(0, Math.floor(point.y / rowHeight));

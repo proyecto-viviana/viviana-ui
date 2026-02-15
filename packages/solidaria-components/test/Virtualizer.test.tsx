@@ -463,6 +463,22 @@ describe('Virtualizer', () => {
     expect(right).toMatchObject({ type: 'item', index: 1 });
   });
 
+  it('grid layout drop targets clamp to before-first and after-last at boundaries', () => {
+    const layout = new GridLayout();
+    const before = layout.getDropTargetFromPoint(
+      { x: 0, y: -5 },
+      6,
+      { rowHeight: 20, columnCount: 2, viewportWidth: 200 }
+    );
+    const after = layout.getDropTargetFromPoint(
+      { x: 0, y: 200 },
+      6,
+      { rowHeight: 20, columnCount: 2, viewportWidth: 200 }
+    );
+    expect(before).toMatchObject({ type: 'item', index: 0, position: 'before' });
+    expect(after).toMatchObject({ type: 'item', index: 5, position: 'after' });
+  });
+
   it('list layout drop targets clamp to before-first and after-last at boundaries', () => {
     const layout = new ListLayout();
     const before = layout.getDropTargetFromPoint({ x: 0, y: -10 }, 4, { itemSize: 20 });
