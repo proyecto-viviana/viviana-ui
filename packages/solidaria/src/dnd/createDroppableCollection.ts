@@ -413,6 +413,13 @@ export function createDroppableCollection(
           e.key === 'End') &&
         opts.dropTargetDelegate.getKeyboardNavigationTarget
       ) {
+        if (
+          (e.key === 'ArrowLeft' && !opts.keyboardDelegate?.getKeyLeftOf) ||
+          (e.key === 'ArrowRight' && !opts.keyboardDelegate?.getKeyRightOf)
+        ) {
+          callUserOnKeyDown();
+          return;
+        }
         const isForwardKey = e.key === 'ArrowDown' || e.key === forwardHorizontalKey || e.key === 'Home';
         const direction = isForwardKey ? 'next' : 'previous';
         const navigationStart = e.key === 'Home' || e.key === 'End'
@@ -438,6 +445,13 @@ export function createDroppableCollection(
         e.key === 'Home' ||
         e.key === 'End'
       ) {
+        if (
+          (e.key === 'ArrowLeft' && !opts.keyboardDelegate?.getKeyLeftOf) ||
+          (e.key === 'ArrowRight' && !opts.keyboardDelegate?.getKeyRightOf)
+        ) {
+          callUserOnKeyDown();
+          return;
+        }
         const nextTarget = resolveFallbackKeyboardTarget(e.key);
         if (nextTarget) {
           e.preventDefault();

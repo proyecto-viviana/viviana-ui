@@ -85,6 +85,10 @@ describe('createDroppableCollection keyboard behavior', () => {
               return null;
             },
           },
+          keyboardDelegate: {
+            getKeyRightOf: (key) => (key === 1 ? 2 : null),
+            getKeyLeftOf: (key) => (key === 2 ? 1 : null),
+          },
         }),
         state
       );
@@ -191,6 +195,91 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(calls.at(-1)).toBe('set:item:2');
 
     fireEvent.keyDown(root, { key: 'PageUp' });
+    expect(calls.at(-1)).toBe('set:item:1');
+  });
+
+  it('ignores horizontal keys when keyboardDelegate does not provide horizontal getters', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'root' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}`);
+          return;
+        }
+        calls.push(`set:${target?.type ?? 'null'}`);
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-no-horizontal') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+            getKeyboardNavigationTarget(_target, direction) {
+              if (direction === 'next') {
+                return { type: 'item', key: 1, dropPosition: 'on' };
+              }
+              return { type: 'item', key: 9, dropPosition: 'on' };
+            },
+          },
+          keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 9,
+            getKeyBelow: (key) => (key === 1 ? 2 : null),
+            getKeyAbove: (key) => (key === 2 ? 1 : null),
+          },
+        }),
+        state
+      );
+
+      return (
+        <div
+          id="drop-root-no-horizontal"
+          tabIndex={0}
+          data-testid="drop-root-no-horizontal"
+          {...collectionProps}
+        />
+      );
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-no-horizontal');
+
+    fireEvent.keyDown(root, { key: 'ArrowRight' });
+    expect(calls).toHaveLength(0);
+
+    fireEvent.keyDown(root, { key: 'ArrowLeft' });
+    expect(calls).toHaveLength(0);
+
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
     expect(calls.at(-1)).toBe('set:item:1');
   });
 
@@ -391,6 +480,10 @@ describe('createDroppableCollection keyboard behavior', () => {
               }
               return { type: 'item', key: 8, dropPosition: 'on' };
             },
+          },
+          keyboardDelegate: {
+            getKeyLeftOf: (key) => (key === 2 ? 1 : null),
+            getKeyRightOf: (key) => (key === 8 ? 9 : null),
           },
         }),
         state
