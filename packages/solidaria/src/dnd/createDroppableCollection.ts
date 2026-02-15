@@ -449,6 +449,55 @@ export function createDroppableCollection(
         }
         return null;
       };
+      const resolvePageTargetForState = (
+        direction: 'next' | 'previous',
+        currentTarget: DropTarget
+      ): DropTarget | null => {
+        const keyboardDelegate = opts.keyboardDelegate;
+        if (!keyboardDelegate) return null;
+        if (direction === 'next') {
+          let targetKey = keyboardDelegate.getFirstKey?.() ?? null;
+          let dropPosition: 'before' | 'on' | 'after' = 'after';
+          if (currentTarget.type === 'item') {
+            targetKey = currentTarget.key;
+            dropPosition = currentTarget.dropPosition;
+          }
+          let nextKey = targetKey != null ? keyboardDelegate.getKeyPageBelow?.(targetKey) ?? null : null;
+          if (
+            nextKey == null ||
+            (currentTarget.type === 'item' && currentTarget.key === keyboardDelegate.getLastKey?.())
+          ) {
+            nextKey = keyboardDelegate.getLastKey?.() ?? null;
+            dropPosition = 'after';
+          }
+          if (nextKey == null) return null;
+          return {
+            type: 'item',
+            key: nextKey,
+            dropPosition,
+          };
+        }
+
+        if (currentTarget.type === 'item') {
+          if (currentTarget.key === keyboardDelegate.getFirstKey?.()) {
+            return { type: 'root' };
+          }
+          let nextKey = keyboardDelegate.getKeyPageAbove?.(currentTarget.key) ?? null;
+          let dropPosition: 'before' | 'on' | 'after' = currentTarget.dropPosition;
+          if (nextKey == null) {
+            nextKey = keyboardDelegate.getFirstKey?.() ?? null;
+            dropPosition = 'before';
+          }
+          if (nextKey == null) return null;
+          return {
+            type: 'item',
+            key: nextKey,
+            dropPosition,
+          };
+        }
+
+        return currentTarget.type === 'root' ? currentTarget : null;
+      };
       if (e.key === 'PageDown' || e.key === 'PageUp') {
         if (
           (e.key === 'PageDown' && !opts.keyboardDelegate?.getKeyPageBelow) ||
@@ -473,7 +522,7 @@ export function createDroppableCollection(
           nextTarget = findNextValidTarget(null, (target) => resolveStepTarget(target, direction));
         } else {
           const pageTarget = pageNavigation?.(state.target, direction, isValidDropTarget)
-            ?? resolveFallbackKeyboardTarget(e.key, state.target)
+            ?? resolvePageTargetForState(direction, state.target)
             ?? null;
           if (pageTarget && isValidDropTarget(pageTarget)) {
             nextTarget = pageTarget;

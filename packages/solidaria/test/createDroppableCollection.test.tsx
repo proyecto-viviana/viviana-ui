@@ -219,6 +219,132 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(calls.at(-1)).toBe('set:item:1');
   });
 
+  it('moves PageUp from first item to root target when root is valid', () => {
+    let currentTarget: DropTarget | null = { type: 'item', key: 1, dropPosition: 'on' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-pageup-first') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+          },
+          keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 3,
+            getKeyBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyAbove: (key) => (key > 1 ? key - 1 : null),
+            getKeyPageBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyPageAbove: (key) => (key > 1 ? key - 1 : null),
+          },
+        }),
+        state
+      );
+
+      return <div id="drop-root-pageup-first" tabIndex={0} data-testid="drop-root-pageup-first" {...collectionProps} />;
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-pageup-first');
+
+    fireEvent.keyDown(root, { key: 'PageUp' });
+    expect(currentTarget).toEqual({ type: 'root' });
+  });
+
+  it('moves PageDown from last item to after-last insertion target', () => {
+    let currentTarget: DropTarget | null = { type: 'item', key: 3, dropPosition: 'on' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-pagedown-last') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+          },
+          keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 3,
+            getKeyBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyAbove: (key) => (key > 1 ? key - 1 : null),
+            getKeyPageBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyPageAbove: (key) => (key > 1 ? key - 1 : null),
+          },
+        }),
+        state
+      );
+
+      return (
+        <div id="drop-root-pagedown-last" tabIndex={0} data-testid="drop-root-pagedown-last" {...collectionProps} />
+      );
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-pagedown-last');
+
+    fireEvent.keyDown(root, { key: 'PageDown' });
+    expect(currentTarget).toEqual({ type: 'item', key: 3, dropPosition: 'after' });
+  });
+
   it('ignores horizontal keys when keyboardDelegate does not provide horizontal getters', () => {
     const calls: string[] = [];
     let currentTarget: DropTarget | null = { type: 'root' };
@@ -536,7 +662,7 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(calls.at(-1)).toBe('set:item:1:on');
 
     fireEvent.keyDown(root, { key: 'PageDown' });
-    expect(calls.at(-1)).toBe('set:item:2:before');
+    expect(calls.at(-1)).toBe('set:item:3:on');
 
     fireEvent.keyDown(root, { key: 'End' });
     expect(calls.at(-1)).toBe('set:item:3:on');
