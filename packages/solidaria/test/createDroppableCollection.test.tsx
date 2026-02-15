@@ -8,6 +8,7 @@ import type { DropTarget, DroppableCollectionState } from '@proyecto-viviana/sol
 afterEach(() => {
   setGlobalDraggingCollectionRef(null);
   setGlobalDraggingKeys(new Set());
+  document.dir = '';
   cleanup();
 });
 
@@ -337,6 +338,75 @@ describe('createDroppableCollection keyboard behavior', () => {
 
     fireEvent.keyDown(root, { key: 'ArrowDown' });
     expect(calls.at(-1)).toBe('set:item:2:on');
+  });
+
+  it('uses rtl-aware horizontal direction for delegate keyboard navigation', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'root' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}`);
+        } else {
+          calls.push(`set:${target?.type ?? 'null'}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-rtl') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+            getKeyboardNavigationTarget(_target, direction) {
+              if (direction === 'next') {
+                return { type: 'item', key: 2, dropPosition: 'on' };
+              }
+              return { type: 'item', key: 8, dropPosition: 'on' };
+            },
+          },
+        }),
+        state
+      );
+
+      return <div id="drop-root-rtl" dir="rtl" tabIndex={0} data-testid="drop-root-rtl" {...collectionProps} />;
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-rtl');
+
+    fireEvent.keyDown(root, { key: 'ArrowLeft' });
+    expect(calls.at(-1)).toBe('set:item:2');
+
+    fireEvent.keyDown(root, { key: 'ArrowRight' });
+    expect(calls.at(-1)).toBe('set:item:8');
   });
 
   it('passes internal dragging keys to onMove for on-item drops', () => {

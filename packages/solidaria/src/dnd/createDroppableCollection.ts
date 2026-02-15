@@ -316,6 +316,17 @@ export function createDroppableCollection(
       onKeyDownBase?.(e);
       const opts = getOptions();
       if (opts.isDisabled) return;
+      const resolveDirection = (): 'ltr' | 'rtl' => {
+        const refEl = opts.ref();
+        if (refEl) {
+          const computedDir = window.getComputedStyle(refEl).direction;
+          if (computedDir === 'rtl') return 'rtl';
+        }
+        return document.dir === 'rtl' ? 'rtl' : 'ltr';
+      };
+      const isRtl = resolveDirection() === 'rtl';
+      const forwardHorizontalKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
+      const backwardHorizontalKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
       const callUserOnKeyDown = () => opts.onKeyDown?.(e);
       const isValidDropTarget = (target: DropTarget) =>
         state.getDropOperation(target, { has: () => true }, ['copy', 'move', 'link']) !== 'cancel';
@@ -356,8 +367,12 @@ export function createDroppableCollection(
 
         if (keyName === 'ArrowDown') return keyForDirection('next', keyboardDelegate.getKeyBelow);
         if (keyName === 'ArrowUp') return keyForDirection('previous', keyboardDelegate.getKeyAbove);
-        if (keyName === 'ArrowRight') return keyForDirection('next', keyboardDelegate.getKeyRightOf);
-        if (keyName === 'ArrowLeft') return keyForDirection('previous', keyboardDelegate.getKeyLeftOf);
+        if (keyName === forwardHorizontalKey) {
+          return keyForDirection('next', isRtl ? keyboardDelegate.getKeyLeftOf : keyboardDelegate.getKeyRightOf);
+        }
+        if (keyName === backwardHorizontalKey) {
+          return keyForDirection('previous', isRtl ? keyboardDelegate.getKeyRightOf : keyboardDelegate.getKeyLeftOf);
+        }
         if (keyName === 'Home') return resolveTargetForKey(keyboardDelegate.getFirstKey?.() ?? null, 'next');
         if (keyName === 'End') return resolveTargetForKey(keyboardDelegate.getLastKey?.() ?? null, 'previous');
         if (keyName === 'PageDown') {
@@ -398,9 +413,8 @@ export function createDroppableCollection(
           e.key === 'End') &&
         opts.dropTargetDelegate.getKeyboardNavigationTarget
       ) {
-        const direction = e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'Home'
-          ? 'next'
-          : 'previous';
+        const isForwardKey = e.key === 'ArrowDown' || e.key === forwardHorizontalKey || e.key === 'Home';
+        const direction = isForwardKey ? 'next' : 'previous';
         const navigationStart = e.key === 'Home' || e.key === 'End'
           ? ({ type: 'root' } as DropTarget)
           : state.target;
