@@ -366,9 +366,12 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
       .filter((index) => index >= 0);
     const dropTarget = dropState()?.target;
     const normalizedDropKey = getNormalizedDropTargetKey(dropTarget, state.collection());
+    const focusedKey = state.focusedKey();
+    const focusedIndex = focusedKey != null ? itemNodes.findIndex((node) => node.key === focusedKey) : -1;
     const forceIncludeIndexes = [
       dropTarget?.type === 'item' ? itemNodes.findIndex((node) => node.key === dropTarget.key) : -1,
       normalizedDropKey != null ? itemNodes.findIndex((node) => node.key === normalizedDropKey) : -1,
+      dropTarget?.type === 'item' ? -1 : focusedIndex,
     ].filter((index) => index >= 0);
     return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, stateProps.items.length, virtualizer, 80, {
       forceIncludeIndexes,

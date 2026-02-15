@@ -419,9 +419,12 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
       .filter((index) => index >= 0);
     const dropTarget = dropState()?.target;
     const normalizedDropKey = getNormalizedDropTargetKey(dropTarget, state.collection);
+    const focusedKey = state.focusedKey;
+    const focusedIndex = focusedKey != null ? rows.findIndex((node) => node.key === focusedKey) : -1;
     const forceIncludeIndexes = [
       dropTarget?.type === 'item' ? rows.findIndex((node) => node.key === dropTarget.key) : -1,
       normalizedDropKey != null ? rows.findIndex((node) => node.key === normalizedDropKey) : -1,
+      dropTarget?.type === 'item' ? -1 : focusedIndex,
     ].filter((index) => index >= 0);
     return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rows.length, virtualizer, 80, {
       forceIncludeIndexes,

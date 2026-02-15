@@ -690,9 +690,12 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
       .filter((index) => index >= 0);
     const dropTarget = (context.dropState as { target?: DropTarget | null } | undefined)?.target;
     const normalizedDropKey = getNormalizedDropTargetKey(dropTarget, context.collection);
+    const focusedKey = context.state.focusedKey;
+    const focusedIndex = focusedKey != null ? rowNodes().findIndex((node) => node.key === focusedKey) : -1;
     const forceIncludeIndexes = [
       dropTarget?.type === 'item' ? rowNodes().findIndex((node) => node.key === dropTarget.key) : -1,
       normalizedDropKey != null ? rowNodes().findIndex((node) => node.key === normalizedDropKey) : -1,
+      dropTarget?.type === 'item' ? -1 : focusedIndex,
     ].filter((index) => index >= 0);
     return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rowCount, virtualizer, 80, {
       forceIncludeIndexes,
