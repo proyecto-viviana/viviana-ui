@@ -52,7 +52,7 @@ import {
 import { type DragAndDropHooks } from './useDragAndDrop';
 import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
-import { useDndPersistedKeys } from './DragAndDrop';
+import { mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
 
 // ============================================
 // TYPES
@@ -682,22 +682,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
     const persistedIndexes = Array.from(persistedKeys())
       .map((key) => rowNodes().findIndex((node) => node.key === key))
       .filter((index) => index >= 0);
-    if (persistedIndexes.length === 0) return baseRange;
-
-    const nextStart = Math.min(baseRange.start, ...persistedIndexes);
-    const nextEnd = Math.max(baseRange.end, ...persistedIndexes.map((index) => index + 1));
-    if (nextStart === baseRange.start && nextEnd === baseRange.end) return baseRange;
-
-    const startRect = nextStart > 0 ? virtualizer.getLayoutInfo(nextStart).rect : { y: 0 };
-    const lastRect = rowCount > 0 ? virtualizer.getLayoutInfo(rowCount - 1).rect : { y: 0, height: 0 };
-    const endRect = nextEnd > 0 ? virtualizer.getLayoutInfo(nextEnd - 1).rect : { y: 0, height: 0 };
-
-    return {
-      start: nextStart,
-      end: nextEnd,
-      offsetTop: Math.max(0, startRect.y),
-      offsetBottom: Math.max(0, (lastRect.y + lastRect.height) - (endRect.y + endRect.height)),
-    };
+    return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rowCount, virtualizer, 80);
   });
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;

@@ -59,7 +59,7 @@ import {
   isCollectionSection,
 } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
-import { useDndPersistedKeys } from './DragAndDrop';
+import { mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
 
 // ============================================
 // TYPES
@@ -499,24 +499,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     const persistedIndexes = Array.from(persistedKeys())
       .map((key) => itemNodes.findIndex((node) => node.key === key))
       .filter((index) => index >= 0);
-    if (persistedIndexes.length === 0) return baseRange;
-
-    const nextStart = Math.min(baseRange.start, ...persistedIndexes);
-    const nextEnd = Math.max(baseRange.end, ...persistedIndexes.map((index) => index + 1));
-    if (nextStart === baseRange.start && nextEnd === baseRange.end) return baseRange;
-
-    const startRect = nextStart > 0 ? virtualizer.getLayoutInfo(nextStart).rect : { y: 0 };
-    const lastRect = stateProps.items.length > 0
-      ? virtualizer.getLayoutInfo(stateProps.items.length - 1).rect
-      : { y: 0, height: 0 };
-    const endRect = nextEnd > 0 ? virtualizer.getLayoutInfo(nextEnd - 1).rect : { y: 0, height: 0 };
-
-    return {
-      start: nextStart,
-      end: nextEnd,
-      offsetTop: Math.max(0, startRect.y),
-      offsetBottom: Math.max(0, (lastRect.y + lastRect.height) - (endRect.y + endRect.height)),
-    };
+    return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, stateProps.items.length, virtualizer, 80);
   });
   const visibleItems = createMemo(() => {
     const range = virtualRange();

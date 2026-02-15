@@ -121,6 +121,17 @@ interface DroppableCollectionStateLike {
   target?: DropTarget | null;
 }
 
+export interface VirtualRangeLike {
+  start: number;
+  end: number;
+  offsetTop: number;
+  offsetBottom: number;
+}
+
+export interface LayoutInfoProviderLike {
+  getLayoutInfo: (index: number) => { rect: { y: number; height: number } };
+}
+
 function resolveKey(value: KeyAccessor): Key | null | undefined {
   if (typeof value === 'function') {
     return (value as Accessor<Key | null | undefined>)();
@@ -174,6 +185,54 @@ export function useDndPersistedKeys(
     if (dropTargetKey != null) keys.add(dropTargetKey);
     return keys;
   });
+}
+
+export function mergePersistedKeysIntoVirtualRange(
+  baseRange: VirtualRangeLike,
+  persistedIndexes: number[],
+  itemCount: number,
+  layoutInfoProvider: LayoutInfoProviderLike,
+  maxExtraItems = 60
+): VirtualRangeLike {
+  const validPersistedIndexes = Array.from(
+    new Set(persistedIndexes.filter((index) => index >= 0 && index < itemCount))
+  ).sort((a, b) => a - b);
+
+  if (validPersistedIndexes.length === 0 || itemCount <= 0) return baseRange;
+
+  const baseSpan = Math.max(1, baseRange.end - baseRange.start);
+  const maxSpan = Math.max(baseSpan, baseSpan + maxExtraItems);
+
+  let start = baseRange.start;
+  let end = baseRange.end;
+
+  const distanceToBaseRange = (index: number): number => {
+    if (index < baseRange.start) return baseRange.start - index;
+    if (index >= baseRange.end) return index - (baseRange.end - 1);
+    return 0;
+  };
+
+  for (const index of validPersistedIndexes.sort((a, b) => distanceToBaseRange(a) - distanceToBaseRange(b))) {
+    const nextStart = Math.min(start, index);
+    const nextEnd = Math.max(end, index + 1);
+    if (nextEnd - nextStart <= maxSpan) {
+      start = nextStart;
+      end = nextEnd;
+    }
+  }
+
+  if (start === baseRange.start && end === baseRange.end) return baseRange;
+
+  const startRect = start > 0 ? layoutInfoProvider.getLayoutInfo(start).rect : { y: 0, height: 0 };
+  const lastRect = layoutInfoProvider.getLayoutInfo(itemCount - 1).rect;
+  const endRect = end > 0 ? layoutInfoProvider.getLayoutInfo(end - 1).rect : { y: 0, height: 0 };
+
+  return {
+    start,
+    end,
+    offsetTop: Math.max(0, startRect.y),
+    offsetBottom: Math.max(0, (lastRect.y + lastRect.height) - (endRect.y + endRect.height)),
+  };
 }
 
 export type DropTargetDelegate = {

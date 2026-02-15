@@ -48,7 +48,7 @@ import {
   filterDOMProps,
 } from './utils';
 import { type DragAndDropHooks } from './useDragAndDrop';
-import { useDndPersistedKeys } from './DragAndDrop';
+import { mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
 import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
 
@@ -411,22 +411,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const persistedIndexes = Array.from(persistedKeys())
       .map((key) => rows.findIndex((node) => node.key === key))
       .filter((index) => index >= 0);
-    if (persistedIndexes.length === 0) return baseRange;
-
-    const nextStart = Math.min(baseRange.start, ...persistedIndexes);
-    const nextEnd = Math.max(baseRange.end, ...persistedIndexes.map((index) => index + 1));
-    if (nextStart === baseRange.start && nextEnd === baseRange.end) return baseRange;
-
-    const startRect = nextStart > 0 ? virtualizer.getLayoutInfo(nextStart).rect : { y: 0 };
-    const lastRect = rows.length > 0 ? virtualizer.getLayoutInfo(rows.length - 1).rect : { y: 0, height: 0 };
-    const endRect = nextEnd > 0 ? virtualizer.getLayoutInfo(nextEnd - 1).rect : { y: 0, height: 0 };
-
-    return {
-      start: nextStart,
-      end: nextEnd,
-      offsetTop: Math.max(0, startRect.y),
-      offsetBottom: Math.max(0, (lastRect.y + lastRect.height) - (endRect.y + endRect.height)),
-    };
+    return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rows.length, virtualizer, 80);
   });
   const virtualizedVisibleRows = createMemo(() => {
     const range = virtualRange();

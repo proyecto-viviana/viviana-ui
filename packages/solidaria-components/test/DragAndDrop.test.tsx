@@ -7,6 +7,7 @@ import {
   DragAndDropContext,
   DropIndicator,
   DropIndicatorContext,
+  mergePersistedKeysIntoVirtualRange,
   useDndPersistedKeys,
 } from '../src/DragAndDrop';
 
@@ -87,5 +88,45 @@ describe('DragAndDrop parity primitives', () => {
 
     render(() => <Probe />);
     expect(screen.getByTestId('normalized-after-key').textContent).toBe('["b"]');
+  });
+
+  it('mergePersistedKeysIntoVirtualRange keeps nearby persisted keys in range', () => {
+    const range = mergePersistedKeysIntoVirtualRange(
+      { start: 10, end: 20, offsetTop: 400, offsetBottom: 3200 },
+      [2, 16],
+      100,
+      {
+        getLayoutInfo: (index) => ({
+          rect: {
+            y: index * 40,
+            height: 40,
+          },
+        }),
+      },
+      20
+    );
+
+    expect(range.start).toBe(2);
+    expect(range.end).toBe(20);
+  });
+
+  it('mergePersistedKeysIntoVirtualRange skips very distant persisted keys when expansion budget is exceeded', () => {
+    const range = mergePersistedKeysIntoVirtualRange(
+      { start: 50, end: 60, offsetTop: 2000, offsetBottom: 1600 },
+      [0, 58],
+      1000,
+      {
+        getLayoutInfo: (index) => ({
+          rect: {
+            y: index * 40,
+            height: 40,
+          },
+        }),
+      },
+      8
+    );
+
+    expect(range.start).toBe(50);
+    expect(range.end).toBe(60);
   });
 });
