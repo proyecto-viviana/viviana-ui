@@ -90,6 +90,8 @@ describe('createDroppableCollection keyboard behavior', () => {
             getLastKey: () => 9,
             getKeyBelow: (key) => (key === 1 ? 2 : null),
             getKeyAbove: (key) => (key === 2 ? 1 : null),
+            getKeyPageBelow: (key) => (key === 9 ? 9 : Number(key) + 1),
+            getKeyPageAbove: (key) => (key === 1 ? 1 : Number(key) - 1),
             getKeyRightOf: (key) => (key === 1 ? 2 : null),
             getKeyLeftOf: (key) => (key === 2 ? 1 : null),
           },
@@ -184,6 +186,14 @@ describe('createDroppableCollection keyboard behavior', () => {
               }
               return { type: 'item', key: Number(target.key) - 1, dropPosition: 'on' };
             },
+          },
+          keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 3,
+            getKeyBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyAbove: (key) => (key > 1 ? key - 1 : null),
+            getKeyPageBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyPageAbove: (key) => (key > 1 ? key - 1 : null),
           },
         }),
         state
@@ -368,6 +378,84 @@ describe('createDroppableCollection keyboard behavior', () => {
 
     fireEvent.keyDown(root, { key: 'ArrowRight' });
     expect(calls.at(-1)).toBe('set:item:1');
+  });
+
+  it('ignores page keys when keyboardDelegate page methods are missing', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'item', key: 1, dropPosition: 'on' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-no-page') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+            getKeyboardPageNavigationTarget(target, direction) {
+              if (target?.type !== 'item') return null;
+              return {
+                type: 'item',
+                key: direction === 'next' ? Number(target.key) + 1 : Number(target.key) - 1,
+                dropPosition: 'on',
+              };
+            },
+          },
+          keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 3,
+            getKeyBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyAbove: (key) => (key > 1 ? key - 1 : null),
+          },
+        }),
+        state
+      );
+
+      return <div id="drop-root-no-page" tabIndex={0} data-testid="drop-root-no-page" {...collectionProps} />;
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-no-page');
+
+    fireEvent.keyDown(root, { key: 'PageDown' });
+    expect(calls).toHaveLength(0);
+
+    fireEvent.keyDown(root, { key: 'PageUp' });
+    expect(calls).toHaveLength(0);
+
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
+    expect(calls.at(-1)).toBe('set:item:2');
   });
 
   it('uses keyboardDelegate fallback when drop target delegate has no keyboard methods', () => {

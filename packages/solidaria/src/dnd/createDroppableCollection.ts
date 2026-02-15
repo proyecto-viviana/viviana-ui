@@ -390,6 +390,13 @@ export function createDroppableCollection(
         return null;
       };
       if (e.key === 'PageDown' || e.key === 'PageUp') {
+        if (
+          (e.key === 'PageDown' && !opts.keyboardDelegate?.getKeyPageBelow) ||
+          (e.key === 'PageUp' && !opts.keyboardDelegate?.getKeyPageAbove)
+        ) {
+          callUserOnKeyDown();
+          return;
+        }
         const direction = e.key === 'PageDown' ? 'next' : 'previous';
         const pageNavigation = opts.dropTargetDelegate.getKeyboardPageNavigationTarget;
         const stepNavigation = opts.dropTargetDelegate.getKeyboardNavigationTarget;
