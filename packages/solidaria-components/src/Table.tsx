@@ -682,7 +682,14 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
     const persistedIndexes = Array.from(persistedKeys())
       .map((key) => rowNodes().findIndex((node) => node.key === key))
       .filter((index) => index >= 0);
-    return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rowCount, virtualizer, 80);
+    const dropTarget = (context.dropState as { target?: DropTarget | null } | undefined)?.target;
+    const forcedDropIndex = dropTarget?.type === 'item'
+      ? rowNodes().findIndex((node) => node.key === dropTarget.key)
+      : -1;
+    return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rowCount, virtualizer, 80, {
+      forceIncludeIndexes: forcedDropIndex >= 0 ? [forcedDropIndex] : [],
+      forceIncludeMaxSpan: 320,
+    });
   });
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;

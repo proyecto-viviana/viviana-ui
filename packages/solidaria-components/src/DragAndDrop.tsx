@@ -192,7 +192,11 @@ export function mergePersistedKeysIntoVirtualRange(
   persistedIndexes: number[],
   itemCount: number,
   layoutInfoProvider: LayoutInfoProviderLike,
-  maxExtraItems = 60
+  maxExtraItems = 60,
+  options?: {
+    forceIncludeIndexes?: number[];
+    forceIncludeMaxSpan?: number;
+  }
 ): VirtualRangeLike {
   const validPersistedIndexes = Array.from(
     new Set(persistedIndexes.filter((index) => index >= 0 && index < itemCount))
@@ -218,6 +222,21 @@ export function mergePersistedKeysIntoVirtualRange(
     if (nextEnd - nextStart <= maxSpan) {
       start = nextStart;
       end = nextEnd;
+    }
+  }
+
+  const forceIndexes = Array.from(
+    new Set((options?.forceIncludeIndexes ?? []).filter((index) => index >= 0 && index < itemCount))
+  );
+  if (forceIndexes.length > 0) {
+    const forceMaxSpan = Math.max(maxSpan, options?.forceIncludeMaxSpan ?? Math.max(maxSpan, 300));
+    for (const index of forceIndexes.sort((a, b) => distanceToBaseRange(a) - distanceToBaseRange(b))) {
+      const nextStart = Math.min(start, index);
+      const nextEnd = Math.max(end, index + 1);
+      if (nextEnd - nextStart <= forceMaxSpan) {
+        start = nextStart;
+        end = nextEnd;
+      }
     }
   }
 

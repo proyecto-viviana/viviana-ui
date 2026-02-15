@@ -411,7 +411,14 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const persistedIndexes = Array.from(persistedKeys())
       .map((key) => rows.findIndex((node) => node.key === key))
       .filter((index) => index >= 0);
-    return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rows.length, virtualizer, 80);
+    const dropTarget = dropState()?.target;
+    const forcedDropIndex = dropTarget?.type === 'item'
+      ? rows.findIndex((node) => node.key === dropTarget.key)
+      : -1;
+    return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rows.length, virtualizer, 80, {
+      forceIncludeIndexes: forcedDropIndex >= 0 ? [forcedDropIndex] : [],
+      forceIncludeMaxSpan: 320,
+    });
   });
   const virtualizedVisibleRows = createMemo(() => {
     const range = virtualRange();

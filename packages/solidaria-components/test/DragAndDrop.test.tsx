@@ -129,4 +129,28 @@ describe('DragAndDrop parity primitives', () => {
     expect(range.start).toBe(50);
     expect(range.end).toBe(60);
   });
+
+  it('mergePersistedKeysIntoVirtualRange can force include prioritized indexes with a larger cap', () => {
+    const range = mergePersistedKeysIntoVirtualRange(
+      { start: 50, end: 60, offsetTop: 2000, offsetBottom: 1600 },
+      [58],
+      1000,
+      {
+        getLayoutInfo: (index) => ({
+          rect: {
+            y: index * 40,
+            height: 40,
+          },
+        }),
+      },
+      8,
+      {
+        forceIncludeIndexes: [0],
+        forceIncludeMaxSpan: 80,
+      }
+    );
+
+    expect(range.start).toBe(0);
+    expect(range.end).toBe(60);
+  });
 });
