@@ -217,6 +217,8 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
         () => ({
           ref,
           dropTargetDelegate: options.dropTargetDelegate ?? props.dropTargetDelegate,
+          keyboardDelegate: options.keyboardDelegate ?? props.keyboardDelegate,
+          onKeyDown: options.onKeyDown ?? props.onKeyDown,
           acceptedDragTypes: normalizedAcceptedDragTypes,
           isDisabled: options.isDisabled ?? props.isDisabled,
           onDropActivate: (e) => {
