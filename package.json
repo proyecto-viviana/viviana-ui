@@ -17,7 +17,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:e2e": "bun run --cwd apps/web bunx playwright test",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "deno task typecheck",
     "version:patch": "npm version patch --workspaces --no-git-tag-version",
     "version:minor": "npm version minor --workspaces --no-git-tag-version",
     "version:major": "npm version major --workspaces --no-git-tag-version",
@@ -25,11 +25,8 @@
     "release": "bun run build && bun run publish:packages"
   },
   "dependencies": {
-    "@adobe/react-spectrum": "^3.46.1",
     "brotli-size": "^4.0.0",
-    "gzip-size": "^7.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "gzip-size": "^7.0.0"
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.10",

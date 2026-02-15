@@ -1,11 +1,14 @@
 /**
  * Separator component for proyecto-viviana-ui
  *
- * Styled separator component built on top of solidaria hook directly.
+ * Styled separator component built on top of solidaria-components.
  */
 
-import { type JSX, splitProps, createMemo, Show } from 'solid-js';
-import { createSeparator, type Orientation } from '@proyecto-viviana/solidaria';
+import { type JSX, splitProps, createMemo } from 'solid-js';
+import {
+  Separator as HeadlessSeparator,
+  type SeparatorProps as HeadlessSeparatorProps,
+} from '@proyecto-viviana/solidaria-components';
 
 // ============================================
 // TYPES
@@ -14,17 +17,14 @@ import { createSeparator, type Orientation } from '@proyecto-viviana/solidaria';
 export type SeparatorVariant = 'default' | 'subtle' | 'strong';
 export type SeparatorSize = 'sm' | 'md' | 'lg';
 
-export interface SeparatorProps {
-  /** The orientation of the separator. @default 'horizontal' */
-  orientation?: Orientation;
+export interface SeparatorProps
+  extends Omit<HeadlessSeparatorProps, 'class' | 'style'> {
   /** The visual style variant. @default 'default' */
   variant?: SeparatorVariant;
   /** The size/thickness of the separator. @default 'md' */
   size?: SeparatorSize;
   /** Additional CSS class name. */
   class?: string;
-  /** An accessibility label for the separator. */
-  'aria-label'?: string;
 }
 
 // ============================================
@@ -73,7 +73,7 @@ const verticalSizeStyles = {
  * ```
  */
 export function Separator(props: SeparatorProps): JSX.Element {
-  const [local, ariaProps] = splitProps(props, [
+  const [local, headlessProps] = splitProps(props, [
     'orientation',
     'variant',
     'size',
@@ -83,22 +83,6 @@ export function Separator(props: SeparatorProps): JSX.Element {
   const orientation = () => local.orientation ?? 'horizontal';
   const variant = () => local.variant ?? 'default';
   const size = () => local.size ?? 'md';
-
-  // Determine the element type
-  const elementType = createMemo(() => {
-    // If vertical, use div since hr is inherently horizontal
-    if (orientation() === 'vertical') {
-      return 'div';
-    }
-    return 'hr';
-  });
-
-  // Create separator aria props
-  const separatorAria = createSeparator({
-    get orientation() { return orientation(); },
-    get elementType() { return elementType(); },
-    get 'aria-label'() { return ariaProps['aria-label']; },
-  });
 
   // Build class string
   const className = createMemo(() => {
@@ -116,26 +100,11 @@ export function Separator(props: SeparatorProps): JSX.Element {
     return base.filter(Boolean).join(' ');
   });
 
-  // Extract props without ref to avoid type issues with specific element types
-  const getAriaProps = () => {
-    const { ref: _, ...props } = separatorAria.separatorProps as Record<string, unknown>;
-    return props;
-  };
-
   return (
-    <Show
-      when={orientation() === 'vertical'}
-      fallback={
-        <hr
-          {...getAriaProps()}
-          class={className()}
-        />
-      }
-    >
-      <div
-        {...getAriaProps()}
-        class={className()}
-      />
-    </Show>
+    <HeadlessSeparator
+      {...headlessProps}
+      orientation={orientation()}
+      class={className()}
+    />
   );
 }

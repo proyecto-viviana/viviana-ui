@@ -20,6 +20,7 @@ import {
   ComboBoxListBox,
   ComboBoxOption,
 } from '../src/ComboBox';
+import { SelectionIndicator } from '../src/SelectionIndicator';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
@@ -293,6 +294,41 @@ describe('ComboBox', () => {
       const option = screen.getByRole('option', { name: 'Apple' });
       await user.click(option);
 
+      await waitFor(() => {
+        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should render SelectionIndicator only for selected option', async () => {
+      render(() => (
+        <ComboBox
+          aria-label="Test ComboBox"
+          items={items}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.name}
+          defaultOpen
+          defaultSelectedKey="1"
+        >
+          <ComboBoxInput />
+          <ComboBoxButton>▼</ComboBoxButton>
+          <ComboBoxListBox>
+            {(item) => (
+              <ComboBoxOption id={item.id}>
+                {() => (
+                  <>
+                    {item.name}
+                    <SelectionIndicator>Selected</SelectionIndicator>
+                  </>
+                )}
+              </ComboBoxOption>
+            )}
+          </ComboBoxListBox>
+        </ComboBox>
+      ));
+
+      await user.click(screen.getByRole('button', { name: 'Show suggestions' }));
+      expect(screen.getAllByText('Selected')).toHaveLength(1);
+      await user.click(screen.getByRole('option', { name: 'Banana' }));
       await waitFor(() => {
         expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
       });

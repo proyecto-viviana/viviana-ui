@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
+import type { Key } from "@proyecto-viviana/solid-stately";
 import {
   Table,
   TableHeader,
@@ -12,16 +13,40 @@ import {
 } from "@proyecto-viviana/ui";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
-export const Route = createFileRoute("/docs/components/table")({
-  component: TablePage,
-});
+type UserRow = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
 
-const sampleData = [
+const sampleData: UserRow[] = [
   { id: "1", name: "John Doe", email: "john@example.com", role: "Admin" },
   { id: "2", name: "Jane Smith", email: "jane@example.com", role: "Editor" },
   { id: "3", name: "Bob Johnson", email: "bob@example.com", role: "Viewer" },
   { id: "4", name: "Alice Brown", email: "alice@example.com", role: "Editor" },
 ];
+
+const baseColumns = [
+  { key: "name", name: "Name" },
+  { key: "email", name: "Email" },
+  { key: "role", name: "Role" },
+];
+
+const selectableColumns = [
+  { key: "selection", name: "Selection" },
+  ...baseColumns,
+];
+
+const sortableColumns = [
+  { key: "name", name: "Name", allowsSorting: true },
+  { key: "email", name: "Email", allowsSorting: true },
+  { key: "role", name: "Role", allowsSorting: true },
+];
+
+export const Route = createFileRoute("/docs/components/table")({
+  component: TablePage,
+});
 
 function TablePage() {
   const [selectedKeys, setSelectedKeys] = createSignal<Set<string>>(new Set());
@@ -42,36 +67,37 @@ function TablePage() {
       <Example
         title="Basic Table"
         description="A simple table displaying data in rows and columns."
-        code={`<Table aria-label="Users">
+        code={`<Table items={rows} columns={columns} aria-label="Users table">
   <TableHeader>
-    <TableColumn>Name</TableColumn>
-    <TableColumn>Email</TableColumn>
-    <TableColumn>Role</TableColumn>
+    <TableColumn id="name">Name</TableColumn>
+    <TableColumn id="email">Email</TableColumn>
+    <TableColumn id="role">Role</TableColumn>
   </TableHeader>
   <TableBody>
-    <TableRow id="1">
-      <TableCell>John Doe</TableCell>
-      <TableCell>john@example.com</TableCell>
-      <TableCell>Admin</TableCell>
-    </TableRow>
-    ...
+    {(user) => (
+      <TableRow id={user.id}>
+        <TableCell>{user.name}</TableCell>
+        <TableCell>{user.email}</TableCell>
+        <TableCell>{user.role}</TableCell>
+      </TableRow>
+    )}
   </TableBody>
 </Table>`}
       >
-        <Table aria-label="Users table">
+        <Table items={sampleData} columns={baseColumns} aria-label="Users table" getKey={(user) => user.id}>
           <TableHeader>
-            <TableColumn>Name</TableColumn>
-            <TableColumn>Email</TableColumn>
-            <TableColumn>Role</TableColumn>
+            <TableColumn id="name">Name</TableColumn>
+            <TableColumn id="email">Email</TableColumn>
+            <TableColumn id="role">Role</TableColumn>
           </TableHeader>
-          <TableBody>
-            {sampleData.map((user) => (
+          <TableBody<UserRow>>
+            {(user) => (
               <TableRow id={user.id}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </Example>
@@ -80,51 +106,59 @@ function TablePage() {
         title="Selectable Rows"
         description="Enable row selection with checkboxes."
         code={`<Table
-  aria-label="Selectable table"
+  items={rows}
+  columns={selectableColumns}
   selectionMode="multiple"
   selectedKeys={selectedKeys()}
   onSelectionChange={setSelectedKeys}
 >
   <TableHeader>
-    <TableColumn><TableSelectAllCheckbox /></TableColumn>
-    <TableColumn>Name</TableColumn>
+    <TableColumn id="selection"><TableSelectAllCheckbox /></TableColumn>
     ...
   </TableHeader>
   <TableBody>
-    <TableRow id="1">
-      <TableCell><TableSelectionCheckbox /></TableCell>
-      <TableCell>John Doe</TableCell>
-      ...
-    </TableRow>
+    {(user) => (
+      <TableRow id={user.id}>
+        <TableSelectionCheckbox rowKey={user.id} />
+        ...
+      </TableRow>
+    )}
   </TableBody>
 </Table>`}
       >
         <div>
           <Table
+            items={sampleData}
+            columns={selectableColumns}
             aria-label="Selectable users table"
+            getKey={(user) => user.id}
             selectionMode="multiple"
             selectedKeys={selectedKeys()}
-            onSelectionChange={(keys) => setSelectedKeys(keys as Set<string>)}
+            onSelectionChange={(keys) => {
+              if (keys === "all") {
+                setSelectedKeys(new Set(sampleData.map((user) => user.id)));
+                return;
+              }
+              setSelectedKeys(new Set([...keys].map((key) => String(key))));
+            }}
           >
             <TableHeader>
-              <TableColumn>
+              <TableColumn id="selection">
                 <TableSelectAllCheckbox />
               </TableColumn>
-              <TableColumn>Name</TableColumn>
-              <TableColumn>Email</TableColumn>
-              <TableColumn>Role</TableColumn>
+              <TableColumn id="name">Name</TableColumn>
+              <TableColumn id="email">Email</TableColumn>
+              <TableColumn id="role">Role</TableColumn>
             </TableHeader>
-            <TableBody>
-              {sampleData.map((user) => (
+            <TableBody<UserRow>>
+              {(user) => (
                 <TableRow id={user.id}>
-                  <TableCell>
-                    <TableSelectionCheckbox />
-                  </TableCell>
+                  <TableSelectionCheckbox rowKey={user.id} />
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role}</TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
           <p class="mt-2 text-sm text-bg-500">
@@ -136,19 +170,21 @@ function TablePage() {
       <Example
         title="Sortable Columns"
         description="Enable sorting by clicking column headers."
-        code={`<Table
-  aria-label="Sortable table"
-  sortDescriptor={sortDescriptor()}
-  onSortChange={setSortDescriptor}
->
+        code={`<Table items={rows} columns={sortableColumns} aria-label="Sortable users table">
   <TableHeader>
     <TableColumn id="name" allowsSorting>Name</TableColumn>
     <TableColumn id="email" allowsSorting>Email</TableColumn>
+    <TableColumn id="role" allowsSorting>Role</TableColumn>
   </TableHeader>
   ...
 </Table>`}
       >
-        <Table aria-label="Sortable users table">
+        <Table
+          items={sampleData}
+          columns={sortableColumns}
+          aria-label="Sortable users table"
+          getKey={(user) => user.id}
+        >
           <TableHeader>
             <TableColumn id="name" allowsSorting>
               Name
@@ -160,14 +196,14 @@ function TablePage() {
               Role
             </TableColumn>
           </TableHeader>
-          <TableBody>
-            {sampleData.map((user) => (
+          <TableBody<UserRow>>
+            {(user) => (
               <TableRow id={user.id}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </Example>
@@ -175,6 +211,16 @@ function TablePage() {
       <h2>Table Props</h2>
       <PropsTable
         props={[
+          {
+            name: "items",
+            type: "T[]",
+            description: "Data rows rendered by the table",
+          },
+          {
+            name: "columns",
+            type: "ColumnDefinition<T>[]",
+            description: "Column metadata used for collection/sorting",
+          },
           {
             name: "aria-label",
             type: "string",
@@ -188,12 +234,12 @@ function TablePage() {
           },
           {
             name: "selectedKeys",
-            type: "Set<string>",
+            type: "Set<string> | 'all'",
             description: "Currently selected row keys",
           },
           {
             name: "onSelectionChange",
-            type: "(keys: Set<string>) => void",
+            type: "(keys: Set<string> | 'all') => void",
             description: "Handler for selection changes",
           },
           {
@@ -206,11 +252,6 @@ function TablePage() {
             type: "(descriptor: SortDescriptor) => void",
             description: "Handler for sort changes",
           },
-          {
-            name: "disabledKeys",
-            type: "Set<string>",
-            description: "Keys of disabled rows",
-          },
         ]}
       />
 
@@ -220,7 +261,7 @@ function TablePage() {
           {
             name: "id",
             type: "string",
-            description: "Unique column identifier (required for sorting)",
+            description: "Unique column identifier",
           },
           {
             name: "allowsSorting",

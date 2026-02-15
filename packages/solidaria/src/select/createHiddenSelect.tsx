@@ -100,21 +100,37 @@ export function createHiddenSelect<T>(
       const p = getProps();
       const state = p.state;
       const selectedKey = state.selectedKey();
+      const selectedKeys = typeof state.selectedKeys === 'function'
+        ? state.selectedKeys()
+        : (selectedKey != null ? new Set([selectedKey]) : new Set<Key>());
       const validationBehavior = p.validationBehavior ?? 'aria';
+      const isMultiple = typeof state.selectionMode === 'function' && state.selectionMode() === 'multiple';
+      const multipleValue =
+        selectedKeys === 'all' ? Array.from(state.collection()).map((item) => String(item.key)) : Array.from(selectedKeys).map(String);
 
       return {
         ref: (el: HTMLSelectElement) => { selectRef = el; },
         tabIndex: -1,
         autoComplete: p.autoComplete,
         disabled: p.isDisabled ?? state.isDisabled,
+        multiple: isMultiple || undefined,
         name: p.name,
         form: p.form,
         // Add required attribute for native form validation
         required: validationBehavior === 'native' && p.isRequired,
-        value: selectedKey != null ? String(selectedKey) : '',
+        value: isMultiple ? multipleValue : (selectedKey != null ? String(selectedKey) : ''),
         onChange: (e: Event) => {
           const target = e.target as HTMLSelectElement;
-          state.setSelectedKey(target.value as Key);
+          if (isMultiple) {
+            if (typeof state.setSelectedKeys === 'function') {
+              state.setSelectedKeys(Array.from(target.selectedOptions).map((o) => o.value as Key));
+            } else {
+              const first = target.selectedOptions[0]?.value;
+              state.setSelectedKey((first ?? null) as Key | null);
+            }
+          } else {
+            state.setSelectedKey(target.value as Key);
+          }
         },
         style: {
           position: 'absolute',
@@ -215,6 +231,11 @@ export function HiddenSelect<T>(props: HiddenSelectProps<T>): JSX.Element {
 
   const collection = () => props.state.collection();
   const selectedKey = () => props.state.selectedKey();
+  const selectedKeys = () => typeof props.state.selectedKeys === 'function'
+    ? props.state.selectedKeys()
+    : (selectedKey() != null ? new Set([selectedKey() as Key]) : new Set<Key>());
+  const isMultiple = () => typeof props.state.selectionMode === 'function'
+    && props.state.selectionMode() === 'multiple';
 
   return (
     <div {...containerProps}>
@@ -224,7 +245,14 @@ export function HiddenSelect<T>(props: HiddenSelectProps<T>): JSX.Element {
           <option />
           <For each={Array.from(collection())}>
             {(item) => (
-              <option value={String(item.key)} selected={item.key === selectedKey()}>
+              <option
+                value={String(item.key)}
+                selected={isMultiple()
+                  ? selectedKeys() === 'all'
+                    ? true
+                    : (selectedKeys() as Set<Key>).has(item.key)
+                  : item.key === selectedKey()}
+              >
                 {item.textValue}
               </option>
             )}

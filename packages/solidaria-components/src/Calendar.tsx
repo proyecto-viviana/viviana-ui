@@ -121,6 +121,18 @@ export interface CalendarHeaderCellProps extends SlotProps {
   style?: JSX.CSSProperties;
 }
 
+export interface CalendarGridHeaderProps extends SlotProps {
+  children?: JSX.Element;
+  class?: string;
+  style?: JSX.CSSProperties;
+}
+
+export interface CalendarGridBodyProps extends SlotProps {
+  children?: JSX.Element;
+  class?: string;
+  style?: JSX.CSSProperties;
+}
+
 // ============================================
 // CONTEXT
 // ============================================
@@ -464,6 +476,34 @@ export function CalendarGrid(props: CalendarGridProps): JSX.Element {
         </Index>
       </tbody>
     </table>
+  );
+}
+
+export function CalendarGridHeader(props: CalendarGridHeaderProps): JSX.Element {
+  return (
+    <thead class={props.class ?? 'solidaria-CalendarGridHeader'} style={props.style}>
+      {props.children}
+    </thead>
+  );
+}
+
+export function CalendarGridBody(props: CalendarGridBodyProps): JSX.Element {
+  return (
+    <tbody class={props.class ?? 'solidaria-CalendarGridBody'} style={props.style}>
+      {props.children}
+    </tbody>
+  );
+}
+
+export function CalendarHeaderCell(props: CalendarHeaderCellProps): JSX.Element {
+  return (
+    <th
+      scope="col"
+      class={props.class ?? 'solidaria-CalendarHeaderCell'}
+      style={props.style}
+    >
+      {props.children}
+    </th>
   );
 }
 

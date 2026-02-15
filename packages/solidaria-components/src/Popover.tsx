@@ -8,18 +8,19 @@
 import {
   type JSX,
   createContext,
+  createEffect,
   createMemo,
   createSignal,
   createUniqueId,
+  onCleanup,
   splitProps,
   useContext,
   Show,
-  createEffect,
-  onCleanup,
 } from 'solid-js'
 import { Portal, isServer } from 'solid-js/web'
 import {
   createOverlayTrigger,
+  createPopover,
   FocusScope,
   type Placement,
   type PlacementAxis,
@@ -145,8 +146,13 @@ export interface PopoverTriggerProps {
 // Re-export from shared contexts
 export { PopoverTriggerContext, usePopoverTrigger, type PopoverTriggerContextValue } from './contexts'
 
-// Internal context for placement
-export const PopoverContext = createContext<{ placement: () => PlacementAxis | null } | null>(null)
+interface PopoverContextValue {
+  placement: () => PlacementAxis | null
+  arrowProps: () => JSX.HTMLAttributes<HTMLElement>
+}
+
+// Internal context for placement + arrow
+export const PopoverContext = createContext<PopoverContextValue | null>(null)
 
 // ============================================
 // POPOVER TRIGGER COMPONENT
@@ -181,9 +187,6 @@ export function PopoverTrigger(props: PopoverTriggerProps): JSX.Element {
     () => triggerRef
   )
 
-  // Track if triggerRef has been set (to prevent buttons inside Popover from overwriting it)
-  let triggerRefSet = false
-
   // Context value
   const contextValue = createMemo(() => ({
     state: {
@@ -192,28 +195,17 @@ export function PopoverTrigger(props: PopoverTriggerProps): JSX.Element {
       close: () => state.close(),
       toggle: () => state.toggle(),
     },
-    triggerRef: () => {
-      return triggerRef
-    },
+    triggerRef: () => triggerRef,
     setTriggerRef: (el: HTMLElement | null) => {
-      // Only set the trigger ref once - the first button to register is the actual trigger
-      // This prevents buttons inside the Popover content from overwriting the trigger ref
-      if (!triggerRefSet && el) {
+      if (!el) return
+      if (!triggerRef || !triggerRef.isConnected) {
         triggerRef = el
-        triggerRefSet = true
       }
     },
     triggerId,
     trigger: 'PopoverTrigger',
   }))
 
-  // Just render children inside the provider - the Button component will detect
-  // the PopoverTriggerContext and handle toggling. The Popover component will
-  // detect the context and use it for open state.
-  //
-  // IMPORTANT: In SolidJS, JSX children are lazily evaluated when they're part
-  // of JSX expression. So {props.children} here means the children (Button, Popover)
-  // will be evaluated inside the Provider context.
   return (
     <PopoverTriggerContext.Provider value={contextValue()}>
       {props.children}
@@ -290,160 +282,74 @@ export function Popover(props: PopoverProps): JSX.Element {
     return null
   }
 
-  // Signal to track placement after positioning
-  const [placement, setPlacement] = createSignal<PlacementAxis | null>(null)
-  // Signal to track position styles
-  // Start with visibility hidden, then show after positioning
-  const [positionStyles, setPositionStyles] = createSignal({
-    top: '0px',
-    left: '0px',
-    visibility: 'hidden' as 'hidden' | 'visible',
-  })
-
-  // Handle keyboard dismiss (Escape key)
-  createEffect(() => {
-    if (!isOpen()) return
-    if (local.isKeyboardDismissDisabled) return
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        e.stopPropagation()
-        close()
-      }
+  const popoverAria = createPopover(
+    {
+      get triggerRef() {
+        return getTriggerRef
+      },
+      get popoverRef() {
+        return () => popoverRef ?? null
+      },
+      get placement() {
+        return local.placement
+      },
+      get containerPadding() {
+        return local.containerPadding
+      },
+      get offset() {
+        return local.offset ?? 8
+      },
+      get crossOffset() {
+        return local.crossOffset
+      },
+      get shouldFlip() {
+        return local.shouldFlip
+      },
+      get isNonModal() {
+        return local.isNonModal
+      },
+      get isKeyboardDismissDisabled() {
+        return local.isKeyboardDismissDisabled
+      },
+      get shouldCloseOnInteractOutside() {
+        return local.shouldCloseOnInteractOutside
+      },
+      get trigger() {
+        return local.trigger ?? triggerContext?.trigger
+      },
+    },
+    {
+      isOpen,
+      open: () => {
+        if (local.isOpen !== undefined) {
+          local.onOpenChange?.(true)
+        } else if (triggerContext) {
+          triggerContext.state.open()
+          local.onOpenChange?.(true)
+        } else {
+          setInternalOpen(true)
+          local.onOpenChange?.(true)
+        }
+      },
+      close,
+      toggle: () => {
+        if (isOpen()) close()
+        else if (local.isOpen !== undefined) {
+          local.onOpenChange?.(true)
+        } else if (triggerContext) {
+          triggerContext.state.toggle()
+        } else {
+          setInternalOpen(true)
+          local.onOpenChange?.(true)
+        }
+      },
     }
-
-    document.addEventListener('keydown', handleKeyDown)
-    onCleanup(() => document.removeEventListener('keydown', handleKeyDown))
-  })
-
-  // Handle click outside to dismiss popover
-  createEffect(() => {
-    if (!isOpen()) return
-    if (local.isNonModal) return // Non-modal popovers don't auto-dismiss on outside click
-
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Element
-      const trigger = getTriggerRef()
-
-      // Don't close if clicking inside the popover
-      if (popoverRef && popoverRef.contains(target)) {
-        return
-      }
-
-      // Don't close if clicking the trigger (it will toggle)
-      if (trigger && trigger.contains(target)) {
-        return
-      }
-
-      // Check custom filter
-      if (local.shouldCloseOnInteractOutside && !local.shouldCloseOnInteractOutside(target)) {
-        return
-      }
-
-      close()
-    }
-
-    // Use capture phase to catch clicks before they bubble
-    // Small delay to avoid closing on the same click that opened it
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside, true)
-    }, 0)
-
-    onCleanup(() => {
-      clearTimeout(timeoutId)
-      document.removeEventListener('mousedown', handleClickOutside, true)
-    })
-  })
-
-  // Calculate position based on trigger element
-  // Using position: fixed so we use viewport coordinates directly from getBoundingClientRect
-  const updatePosition = () => {
-    const trigger = getTriggerRef()
-    const popover = popoverRef
-    if (!trigger || !popover) return
-
-    const triggerRect = trigger.getBoundingClientRect()
-    // Use offsetWidth/offsetHeight which are more reliable than getBoundingClientRect
-    // when the element might be positioned off-screen initially
-    const popoverWidth = popover.offsetWidth
-    const popoverHeight = popover.offsetHeight
-    const offset = local.offset ?? 8
-
-    let top = 0
-    let left = 0
-    const placementValue = local.placement ?? 'bottom'
-
-    // Using viewport coordinates for position: fixed
-    switch (placementValue) {
-      case 'top':
-      case 'top start':
-      case 'top end':
-        top = triggerRect.top - popoverHeight - offset
-        left = triggerRect.left + (triggerRect.width - popoverWidth) / 2
-        setPlacement('top')
-        break
-      case 'bottom':
-      case 'bottom start':
-      case 'bottom end':
-        top = triggerRect.bottom + offset
-        left = triggerRect.left + (triggerRect.width - popoverWidth) / 2
-        setPlacement('bottom')
-        break
-      case 'left':
-      case 'left top':
-      case 'left bottom':
-        top = triggerRect.top + (triggerRect.height - popoverHeight) / 2
-        left = triggerRect.left - popoverWidth - offset
-        setPlacement('left')
-        break
-      case 'right':
-      case 'right top':
-      case 'right bottom':
-        top = triggerRect.top + (triggerRect.height - popoverHeight) / 2
-        left = triggerRect.right + offset
-        setPlacement('right')
-        break
-      default:
-        top = triggerRect.bottom + offset
-        left = triggerRect.left + (triggerRect.width - popoverWidth) / 2
-        setPlacement('bottom')
-    }
-
-    setPositionStyles({
-      top: `${top}px`,
-      left: `${left}px`,
-      visibility: 'visible',
-    })
-  }
-
-  // Set up positioning effect - runs when open and trigger ref is available
-  createEffect(() => {
-    if (!isOpen()) return
-
-    const triggerElement = getTriggerRef()
-    if (!triggerElement) return
-
-    // Initial position calculation - use requestAnimationFrame to ensure
-    // the element is rendered and has proper dimensions
-    requestAnimationFrame(() => {
-      updatePosition()
-    })
-
-    // Update on scroll/resize
-    window.addEventListener('scroll', updatePosition, true)
-    window.addEventListener('resize', updatePosition)
-
-    onCleanup(() => {
-      window.removeEventListener('scroll', updatePosition, true)
-      window.removeEventListener('resize', updatePosition)
-    })
-  })
+  )
 
   // Render props values
   const renderValues = createMemo<PopoverRenderProps>(() => ({
     trigger: local.trigger ?? triggerContext?.trigger ?? null,
-    placement: placement(),
+    placement: popoverAria.placement(),
     isEntering: local.isEntering ?? false,
     isExiting: local.isExiting ?? false,
   }))
@@ -462,28 +368,62 @@ export function Popover(props: PopoverProps): JSX.Element {
   // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }))
 
+  // Remove style/ref from spread props to avoid collisions
+  const cleanPopoverProps = () => {
+    const { style: _style, ref: _ref, ...remaining } = popoverAria.popoverProps as Record<string, unknown>
+    return remaining
+  }
+
+  const mergedStyle = (): JSX.CSSProperties => {
+    const ariaStyle = (popoverAria.popoverProps as Record<string, unknown>).style as JSX.CSSProperties | undefined
+    const renderStyle = renderProps.style() || {}
+    return {
+      ...(ariaStyle ?? {}),
+      ...renderStyle,
+    }
+  }
+
   // Check if we should render with dialog role
   const shouldBeDialog = () => !local.isNonModal
+
+  // Ensure Escape handling works even when popover content has no focusable children.
+  createEffect(() => {
+    if (!isOpen() || !shouldBeDialog()) return
+    if (!popoverRef) return
+    if (document.activeElement !== popoverRef) {
+      popoverRef.focus()
+    }
+  })
+
+  // Fallback Escape handling for environments where focus is not moved into the popover.
+  createEffect(() => {
+    if (!isOpen()) return
+    if (local.isKeyboardDismissDisabled) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      close()
+    }
+
+    document.addEventListener('keydown', onKeyDown, true)
+    onCleanup(() => document.removeEventListener('keydown', onKeyDown, true))
+  })
 
   return (
     <Show when={isOpen() || local.isExiting}>
       <Portal>
-        <PopoverContext.Provider value={{ placement: () => placement() }}>
+        <PopoverContext.Provider value={{ placement: popoverAria.placement, arrowProps: () => popoverAria.arrowProps }}>
           <FocusScope contain={shouldBeDialog()} restoreFocus autoFocus>
             <div
               {...domProps()}
+              {...cleanPopoverProps()}
               ref={popoverRef}
               role={shouldBeDialog() ? 'dialog' : undefined}
               tabIndex={shouldBeDialog() ? -1 : undefined}
               class={renderProps.class()}
-              style={{
-                position: 'fixed',
-                'z-index': 100000,
-                ...positionStyles(),
-                ...renderProps.style(),
-              }}
+              style={mergedStyle()}
               data-trigger={local.trigger ?? triggerContext?.trigger}
-              data-placement={placement()}
+              data-placement={popoverAria.placement()}
               data-entering={dataAttr(local.isEntering)}
               data-exiting={dataAttr(local.isExiting)}
             >
@@ -516,6 +456,21 @@ export function OverlayArrow(props: OverlayArrowProps): JSX.Element {
   const popoverContext = useContext(PopoverContext)
   const placement = () => popoverContext?.placement() ?? null
 
+  const cleanArrowProps = () => {
+    const contextArrowProps = popoverContext?.arrowProps() as Record<string, unknown> | undefined
+    if (!contextArrowProps) return {}
+    const { style: _style, ref: _ref, ...rest } = contextArrowProps
+    return rest
+  }
+
+  const mergedStyle = () => {
+    const contextStyle = (popoverContext?.arrowProps() as Record<string, unknown> | undefined)?.style as JSX.CSSProperties | undefined
+    return {
+      ...(contextStyle ?? {}),
+      ...(props.style ?? {}),
+    }
+  }
+
   const resolveChildren = () => {
     const children = props.children
     if (typeof children === 'function') {
@@ -526,8 +481,9 @@ export function OverlayArrow(props: OverlayArrowProps): JSX.Element {
 
   return (
     <div
+      {...cleanArrowProps()}
       class={props.class}
-      style={props.style}
+      style={mergedStyle()}
       data-placement={placement()}
       aria-hidden="true"
       role="presentation"

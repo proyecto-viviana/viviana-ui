@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/solid-router";
+import { Link, createFileRoute } from "@tanstack/solid-router";
 import { Button } from "@proyecto-viviana/ui";
 
 export const Route = createFileRoute("/docs/")({
@@ -51,9 +51,11 @@ function GettingStartedPage() {
           <code>{`import { Button } from '@proyecto-viviana/ui';
 
 function App() {
+  const [pressed, setPressed] = createSignal(false);
+
   return (
-    <Button onPress={() => console.log('Clicked!')}>
-      Click me
+    <Button onPress={() => setPressed(true)}>
+      {pressed() ? 'Pressed' : 'Click me'}
     </Button>
   );
 }`}</code>
@@ -92,21 +94,21 @@ function App() {
         <h2>Next Steps</h2>
         <ul class="list-disc pl-6 space-y-2">
           <li>
-            <a href="/docs/installation" class="text-primary-400 hover:underline">
+            <Link to="/docs/installation" class="text-primary-400 hover:underline">
               Installation
-            </a>{" "}
+            </Link>{" "}
             - Set up the packages in your project
           </li>
           <li>
-            <a href="/docs/components/button" class="text-primary-400 hover:underline">
+            <Link to="/docs/components/button" class="text-primary-400 hover:underline">
               Components
-            </a>{" "}
+            </Link>{" "}
             - Explore the component library
           </li>
           <li>
-            <a href="/docs/hooks/create-button" class="text-primary-400 hover:underline">
+            <Link to="/docs/hooks/create-button" class="text-primary-400 hover:underline">
               Hooks
-            </a>{" "}
+            </Link>{" "}
             - Build custom components with ARIA hooks
           </li>
         </ul>

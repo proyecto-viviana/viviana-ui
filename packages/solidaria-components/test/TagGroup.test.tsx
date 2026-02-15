@@ -17,6 +17,7 @@ import {
   Tag,
   TagRemoveButton,
 } from '../src/TagGroup';
+import { SelectionIndicator } from '../src/SelectionIndicator';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // User event instance - created per test
@@ -191,6 +192,33 @@ describe('TagGroup', () => {
 
       const selectedTags = document.querySelectorAll('[data-selected]');
       expect(selectedTags.length).toBe(1);
+    });
+
+    it('should render SelectionIndicator only for selected tags', async () => {
+      render(() => (
+        <TagGroup>
+          <TagList items={sampleItems} aria-label="Test Tags" selectionMode="single" defaultSelectedKeys={['1']}>
+            {(item) => (
+              <Tag id={item.id}>
+                {() => (
+                  <>
+                    {item.name}
+                    <SelectionIndicator>Selected</SelectionIndicator>
+                  </>
+                )}
+              </Tag>
+            )}
+          </TagList>
+        </TagGroup>
+      ));
+
+      expect(screen.getAllByText('Selected')).toHaveLength(1);
+
+      const travelTag = screen.getByText('Travel').closest('.solidaria-Tag');
+      await user.click(travelTag!);
+
+      expect(screen.getAllByText('Selected')).toHaveLength(1);
+      expect(travelTag?.textContent).toContain('Selected');
     });
   });
 

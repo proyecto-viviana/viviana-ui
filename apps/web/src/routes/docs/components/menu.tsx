@@ -1,12 +1,59 @@
 import { createFileRoute } from "@tanstack/solid-router";
+import { createSignal } from "solid-js";
 import { Menu, MenuItem, MenuTrigger, MenuButton, MenuSeparator, Button } from "@proyecto-viviana/ui";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
+
+type MenuDocItem = {
+  id: string;
+  label: string;
+  isDisabled?: boolean;
+  isSeparator?: boolean;
+  isDestructive?: boolean;
+};
 
 export const Route = createFileRoute("/docs/components/menu")({
   component: MenuPage,
 });
 
 function MenuPage() {
+  const [lastAction, setLastAction] = createSignal("None");
+
+  const basicItems: MenuDocItem[] = [
+    { id: "new", label: "New file" },
+    { id: "open", label: "Open" },
+    { id: "save", label: "Save" },
+  ];
+
+  const editItems: MenuDocItem[] = [
+    { id: "cut", label: "Cut" },
+    { id: "copy", label: "Copy" },
+    { id: "paste", label: "Paste" },
+    { id: "sep-1", label: "", isSeparator: true },
+    { id: "selectAll", label: "Select All" },
+    { id: "sep-2", label: "", isSeparator: true },
+    { id: "delete", label: "Delete" },
+  ];
+
+  const disabledItems: MenuDocItem[] = [
+    { id: "cut", label: "Cut" },
+    { id: "copy", label: "Copy" },
+    { id: "paste", label: "Paste (clipboard empty)", isDisabled: true },
+  ];
+
+  const moreItems: MenuDocItem[] = [
+    { id: "settings", label: "Settings" },
+    { id: "help", label: "Help" },
+    { id: "about", label: "About" },
+  ];
+
+  const fileItems: MenuDocItem[] = [
+    { id: "rename", label: "Rename" },
+    { id: "duplicate", label: "Duplicate" },
+    { id: "archive", label: "Archive" },
+    { id: "sep-3", label: "", isSeparator: true },
+    { id: "delete", label: "Delete permanently", isDestructive: true },
+  ];
+
   return (
     <DocPage
       title="Menu"
@@ -24,19 +71,15 @@ function MenuPage() {
         description="A simple menu with action items."
         code={`<MenuTrigger>
   <MenuButton>Actions</MenuButton>
-  <Menu onAction={(key) => console.log(key)}>
-    <MenuItem id="new">New file</MenuItem>
-    <MenuItem id="open">Open</MenuItem>
-    <MenuItem id="save">Save</MenuItem>
+  <Menu items={items}>
+    {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
   </Menu>
 </MenuTrigger>`}
       >
         <MenuTrigger>
           <MenuButton>Actions</MenuButton>
-          <Menu onAction={(key) => alert(`Action: ${key}`)}>
-            <MenuItem id="new">New file</MenuItem>
-            <MenuItem id="open">Open</MenuItem>
-            <MenuItem id="save">Save</MenuItem>
+          <Menu items={basicItems} onAction={(key) => setLastAction(String(key))}>
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
           </Menu>
         </MenuTrigger>
       </Example>
@@ -44,24 +87,16 @@ function MenuPage() {
       <Example
         title="With Separators"
         description="Use separators to group related menu items."
-        code={`<Menu>
-  <MenuItem id="cut">Cut</MenuItem>
-  <MenuItem id="copy">Copy</MenuItem>
-  <MenuItem id="paste">Paste</MenuItem>
-  <MenuSeparator />
-  <MenuItem id="delete">Delete</MenuItem>
+        code={`<Menu items={items}>
+  {(item) => item.isSeparator ? <MenuSeparator /> : <MenuItem id={item.id}>{item.label}</MenuItem>}
 </Menu>`}
       >
         <MenuTrigger>
           <MenuButton>Edit</MenuButton>
-          <Menu onAction={(key) => alert(`Action: ${key}`)}>
-            <MenuItem id="cut">Cut</MenuItem>
-            <MenuItem id="copy">Copy</MenuItem>
-            <MenuItem id="paste">Paste</MenuItem>
-            <MenuSeparator />
-            <MenuItem id="selectAll">Select All</MenuItem>
-            <MenuSeparator />
-            <MenuItem id="delete">Delete</MenuItem>
+          <Menu items={editItems} onAction={(key) => setLastAction(String(key))}>
+            {(item) =>
+              item.isSeparator ? <MenuSeparator /> : <MenuItem id={item.id}>{item.label}</MenuItem>
+            }
           </Menu>
         </MenuTrigger>
       </Example>
@@ -75,12 +110,12 @@ function MenuPage() {
       >
         <MenuTrigger>
           <MenuButton>Edit</MenuButton>
-          <Menu onAction={(key) => alert(`Action: ${key}`)}>
-            <MenuItem id="cut">Cut</MenuItem>
-            <MenuItem id="copy">Copy</MenuItem>
-            <MenuItem id="paste" isDisabled>
-              Paste (clipboard empty)
-            </MenuItem>
+          <Menu items={disabledItems} onAction={(key) => setLastAction(String(key))}>
+            {(item) => (
+              <MenuItem id={item.id} isDisabled={item.isDisabled}>
+                {item.label}
+              </MenuItem>
+            )}
           </Menu>
         </MenuTrigger>
       </Example>
@@ -90,15 +125,13 @@ function MenuPage() {
         description="Use any button as the menu trigger."
         code={`<MenuTrigger>
   <Button variant="accent">Open Menu</Button>
-  <Menu>...</Menu>
+  <Menu items={items}>...</Menu>
 </MenuTrigger>`}
       >
         <MenuTrigger>
           <Button variant="accent">More Options</Button>
-          <Menu onAction={(key) => alert(`Action: ${key}`)}>
-            <MenuItem id="settings">Settings</MenuItem>
-            <MenuItem id="help">Help</MenuItem>
-            <MenuItem id="about">About</MenuItem>
+          <Menu items={moreItems} onAction={(key) => setLastAction(String(key))}>
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
           </Menu>
         </MenuTrigger>
       </Example>
@@ -106,21 +139,27 @@ function MenuPage() {
       <Example
         title="Destructive Actions"
         description="Use the negative variant for destructive actions."
-        code={`<MenuItem id="delete" variant="negative">
+        code={`<MenuItem id="delete" isDestructive>
   Delete permanently
 </MenuItem>`}
       >
         <MenuTrigger>
           <MenuButton>File Options</MenuButton>
-          <Menu onAction={(key) => alert(`Action: ${key}`)}>
-            <MenuItem id="rename">Rename</MenuItem>
-            <MenuItem id="duplicate">Duplicate</MenuItem>
-            <MenuItem id="archive">Archive</MenuItem>
-            <MenuSeparator />
-            <MenuItem id="delete">Delete permanently</MenuItem>
+          <Menu items={fileItems} onAction={(key) => setLastAction(String(key))}>
+            {(item) =>
+              item.isSeparator ? (
+                <MenuSeparator />
+              ) : (
+                <MenuItem id={item.id} isDestructive={item.isDestructive}>
+                  {item.label}
+                </MenuItem>
+              )
+            }
           </Menu>
         </MenuTrigger>
       </Example>
+
+      <p class="text-sm text-bg-500 mb-6">Last action: {lastAction()}</p>
 
       <h2>MenuTrigger Props</h2>
       <PropsTable
@@ -153,6 +192,11 @@ function MenuPage() {
       <PropsTable
         props={[
           {
+            name: "items",
+            type: "T[]",
+            description: "Collection of menu items",
+          },
+          {
             name: "onAction",
             type: "(key: string) => void",
             description: "Handler called when an item is selected",
@@ -168,15 +212,9 @@ function MenuPage() {
             description: "Keys of disabled items",
           },
           {
-            name: "autoFocus",
-            type: "boolean | 'first' | 'last'",
-            default: "'first'",
-            description: "Where to focus when menu opens",
-          },
-          {
             name: "children",
-            type: "JSX.Element",
-            description: "MenuItem and MenuSeparator components",
+            type: "(item: T) => JSX.Element",
+            description: "Render function for MenuItem/MenuSeparator",
           },
         ]}
       />
@@ -215,14 +253,12 @@ function MenuPage() {
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>
-            Uses <code>menu</code> and <code>menuitem</code> ARIA roles
-          </li>
-          <li>Full keyboard navigation: Arrow keys, Home, End</li>
-          <li>Type-ahead search to quickly find items</li>
-          <li>Escape key closes the menu and returns focus to trigger</li>
-          <li>Focus is automatically moved to the first item when opened</li>
-          <li>Screen readers announce item count and current position</li>
+          <li>Uses ARIA menu pattern with <code>menu</code> and <code>menuitem</code> roles</li>
+          <li>Arrow keys navigate between items</li>
+          <li>Home/End keys jump to first/last item</li>
+          <li>Escape closes the menu and returns focus to trigger</li>
+          <li>Type-ahead search jumps to matching items</li>
+          <li>Disabled items are focusable but not actionable (for context)</li>
         </ul>
       </AccessibilitySection>
     </DocPage>

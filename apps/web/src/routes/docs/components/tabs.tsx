@@ -3,6 +3,36 @@ import { createSignal } from "solid-js";
 import { Tabs, TabList, Tab, TabPanel } from "@proyecto-viviana/ui";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
+type TabItem = {
+  id: string;
+  label: string;
+};
+
+const settingsTabs: TabItem[] = [
+  { id: "account", label: "Account" },
+  { id: "password", label: "Password" },
+  { id: "notifications", label: "Notifications" },
+];
+
+const controlledTabs: TabItem[] = [
+  { id: "tab1", label: "Tab 1" },
+  { id: "tab2", label: "Tab 2" },
+  { id: "tab3", label: "Tab 3" },
+];
+
+const featureTabs: TabItem[] = [
+  { id: "free", label: "Free Features" },
+  { id: "pro", label: "Pro Features" },
+  { id: "enterprise", label: "Enterprise (Contact Sales)" },
+];
+
+const verticalTabs: TabItem[] = [
+  { id: "general", label: "General" },
+  { id: "security", label: "Security" },
+  { id: "privacy", label: "Privacy" },
+  { id: "advanced", label: "Advanced" },
+];
+
 export const Route = createFileRoute("/docs/components/tabs")({
   component: TabsPage,
 });
@@ -19,22 +49,18 @@ function TabsPage() {
       <Example
         title="Basic Usage"
         description="A simple tab interface with multiple panels."
-        code={`<Tabs>
+        code={`<Tabs items={tabs}>
   <TabList aria-label="Settings">
-    <Tab id="account">Account</Tab>
-    <Tab id="password">Password</Tab>
-    <Tab id="notifications">Notifications</Tab>
+    {(item) => <Tab id={item.id}>{item.label}</Tab>}
   </TabList>
-  <TabPanel id="account">Account settings content</TabPanel>
-  <TabPanel id="password">Password settings content</TabPanel>
-  <TabPanel id="notifications">Notification settings</TabPanel>
+  <TabPanel id="account">...</TabPanel>
+  <TabPanel id="password">...</TabPanel>
+  <TabPanel id="notifications">...</TabPanel>
 </Tabs>`}
       >
-        <Tabs>
-          <TabList aria-label="Settings">
-            <Tab id="account">Account</Tab>
-            <Tab id="password">Password</Tab>
-            <Tab id="notifications">Notifications</Tab>
+        <Tabs items={settingsTabs} getKey={(item) => item.id} getTextValue={(item) => item.label}>
+          <TabList<TabItem> aria-label="Settings">
+            {(item) => <Tab id={item.id}>{item.label}</Tab>}
           </TabList>
           <TabPanel id="account">
             <div class="p-4 text-bg-600">
@@ -57,11 +83,7 @@ function TabsPage() {
       <Example
         title="Controlled Tabs"
         description="Control which tab is selected programmatically."
-        code={`const [selectedKey, setSelectedKey] = createSignal("account");
-
-<Tabs selectedKey={selectedKey()} onSelectionChange={setSelectedKey}>
-  ...
-</Tabs>`}
+        code={`<Tabs items={tabs} selectedKey={selectedKey()} onSelectionChange={setSelectedKey}>...</Tabs>`}
       >
         <div>
           <div class="mb-4 flex gap-2">
@@ -78,11 +100,15 @@ function TabsPage() {
               Select Tab 2
             </button>
           </div>
-          <Tabs selectedKey={selectedKey()} onSelectionChange={(key) => setSelectedKey(key as string)}>
-            <TabList aria-label="Controlled tabs">
-              <Tab id="tab1">Tab 1</Tab>
-              <Tab id="tab2">Tab 2</Tab>
-              <Tab id="tab3">Tab 3</Tab>
+          <Tabs
+            items={controlledTabs}
+            getKey={(item) => item.id}
+            getTextValue={(item) => item.label}
+            selectedKey={selectedKey()}
+            onSelectionChange={(key) => setSelectedKey(String(key))}
+          >
+            <TabList<TabItem> aria-label="Controlled tabs">
+              {(item) => <Tab id={item.id}>{item.label}</Tab>}
             </TabList>
             <TabPanel id="tab1">
               <div class="p-4 text-bg-600">Content for Tab 1</div>
@@ -100,15 +126,16 @@ function TabsPage() {
       <Example
         title="Disabled Tabs"
         description="Individual tabs can be disabled."
-        code={`<Tab id="premium" isDisabled>Premium (Locked)</Tab>`}
+        code={`<Tabs items={tabs} disabledKeys={["enterprise"]}>...</Tabs>`}
       >
-        <Tabs>
-          <TabList aria-label="Features">
-            <Tab id="free">Free Features</Tab>
-            <Tab id="pro">Pro Features</Tab>
-            <Tab id="enterprise" isDisabled>
-              Enterprise (Contact Sales)
-            </Tab>
+        <Tabs
+          items={featureTabs}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.label}
+          disabledKeys={["enterprise"]}
+        >
+          <TabList<TabItem> aria-label="Features">
+            {(item) => <Tab id={item.id}>{item.label}</Tab>}
           </TabList>
           <TabPanel id="free">
             <div class="p-4 text-bg-600">Free tier features available to all users.</div>
@@ -125,17 +152,16 @@ function TabsPage() {
       <Example
         title="Vertical Orientation"
         description="Tabs can be displayed vertically."
-        code={`<Tabs orientation="vertical">
-  <TabList aria-label="Vertical tabs">...</TabList>
-  ...
-</Tabs>`}
+        code={`<Tabs items={tabs} orientation="vertical">...</Tabs>`}
       >
-        <Tabs orientation="vertical">
-          <TabList aria-label="Vertical navigation">
-            <Tab id="general">General</Tab>
-            <Tab id="security">Security</Tab>
-            <Tab id="privacy">Privacy</Tab>
-            <Tab id="advanced">Advanced</Tab>
+        <Tabs
+          items={verticalTabs}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.label}
+          orientation="vertical"
+        >
+          <TabList<TabItem> aria-label="Vertical navigation">
+            {(item) => <Tab id={item.id}>{item.label}</Tab>}
           </TabList>
           <TabPanel id="general">
             <div class="p-4 text-bg-600">General settings and preferences.</div>
@@ -155,6 +181,11 @@ function TabsPage() {
       <h2>Tabs Props</h2>
       <PropsTable
         props={[
+          {
+            name: "items",
+            type: "T[]",
+            description: "Collection of tab items",
+          },
           {
             name: "selectedKey",
             type: "string",
@@ -186,11 +217,6 @@ function TabsPage() {
             name: "disabledKeys",
             type: "Iterable<string>",
             description: "Keys of disabled tabs",
-          },
-          {
-            name: "children",
-            type: "JSX.Element",
-            description: "TabList and TabPanel components",
           },
         ]}
       />

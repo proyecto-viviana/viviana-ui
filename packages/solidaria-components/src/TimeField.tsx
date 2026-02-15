@@ -110,6 +110,7 @@ export interface TimeSegmentProps extends SlotProps {
 // ============================================
 
 export const TimeFieldContext = createContext<TimeFieldState<TimeValue> | null>(null);
+export const TimeFieldStateContext = TimeFieldContext;
 
 export function useTimeFieldContext(): TimeFieldState<TimeValue> {
   const context = useContext(TimeFieldContext);

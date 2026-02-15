@@ -8,6 +8,37 @@ export {
   type ToggleButtonAria,
 } from './button';
 
+// ActionGroup
+export {
+  createActionGroup,
+  createActionGroupItem,
+  type AriaActionGroupProps,
+  type ActionGroupAria,
+  type AriaActionGroupItemProps,
+  type ActionGroupItemAria,
+} from './actiongroup';
+
+// Collections
+export {
+  CollectionBuilder,
+  Collection,
+  createLeafComponent,
+  createBranchComponent,
+  createHideableComponent,
+  useIsHidden,
+  useCachedChildren,
+  BaseCollection,
+  type CollectionBuilderProps,
+  type CollectionProps,
+  type CachedChildrenOptions,
+  type CollectionNode,
+  type ItemNode,
+  type SectionNode,
+  type FilterableNode,
+  type LoaderNode,
+  type HeaderNode,
+} from './collections';
+
 // Checkbox
 export {
   createCheckbox,
@@ -445,9 +476,12 @@ export {
   type TimeFieldAria,
   // Date Picker
   createDatePicker,
+  createDateRangePicker,
   type AriaDatePickerProps,
   type DatePickerAria,
   type DatePickerState,
+  type AriaDateRangePickerProps,
+  type DateRangePickerAria,
 } from './datepicker';
 
 // Grid

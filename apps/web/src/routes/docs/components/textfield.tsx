@@ -71,14 +71,14 @@ function TextFieldPage() {
         code={`<TextField
   label="Email"
   errorMessage="Please enter a valid email address"
-  validationState="invalid"
+  isInvalid
 />`}
       >
         <div class="max-w-xs">
           <TextField
             label="Email"
             errorMessage="Please enter a valid email address"
-            validationState="invalid"
+            isInvalid
             defaultValue="not-an-email"
           />
         </div>
@@ -119,21 +119,19 @@ function TextFieldPage() {
       </Example>
 
       <Example
-        title="Multiline (Textarea)"
-        description="Use multiline for larger text inputs."
+        title="Filled Variant"
+        description="Use the filled visual variant for denser surfaces."
         code={`<TextField
-  label="Bio"
-  multiline
-  rows={4}
-  placeholder="Tell us about yourself..."
+  label="Display name"
+  variant="filled"
+  placeholder="Enter your display name"
 />`}
       >
-        <div class="max-w-md">
+        <div class="max-w-xs">
           <TextField
-            label="Bio"
-            multiline
-            rows={4}
-            placeholder="Tell us about yourself..."
+            label="Display name"
+            variant="filled"
+            placeholder="Enter your display name"
           />
         </div>
       </Example>
@@ -182,15 +180,10 @@ function TextFieldPage() {
             description: "Input type",
           },
           {
-            name: "multiline",
-            type: "boolean",
-            default: "false",
-            description: "Render as textarea",
-          },
-          {
-            name: "rows",
-            type: "number",
-            description: "Number of visible rows (multiline only)",
+            name: "variant",
+            type: "'outline' | 'filled'",
+            default: "'outline'",
+            description: "Visual style variant",
           },
           {
             name: "isRequired",
@@ -211,9 +204,9 @@ function TextFieldPage() {
             description: "Whether input is read-only",
           },
           {
-            name: "validationState",
-            type: "'valid' | 'invalid'",
-            description: "Validation state for styling",
+            name: "isInvalid",
+            type: "boolean",
+            description: "Marks the field as invalid for styles and aria-invalid",
           },
           {
             name: "autoFocus",

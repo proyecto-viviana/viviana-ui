@@ -73,6 +73,10 @@ export interface TextFieldContextValue {
 }
 
 export const TextFieldContext = createContext<TextFieldContextValue | null>(null);
+export const LabelContext = TextFieldContext;
+export const InputContext = TextFieldContext;
+export const TextAreaContext = TextFieldContext;
+export const FieldInputContext = TextFieldContext;
 
 // ============================================
 // SUB-COMPONENTS

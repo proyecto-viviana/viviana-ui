@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
+import type { JSX } from "solid-js";
 import { createPress } from "@proyecto-viviana/solidaria";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
@@ -27,9 +28,9 @@ function CreatePressPage() {
       <h2>Usage</h2>
       <pre>
         <code>{`const { pressProps, isPressed } = createPress({
-  onPress: (e) => console.log('Pressed!', e.pointerType),
-  onPressStart: (e) => console.log('Press started'),
-  onPressEnd: (e) => console.log('Press ended'),
+  onPress: () => setStatus('pressed'),
+  onPressStart: () => setStatus('press started'),
+  onPressEnd: () => setStatus('press ended'),
 });
 
 return (
@@ -43,7 +44,7 @@ return (
         title="Interactive Card"
         description="Make any element pressable while normalizing all input types."
         code={`const { pressProps, isPressed } = createPress({
-  onPress: (e) => console.log('Pressed via', e.pointerType),
+  onPress: (e) => setLastInput(e.pointerType),
 });
 
 <div
@@ -56,7 +57,7 @@ return (
 </div>`}
       >
         <div
-          {...pressProps}
+          {...(pressProps as unknown as JSX.HTMLAttributes<HTMLDivElement>)}
           tabIndex={0}
           role="button"
           class={`cursor-pointer select-none rounded-xl border-2 p-6 transition-all ${
@@ -253,7 +254,7 @@ function PressStateDemo() {
   return (
     <div class="flex gap-6 items-start">
       <div
-        {...pressProps}
+        {...(pressProps as unknown as JSX.HTMLAttributes<HTMLDivElement>)}
         tabIndex={0}
         role="button"
         class={`cursor-pointer select-none rounded-lg border-2 p-4 transition-all ${

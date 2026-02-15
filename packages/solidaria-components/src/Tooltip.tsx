@@ -83,6 +83,8 @@ interface TooltipTriggerContextValue {
 }
 
 const TooltipTriggerContext = createContext<TooltipTriggerContextValue | null>(null);
+export const TooltipContext = TooltipTriggerContext;
+export const TooltipTriggerStateContext = createContext<TooltipTriggerState | null>(null);
 
 // ============================================
 // COMPONENTS
@@ -150,9 +152,11 @@ export const TooltipTrigger: ParentComponent<TooltipTriggerComponentProps> = (pr
   };
 
   return (
-    <TooltipTriggerContext.Provider value={context}>
-      {processChildren()}
-    </TooltipTriggerContext.Provider>
+    <TooltipTriggerStateContext.Provider value={state}>
+      <TooltipTriggerContext.Provider value={context}>
+        {processChildren()}
+      </TooltipTriggerContext.Provider>
+    </TooltipTriggerStateContext.Provider>
   );
 };
 

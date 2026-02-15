@@ -12,6 +12,9 @@ const SOLIDARIA_INDEX = 'packages/solidaria-components/src/index.ts';
 
 const REQUIRED_SYMBOLS = [
   'Section',
+  'ListBoxSection',
+  'GridListSection',
+  'MenuSection',
   'Header',
   'Group',
   'CollectionRendererContext',

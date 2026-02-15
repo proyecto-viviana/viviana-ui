@@ -44,6 +44,7 @@ export interface ToggleButtonGroupStateContextValue {
 
 export const ToggleButtonGroupContext = createContext<ToggleButtonGroupProps | null>(null);
 export const ToggleButtonGroupStateContext = createContext<ToggleButtonGroupStateContextValue | null>(null);
+export const ToggleGroupStateContext = ToggleButtonGroupStateContext;
 
 function toKeySet(keys?: Iterable<Key>): Set<Key> {
   return new Set(keys ? Array.from(keys) : []);

@@ -107,6 +107,7 @@ interface DisclosureContextValue {
 }
 
 export const DisclosureContext = createContext<DisclosureContextValue | null>(null);
+export const DisclosureStateContext = createContext<DisclosureState | null>(null);
 
 export function useDisclosureContext(): DisclosureContextValue | null {
   return useContext(DisclosureContext);
@@ -117,6 +118,7 @@ interface DisclosureGroupContextValue {
 }
 
 export const DisclosureGroupContext = createContext<DisclosureGroupContextValue | null>(null);
+export const DisclosureGroupStateContext = createContext<DisclosureGroupState | null>(null);
 
 export function useDisclosureGroupContext(): DisclosureGroupContextValue | null {
   return useContext(DisclosureGroupContext);
@@ -199,17 +201,19 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
   const { ref: _ref, ...cleanGroupProps } = groupProps as Record<string, unknown>;
 
   return (
-    <DisclosureGroupContext.Provider value={contextValue}>
-      <div
-        {...domProps()}
-        {...cleanGroupProps}
-        class={renderProps.class()}
-        style={renderProps.style()}
-        data-disabled={dataAttr(state.isDisabled)}
-      >
-        {props.children}
-      </div>
-    </DisclosureGroupContext.Provider>
+    <DisclosureGroupStateContext.Provider value={state}>
+      <DisclosureGroupContext.Provider value={contextValue}>
+        <div
+          {...domProps()}
+          {...cleanGroupProps}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          data-disabled={dataAttr(state.isDisabled)}
+        >
+          {props.children}
+        </div>
+      </DisclosureGroupContext.Provider>
+    </DisclosureGroupStateContext.Provider>
   );
 }
 
@@ -315,19 +319,21 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
   };
 
   return (
-    <DisclosureContext.Provider value={contextValue}>
-      <DisclosurePanelRefContext.Provider value={setPanelRef}>
-        <div
-          {...domProps()}
-          class={renderProps.class()}
-          style={renderProps.style()}
-          data-expanded={dataAttr(state.isExpanded())}
-          data-disabled={dataAttr(isDisabled())}
-        >
-          {props.children}
-        </div>
-      </DisclosurePanelRefContext.Provider>
-    </DisclosureContext.Provider>
+    <DisclosureStateContext.Provider value={state}>
+      <DisclosureContext.Provider value={contextValue}>
+        <DisclosurePanelRefContext.Provider value={setPanelRef}>
+          <div
+            {...domProps()}
+            class={renderProps.class()}
+            style={renderProps.style()}
+            data-expanded={dataAttr(state.isExpanded())}
+            data-disabled={dataAttr(isDisabled())}
+          >
+            {props.children}
+          </div>
+        </DisclosurePanelRefContext.Provider>
+      </DisclosureContext.Provider>
+    </DisclosureStateContext.Provider>
   );
 }
 

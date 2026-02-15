@@ -1,19 +1,18 @@
 /**
  * TextField component for proyecto-viviana-ui
  *
- * A styled text field component built on solidaria hooks directly.
- * This bypasses solidaria-components for now due to context timing issues.
+ * Styled text field built on top of solidaria-components.
  */
 
-import { type JSX, splitProps, mergeProps as solidMergeProps, Show } from 'solid-js'
+import { type JSX, splitProps, Show, useContext } from 'solid-js'
 import {
-  createTextField,
-  createFocusRing,
-  type AriaTextFieldProps,
-} from '@proyecto-viviana/solidaria'
-import {
-  createTextFieldState,
-} from '@proyecto-viviana/solid-stately'
+  TextField as HeadlessTextField,
+  Label as HeadlessLabel,
+  Input as HeadlessInput,
+  TextFieldContext,
+  type TextFieldProps as HeadlessTextFieldProps,
+  type TextFieldRenderProps,
+} from '@proyecto-viviana/solidaria-components'
 
 // ============================================
 // TYPES
@@ -22,7 +21,7 @@ import {
 export type TextFieldSize = 'sm' | 'md' | 'lg'
 export type TextFieldVariant = 'outline' | 'filled'
 
-export interface TextFieldProps extends Omit<AriaTextFieldProps, 'children'> {
+export interface TextFieldProps extends Omit<HeadlessTextFieldProps, 'class' | 'style' | 'children'> {
   /** The size of the text field. */
   size?: TextFieldSize
   /** The visual variant of the text field. */
@@ -59,24 +58,40 @@ const sizeStyles = {
   },
 }
 
+function TextFieldDescription(props: { class?: string; children?: JSX.Element }): JSX.Element | null {
+  const context = useContext(TextFieldContext)
+  if (!context) return null
+  const descriptionProps = () => {
+    const { ref: _ref, ...rest } = context.descriptionProps as Record<string, unknown>
+    return rest
+  }
+  return (
+    <p {...descriptionProps()} class={props.class}>
+      {props.children}
+    </p>
+  )
+}
+
+function TextFieldError(props: { class?: string; children?: JSX.Element }): JSX.Element | null {
+  const context = useContext(TextFieldContext)
+  if (!context) return null
+  const errorMessageProps = () => {
+    const { ref: _ref, ...rest } = context.errorMessageProps as Record<string, unknown>
+    return rest
+  }
+  return (
+    <p {...errorMessageProps()} class={props.class}>
+      {props.children}
+    </p>
+  )
+}
+
 // ============================================
 // COMPONENT
 // ============================================
 
-/**
- * A text field allows users to enter a plain text value with a keyboard.
- *
- * Built directly on solidaria hooks for full accessibility support.
- */
 export function TextField(props: TextFieldProps): JSX.Element {
-  const defaultProps: Partial<TextFieldProps> = {
-    size: 'md',
-    variant: 'outline',
-  }
-
-  const merged = solidMergeProps(defaultProps, props)
-
-  const [local, ariaProps] = splitProps(merged, [
+  const [local, headlessProps] = splitProps(props, [
     'size',
     'variant',
     'class',
@@ -85,54 +100,32 @@ export function TextField(props: TextFieldProps): JSX.Element {
     'errorMessage',
   ])
 
-  const size = () => sizeStyles[local.size!]
+  const size = () => sizeStyles[local.size ?? 'md']
 
-  // Create text field state
-  const state = createTextFieldState(() => ({
-    value: ariaProps.value,
-    defaultValue: ariaProps.defaultValue,
-    onChange: ariaProps.onChange,
-  }))
-
-  // Create text field aria props
-  const textFieldAria = createTextField(() => ({
-    ...ariaProps,
-    value: state.value(),
-    onChange: state.setValue,
-  }))
-
-  // Create focus ring
-  const { isFocused, isFocusVisible, focusProps } = createFocusRing()
-
-  // Compute classes
   const containerClasses = () => {
     const base = 'flex flex-col'
-    const disabledClass = ariaProps.isDisabled ? 'opacity-60' : ''
-    const custom = local.class || ''
-    return [base, disabledClass, custom].filter(Boolean).join(' ')
+    const custom = local.class ?? ''
+    return [base, custom].filter(Boolean).join(' ')
   }
 
-  const inputClasses = () => {
+  const inputClasses = (renderProps: TextFieldRenderProps) => {
     const base = 'w-full rounded-md transition-all duration-200 outline-none'
     const sizeClass = size().input
 
-    let variantClass: string
-    if (local.variant === 'filled') {
-      variantClass = 'bg-bg-200 border border-transparent'
-    } else {
-      variantClass = 'bg-transparent border border-bg-400'
-    }
+    const variantClass = local.variant === 'filled'
+      ? 'bg-bg-200 border border-transparent'
+      : 'bg-transparent border border-bg-400'
 
-    let stateClass: string
-    if (ariaProps.isDisabled) {
+    let stateClass = ''
+    if (renderProps.isDisabled) {
       stateClass = 'bg-bg-200 text-primary-500 cursor-not-allowed'
-    } else if (textFieldAria.isInvalid) {
+    } else if (renderProps.isInvalid) {
       stateClass = 'border-danger-500 focus:border-danger-400 focus:ring-2 focus:ring-danger-400/20'
     } else {
       stateClass = 'text-primary-100 placeholder:text-primary-500 focus:border-accent focus:ring-2 focus:ring-accent/20'
     }
 
-    const hoverClass = ariaProps.isDisabled ? '' : 'hover:border-accent-300'
+    const hoverClass = renderProps.isDisabled ? '' : 'hover:border-accent-300'
 
     return [base, sizeClass, variantClass, stateClass, hoverClass].filter(Boolean).join(' ')
   }
@@ -155,57 +148,39 @@ export function TextField(props: TextFieldProps): JSX.Element {
     return [base, sizeClass].filter(Boolean).join(' ')
   }
 
-  // Clean props - remove ref to avoid type conflicts
-  const cleanLabelProps = () => {
-    const { ref: _ref, ...rest } = textFieldAria.labelProps as Record<string, unknown>
-    return rest
-  }
-  const cleanInputProps = () => {
-    const { ref: _ref1, ...rest } = textFieldAria.inputProps as Record<string, unknown>
-    const { ref: _ref2, ...focusRest } = focusProps as Record<string, unknown>
-    return { ...rest, ...focusRest }
-  }
-  const cleanDescriptionProps = () => {
-    const { ref: _ref, ...rest } = textFieldAria.descriptionProps as Record<string, unknown>
-    return rest
-  }
-  const cleanErrorMessageProps = () => {
-    const { ref: _ref, ...rest } = textFieldAria.errorMessageProps as Record<string, unknown>
-    return rest
-  }
-
   return (
-    <div
+    <HeadlessTextField
+      {...headlessProps}
+      label={local.label}
+      description={local.description}
+      errorMessage={local.errorMessage}
       class={containerClasses()}
-      data-disabled={ariaProps.isDisabled || undefined}
-      data-invalid={textFieldAria.isInvalid || undefined}
-      data-readonly={ariaProps.isReadOnly || undefined}
-      data-required={ariaProps.isRequired || undefined}
-      data-focused={isFocused() || undefined}
-      data-focus-visible={isFocusVisible() || undefined}
-    >
-      <Show when={local.label}>
-        <label {...cleanLabelProps()} class={labelClasses()}>
-          {local.label}
-          <Show when={ariaProps.isRequired}>
-            <span class="text-danger-400 ml-0.5">*</span>
+      children={(renderProps) => (
+        <>
+          <Show when={local.label}>
+            <HeadlessLabel class={labelClasses()}>
+              {local.label}
+              <Show when={renderProps.isRequired}>
+                <span class="text-danger-400 ml-0.5">*</span>
+              </Show>
+            </HeadlessLabel>
           </Show>
-        </label>
-      </Show>
 
-      <input {...cleanInputProps()} class={inputClasses()} />
+          <HeadlessInput class={inputClasses(renderProps)} />
 
-      <Show when={local.description && !textFieldAria.isInvalid}>
-        <p {...cleanDescriptionProps()} class={descriptionClasses()}>
-          {local.description}
-        </p>
-      </Show>
+          <Show when={local.description && !renderProps.isInvalid}>
+            <TextFieldDescription class={descriptionClasses()}>
+              {local.description}
+            </TextFieldDescription>
+          </Show>
 
-      <Show when={local.errorMessage && textFieldAria.isInvalid}>
-        <p {...cleanErrorMessageProps()} class={errorClasses()}>
-          {local.errorMessage}
-        </p>
-      </Show>
-    </div>
+          <Show when={local.errorMessage && renderProps.isInvalid}>
+            <TextFieldError class={errorClasses()}>
+              {local.errorMessage}
+            </TextFieldError>
+          </Show>
+        </>
+      )}
+    />
   )
 }

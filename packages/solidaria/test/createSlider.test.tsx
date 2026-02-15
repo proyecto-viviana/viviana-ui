@@ -8,6 +8,7 @@ import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
 import { createSlider } from '../src/slider/createSlider';
 import { createSliderState } from '@proyecto-viviana/solid-stately';
 import { createSignal } from 'solid-js';
+import { I18nProvider } from '../src/i18n';
 
 // Test component that uses createSlider
 function TestSlider(props: {
@@ -243,6 +244,36 @@ describe('createSlider', () => {
 
       fireEvent.keyDown(thumb, { key: 'ArrowRight' });
       expect(onChange).toHaveBeenCalledWith(60);
+    });
+
+    it('should reverse horizontal ArrowRight behavior in RTL', () => {
+      const onChange = vi.fn();
+      render(() => (
+        <I18nProvider locale="he-IL">
+          <TestSlider aria-label="Volume" defaultValue={50} orientation="horizontal" onChange={onChange} />
+        </I18nProvider>
+      ));
+
+      const thumb = screen.getByTestId('slider-thumb');
+      thumb.focus();
+
+      fireEvent.keyDown(thumb, { key: 'ArrowRight' });
+      expect(onChange).toHaveBeenCalledWith(49);
+    });
+
+    it('should reverse horizontal ArrowLeft behavior in RTL', () => {
+      const onChange = vi.fn();
+      render(() => (
+        <I18nProvider locale="he-IL">
+          <TestSlider aria-label="Volume" defaultValue={50} orientation="horizontal" onChange={onChange} />
+        </I18nProvider>
+      ));
+
+      const thumb = screen.getByTestId('slider-thumb');
+      thumb.focus();
+
+      fireEvent.keyDown(thumb, { key: 'ArrowLeft' });
+      expect(onChange).toHaveBeenCalledWith(51);
     });
   });
 

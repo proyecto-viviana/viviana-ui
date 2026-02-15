@@ -204,7 +204,7 @@ export function createSelect<T>(
     if (getProps().isDisabled) return;
 
     const collection = state.collection();
-    const currentKey = state.selectedKey();
+    const currentKey = state.focusedKey() ?? state.selectedKey();
 
     switch (e.key) {
       case 'Enter':
@@ -374,6 +374,7 @@ export function createSelect<T>(
         id: listBoxId,
         role: 'listbox',
         'aria-labelledby': buttonId,
+        'aria-multiselectable': state.selectionMode() === 'multiple' ? true : undefined,
         tabIndex: -1,
       } as JSX.HTMLAttributes<HTMLElement>;
     },

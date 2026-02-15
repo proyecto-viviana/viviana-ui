@@ -12,6 +12,7 @@ import {
   type RadioRenderProps,
   type RadioGroupRenderProps,
 } from '../src/RadioGroup';
+import { SelectionIndicator } from '../src/SelectionIndicator';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
@@ -217,6 +218,37 @@ describe('RadioGroup', () => {
       await user.click(radios[1]);
       expect(labelA).not.toHaveAttribute('data-selected');
       expect(labelB).toHaveAttribute('data-selected');
+    });
+
+    it('should render SelectionIndicator only for selected radio', async () => {
+      render(() => (
+        <RadioGroup aria-label="Options" defaultValue="a">
+          <Radio value="a">
+            {() => (
+              <>
+                Option A
+                <SelectionIndicator>Selected</SelectionIndicator>
+              </>
+            )}
+          </Radio>
+          <Radio value="b">
+            {() => (
+              <>
+                Option B
+                <SelectionIndicator>Selected</SelectionIndicator>
+              </>
+            )}
+          </Radio>
+        </RadioGroup>
+      ));
+
+      expect(screen.getAllByText('Selected')).toHaveLength(1);
+
+      const radios = screen.getAllByRole('radio');
+      await user.click(radios[1]);
+
+      expect(screen.getAllByText('Selected')).toHaveLength(1);
+      expect(radios[1].closest('label')?.textContent).toContain('Selected');
     });
   });
 

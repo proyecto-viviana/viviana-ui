@@ -181,6 +181,17 @@ export interface ComboBoxButtonRenderProps {
   isDisabled: boolean;
 }
 
+export interface ComboBoxValueRenderProps {
+  textValue: string;
+  isPlaceholder: boolean;
+}
+
+export interface ComboBoxValueProps extends SlotProps {
+  children?: RenderChildren<ComboBoxValueRenderProps>;
+  class?: ClassNameOrFunction<ComboBoxValueRenderProps>;
+  style?: StyleOrFunction<ComboBoxValueRenderProps>;
+}
+
 export interface ComboBoxButtonProps extends SlotProps {
   /** The children of the button. */
   children?: RenderChildren<ComboBoxButtonRenderProps>;
@@ -260,6 +271,7 @@ interface ComboBoxContextValue<T> {
 
 export const ComboBoxContext = createContext<ComboBoxContextValue<unknown> | null>(null);
 export const ComboBoxStateContext = createContext<ComboBoxState<unknown> | null>(null);
+export const ComboBoxValueContext = ComboBoxContext;
 
 // ============================================
 // COMPONENTS
@@ -608,6 +620,40 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
       data-hovered={isHovered() || undefined}
       data-disabled={state.isDisabled || undefined}
     />
+  );
+}
+
+export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
+  const context = useContext(ComboBoxContext);
+  if (!context) {
+    throw new Error('ComboBoxValue must be used within a ComboBox');
+  }
+
+  const state = context.state;
+  const textValue = createMemo(() => state.inputValue() ?? '');
+  const isPlaceholder = createMemo(() => textValue().length === 0);
+
+  const renderProps = useRenderProps(
+    {
+      children: props.children,
+      class: props.class,
+      style: props.style,
+      defaultClassName: 'solidaria-ComboBox-value',
+    },
+    () => ({
+      textValue: textValue(),
+      isPlaceholder: isPlaceholder(),
+    })
+  );
+
+  return (
+    <span
+      class={renderProps.class()}
+      style={renderProps.style()}
+      data-placeholder={isPlaceholder() || undefined}
+    >
+      {props.children ? renderProps.renderChildren() : textValue()}
+    </span>
   );
 }
 

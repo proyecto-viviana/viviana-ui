@@ -12,6 +12,7 @@ import { mergeProps } from '../utils/mergeProps';
 import { createId } from '../ssr';
 import { access, type MaybeAccessor } from '../utils/reactivity';
 import type { SliderState, SliderOrientation } from '@proyecto-viviana/solid-stately';
+import { useLocale } from '../i18n';
 
 export interface AriaSliderProps {
   /** An ID for the slider. */
@@ -55,6 +56,7 @@ export function createSlider(
 ): SliderAria {
   const getProps = () => access(props);
   const id = createId(getProps().id);
+  const locale = useLocale();
 
   // Generate IDs for associated elements
   const inputId = `${id}-input`;
@@ -150,12 +152,18 @@ export function createSlider(
     if (state.isDisabled) return;
 
     const isVertical = state.orientation === 'vertical';
+    const isRTL = locale().direction === 'rtl';
+    const shouldIncrementOnArrowRight = !isVertical && !isRTL;
+    const shouldIncrementOnArrowLeft = !isVertical && isRTL;
 
     switch (e.key) {
       case 'ArrowRight':
       case 'ArrowUp':
         e.preventDefault();
-        if ((e.key === 'ArrowRight' && !isVertical) || (e.key === 'ArrowUp' && isVertical)) {
+        if (
+          (e.key === 'ArrowRight' && shouldIncrementOnArrowRight) ||
+          (e.key === 'ArrowUp' && isVertical)
+        ) {
           state.increment();
         } else {
           state.decrement();
@@ -164,10 +172,13 @@ export function createSlider(
       case 'ArrowLeft':
       case 'ArrowDown':
         e.preventDefault();
-        if ((e.key === 'ArrowLeft' && !isVertical) || (e.key === 'ArrowDown' && isVertical)) {
-          state.decrement();
-        } else {
+        if (
+          (e.key === 'ArrowLeft' && shouldIncrementOnArrowLeft) ||
+          (e.key === 'ArrowDown' && isVertical)
+        ) {
           state.increment();
+        } else {
+          state.decrement();
         }
         break;
       case 'PageUp':

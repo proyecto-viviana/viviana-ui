@@ -120,6 +120,7 @@ export interface RangeCalendarCellProps extends SlotProps {
 // ============================================
 
 export const RangeCalendarContext = createContext<RangeCalendarState<DateValue> | null>(null);
+export const RangeCalendarStateContext = createContext<RangeCalendarState<DateValue> | null>(null);
 
 export function useRangeCalendarContext(): RangeCalendarState<DateValue> {
   const context = useContext(RangeCalendarContext);
@@ -220,18 +221,20 @@ function RangeCalendarInner<T extends DateValue = CalendarDate>(
   );
 
   return (
-    <RangeCalendarContext.Provider value={state as unknown as RangeCalendarState<DateValue>}>
-      <div
-        {...calendarAria.calendarProps}
-        class={renderProps.class()}
-        style={renderProps.style()}
-        data-disabled={dataAttr(state.isDisabled())}
-        data-readonly={dataAttr(state.isReadOnly())}
-        data-dragging={dataAttr(state.isDragging())}
-      >
-        {props.children}
-      </div>
-    </RangeCalendarContext.Provider>
+    <RangeCalendarStateContext.Provider value={state as unknown as RangeCalendarState<DateValue>}>
+      <RangeCalendarContext.Provider value={state as unknown as RangeCalendarState<DateValue>}>
+        <div
+          {...calendarAria.calendarProps}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          data-disabled={dataAttr(state.isDisabled())}
+          data-readonly={dataAttr(state.isReadOnly())}
+          data-dragging={dataAttr(state.isDragging())}
+        >
+          {props.children}
+        </div>
+      </RangeCalendarContext.Provider>
+    </RangeCalendarStateContext.Provider>
   );
 }
 

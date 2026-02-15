@@ -11,9 +11,18 @@ import {
   createMemo,
   splitProps,
   useContext,
+  For,
 } from 'solid-js';
 import type { Key } from '@proyecto-viviana/solid-stately';
 import type { DragTypes, DropOperation, DropTarget } from '@proyecto-viviana/solid-stately';
+import {
+  Collection as AriaCollection,
+  CollectionBuilder as AriaCollectionBuilder,
+  createLeafComponent,
+  createBranchComponent,
+  type CollectionProps as AriaCollectionProps,
+  type CollectionBuilderProps as AriaCollectionBuilderProps,
+} from '@proyecto-viviana/solidaria';
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -109,11 +118,35 @@ export interface GroupProps extends SlotProps {
   style?: StyleOrFunction<CollectionPrimitiveRenderProps>;
 }
 
+export interface CollectionBranchProps<T> {
+  collection: Iterable<T>;
+  parent?: unknown;
+  renderDropIndicator?: (target: { type: 'item'; key: Key; dropPosition: 'before' | 'after' | 'on' }) => JSX.Element | undefined;
+}
+
+export interface CollectionRootProps<T> {
+  collection: Iterable<T>;
+  persistedKeys?: Set<Key> | null;
+  renderDropIndicator?: (target: { type: 'item'; key: Key; dropPosition: 'before' | 'after' | 'on' }) => JSX.Element | undefined;
+}
+
+export interface CollectionRenderer<T = unknown> {
+  isVirtualized?: boolean;
+  layoutDelegate?: unknown;
+  dropTargetDelegate?: CollectionDropTargetDelegate;
+  CollectionRoot: (props: CollectionRootProps<T>) => JSX.Element;
+  CollectionBranch: (props: CollectionBranchProps<T>) => JSX.Element;
+}
+
 // ============================================
 // CONTEXT
 // ============================================
 
 export const CollectionRendererContext = createContext<CollectionRendererContextValue<unknown> | null>(null);
+export const SelectableCollectionContext = CollectionRendererContext;
+export const GroupContext = createContext<Partial<GroupProps> | null>(null);
+export const HeaderContext = createContext<Partial<HeaderProps> | null>(null);
+export const HeadingContext = createContext<Partial<HeaderProps> | null>(null);
 
 export function useCollectionRenderer<T>(): CollectionRendererContextValue<T> | null {
   return useContext(CollectionRendererContext) as CollectionRendererContextValue<T> | null;
@@ -135,6 +168,46 @@ export function flattenCollectionEntries<T>(entries: CollectionEntry<T>[]): T[] 
   }
   return flattened;
 }
+
+function renderCollectionItems<T>(
+  collection: Iterable<T>,
+  renderDropIndicator?: (target: { type: 'item'; key: Key; dropPosition: 'before' | 'after' | 'on' }) => JSX.Element | undefined
+): JSX.Element {
+  const items = Array.from(collection);
+  return (
+    <For each={items}>
+      {(item, index) => {
+        const key = (item as { key?: Key }).key ?? index();
+        return (
+          <>
+            {renderDropIndicator?.({ type: 'item', key, dropPosition: 'before' })}
+            {(item as unknown as JSX.Element)}
+            {renderDropIndicator?.({ type: 'item', key, dropPosition: 'after' })}
+          </>
+        );
+      }}
+    </For>
+  );
+}
+
+export const DefaultCollectionRenderer: CollectionRenderer<unknown> = {
+  CollectionRoot(props) {
+    return renderCollectionItems(props.collection, props.renderDropIndicator);
+  },
+  CollectionBranch(props) {
+    return renderCollectionItems(props.collection, props.renderDropIndicator);
+  },
+};
+
+export function CollectionBuilder<T>(props: AriaCollectionBuilderProps<T>): unknown {
+  return AriaCollectionBuilder(props);
+}
+
+export function Collection<T>(props: AriaCollectionProps<T>): unknown {
+  return AriaCollection(props);
+}
+
+export { createLeafComponent, createBranchComponent };
 
 // ============================================
 // COMPONENTS

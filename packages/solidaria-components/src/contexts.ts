@@ -35,6 +35,7 @@ export function useOverlayTriggerState(): OverlayTriggerState | null {
 export interface DialogTriggerContextValue {
   state: StatelyOverlayTriggerState
   triggerRef: () => HTMLElement | null
+  setTriggerRef: (el: HTMLElement | null) => void
   triggerId: string
 }
 

@@ -180,8 +180,7 @@ describe('DateField', () => {
       expect(daySegment).toBeInTheDocument();
     });
 
-    it.skip('should navigate to next segment with Arrow Right', async () => {
-      // Skipped: focus management in contenteditable doesn't work in jsdom
+    it('should navigate to next segment with Arrow Right', async () => {
       render(() => (
         <TestDateField
           fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }}
@@ -191,6 +190,10 @@ describe('DateField', () => {
 
       const segments = screen.getAllByRole('spinbutton');
       expect(segments.length).toBe(3);
+
+      segments[0].focus();
+      fireEvent.keyDown(segments[0], { key: 'ArrowRight' });
+      expect(segments[1]).toHaveFocus();
     });
 
     it.skip('should navigate to previous segment with Arrow Left', async () => {

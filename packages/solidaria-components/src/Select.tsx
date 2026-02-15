@@ -220,6 +220,7 @@ interface SelectContextValue<T> {
 
 export const SelectContext = createContext<SelectContextValue<unknown> | null>(null);
 export const SelectStateContext = createContext<SelectState<unknown> | null>(null);
+export const SelectValueContext = SelectContext;
 
 // ============================================
 // COMPONENTS

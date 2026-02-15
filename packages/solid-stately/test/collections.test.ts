@@ -9,6 +9,8 @@ import {
   createListCollection,
   createListState,
   createSelectionState,
+  useMultipleSelectionState,
+  useMenuTriggerState,
   createMenuState,
   createMenuTriggerState,
 } from '../src';
@@ -217,6 +219,22 @@ describe('createSelectionState', () => {
   });
 });
 
+describe('selection module compatibility aliases', () => {
+  it('useMultipleSelectionState maps to createSelectionState behavior', () => {
+    createRoot((dispose) => {
+      const state = useMultipleSelectionState({
+        selectionMode: 'multiple',
+        defaultSelectedKeys: ['a'],
+      });
+
+      expect(state.selectedKeys().has('a')).toBe(true);
+      state.toggleSelection('b');
+      expect(state.selectedKeys().has('b')).toBe(true);
+      dispose();
+    });
+  });
+});
+
 // ============================================
 // createListState tests
 // ============================================
@@ -387,6 +405,20 @@ describe('createMenuTriggerState', () => {
 
       state.close();
       expect(onOpenChange).toHaveBeenCalledWith(false);
+      dispose();
+    });
+  });
+});
+
+describe('menu module compatibility aliases', () => {
+  it('useMenuTriggerState maps to menu trigger state behavior', () => {
+    createRoot((dispose) => {
+      const state = useMenuTriggerState();
+      expect(state.isOpen()).toBe(false);
+      state.open();
+      expect(state.isOpen()).toBe(true);
+      state.close();
+      expect(state.isOpen()).toBe(false);
       dispose();
     });
   });

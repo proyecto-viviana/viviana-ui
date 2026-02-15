@@ -4,7 +4,13 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
 import {
+  Collection,
+  CollectionBuilder,
   CollectionRendererContext,
+  DefaultCollectionRenderer,
+  GroupContext,
+  HeaderContext,
+  HeadingContext,
   Group,
   Header,
   Section,
@@ -83,5 +89,41 @@ describe('Collection primitives', () => {
     ));
 
     expect(screen.getByText('Hello')).toBeInTheDocument();
+  });
+
+  it('exports collection context primitives for parity', () => {
+    expect(GroupContext).toBeTruthy();
+    expect(HeaderContext).toBeTruthy();
+    expect(HeadingContext).toBeTruthy();
+  });
+
+  it('exports DefaultCollectionRenderer and renders root collections', () => {
+    render(() => (
+      <div>
+        {DefaultCollectionRenderer.CollectionRoot({
+          collection: [<span>A</span>, <span>B</span>],
+        })}
+      </div>
+    ));
+
+    expect(screen.getByText('A')).toBeInTheDocument();
+    expect(screen.getByText('B')).toBeInTheDocument();
+  });
+
+  it('exports CollectionBuilder compatibility wrapper', () => {
+    const out = CollectionBuilder({
+      items: [{ id: 'x', label: 'X' }],
+      children: (item: { id: string; label: string }) => item.label,
+    }) as unknown[];
+    expect(out).toHaveLength(1);
+    expect(out[0]).toBe('X');
+  });
+
+  it('exports Collection compatibility wrapper', () => {
+    const out = Collection({
+      items: [{ id: 'x', label: 'X' }],
+      children: (item: { id: string; label: string }) => ({ label: item.label }),
+    }) as Array<Record<string, unknown>>;
+    expect((out[0]?.value as { id: string })?.id).toBe('x');
   });
 });

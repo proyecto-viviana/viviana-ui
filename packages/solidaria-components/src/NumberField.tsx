@@ -143,6 +143,7 @@ interface NumberFieldContextValue {
 }
 
 export const NumberFieldContext = createContext<NumberFieldContextValue | null>(null);
+export const NumberFieldStateContext = createContext<NumberFieldState | null>(null);
 
 // ============================================
 // COMPONENTS
@@ -231,34 +232,36 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
 
   return (
-    <NumberFieldContext.Provider
-      value={{
-        state,
-        inputProps,
-        incrementButtonProps,
-        decrementButtonProps,
-        labelProps,
-        groupProps,
-        descriptionProps,
-        errorMessageProps,
-        isDisabled: ariaProps.isDisabled ?? false,
-        isInvalid: ariaProps.isInvalid ?? false,
-        isRequired: ariaProps.isRequired ?? false,
-        isReadOnly: ariaProps.isReadOnly ?? false,
-      }}
-    >
-      <div
-        {...domProps()}
-        class={renderProps.class()}
-        style={renderProps.style()}
-        data-disabled={ariaProps.isDisabled || undefined}
-        data-invalid={ariaProps.isInvalid || undefined}
-        data-required={ariaProps.isRequired || undefined}
-        data-readonly={ariaProps.isReadOnly || undefined}
+    <NumberFieldStateContext.Provider value={state}>
+      <NumberFieldContext.Provider
+        value={{
+          state,
+          inputProps,
+          incrementButtonProps,
+          decrementButtonProps,
+          labelProps,
+          groupProps,
+          descriptionProps,
+          errorMessageProps,
+          isDisabled: ariaProps.isDisabled ?? false,
+          isInvalid: ariaProps.isInvalid ?? false,
+          isRequired: ariaProps.isRequired ?? false,
+          isReadOnly: ariaProps.isReadOnly ?? false,
+        }}
       >
-        {renderProps.renderChildren()}
-      </div>
-    </NumberFieldContext.Provider>
+        <div
+          {...domProps()}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          data-disabled={ariaProps.isDisabled || undefined}
+          data-invalid={ariaProps.isInvalid || undefined}
+          data-required={ariaProps.isRequired || undefined}
+          data-readonly={ariaProps.isReadOnly || undefined}
+        >
+          {renderProps.renderChildren()}
+        </div>
+      </NumberFieldContext.Provider>
+    </NumberFieldStateContext.Provider>
   );
 }
 

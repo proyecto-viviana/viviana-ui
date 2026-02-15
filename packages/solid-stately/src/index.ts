@@ -80,6 +80,31 @@ export {
   type MenuTriggerState,
 } from './collections';
 
+// Selection (module-compat aliases)
+export {
+  useMultipleSelectionState,
+  type MultipleSelectionStateProps,
+  type MultipleSelectionState,
+} from './selection';
+
+// Menu (module-compat aliases)
+export {
+  useMenuTriggerState,
+} from './menu';
+
+// Datepicker (module-compat aliases)
+export {
+  useDateFieldState,
+  useDatePickerState,
+  useDateRangePickerState,
+  useTimeFieldState,
+  type DateFieldStateOptions,
+  type DatePickerStateOptions,
+  type DateRangePickerStateOptions,
+  type TimeFieldStateOptions,
+  type SegmentType,
+} from './datepicker';
+
 // Select
 export {
   createSelectState,

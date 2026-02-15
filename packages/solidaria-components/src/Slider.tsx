@@ -160,6 +160,9 @@ interface SliderContextValue {
 }
 
 export const SliderContext = createContext<SliderContextValue | null>(null);
+export const SliderStateContext = SliderContext;
+export const SliderTrackContext = SliderContext;
+export const SliderOutputContext = SliderContext;
 
 // ============================================
 // COMPONENTS

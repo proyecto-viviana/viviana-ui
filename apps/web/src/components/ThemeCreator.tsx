@@ -60,9 +60,9 @@ export function ThemeCreator(props: ThemeCreatorProps) {
   })
 
   const modeOptions = [
-    { id: 'light', label: 'Light' },
-    { id: 'dim', label: 'Dim' },
-    { id: 'dark', label: 'Dark' },
+    { value: 'light', label: 'Light' },
+    { value: 'dim', label: 'Dim' },
+    { value: 'dark', label: 'Dark' },
   ]
 
   return (
@@ -77,7 +77,6 @@ export function ThemeCreator(props: ThemeCreatorProps) {
             options={modeOptions}
             value={mode()}
             onChange={(v) => setMode(v as ThemeMode)}
-            size="sm"
           />
         </div>
 

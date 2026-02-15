@@ -250,6 +250,36 @@
   opacity: 0;
 }
 
+/* Respect user motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-gradient,
+  .animate-float,
+  .animate-float-slow,
+  .animate-float-fast,
+  .animate-pulse-glow,
+  .animate-shimmer,
+  .animate-fade-in-up,
+  .animate-scale-in,
+  .animate-blink {
+    animation: none !important;
+  }
+
+  .hover-lift:hover,
+  .hover-scale:hover,
+  .tilt-card:hover {
+    transform: none !important;
+  }
+}
+
 /* ===== GLASS MORPHISM UTILITIES ===== */
 .glass {
   background: rgba(36, 49, 58, 0.6);

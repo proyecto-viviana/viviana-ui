@@ -111,9 +111,20 @@ export interface DateSegmentProps extends SlotProps {
 // CONTEXT
 // ============================================
 
-export const DateFieldContext = createContext<DateFieldState<DateValue> | null>(null);
+export interface DateFieldContextValue {
+  state: DateFieldState<DateValue>;
+  aria: {
+    labelProps: Record<string, unknown>;
+    inputProps: Record<string, unknown>;
+    descriptionProps: Record<string, unknown>;
+    errorMessageProps: Record<string, unknown>;
+  };
+}
 
-export function useDateFieldContext(): DateFieldState<DateValue> {
+export const DateFieldContext = createContext<DateFieldContextValue | null>(null);
+export const DateFieldStateContext = createContext<DateFieldState<DateValue> | null>(null);
+
+export function useDateFieldContext(): DateFieldContextValue {
   const context = useContext(DateFieldContext);
   if (!context) {
     throw new Error('DateField components must be used within a DateField');
@@ -189,7 +200,15 @@ function DateFieldInner<T extends DateValue = CalendarDate>(
   const state = createDateFieldState(stateProps);
 
   // Create date field ARIA props
-  const fieldAria = createDateField(rest, state as unknown as DateFieldState<DateValue>, fieldRef);
+  const fieldAria = createDateField(
+    () => ({
+      ...(rest as Record<string, unknown>),
+      description: stateProps.description,
+      errorMessage: stateProps.errorMessage,
+    }),
+    state as unknown as DateFieldState<DateValue>,
+    fieldRef
+  );
 
   // Render props values
   const renderValues = createMemo<DateFieldRenderProps>(() => ({
@@ -210,20 +229,32 @@ function DateFieldInner<T extends DateValue = CalendarDate>(
   );
 
   return (
-    <DateFieldContext.Provider value={state as unknown as DateFieldState<DateValue>}>
-      <div
-        ref={setFieldRef}
-        {...fieldAria.fieldProps}
-        class={renderProps.class()}
-        style={renderProps.style()}
-        data-disabled={dataAttr(state.isDisabled())}
-        data-readonly={dataAttr(state.isReadOnly())}
-        data-required={dataAttr(state.isRequired())}
-        data-invalid={dataAttr(state.isInvalid())}
+    <DateFieldStateContext.Provider value={state as unknown as DateFieldState<DateValue>}>
+      <DateFieldContext.Provider
+        value={{
+          state: state as unknown as DateFieldState<DateValue>,
+          aria: {
+            labelProps: fieldAria.labelProps,
+            inputProps: fieldAria.inputProps,
+            descriptionProps: fieldAria.descriptionProps,
+            errorMessageProps: fieldAria.errorMessageProps,
+          },
+        }}
       >
-        {props.children as JSX.Element}
-      </div>
-    </DateFieldContext.Provider>
+        <div
+          ref={setFieldRef}
+          {...fieldAria.fieldProps}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          data-disabled={dataAttr(state.isDisabled())}
+          data-readonly={dataAttr(state.isReadOnly())}
+          data-required={dataAttr(state.isRequired())}
+          data-invalid={dataAttr(state.isInvalid())}
+        >
+          {props.children as JSX.Element}
+        </div>
+      </DateFieldContext.Provider>
+    </DateFieldStateContext.Provider>
   );
 }
 
@@ -235,7 +266,8 @@ function DateFieldInner<T extends DateValue = CalendarDate>(
  * The input area containing date segments.
  */
 export function DateInput(props: DateInputProps): JSX.Element {
-  const state = useDateFieldContext();
+  const context = useDateFieldContext();
+  const { state, aria } = context;
   const [isFocused, setIsFocused] = createSignal(false);
 
   // Render props values
@@ -256,7 +288,7 @@ export function DateInput(props: DateInputProps): JSX.Element {
 
   return (
     <div
-      role="presentation"
+      {...aria.inputProps}
       class={renderProps.class()}
       style={renderProps.style()}
       data-disabled={dataAttr(state.isDisabled())}
@@ -279,7 +311,7 @@ export function DateInput(props: DateInputProps): JSX.Element {
  * A segment of a date field (year, month, day, etc.).
  */
 export function DateSegment(props: DateSegmentProps): JSX.Element {
-  const state = useDateFieldContext();
+  const { state } = useDateFieldContext();
   const [segmentRef, setSegmentRef] = createSignal<HTMLDivElement | null>(null);
 
   // Create segment ARIA props
@@ -330,6 +362,48 @@ export function DateSegment(props: DateSegmentProps): JSX.Element {
     >
       {getChildren()}
     </div>
+  );
+}
+
+export interface DateFieldLabelProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function DateFieldLabel(props: DateFieldLabelProps): JSX.Element {
+  const { aria } = useDateFieldContext();
+  return (
+    <span {...aria.labelProps} class={props.class}>
+      {props.children}
+    </span>
+  );
+}
+
+export interface DateFieldDescriptionProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function DateFieldDescription(props: DateFieldDescriptionProps): JSX.Element {
+  const { aria } = useDateFieldContext();
+  return (
+    <p {...aria.descriptionProps} class={props.class}>
+      {props.children}
+    </p>
+  );
+}
+
+export interface DateFieldErrorMessageProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function DateFieldErrorMessage(props: DateFieldErrorMessageProps): JSX.Element {
+  const { aria } = useDateFieldContext();
+  return (
+    <p {...aria.errorMessageProps} class={props.class}>
+      {props.children}
+    </p>
   );
 }
 

@@ -29,6 +29,10 @@ import {
 } from '@proyecto-viviana/solid-stately';
 import { VisuallyHidden } from './VisuallyHidden';
 import {
+  SelectionIndicatorContext,
+  type SelectionIndicatorContextValue,
+} from './SelectionIndicator';
+import {
   type RenderChildren,
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -267,6 +271,10 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
     renderValues
   );
 
+  const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
+    isSelected: radioAria.isSelected,
+  }));
+
   // Filter DOM props
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps, { global: true });
@@ -294,31 +302,33 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
   };
 
   return (
-    <label
-      {...domProps()}
-      {...cleanLabelProps()}
-      {...cleanHoverProps()}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-selected={radioAria.isSelected() || undefined}
-      data-pressed={radioAria.isPressed() || undefined}
-      data-hovered={isHovered() || undefined}
-      data-focused={isFocused() || undefined}
-      data-focus-visible={isFocusVisible() || undefined}
-      data-disabled={radioAria.isDisabled || undefined}
-      data-readonly={state.isReadOnly || undefined}
-      data-invalid={state.isInvalid || undefined}
-      data-required={state.isRequired || undefined}
-    >
-      <VisuallyHidden>
-        <input
-          ref={(el) => (inputRef = el)}
-          {...cleanInputProps()}
-          {...cleanFocusProps()}
-        />
-      </VisuallyHidden>
-      {renderProps.renderChildren()}
-    </label>
+    <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
+      <label
+        {...domProps()}
+        {...cleanLabelProps()}
+        {...cleanHoverProps()}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-selected={radioAria.isSelected() || undefined}
+        data-pressed={radioAria.isPressed() || undefined}
+        data-hovered={isHovered() || undefined}
+        data-focused={isFocused() || undefined}
+        data-focus-visible={isFocusVisible() || undefined}
+        data-disabled={radioAria.isDisabled || undefined}
+        data-readonly={state.isReadOnly || undefined}
+        data-invalid={state.isInvalid || undefined}
+        data-required={state.isRequired || undefined}
+      >
+        <VisuallyHidden>
+          <input
+            ref={(el) => (inputRef = el)}
+            {...cleanInputProps()}
+            {...cleanFocusProps()}
+          />
+        </VisuallyHidden>
+        {renderProps.renderChildren()}
+      </label>
+    </SelectionIndicatorContext.Provider>
   );
 }
 

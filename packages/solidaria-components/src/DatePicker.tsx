@@ -18,19 +18,25 @@ import {
 import { Portal } from 'solid-js/web';
 import {
   createDatePicker,
+  createDateRangePicker,
   createPopover,
   FocusScope,
   type AriaDatePickerProps,
+  type AriaDateRangePickerProps,
   type DatePickerState as AriaDatePickerState,
 } from '@proyecto-viviana/solidaria';
 import {
   createDateFieldState,
   createCalendarState,
+  createRangeCalendarState,
   type DateFieldState,
   type CalendarState,
+  type RangeCalendarState,
   type DateFieldStateProps,
   type CalendarDate,
   type DateValue,
+  type RangeCalendarStateProps,
+  type RangeValue,
 } from '@proyecto-viviana/solid-stately';
 import {
   type RenderChildren,
@@ -43,6 +49,7 @@ import {
 } from './utils';
 import { DateFieldContext } from './DateField';
 import { CalendarContext } from './Calendar';
+import { RangeCalendarContext } from './RangeCalendar';
 
 // ============================================
 // TYPES
@@ -61,6 +68,11 @@ export interface DatePickerRenderProps {
   isOpen: boolean;
 }
 
+export interface DateRangePickerRenderProps
+  extends Omit<DatePickerRenderProps, 'isInvalid'> {
+  isInvalid: boolean;
+}
+
 export interface DatePickerContextValue {
   fieldState: DateFieldState<DateValue>;
   calendarState: CalendarState<DateValue>;
@@ -73,6 +85,19 @@ export interface DatePickerContextValue {
   triggerRef: () => HTMLElement | null;
   setTriggerRef: (element: HTMLElement | null) => void;
   pickerAria: ReturnType<typeof createDatePicker>;
+}
+
+export interface DateRangePickerContextValue {
+  calendarState: RangeCalendarState<DateValue>;
+  overlayState: {
+    isOpen: boolean;
+    open: () => void;
+    close: () => void;
+    toggle: () => void;
+  };
+  triggerRef: () => HTMLElement | null;
+  setTriggerRef: (element: HTMLElement | null) => void;
+  pickerAria: ReturnType<typeof createDateRangePicker>;
 }
 
 export interface DatePickerProps<T extends DateValue = DateValue>
@@ -88,6 +113,17 @@ export interface DatePickerProps<T extends DateValue = DateValue>
   /** The locale to use for formatting. */
   locale?: string;
   /** Whether the calendar should close when a date is selected. */
+  shouldCloseOnSelect?: boolean;
+}
+
+export interface DateRangePickerProps<T extends DateValue = DateValue>
+  extends Omit<AriaDateRangePickerProps, 'id' | 'isDisabled' | 'isReadOnly' | 'isRequired'>,
+    Omit<RangeCalendarStateProps<T>, 'locale'>,
+    SlotProps {
+  children?: JSX.Element;
+  class?: ClassNameOrFunction<DateRangePickerRenderProps>;
+  style?: StyleOrFunction<DateRangePickerRenderProps>;
+  locale?: string;
   shouldCloseOnSelect?: boolean;
 }
 
@@ -109,16 +145,29 @@ export interface DatePickerButtonProps extends SlotProps {
   isDisabled?: boolean;
 }
 
+export interface DateRangePickerButtonProps extends DatePickerButtonProps {}
+
 // ============================================
 // CONTEXT
 // ============================================
 
 export const DatePickerContext = createContext<DatePickerContextValue | null>(null);
+export const DateRangePickerContext = createContext<DateRangePickerContextValue | null>(null);
+export const DatePickerStateContext = createContext<DateFieldState<DateValue> | null>(null);
+export const DateRangePickerStateContext = createContext<RangeCalendarState<DateValue> | null>(null);
 
 export function useDatePickerContext(): DatePickerContextValue {
   const context = useContext(DatePickerContext);
   if (!context) {
     throw new Error('DatePicker components must be used within a DatePicker');
+  }
+  return context;
+}
+
+export function useDateRangePickerContext(): DateRangePickerContextValue {
+  const context = useContext(DateRangePickerContext);
+  if (!context) {
+    throw new Error('DateRangePicker components must be used within a DateRangePicker');
   }
   return context;
 }
@@ -282,35 +331,146 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
   );
 
   return (
-    <DatePickerContext.Provider value={contextValue}>
-      {/* Also provide DateFieldContext so DateInput/DateSegment work inside DatePicker */}
-      <DateFieldContext.Provider
-        value={{
-          state: fieldState as unknown as DateFieldState<DateValue>,
-          aria: {
-            labelProps: pickerAria.labelProps,
-            inputProps: pickerAria.fieldProps,
-            descriptionProps: pickerAria.descriptionProps,
-            errorMessageProps: pickerAria.errorMessageProps,
-          },
-        }}
-      >
-        <CalendarContext.Provider value={calendarState as unknown as CalendarState<DateValue>}>
+    <DatePickerStateContext.Provider value={fieldState as unknown as DateFieldState<DateValue>}>
+      <DatePickerContext.Provider value={contextValue}>
+        {/* Also provide DateFieldContext so DateInput/DateSegment work inside DatePicker */}
+        <DateFieldContext.Provider
+          value={{
+            state: fieldState as unknown as DateFieldState<DateValue>,
+            aria: {
+              labelProps: pickerAria.labelProps,
+              inputProps: pickerAria.fieldProps,
+              descriptionProps: pickerAria.descriptionProps,
+              errorMessageProps: pickerAria.errorMessageProps,
+            },
+          }}
+        >
+          <CalendarContext.Provider value={calendarState as unknown as CalendarState<DateValue>}>
+            <div
+              {...pickerAria.groupProps}
+              class={renderProps.class()}
+              style={renderProps.style()}
+              data-disabled={dataAttr(fieldState.isDisabled())}
+              data-readonly={dataAttr(fieldState.isReadOnly())}
+              data-required={dataAttr(fieldState.isRequired())}
+              data-invalid={dataAttr(fieldState.isInvalid())}
+              data-open={dataAttr(overlayState.isOpen)}
+            >
+              {props.children}
+            </div>
+          </CalendarContext.Provider>
+        </DateFieldContext.Provider>
+      </DatePickerContext.Provider>
+    </DatePickerStateContext.Provider>
+  );
+}
+
+export function DateRangePicker<T extends DateValue = CalendarDate>(
+  props: DateRangePickerProps<T>
+): JSX.Element {
+  const isHydrated = useIsHydrated();
+  return (
+    <Show
+      when={isHydrated()}
+      fallback={<div class="solidaria-DateRangePicker solidaria-DateRangePicker--placeholder" aria-hidden="true" />}
+    >
+      <DateRangePickerInner {...props} />
+    </Show>
+  );
+}
+
+function DateRangePickerInner<T extends DateValue = CalendarDate>(
+  props: DateRangePickerProps<T>
+): JSX.Element {
+  const [local, stateProps, rest] = splitProps(
+    props,
+    ['children', 'class', 'style', 'slot'],
+    [
+      'value',
+      'defaultValue',
+      'onChange',
+      'minValue',
+      'maxValue',
+      'isDisabled',
+      'isReadOnly',
+      'focusedValue',
+      'defaultFocusedValue',
+      'onFocusChange',
+      'locale',
+      'isDateUnavailable',
+      'visibleMonths',
+      'isDateDisabled',
+      'validationState',
+      'allowsNonContiguousRanges',
+      'firstDayOfWeek',
+    ]
+  );
+
+  const [isOpen, setIsOpen] = createSignal(false);
+  let triggerRef: HTMLElement | null = null;
+  const overlayState = {
+    get isOpen() { return isOpen(); },
+    open: () => setIsOpen(true),
+    close: () => setIsOpen(false),
+    toggle: () => setIsOpen((prev) => !prev),
+  };
+
+  const calendarState = createRangeCalendarState(stateProps);
+  const pickerAria = createDateRangePicker(
+    () => ({
+      ...(rest as Record<string, unknown>),
+      description: (props as { description?: string }).description,
+      errorMessage: (props as { errorMessage?: string }).errorMessage,
+    }),
+    calendarState as unknown as RangeCalendarState<DateValue>,
+    overlayState as AriaDatePickerState
+  );
+
+  const contextValue: DateRangePickerContextValue = {
+    calendarState: calendarState as unknown as RangeCalendarState<DateValue>,
+    overlayState,
+    triggerRef: () => triggerRef,
+    setTriggerRef: (element) => {
+      if (!element) return;
+      if (!triggerRef || !triggerRef.isConnected) triggerRef = element;
+    },
+    pickerAria,
+  };
+
+  const renderValues = createMemo<DateRangePickerRenderProps>(() => ({
+    isDisabled: calendarState.isDisabled(),
+    isReadOnly: calendarState.isReadOnly(),
+    isRequired: false,
+    isInvalid: false,
+    isOpen: overlayState.isOpen,
+  }));
+
+  const renderProps = useRenderProps(
+    {
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-DateRangePicker',
+    },
+    renderValues
+  );
+
+  return (
+    <DateRangePickerStateContext.Provider value={calendarState as unknown as RangeCalendarState<DateValue>}>
+      <DateRangePickerContext.Provider value={contextValue}>
+        <RangeCalendarContext.Provider value={calendarState as unknown as RangeCalendarState<DateValue>}>
           <div
             {...pickerAria.groupProps}
             class={renderProps.class()}
             style={renderProps.style()}
-            data-disabled={dataAttr(fieldState.isDisabled())}
-            data-readonly={dataAttr(fieldState.isReadOnly())}
-            data-required={dataAttr(fieldState.isRequired())}
-            data-invalid={dataAttr(fieldState.isInvalid())}
+            data-disabled={dataAttr(calendarState.isDisabled())}
+            data-readonly={dataAttr(calendarState.isReadOnly())}
             data-open={dataAttr(overlayState.isOpen)}
           >
             {props.children}
           </div>
-        </CalendarContext.Provider>
-      </DateFieldContext.Provider>
-    </DatePickerContext.Provider>
+        </RangeCalendarContext.Provider>
+      </DateRangePickerContext.Provider>
+    </DateRangePickerStateContext.Provider>
   );
 }
 
@@ -368,6 +528,46 @@ export function DatePickerButton(props: DatePickerButtonProps): JSX.Element {
   );
 }
 
+export function DateRangePickerButton(props: DateRangePickerButtonProps): JSX.Element {
+  const context = useDateRangePickerContext();
+
+  const renderValues = createMemo<DatePickerButtonRenderProps>(() => ({
+    isDisabled: context.calendarState.isDisabled() || (props.isDisabled ?? false),
+    isOpen: context.overlayState.isOpen,
+  }));
+
+  const renderProps = useRenderProps(
+    {
+      children: props.children,
+      class: props.class,
+      style: props.style,
+      defaultClassName: 'solidaria-DateRangePickerButton',
+    },
+    renderValues
+  );
+
+  const getChildren = () => {
+    if (typeof props.children === 'function') {
+      return renderProps.renderChildren();
+    }
+    return props.children ?? '📅';
+  };
+
+  return (
+    <button
+      ref={(el) => context.setTriggerRef(el)}
+      {...context.pickerAria.buttonProps}
+      class={renderProps.class()}
+      style={renderProps.style()}
+      disabled={context.calendarState.isDisabled() || props.isDisabled}
+      data-disabled={dataAttr(context.calendarState.isDisabled() || props.isDisabled)}
+      data-open={dataAttr(context.overlayState.isOpen)}
+    >
+      {getChildren()}
+    </button>
+  );
+}
+
 // ============================================
 // DATE PICKER CONTENT COMPONENT
 // ============================================
@@ -380,6 +580,8 @@ export interface DatePickerContentProps extends SlotProps {
   /** The inline style for the element. */
   style?: JSX.CSSProperties;
 }
+
+export interface DateRangePickerContentProps extends DatePickerContentProps {}
 
 /**
  * The content area of the date picker (typically contains a Calendar).
@@ -435,6 +637,75 @@ export function DatePickerContent(props: DatePickerContentProps): JSX.Element {
             {...context.pickerAria.dialogProps}
             tabIndex={-1}
             class={props.class ?? 'solidaria-DatePickerContent'}
+            style={mergedStyle()}
+            data-placement={popoverAria.placement() ?? undefined}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                event.preventDefault();
+                event.stopPropagation();
+                context.overlayState.close();
+              }
+            }}
+          >
+            {props.children}
+          </div>
+        </FocusScope>
+      </Portal>
+    </Show>
+  );
+}
+
+export function DateRangePickerContent(props: DateRangePickerContentProps): JSX.Element {
+  const context = useDateRangePickerContext();
+  let contentRef: HTMLDivElement | undefined;
+
+  const popoverAria = createPopover(
+    {
+      triggerRef: context.triggerRef,
+      popoverRef: () => contentRef ?? null,
+      placement: 'bottom start',
+      offset: 8,
+      isNonModal: false,
+      isKeyboardDismissDisabled: false,
+    },
+    {
+      isOpen: () => context.overlayState.isOpen,
+      open: context.overlayState.open,
+      close: context.overlayState.close,
+      toggle: context.overlayState.toggle,
+    }
+  );
+
+  const cleanPopoverProps = () => {
+    const { style: _style, ref: _ref, ...rest } = popoverAria.popoverProps as Record<string, unknown>;
+    return rest;
+  };
+
+  const mergedStyle = (): JSX.CSSProperties => {
+    const popoverStyle = (popoverAria.popoverProps as Record<string, unknown>).style as JSX.CSSProperties | undefined;
+    return {
+      ...(popoverStyle ?? {}),
+      ...(props.style ?? {}),
+    };
+  };
+
+  createEffect(() => {
+    if (!context.overlayState.isOpen || !contentRef) return;
+    if (document.activeElement !== contentRef) {
+      contentRef.focus();
+    }
+  });
+
+  return (
+    <Show when={context.overlayState.isOpen}>
+      <Portal>
+        <FocusScope contain restoreFocus autoFocus>
+          <div
+            ref={contentRef}
+            {...cleanPopoverProps()}
+            {...context.pickerAria.dialogProps}
+            tabIndex={-1}
+            class={props.class ?? 'solidaria-DateRangePickerContent'}
             style={mergedStyle()}
             data-placement={popoverAria.placement() ?? undefined}
             onKeyDown={(event) => {

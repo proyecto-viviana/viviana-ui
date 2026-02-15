@@ -1,5 +1,5 @@
-import { Outlet, createFileRoute, Link, useMatches } from "@tanstack/solid-router";
-import { For, createMemo, createSignal, Show } from "solid-js";
+import { Outlet, createFileRoute, Link } from "@tanstack/solid-router";
+import { For, createSignal, Show } from "solid-js";
 import { PageLayout } from "@proyecto-viviana/ui";
 import { Header } from "@/components";
 
@@ -19,72 +19,69 @@ type NavSection = {
 
 type NavEntry = NavItem | NavSection;
 
+const componentPages = import.meta.glob("./components/*.tsx");
+const hookPages = import.meta.glob("./hooks/*.tsx");
+
+const componentOrder = ["button", "checkbox", "dialog", "menu", "select", "table", "tabs", "textfield", "toast"];
+const hookOrder = ["create-button", "create-press"];
+
+const labelOverrides: Record<string, string> = {
+  textfield: "TextField",
+};
+
+function filePathToSlug(filePath: string) {
+  return filePath.split("/").at(-1)?.replace(".tsx", "") ?? "";
+}
+
+function toTitleCase(slug: string) {
+  if (slug in labelOverrides) return labelOverrides[slug];
+  return slug
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function toCamelCase(slug: string) {
+  const [first, ...rest] = slug.split("-");
+  return `${first}${rest.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join("")}`;
+}
+
+function buildSectionItems(
+  pages: Record<string, unknown>,
+  basePath: "/docs/components" | "/docs/hooks",
+  order: string[],
+  labelFormatter: (slug: string) => string
+): NavItem[] {
+  const routeItems = Object.keys(pages).map((filePath) => {
+    const slug = filePathToSlug(filePath);
+    return { slug, item: { label: labelFormatter(slug), href: `${basePath}/${slug}` } };
+  });
+
+  return routeItems
+    .sort((a, b) => {
+      const aIndex = order.indexOf(a.slug);
+      const bIndex = order.indexOf(b.slug);
+      const aRank = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
+      const bRank = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
+      return aRank === bRank ? a.item.label.localeCompare(b.item.label) : aRank - bRank;
+    })
+    .map((entry) => entry.item);
+}
+
 const navItems: NavEntry[] = [
   { label: "Getting Started", href: "/docs" },
   { label: "Installation", href: "/docs/installation" },
   {
     section: "Components",
-    items: [
-      { label: "Button", href: "/docs/components/button" },
-      { label: "Checkbox", href: "/docs/components/checkbox" },
-      { label: "Radio", href: "/docs/components/radio" },
-      { label: "Switch", href: "/docs/components/switch" },
-      { label: "TextField", href: "/docs/components/textfield" },
-      { label: "NumberField", href: "/docs/components/numberfield" },
-      { label: "SearchField", href: "/docs/components/searchfield" },
-      { label: "Select", href: "/docs/components/select" },
-      { label: "ComboBox", href: "/docs/components/combobox" },
-      { label: "Menu", href: "/docs/components/menu" },
-      { label: "ListBox", href: "/docs/components/listbox" },
-      { label: "Tabs", href: "/docs/components/tabs" },
-      { label: "Dialog", href: "/docs/components/dialog" },
-      { label: "Popover", href: "/docs/components/popover" },
-      { label: "Tooltip", href: "/docs/components/tooltip" },
-      { label: "Toast", href: "/docs/components/toast" },
-      { label: "Table", href: "/docs/components/table" },
-      { label: "GridList", href: "/docs/components/gridlist" },
-      { label: "Tree", href: "/docs/components/tree" },
-      { label: "Calendar", href: "/docs/components/calendar" },
-      { label: "DateField", href: "/docs/components/datefield" },
-      { label: "DatePicker", href: "/docs/components/datepicker" },
-      { label: "Slider", href: "/docs/components/slider" },
-      { label: "ProgressBar", href: "/docs/components/progressbar" },
-      { label: "Meter", href: "/docs/components/meter" },
-      { label: "Badge", href: "/docs/components/badge" },
-      { label: "Alert", href: "/docs/components/alert" },
-      { label: "Avatar", href: "/docs/components/avatar" },
-      { label: "Breadcrumbs", href: "/docs/components/breadcrumbs" },
-      { label: "Disclosure", href: "/docs/components/disclosure" },
-      { label: "TagGroup", href: "/docs/components/taggroup" },
-      { label: "ColorPicker", href: "/docs/components/colorpicker" },
-      { label: "Separator", href: "/docs/components/separator" },
-      { label: "Link", href: "/docs/components/link" },
-    ],
+    items: buildSectionItems(componentPages, "/docs/components", componentOrder, toTitleCase),
   },
   {
     section: "Hooks",
-    items: [
-      { label: "createButton", href: "/docs/hooks/create-button" },
-      { label: "createPress", href: "/docs/hooks/create-press" },
-      { label: "createHover", href: "/docs/hooks/create-hover" },
-      { label: "createFocusRing", href: "/docs/hooks/create-focus-ring" },
-      { label: "createTextField", href: "/docs/hooks/create-textfield" },
-      { label: "createCheckbox", href: "/docs/hooks/create-checkbox" },
-      { label: "createSelect", href: "/docs/hooks/create-select" },
-      { label: "createMenu", href: "/docs/hooks/create-menu" },
-      { label: "createDialog", href: "/docs/hooks/create-dialog" },
-      { label: "createTooltip", href: "/docs/hooks/create-tooltip" },
-    ],
+    items: buildSectionItems(hookPages, "/docs/hooks", hookOrder, toCamelCase),
   },
 ];
 
 function DocsLayout() {
-  const matches = useMatches();
-  const currentPath = createMemo(() => {
-    const match = matches();
-    return match[match.length - 1]?.pathname || "/docs";
-  });
-
   const [expandedSections, setExpandedSections] = createSignal<Set<string>>(
     new Set(["Components", "Hooks"])
   );
@@ -121,11 +118,12 @@ function DocsLayout() {
           </div>
 
           {/* Navigation */}
-          <nav class="px-4 py-6">
+          <nav class="px-4 py-6" aria-label="Documentation navigation">
             <For each={navItems}>
-              {(item, index) => {
+              {(item) => {
                 if ("section" in item) {
                   const isExpanded = () => expandedSections().has(item.section);
+                  const contentId = `docs-section-${item.section.toLowerCase()}`;
 
                   return (
                     <div class="mt-6 first:mt-0">
@@ -133,6 +131,8 @@ function DocsLayout() {
                       <button
                         class="w-full flex items-center justify-between px-3 py-2 mb-1 text-xs font-semibold uppercase tracking-wider text-primary-500 hover:text-primary-300 transition-colors rounded-lg hover:bg-primary-700/10"
                         onClick={() => toggleSection(item.section)}
+                        aria-expanded={isExpanded()}
+                        aria-controls={contentId}
                       >
                         <span>{item.section}</span>
                         <ChevronIcon
@@ -144,7 +144,7 @@ function DocsLayout() {
 
                       {/* Section items */}
                       <Show when={isExpanded()}>
-                        <div class="space-y-0.5 animate-fade-in-up">
+                        <div id={contentId} class="space-y-0.5 animate-fade-in-up">
                           <For each={item.items}>
                             {(subItem) => (
                               <Link

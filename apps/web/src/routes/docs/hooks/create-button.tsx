@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/solid-router";
+import { createSignal } from "solid-js";
 import { createButton } from "@proyecto-viviana/solidaria";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
@@ -7,6 +8,8 @@ export const Route = createFileRoute("/docs/hooks/create-button")({
 });
 
 function CreateButtonPage() {
+  const [status, setStatus] = createSignal("Not pressed yet");
+
   return (
     <DocPage
       title="createButton"
@@ -54,9 +57,14 @@ function CreateButtonPage() {
   );
 }`}
       >
-        <GradientButton onPress={() => alert("Pressed!")}>
+        <GradientButton
+          onPress={() => {
+            setStatus("Pressed");
+          }}
+        >
           Custom Gradient Button
         </GradientButton>
+        <p class="mt-3 text-sm text-bg-500">Status: {status()}</p>
       </Example>
 
       <Example
@@ -196,18 +204,13 @@ const { buttonProps } = createButton(props, ref);`}</code>
 }
 
 function GradientButton(props: { onPress?: () => void; children: string }) {
-  let ref: HTMLButtonElement | undefined;
-  const { buttonProps, isPressed } = createButton(
-    {
-      onPress: props.onPress,
-    },
-    () => ref
-  );
+  const { buttonProps, isPressed } = createButton({
+    onPress: props.onPress,
+  });
 
   return (
     <button
       {...buttonProps}
-      ref={ref}
       class={`rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3 font-medium text-white shadow-md transition-all hover:shadow-lg ${
         isPressed() ? "scale-[0.98] shadow-sm" : ""
       }`}
@@ -218,18 +221,13 @@ function GradientButton(props: { onPress?: () => void; children: string }) {
 }
 
 function ButtonLink(props: { href: string; children: string }) {
-  let ref: HTMLAnchorElement | undefined;
-  const { buttonProps } = createButton(
-    {
-      elementType: "a",
-    },
-    () => ref
-  );
+  const { buttonProps } = createButton({
+    elementType: "a",
+  });
 
   return (
     <a
       {...buttonProps}
-      ref={ref}
       href={props.href}
       target="_blank"
       rel="noopener noreferrer"

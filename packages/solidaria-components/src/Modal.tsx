@@ -90,6 +90,7 @@ export interface ModalProps extends ModalOverlayProps {}
 // Re-export from contexts for backwards compatibility
 export { OverlayTriggerStateContext, type OverlayTriggerState } from './contexts'
 export { useOverlayTriggerState } from './contexts'
+export const ModalContext = OverlayTriggerStateContext;
 
 // ============================================
 // MODAL OVERLAY COMPONENT

@@ -26,3 +26,10 @@ export {
   type DatePickerAria,
   type DatePickerState,
 } from './createDatePicker';
+
+// Date Range Picker
+export {
+  createDateRangePicker,
+  type AriaDateRangePickerProps,
+  type DateRangePickerAria,
+} from './createDateRangePicker';

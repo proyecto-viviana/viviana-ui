@@ -35,14 +35,14 @@ function ButtonPage() {
       <Example
         title="Styles"
         description="Each variant can be rendered in fill (default) or outline style."
-        code={`<Button variant="primary" style="fill">Fill</Button>
-<Button variant="primary" style="outline">Outline</Button>`}
+        code={`<Button variant="primary" buttonStyle="fill">Fill</Button>
+<Button variant="primary" buttonStyle="outline">Outline</Button>`}
       >
         <div class="flex flex-wrap gap-3">
-          <Button variant="primary" style="fill">Fill</Button>
-          <Button variant="primary" style="outline">Outline</Button>
-          <Button variant="secondary" style="fill">Fill</Button>
-          <Button variant="secondary" style="outline">Outline</Button>
+          <Button variant="primary" buttonStyle="fill">Fill</Button>
+          <Button variant="primary" buttonStyle="outline">Outline</Button>
+          <Button variant="secondary" buttonStyle="fill">Fill</Button>
+          <Button variant="secondary" buttonStyle="outline">Outline</Button>
         </div>
       </Example>
 
@@ -94,7 +94,7 @@ function ButtonPage() {
             description: "Visual style variant",
           },
           {
-            name: "style",
+            name: "buttonStyle",
             type: "'fill' | 'outline'",
             default: "'fill'",
             description: "Background fill style",

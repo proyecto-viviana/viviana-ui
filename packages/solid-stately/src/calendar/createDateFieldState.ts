@@ -364,11 +364,34 @@ export function createDateFieldState<T extends DateValue = CalendarDate>(
 
   // Confirm placeholder value
   const confirmPlaceholder = () => {
+    if (isDisabled() || isReadOnly()) return;
+
+    const minValue = access(props.minValue);
+    const maxValue = access(props.maxValue);
+    const constrain = (candidate: DateValue): DateValue => {
+      if (minValue && candidate.compare(minValue) < 0) {
+        return minValue;
+      }
+      if (maxValue && candidate.compare(maxValue) > 0) {
+        return maxValue;
+      }
+      return candidate;
+    };
+
     const parts = placeholderDate();
     if (Object.keys(parts).length > 0) {
       const dv = dateValue();
       if (dv) {
-        setValue(dv as T);
+        setValue(constrain(dv) as T);
+      }
+      return;
+    }
+
+    const current = value();
+    if (current) {
+      const constrained = constrain(current);
+      if (constrained.compare(current) !== 0) {
+        setValue(constrained as T);
       }
     }
   };

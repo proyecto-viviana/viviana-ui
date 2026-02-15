@@ -19,6 +19,7 @@ import {
   SelectListBox,
   SelectOption,
 } from '../src/Select';
+import { SelectionIndicator } from '../src/SelectionIndicator';
 import type { Key } from '@proyecto-viviana/solid-stately';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
@@ -240,6 +241,61 @@ describe('Select', () => {
       const options = screen.getAllByRole('option');
       const catOption = options.find((o) => o.textContent === 'Cat');
       expect(catOption).toHaveAttribute('data-selected');
+    });
+
+    it('should support multiple selection mode', async () => {
+      const onSelectionChangeKeys = vi.fn();
+      render(() => (
+        <TestSelect
+          selectProps={{
+            selectionMode: 'multiple',
+            defaultOpen: true,
+            defaultSelectedKeys: ['cat'],
+            onSelectionChangeKeys,
+          }}
+        />
+      ));
+
+      const options = screen.getAllByRole('option');
+      const dogOption = options.find((o) => o.textContent === 'Dog')!;
+      await user.click(dogOption);
+
+      expect(screen.getByRole('combobox')).toHaveTextContent('Cat, Dog');
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+      expect(onSelectionChangeKeys).toHaveBeenCalled();
+    });
+
+    it('should render SelectionIndicator only for selected option', async () => {
+      render(() => (
+        <Select<TestItem>
+          aria-label="Test Select"
+          items={testItems}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.name}
+          defaultOpen
+          defaultSelectedKey="cat"
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectListBox>
+            {(item) => (
+              <SelectOption id={item.id}>
+                {() => (
+                  <>
+                    {item.name}
+                    <SelectionIndicator>Selected</SelectionIndicator>
+                  </>
+                )}
+              </SelectOption>
+            )}
+          </SelectListBox>
+        </Select>
+      ));
+
+      expect(screen.getAllByText('Selected')).toHaveLength(1);
+      await user.click(screen.getByRole('option', { name: 'Dog' }));
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     });
   });
 

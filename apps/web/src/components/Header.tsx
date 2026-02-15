@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/solid-router";
-import { Button, Logo, Icon, GitHubIcon } from "@proyecto-viviana/ui";
+import { Button, Logo, GitHubIcon } from "@proyecto-viviana/ui";
 import { createSignal, onMount, Show } from "solid-js";
 
 export function Header() {
@@ -78,7 +78,7 @@ export function Header() {
             rel="noopener noreferrer"
             aria-label="GitHub"
           >
-            <Icon icon={GitHubIcon} size={20} />
+            <GitHubIcon size={20} />
           </a>
 
           {/* CTA Button */}

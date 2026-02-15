@@ -1368,3 +1368,47 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
     </div>
   );
 }
+
+export const ColorSliderStateContext = ColorSliderContext;
+export const ColorAreaStateContext = ColorAreaContext;
+export const ColorWheelStateContext = ColorWheelContext;
+export const ColorWheelTrackContext = ColorWheelContext;
+export const ColorFieldStateContext = ColorFieldContext;
+export const ColorSwatchContext = createContext<null>(null);
+export const ColorPickerContext = ColorFieldContext;
+export const ColorPickerStateContext = ColorFieldContext;
+export const ColorSwatchPickerContext = createContext<null>(null);
+export const ColorThumb = ColorSliderThumb;
+
+export interface ColorPickerProps extends ColorFieldProps {}
+export interface ColorPickerRenderProps extends ColorFieldRenderProps {}
+export interface ColorSwatchPickerProps extends SlotProps {
+  children?: JSX.Element;
+  class?: string;
+  style?: JSX.CSSProperties;
+}
+export interface ColorSwatchPickerItemProps extends SlotProps {
+  children?: JSX.Element;
+  class?: string;
+  style?: JSX.CSSProperties;
+}
+
+export function ColorPicker(props: ColorPickerProps): JSX.Element {
+  return <ColorField {...props} />;
+}
+
+export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
+  return (
+    <div class={props.class ?? 'solidaria-ColorSwatchPicker'} style={props.style}>
+      {props.children}
+    </div>
+  );
+}
+
+export function ColorSwatchPickerItem(props: ColorSwatchPickerItemProps): JSX.Element {
+  return (
+    <div class={props.class ?? 'solidaria-ColorSwatchPickerItem'} style={props.style}>
+      {props.children}
+    </div>
+  );
+}

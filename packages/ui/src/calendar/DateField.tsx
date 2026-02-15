@@ -7,6 +7,9 @@
 import { type JSX, splitProps } from 'solid-js';
 import {
   DateField as HeadlessDateField,
+  DateFieldLabel,
+  DateFieldDescription,
+  DateFieldErrorMessage,
   DateInput,
   DateSegment,
   type DateFieldProps as HeadlessDateFieldProps,
@@ -106,6 +109,9 @@ export function DateField<T extends DateValue = CalendarDate>(
   return (
     <HeadlessDateField
       {...rest}
+      label={local.label}
+      description={local.description}
+      errorMessage={local.errorMessage}
       isInvalid={isInvalid()}
       class={`
         flex flex-col gap-1
@@ -115,10 +121,10 @@ export function DateField<T extends DateValue = CalendarDate>(
     >
       {/* Label */}
       {local.label && (
-        <label class={`font-medium text-primary-200 ${sizeConfig().label}`}>
+        <DateFieldLabel class={`font-medium text-primary-200 ${sizeConfig().label}`}>
           {local.label}
           {rest.isRequired && <span class="text-red-500 ml-0.5">*</span>}
-        </label>
+        </DateFieldLabel>
       )}
 
       {/* Input container */}
@@ -181,16 +187,16 @@ export function DateField<T extends DateValue = CalendarDate>(
 
       {/* Description */}
       {local.description && !isInvalid() && (
-        <p class={`text-primary-400 ${sizeConfig().label}`}>
+        <DateFieldDescription class={`text-primary-400 ${sizeConfig().label}`}>
           {local.description}
-        </p>
+        </DateFieldDescription>
       )}
 
       {/* Error message */}
       {isInvalid() && local.errorMessage && (
-        <p class={`text-red-500 ${sizeConfig().label}`}>
+        <DateFieldErrorMessage class={`text-red-500 ${sizeConfig().label}`}>
           {local.errorMessage}
-        </p>
+        </DateFieldErrorMessage>
       )}
     </HeadlessDateField>
   );

@@ -30,7 +30,7 @@ function ToastPage() {
   return (
     <ToastProvider>
       <YourApp />
-      <ToastRegion placement="bottom-right" />
+      <ToastRegion placement="bottom-end" />
     </ToastProvider>
   );
 }`}</code>
@@ -59,7 +59,7 @@ toastInfo('New update available');`}
               Info Toast
             </Button>
           </div>
-          <ToastRegion placement="bottom-right" />
+          <ToastRegion placement="bottom-end" />
         </ToastProvider>
       </Example>
 
@@ -84,19 +84,19 @@ toastInfo('Stays longer', { timeout: 10000 });`}
               Long Toast
             </Button>
           </div>
-          <ToastRegion placement="bottom-right" />
+          <ToastRegion placement="bottom-end" />
         </ToastProvider>
       </Example>
 
       <Example
         title="Placement Options"
         description="Toasts can appear at different edges of the screen."
-        code={`<ToastRegion placement="top-right" />
-<ToastRegion placement="top-center" />
-<ToastRegion placement="bottom-left" />`}
+        code={`<ToastRegion placement="top-end" />
+<ToastRegion placement="top" />
+<ToastRegion placement="bottom-start" />`}
       >
         <div class="text-sm text-bg-500">
-          Placement options: top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
+          Placement options: top, top-start, top-end, bottom, bottom-start, bottom-end
         </div>
       </Example>
 
@@ -116,8 +116,8 @@ toastInfo('Stays longer', { timeout: 10000 });`}
         props={[
           {
             name: "placement",
-            type: "'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'",
-            default: "'bottom-right'",
+            type: "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end'",
+            default: "'bottom-end'",
             description: "Where toasts appear on screen",
           },
           {

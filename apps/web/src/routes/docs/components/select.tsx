@@ -3,6 +3,12 @@ import { createSignal } from "solid-js";
 import { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from "@proyecto-viviana/ui";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
+type SelectItem = {
+  id: string;
+  name: string;
+  isDisabled?: boolean;
+};
+
 export const Route = createFileRoute("/docs/components/select")({
   component: SelectPage,
 });
@@ -10,12 +16,26 @@ export const Route = createFileRoute("/docs/components/select")({
 function SelectPage() {
   const [selected, setSelected] = createSignal<string | null>(null);
 
-  const options = [
+  const fruitOptions: SelectItem[] = [
     { id: "apple", name: "Apple" },
     { id: "banana", name: "Banana" },
     { id: "cherry", name: "Cherry" },
     { id: "date", name: "Date" },
     { id: "elderberry", name: "Elderberry" },
+  ];
+
+  const countryOptions: SelectItem[] = [
+    { id: "us", name: "United States" },
+    { id: "uk", name: "United Kingdom" },
+    { id: "ca", name: "Canada" },
+    { id: "au", name: "Australia" },
+  ];
+
+  const planOptions: SelectItem[] = [
+    { id: "free", name: "Free" },
+    { id: "basic", name: "Basic - $9/mo" },
+    { id: "pro", name: "Pro - $29/mo" },
+    { id: "enterprise", name: "Enterprise (Contact Sales)", isDisabled: true },
   ];
 
   return (
@@ -33,38 +53,29 @@ function SelectPage() {
       <Example
         title="Basic Usage"
         description="A simple select with static options."
-        code={`const [selected, setSelected] = createSignal(null);
-
-<Select
-  label="Favorite fruit"
-  selectedKey={selected()}
-  onSelectionChange={setSelected}
->
+        code={`<Select items={items} selectedKey={selected()} onSelectionChange={setSelected}>
   <SelectTrigger>
     <SelectValue placeholder="Select a fruit" />
   </SelectTrigger>
   <SelectListBox>
-    <SelectOption id="apple">Apple</SelectOption>
-    <SelectOption id="banana">Banana</SelectOption>
-    <SelectOption id="cherry">Cherry</SelectOption>
+    {(item) => <SelectOption id={item.id}>{item.name}</SelectOption>}
   </SelectListBox>
 </Select>`}
       >
         <div class="max-w-xs">
           <Select
             label="Favorite fruit"
+            items={fruitOptions}
+            getKey={(item) => item.id}
+            getTextValue={(item) => item.name}
             selectedKey={selected()}
-            onSelectionChange={(key) => setSelected(key as string)}
+            onSelectionChange={(key) => setSelected((key as string) ?? null)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select a fruit" />
             </SelectTrigger>
-            <SelectListBox>
-              <SelectOption id="apple">Apple</SelectOption>
-              <SelectOption id="banana">Banana</SelectOption>
-              <SelectOption id="cherry">Cherry</SelectOption>
-              <SelectOption id="date">Date</SelectOption>
-              <SelectOption id="elderberry">Elderberry</SelectOption>
+            <SelectListBox<SelectItem>>
+              {(item) => <SelectOption id={item.id}>{item.name}</SelectOption>}
             </SelectListBox>
           </Select>
           <p class="mt-2 text-sm text-bg-500">Selected: {selected() || "None"}</p>
@@ -74,26 +85,21 @@ function SelectPage() {
       <Example
         title="With Description"
         description="Add a description to provide additional context."
-        code={`<Select
-  label="Country"
-  description="Select your country of residence"
->
-  ...
-</Select>`}
+        code={`<Select label="Country" description="Select your country of residence" items={items}>...</Select>`}
       >
         <div class="max-w-xs">
           <Select
             label="Country"
             description="Select your country of residence"
+            items={countryOptions}
+            getKey={(item) => item.id}
+            getTextValue={(item) => item.name}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select a country" />
             </SelectTrigger>
-            <SelectListBox>
-              <SelectOption id="us">United States</SelectOption>
-              <SelectOption id="uk">United Kingdom</SelectOption>
-              <SelectOption id="ca">Canada</SelectOption>
-              <SelectOption id="au">Australia</SelectOption>
+            <SelectListBox<SelectItem>>
+              {(item) => <SelectOption id={item.id}>{item.name}</SelectOption>}
             </SelectListBox>
           </Select>
         </div>
@@ -102,22 +108,25 @@ function SelectPage() {
       <Example
         title="Disabled Options"
         description="Individual options can be disabled."
-        code={`<SelectOption id="premium" isDisabled>
-  Premium (Unavailable)
-</SelectOption>`}
+        code={`<Select items={items} getDisabled={(item) => item.isDisabled ?? false}>...</Select>`}
       >
         <div class="max-w-xs">
-          <Select label="Plan">
+          <Select
+            label="Plan"
+            items={planOptions}
+            getKey={(item) => item.id}
+            getTextValue={(item) => item.name}
+            getDisabled={(item) => item.isDisabled ?? false}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select a plan" />
             </SelectTrigger>
-            <SelectListBox>
-              <SelectOption id="free">Free</SelectOption>
-              <SelectOption id="basic">Basic - $9/mo</SelectOption>
-              <SelectOption id="pro">Pro - $29/mo</SelectOption>
-              <SelectOption id="enterprise" isDisabled>
-                Enterprise (Contact Sales)
-              </SelectOption>
+            <SelectListBox<SelectItem>>
+              {(item) => (
+                <SelectOption id={item.id} isDisabled={item.isDisabled}>
+                  {item.name}
+                </SelectOption>
+              )}
             </SelectListBox>
           </Select>
         </div>
@@ -126,17 +135,21 @@ function SelectPage() {
       <Example
         title="Disabled State"
         description="The entire select can be disabled."
-        code={`<Select label="Disabled select" isDisabled>
-  ...
-</Select>`}
+        code={`<Select label="Disabled select" isDisabled items={items}>...</Select>`}
       >
         <div class="max-w-xs">
-          <Select label="Disabled select" isDisabled>
+          <Select
+            label="Disabled select"
+            isDisabled
+            items={[{ id: "opt1", name: "Option 1" }]}
+            getKey={(item) => item.id}
+            getTextValue={(item) => item.name}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Cannot select" />
             </SelectTrigger>
-            <SelectListBox>
-              <SelectOption id="opt1">Option 1</SelectOption>
+            <SelectListBox<SelectItem>>
+              {(item) => <SelectOption id={item.id}>{item.name}</SelectOption>}
             </SelectListBox>
           </Select>
         </div>
@@ -145,18 +158,24 @@ function SelectPage() {
       <Example
         title="Required Field"
         description="Mark the select as required for form validation."
-        code={`<Select label="Required field" isRequired>
-  ...
-</Select>`}
+        code={`<Select label="Required field" isRequired items={items}>...</Select>`}
       >
         <div class="max-w-xs">
-          <Select label="Required field" isRequired>
+          <Select
+            label="Required field"
+            isRequired
+            items={[
+              { id: "opt1", name: "Option 1" },
+              { id: "opt2", name: "Option 2" },
+            ]}
+            getKey={(item) => item.id}
+            getTextValue={(item) => item.name}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select an option" />
             </SelectTrigger>
-            <SelectListBox>
-              <SelectOption id="opt1">Option 1</SelectOption>
-              <SelectOption id="opt2">Option 2</SelectOption>
+            <SelectListBox<SelectItem>>
+              {(item) => <SelectOption id={item.id}>{item.name}</SelectOption>}
             </SelectListBox>
           </Select>
         </div>
@@ -165,6 +184,11 @@ function SelectPage() {
       <h2>Select Props</h2>
       <PropsTable
         props={[
+          {
+            name: "items",
+            type: "T[]",
+            description: "Collection of selectable items",
+          },
           {
             name: "label",
             type: "string",
@@ -206,11 +230,6 @@ function SelectPage() {
             type: "boolean",
             default: "false",
             description: "Whether a selection is required",
-          },
-          {
-            name: "placeholder",
-            type: "string",
-            description: "Placeholder text when no selection",
           },
           {
             name: "children",
@@ -258,7 +277,6 @@ function SelectPage() {
             Announces selection changes to screen readers
           </li>
           <li>Focus trapped within popover when open</li>
-          <li>Escape key closes the popover and returns focus to trigger</li>
         </ul>
       </AccessibilitySection>
     </DocPage>

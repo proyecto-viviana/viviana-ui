@@ -9,6 +9,7 @@ import { createId } from '@proyecto-viviana/solid-stately';
 import type { GridState, GridCollection, Key } from '@proyecto-viviana/solid-stately';
 import type { GridProps, GridAria, KeyboardDelegate } from './types';
 import { GridKeyboardDelegate } from './GridKeyboardDelegate';
+import { useLocale } from '../i18n';
 
 // Global map to store grid metadata for child components
 const gridMap = new WeakMap<
@@ -37,6 +38,7 @@ export function createGrid<T extends object>(
   ref: Accessor<HTMLElement | null>
 ): GridAria {
   const id = createId(props().id);
+  const locale = useLocale();
 
   // Track focused state
   const [_isFocused, setIsFocused] = createSignal(false);
@@ -55,7 +57,7 @@ export function createGrid<T extends object>(
       disabledKeys: s.disabledKeys,
       ref,
       focusMode: p.focusMode ?? 'row',
-      direction: 'ltr', // TODO: get from locale
+      direction: locale().direction,
     });
   });
 

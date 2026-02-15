@@ -109,10 +109,18 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
     () => triggerRef
   )
 
+  const setTriggerRef = (el: HTMLElement | null) => {
+    if (!el) return
+    if (!triggerRef || !triggerRef.isConnected) {
+      triggerRef = el
+    }
+  }
+
   // Context value - memoized to avoid unnecessary re-renders
   const contextValue = createMemo(() => ({
     state,
     triggerRef: () => triggerRef,
+    setTriggerRef,
     triggerId,
   }))
 

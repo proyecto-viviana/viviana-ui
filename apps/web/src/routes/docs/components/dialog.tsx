@@ -19,79 +19,91 @@ function DialogPage() {
       <Example
         title="Basic Dialog"
         description="A simple dialog with a title and content."
-        code={`<DialogTrigger>
-  <Button>Open Dialog</Button>
-  <Dialog title="Welcome">
-    <p>This is a basic dialog with some content.</p>
-  </Dialog>
-</DialogTrigger>`}
+        code={`<DialogTrigger
+  trigger={<Button>Open Dialog</Button>}
+  content={(close) => (
+    <Dialog title="Welcome" onClose={close}>
+      <p>This is a basic dialog with some content.</p>
+    </Dialog>
+  )}
+/>`}
       >
-        <DialogTrigger>
-          <Button>Open Dialog</Button>
-          <Dialog title="Welcome">
-            <p class="text-bg-600">
-              This is a basic dialog with some content. Click outside or press Escape to close.
-            </p>
-          </Dialog>
-        </DialogTrigger>
+        <DialogTrigger
+          trigger={<Button>Open Dialog</Button>}
+          content={(close) => (
+            <Dialog title="Welcome" onClose={close}>
+              <p class="text-bg-600">
+                This is a basic dialog with some content. Click outside or press Escape to close.
+              </p>
+            </Dialog>
+          )}
+        />
       </Example>
 
       <Example
         title="Confirmation Dialog"
         description="Dialogs commonly used to confirm destructive actions."
-        code={`<DialogTrigger>
-  <Button variant="negative">Delete Item</Button>
-  <Dialog title="Confirm Delete">
-    <p>Are you sure you want to delete this item?</p>
-    <DialogFooter>
-      <Button variant="secondary" slot="cancel">Cancel</Button>
-      <Button variant="negative" slot="confirm">Delete</Button>
-    </DialogFooter>
-  </Dialog>
-</DialogTrigger>`}
+        code={`<DialogTrigger
+  trigger={<Button variant="negative">Delete Item</Button>}
+  content={(close) => (
+    <Dialog title="Confirm Delete" onClose={close}>
+      <p>Are you sure you want to delete this item?</p>
+      <DialogFooter>
+        <Button variant="secondary" onPress={close}>Cancel</Button>
+        <Button variant="negative" onPress={close}>Delete</Button>
+      </DialogFooter>
+    </Dialog>
+  )}
+/>`}
       >
-        <DialogTrigger>
-          <Button variant="negative">Delete Item</Button>
-          <Dialog title="Confirm Delete">
-            <p class="text-bg-600">
-              Are you sure you want to delete this item? This action cannot be undone.
-            </p>
-            <DialogFooter>
-              <Button variant="secondary">Cancel</Button>
-              <Button variant="negative">Delete</Button>
-            </DialogFooter>
-          </Dialog>
-        </DialogTrigger>
+        <DialogTrigger
+          trigger={<Button variant="negative">Delete Item</Button>}
+          content={(close) => (
+            <Dialog title="Confirm Delete" onClose={close}>
+              <p class="text-bg-600">
+                Are you sure you want to delete this item? This action cannot be undone.
+              </p>
+              <DialogFooter>
+                <Button variant="secondary" onPress={close}>Cancel</Button>
+                <Button variant="negative" onPress={close}>Delete</Button>
+              </DialogFooter>
+            </Dialog>
+          )}
+        />
       </Example>
 
       <Example
         title="Form Dialog"
         description="Collect user input within a dialog."
-        code={`<DialogTrigger>
-  <Button>Edit Profile</Button>
-  <Dialog title="Edit Profile">
-    <TextField label="Name" defaultValue="John Doe" />
-    <TextField label="Email" defaultValue="john@example.com" />
-    <DialogFooter>
-      <Button variant="secondary">Cancel</Button>
-      <Button variant="primary">Save</Button>
-    </DialogFooter>
-  </Dialog>
-</DialogTrigger>`}
+        code={`<DialogTrigger
+  trigger={<Button>Edit Profile</Button>}
+  content={(close) => (
+    <Dialog title="Edit Profile" onClose={close}>
+      <TextField label="Name" defaultValue="John Doe" />
+      <TextField label="Email" defaultValue="john@example.com" />
+      <DialogFooter>
+        <Button variant="secondary" onPress={close}>Cancel</Button>
+        <Button variant="primary" onPress={close}>Save</Button>
+      </DialogFooter>
+    </Dialog>
+  )}
+/>`}
       >
-        <DialogTrigger>
-          <Button>Edit Profile</Button>
-          <Dialog title="Edit Profile">
-            <div class="space-y-4">
-              <TextField label="Name" defaultValue="John Doe" />
-              <TextField label="Email" defaultValue="john@example.com" />
-            </div>
-            <DialogFooter>
-              <Button variant="secondary">Cancel</Button>
-              <Button variant="primary">Save</Button>
-            </DialogFooter>
-          </Dialog>
-        </DialogTrigger>
+        <DialogTrigger
+          trigger={<Button>Edit Profile</Button>}
+          content={(close) => (
+            <Dialog title="Edit Profile" onClose={close}>
+              <div class="space-y-4">
+                <TextField label="Name" defaultValue="John Doe" />
+                <TextField label="Email" defaultValue="john@example.com" />
+              </div>
+              <DialogFooter>
+                <Button variant="secondary" onPress={close}>Cancel</Button>
+                <Button variant="primary" onPress={close}>Save</Button>
+              </DialogFooter>
+            </Dialog>
+          )}
+        />
       </Example>
 
       <Example
@@ -99,26 +111,32 @@ function DialogPage() {
         description="Control the dialog's open state programmatically."
         code={`const [isOpen, setIsOpen] = createSignal(false);
 
-<Button onPress={() => setIsOpen(true)}>Open</Button>
-
-<DialogTrigger isOpen={isOpen()} onOpenChange={setIsOpen}>
-  <Dialog title="Controlled Dialog">
-    <p>This dialog is controlled by state.</p>
-  </Dialog>
-</DialogTrigger>`}
+<DialogTrigger
+  isOpen={isOpen()}
+  onOpenChange={setIsOpen}
+  trigger={<Button>Open</Button>}
+  content={(close) => (
+    <Dialog title="Controlled Dialog" onClose={close}>...</Dialog>
+  )}
+/>`}
       >
         <div class="flex gap-3">
           <Button onPress={() => setIsOpen(true)}>Open Controlled Dialog</Button>
-          <DialogTrigger isOpen={isOpen()} onOpenChange={setIsOpen}>
-            <Dialog title="Controlled Dialog">
-              <p class="text-bg-600">This dialog is controlled by state.</p>
-              <DialogFooter>
-                <Button variant="primary" onPress={() => setIsOpen(false)}>
-                  Close
-                </Button>
-              </DialogFooter>
-            </Dialog>
-          </DialogTrigger>
+          <DialogTrigger
+            isOpen={isOpen()}
+            onOpenChange={setIsOpen}
+            trigger={<span />}
+            content={(close) => (
+              <Dialog title="Controlled Dialog" onClose={close}>
+                <p class="text-bg-600">This dialog is controlled by state.</p>
+                <DialogFooter>
+                  <Button variant="primary" onPress={close}>
+                    Close
+                  </Button>
+                </DialogFooter>
+              </Dialog>
+            )}
+          />
         </div>
       </Example>
 
@@ -130,24 +148,30 @@ function DialogPage() {
 <Dialog title="Large Dialog" size="lg">...</Dialog>`}
       >
         <div class="flex gap-3">
-          <DialogTrigger>
-            <Button variant="secondary">Small</Button>
-            <Dialog title="Small Dialog" size="sm">
-              <p class="text-bg-600">A compact dialog for simple messages.</p>
-            </Dialog>
-          </DialogTrigger>
-          <DialogTrigger>
-            <Button variant="secondary">Medium</Button>
-            <Dialog title="Medium Dialog" size="md">
-              <p class="text-bg-600">The default size for most use cases.</p>
-            </Dialog>
-          </DialogTrigger>
-          <DialogTrigger>
-            <Button variant="secondary">Large</Button>
-            <Dialog title="Large Dialog" size="lg">
-              <p class="text-bg-600">A larger dialog for complex content or forms.</p>
-            </Dialog>
-          </DialogTrigger>
+          <DialogTrigger
+            trigger={<Button variant="secondary">Small</Button>}
+            content={(close) => (
+              <Dialog title="Small Dialog" size="sm" onClose={close}>
+                <p class="text-bg-600">A compact dialog for simple messages.</p>
+              </Dialog>
+            )}
+          />
+          <DialogTrigger
+            trigger={<Button variant="secondary">Medium</Button>}
+            content={(close) => (
+              <Dialog title="Medium Dialog" size="md" onClose={close}>
+                <p class="text-bg-600">The default size for most use cases.</p>
+              </Dialog>
+            )}
+          />
+          <DialogTrigger
+            trigger={<Button variant="secondary">Large</Button>}
+            content={(close) => (
+              <Dialog title="Large Dialog" size="lg" onClose={close}>
+                <p class="text-bg-600">A larger dialog for complex content or forms.</p>
+              </Dialog>
+            )}
+          />
         </div>
       </Example>
 
@@ -155,25 +179,24 @@ function DialogPage() {
       <PropsTable
         props={[
           {
+            name: "trigger",
+            type: "JSX.Element",
+            description: "Element that opens the dialog",
+          },
+          {
+            name: "content",
+            type: "(close: () => void) => JSX.Element",
+            description: "Render function that receives a close callback",
+          },
+          {
             name: "isOpen",
             type: "boolean",
             description: "Whether the dialog is open (controlled)",
           },
           {
-            name: "defaultOpen",
-            type: "boolean",
-            default: "false",
-            description: "Whether the dialog is open by default",
-          },
-          {
             name: "onOpenChange",
             type: "(isOpen: boolean) => void",
             description: "Handler called when open state changes",
-          },
-          {
-            name: "children",
-            type: "JSX.Element",
-            description: "Trigger button and Dialog component",
           },
         ]}
       />
@@ -184,11 +207,11 @@ function DialogPage() {
           {
             name: "title",
             type: "string",
-            description: "Dialog title (required for accessibility)",
+            description: "Dialog title (recommended for accessibility)",
           },
           {
             name: "size",
-            type: "'sm' | 'md' | 'lg'",
+            type: "'sm' | 'md' | 'lg' | 'fullscreen'",
             default: "'md'",
             description: "Dialog width",
           },
@@ -196,18 +219,12 @@ function DialogPage() {
             name: "isDismissable",
             type: "boolean",
             default: "true",
-            description: "Whether clicking outside closes the dialog",
-          },
-          {
-            name: "isKeyboardDismissDisabled",
-            type: "boolean",
-            default: "false",
-            description: "Whether Escape key is disabled",
+            description: "Whether close affordance is shown",
           },
           {
             name: "onClose",
             type: "() => void",
-            description: "Handler called when dialog is closed",
+            description: "Handler called when dialog should close",
           },
           {
             name: "children",
@@ -219,15 +236,11 @@ function DialogPage() {
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>
-            Uses <code>dialog</code> role with <code>aria-modal="true"</code>
-          </li>
-          <li>Focus is trapped within the dialog while open</li>
-          <li>Focus moves to first focusable element when opened</li>
-          <li>Escape key closes the dialog</li>
-          <li>Focus returns to trigger element when closed</li>
-          <li>Background content is hidden from screen readers</li>
-          <li>Page scroll is prevented while dialog is open</li>
+          <li>Uses modal dialog semantics with keyboard dismissal (Escape)</li>
+          <li>Focus remains contained while the dialog is open</li>
+          <li>Focus is restored to the trigger when closed</li>
+          <li>Includes outside-click dismissal support (configurable)</li>
+          <li>Document scrolling is prevented while open</li>
         </ul>
       </AccessibilitySection>
     </DocPage>

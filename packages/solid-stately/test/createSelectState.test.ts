@@ -372,4 +372,59 @@ describe('createSelectState', () => {
       });
     });
   });
+
+  describe('multiple selection mode', () => {
+    it('supports defaultSelectedKeys', () => {
+      createRoot((dispose) => {
+        const state = createSelectState({
+          items,
+          getKey: (item) => item.key,
+          selectionMode: 'multiple',
+          defaultSelectedKeys: ['a', 'c'],
+        });
+
+        expect(state.selectionMode()).toBe('multiple');
+        expect(state.selectedKeys()).toEqual(new Set(['a', 'c']));
+        expect(state.selectedItems().map((item) => item.key)).toEqual(['a', 'c']);
+        dispose();
+      });
+    });
+
+    it('supports controlled selectedKeys', () => {
+      createRoot((dispose) => {
+        const [selectedKeys, setSelectedKeys] = createSignal(new Set(['a']));
+
+        const state = createSelectState({
+          items,
+          getKey: (item) => item.key,
+          selectionMode: 'multiple',
+          get selectedKeys() {
+            return selectedKeys();
+          },
+        });
+
+        expect(state.selectedKeys()).toEqual(new Set(['a']));
+        setSelectedKeys(new Set(['b', 'c']));
+        expect(state.selectedKeys()).toEqual(new Set(['b', 'c']));
+        dispose();
+      });
+    });
+
+    it('calls onSelectionChangeKeys for list interactions', () => {
+      const onSelectionChangeKeys = vi.fn();
+
+      createRoot((dispose) => {
+        const state = createSelectState({
+          items,
+          getKey: (item) => item.key,
+          selectionMode: 'multiple',
+          onSelectionChangeKeys,
+        });
+
+        state.setSelectedKeys(['a', 'b']);
+        expect(onSelectionChangeKeys).toHaveBeenCalledWith(new Set(['a', 'b']));
+        dispose();
+      });
+    });
+  });
 });

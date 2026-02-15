@@ -7,6 +7,7 @@ import {
   type JSX,
   type Accessor,
   type FlowComponent,
+  type ParentComponent,
   createContext,
   useContext,
   createMemo,
@@ -54,6 +55,8 @@ export interface SlotProps {
   /** A slot name for the component. */
   slot?: string;
 }
+
+export const DEFAULT_SLOT = 'default';
 
 // ============================================
 // RENDER PROPS
@@ -130,6 +133,19 @@ export function useRenderProps<T extends object>(
   };
 }
 
+export function composeRenderProps<T extends object>(
+  base: RenderPropsBase<T> | undefined,
+  override: RenderPropsBase<T> | undefined
+): RenderPropsBase<T> {
+  if (!base) return override ?? {};
+  if (!override) return base;
+  return {
+    children: override.children ?? base.children,
+    class: override.class ?? base.class,
+    style: override.style ?? base.style,
+  };
+}
+
 // ============================================
 // CONTEXT UTILITIES
 // ============================================
@@ -152,6 +168,21 @@ export function createSlottedContext<T>() {
 export function useSlottedContext<T>(context: ReturnType<typeof createContext<T | null>>): T | null {
   return useContext(context);
 }
+
+export function useContextProps<TProps extends object, TRef>(
+  props: TProps,
+  ref: TRef,
+  context?: ContextValue<Partial<TProps>>
+): [TProps, TRef] {
+  if (!context) return [props, ref];
+  return [{ ...(context as TProps), ...props }, ref];
+}
+
+export const Provider: ParentComponent<{
+  values: Array<[ReturnType<typeof createContext<unknown>>, unknown]>;
+}> = (props) => {
+  return props.children;
+};
 
 // ============================================
 // DATA ATTRIBUTES

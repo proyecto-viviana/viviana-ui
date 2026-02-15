@@ -124,6 +124,16 @@ describe('createSelect', () => {
         dispose();
       });
     });
+
+    it('sets aria-multiselectable in multiple selection mode', () => {
+      createRoot((dispose) => {
+        const state = createTestState({ selectionMode: 'multiple' });
+        const { menuProps } = createSelect({}, state);
+
+        expect(menuProps['aria-multiselectable']).toBe(true);
+        dispose();
+      });
+    });
   });
 
   describe('labelProps', () => {

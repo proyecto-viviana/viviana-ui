@@ -5,9 +5,16 @@
  * Follows Spectrum 2 design patterns.
  */
 
-import { type JSX, splitProps, Show, createSignal, createContext, useContext, createUniqueId, onMount, onCleanup, createEffect } from 'solid-js'
-import { Portal } from 'solid-js/web'
-import { createInteractOutside } from '@proyecto-viviana/solidaria'
+import { type JSX, splitProps, Show, createContext, useContext } from 'solid-js'
+import {
+  Dialog as HeadlessDialog,
+  DialogTrigger as HeadlessDialogTrigger,
+  Heading as HeadlessDialogHeading,
+  Modal as HeadlessModal,
+  ModalOverlay as HeadlessModalOverlay,
+  useDialogTrigger,
+  type DialogProps as HeadlessDialogProps,
+} from '@proyecto-viviana/solidaria-components'
 
 // ============================================
 // TYPES
@@ -15,7 +22,7 @@ import { createInteractOutside } from '@proyecto-viviana/solidaria'
 
 export type DialogSize = 'sm' | 'md' | 'lg' | 'fullscreen'
 
-export interface DialogProps {
+export interface DialogProps extends Omit<HeadlessDialogProps, 'class' | 'style' | 'children'> {
   /** The size of the dialog. */
   size?: DialogSize
   /** Whether the dialog can be dismissed by clicking the X button. */
@@ -28,12 +35,6 @@ export interface DialogProps {
   children: JSX.Element
   /** Callback when dialog should close */
   onClose?: () => void
-  /** ARIA role - defaults to 'dialog' */
-  role?: 'dialog' | 'alertdialog'
-  /** ARIA label */
-  'aria-label'?: string
-  /** ARIA labelledby */
-  'aria-labelledby'?: string
 }
 
 export interface DialogTriggerProps {
@@ -47,7 +48,7 @@ export interface DialogTriggerProps {
   onOpenChange?: (isOpen: boolean) => void
   /** Whether clicking outside the dialog closes it. Defaults to true. */
   isDismissable?: boolean
-  /** Whether pressing Escape closes the dialog. Defaults to true. */
+  /** Whether pressing Escape closes the dialog. Defaults to false. */
   isKeyboardDismissDisabled?: boolean
 }
 
@@ -89,60 +90,48 @@ export function Dialog(props: DialogProps): JSX.Element {
     'isDismissable',
     'class',
     'title',
+    'children',
     'onClose',
-    'role',
-    'aria-label',
-    'aria-labelledby',
   ])
 
-  const size = local.size ?? 'md'
-  const customClass = local.class ?? ''
-  const role = local.role ?? 'dialog'
+  const size = () => local.size ?? 'md'
 
-  // Generate a unique ID for the title if one is present
-  const titleId = createUniqueId()
-  const ariaLabelledBy = local['aria-labelledby'] ?? (local.title ? titleId : undefined)
-
-  const close = () => local.onClose?.()
-
-  const baseClass = 'bg-bg-300 rounded-lg shadow-xl border border-primary-700'
-  const sizeClass = sizeStyles[size]
-  const padding = 'p-6'
-  const className = [baseClass, sizeClass, padding, customClass].filter(Boolean).join(' ')
+  const className = () => {
+    const base = 'bg-bg-300 rounded-lg shadow-xl border border-primary-700 p-6'
+    const sizeClass = sizeStyles[size()]
+    const custom = local.class ?? ''
+    return [base, sizeClass, custom].filter(Boolean).join(' ')
+  }
 
   return (
-    <DialogContext.Provider value={{ close }}>
-      <div
-        role={role}
-        tabIndex={-1}
-        aria-label={local['aria-label']}
-        aria-labelledby={ariaLabelledBy}
-        class={className}
-        {...rest}
-      >
-        <Show when={local.title}>
-          <div class="flex items-center justify-between mb-4">
-            <h2 id={titleId} class="text-xl font-semibold text-primary-100">
-              {local.title}
-            </h2>
-            <Show when={local.isDismissable}>
-              <button
-                onClick={close}
-                class="text-primary-400 hover:text-primary-200 transition-colors"
-                aria-label="Close dialog"
-              >
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </Show>
-          </div>
-        </Show>
-        <div class="text-primary-200">
-          {props.children}
-        </div>
-      </div>
-    </DialogContext.Provider>
+    <HeadlessDialog
+      {...rest}
+      onClose={local.onClose}
+      class={className()}
+      children={({ close }) => (
+        <DialogContext.Provider value={{ close }}>
+          <Show when={local.title}>
+            <div class="flex items-center justify-between mb-4">
+              <HeadlessDialogHeading level={2} class="text-xl font-semibold text-primary-100">
+                {local.title}
+              </HeadlessDialogHeading>
+              <Show when={local.isDismissable}>
+                <button
+                  onClick={close}
+                  class="text-primary-400 hover:text-primary-200 transition-colors"
+                  aria-label="Close dialog"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </Show>
+            </div>
+          </Show>
+          <div class="text-primary-200">{local.children}</div>
+        </DialogContext.Provider>
+      )}
+    />
   )
 }
 
@@ -150,90 +139,35 @@ export function Dialog(props: DialogProps): JSX.Element {
 // DIALOG TRIGGER COMPONENT
 // ============================================
 
+function DialogTriggerContent(props: { content: (close: () => void) => JSX.Element }): JSX.Element {
+  const triggerContext = useDialogTrigger()
+  const close = () => triggerContext?.state.close()
+  return props.content(close)
+}
+
 /**
  * DialogTrigger wraps a trigger button and dialog content.
  * Handles opening/closing the dialog with overlay and backdrop.
  */
 export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
-  const [isOpen, setIsOpen] = createSignal(props.isOpen ?? false)
-  let dialogRef: HTMLDivElement | undefined
-
-  const open = () => {
-    setIsOpen(true)
-    props.onOpenChange?.(true)
-  }
-
-  const close = () => {
-    setIsOpen(false)
-    props.onOpenChange?.(false)
-  }
-
-  // Handle controlled state
-  const isOpenControlled = () => props.isOpen !== undefined ? props.isOpen : isOpen()
-
-  // Whether dismissable (defaults to true)
-  const isDismissable = () => props.isDismissable !== false
-
-  // Click outside to close
-  createInteractOutside({
-    ref: () => dialogRef ?? null,
-    onInteractOutside: () => {
-      if (isOpenControlled() && isDismissable()) {
-        close()
-      }
-    },
-    isDisabled: !isOpenControlled() || !isDismissable(),
-  })
-
-  // Escape key to close
-  onMount(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpenControlled() && !props.isKeyboardDismissDisabled) {
-        e.preventDefault()
-        e.stopPropagation()
-        close()
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    onCleanup(() => document.removeEventListener('keydown', handleKeyDown))
-  })
-
-  // Prevent background scroll when dialog is open
-  createEffect(() => {
-    if (!isOpenControlled()) return
-
-    const prevOverflow = document.documentElement.style.overflow
-    document.documentElement.style.overflow = 'hidden'
-
-    onCleanup(() => {
-      document.documentElement.style.overflow = prevOverflow
-    })
-  })
-
   return (
-    <>
-      <div onClick={open}>
-        {props.trigger}
-      </div>
-
-      <Show when={isOpenControlled()}>
-        <Portal>
-          {/* Backdrop */}
-          <div
-            class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-            aria-hidden="true"
-          />
-
-          {/* Dialog container - pointer-events-none so clicks pass through to backdrop detection */}
-          <div class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-            {/* Dialog wrapper - pointer-events-auto to capture clicks on the dialog itself */}
-            <div ref={dialogRef} class="pointer-events-auto">
-              {props.content(close)}
-            </div>
-          </div>
-        </Portal>
-      </Show>
-    </>
+    <HeadlessDialogTrigger
+      isOpen={props.isOpen}
+      onOpenChange={props.onOpenChange}
+    >
+      {props.trigger}
+      <HeadlessModalOverlay
+        isDismissable={props.isDismissable ?? true}
+        isKeyboardDismissDisabled={props.isKeyboardDismissDisabled ?? false}
+        class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+      >
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          <HeadlessModal class="pointer-events-auto">
+            <DialogTriggerContent content={props.content} />
+          </HeadlessModal>
+        </div>
+      </HeadlessModalOverlay>
+    </HeadlessDialogTrigger>
   )
 }
 

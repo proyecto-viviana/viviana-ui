@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/solid-router";
 import { createSignal, For, onMount, Show } from "solid-js";
-import { Button, GitHubIcon, Icon, PageLayout } from "@proyecto-viviana/ui";
+import { Button, GitHubIcon, PageLayout } from "@proyecto-viviana/ui";
 import { createButton } from "@proyecto-viviana/solidaria";
 import { Header } from "@/components";
 
@@ -141,7 +141,7 @@ function Hero() {
             </Button>
           </Link>
           <Link to="/playground">
-            <Button variant="secondary" style="outline" size="lg" class="hover-lift">
+            <Button variant="secondary" buttonStyle="outline" size="lg" class="hover-lift">
               Try Playground
             </Button>
           </Link>
@@ -295,13 +295,9 @@ function FeatureCard(props: {
   };
   index: number;
 }) {
-  const [isHovered, setIsHovered] = createSignal(false);
-
   return (
     <div
       class="group relative p-6 rounded-xl glass hover-lift cursor-default"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{ "animation-delay": `${props.index * 0.1}s` }}
     >
       {/* Hover glow effect */}
@@ -421,21 +417,21 @@ function ComponentShowcase() {
                     <Show when={activeVariant() === "outline"}>
                       <Button
                         variant="primary"
-                        style="outline"
+                        buttonStyle="outline"
                         onPress={() => setCount((c) => c + 1)}
                       >
                         Count: {count()}
                       </Button>
-                      <Button variant="secondary" style="outline">
+                      <Button variant="secondary" buttonStyle="outline">
                         Secondary
                       </Button>
-                      <Button variant="accent" style="outline">
+                      <Button variant="accent" buttonStyle="outline">
                         Accent
                       </Button>
-                      <Button variant="positive" style="outline">
+                      <Button variant="positive" buttonStyle="outline">
                         Positive
                       </Button>
-                      <Button variant="negative" style="outline">
+                      <Button variant="negative" buttonStyle="outline">
                         Negative
                       </Button>
                     </Show>
@@ -448,13 +444,13 @@ function ComponentShowcase() {
                     Size Variants
                   </p>
                   <div class="flex flex-wrap items-center gap-3">
-                    <Button variant="accent" size="sm" style={activeVariant()}>
+                    <Button variant="accent" size="sm" buttonStyle={activeVariant()}>
                       Small
                     </Button>
-                    <Button variant="accent" size="md" style={activeVariant()}>
+                    <Button variant="accent" size="md" buttonStyle={activeVariant()}>
                       Medium
                     </Button>
-                    <Button variant="accent" size="lg" style={activeVariant()}>
+                    <Button variant="accent" size="lg" buttonStyle={activeVariant()}>
                       Large
                     </Button>
                   </div>
@@ -465,7 +461,7 @@ function ComponentShowcase() {
                   <p class="text-xs font-semibold uppercase tracking-wider text-primary-500 mb-4">
                     Custom with createButton Hook
                   </p>
-                  <CustomGradientButton onPress={() => alert("Custom button works!")}>
+                  <CustomGradientButton onPress={() => setCount((c) => c + 1)}>
                     Gradient Button
                   </CustomGradientButton>
                 </div>
@@ -511,9 +507,11 @@ import { createButton } from '@proyecto-viviana/solidaria';
 
 // Use the styled component
 function App() {
+  const [count, setCount] = createSignal(0);
+
   return (
-    <Button variant="accent" onPress={() => console.log('Clicked!')}>
-      Click me
+    <Button variant="accent" onPress={() => setCount((n) => n + 1)}>
+      Clicked {count()} times
     </Button>
   );
 }
@@ -672,8 +670,10 @@ function CallToAction() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Button variant="secondary" style="outline" size="lg" class="hover-lift">
-              <Icon icon={GitHubIcon} size={18} class="mr-2" />
+            <Button variant="secondary" buttonStyle="outline" size="lg" class="hover-lift">
+              <span class="mr-2 inline-flex">
+                <GitHubIcon size={18} />
+              </span>
               View on GitHub
             </Button>
           </a>
@@ -731,7 +731,7 @@ function Footer() {
               class="text-primary-400 hover:text-primary-200 transition-colors"
               aria-label="GitHub"
             >
-              <Icon icon={GitHubIcon} size={20} />
+              <GitHubIcon size={20} />
             </a>
           </nav>
         </div>

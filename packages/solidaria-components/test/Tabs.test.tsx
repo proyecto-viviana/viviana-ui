@@ -12,7 +12,7 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { Tabs, TabList, Tab, TabPanel } from '../src/Tabs';
+import { Tabs, TabList, Tab, TabPanel, SelectionIndicator } from '../src/Tabs';
 import type { Key } from '@proyecto-viviana/solid-stately';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
@@ -177,6 +177,66 @@ describe('Tabs', () => {
 
       const tabs = screen.getAllByRole('tab');
       expect(tabs[0]).toHaveAttribute('data-selected');
+    });
+
+    it('should render SelectionIndicator only for selected tab', async () => {
+      render(() => (
+        <Tabs<TestTab>
+          items={testTabs}
+          getKey={(item) => item.id}
+          defaultSelectedKey="tab1"
+        >
+          <TabList>
+            {(item) => (
+              <Tab id={item.id}>
+                {() => (
+                  <>
+                    {item.label}
+                    <SelectionIndicator>Selected</SelectionIndicator>
+                  </>
+                )}
+              </Tab>
+            )}
+          </TabList>
+          {testTabs.map((tab) => (
+            <TabPanel id={tab.id}>{tab.content}</TabPanel>
+          ))}
+        </Tabs>
+      ));
+
+      expect(screen.getAllByText('Selected')).toHaveLength(1);
+      const tabs = screen.getAllByRole('tab');
+      await user.click(tabs[1]);
+      expect(screen.getAllByText('Selected')).toHaveLength(1);
+      expect(tabs[1].textContent).toContain('Selected');
+    });
+
+    it('should support SelectionIndicator shouldForceMount', () => {
+      render(() => (
+        <Tabs<TestTab>
+          items={testTabs}
+          getKey={(item) => item.id}
+          defaultSelectedKey="tab1"
+        >
+          <TabList>
+            {(item) => (
+              <Tab id={item.id}>
+                {() => (
+                  <>
+                    {item.label}
+                    <SelectionIndicator shouldForceMount>Dot</SelectionIndicator>
+                  </>
+                )}
+              </Tab>
+            )}
+          </TabList>
+          {testTabs.map((tab) => (
+            <TabPanel id={tab.id}>{tab.content}</TabPanel>
+          ))}
+        </Tabs>
+      ));
+
+      expect(screen.getAllByText('Dot')).toHaveLength(3);
     });
   });
 
