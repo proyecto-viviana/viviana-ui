@@ -27,6 +27,7 @@ import {
   createTableSelectAllCheckbox,
   createFocusRing,
   createHover,
+  mergeProps,
   type AriaTableProps,
 } from '@proyecto-viviana/solidaria';
 import {
@@ -38,6 +39,7 @@ import {
   type SortDescriptor,
   type ColumnDefinition,
   type GridNode,
+  type DropTarget,
 } from '@proyecto-viviana/solid-stately';
 import {
   type RenderChildren,
@@ -47,7 +49,8 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
-import { useCollectionRenderer } from './Collection';
+import { type DragAndDropHooks } from './useDragAndDrop';
+import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
 
 // ============================================
@@ -98,6 +101,8 @@ export interface TableProps<T extends object> extends Omit<AriaTableProps, 'chil
   style?: StyleOrFunction<TableRenderProps>;
   /** A function to render when the table is empty. */
   renderEmptyState?: () => JSX.Element;
+  /** Drag and drop hooks from `useDragAndDrop`. */
+  dragAndDropHooks?: DragAndDropHooks<T>;
 }
 
 export interface TableHeaderRenderProps {
@@ -236,10 +241,14 @@ interface TableContextValue<T extends object> {
   columns: ColumnDefinition<T>[];
   isDisabled: boolean;
   showSelectionCheckboxes: boolean;
+  dragAndDropHooks?: DragAndDropHooks<T>;
+  dragState?: unknown;
+  dropState?: unknown;
 }
 
 export const TableContext = createContext<TableContextValue<object> | null>(null);
 export const TableStateContext = createContext<TableState<object, TableCollection<object>> | null>(null);
+export const TableColumnResizeStateContext = createContext<null>(null);
 
 // Row-level context for cells
 interface TableRowContextValue {
@@ -260,7 +269,7 @@ export const TableRowContext = createContext<TableRowContextValue | null>(null);
 export function Table<T extends object>(props: TableProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['class', 'style', 'slot', 'renderEmptyState'],
+    ['class', 'style', 'slot', 'renderEmptyState', 'dragAndDropHooks'],
     [
       'items',
       'columns',
@@ -357,6 +366,65 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     const { ref: _ref2, ...rest } = focusProps as Record<string, unknown>;
     return rest;
   };
+  const parentCollectionRenderer = useCollectionRenderer<T>();
+  const getItemNodes = () => Array.from(state.collection).filter((node) => node.type === 'item');
+  const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
+    const node = getItemNodes()[index];
+    if (!node) return null;
+    return { type: 'item', key: node.key, dropPosition: position };
+  };
+  const hasDroppableDnd = createMemo(() => {
+    const hooks = local.dragAndDropHooks;
+    return Boolean(
+      hooks?.useDroppableCollectionState &&
+      hooks.useDroppableCollection &&
+      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate)
+    );
+  });
+  const hasDraggableDnd = createMemo(() => {
+    const hooks = local.dragAndDropHooks;
+    return Boolean(hooks?.useDraggableCollectionState && hooks.useDraggableCollection);
+  });
+  const dragState = createMemo(() => {
+    if (!hasDraggableDnd()) return undefined;
+    return local.dragAndDropHooks?.useDraggableCollectionState?.({
+      items: stateProps.items,
+    });
+  });
+  const dropState = createMemo(() => {
+    if (!hasDroppableDnd()) return undefined;
+    return local.dragAndDropHooks?.useDroppableCollectionState?.({});
+  });
+  createEffect(() => {
+    if (!hasDraggableDnd()) return;
+    const hooks = local.dragAndDropHooks;
+    const activeDragState = dragState();
+    if (!hooks?.useDraggableCollection || !activeDragState) return;
+    hooks.useDraggableCollection({}, activeDragState, () => ref());
+  });
+  const droppableCollection = createMemo(() => {
+    if (!hasDroppableDnd()) return undefined;
+    const hooks = local.dragAndDropHooks;
+    const activeDropState = dropState();
+    if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
+    const dropTargetDelegate = hooks.dropTargetDelegate ?? parentCollectionRenderer?.dropTargetDelegate;
+    if (!dropTargetDelegate) return undefined;
+    return hooks.useDroppableCollection(
+      {
+        dropTargetDelegate,
+      },
+      activeDropState,
+      () => ref()
+    );
+  });
+  const isRootDropTarget = createMemo(() => {
+    return Boolean(dropState()?.target?.type === 'root');
+  });
+  const dndDropIndicator = (index: number, position: 'before' | 'after' | 'on') => {
+    const target = getDropTargetByIndex(index, position);
+    if (!target || target.type !== 'item') return undefined;
+    return local.dragAndDropHooks?.renderDropIndicator?.(target);
+  };
 
   const contextValue = createMemo<TableContextValue<T>>(() => ({
     state,
@@ -365,24 +433,39 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     columns: stateProps.columns,
     isDisabled: false,
     showSelectionCheckboxes: stateProps.showSelectionCheckboxes ?? false,
+    dragAndDropHooks: local.dragAndDropHooks,
+    dragState: dragState(),
+    dropState: dropState(),
+  }));
+  const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
+    ...parentCollectionRenderer,
+    renderItem: (item) => item as JSX.Element,
+    renderDropIndicator: (index: number, position: 'before' | 'after' | 'on') =>
+      dndDropIndicator(index, position) ?? parentCollectionRenderer?.renderDropIndicator?.(index, position),
   }));
 
   return (
-    <TableContext.Provider value={contextValue() as TableContextValue<object>}>
+    <TableContext.Provider value={contextValue() as unknown as TableContextValue<object>}>
       <TableStateContext.Provider value={state as unknown as TableState<object, TableCollection<object>>}>
-        <table
-          ref={setRef}
-          {...domProps()}
-          {...cleanGridProps()}
-          {...cleanFocusProps()}
-          class={renderProps.class()}
-          style={renderProps.style()}
-          data-focused={state.isFocused || undefined}
-          data-focus-visible={isFocusVisible() || undefined}
-          data-empty={stateProps.items.length === 0 || undefined}
-        >
-          {renderProps.renderChildren()}
-        </table>
+        <CollectionRendererContext.Provider value={collectionRenderer()}>
+          <table
+            ref={setRef}
+            {...mergeProps(
+              domProps(),
+              cleanGridProps(),
+              cleanFocusProps(),
+              (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
+            )}
+            class={renderProps.class()}
+            style={renderProps.style()}
+            data-focused={state.isFocused || undefined}
+            data-focus-visible={isFocusVisible() || undefined}
+            data-empty={stateProps.items.length === 0 || undefined}
+            data-drop-target={isRootDropTarget() || undefined}
+          >
+            {renderProps.renderChildren()}
+          </table>
+        </CollectionRendererContext.Provider>
       </TableStateContext.Provider>
     </TableContext.Provider>
   );
@@ -732,6 +815,7 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     throw new Error('TableRow must be used within a Table');
   }
   const { state, collection } = context;
+  const tableContext = context as unknown as TableContextValue<T>;
 
   // Create ref signal
   const [ref, setRef] = createSignal<HTMLTableRowElement | null>(null);
@@ -777,6 +861,25 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
 
   // Check if focused
   const isFocused = createMemo(() => state.focusedKey === local.id);
+  const draggableItem = createMemo(() => {
+    if (!tableContext.dragAndDropHooks?.useDraggableItem || !tableContext.dragState) return undefined;
+    return tableContext.dragAndDropHooks.useDraggableItem(
+      {
+        key: local.id as string | number,
+      },
+      tableContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>['useDraggableItem']>>[1]
+    );
+  });
+  const droppableItem = createMemo(() => {
+    if (!tableContext.dragAndDropHooks?.useDroppableItem || !tableContext.dropState) return undefined;
+    return tableContext.dragAndDropHooks.useDroppableItem(
+      {
+        key: local.id as string | number,
+      },
+      tableContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>['useDroppableItem']>>[1],
+      () => ref()
+    );
+  });
 
   // Render props values
   const renderValues = createMemo<TableRowRenderProps>(() => ({
@@ -822,9 +925,13 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     <TableRowContext.Provider value={rowContextValue}>
       <tr
         ref={setRef}
-        {...cleanRowProps()}
-        {...cleanHoverProps()}
-        {...cleanFocusProps()}
+        {...mergeProps(
+          cleanRowProps(),
+          cleanHoverProps(),
+          cleanFocusProps(),
+          (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
+          (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
+        )}
         class={renderProps.class()}
         style={renderProps.style()}
         data-selected={isSelected || undefined}
@@ -833,6 +940,8 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
         data-pressed={isPressed || undefined}
         data-hovered={isHovered() || undefined}
         data-disabled={isDisabled || undefined}
+        data-dragging={draggableItem()?.isDragging || undefined}
+        data-drop-target={droppableItem()?.isDropTarget || undefined}
       >
         {renderProps.renderChildren()}
       </tr>
@@ -1003,3 +1112,30 @@ Table.Row = TableRow;
 Table.Cell = TableCell;
 Table.SelectionCheckbox = TableSelectionCheckbox;
 Table.SelectAllCheckbox = TableSelectAllCheckbox;
+
+export interface ColumnResizerProps extends SlotProps {
+  class?: string;
+  style?: JSX.CSSProperties;
+}
+
+export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
+  return <div role="separator" class={props.class ?? 'solidaria-Table-columnResizer'} style={props.style} />;
+}
+
+export interface ResizableTableContainerProps extends SlotProps {
+  children?: JSX.Element;
+  class?: string;
+  style?: JSX.CSSProperties;
+}
+
+export function ResizableTableContainer(props: ResizableTableContainerProps): JSX.Element {
+  return (
+    <div class={props.class ?? 'solidaria-ResizableTableContainer'} style={props.style}>
+      {props.children}
+    </div>
+  );
+}
+
+export function useTableOptions() {
+  return useContext(TableContext);
+}

@@ -3,7 +3,8 @@
  */
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@solidjs/testing-library';
+import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
+import { useDragAndDrop } from '../src/useDragAndDrop';
 import {
   Table,
   TableHeader,
@@ -136,6 +137,61 @@ describe('Table', () => {
 
       const cells = document.querySelectorAll('.solidaria-Table-cell');
       expect(cells.length).toBe(9);
+    });
+
+    it('should trigger onLoadMore from table body sentinel', () => {
+      const onLoadMore = vi.fn();
+      render(() => (
+        <Table
+          items={testData}
+          columns={testColumns}
+          getKey={(item: any) => item.id}
+          aria-label="Pokemon"
+        >
+          {() => (
+            <>
+              <TableHeader>
+                <TableColumn id="name">{() => <>Name</>}</TableColumn>
+                <TableColumn id="type">{() => <>Type</>}</TableColumn>
+                <TableColumn id="level">{() => <>Level</>}</TableColumn>
+              </TableHeader>
+              <TableBody hasMore onLoadMore={onLoadMore}>
+                {(item: any) => (
+                  <TableRow id={item.id} item={item}>
+                    {() => (
+                      <>
+                        <TableCell>{() => <>{item.name}</>}</TableCell>
+                        <TableCell>{() => <>{item.type}</>}</TableCell>
+                        <TableCell>{() => <>{item.level}</>}</TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+            </>
+          )}
+        </Table>
+      ));
+
+      const loadMoreRow = document.querySelector('.solidaria-Table-loadMore');
+      expect(loadMoreRow).toBeTruthy();
+      fireEvent.focus(loadMoreRow!);
+      expect(onLoadMore).toHaveBeenCalled();
+    });
+
+    it('should apply draggable row semantics when drag hooks are provided', () => {
+      const { dragAndDropHooks } = useDragAndDrop<(typeof testData)[number]>({
+        items: testData,
+        getItems: (keys, items) =>
+          items
+            .filter((item) => keys.has(item.id))
+            .map((item) => ({ 'text/plain': item.name })),
+      });
+
+      render(() => <TestTable dragAndDropHooks={dragAndDropHooks} />);
+
+      const rows = document.querySelectorAll('.solidaria-Table-row');
+      expect(rows[0]).toHaveAttribute('draggable', 'true');
     });
   });
 
