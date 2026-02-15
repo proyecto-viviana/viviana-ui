@@ -8,7 +8,9 @@
 import {
   type JSX,
   createContext,
+  createEffect,
   createMemo,
+  createSignal,
   splitProps,
   useContext,
   For,
@@ -22,6 +24,7 @@ import {
   createHover,
   createButton,
   createInteractOutside,
+  mergeProps,
   FocusScope,
   type AriaMenuProps,
   type AriaMenuItemProps,
@@ -33,6 +36,7 @@ import {
   type MenuState,
   type OverlayTriggerState,
   type Key,
+  type DropTarget,
 } from '@proyecto-viviana/solid-stately';
 import {
   type RenderChildren,
@@ -41,6 +45,7 @@ import {
   type SlotProps,
   useRenderProps,
 } from './utils';
+import { type DragAndDropHooks } from './useDragAndDrop';
 import {
   CollectionRendererContext,
   Section,
@@ -48,6 +53,7 @@ import {
   Group,
   type CollectionEntry,
   type CollectionRendererContextValue,
+  type SectionProps,
   useCollectionRenderer,
   flattenCollectionEntries,
   isCollectionSection,
@@ -88,6 +94,8 @@ export interface MenuProps<T>
   class?: ClassNameOrFunction<MenuRenderProps>;
   /** The inline style for the element. */
   style?: StyleOrFunction<MenuRenderProps>;
+  /** Drag and drop hooks from `useDragAndDrop`. */
+  dragAndDropHooks?: DragAndDropHooks<T>;
 }
 
 export interface MenuItemRenderProps {
@@ -152,12 +160,17 @@ export interface MenuTriggerProps extends Omit<AriaMenuTriggerProps, 'children'>
   onOpenChange?: (isOpen: boolean) => void;
 }
 
+export interface SubmenuTriggerProps extends MenuTriggerProps {}
+
 // ============================================
 // CONTEXT
 // ============================================
 
 interface MenuContextValue<T> {
   state: MenuState<T>;
+  dragAndDropHooks?: DragAndDropHooks<T>;
+  dragState?: unknown;
+  dropState?: unknown;
 }
 
 interface MenuTriggerContextValue {
@@ -169,6 +182,7 @@ interface MenuTriggerContextValue {
 export const MenuContext = createContext<MenuContextValue<unknown> | null>(null);
 export const MenuStateContext = createContext<MenuState<unknown> | null>(null);
 export const MenuTriggerContext = createContext<MenuTriggerContextValue | null>(null);
+export const RootMenuTriggerStateContext = createContext<OverlayTriggerState | null>(null);
 
 // ============================================
 // COMPONENTS
@@ -204,16 +218,22 @@ export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
   );
 
   return (
-    <MenuTriggerContext.Provider
-      value={{
-        state,
-        triggerProps: menuTriggerProps,
-        menuProps,
-      }}
-    >
-      {props.children}
-    </MenuTriggerContext.Provider>
+    <RootMenuTriggerStateContext.Provider value={state}>
+      <MenuTriggerContext.Provider
+        value={{
+          state,
+          triggerProps: menuTriggerProps,
+          menuProps,
+        }}
+      >
+        {props.children}
+      </MenuTriggerContext.Provider>
+    </RootMenuTriggerStateContext.Provider>
   );
+}
+
+export function SubmenuTrigger(props: SubmenuTriggerProps): JSX.Element {
+  return <MenuTrigger {...props} />;
 }
 
 /**
@@ -229,6 +249,8 @@ export interface MenuButtonProps extends SlotProps {
   /** Whether the button is disabled. */
   isDisabled?: boolean;
 }
+
+export interface MenuSectionProps extends SectionProps {}
 
 export function MenuButton(props: MenuButtonProps): JSX.Element {
   const [local] = splitProps(props, ['class', 'style', 'slot', 'isDisabled']);
@@ -327,7 +349,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
     ['children', 'class', 'style', 'slot'],
-    ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'onAction', 'onClose']
+    ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'onAction', 'onClose', 'dragAndDropHooks']
   );
 
   // Get trigger context if available
@@ -444,46 +466,157 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     if (!range) return stateProps.items;
     return stateProps.items.slice(range.start, range.end);
   });
+  const getItemNodes = () => Array.from(state.collection()).filter((node) => node.type === 'item');
+  const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
+    const node = getItemNodes()[index];
+    if (!node) return null;
+    return { type: 'item', key: node.key, dropPosition: position };
+  };
+  const hasDroppableDnd = createMemo(() => {
+    const hooks = stateProps.dragAndDropHooks;
+    return Boolean(
+      hooks?.useDroppableCollectionState &&
+      hooks.useDroppableCollection &&
+      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate)
+    );
+  });
+  const hasDraggableDnd = createMemo(() => {
+    const hooks = stateProps.dragAndDropHooks;
+    return Boolean(hooks?.useDraggableCollectionState && hooks.useDraggableCollection);
+  });
+  const dragState = createMemo(() => {
+    if (!hasDraggableDnd()) return undefined;
+    return stateProps.dragAndDropHooks?.useDraggableCollectionState?.({
+      items: flatItems(),
+    });
+  });
+  const dropState = createMemo(() => {
+    if (!hasDroppableDnd()) return undefined;
+    return stateProps.dragAndDropHooks?.useDroppableCollectionState?.({});
+  });
+  createEffect(() => {
+    if (!hasDraggableDnd()) return;
+    const hooks = stateProps.dragAndDropHooks;
+    const activeDragState = dragState();
+    if (!hooks?.useDraggableCollection || !activeDragState) return;
+    hooks.useDraggableCollection({}, activeDragState, () => menuRef ?? null);
+  });
+  const droppableCollection = createMemo(() => {
+    if (!hasDroppableDnd()) return undefined;
+    const hooks = stateProps.dragAndDropHooks;
+    const activeDropState = dropState();
+    if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
+    const dropTargetDelegate = hooks.dropTargetDelegate ?? parentCollectionRenderer?.dropTargetDelegate;
+    if (!dropTargetDelegate) return undefined;
+    return hooks.useDroppableCollection(
+      {
+        dropTargetDelegate,
+      },
+      activeDropState,
+      () => menuRef ?? null
+    );
+  });
+  const isRootDropTarget = createMemo(() => {
+    return Boolean(dropState()?.target?.type === 'root');
+  });
+  const dndDropIndicator = (index: number, position: 'before' | 'after' | 'on') => {
+    const target = getDropTargetByIndex(index, position);
+    if (!target || target.type !== 'item') return undefined;
+    return stateProps.dragAndDropHooks?.renderDropIndicator?.(target);
+  };
+  const sectionedRenderEntries = createMemo(() => {
+    let globalIndex = 0;
+    return stateProps.items.map((entry) => {
+      if (isCollectionSection(entry)) {
+        const sectionItems = entry.items.map((item) => ({
+          item,
+          index: globalIndex++,
+        }));
+        return {
+          type: 'section' as const,
+          section: entry,
+          items: sectionItems,
+        };
+      }
+      const indexedItem = {
+        item: entry as T,
+        index: globalIndex++,
+      };
+      return {
+        type: 'item' as const,
+        item: indexedItem,
+      };
+    });
+  });
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     ...parentCollectionRenderer,
     renderItem: (item) => props.children(item as T),
+    renderDropIndicator: (index, position) =>
+      dndDropIndicator(index, position) ?? parentCollectionRenderer?.renderDropIndicator?.(index, position),
   }));
 
   // Only use FocusScope when inside a MenuTrigger (for popover behavior)
   // Standalone menus don't need focus restoration
   const menuContent = () => (
-    <MenuContext.Provider value={{ state }}>
+    <MenuContext.Provider
+      value={{
+        state,
+        dragAndDropHooks: stateProps.dragAndDropHooks,
+        dragState: dragState(),
+        dropState: dropState(),
+      } as MenuContextValue<unknown>}
+    >
       <MenuStateContext.Provider value={state}>
         <CollectionRendererContext.Provider value={collectionRenderer()}>
           <ul
             ref={(el) => (menuRef = el)}
-            {...cleanMenuProps()}
-            {...cleanTriggerMenuProps()}
-            {...cleanFocusProps()}
+            {...mergeProps(
+              cleanMenuProps(),
+              cleanTriggerMenuProps(),
+              cleanFocusProps(),
+              (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
+            )}
             class={renderProps.class()}
             style={renderProps.style()}
             data-focused={state.isFocused() || undefined}
+            data-drop-target={isRootDropTarget() || undefined}
           >
             {hasSections()
               ? (
-                <For each={stateProps.items}>
+                <For each={sectionedRenderEntries()}>
                   {(entry) =>
-                    isCollectionSection(entry)
+                    entry.type === 'section'
                       ? (
                         <li role="presentation" data-section-wrapper>
                           <Section class="solidaria-Menu-section">
-                            {entry.title != null && (
-                              <Header class="solidaria-Menu-sectionHeader">{entry.title}</Header>
+                            {entry.section.title != null && (
+                              <Header class="solidaria-Menu-sectionHeader">{entry.section.title}</Header>
                             )}
                             <Group class="solidaria-Menu-sectionGroup">
-                              <ul role="group" aria-label={entry['aria-label']}>
-                                <For each={entry.items}>{(item) => props.children?.(item)}</For>
+                              <ul role="group" aria-label={entry.section['aria-label']}>
+                                <For each={entry.items}>
+                                  {(indexedItem) => (
+                                    <>
+                                      {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'before')}
+                                      {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'on')}
+                                      {props.children?.(indexedItem.item)}
+                                      {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'after')}
+                                    </>
+                                  )}
+                                </For>
                               </ul>
                             </Group>
                           </Section>
                         </li>
                       )
-                      : props.children?.(entry as T)
+                      : (
+                        <>
+                          {collectionRenderer().renderDropIndicator?.(entry.item.index, 'before')}
+                          {collectionRenderer().renderDropIndicator?.(entry.item.index, 'on')}
+                          {props.children?.(entry.item.item)}
+                          {collectionRenderer().renderDropIndicator?.(entry.item.index, 'after')}
+                        </>
+                      )
                   }
                 </For>
               )
@@ -495,9 +628,9 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
                   <For each={visibleItems()}>
                     {(item, index) => {
                       const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-                      const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
-                      const onIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'on');
-                      const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
+                      const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
+                      const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
+                      const afterIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'after');
                       return (
                         <>
                           {beforeIndicator()}
@@ -550,6 +683,8 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     throw new Error('MenuItem must be used within a Menu');
   }
   const state = context as MenuState<T>;
+  const menuContext = useContext(MenuContext) as MenuContextValue<T> | null;
+  const [ref, setRef] = createSignal<HTMLLIElement | null>(null);
 
   // Create menu item aria props
   const itemAria = createMenuItem<T>(
@@ -605,11 +740,35 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     const { ref: _ref2, ...rest } = hoverProps as Record<string, unknown>;
     return rest;
   };
+  const draggableItem = createMemo(() => {
+    if (!menuContext?.dragAndDropHooks?.useDraggableItem || !menuContext.dragState) return undefined;
+    return menuContext.dragAndDropHooks.useDraggableItem(
+      {
+        key: local.id as string | number,
+      },
+      menuContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>['useDraggableItem']>>[1]
+    );
+  });
+  const droppableItem = createMemo(() => {
+    if (!menuContext?.dragAndDropHooks?.useDroppableItem || !menuContext.dropState) return undefined;
+    return menuContext.dragAndDropHooks.useDroppableItem(
+      {
+        key: local.id as string | number,
+      },
+      menuContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>['useDroppableItem']>>[1],
+      () => ref()
+    );
+  });
 
   return (
     <li
-      {...cleanItemProps()}
-      {...cleanHoverProps()}
+      ref={setRef}
+      {...mergeProps(
+        cleanItemProps(),
+        cleanHoverProps(),
+        (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
+        (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
+      )}
       class={renderProps.class()}
       style={renderProps.style()}
       data-focused={itemAria.isFocused() || undefined}
@@ -617,10 +776,19 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
       data-pressed={itemAria.isPressed() || undefined}
       data-hovered={isHovered() || undefined}
       data-disabled={itemAria.isDisabled() || undefined}
+      data-dragging={draggableItem()?.isDragging || undefined}
+      data-drop-target={droppableItem()?.isDropTarget || undefined}
     >
       {renderProps.renderChildren()}
     </li>
   );
+}
+
+/**
+ * Section primitive alias for Menu composition parity.
+ */
+export function MenuSection(props: MenuSectionProps): JSX.Element {
+  return <Section {...props} />;
 }
 
 // Attach Item as a static property

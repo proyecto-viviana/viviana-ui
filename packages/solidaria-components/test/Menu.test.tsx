@@ -12,7 +12,8 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, within } from '@solidjs/testing-library';
-import { Menu, MenuItem, MenuTrigger, MenuButton } from '../src/Menu';
+import { Menu, MenuItem, MenuSection, MenuTrigger, MenuButton } from '../src/Menu';
+import { useDragAndDrop } from '../src/useDragAndDrop';
 import type { Key } from '@proyecto-viviana/solid-stately';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
@@ -82,6 +83,11 @@ describe('Menu', () => {
   // ============================================
 
   describe('rendering', () => {
+    it('should render MenuSection as a collection section primitive', () => {
+      const { container } = render(() => <MenuSection>Section</MenuSection>);
+      expect(container.querySelector('[data-section]')).toBeInTheDocument();
+    });
+
     it('should render with menu role', () => {
       render(() => <TestMenu />);
 
@@ -154,6 +160,21 @@ describe('Menu', () => {
       expect(screen.getByText('Mammals')).toBeInTheDocument();
       expect(screen.getByRole('group', { name: 'Mammals actions' })).toBeInTheDocument();
       expect(screen.getAllByRole('menuitem')).toHaveLength(3);
+    });
+
+    it('should apply draggable item semantics when drag hooks are provided', () => {
+      const { dragAndDropHooks } = useDragAndDrop<TestItem>({
+        items: testItems,
+        getItems: (keys, items) =>
+          items
+            .filter((item) => keys.has(item.id))
+            .map((item) => ({ 'text/plain': item.name })),
+      });
+
+      render(() => <TestMenu menuProps={{ dragAndDropHooks }} />);
+
+      const items = screen.getAllByRole('menuitem');
+      expect(items[0]).toHaveAttribute('draggable', 'true');
     });
   });
 
