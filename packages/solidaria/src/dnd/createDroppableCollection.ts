@@ -15,7 +15,7 @@ import type {
   DragTypes,
 } from '@proyecto-viviana/solid-stately';
 import { createDrop } from './createDrop';
-import { getGlobalDraggingCollectionRef } from './createDraggableCollection';
+import { getGlobalDraggingCollectionRef, getGlobalDraggingKeys } from './createDraggableCollection';
 
 // Global state for tracking the drop collection
 let globalDropCollectionRef: HTMLElement | null = null;
@@ -257,9 +257,9 @@ export function createDroppableCollection(
 
       // Handle move for internal operations
       if (opts.onMove && isInternal) {
-        // Would get dragging keys from global state
+        const draggingKeys = getGlobalDraggingKeys();
         await opts.onMove({
-          keys: new Set(),
+          keys: draggingKeys,
           target,
           dropOperation,
         });
@@ -275,9 +275,9 @@ export function createDroppableCollection(
         }
 
         if (isInternal && opts.onReorder) {
-          // Would get dragging keys from global state
+          const draggingKeys = getGlobalDraggingKeys();
           await opts.onReorder({
-            keys: new Set(),
+            keys: draggingKeys,
             target,
             dropOperation,
           });

@@ -9,7 +9,13 @@ export { createDrag } from './createDrag';
 export { createDrop } from './createDrop';
 
 // Collection hooks
-export { createDraggableCollection, setGlobalDraggingCollectionRef, getGlobalDraggingCollectionRef } from './createDraggableCollection';
+export {
+  createDraggableCollection,
+  setGlobalDraggingCollectionRef,
+  getGlobalDraggingCollectionRef,
+  setGlobalDraggingKeys,
+  getGlobalDraggingKeys,
+} from './createDraggableCollection';
 export { createDroppableCollection, setGlobalDropCollectionRef, getGlobalDropCollectionRef } from './createDroppableCollection';
 
 // Item hooks

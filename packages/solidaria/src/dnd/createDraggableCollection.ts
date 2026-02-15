@@ -10,6 +10,7 @@ import type { DraggableCollectionState } from '@proyecto-viviana/solid-stately';
 
 // Global state for tracking the dragging collection
 let globalDraggingCollectionRef: HTMLElement | null = null;
+let globalDraggingKeys: Set<string | number> = new Set();
 
 export function setGlobalDraggingCollectionRef(ref: HTMLElement | null): void {
   globalDraggingCollectionRef = ref;
@@ -17,6 +18,14 @@ export function setGlobalDraggingCollectionRef(ref: HTMLElement | null): void {
 
 export function getGlobalDraggingCollectionRef(): HTMLElement | null {
   return globalDraggingCollectionRef;
+}
+
+export function setGlobalDraggingKeys(keys: Set<string | number>): void {
+  globalDraggingKeys = new Set(keys);
+}
+
+export function getGlobalDraggingKeys(): Set<string | number> {
+  return new Set(globalDraggingKeys);
 }
 
 export interface DraggableCollectionOptions {
@@ -45,8 +54,18 @@ export function createDraggableCollection(
   // Track dragging state globally
   createEffect(() => {
     const currentRef = ref();
-    if (state.draggingKeys.size > 0 && globalDraggingCollectionRef !== currentRef) {
-      setGlobalDraggingCollectionRef(currentRef);
+    if (state.draggingKeys.size > 0) {
+      if (globalDraggingCollectionRef !== currentRef) {
+        setGlobalDraggingCollectionRef(currentRef);
+      }
+      setGlobalDraggingKeys(state.draggingKeys);
+      return;
+    }
+
+    // Clear global drag tracking when this collection is no longer dragging.
+    if (globalDraggingCollectionRef === currentRef) {
+      setGlobalDraggingCollectionRef(null);
+      setGlobalDraggingKeys(new Set());
     }
   });
 
@@ -54,6 +73,7 @@ export function createDraggableCollection(
   onCleanup(() => {
     if (globalDraggingCollectionRef === ref()) {
       setGlobalDraggingCollectionRef(null);
+      setGlobalDraggingKeys(new Set());
     }
   });
 

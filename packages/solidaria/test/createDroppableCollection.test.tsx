@@ -2,9 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { render, fireEvent, screen, cleanup } from '@solidjs/testing-library';
 import { afterEach } from 'vitest';
 import { createDroppableCollection } from '../src/dnd/createDroppableCollection';
+import { setGlobalDraggingCollectionRef, setGlobalDraggingKeys } from '../src/dnd/createDraggableCollection';
 import type { DropTarget, DroppableCollectionState } from '@proyecto-viviana/solid-stately';
 
 afterEach(() => {
+  setGlobalDraggingCollectionRef(null);
+  setGlobalDraggingKeys(new Set());
   cleanup();
 });
 
@@ -188,5 +191,157 @@ describe('createDroppableCollection keyboard behavior', () => {
 
     fireEvent.keyDown(root, { key: 'PageUp' });
     expect(calls.at(-1)).toBe('set:item:1');
+  });
+
+  it('passes internal dragging keys to onMove for on-item drops', () => {
+    const onMoveCalls: Array<Set<string | number>> = [];
+    const dropTarget: DropTarget = { type: 'item', key: 'b', dropPosition: 'on' };
+    let currentTarget: DropTarget | null = null;
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+      },
+      activateTarget() {},
+      exitTarget() {
+        currentTarget = null;
+      },
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-internal-move') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return dropTarget;
+            },
+          },
+          onMove: (e) => {
+            onMoveCalls.push(new Set(e.keys));
+          },
+        }),
+        state
+      );
+
+      return <div id="drop-root-internal-move" tabIndex={0} data-testid="drop-root-internal-move" {...collectionProps} />;
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-internal-move');
+    const dataTransfer = {
+      effectAllowed: 'all',
+      dropEffect: 'none',
+      items: [{ kind: 'string', type: 'text/plain' }],
+      types: ['text/plain'],
+      getData: () => 'payload',
+    } as unknown as DataTransfer;
+
+    const draggingKeys = new Set<string | number>(['a', 'c']);
+    setGlobalDraggingCollectionRef(root as HTMLElement);
+    setGlobalDraggingKeys(draggingKeys);
+
+    fireEvent.dragEnter(root, { dataTransfer, clientX: 1, clientY: 1 });
+    fireEvent.dragOver(root, { dataTransfer, clientX: 2, clientY: 2 });
+    fireEvent.drop(root, { dataTransfer, clientX: 2, clientY: 2 });
+
+    expect(onMoveCalls).toHaveLength(1);
+    expect(onMoveCalls[0]).toEqual(draggingKeys);
+  });
+
+  it('passes internal dragging keys to onReorder for insertion drops', () => {
+    const onReorderCalls: Array<Set<string | number>> = [];
+    const dropTarget: DropTarget = { type: 'item', key: 'b', dropPosition: 'before' };
+    let currentTarget: DropTarget | null = null;
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+      },
+      activateTarget() {},
+      exitTarget() {
+        currentTarget = null;
+      },
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-internal-reorder') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return dropTarget;
+            },
+          },
+          onReorder: (e) => {
+            onReorderCalls.push(new Set(e.keys));
+          },
+        }),
+        state
+      );
+
+      return <div id="drop-root-internal-reorder" tabIndex={0} data-testid="drop-root-internal-reorder" {...collectionProps} />;
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-internal-reorder');
+    const dataTransfer = {
+      effectAllowed: 'all',
+      dropEffect: 'none',
+      items: [{ kind: 'string', type: 'text/plain' }],
+      types: ['text/plain'],
+      getData: () => 'payload',
+    } as unknown as DataTransfer;
+
+    const draggingKeys = new Set<string | number>(['x']);
+    setGlobalDraggingCollectionRef(root as HTMLElement);
+    setGlobalDraggingKeys(draggingKeys);
+
+    fireEvent.dragEnter(root, { dataTransfer, clientX: 1, clientY: 1 });
+    fireEvent.dragOver(root, { dataTransfer, clientX: 2, clientY: 2 });
+    fireEvent.drop(root, { dataTransfer, clientX: 2, clientY: 2 });
+
+    expect(onReorderCalls).toHaveLength(1);
+    expect(onReorderCalls[0]).toEqual(draggingKeys);
   });
 });
