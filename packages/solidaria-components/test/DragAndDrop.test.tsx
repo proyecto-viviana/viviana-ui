@@ -7,6 +7,7 @@ import {
   DragAndDropContext,
   DropIndicator,
   DropIndicatorContext,
+  getNormalizedDropTargetKey,
   mergePersistedKeysIntoVirtualRange,
   useDndPersistedKeys,
 } from '../src/DragAndDrop';
@@ -177,5 +178,32 @@ describe('DragAndDrop parity primitives', () => {
     expect(range.start).toBeLessThanOrEqual(40);
     expect(range.end).toBeGreaterThan(40);
     expect(range.end - range.start).toBeLessThanOrEqual(120);
+  });
+
+  it('getNormalizedDropTargetKey normalizes after drop targets using collection boundaries', () => {
+    const collection = {
+      getKeyAfter(key: string | number) {
+        const order = ['a', 'a-1', 'a-2', 'b'];
+        const index = order.indexOf(String(key));
+        return index >= 0 && index < order.length - 1 ? order[index + 1] : null;
+      },
+      getItem(key: string | number) {
+        const levels: Record<string, number> = {
+          a: 0,
+          'a-1': 1,
+          'a-2': 1,
+          b: 0,
+        };
+        if (!(String(key) in levels)) return null;
+        return { type: 'item', level: levels[String(key)] };
+      },
+    };
+
+    const normalized = getNormalizedDropTargetKey(
+      { type: 'item', key: 'a', dropPosition: 'after' },
+      collection
+    );
+
+    expect(normalized).toBe('b');
   });
 });

@@ -48,7 +48,7 @@ import {
   filterDOMProps,
 } from './utils';
 import { type DragAndDropHooks } from './useDragAndDrop';
-import { mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
+import { getNormalizedDropTargetKey, mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
 import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
 
@@ -412,11 +412,13 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
       .map((key) => rows.findIndex((node) => node.key === key))
       .filter((index) => index >= 0);
     const dropTarget = dropState()?.target;
-    const forcedDropIndex = dropTarget?.type === 'item'
-      ? rows.findIndex((node) => node.key === dropTarget.key)
-      : -1;
+    const normalizedDropKey = getNormalizedDropTargetKey(dropTarget, state.collection);
+    const forceIncludeIndexes = [
+      dropTarget?.type === 'item' ? rows.findIndex((node) => node.key === dropTarget.key) : -1,
+      normalizedDropKey != null ? rows.findIndex((node) => node.key === normalizedDropKey) : -1,
+    ].filter((index) => index >= 0);
     return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rows.length, virtualizer, 80, {
-      forceIncludeIndexes: forcedDropIndex >= 0 ? [forcedDropIndex] : [],
+      forceIncludeIndexes,
       forceIncludeMaxSpan: 320,
     });
   });

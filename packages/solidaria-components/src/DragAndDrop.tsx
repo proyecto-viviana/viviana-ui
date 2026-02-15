@@ -166,6 +166,14 @@ function getAfterDropNormalizedKey(
   return nextKey ?? lastDescendantKey ?? target.key;
 }
 
+export function getNormalizedDropTargetKey(
+  target: DropTarget | null | undefined,
+  collection?: CollectionLike
+): Key | null {
+  if (!target || target.type !== 'item') return null;
+  return getAfterDropNormalizedKey(target, collection);
+}
+
 export function useDndPersistedKeys(
   selectionManager: SelectionManagerLike | null | undefined,
   dragAndDropHooks?: Pick<DragAndDropHooks<unknown>, 'isVirtualDragging'>,
@@ -177,7 +185,7 @@ export function useDndPersistedKeys(
     let dropTargetKey: Key | null | undefined;
 
     if (dragAndDropHooks?.isVirtualDragging?.() && dropState?.target?.type === 'item') {
-      dropTargetKey = getAfterDropNormalizedKey(dropState.target, collection);
+      dropTargetKey = getNormalizedDropTargetKey(dropState.target, collection) ?? undefined;
     }
 
     const keys = new Set<Key>();

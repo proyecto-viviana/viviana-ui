@@ -45,7 +45,7 @@ import {
 } from './SelectionIndicator';
 import { useVirtualizerContext } from './Virtualizer';
 import { type DragAndDropHooks } from './useDragAndDrop';
-import { mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
+import { getNormalizedDropTargetKey, mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
 import {
   CollectionRendererContext,
   Section,
@@ -359,11 +359,13 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
       .map((key) => itemNodes.findIndex((node) => node.key === key))
       .filter((index) => index >= 0);
     const dropTarget = dropState()?.target;
-    const forcedDropIndex = dropTarget?.type === 'item'
-      ? itemNodes.findIndex((node) => node.key === dropTarget.key)
-      : -1;
+    const normalizedDropKey = getNormalizedDropTargetKey(dropTarget, state.collection());
+    const forceIncludeIndexes = [
+      dropTarget?.type === 'item' ? itemNodes.findIndex((node) => node.key === dropTarget.key) : -1,
+      normalizedDropKey != null ? itemNodes.findIndex((node) => node.key === normalizedDropKey) : -1,
+    ].filter((index) => index >= 0);
     return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, stateProps.items.length, virtualizer, 80, {
-      forceIncludeIndexes: forcedDropIndex >= 0 ? [forcedDropIndex] : [],
+      forceIncludeIndexes,
       forceIncludeMaxSpan: 320,
     });
   });

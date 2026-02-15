@@ -52,7 +52,7 @@ import {
 import { type DragAndDropHooks } from './useDragAndDrop';
 import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
-import { mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
+import { getNormalizedDropTargetKey, mergePersistedKeysIntoVirtualRange, useDndPersistedKeys } from './DragAndDrop';
 
 // ============================================
 // TYPES
@@ -683,11 +683,13 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
       .map((key) => rowNodes().findIndex((node) => node.key === key))
       .filter((index) => index >= 0);
     const dropTarget = (context.dropState as { target?: DropTarget | null } | undefined)?.target;
-    const forcedDropIndex = dropTarget?.type === 'item'
-      ? rowNodes().findIndex((node) => node.key === dropTarget.key)
-      : -1;
+    const normalizedDropKey = getNormalizedDropTargetKey(dropTarget, context.collection);
+    const forceIncludeIndexes = [
+      dropTarget?.type === 'item' ? rowNodes().findIndex((node) => node.key === dropTarget.key) : -1,
+      normalizedDropKey != null ? rowNodes().findIndex((node) => node.key === normalizedDropKey) : -1,
+    ].filter((index) => index >= 0);
     return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rowCount, virtualizer, 80, {
-      forceIncludeIndexes: forcedDropIndex >= 0 ? [forcedDropIndex] : [],
+      forceIncludeIndexes,
       forceIncludeMaxSpan: 320,
     });
   });
