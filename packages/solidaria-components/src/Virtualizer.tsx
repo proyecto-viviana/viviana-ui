@@ -280,6 +280,18 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     const mappedTarget = toCollectionDropTarget(virtualTarget);
     if (isValidDropTarget(mappedTarget)) return mappedTarget;
     if (mappedTarget.type === 'item') {
+      const alternatePositions: Array<'before' | 'after' | 'on'> = mappedTarget.dropPosition === 'on'
+        ? ['before', 'after']
+        : mappedTarget.dropPosition === 'before'
+          ? ['on', 'after']
+          : ['on', 'before'];
+      for (const position of alternatePositions) {
+        const alternateTarget: DropTarget = {
+          ...mappedTarget,
+          dropPosition: position,
+        };
+        if (isValidDropTarget(alternateTarget)) return alternateTarget;
+      }
       const rootTarget: DropTarget = { type: 'root' };
       if (isValidDropTarget(rootTarget)) return rootTarget;
     }

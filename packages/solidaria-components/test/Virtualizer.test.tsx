@@ -172,6 +172,35 @@ describe('Virtualizer', () => {
     expect(typeof capturedViewportWidth).toBe('number');
   });
 
+  it('drop-target delegate falls back to sibling positions before root', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 5);
+      return (
+        <output data-testid="drop-fallback-target">
+          {JSON.stringify(
+            collection()?.dropTargetDelegate?.getDropTargetFromPoint(
+              1,
+              20,
+              (target) => target.type === 'item' && target.dropPosition !== 'on'
+            ) ?? null
+          )}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 40 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('drop-fallback-target').textContent || '{}');
+    expect(parsed?.type).toBe('item');
+    expect(['before', 'after']).toContain(parsed?.dropPosition);
+  });
+
   it('keyboard delegate skips invalid on-targets and falls back to insertion/root targets', () => {
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext());
