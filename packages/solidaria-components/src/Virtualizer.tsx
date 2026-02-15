@@ -184,6 +184,16 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   });
 
   const virtualOptions = createMemo(() => resolvedLayoutOptions() as DefaultVirtualizerLayoutOptions | undefined);
+  const layoutOptionsWithViewport = createMemo(() => {
+    const options = resolvedLayoutOptions();
+    if (options && typeof options === 'object') {
+      return {
+        ...(options as Record<string, unknown>),
+        viewportWidth: measuredViewportWidth(),
+      } as O;
+    }
+    return { viewportWidth: measuredViewportWidth() } as O;
+  });
   const itemSize = createMemo(() => getObjectValue(virtualOptions(), 'itemSize') ?? 40);
   const overscan = createMemo(() => getObjectValue(virtualOptions(), 'overscan') ?? 2);
   const viewportSize = createMemo(
@@ -232,7 +242,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     return nextInfo;
   };
   const getDropTargetFromPoint = (point: Point, itemCount: number): VirtualizerDropTarget | null => {
-    const target = resolvedLayout().getDropTargetFromPoint?.(point, itemCount, resolvedLayoutOptions()) ??
+    const target = resolvedLayout().getDropTargetFromPoint?.(point, itemCount, layoutOptionsWithViewport()) ??
       fallbackLayout.getDropTargetFromPoint(point, itemCount, virtualOptions());
     if (!target) return null;
     const resolver = dropTargetResolver();

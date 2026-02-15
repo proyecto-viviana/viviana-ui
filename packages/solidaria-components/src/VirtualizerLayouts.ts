@@ -46,6 +46,7 @@ export interface DefaultVirtualizerLayoutOptions {
 export interface GridLayoutOptions extends DefaultVirtualizerLayoutOptions {
   rowHeight?: number;
   columnCount?: number;
+  viewportWidth?: number;
 }
 
 export interface WaterfallLayoutOptions extends GridLayoutOptions {
@@ -207,7 +208,7 @@ export class GridLayout {
     if (itemCount <= 0) return { type: 'root', index: -1, position: 'on' };
     const rowHeight = Math.max(1, options?.rowHeight ?? options?.itemSize ?? 40);
     const columns = Math.max(1, options?.columnCount ?? 1);
-    const width = Math.max(1, options?.viewportSize ?? 320);
+    const width = Math.max(1, options?.viewportWidth ?? 320);
     const cellWidth = width / columns;
     const row = Math.max(0, Math.floor(point.y / rowHeight));
     const col = Math.max(0, Math.min(columns - 1, Math.floor(Math.max(0, point.x) / cellWidth)));

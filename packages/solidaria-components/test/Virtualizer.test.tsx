@@ -144,6 +144,34 @@ describe('Virtualizer', () => {
     expect(screen.getByTestId('drop-op').textContent).toBe('copy');
   });
 
+  it('passes viewport width to layout drop-target options', () => {
+    let capturedViewportWidth: unknown;
+    const layout: VirtualizerLayout<Record<string, unknown>> = {
+      getDropTargetFromPoint(_point, _itemCount, options) {
+        capturedViewportWidth = options?.viewportWidth;
+        return { type: 'root', index: -1, position: 'on' };
+      },
+    };
+
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext<Record<string, unknown>>());
+      return (
+        <output data-testid="viewport-width-option">
+          {JSON.stringify(ctx()?.getDropTargetFromPoint({ x: 1, y: 1 }, 1) ?? null)}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={layout} style={{ width: '240px' }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    expect(screen.getByTestId('viewport-width-option').textContent).toContain('"type":"root"');
+    expect(typeof capturedViewportWidth).toBe('number');
+  });
+
   it('keyboard delegate skips invalid on-targets and falls back to insertion/root targets', () => {
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext());
@@ -388,6 +416,22 @@ describe('Virtualizer', () => {
     expect(range.start).toBe(16);
     expect(range.end).toBe(28);
     expect(range.offsetTop).toBe(80);
+  });
+
+  it('grid layout drop targeting uses viewport width for column mapping', () => {
+    const layout = new GridLayout();
+    const left = layout.getDropTargetFromPoint(
+      { x: 10, y: 10 },
+      8,
+      { rowHeight: 20, columnCount: 2, viewportWidth: 200 }
+    );
+    const right = layout.getDropTargetFromPoint(
+      { x: 150, y: 10 },
+      8,
+      { rowHeight: 20, columnCount: 2, viewportWidth: 200 }
+    );
+    expect(left).toMatchObject({ type: 'item', index: 0 });
+    expect(right).toMatchObject({ type: 'item', index: 1 });
   });
 
   it('list layout drop targets clamp to before-first and after-last at boundaries', () => {
