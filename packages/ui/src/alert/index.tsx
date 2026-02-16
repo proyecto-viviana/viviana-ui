@@ -35,6 +35,7 @@ export function Alert(props: AlertProps) {
         <div class="flex-1">{props.children}</div>
         <Show when={props.dismissible}>
           <button
+            type="button"
             class="hover:opacity-70 transition-opacity ml-2"
             onClick={props.onDismiss}
             aria-label="Dismiss"

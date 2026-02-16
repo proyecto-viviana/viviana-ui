@@ -117,6 +117,7 @@ export function Dialog(props: DialogProps): JSX.Element {
               </HeadlessDialogHeading>
               <Show when={local.isDismissable}>
                 <button
+                  type="button"
                   onClick={close}
                   class="text-primary-400 hover:text-primary-200 transition-colors"
                   aria-label="Close dialog"

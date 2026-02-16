@@ -24,6 +24,7 @@ export interface ConversationPreviewProps {
 export function ConversationPreview(props: ConversationPreviewProps) {
   return (
     <button
+      type="button"
       class={`flex w-full items-center gap-3 rounded-xl p-3 hover:bg-bg-300 transition-colors text-left ${props.class ?? ''}`}
       onClick={props.onClick}
     >

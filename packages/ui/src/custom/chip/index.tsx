@@ -34,6 +34,7 @@ export function Chip(props: ChipProps) {
 
   return (
     <button
+      type="button"
       class={`flex justify-center items-center h-6 w-auto rounded-full px-4 py-1 font-medium text-sm tracking-wide transition-colors ${variantStyles[variant()]} ${props.class ?? ''}`}
       onClick={props.onClick}
     >

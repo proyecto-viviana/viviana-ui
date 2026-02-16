@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's Picker component patterns.
  */
 
-import { type JSX, Show, splitProps, createContext, useContext } from 'solid-js'
+import { type JSX, Show, splitProps, createContext, useContext, createUniqueId } from 'solid-js'
 import {
   Select as HeadlessSelect,
   SelectTrigger as HeadlessSelectTrigger,
@@ -107,6 +107,9 @@ const sizeStyles = {
  * Built on solidaria-components Select for full accessibility support.
  */
 export function Select<T>(props: SelectProps<T>): JSX.Element {
+  const descriptionId = createUniqueId()
+  const errorId = createUniqueId()
+
   const [local, headlessProps] = splitProps(props, [
     'size',
     'class',
@@ -125,23 +128,35 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     return [base, disabledClass, customClass].filter(Boolean).join(' ')
   }
 
+  const mergedAriaLabel =
+    (headlessProps as { 'aria-label'?: string })['aria-label'] ??
+    (typeof local.label === 'string' ? local.label : undefined)
+
+  const describedByIds = [
+    (headlessProps as { 'aria-describedby'?: string })['aria-describedby'],
+    local.description && !local.isInvalid ? descriptionId : undefined,
+    local.errorMessage && local.isInvalid ? errorId : undefined,
+  ].filter(Boolean).join(' ') || undefined
+
   return (
     <SelectSizeContext.Provider value={size}>
       <HeadlessSelect
         {...headlessProps}
+        aria-label={mergedAriaLabel}
+        aria-describedby={describedByIds}
         class={getClassName}
       >
         <Show when={local.label}>
-          <label class={`text-primary-200 font-medium ${sizeStyles[size].label}`}>
+          <span class={`text-primary-200 font-medium ${sizeStyles[size].label}`}>
             {local.label}
-          </label>
+          </span>
         </Show>
         {props.children}
         <Show when={local.description && !local.isInvalid}>
-          <span class="text-primary-400 text-sm">{local.description}</span>
+          <span id={descriptionId} class="text-primary-400 text-sm">{local.description}</span>
         </Show>
         <Show when={local.errorMessage && local.isInvalid}>
-          <span class="text-danger-400 text-sm">{local.errorMessage}</span>
+          <span id={errorId} class="text-danger-400 text-sm">{local.errorMessage}</span>
         </Show>
       </HeadlessSelect>
     </SelectSizeContext.Provider>

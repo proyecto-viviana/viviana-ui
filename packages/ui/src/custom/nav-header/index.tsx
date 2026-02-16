@@ -30,6 +30,7 @@ export function NavHeader(props: NavHeaderProps) {
         {props.children}
         <Show when={props.menuIcon}>
           <button
+            type="button"
             class="md:hidden flex items-center justify-center"
             onClick={props.onMenuClick}
           >

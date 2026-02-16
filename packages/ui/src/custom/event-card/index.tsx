@@ -109,6 +109,7 @@ export interface EventListItemProps {
 export function EventListItem(props: EventListItemProps) {
   return (
     <button
+      type="button"
       class={`flex items-center gap-3 w-full p-2 rounded-lg hover:bg-bg-300 transition-colors text-left ${props.class ?? ''}`}
       onClick={props.onClick}
     >

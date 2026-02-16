@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's ListBox component patterns.
  */
 
-import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js'
+import { type JSX, splitProps, createContext, useContext, Show, createUniqueId } from 'solid-js'
 import {
   ListBox as HeadlessListBox,
   ListBoxOption as HeadlessListBoxOption,
@@ -89,6 +89,7 @@ const sizeStyles = {
  * Built on solidaria-components ListBox for full accessibility support.
  */
 export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
+  const descriptionId = createUniqueId()
   const [local, headlessProps] = splitProps(props, [
     'size',
     'class',
@@ -125,22 +126,33 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     </li>
   )
 
+  const mergedAriaLabel =
+    (headlessProps as { 'aria-label'?: string })['aria-label'] ??
+    (typeof local.label === 'string' ? local.label : undefined)
+
+  const describedByIds = [
+    (headlessProps as { 'aria-describedby'?: string })['aria-describedby'],
+    local.description ? descriptionId : undefined,
+  ].filter(Boolean).join(' ') || undefined
+
   return (
     <ListBoxSizeContext.Provider value={size}>
       <div class="flex flex-col gap-1.5">
         <Show when={local.label}>
-          <label class={`text-primary-200 font-medium ${styles.label}`}>
+          <span class={`text-primary-200 font-medium ${styles.label}`}>
             {local.label}
-          </label>
+          </span>
         </Show>
         <HeadlessListBox
           {...headlessProps}
+          aria-label={mergedAriaLabel}
+          aria-describedby={describedByIds}
           class={getClassName}
           renderEmptyState={local.renderEmptyState ?? defaultEmptyState}
           children={props.children}
         />
         <Show when={local.description}>
-          <span class="text-primary-400 text-sm">{local.description}</span>
+          <span id={descriptionId} class="text-primary-400 text-sm">{local.description}</span>
         </Show>
       </div>
     </ListBoxSizeContext.Provider>
