@@ -625,6 +625,18 @@ describe('Virtualizer', () => {
                 'previous',
                 (target) => target.type === 'item' && target.dropPosition === 'on'
               ) ?? null,
+            pageNext:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 2, dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+            pagePrevious:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 2, dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
           })}
         </output>
       );
@@ -639,6 +651,8 @@ describe('Virtualizer', () => {
     const parsed = JSON.parse(screen.getByTestId('keyboard-unmapped-numeric-key-rebase').textContent || '{}');
     expect(parsed.next).toMatchObject({ type: 'item', key: 0, dropPosition: 'on' });
     expect(parsed.previous).toMatchObject({ type: 'item', key: 5, dropPosition: 'on' });
+    expect(parsed.pageNext).toMatchObject({ type: 'item', key: 1, dropPosition: 'on' });
+    expect(parsed.pagePrevious).toMatchObject({ type: 'item', key: 4, dropPosition: 'on' });
   });
 
   it('keyboard page delegate prefers boundary item targets before root on out-of-range jumps', () => {
