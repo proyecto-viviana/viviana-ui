@@ -122,6 +122,18 @@ export type { FormProps, FieldErrorProps } from './form';
 export { Toolbar } from './toolbar';
 export type { ToolbarProps, ToolbarSize, ToolbarVariant } from './toolbar';
 
+// ActionBar
+export { ActionBar } from './actionbar';
+export type { ActionBarProps } from './actionbar';
+
+// ActionGroup
+export { ActionGroup, ActionButton } from './actiongroup';
+export type { ActionGroupProps, ActionButtonProps } from './actiongroup';
+
+// ButtonGroup
+export { ButtonGroup } from './buttongroup';
+export type { ButtonGroupProps } from './buttongroup';
+
 // Autocomplete
 export { SearchAutocomplete } from './autocomplete';
 export type { SearchAutocompleteProps, SearchAutocompleteItem, SearchAutocompleteSize } from './autocomplete';
@@ -183,6 +195,10 @@ export type { FileTriggerProps } from './filetrigger';
 export { SearchField } from './searchfield';
 export type { SearchFieldProps, SearchFieldSize, SearchFieldVariant } from './searchfield';
 
+// ContextualHelp
+export { ContextualHelp } from './contextualhelp';
+export type { ContextualHelpProps } from './contextualhelp';
+
 // Slider
 export { Slider } from './slider';
 export type { SliderProps, SliderSize, SliderVariant } from './slider';
@@ -233,6 +249,22 @@ export type {
   DisclosureSize,
   DisclosureVariant,
 } from './disclosure';
+
+// Accordion
+export {
+  Accordion,
+  AccordionItem,
+  AccordionHeader,
+  AccordionPanel,
+} from './accordion';
+export type {
+  AccordionProps,
+  AccordionItemProps,
+  AccordionHeaderProps,
+  AccordionPanelProps,
+  AccordionSize,
+  AccordionVariant,
+} from './accordion';
 
 // Meter
 export { Meter } from './meter';
@@ -382,6 +414,14 @@ export type { ImageProps } from './image';
 export { Layout } from './layout';
 export type { LayoutProps } from './layout';
 
+// IllustratedMessage
+export { IllustratedMessage } from './illustratedmessage';
+export type { IllustratedMessageProps } from './illustratedmessage';
+
+// StepList
+export { StepList, Step } from './steplist';
+export type { StepListProps, StepProps } from './steplist';
+
 // Drag and Drop
 export {
   DragAndDropContext,
@@ -399,6 +439,16 @@ export type {
   DragAndDropOptions,
   DragAndDropHooks,
 } from './dnd';
+
+// Story utilities
+export { cx } from './story-utils';
+
+// Style macro compatibility
+export { s1 } from './style-macro-s1';
+
+// Theme compatibility
+export { themeExpressClass } from './theme-express';
+export { themeLightClass } from './theme-light';
 
 // ============================================
 // CUSTOM COMPONENTS
