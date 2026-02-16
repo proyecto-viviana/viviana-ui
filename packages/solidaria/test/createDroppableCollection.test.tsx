@@ -1301,6 +1301,97 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(calls.at(-1)).toBe('set:item:8');
   });
 
+  it('falls back to document direction when getComputedStyle is unavailable', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'root' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}`);
+        } else {
+          calls.push(`set:${target?.type ?? 'null'}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation() {
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    const originalDir = document.dir;
+    const originalGetComputedStyle = window.getComputedStyle;
+    document.dir = 'rtl';
+    Object.defineProperty(window, 'getComputedStyle', {
+      configurable: true,
+      writable: true,
+      value: undefined,
+    });
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-rtl-fallback') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+            getKeyboardNavigationTarget(_target, direction) {
+              if (direction === 'next') {
+                return { type: 'item', key: 2, dropPosition: 'on' };
+              }
+              return { type: 'item', key: 8, dropPosition: 'on' };
+            },
+          },
+          keyboardDelegate: {
+            getKeyLeftOf: (key) => (key === 2 ? 1 : null),
+            getKeyRightOf: (key) => (key === 8 ? 9 : null),
+          },
+        }),
+        state
+      );
+
+      return <div id="drop-root-rtl-fallback" tabIndex={0} data-testid="drop-root-rtl-fallback" {...collectionProps} />;
+    }
+
+    try {
+      render(() => <TestComponent />);
+      const root = screen.getByTestId('drop-root-rtl-fallback');
+
+      fireEvent.keyDown(root, { key: 'ArrowLeft' });
+      expect(calls.at(-1)).toBe('set:item:2');
+
+      fireEvent.keyDown(root, { key: 'ArrowRight' });
+      expect(calls.at(-1)).toBe('set:item:8');
+    } finally {
+      Object.defineProperty(window, 'getComputedStyle', {
+        configurable: true,
+        writable: true,
+        value: originalGetComputedStyle,
+      });
+      document.dir = originalDir;
+    }
+  });
+
   it('passes internal dragging keys to onMove for on-item drops', () => {
     const onMoveCalls: Array<Set<string | number>> = [];
     const dropTarget: DropTarget = { type: 'item', key: 'b', dropPosition: 'on' };

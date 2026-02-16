@@ -45,9 +45,11 @@ results.push({
   ok:
     hasPattern(coreSource, /keyboardDelegate\?:\s*KeyboardDelegateLike/) &&
     hasPattern(coreSource, /const\s+resolveFallbackKeyboardTarget\s*=\s*\(/) &&
-    hasPattern(coreSource, /\?\?\s*resolveFallbackKeyboardTarget\(e\.key(?:\s*,\s*target)?\)/),
+    hasPattern(coreSource, /\?\?\s*resolveFallbackKeyboardTarget\(e\.key(?:\s*,\s*target)?\)/) &&
+    hasPattern(coreSource, /typeof\s+window\s*!==\s*['"]undefined['"]/) &&
+    hasPattern(coreSource, /typeof\s+document\s*!==\s*['"]undefined['"]/),
   detail:
-    "contains keyboardDelegate option type and fallback keyboard target resolution in onKeyDown path",
+    "contains keyboardDelegate option type, keyboard fallback resolution, and SSR-safe direction guards",
 });
 
 for (let i = 0; i < componentPaths.length; i += 1) {
