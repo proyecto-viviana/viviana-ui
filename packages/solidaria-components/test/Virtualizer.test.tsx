@@ -1653,6 +1653,18 @@ describe('Virtualizer', () => {
                 'previous',
                 (target) => target.type === 'item' && target.dropPosition === 'on'
               ) ?? null,
+            pageNext:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 'child', dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+            pagePrevious:
+              collection()?.dropTargetDelegate?.getKeyboardPageNavigationTarget?.(
+                { type: 'item', key: 'child', dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
           })}
         </output>
       );
@@ -1676,6 +1688,8 @@ describe('Virtualizer', () => {
     const parsed = JSON.parse(screen.getByTestId('tree-hidden-keyboard-rebase').textContent || '{}');
     expect(parsed.next).toMatchObject({ type: 'item', key: 'parent', dropPosition: 'on' });
     expect(parsed.previous).toMatchObject({ type: 'item', key: 'sibling', dropPosition: 'on' });
+    expect(parsed.pageNext).toMatchObject({ type: 'item', key: 'sibling', dropPosition: 'on' });
+    expect(parsed.pagePrevious).toMatchObject({ type: 'item', key: 'parent', dropPosition: 'on' });
   });
 
   it('renders tree after-drop indicators at branch boundaries only', () => {
