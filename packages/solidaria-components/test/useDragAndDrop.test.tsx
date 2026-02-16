@@ -5,6 +5,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { createRoot } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { useDragAndDrop } from '../src/useDragAndDrop';
+import { DIRECTORY_DRAG_TYPE } from '@proyecto-viviana/solid-stately';
 import type { DropTarget, DroppableCollectionState, DragPreviewRenderer } from '@proyecto-viviana/solid-stately';
 import { setGlobalDraggingCollectionRef, setGlobalDraggingKeys } from '@proyecto-viviana/solidaria';
 
@@ -229,6 +230,24 @@ describe('useDragAndDrop', () => {
         role: 'option',
         tabIndex: -1,
       }));
+
+      dispose();
+    });
+  });
+
+  it('preserves symbol accepted drag types through droppable state wiring', () => {
+    createRoot((dispose) => {
+      const { dragAndDropHooks } = useDragAndDrop({
+        onInsert: () => {},
+        acceptedDragTypes: [DIRECTORY_DRAG_TYPE],
+      });
+
+      const dropState = dragAndDropHooks.useDroppableCollectionState?.({});
+      expect(dropState).toBeDefined();
+      const accepted = dropState?.isAccepted({
+        has: (type) => type === DIRECTORY_DRAG_TYPE,
+      });
+      expect(accepted).toBe(true);
 
       dispose();
     });
