@@ -15,6 +15,8 @@ export {
   getGlobalDraggingCollectionRef,
   setGlobalDraggingKeys,
   getGlobalDraggingKeys,
+  setGlobalDraggingTypes,
+  getGlobalDraggingTypes,
 } from './createDraggableCollection';
 export { createDroppableCollection, setGlobalDropCollectionRef, getGlobalDropCollectionRef } from './createDroppableCollection';
 

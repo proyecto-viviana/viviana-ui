@@ -6,10 +6,11 @@ import { createRoot } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { useDragAndDrop } from '../src/useDragAndDrop';
 import type { DropTarget, DroppableCollectionState, DragPreviewRenderer } from '@proyecto-viviana/solid-stately';
-import { setGlobalDraggingCollectionRef } from '@proyecto-viviana/solidaria';
+import { setGlobalDraggingCollectionRef, setGlobalDraggingKeys } from '@proyecto-viviana/solidaria';
 
 afterEach(() => {
   setGlobalDraggingCollectionRef(null);
+  setGlobalDraggingKeys(new Set());
 });
 
 describe('useDragAndDrop', () => {
@@ -278,6 +279,10 @@ describe('useDragAndDrop', () => {
       expect(dragAndDropHooks.isVirtualDragging?.()).toBe(true);
 
       setGlobalDraggingCollectionRef(null);
+      setGlobalDraggingKeys(new Set(['a']));
+      expect(dragAndDropHooks.isVirtualDragging?.()).toBe(true);
+
+      setGlobalDraggingKeys(new Set());
       expect(dragAndDropHooks.isVirtualDragging?.()).toBe(false);
 
       dispose();

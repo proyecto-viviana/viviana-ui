@@ -589,6 +589,10 @@ export {
   // Global state
   setGlobalDraggingCollectionRef,
   getGlobalDraggingCollectionRef,
+  setGlobalDraggingKeys,
+  getGlobalDraggingKeys,
+  setGlobalDraggingTypes,
+  getGlobalDraggingTypes,
   setGlobalDropCollectionRef,
   getGlobalDropCollectionRef,
   // Types
