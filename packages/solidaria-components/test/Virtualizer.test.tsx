@@ -836,6 +836,107 @@ describe('Virtualizer', () => {
     expect(screen.queryByText('Item 0')).not.toBeInTheDocument();
   });
 
+  it('keeps section header visible when virtual range starts inside the same tree section', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 1;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
+    const sectionedTreeItems = [
+      {
+        key: 'section-a',
+        title: 'Section A',
+        items: [
+          { key: 'a-0', value: { label: 'A 0' }, textValue: 'A 0' },
+          { key: 'a-1', value: { label: 'A 1' }, textValue: 'A 1' },
+          { key: 'a-2', value: { label: 'A 2' }, textValue: 'A 2' },
+        ],
+      },
+      {
+        key: 'section-b',
+        title: 'Section B',
+        items: [
+          { key: 'b-0', value: { label: 'B 0' }, textValue: 'B 0' },
+          { key: 'b-1', value: { label: 'B 1' }, textValue: 'B 1' },
+        ],
+      },
+    ];
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <Tree aria-label="Sectioned virtual tree" items={sectionedTreeItems as any}>
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByRole('heading', { name: 'Section A' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Section B' })).not.toBeInTheDocument();
+
+    const container = document.querySelector('[data-virtualizer]') as HTMLDivElement;
+    container.scrollTop = 20;
+    fireEvent.scroll(container);
+
+    expect(screen.getByRole('heading', { name: 'Section A' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Section B' })).not.toBeInTheDocument();
+  });
+
+  it('updates tree section headers when scrolling across section boundaries', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      cb(0);
+      return 1;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
+    const sectionedTreeItems = [
+      {
+        key: 'section-a',
+        title: 'Section A',
+        items: [
+          { key: 'a-0', value: { label: 'A 0' }, textValue: 'A 0' },
+          { key: 'a-1', value: { label: 'A 1' }, textValue: 'A 1' },
+          { key: 'a-2', value: { label: 'A 2' }, textValue: 'A 2' },
+        ],
+      },
+      {
+        key: 'section-b',
+        title: 'Section B',
+        items: [
+          { key: 'b-0', value: { label: 'B 0' }, textValue: 'B 0' },
+          { key: 'b-1', value: { label: 'B 1' }, textValue: 'B 1' },
+          { key: 'b-2', value: { label: 'B 2' }, textValue: 'B 2' },
+        ],
+      },
+    ];
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <Tree aria-label="Section boundary virtual tree" items={sectionedTreeItems as any}>
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      </Virtualizer>
+    ));
+
+    expect(screen.getByRole('heading', { name: 'Section A' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Section B' })).not.toBeInTheDocument();
+
+    const container = document.querySelector('[data-virtualizer]') as HTMLDivElement;
+    container.scrollTop = 60;
+    fireEvent.scroll(container);
+
+    expect(screen.getByRole('heading', { name: 'Section B' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Section A' })).not.toBeInTheDocument();
+  });
+
   it('retains focused item in virtualized listbox when no drop target is active', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       cb(0);
