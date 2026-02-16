@@ -94,6 +94,17 @@ export type { SearchAutocompleteProps, SearchAutocompleteItem, SearchAutocomplet
 export { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from './select';
 export type { SelectProps, SelectTriggerProps, SelectValueProps, SelectListBoxProps, SelectOptionProps, SelectSize } from './select';
 
+// Picker
+export { Picker, PickerTrigger, PickerValue, PickerListBox, PickerItem } from './picker';
+export type {
+  PickerProps,
+  PickerTriggerProps,
+  PickerValueProps,
+  PickerListBoxProps,
+  PickerItemProps,
+  PickerSize,
+} from './picker';
+
 // Menu
 export { Menu, MenuItem, MenuTrigger, MenuButton, MenuSeparator } from './menu';
 export type { MenuProps, MenuItemProps, MenuTriggerProps, MenuButtonProps, MenuSeparatorProps, MenuSize } from './menu';
@@ -101,6 +112,16 @@ export type { MenuProps, MenuItemProps, MenuTriggerProps, MenuButtonProps, MenuS
 // ListBox
 export { ListBox, ListBoxOption } from './listbox';
 export type { ListBoxProps, ListBoxOptionProps, ListBoxSize } from './listbox';
+
+// List
+export { ListView, ListViewItem, ListViewSelectionCheckbox } from './list';
+export type {
+  ListViewProps,
+  ListViewItemProps,
+  ListViewSize,
+  ListViewVariant,
+  ListViewLayout,
+} from './list';
 
 // Tabs
 export { Tabs, TabList, Tab, TabPanel } from './tabs';
@@ -176,6 +197,14 @@ export type { MeterProps, MeterSize, MeterVariant } from './meter';
 // TagGroup
 export { TagGroup } from './tag-group';
 export type { TagGroupProps, TagProps, TagGroupSize, TagGroupVariant } from './tag-group';
+
+// LabeledValue
+export { LabeledValue } from './labeledvalue';
+export type { LabeledValueProps, LabeledValueOrientation } from './labeledvalue';
+
+// StatusLight
+export { StatusLight } from './statuslight';
+export type { StatusLightProps, StatusLightSize, StatusLightVariant } from './statuslight';
 
 // Calendar
 export { Calendar } from './calendar';
