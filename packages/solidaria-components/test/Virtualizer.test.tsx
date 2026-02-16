@@ -1623,6 +1623,61 @@ describe('Virtualizer', () => {
     expect(target.level).toBe(0);
   });
 
+  it('virtualized tree keyboard delegate rebases hidden child keys to visible rows', () => {
+    const items = [
+      {
+        key: 'parent',
+        value: { name: 'Parent' },
+        textValue: 'Parent',
+        children: [
+          { key: 'child', value: { name: 'Child' }, textValue: 'Child' },
+        ],
+      },
+      { key: 'sibling', value: { name: 'Sibling' }, textValue: 'Sibling' },
+    ];
+
+    function Consumer(): JSX.Element {
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      return (
+        <output data-testid="tree-hidden-keyboard-rebase">
+          {JSON.stringify({
+            next:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 'child', dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+            previous:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 'child', dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer
+        layout={{}}
+        layoutOptions={{ itemSize: 20, viewportSize: 40, overscan: 0 }}
+        style={{ height: '40px', overflow: 'auto' }}
+      >
+        <>
+          <Tree items={items} aria-label="Tree hidden keyboard key">
+            {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+          </Tree>
+          <Consumer />
+        </>
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('tree-hidden-keyboard-rebase').textContent || '{}');
+    expect(parsed.next).toMatchObject({ type: 'item', key: 'parent', dropPosition: 'on' });
+    expect(parsed.previous).toMatchObject({ type: 'item', key: 'sibling', dropPosition: 'on' });
+  });
+
   it('renders tree after-drop indicators at branch boundaries only', () => {
     const items = [
       {
