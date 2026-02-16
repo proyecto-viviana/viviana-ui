@@ -331,8 +331,12 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
 
     const resolveCurrentIndex = (currentTarget: DropTarget | null): number | null => {
       if (!currentTarget || currentTarget.type === 'root') return null;
-      const fromResolver = dropTargetIndexResolver()?.(currentTarget.key);
-      if (fromResolver != null && fromResolver >= 0 && fromResolver < itemCount) return fromResolver;
+      const resolver = dropTargetIndexResolver();
+      if (resolver) {
+        const fromResolver = resolver(currentTarget.key);
+        if (fromResolver != null && fromResolver >= 0 && fromResolver < itemCount) return fromResolver;
+        return null;
+      }
       if (typeof currentTarget.key === 'number' && currentTarget.key >= 0 && currentTarget.key < itemCount) {
         return currentTarget.key;
       }
@@ -497,10 +501,13 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       const rootTarget: DropTarget = { type: 'root' };
       return isValidDropTarget(rootTarget) ? rootTarget : null;
     }
-    const resolvedIndex = dropTargetIndexResolver()?.(target.key);
+    const resolver = dropTargetIndexResolver();
+    const resolvedIndex = resolver?.(target.key);
     const currentIndex = resolvedIndex != null
       ? resolvedIndex
-      : (typeof target.key === 'number' ? target.key : (direction === 'next' ? -1 : itemCount));
+      : resolver
+        ? (direction === 'next' ? -1 : itemCount)
+        : (typeof target.key === 'number' ? target.key : (direction === 'next' ? -1 : itemCount));
     const pageSize = Math.max(1, Math.floor(viewportSize() / Math.max(1, itemSize())));
     const delta = direction === 'next' ? 1 : -1;
     const nextStart = currentIndex + delta * pageSize;

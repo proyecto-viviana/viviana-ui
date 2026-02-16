@@ -604,6 +604,43 @@ describe('Virtualizer', () => {
     expect(parsed.previous?.key).not.toBe('missing');
   });
 
+  it('keyboard delegate does not treat numeric keys as indexes when resolver reports unmapped', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 6);
+      ctx()?.setDropTargetIndexResolver(() => null);
+      return (
+        <output data-testid="keyboard-unmapped-numeric-key-rebase">
+          {JSON.stringify({
+            next:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 2, dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+            previous:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 2, dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item' && target.dropPosition === 'on'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20, viewportSize: 40 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-unmapped-numeric-key-rebase').textContent || '{}');
+    expect(parsed.next).toMatchObject({ type: 'item', key: 0, dropPosition: 'on' });
+    expect(parsed.previous).toMatchObject({ type: 'item', key: 5, dropPosition: 'on' });
+  });
+
   it('keyboard page delegate prefers boundary item targets before root on out-of-range jumps', () => {
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext());
