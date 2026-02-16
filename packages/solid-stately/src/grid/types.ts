@@ -15,6 +15,7 @@ export type GridNodeType =
   | 'rowheader'      // A cell that acts as a row header
   | 'headerrow'      // A header row container
   | 'section'        // A section/group
+  | 'content'        // A collection content placeholder
   | 'placeholder';   // A placeholder (e.g., empty row)
 
 /**
@@ -37,6 +38,10 @@ export interface GridNode<T = unknown> {
   index: number;
   /** The key of the parent node, if any. */
   parentKey?: Key | null;
+  /** Previous sibling key (visible order). */
+  prevKey?: Key | null;
+  /** Next sibling key (visible order). */
+  nextKey?: Key | null;
   /** Whether this node has child nodes. */
   hasChildNodes: boolean;
   /** Child nodes (cells for rows, rows for sections). */

@@ -106,6 +106,23 @@ describe('createTreeState', () => {
     });
   });
 
+  it('provides prev/next sibling keys', () => {
+    createRoot((dispose) => {
+      const items = createTestItems();
+      const state = createState(
+        () => ({ defaultExpandedKeys: ['1'] }),
+        items
+      );
+
+      expect(state.collection.getKeyAfter('1')).toBe('1.1');
+      expect(state.collection.getKeyAfter('1.3')).toBe('2');
+      expect(state.collection.getKeyBefore('2')).toBe('1.3');
+      expect(state.collection.getKeyBefore('1.1')).toBe('1');
+
+      dispose();
+    });
+  });
+
   describe('expansion state', () => {
     it('should start with no expanded keys by default', () => {
       createRoot((dispose) => {

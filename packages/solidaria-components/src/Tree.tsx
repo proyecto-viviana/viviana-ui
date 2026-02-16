@@ -554,6 +554,19 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     onExpandedChange: stateProps.onExpandedChange,
   }));
 
+  const [lastExpandedKeys, setLastExpandedKeys] = createSignal<Set<Key>>(new Set());
+  const [lastItemsLength, setLastItemsLength] = createSignal(flatItems().length);
+  const [collectionVersion, setCollectionVersion] = createSignal(0);
+  createEffect(() => {
+    const expanded = state.expandedKeys;
+    const items = flatItems();
+    if (!areSetsEqual(lastExpandedKeys(), expanded) || lastItemsLength() !== items.length) {
+      setLastExpandedKeys(new Set(expanded));
+      setLastItemsLength(items.length);
+      setCollectionVersion((v) => v + 1);
+    }
+  });
+
   // Create tree aria props
   const { treeProps } = createTree<T, TreeCollection<T>>(
     () => ({
@@ -609,7 +622,10 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   const isEmpty = () => flatItems().length === 0;
 
   // Render visible rows (flat list based on expansion state)
-  const visibleRows = createMemo(() => state.collection.rows);
+  const visibleRows = createMemo(() => {
+    collectionVersion();
+    return state.collection.rows;
+  });
   const virtualizer = useVirtualizerContext();
   const parentCollectionRenderer = useCollectionRenderer<TreeItemData<T>>();
   const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
@@ -1343,3 +1359,11 @@ Tree.SelectionCheckbox = TreeSelectionCheckbox;
 Tree.LoadMoreItem = TreeLoadMoreItem;
 Tree.Section = TreeSection;
 Tree.Header = TreeHeader;
+
+function areSetsEqual<T>(a: Set<T>, b: Set<T>): boolean {
+  if (a.size !== b.size) return false;
+  for (const entry of a) {
+    if (!b.has(entry)) return false;
+  }
+  return true;
+}

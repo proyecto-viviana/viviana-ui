@@ -15,8 +15,9 @@ import type { TreeCollection as ITreeCollection, TreeNode, TreeItemData } from '
  */
 export class TreeCollection<T> implements ITreeCollection<T> {
   private keyMap: Map<Key, TreeNode<T>> = new Map();
-  private visibleKeys: Key[] = [];
-  private _rows: TreeNode<T>[] = [];
+  private visibleRows: TreeNode<T>[] = [];
+  private firstKey: Key | null = null;
+  private lastKey: Key | null = null;
 
   constructor(
     items: TreeItemData<T>[],
@@ -27,6 +28,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
 
   private buildCollection(items: TreeItemData<T>[], expandedKeys: Set<Key>): void {
     let globalIndex = 0;
+    let previousNode: TreeNode<T> | null = null;
 
     const visit = (
       item: TreeItemData<T>,
@@ -77,12 +79,15 @@ export class TreeCollection<T> implements ITreeCollection<T> {
     // Second pass: build visible rows list
     const addVisibleNodes = (nodes: TreeNode<T>[]): void => {
       for (const node of nodes) {
-        // Update the row index for visible nodes
         node.rowIndex = globalIndex++;
-        this._rows.push(node);
-        this.visibleKeys.push(node.key);
+        this.visibleRows.push(node);
+        node.prevKey = previousNode?.key ?? null;
+        node.nextKey = undefined;
+        if (previousNode) {
+          previousNode.nextKey = node.key;
+        }
+        previousNode = node;
 
-        // Add children if expanded
         if (node.isExpanded && node.childNodes.length > 0) {
           addVisibleNodes(node.childNodes);
         }
@@ -90,26 +95,28 @@ export class TreeCollection<T> implements ITreeCollection<T> {
     };
 
     addVisibleNodes(rootNodes);
+    this.firstKey = this.visibleRows[0]?.key ?? null;
+    this.lastKey = this.visibleRows[this.visibleRows.length - 1]?.key ?? null;
   }
 
   // Collection properties
 
   get size(): number {
-    return this.visibleKeys.length;
+    return this.visibleRows.length;
   }
 
   get rows(): TreeNode<T>[] {
-    return this._rows;
+    return this.visibleRows;
   }
 
   get rowCount(): number {
-    return this._rows.length;
+    return this.visibleRows.length;
   }
 
   // Collection methods
 
   getKeys(): Iterable<Key> {
-    return this.visibleKeys;
+    return this.visibleRows.map((node) => node.key);
   }
 
   getItem(key: Key): TreeNode<T> | null {
@@ -117,30 +124,56 @@ export class TreeCollection<T> implements ITreeCollection<T> {
   }
 
   at(index: number): TreeNode<T> | null {
-    if (index < 0 || index >= this._rows.length) {
+    if (index < 0 || index >= this.visibleRows.length) {
       return null;
     }
-    return this._rows[index];
+    return this.visibleRows[index];
   }
 
   getKeyBefore(key: Key): Key | null {
-    const index = this.visibleKeys.indexOf(key);
-    if (index <= 0) return null;
-    return this.visibleKeys[index - 1];
+    const node = this.keyMap.get(key);
+    let previousKey = node?.prevKey ?? null;
+    while (previousKey != null) {
+      const candidate = this.keyMap.get(previousKey);
+      if (!candidate) break;
+      if (candidate.type !== 'content') {
+        return candidate.key;
+      }
+      previousKey = candidate.prevKey ?? null;
+    }
+    return null;
   }
 
   getKeyAfter(key: Key): Key | null {
-    const index = this.visibleKeys.indexOf(key);
-    if (index < 0 || index >= this.visibleKeys.length - 1) return null;
-    return this.visibleKeys[index + 1];
+    const node = this.keyMap.get(key);
+    let nextKey = node?.nextKey ?? null;
+    while (nextKey != null) {
+      const candidate = this.keyMap.get(nextKey);
+      if (!candidate) break;
+      if (candidate.type !== 'content') {
+        return candidate.key;
+      }
+      nextKey = candidate.nextKey ?? null;
+    }
+    return null;
   }
 
   getFirstKey(): Key | null {
-    return this.visibleKeys[0] ?? null;
+    if (this.firstKey == null) return null;
+    const candidate = this.keyMap.get(this.firstKey);
+    if (candidate?.type === 'content') {
+      return this.getKeyAfter(candidate.key);
+    }
+    return this.firstKey;
   }
 
   getLastKey(): Key | null {
-    return this.visibleKeys[this.visibleKeys.length - 1] ?? null;
+    if (this.lastKey == null) return null;
+    const candidate = this.keyMap.get(this.lastKey);
+    if (candidate?.type === 'content') {
+      return this.getKeyBefore(candidate.key);
+    }
+    return this.lastKey;
   }
 
   getChildren(key: Key): Iterable<TreeNode<T>> {
@@ -159,7 +192,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
   }
 
   [Symbol.iterator](): Iterator<TreeNode<T>> {
-    return this._rows[Symbol.iterator]();
+    return this.visibleRows[Symbol.iterator]();
   }
 }
 
