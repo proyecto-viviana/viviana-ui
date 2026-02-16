@@ -58,9 +58,29 @@ export type { LinkProps, LinkVariant } from './link';
 export { ProgressBar } from './progress-bar';
 export type { ProgressBarProps, ProgressBarSize, ProgressBarVariant } from './progress-bar';
 
+// Progress
+export { ProgressBar as Progress } from './progress';
+export type { ProgressBarProps as ProgressProps, ProgressBarSize as ProgressSize, ProgressBarVariant as ProgressVariant } from './progress';
+
 // Separator
 export { Separator } from './separator';
 export type { SeparatorProps, SeparatorVariant, SeparatorSize } from './separator';
+
+// Divider
+export { Divider } from './divider';
+export type { DividerProps, DividerVariant, DividerSize } from './divider';
+
+// Text
+export { Text } from './text';
+export type { TextProps, TextVariant, TextSize } from './text';
+
+// Label
+export { Label } from './label';
+export type { LabelProps, LabelSize } from './label';
+
+// Form
+export { Form, FieldError as FormFieldError } from './form';
+export type { FormProps, FieldErrorProps } from './form';
 
 // Toolbar
 export { Toolbar } from './toolbar';
