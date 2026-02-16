@@ -6,19 +6,23 @@
 
 // Type-safe access to import.meta.env (Vite) and Deno.env
 declare const Deno: { env?: { get(key: string): string | undefined } } | undefined;
+type ImportMetaWithEnv = ImportMeta & { env?: Record<string, unknown> };
+type ProcessLike = { env?: Record<string, string | undefined> };
 
 function getEnvVar(key: string): string | undefined {
   // Check Vite's import.meta.env
-  if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
-    return (import.meta as any).env[key];
+  const importMetaEnv = (import.meta as ImportMetaWithEnv).env;
+  if (importMetaEnv && typeof importMetaEnv[key] === 'string') {
+    return importMetaEnv[key] as string;
   }
   // Check Deno
   if (typeof Deno !== 'undefined' && Deno.env) {
     return Deno.env.get(key);
   }
   // Check Node.js process.env via globalThis
-  if (typeof globalThis !== 'undefined' && (globalThis as any).process?.env) {
-    return (globalThis as any).process.env[key];
+  const processEnv = (globalThis as typeof globalThis & { process?: ProcessLike }).process?.env;
+  if (processEnv) {
+    return processEnv[key];
   }
   return undefined;
 }
@@ -35,7 +39,8 @@ export function isTestEnv(): boolean {
  */
 export function isDevEnv(): boolean {
   // Check Vite's DEV flag
-  if (typeof import.meta !== 'undefined' && (import.meta as any).env?.DEV) {
+  const importMetaEnv = (import.meta as ImportMetaWithEnv).env;
+  if (importMetaEnv?.DEV === true) {
     return true;
   }
   const nodeEnv = getEnvVar('NODE_ENV');
@@ -47,7 +52,8 @@ export function isDevEnv(): boolean {
  */
 export function isProdEnv(): boolean {
   // Check Vite's PROD flag
-  if (typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD) {
+  const importMetaEnv = (import.meta as ImportMetaWithEnv).env;
+  if (importMetaEnv?.PROD === true) {
     return true;
   }
   return getEnvVar('NODE_ENV') === 'production';

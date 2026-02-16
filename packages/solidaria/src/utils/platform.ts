@@ -3,16 +3,26 @@
  * Based on @react-aria/utils platform detection.
  */
 
+interface NavigatorWithUserAgentData extends Navigator {
+  userAgentData?: {
+    platform?: string;
+  };
+}
+
+function getNavigator(): NavigatorWithUserAgentData | null {
+  if (typeof window === 'undefined' || window.navigator == null) return null;
+  return window.navigator as NavigatorWithUserAgentData;
+}
+
 function testPlatform(re: RegExp): boolean {
-  return typeof window !== 'undefined' && window.navigator != null
-    ? re.test(window.navigator.platform || (window.navigator as any).userAgentData?.platform || '')
-    : false;
+  const nav = getNavigator();
+  if (!nav) return false;
+  return re.test(nav.platform || nav.userAgentData?.platform || '');
 }
 
 function testUserAgent(re: RegExp): boolean {
-  return typeof window !== 'undefined' && window.navigator != null
-    ? re.test(window.navigator.userAgent)
-    : false;
+  const nav = getNavigator();
+  return nav ? re.test(nav.userAgent) : false;
 }
 
 export function isMac(): boolean {
