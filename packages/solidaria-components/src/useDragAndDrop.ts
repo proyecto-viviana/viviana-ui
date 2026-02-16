@@ -228,7 +228,8 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
       const acceptedDragTypes = (options.acceptedDragTypes ?? props.acceptedDragTypes);
       const normalizedAcceptedDragTypes = acceptedDragTypes === 'all'
         ? 'all'
-        : acceptedDragTypes?.filter((type): type is string => typeof type === 'string');
+        : acceptedDragTypes?.filter((type): type is string | symbol =>
+          typeof type === 'string' || typeof type === 'symbol');
       return (
       createDroppableCollection(
         () => ({

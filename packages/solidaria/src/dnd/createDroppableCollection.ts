@@ -14,6 +14,7 @@ import type {
   DropItem,
   DragTypes,
 } from '@proyecto-viviana/solid-stately';
+import { DIRECTORY_DRAG_TYPE } from '@proyecto-viviana/solid-stately';
 import { createDrop } from './createDrop';
 import {
   getGlobalDraggingCollectionRef,
@@ -120,7 +121,17 @@ export interface DroppableCollectionOptions {
   /** Whether the collection is disabled for dropping. */
   isDisabled?: boolean;
   /** Accepted drag types. 'all' accepts any type. */
-  acceptedDragTypes?: 'all' | string[];
+  acceptedDragTypes?: 'all' | Array<string | symbol>;
+}
+
+export function getDropItemTypes(item: DropItem): Set<string | symbol> {
+  if (item.kind === 'file') {
+    return new Set([item.type]);
+  }
+  if (item.kind === 'text') {
+    return new Set(item.types);
+  }
+  return new Set([DIRECTORY_DRAG_TYPE]);
 }
 
 export interface DroppableCollectionAria {
@@ -267,12 +278,7 @@ export function createDroppableCollection(
     const acceptedTypes = opts.acceptedDragTypes;
     if (acceptedTypes && acceptedTypes !== 'all') {
       filteredItems = items.filter((item) => {
-        const itemTypes =
-          item.kind === 'file'
-            ? new Set([item.type])
-            : item.kind === 'text'
-              ? item.types
-              : new Set<string>();
+        const itemTypes = getDropItemTypes(item);
         return acceptedTypes.some((type) => itemTypes.has(type));
       });
     }
