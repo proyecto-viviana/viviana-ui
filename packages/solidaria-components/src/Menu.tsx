@@ -362,7 +362,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   const triggerContext = useContext(MenuTriggerContext);
 
   // Ref for the menu element (for click outside detection)
-  let menuRef: HTMLUListElement | undefined;
+  const [menuRef, setMenuRef] = createSignal<HTMLUListElement | null>(null);
 
   const flatItems = createMemo<T[]>(() => {
     return flattenCollectionEntries(stateProps.items);
@@ -416,7 +416,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
 
   // Handle click outside to close menu
   createInteractOutside({
-    ref: () => menuRef ?? null,
+    ref: () => menuRef(),
     onInteractOutside: () => {
       if (triggerContext?.state.isOpen()) {
         triggerContext.state.close();
@@ -528,7 +528,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     const hooks = stateProps.dragAndDropHooks;
     const activeDragState = dragState();
     if (!hooks?.useDraggableCollection || !activeDragState) return;
-    hooks.useDraggableCollection({}, activeDragState, () => menuRef ?? null);
+    hooks.useDraggableCollection({}, activeDragState, () => menuRef());
   });
   const droppableCollection = createMemo(() => {
     if (!hasDroppableDnd()) return undefined;
@@ -536,8 +536,9 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     const activeDropState = dropState();
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
     const resolveDirection = (): 'ltr' | 'rtl' => {
-      if (menuRef && typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
-        const dir = window.getComputedStyle(menuRef).direction;
+      const menuEl = menuRef();
+      if (menuEl && typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
+        const dir = window.getComputedStyle(menuEl).direction;
         if (dir === 'rtl') return 'rtl';
       }
       return typeof document !== 'undefined' && document.dir === 'rtl' ? 'rtl' : 'ltr';
@@ -547,7 +548,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
       ?? (hooks.ListDropTargetDelegate
         ? new hooks.ListDropTargetDelegate(
           () => state.collection(),
-          () => menuRef ?? null,
+          () => menuRef(),
           { layout: 'stack', orientation: 'vertical', direction: resolveDirection() }
         )
         : undefined);
@@ -565,7 +566,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
         },
       },
       activeDropState,
-      () => menuRef ?? null
+      () => menuRef()
     );
   });
   const isRootDropTarget = createMemo(() => {
@@ -622,7 +623,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
       <MenuStateContext.Provider value={state}>
         <CollectionRendererContext.Provider value={collectionRenderer()}>
           <ul
-            ref={(el) => (menuRef = el)}
+            ref={setMenuRef}
             {...mergeProps(
               cleanMenuProps(),
               cleanTriggerMenuProps(),

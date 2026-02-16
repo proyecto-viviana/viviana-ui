@@ -183,6 +183,50 @@ describe('Menu', () => {
       }
     });
 
+    it('prefers computed direction over document direction when available', () => {
+      const originalDir = document.dir;
+      document.dir = 'ltr';
+      const computedStyleSpy = vi.spyOn(window, 'getComputedStyle').mockImplementation(() => (
+        { direction: 'rtl' } as CSSStyleDeclaration
+      ));
+
+      let capturedDirection: 'ltr' | 'rtl' | undefined;
+      const dragAndDropHooks = {
+        useDroppableCollectionState: () => ({
+          isDropTarget: false,
+          target: null,
+          isDisabled: false,
+          setTarget: () => {},
+          isAccepted: () => true,
+          enterTarget: () => {},
+          moveToTarget: () => {},
+          exitTarget: () => {},
+          activateTarget: () => {},
+          drop: () => {},
+          shouldAcceptItemDrop: () => true,
+          getDropOperation: () => 'move' as const,
+        }),
+        useDroppableCollection: () => ({ collectionProps: {} }),
+        useDroppableItem: () => ({ dropProps: {}, dropButtonProps: {}, isDropTarget: false }),
+        ListDropTargetDelegate: class {
+          constructor(_collection: unknown, _ref: unknown, options?: { direction?: 'ltr' | 'rtl' }) {
+            capturedDirection = options?.direction;
+          }
+          getDropTargetFromPoint() {
+            return null;
+          }
+        },
+      };
+
+      try {
+        render(() => <TestMenu menuProps={{ dragAndDropHooks: dragAndDropHooks as any }} />);
+        expect(capturedDirection).toBe('rtl');
+      } finally {
+        computedStyleSpy.mockRestore();
+        document.dir = originalDir;
+      }
+    });
+
     it('should render item text content', () => {
       render(() => <TestMenu />);
 
