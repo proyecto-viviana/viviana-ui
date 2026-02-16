@@ -14,6 +14,10 @@ export type { BadgeProps, BadgeVariant, BadgeSize } from './badge';
 export { Alert } from './alert';
 export type { AlertProps, AlertVariant } from './alert';
 
+// InlineAlert
+export { InlineAlert } from './inlinealert';
+export type { InlineAlertProps, InlineAlertVariant } from './inlinealert';
+
 // Avatar
 export { Avatar, AvatarGroup } from './avatar';
 export type { AvatarProps, AvatarGroupProps, AvatarSize } from './avatar';
@@ -41,6 +45,38 @@ export type { IconProps, GitHubIconProps } from './icon';
 // Tooltip
 export { Tooltip, TooltipTrigger, SimpleTooltip } from './tooltip';
 export type { TooltipProps, TooltipTriggerProps, TooltipPlacement, TooltipVariant, SimpleTooltipProps } from './tooltip';
+
+// Overlays
+export {
+  Dialog as OverlayDialog,
+  DialogTrigger as OverlayDialogTrigger,
+  DialogFooter as OverlayDialogFooter,
+  Popover as OverlayPopover,
+  PopoverTrigger as OverlayPopoverTrigger,
+  PopoverHeader as OverlayPopoverHeader,
+  PopoverFooter as OverlayPopoverFooter,
+  Tooltip as OverlayTooltip,
+  TooltipTrigger as OverlayTooltipTrigger,
+  SimpleTooltip as OverlaySimpleTooltip,
+} from './overlays';
+export type {
+  DialogProps as OverlayDialogProps,
+  DialogTriggerProps as OverlayDialogTriggerProps,
+  DialogFooterProps as OverlayDialogFooterProps,
+  DialogSize as OverlayDialogSize,
+  PopoverProps as OverlayPopoverProps,
+  PopoverTriggerProps as OverlayPopoverTriggerProps,
+  PopoverHeaderProps as OverlayPopoverHeaderProps,
+  PopoverFooterProps as OverlayPopoverFooterProps,
+  PopoverPlacement as OverlayPopoverPlacement,
+  PopoverSize as OverlayPopoverSize,
+  PopoverRenderProps as OverlayPopoverRenderProps,
+  TooltipProps as OverlayTooltipProps,
+  TooltipTriggerProps as OverlayTooltipTriggerProps,
+  TooltipPlacement as OverlayTooltipPlacement,
+  TooltipVariant as OverlayTooltipVariant,
+  SimpleTooltipProps as OverlaySimpleTooltipProps,
+} from './overlays';
 
 // Popover
 export { Popover, PopoverTrigger, PopoverHeader, PopoverFooter } from './popover';
@@ -134,6 +170,14 @@ export type { BreadcrumbsProps, BreadcrumbItemProps, BreadcrumbsSize, Breadcrumb
 // NumberField
 export { NumberField } from './numberfield';
 export type { NumberFieldProps, NumberFieldSize, NumberFieldVariant } from './numberfield';
+
+// DropZone
+export { DropZone } from './dropzone';
+export type { DropZoneProps } from './dropzone';
+
+// FileTrigger
+export { FileTrigger } from './filetrigger';
+export type { FileTriggerProps } from './filetrigger';
 
 // SearchField
 export { SearchField } from './searchfield';
@@ -317,6 +361,24 @@ export type {
   AriaLandmarkRole,
   LandmarkController,
 } from './landmark';
+
+// Drag and Drop
+export {
+  DragAndDropContext,
+  DropIndicator,
+  DropIndicatorContext,
+  useDndPersistedKeys,
+  useRenderDropIndicator,
+  useDragAndDrop,
+} from './dnd';
+export type {
+  DragAndDropContextValue,
+  DropIndicatorProps,
+  DropIndicatorRenderProps,
+  DropTargetDelegate,
+  DragAndDropOptions,
+  DragAndDropHooks,
+} from './dnd';
 
 // ============================================
 // CUSTOM COMPONENTS
