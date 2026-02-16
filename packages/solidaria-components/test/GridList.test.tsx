@@ -298,6 +298,82 @@ describe('GridList', () => {
         document.dir = originalDir;
       }
     });
+
+    it('falls back to document direction when getComputedStyle is unavailable', () => {
+      const originalDir = document.dir;
+      document.dir = 'rtl';
+      const originalGetComputedStyle = window.getComputedStyle;
+      Object.defineProperty(window, 'getComputedStyle', {
+        configurable: true,
+        writable: true,
+        value: undefined,
+      });
+
+      let keyboardDelegate:
+        | {
+          getKeyLeftOf?: (key: string | number) => string | number | null;
+          getKeyRightOf?: (key: string | number) => string | number | null;
+        }
+        | undefined;
+      const dragAndDropHooks = {
+        useDroppableCollectionState: () => ({
+          isDropTarget: false,
+          target: null,
+          isDisabled: false,
+          setTarget: () => {},
+          isAccepted: () => true,
+          enterTarget: () => {},
+          moveToTarget: () => {},
+          exitTarget: () => {},
+          activateTarget: () => {},
+          drop: () => {},
+          shouldAcceptItemDrop: () => true,
+          getDropOperation: () => 'move' as const,
+        }),
+        useDroppableCollection: (props: {
+          keyboardDelegate?: {
+            getKeyLeftOf?: (key: string | number) => string | number | null;
+            getKeyRightOf?: (key: string | number) => string | number | null;
+          };
+        }) => {
+          keyboardDelegate = props.keyboardDelegate;
+          return { collectionProps: {} };
+        },
+        useDroppableItem: () => ({ dropProps: {}, dropButtonProps: {}, isDropTarget: false }),
+        ListDropTargetDelegate: class {
+          getDropTargetFromPoint() {
+            return null;
+          }
+        },
+      };
+
+      try {
+        render(() => (
+          <GridList
+            items={testItems}
+            getKey={(item) => item.id}
+            aria-label="DnD Grid fallback direction"
+            dragAndDropHooks={dragAndDropHooks as any}
+          >
+            {(item) => (
+              <GridListItem id={item.id} textValue={item.name}>
+                {item.name}
+              </GridListItem>
+            )}
+          </GridList>
+        ));
+
+        expect(keyboardDelegate?.getKeyLeftOf?.(2)).toBe(3);
+        expect(keyboardDelegate?.getKeyRightOf?.(2)).toBe(1);
+      } finally {
+        Object.defineProperty(window, 'getComputedStyle', {
+          configurable: true,
+          writable: true,
+          value: originalGetComputedStyle,
+        });
+        document.dir = originalDir;
+      }
+    });
   });
 
   // ============================================

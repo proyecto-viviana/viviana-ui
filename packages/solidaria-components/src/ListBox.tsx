@@ -333,7 +333,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
     const resolveDirection = (): 'ltr' | 'rtl' => {
       const el = listRef();
-      if (el) {
+      if (el && typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
         const dir = window.getComputedStyle(el).direction;
         if (dir === 'rtl') return 'rtl';
       }

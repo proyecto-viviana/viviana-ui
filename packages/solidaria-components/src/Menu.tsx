@@ -536,7 +536,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     const activeDropState = dropState();
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
     const resolveDirection = (): 'ltr' | 'rtl' => {
-      if (menuRef) {
+      if (menuRef && typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
         const dir = window.getComputedStyle(menuRef).direction;
         if (dir === 'rtl') return 'rtl';
       }

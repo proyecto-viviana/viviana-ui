@@ -423,7 +423,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
     const resolveDirection = (): 'ltr' | 'rtl' => {
       const el = ref();
-      if (el) {
+      if (el && typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
         const dir = window.getComputedStyle(el).direction;
         if (dir === 'rtl') return 'rtl';
       }
