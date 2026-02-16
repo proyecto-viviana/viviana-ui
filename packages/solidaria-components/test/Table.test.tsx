@@ -193,6 +193,106 @@ describe('Table', () => {
       const rows = document.querySelectorAll('.solidaria-Table-row');
       expect(rows[0]).toHaveAttribute('draggable', 'true');
     });
+
+    it('wires horizontal droppable keyboard delegate methods in ltr', () => {
+      let keyboardDelegate:
+        | {
+          getKeyLeftOf?: (key: string | number) => string | number | null;
+          getKeyRightOf?: (key: string | number) => string | number | null;
+        }
+        | undefined;
+      const dragAndDropHooks = {
+        useDroppableCollectionState: () => ({
+          isDropTarget: false,
+          target: null,
+          isDisabled: false,
+          setTarget: () => {},
+          isAccepted: () => true,
+          enterTarget: () => {},
+          moveToTarget: () => {},
+          exitTarget: () => {},
+          activateTarget: () => {},
+          drop: () => {},
+          shouldAcceptItemDrop: () => true,
+          getDropOperation: () => 'move' as const,
+        }),
+        useDroppableCollection: (props: {
+          keyboardDelegate?: {
+            getKeyLeftOf?: (key: string | number) => string | number | null;
+            getKeyRightOf?: (key: string | number) => string | number | null;
+          };
+        }) => {
+          keyboardDelegate = props.keyboardDelegate;
+          return { collectionProps: {} };
+        },
+        useDroppableItem: () => ({ dropProps: {}, dropButtonProps: {}, isDropTarget: false }),
+        ListDropTargetDelegate: class {
+          getDropTargetFromPoint() {
+            return null;
+          }
+        },
+      };
+
+      render(() => <TestTable dragAndDropHooks={dragAndDropHooks as any} />);
+
+      expect(keyboardDelegate?.getKeyLeftOf).toBeTypeOf('function');
+      expect(keyboardDelegate?.getKeyRightOf).toBeTypeOf('function');
+      expect(keyboardDelegate?.getKeyLeftOf?.(2)).toBe(1);
+      expect(keyboardDelegate?.getKeyRightOf?.(2)).toBe(3);
+    });
+
+    it('wires horizontal droppable keyboard delegate methods in rtl', () => {
+      const originalDir = document.dir;
+      document.dir = 'rtl';
+      let keyboardDelegate:
+        | {
+          getKeyLeftOf?: (key: string | number) => string | number | null;
+          getKeyRightOf?: (key: string | number) => string | number | null;
+        }
+        | undefined;
+      const dragAndDropHooks = {
+        useDroppableCollectionState: () => ({
+          isDropTarget: false,
+          target: null,
+          isDisabled: false,
+          setTarget: () => {},
+          isAccepted: () => true,
+          enterTarget: () => {},
+          moveToTarget: () => {},
+          exitTarget: () => {},
+          activateTarget: () => {},
+          drop: () => {},
+          shouldAcceptItemDrop: () => true,
+          getDropOperation: () => 'move' as const,
+        }),
+        useDroppableCollection: (props: {
+          keyboardDelegate?: {
+            getKeyLeftOf?: (key: string | number) => string | number | null;
+            getKeyRightOf?: (key: string | number) => string | number | null;
+          };
+        }) => {
+          keyboardDelegate = props.keyboardDelegate;
+          return { collectionProps: {} };
+        },
+        useDroppableItem: () => ({ dropProps: {}, dropButtonProps: {}, isDropTarget: false }),
+        ListDropTargetDelegate: class {
+          getDropTargetFromPoint() {
+            return null;
+          }
+        },
+      };
+
+      try {
+        render(() => <TestTable dragAndDropHooks={dragAndDropHooks as any} />);
+
+        expect(keyboardDelegate?.getKeyLeftOf).toBeTypeOf('function');
+        expect(keyboardDelegate?.getKeyRightOf).toBeTypeOf('function');
+        expect(keyboardDelegate?.getKeyLeftOf?.(2)).toBe(3);
+        expect(keyboardDelegate?.getKeyRightOf?.(2)).toBe(1);
+      } finally {
+        document.dir = originalDir;
+      }
+    });
   });
 
   // ============================================
