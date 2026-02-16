@@ -367,39 +367,41 @@ export function createTab<T>(
   const tabPanelId = generateTabPanelId(state, key());
 
   // Helper to safely call event handlers that may be bound tuples
-  const callHandler = <E extends Event>(
-    handler: ((e: E) => void) | [object, (e: E) => void] | undefined,
-    event: E
-  ) => {
-    if (!handler) return;
-    if (Array.isArray(handler)) {
-      handler[1].call(handler[0], event);
-    } else {
-      handler(event);
+  const callHandler = <E extends Event>(handler: unknown, event: E) => {
+    if (typeof handler === 'function') {
+      (handler as (e: E) => void)(event);
+      return;
+    }
+    if (
+      Array.isArray(handler) &&
+      handler.length >= 2 &&
+      typeof handler[1] === 'function'
+    ) {
+      (handler[1] as (this: unknown, e: E) => void).call(handler[0], event);
     }
   };
 
   // Focus management
   const handleFocus = (e: FocusEvent) => {
     state.setFocusedKey(key());
-    callHandler(focusProps.onFocus as any, e);
+    callHandler(focusProps.onFocus, e);
   };
 
   // Combine all handlers
   const handleKeyDown = (e: KeyboardEvent) => {
-    callHandler(pressProps.onKeyDown as any, e);
+    callHandler(pressProps.onKeyDown, e);
   };
 
   const handleMouseDown = (e: MouseEvent) => {
-    callHandler(pressProps.onMouseDown as any, e);
+    callHandler(pressProps.onMouseDown, e);
   };
 
   const handlePointerDown = (e: PointerEvent) => {
-    callHandler(pressProps.onPointerDown as any, e);
+    callHandler(pressProps.onPointerDown, e);
   };
 
   const handleClick = (e: MouseEvent) => {
-    callHandler(pressProps.onClick as any, e);
+    callHandler(pressProps.onClick, e);
   };
 
   // Focus this tab when it becomes selected and focused
