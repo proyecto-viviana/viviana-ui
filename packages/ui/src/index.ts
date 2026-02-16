@@ -362,6 +362,26 @@ export type {
   LandmarkController,
 } from './landmark';
 
+// View
+export { View } from './view';
+export type { ViewProps } from './view';
+
+// Well
+export { Well } from './well';
+export type { WellProps } from './well';
+
+// Card
+export { Card } from './card';
+export type { CardProps } from './card';
+
+// Image
+export { Image } from './image';
+export type { ImageProps } from './image';
+
+// Layout
+export { Layout } from './layout';
+export type { LayoutProps } from './layout';
+
 // Drag and Drop
 export {
   DragAndDropContext,
