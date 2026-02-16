@@ -6,6 +6,7 @@
  */
 
 import type { Accessor, JSX } from 'solid-js';
+import { DragPreview } from './DragPreview';
 import { ListDropTargetDelegate } from './ListDropTargetDelegate';
 import {
   createDraggableCollection,
@@ -49,6 +50,7 @@ interface DragHooks<T = object> {
     ref: Accessor<HTMLElement | null>
   ) => DraggableCollectionAria;
   useDraggableItem?: (props: DraggableItemOptions, state: DraggableCollectionState) => DraggableItemAria;
+  DragPreview?: typeof DragPreview;
   renderDragPreview?: DragAndDropOptions<T>['renderDragPreview'];
   isVirtualDragging?: () => boolean;
 }
@@ -192,6 +194,7 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
       ref: Accessor<HTMLElement | null>
     ) => createDraggableCollection({ ...props, ref }, state);
     hooks.useDraggableItem = (props, state) => createDraggableItem(() => props, state);
+    hooks.DragPreview = DragPreview;
     hooks.renderDragPreview = renderDragPreview;
     hooks.isVirtualDragging = () => false;
   }

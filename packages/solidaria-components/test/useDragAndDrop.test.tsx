@@ -3,8 +3,9 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { createRoot } from 'solid-js';
+import type { JSX } from 'solid-js';
 import { useDragAndDrop } from '../src/useDragAndDrop';
-import type { DropTarget, DroppableCollectionState } from '@proyecto-viviana/solid-stately';
+import type { DropTarget, DroppableCollectionState, DragPreviewRenderer } from '@proyecto-viviana/solid-stately';
 
 describe('useDragAndDrop', () => {
   it('returns draggable hooks when getItems is provided', () => {
@@ -16,6 +17,7 @@ describe('useDragAndDrop', () => {
     expect(typeof dragAndDropHooks.useDraggableCollectionState).toBe('function');
     expect(typeof dragAndDropHooks.useDraggableCollection).toBe('function');
     expect(typeof dragAndDropHooks.useDraggableItem).toBe('function');
+    expect(typeof dragAndDropHooks.DragPreview).toBe('function');
   });
 
   it('returns droppable hooks when drop handlers are provided', () => {
@@ -223,6 +225,37 @@ describe('useDragAndDrop', () => {
       }));
 
       dispose();
+    });
+  });
+
+  it('wires DragPreview ref renderer in draggable hooks', () => {
+    createRoot((dispose) => {
+      const { dragAndDropHooks } = useDragAndDrop({
+        items: [{ id: 'a' }],
+        getItems: (keys) => Array.from(keys).map((key) => ({ 'text/plain': String(key) })),
+      });
+
+      const previewRef: { current: DragPreviewRenderer | null } = {
+        current: null,
+      };
+      const DragPreviewComp = dragAndDropHooks.DragPreview;
+      expect(typeof DragPreviewComp).toBe('function');
+
+      DragPreviewComp?.({
+        ref: previewRef,
+        children: () => document.createElement('div') as unknown as JSX.Element,
+      });
+
+      expect(typeof previewRef.current).toBe('function');
+
+      let node: HTMLElement | null = null;
+      previewRef.current?.([{ 'text/plain': 'a' }], (el) => {
+        node = el;
+      });
+      expect(node).toBeInstanceOf(HTMLElement);
+
+      dispose();
+      expect(previewRef.current).toBeNull();
     });
   });
 });
