@@ -110,6 +110,28 @@ describe('Collection primitives', () => {
     expect(screen.getByText('B')).toBeInTheDocument();
   });
 
+  it('skips rendering content collection nodes in default renderer', () => {
+    const contentNode = { type: 'content', key: 'content-1' } as unknown;
+
+    render(() => (
+      <div>
+        {DefaultCollectionRenderer.CollectionRoot({
+          collection: [<span>Visible item</span>, contentNode],
+          renderDropIndicator: ({ key, dropPosition }) => (
+            <span data-testid={`drop-${String(key)}-${dropPosition}`} />
+          ),
+        })}
+      </div>
+    ));
+
+    expect(screen.getByText('Visible item')).toBeInTheDocument();
+    expect(screen.queryByText('[object Object]')).not.toBeInTheDocument();
+    expect(screen.getByTestId('drop-0-before')).toBeInTheDocument();
+    expect(screen.getByTestId('drop-0-after')).toBeInTheDocument();
+    expect(screen.queryByTestId('drop-content-1-before')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('drop-content-1-after')).not.toBeInTheDocument();
+  });
+
   it('exports CollectionBuilder compatibility wrapper', () => {
     const out = CollectionBuilder({
       items: [{ id: 'x', label: 'X' }],

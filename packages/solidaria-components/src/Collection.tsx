@@ -177,7 +177,12 @@ function renderCollectionItems<T>(
   return (
     <For each={items}>
       {(item, index) => {
-        const key = (item as { key?: Key }).key ?? index();
+        const node = item as { type?: unknown; key?: Key };
+        if (node.type === 'content') {
+          // Content rows are rendered by their owning item/section branch.
+          return <></>;
+        }
+        const key = node.key ?? index();
         return (
           <>
             {renderDropIndicator?.({ type: 'item', key, dropPosition: 'before' })}
