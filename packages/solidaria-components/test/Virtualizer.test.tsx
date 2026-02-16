@@ -566,6 +566,44 @@ describe('Virtualizer', () => {
     expect(parsed.pagePrevious).toMatchObject({ type: 'item', key: 4, dropPosition: 'on' });
   });
 
+  it('keyboard delegate ignores same-item transitions for unmapped keys and rebases to real items', () => {
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 6);
+      return (
+        <output data-testid="keyboard-unmapped-transition-rebase">
+          {JSON.stringify({
+            next:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 'missing', dropPosition: 'on' },
+                'next',
+                (target) => target.type === 'item'
+              ) ?? null,
+            previous:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 'missing', dropPosition: 'on' },
+                'previous',
+                (target) => target.type === 'item'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20, viewportSize: 40 }}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('keyboard-unmapped-transition-rebase').textContent || '{}');
+    expect(parsed.next).toMatchObject({ type: 'item', key: 0 });
+    expect(parsed.previous).toMatchObject({ type: 'item', key: 5 });
+    expect(parsed.next?.key).not.toBe('missing');
+    expect(parsed.previous?.key).not.toBe('missing');
+  });
+
   it('keyboard page delegate prefers boundary item targets before root on out-of-range jumps', () => {
     function Consumer(): JSX.Element {
       const ctx = createMemo(() => useVirtualizerContext());

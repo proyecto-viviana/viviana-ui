@@ -329,13 +329,21 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       return isValidDropTarget(rootTarget) ? rootTarget : null;
     }
 
+    const resolveCurrentIndex = (currentTarget: DropTarget | null): number | null => {
+      if (!currentTarget || currentTarget.type === 'root') return null;
+      const fromResolver = dropTargetIndexResolver()?.(currentTarget.key);
+      if (fromResolver != null && fromResolver >= 0 && fromResolver < itemCount) return fromResolver;
+      if (typeof currentTarget.key === 'number' && currentTarget.key >= 0 && currentTarget.key < itemCount) {
+        return currentTarget.key;
+      }
+      return null;
+    };
     const getCurrentIndex = (currentTarget: DropTarget | null): number => {
       if (!currentTarget || currentTarget.type === 'root') {
         return direction === 'next' ? -1 : itemCount;
       }
-      const fromResolver = dropTargetIndexResolver()?.(currentTarget.key);
-      if (fromResolver != null) return fromResolver;
-      if (typeof currentTarget.key === 'number') return currentTarget.key;
+      const resolvedIndex = resolveCurrentIndex(currentTarget);
+      if (resolvedIndex != null) return resolvedIndex;
       return direction === 'next' ? -1 : itemCount;
     };
     const tryCurrentItemTransition = (currentTarget: DropTarget | null): DropTarget | null => {
@@ -436,7 +444,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
       }
       return null;
     };
-    const directTransition = tryCurrentItemTransition(target);
+    const directTransition = resolveCurrentIndex(target) != null ? tryCurrentItemTransition(target) : null;
     if (directTransition) return directTransition;
     if (!target || target.type === 'root') {
       const boundaryTarget = tryBoundaryTarget(direction);
