@@ -94,6 +94,14 @@ export interface DragAndDropOptions<T = object>
   extends Partial<Omit<DraggableCollectionProps<T>, 'preview'>>,
     Partial<DroppableCollectionProps> {
   /**
+   * Optional keyboard delegate forwarded to the collection droppable hook.
+   */
+  keyboardDelegate?: DroppableCollectionOptions['keyboardDelegate'];
+  /**
+   * Optional keydown handler composed with collection droppable keyboard behavior.
+   */
+  onKeyDown?: DroppableCollectionOptions['onKeyDown'];
+  /**
    * A function that returns the items being dragged.
    * If omitted, draggable hooks are not added.
    */
