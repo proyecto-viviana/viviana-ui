@@ -67,4 +67,77 @@ describe('ListDropTargetDelegate', () => {
       dropPosition: 'before',
     });
   });
+
+  it('supports keyboard navigation transitions across before/on/after and neighbors', () => {
+    const delegate = new ListDropTargetDelegate(
+      [
+        { type: 'item', key: 'a' },
+        { type: 'item', key: 'b' },
+        { type: 'item', key: 'c' },
+      ],
+      () => document.createElement('div')
+    );
+    const allowAll = (_target: DropTarget) => true;
+
+    expect(delegate.getKeyboardNavigationTarget({ type: 'root' }, 'next', allowAll)).toEqual({
+      type: 'item',
+      key: 'a',
+      dropPosition: 'before',
+    });
+    expect(delegate.getKeyboardNavigationTarget({ type: 'root' }, 'previous', allowAll)).toEqual({
+      type: 'item',
+      key: 'c',
+      dropPosition: 'after',
+    });
+
+    expect(delegate.getKeyboardNavigationTarget({ type: 'item', key: 'a', dropPosition: 'before' }, 'next', allowAll)).toEqual({
+      type: 'item',
+      key: 'a',
+      dropPosition: 'on',
+    });
+    expect(delegate.getKeyboardNavigationTarget({ type: 'item', key: 'a', dropPosition: 'on' }, 'next', allowAll)).toEqual({
+      type: 'item',
+      key: 'a',
+      dropPosition: 'after',
+    });
+    expect(delegate.getKeyboardNavigationTarget({ type: 'item', key: 'a', dropPosition: 'after' }, 'next', allowAll)).toEqual({
+      type: 'item',
+      key: 'b',
+      dropPosition: 'on',
+    });
+
+    expect(delegate.getKeyboardNavigationTarget({ type: 'item', key: 'b', dropPosition: 'after' }, 'previous', allowAll)).toEqual({
+      type: 'item',
+      key: 'b',
+      dropPosition: 'on',
+    });
+    expect(delegate.getKeyboardNavigationTarget({ type: 'item', key: 'b', dropPosition: 'on' }, 'previous', allowAll)).toEqual({
+      type: 'item',
+      key: 'b',
+      dropPosition: 'before',
+    });
+  });
+
+  it('falls back to valid insertion positions when on is invalid during keyboard navigation', () => {
+    const delegate = new ListDropTargetDelegate(
+      [
+        { type: 'item', key: 'a' },
+        { type: 'item', key: 'b' },
+      ],
+      () => document.createElement('div')
+    );
+    const disallowOn = (target: DropTarget) =>
+      target.type !== 'item' || target.dropPosition !== 'on';
+
+    expect(delegate.getKeyboardNavigationTarget({ type: 'root' }, 'next', disallowOn)).toEqual({
+      type: 'item',
+      key: 'a',
+      dropPosition: 'before',
+    });
+    expect(delegate.getKeyboardNavigationTarget({ type: 'item', key: 'a', dropPosition: 'after' }, 'next', disallowOn)).toEqual({
+      type: 'item',
+      key: 'b',
+      dropPosition: 'before',
+    });
+  });
 });

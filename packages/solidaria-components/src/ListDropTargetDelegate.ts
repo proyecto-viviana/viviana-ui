@@ -74,6 +74,110 @@ export class ListDropTargetDelegate {
     return this.getFlowEnd(rect) - this.getFlowStart(rect);
   }
 
+  private getItemKeys(): Array<string | number> {
+    return [...this.getCollection()]
+      .filter((item) => item.type === 'item')
+      .map((item) => item.key);
+  }
+
+  private resolveBoundaryTarget(
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null {
+    const keys = this.getItemKeys();
+    if (keys.length === 0) return null;
+    const key = direction === 'next' ? keys[0] : keys[keys.length - 1];
+    const order: Array<'before' | 'on' | 'after'> = direction === 'next'
+      ? ['before', 'on', 'after']
+      : ['after', 'on', 'before'];
+    for (const dropPosition of order) {
+      const target: DropTarget = { type: 'item', key, dropPosition };
+      if (isValidDropTarget(target)) return target;
+    }
+    return null;
+  }
+
+  private resolveTransitionTarget(
+    target: DropTarget,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null {
+    if (target.type !== 'item') return null;
+    const tryPosition = (dropPosition: 'before' | 'on' | 'after'): DropTarget | null => {
+      if (target.dropPosition === dropPosition) return null;
+      const nextTarget: DropTarget = {
+        type: 'item',
+        key: target.key,
+        dropPosition,
+      };
+      return isValidDropTarget(nextTarget) ? nextTarget : null;
+    };
+
+    if (direction === 'next') {
+      if (target.dropPosition === 'before') {
+        return tryPosition('on') ?? tryPosition('after');
+      }
+      if (target.dropPosition === 'on') {
+        return tryPosition('after');
+      }
+    } else {
+      if (target.dropPosition === 'after') {
+        return tryPosition('on') ?? tryPosition('before');
+      }
+      if (target.dropPosition === 'on') {
+        return tryPosition('before');
+      }
+    }
+
+    return null;
+  }
+
+  private resolveNeighborTarget(
+    target: DropTarget,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null {
+    if (target.type !== 'item') return null;
+    const keys = this.getItemKeys();
+    const index = keys.findIndex((key) => key === target.key);
+    if (index < 0) return this.resolveBoundaryTarget(direction, isValidDropTarget);
+    const nextIndex = direction === 'next' ? index + 1 : index - 1;
+    if (nextIndex < 0 || nextIndex >= keys.length) {
+      const rootTarget: DropTarget = { type: 'root' };
+      return isValidDropTarget(rootTarget) ? rootTarget : null;
+    }
+    const key = keys[nextIndex];
+    const order: Array<'on' | 'before' | 'after'> = direction === 'next'
+      ? ['on', 'before', 'after']
+      : ['on', 'after', 'before'];
+    for (const dropPosition of order) {
+      const nextTarget: DropTarget = { type: 'item', key, dropPosition };
+      if (isValidDropTarget(nextTarget)) return nextTarget;
+    }
+    return null;
+  }
+
+  getKeyboardNavigationTarget(
+    target: DropTarget | null,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null {
+    if (!target || target.type === 'root') {
+      return this.resolveBoundaryTarget(direction, isValidDropTarget);
+    }
+    const transition = this.resolveTransitionTarget(target, direction, isValidDropTarget);
+    if (transition) return transition;
+    return this.resolveNeighborTarget(target, direction, isValidDropTarget);
+  }
+
+  getKeyboardPageNavigationTarget(
+    target: DropTarget | null,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null {
+    return this.getKeyboardNavigationTarget(target, direction, isValidDropTarget);
+  }
+
   getDropTargetFromPoint(
     x: number,
     y: number,
