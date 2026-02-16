@@ -63,13 +63,6 @@ export function TabSwitch(props: TabSwitchProps): JSX.Element {
     'grid-template-columns': `repeat(${optionCount()}, minmax(0, 1fr))`,
   }))
 
-  const handleSelectionChange = (keys: Set<Key>) => {
-    const [nextKey] = Array.from(keys)
-    if (typeof nextKey === 'string') {
-      props.onChange?.(nextKey)
-    }
-  }
-
   return (
     <div class={`relative bg-bg-400 rounded-full w-[250px] ${props.class ?? ''}`}>
       <div
@@ -79,7 +72,6 @@ export function TabSwitch(props: TabSwitchProps): JSX.Element {
       <HeadlessToggleButtonGroup
         selectionMode="single"
         selectedKeys={selectedKeys()}
-        onSelectionChange={handleSelectionChange}
         class="relative z-10 grid h-8"
         style={layoutStyle()}
         aria-label="View mode"
@@ -87,6 +79,7 @@ export function TabSwitch(props: TabSwitchProps): JSX.Element {
         {options().map((option) => (
           <HeadlessToggleButton
             toggleKey={option.value}
+            onClick={() => props.onChange?.(option.value)}
             class={({ isSelected }) =>
               `transition-all ease-in-out duration-300 z-10 text-lg flex justify-center items-center rounded-full ${
                 isSelected ? textSelected : textUnselected

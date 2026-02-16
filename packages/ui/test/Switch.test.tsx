@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
-import { ToggleSwitch } from '../src/switch';
+import { ToggleSwitch, TabSwitch } from '../src/switch';
 import { setupUser } from '@proyecto-viviana/ui-test-utils';
 
 // setupUser is consolidated in ui-test-utils.
@@ -205,5 +205,44 @@ describe('ToggleSwitch', () => {
       const switchEl = screen.getByRole('switch');
       expect(switchEl).toHaveAttribute('data-foo', 'bar');
     });
+  });
+});
+
+describe('TabSwitch', () => {
+  let user: ReturnType<typeof setupUser>;
+
+  beforeEach(() => {
+    user = setupUser();
+  });
+
+  it('renders two options as buttons', () => {
+    render(() => (
+      <TabSwitch
+        options={[
+          { label: 'List', value: 'list' },
+          { label: 'Grid', value: 'grid' },
+        ]}
+      />
+    ));
+
+    expect(screen.getByRole('button', { name: 'List' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Grid' })).toBeInTheDocument();
+  });
+
+  it('calls onChange with selected value', async () => {
+    const onChange = vi.fn();
+    render(() => (
+      <TabSwitch
+        options={[
+          { label: 'List', value: 'list' },
+          { label: 'Grid', value: 'grid' },
+        ]}
+        value="list"
+        onChange={onChange}
+      />
+    ));
+
+    await user.click(screen.getByRole('button', { name: 'Grid' }));
+    expect(onChange).toHaveBeenCalledWith('grid');
   });
 });
