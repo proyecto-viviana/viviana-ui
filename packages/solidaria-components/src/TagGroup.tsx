@@ -125,6 +125,8 @@ export interface TagRenderProps {
   allowsRemoving: boolean;
   /** The selection mode. */
   selectionMode: SelectionMode;
+  /** Props for the remove button when removal is allowed. */
+  removeButtonProps: Record<string, unknown>;
 }
 
 export interface TagProps extends SlotProps {
@@ -151,8 +153,14 @@ interface TagGroupContextValue {
   onRemove?: (keys: Set<Key>) => void;
 }
 
+interface TagContextValue {
+  removeButtonProps: Record<string, unknown>;
+  allowsRemoving: boolean;
+}
+
 export const TagGroupContext = createContext<TagGroupContextValue | null>(null);
 export const TagListStateContext = createContext<ListState | null>(null);
+export const TagContext = createContext<TagContextValue | null>(null);
 
 export function useTagGroupContext(): TagGroupContextValue | null {
   return useContext(TagGroupContext);
@@ -330,6 +338,7 @@ export function Tag(props: TagProps): JSX.Element {
   ]);
 
   const state = useContext(TagListStateContext);
+  const groupContext = useContext(TagGroupContext);
 
   // Create a ref for the tag
   const [tagRef, setTagRef] = createSignal<HTMLDivElement | null>(null);
@@ -345,6 +354,21 @@ export function Tag(props: TagProps): JSX.Element {
     tagRef
   );
 
+  const normalizedRemoveButtonProps = createMemo<Record<string, unknown>>(() => {
+    const raw = tagAria.removeButtonProps;
+    const rawHandler = typeof raw.onPress === 'function' ? (raw.onPress as () => void) : undefined;
+    return {
+      ...raw,
+      onPress: () => {
+        if (!tagAria.isDisabled && groupContext?.onRemove) {
+          groupContext.onRemove(new Set([local.id]));
+          return;
+        }
+        rawHandler?.();
+      },
+    };
+  });
+
   // Render props values
   const renderValues = createMemo<TagRenderProps>(() => ({
     isSelected: tagAria.isSelected,
@@ -353,6 +377,7 @@ export function Tag(props: TagProps): JSX.Element {
     isPressed: tagAria.isPressed,
     allowsRemoving: tagAria.allowsRemoving,
     selectionMode: state?.selectionMode() ?? 'none',
+    removeButtonProps: normalizedRemoveButtonProps(),
   }));
 
   // Resolve render props
@@ -375,22 +400,29 @@ export function Tag(props: TagProps): JSX.Element {
 
   return (
     <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
-      <div
-        ref={setTagRef}
-        {...domProps()}
-        {...tagAria.rowProps}
-        class={renderProps.class()}
-        style={renderProps.style()}
-        data-selected={dataAttr(tagAria.isSelected)}
-        data-disabled={dataAttr(tagAria.isDisabled)}
-        data-focused={dataAttr(tagAria.isFocused)}
-        data-pressed={dataAttr(tagAria.isPressed)}
-        data-allows-removing={dataAttr(tagAria.allowsRemoving)}
+      <TagContext.Provider
+        value={{
+          get removeButtonProps() { return normalizedRemoveButtonProps(); },
+          get allowsRemoving() { return tagAria.allowsRemoving; },
+        }}
       >
-        <div {...tagAria.gridCellProps} style={{ display: 'contents' }}>
-          {renderProps.renderChildren()}
+        <div
+          ref={setTagRef}
+          {...domProps()}
+          {...tagAria.rowProps}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          data-selected={dataAttr(tagAria.isSelected)}
+          data-disabled={dataAttr(tagAria.isDisabled)}
+          data-focused={dataAttr(tagAria.isFocused)}
+          data-pressed={dataAttr(tagAria.isPressed)}
+          data-allows-removing={dataAttr(tagAria.allowsRemoving)}
+        >
+          <div {...tagAria.gridCellProps} style={{ display: 'contents' }}>
+            {renderProps.renderChildren()}
+          </div>
         </div>
-      </div>
+      </TagContext.Provider>
     </SelectionIndicatorContext.Provider>
   );
 }
@@ -406,6 +438,8 @@ export interface TagRemoveButtonProps {
   class?: string;
   /** The inline style for the element. */
   style?: JSX.CSSProperties;
+  /** Explicit button props from Tag render props. */
+  buttonProps?: Record<string, unknown>;
 }
 
 /**
@@ -413,14 +447,35 @@ export interface TagRemoveButtonProps {
  * It should be placed inside a Tag component.
  */
 export function TagRemoveButton(props: TagRemoveButtonProps): JSX.Element {
-  // This is a simplified version - in a full implementation,
-  // we'd get the remove button props from the Tag context
+  const tagContext = useContext(TagContext);
+  const getRemoveButtonProps = () => props.buttonProps ?? tagContext?.removeButtonProps ?? {};
+  const getIsDisabled = () => Boolean(getRemoveButtonProps().isDisabled);
+  const rawId = getRemoveButtonProps().id;
+  const rawAriaLabel = getRemoveButtonProps()['aria-label'];
+  const rawAriaLabelledBy = getRemoveButtonProps()['aria-labelledby'];
+  const buttonId: string | undefined = typeof rawId === 'string' ? rawId : undefined;
+  const ariaLabel: string = typeof rawAriaLabel === 'string' ? rawAriaLabel : 'Remove';
+  const ariaLabelledBy: string | undefined = typeof rawAriaLabelledBy === 'string' ? rawAriaLabelledBy : undefined;
+
+  const handleClick: JSX.EventHandler<HTMLButtonElement, MouseEvent> = (event) => {
+    event.stopPropagation();
+    const handler = getRemoveButtonProps().onPress;
+    if (typeof handler === 'function' && !getIsDisabled()) {
+      (handler as () => void)();
+    }
+  };
+
   return (
     <button
       type="button"
       class={props.class ?? 'solidaria-TagRemoveButton'}
       style={props.style}
-      aria-label="Remove"
+      id={buttonId}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+      disabled={getIsDisabled()}
+      data-allows-removing={dataAttr(tagContext?.allowsRemoving ?? false)}
+      onClick={handleClick}
     >
       {props.children ?? '×'}
     </button>

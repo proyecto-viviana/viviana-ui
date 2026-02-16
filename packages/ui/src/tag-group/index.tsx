@@ -9,6 +9,7 @@ import { type JSX, splitProps, Show } from 'solid-js';
 import {
   TagList as HeadlessTagList,
   Tag as HeadlessTag,
+  TagRemoveButton as HeadlessTagRemoveButton,
 } from '@proyecto-viviana/solidaria-components';
 import type { Key, SelectionMode } from '@proyecto-viviana/solid-stately';
 
@@ -199,19 +200,14 @@ export function TagGroup<T extends { id?: Key; key?: Key }>(props: TagGroupProps
               <>
                 <span>{props.children(item)}</span>
                 <Show when={renderProps.allowsRemoving}>
-                  <button
-                    type="button"
+                  <HeadlessTagRemoveButton
+                    buttonProps={renderProps.removeButtonProps}
                     class={`
                       ${sizeConfig().removeButton}
                       rounded-full flex items-center justify-center
                       hover:bg-black/20 transition-colors
                       focus:outline-none
                     `}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      local.onRemove?.(new Set([getKey(item)]));
-                    }}
-                    aria-label="Remove"
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -225,7 +221,7 @@ export function TagGroup<T extends { id?: Key; key?: Key }>(props: TagGroupProps
                       <line x1="18" y1="6" x2="6" y2="18" />
                       <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
-                  </button>
+                  </HeadlessTagRemoveButton>
                 </Show>
               </>
             )}

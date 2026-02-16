@@ -320,6 +320,33 @@ describe('TagGroup', () => {
 
       expect(screen.getAllByText('Delete').length).toBe(4);
     });
+
+    it('should call onRemove when remove button is pressed', async () => {
+      const onRemove = vi.fn();
+      render(() => (
+        <TagGroup>
+          <TagList items={sampleItems} aria-label="Test" onRemove={onRemove}>
+            {(item) => (
+              <Tag id={item.id}>
+                {(renderProps) => (
+                  <>
+                    {item.name}
+                    <TagRemoveButton buttonProps={renderProps.removeButtonProps} />
+                  </>
+                )}
+              </Tag>
+            )}
+          </TagList>
+        </TagGroup>
+      ));
+
+      const removeButtons = document.querySelectorAll('.solidaria-TagRemoveButton');
+      await user.click(removeButtons[0] as HTMLElement);
+
+      await waitFor(() => {
+        expect(onRemove).toHaveBeenCalledWith(new Set(['1']));
+      });
+    });
   });
 
   // ============================================
