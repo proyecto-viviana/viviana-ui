@@ -669,22 +669,22 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const hooks = local.dragAndDropHooks;
     const activeDropState = dropState();
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
+    const direction = resolveTreeDirection(ref());
     const baseDropTargetDelegate = hooks.dropTargetDelegate
       ?? parentCollectionRenderer?.dropTargetDelegate
       ?? (hooks.ListDropTargetDelegate
         ? new hooks.ListDropTargetDelegate(
           () => state.collection,
           () => ref(),
-          { layout: 'stack', orientation: 'vertical', direction: resolveTreeDirection(ref()) }
+          { layout: 'stack', orientation: 'vertical', direction }
         )
         : undefined);
     if (!baseDropTargetDelegate) return undefined;
     const dropTargetDelegate = createTreeDropTargetDelegate(
       baseDropTargetDelegate as TreeDropTargetDelegate,
       state,
-      resolveTreeDirection(ref())
+      direction
     );
-    const direction = resolveTreeDirection(ref());
     return hooks.useDroppableCollection(
       {
         dropTargetDelegate,
@@ -693,6 +693,14 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
           getLastKey: () => state.collection.getLastKey(),
           getKeyBelow: (key) => state.collection.getKeyAfter(key),
           getKeyAbove: (key) => state.collection.getKeyBefore(key),
+          getKeyLeftOf: (key) =>
+            direction === 'rtl'
+              ? state.collection.getKeyAfter(key)
+              : state.collection.getKeyBefore(key),
+          getKeyRightOf: (key) =>
+            direction === 'rtl'
+              ? state.collection.getKeyBefore(key)
+              : state.collection.getKeyAfter(key),
           getKeyPageBelow: (key) => state.collection.getKeyAfter(key),
           getKeyPageAbove: (key) => state.collection.getKeyBefore(key),
         },
