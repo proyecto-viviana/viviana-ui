@@ -57,8 +57,11 @@ import {
 } from './DragAndDrop';
 import {
   CollectionRendererContext,
+  flattenCollectionEntries,
+  isCollectionSection,
   Section,
   Header,
+  type CollectionEntry,
   type CollectionRendererContextValue,
   type SectionProps,
   type HeaderProps,
@@ -83,7 +86,7 @@ export interface TreeRenderProps {
 
 export interface TreeProps<T extends object> extends Omit<AriaTreeProps, 'children'>, SlotProps {
   /** The hierarchical items to render in the tree. */
-  items: TreeItemData<T>[];
+  items: CollectionEntry<TreeItemData<T>>[];
   /** The selection mode. */
   selectionMode?: 'none' | 'single' | 'multiple';
   /** Keys of disabled items. */
@@ -534,11 +537,13 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
 
   // Create ref signal
   const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
+  const flatItems = createMemo<TreeItemData<T>[]>(() => flattenCollectionEntries(stateProps.items));
+  const hasSections = createMemo(() => stateProps.items.some((entry) => isCollectionSection(entry)));
 
   // Create tree state
   const state = createTreeState<T, TreeCollection<T>>(() => ({
     collectionFactory: (expandedKeys) =>
-      createTreeCollection(stateProps.items, expandedKeys) as TreeCollection<T>,
+      createTreeCollection(flatItems(), expandedKeys) as TreeCollection<T>,
     disabledKeys: stateProps.disabledKeys,
     selectionMode: stateProps.selectionMode,
     selectedKeys: stateProps.selectedKeys,
@@ -572,7 +577,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     isFocused: state.isFocused || isFocused(),
     isFocusVisible: isFocusVisible(),
     isDisabled: ariaProps.isDisabled ?? false,
-    isEmpty: stateProps.items.length === 0,
+    isEmpty: flatItems().length === 0,
   }));
 
   // Resolve render props
@@ -601,7 +606,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     return rest;
   };
 
-  const isEmpty = () => stateProps.items.length === 0;
+  const isEmpty = () => flatItems().length === 0;
 
   // Render visible rows (flat list based on expansion state)
   const visibleRows = createMemo(() => state.collection.rows);
@@ -853,6 +858,89 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     renderDropIndicator: (index: number, position: 'before' | 'after' | 'on') =>
       dndDropIndicator(index, position) ?? parentCollectionRenderer?.renderDropIndicator?.(index, position),
   }));
+  const rootKeyByNodeKey = createMemo(() => {
+    const rootMap = new Map<Key, Key>();
+    for (const row of visibleRows()) {
+      let rootKey: Key = row.key;
+      let parentKey = row.parentKey;
+      while (parentKey != null) {
+        rootKey = parentKey;
+        parentKey = state.collection.getParentKey(parentKey);
+      }
+      rootMap.set(row.key, rootKey);
+    }
+    return rootMap;
+  });
+  const renderRange = createMemo(() => {
+    const range = virtualRange();
+    if (!range) return null;
+    return { start: range.start, end: range.end };
+  });
+  const renderableRows = createMemo(() => {
+    const offset = renderRange()?.start ?? 0;
+    return virtualizedVisibleRows().map((node, index) => ({
+      node,
+      globalIndex: offset + index,
+    }));
+  });
+  const sectionedRenderableRows = createMemo(() => {
+    if (!hasSections()) return null;
+    const rootMap = rootKeyByNodeKey();
+    const rows = renderableRows();
+    return stateProps.items.map((entry) => {
+      if (!isCollectionSection(entry)) {
+        const matching = rows.filter((row) => rootMap.get(row.node.key) === entry.key);
+        return {
+          type: 'single' as const,
+          item: entry,
+          rows: matching,
+        };
+      }
+      const sectionRootKeys = new Set(entry.items.map((item) => item.key));
+      const sectionRows = rows.filter((row) => {
+        const rootKey = rootMap.get(row.node.key);
+        return rootKey != null && sectionRootKeys.has(rootKey);
+      });
+      return {
+        type: 'section' as const,
+        section: entry,
+        rows: sectionRows,
+      };
+    });
+  });
+  const renderTreeRow = (node: TreeNode<T>, itemIndex: number) => {
+    const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex, 'before');
+    const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex, 'on');
+    const afterIndicatorIndexes = () => getAfterIndicatorIndexes(itemIndex, renderRange());
+    // Find the original item data to pass to render function
+    const itemData: TreeItemData<T> = {
+      key: node.key,
+      value: node.value as T,
+      textValue: node.textValue,
+      children: node.hasChildNodes
+        ? node.childNodes.map((child) => ({
+            key: child.key,
+            value: child.value as T,
+            textValue: child.textValue,
+          }))
+        : undefined,
+    };
+    const itemState: TreeRenderItemState = {
+      isExpanded: node.isExpanded ?? false,
+      isExpandable: node.isExpandable ?? false,
+      level: node.level,
+    };
+    return (
+      <>
+        {beforeIndicator()}
+        {onIndicator()}
+        {props.children(itemData, itemState)}
+        <For each={afterIndicatorIndexes()}>
+          {(afterIndex) => collectionRenderer().renderDropIndicator?.(afterIndex, 'after')}
+        </For>
+      </>
+    );
+  };
 
   return (
     <TreeContext.Provider value={contextValue() as unknown as TreeContextValue<object>}>
@@ -881,42 +969,38 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
                 {virtualRange()?.offsetTop
                   ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
                   : null}
-                <For each={virtualizedVisibleRows()}>
-                {(node, index) => {
-                  const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-                  const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
-                  const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
-                  const afterIndicatorIndexes = () => getAfterIndicatorIndexes(itemIndex(), virtualRange());
-                  // Find the original item data to pass to render function
-                  const itemData: TreeItemData<T> = {
-                    key: node.key,
-                    value: node.value as T,
-                    textValue: node.textValue,
-                    children: node.hasChildNodes
-                      ? node.childNodes.map((child) => ({
-                          key: child.key,
-                          value: child.value as T,
-                          textValue: child.textValue,
-                        }))
-                      : undefined,
-                  };
-                  const itemState: TreeRenderItemState = {
-                    isExpanded: node.isExpanded ?? false,
-                    isExpandable: node.isExpandable ?? false,
-                    level: node.level,
-                  };
-                  return (
-                    <>
-                      {beforeIndicator()}
-                      {onIndicator()}
-                      {props.children(itemData, itemState)}
-                      <For each={afterIndicatorIndexes()}>
-                        {(afterIndex) => collectionRenderer().renderDropIndicator?.(afterIndex, 'after')}
-                      </For>
-                    </>
-                  );
-                }}
-                </For>
+                <Show
+                  when={hasSections()}
+                  fallback={(
+                    <For each={renderableRows()}>
+                      {(row) => renderTreeRow(row.node, row.globalIndex)}
+                    </For>
+                  )}
+                >
+                  <For each={sectionedRenderableRows() ?? []}>
+                    {(entry) => (
+                      <Show when={entry.rows.length > 0}>
+                        <Show
+                          when={entry.type === 'section'}
+                          fallback={(
+                            <For each={entry.rows}>
+                              {(row) => renderTreeRow(row.node, row.globalIndex)}
+                            </For>
+                          )}
+                        >
+                          <TreeSection>
+                            {entry.type === 'section' && entry.section.title
+                              ? <TreeHeader>{entry.section.title}</TreeHeader>
+                              : null}
+                            <For each={entry.rows}>
+                              {(row) => renderTreeRow(row.node, row.globalIndex)}
+                            </For>
+                          </TreeSection>
+                        </Show>
+                      </Show>
+                    )}
+                  </For>
+                </Show>
                 {virtualRange()?.offsetBottom
                   ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
                   : null}

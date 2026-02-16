@@ -54,6 +54,34 @@ function createTestItems(): TreeItemData<TestItem>[] {
   ];
 }
 
+function createSectionedTreeItems() {
+  return [
+    {
+      key: 'mammals',
+      title: 'Mammals',
+      items: [
+        {
+          key: 'lion',
+          value: { name: 'Lion' },
+          textValue: 'Lion',
+          children: [{ key: 'cub', value: { name: 'Cub' }, textValue: 'Cub' }],
+        },
+      ],
+    },
+    {
+      key: 'birds',
+      title: 'Birds',
+      items: [
+        {
+          key: 'eagle',
+          value: { name: 'Eagle' },
+          textValue: 'Eagle',
+        },
+      ],
+    },
+  ] as const;
+}
+
 describe('Tree', () => {
   afterEach(() => {
     cleanup();
@@ -123,6 +151,33 @@ describe('Tree', () => {
 
       const rows = screen.getAllByRole('row');
       expect(rows[0]).toHaveClass('solidaria-Tree-item');
+    });
+
+    it('should render section headers when sectioned tree items are provided', () => {
+      render(() => (
+        <Tree items={createSectionedTreeItems() as any} aria-label="Sectioned Tree">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      expect(screen.getByRole('heading', { name: 'Mammals' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Birds' })).toBeInTheDocument();
+      expect(screen.getByText('Lion')).toBeInTheDocument();
+      expect(screen.getByText('Eagle')).toBeInTheDocument();
+    });
+
+    it('should honor defaultExpandedKeys for nested items inside sections', () => {
+      render(() => (
+        <Tree
+          items={createSectionedTreeItems() as any}
+          aria-label="Sectioned Tree"
+          defaultExpandedKeys={['lion']}
+        >
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      expect(screen.getByText('Cub')).toBeInTheDocument();
     });
 
     it('should render empty state when no items', () => {
