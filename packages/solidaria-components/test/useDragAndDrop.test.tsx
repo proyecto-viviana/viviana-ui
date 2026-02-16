@@ -4,6 +4,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createRoot } from 'solid-js';
 import { useDragAndDrop } from '../src/useDragAndDrop';
+import type { DropTarget, DroppableCollectionState } from '@proyecto-viviana/solid-stately';
 
 describe('useDragAndDrop', () => {
   it('returns draggable hooks when getItems is provided', () => {
@@ -25,6 +26,7 @@ describe('useDragAndDrop', () => {
     expect(typeof dragAndDropHooks.useDroppableCollectionState).toBe('function');
     expect(typeof dragAndDropHooks.useDroppableCollection).toBe('function');
     expect(typeof dragAndDropHooks.useDroppableItem).toBe('function');
+    expect(typeof dragAndDropHooks.useDropIndicator).toBe('function');
     expect(typeof dragAndDropHooks.ListDropTargetDelegate).toBe('function');
   });
 
@@ -192,6 +194,33 @@ describe('useDragAndDrop', () => {
       if (target.type === 'item') {
         expect(target.key).toBe('row-1');
       }
+
+      dispose();
+    });
+  });
+
+  it('returns drop indicator aria contract from useDropIndicator', () => {
+    createRoot((dispose) => {
+      const { dragAndDropHooks } = useDragAndDrop({
+        onInsert: () => {},
+      });
+
+      const state = {
+        target: { type: 'item', key: 'row-1', dropPosition: 'before' as const },
+      } as unknown as DroppableCollectionState;
+
+      const result = dragAndDropHooks.useDropIndicator?.(
+        { target: { type: 'item', key: 'row-1', dropPosition: 'before' } as DropTarget },
+        state,
+        () => null
+      );
+
+      expect(result?.isDropTarget).toBe(true);
+      expect(result?.isHidden).toBe(false);
+      expect(result?.dropIndicatorProps).toEqual(expect.objectContaining({
+        role: 'option',
+        tabIndex: -1,
+      }));
 
       dispose();
     });

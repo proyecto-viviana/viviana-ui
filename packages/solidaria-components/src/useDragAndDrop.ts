@@ -65,6 +65,15 @@ interface DropHooks {
     state: DroppableCollectionState,
     ref: Accessor<HTMLElement | null>
   ) => DroppableItemAria;
+  useDropIndicator?: (
+    props: { target: DropTarget },
+    state: DroppableCollectionState,
+    ref: Accessor<HTMLElement | null>
+  ) => {
+    dropIndicatorProps: JSX.HTMLAttributes<HTMLElement>;
+    isDropTarget: boolean;
+    isHidden: boolean;
+  };
   renderDropIndicator?: (target: DropTarget) => JSX.Element;
   dropTargetDelegate?: AriaDropTargetDelegate;
   ListDropTargetDelegate?: typeof ListDropTargetDelegate;
@@ -288,6 +297,34 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
       state: DroppableCollectionState,
       ref: Accessor<HTMLElement | null>
     ) => createDroppableItem(() => ({ ...props, ref }), state);
+    hooks.useDropIndicator = (
+      props: { target: DropTarget },
+      state: DroppableCollectionState,
+      _ref: Accessor<HTMLElement | null>
+    ) => {
+      const target = props.target;
+      const activeTarget = state.target;
+      const isDropTarget =
+        activeTarget?.type === target.type &&
+        (target.type === 'root'
+          || (
+            activeTarget.type === 'item' &&
+            target.type === 'item' &&
+            activeTarget.key === target.key &&
+            activeTarget.dropPosition === target.dropPosition
+          ));
+      return {
+        dropIndicatorProps: {
+          role: 'option',
+          'aria-disabled': true,
+          'aria-hidden': isDropTarget ? undefined : 'true',
+          tabIndex: -1,
+          'data-drop-target': isDropTarget ? '' : undefined,
+        },
+        isDropTarget,
+        isHidden: !isDropTarget,
+      };
+    };
     hooks.renderDropIndicator = renderDropIndicator;
     hooks.dropTargetDelegate = dropTargetDelegate;
     hooks.ListDropTargetDelegate = ListDropTargetDelegate;
