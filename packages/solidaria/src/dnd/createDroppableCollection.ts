@@ -450,14 +450,24 @@ export function createDroppableCollection(
           direction: 'next' | 'previous',
           getter: ((key: string | number) => string | number | null) | undefined
         ): DropTarget | null => {
-          if (!getter) return null;
           if (currentKey == null) {
             const boundaryKey = direction === 'next'
               ? keyboardDelegate.getFirstKey?.()
               : keyboardDelegate.getLastKey?.();
             return resolveBoundaryTargetForDirection(boundaryKey ?? null, direction);
           }
-          return resolveTargetForKey(getter(currentKey), direction);
+          if (!getter) return null;
+          let nextKey = getter(currentKey);
+          let safety = 0;
+          while (nextKey != null && safety < 256) {
+            const resolvedTarget = resolveTargetForKey(nextKey, direction);
+            if (resolvedTarget) return resolvedTarget;
+            const candidate = getter(nextKey);
+            if (candidate === nextKey) break;
+            nextKey = candidate;
+            safety += 1;
+          }
+          return null;
         };
 
         if (keyName === 'ArrowDown') return keyForDirection('next', keyboardDelegate.getKeyBelow);

@@ -816,6 +816,83 @@ describe('createDroppableCollection keyboard behavior', () => {
     expect(calls.at(-1)).toBe('set:item:2:on');
   });
 
+  it('skips invalid intermediate keys in keyboardDelegate fallback traversal', () => {
+    const calls: string[] = [];
+    let currentTarget: DropTarget | null = { type: 'item', key: 1, dropPosition: 'on' };
+    const state = {
+      get target() {
+        return currentTarget;
+      },
+      get isDropTarget() {
+        return currentTarget != null;
+      },
+      get isDisabled() {
+        return false;
+      },
+      setTarget(target: DropTarget | null) {
+        currentTarget = target;
+        if (target?.type === 'item') {
+          calls.push(`set:item:${String(target.key)}:${target.dropPosition}`);
+        }
+      },
+      activateTarget() {},
+      exitTarget() {},
+      getDropOperation(target: DropTarget) {
+        if (target.type === 'item' && target.key === 2) {
+          return 'cancel' as const;
+        }
+        return 'move' as const;
+      },
+      enterTarget() {},
+      moveToTarget() {},
+      drop() {},
+      isAccepted() {
+        return true;
+      },
+      shouldAcceptItemDrop() {
+        return true;
+      },
+    } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
+
+    function TestComponent() {
+      const { collectionProps } = createDroppableCollection(
+        () => ({
+          ref: () => document.getElementById('drop-root-kbd-skip-invalid') as HTMLElement | null,
+          dropTargetDelegate: {
+            getDropTargetFromPoint() {
+              return null;
+            },
+            getKeyboardNavigationTarget() {
+              return null;
+            },
+          },
+          keyboardDelegate: {
+            getFirstKey: () => 1,
+            getLastKey: () => 3,
+            getKeyBelow: (key) => (key < 3 ? key + 1 : null),
+            getKeyAbove: (key) => (key > 1 ? key - 1 : null),
+          },
+        }),
+        state
+      );
+
+      return (
+        <div
+          id="drop-root-kbd-skip-invalid"
+          tabIndex={0}
+          data-testid="drop-root-kbd-skip-invalid"
+          {...collectionProps}
+        />
+      );
+    }
+
+    render(() => <TestComponent />);
+    const root = screen.getByTestId('drop-root-kbd-skip-invalid');
+
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
+    expect(calls.at(-1)).toBe('set:item:3:on');
+  });
+
   it('iteratively skips invalid keyboard targets until a valid target is found', () => {
     const calls: string[] = [];
     let currentTarget: DropTarget | null = { type: 'root' };
