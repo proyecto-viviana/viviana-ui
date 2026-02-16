@@ -698,14 +698,6 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
           getLastKey: () => state.collection.getLastKey(),
           getKeyBelow: (key) => state.collection.getKeyAfter(key),
           getKeyAbove: (key) => state.collection.getKeyBefore(key),
-          getKeyLeftOf: (key) =>
-            direction === 'rtl'
-              ? state.collection.getKeyAfter(key)
-              : state.collection.getKeyBefore(key),
-          getKeyRightOf: (key) =>
-            direction === 'rtl'
-              ? state.collection.getKeyBefore(key)
-              : state.collection.getKeyAfter(key),
           getKeyPageBelow: (key) => state.collection.getKeyAfter(key),
           getKeyPageAbove: (key) => state.collection.getKeyBefore(key),
         },

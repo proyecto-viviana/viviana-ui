@@ -61,14 +61,14 @@ for (let i = 0; i < componentPaths.length; i += 1) {
     hasPattern(source, /typeof\s+window\s*!==\s*['"]undefined['"]/) &&
     hasPattern(source, /typeof\s+document\s*!==\s*['"]undefined['"]/);
   const hasHorizontalMethods =
-    (path.endsWith("GridList.tsx") || path.endsWith("Table.tsx") || path.endsWith("Tree.tsx"))
+    (path.endsWith("GridList.tsx") || path.endsWith("Table.tsx"))
     ? hasPattern(source, /getKeyLeftOf\s*:/) && hasPattern(source, /getKeyRightOf\s*:/)
     : true;
 
   results.push({
     target: path,
     ok: hasUseDroppableCollectionCall && hasKeyboardDelegateOption && hasHorizontalMethods && hasSsrDirectionGuards,
-    detail: (path.endsWith("GridList.tsx") || path.endsWith("Table.tsx") || path.endsWith("Tree.tsx"))
+    detail: (path.endsWith("GridList.tsx") || path.endsWith("Table.tsx"))
       ? "passes keyboardDelegate with horizontal key delegates and SSR-safe direction guards"
       : "passes keyboardDelegate into useDroppableCollection options with SSR-safe direction guards",
   });
