@@ -231,6 +231,11 @@ function resolveTreeDirection(element: HTMLElement | null): 'ltr' | 'rtl' {
     const dir = element.closest('[dir]')?.getAttribute('dir');
     if (dir === 'rtl') return 'rtl';
     if (dir === 'ltr') return 'ltr';
+    if (typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
+      const computedDirection = window.getComputedStyle(element).direction;
+      if (computedDirection === 'rtl') return 'rtl';
+      if (computedDirection === 'ltr') return 'ltr';
+    }
   }
   if (typeof document !== 'undefined') {
     return document.dir === 'rtl' ? 'rtl' : 'ltr';

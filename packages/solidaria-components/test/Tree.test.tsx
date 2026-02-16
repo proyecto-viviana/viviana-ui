@@ -379,6 +379,70 @@ describe('Tree', () => {
       }
     });
 
+    it('should prefer computed rtl direction for keyboard drop-target branch toggle', () => {
+      const originalDir = document.dir;
+      document.dir = 'ltr';
+      const computedStyleSpy = vi.spyOn(window, 'getComputedStyle').mockImplementation(() => (
+        { direction: 'rtl' } as CSSStyleDeclaration
+      ));
+
+      const dropState: DroppableCollectionState = {
+        isDropTarget: false,
+        target: { type: 'item', key: 'item-1', dropPosition: 'on' },
+        isDisabled: false,
+        setTarget: () => {},
+        isAccepted: () => true,
+        enterTarget: () => {},
+        moveToTarget: () => {},
+        exitTarget: () => {},
+        activateTarget: () => {},
+        drop: () => {},
+        shouldAcceptItemDrop: () => true,
+        getDropOperation: () => 'move',
+      };
+
+      let onKeyDown:
+        | ((event: KeyboardEvent) => void)
+        | undefined;
+      const dragAndDropHooks = {
+        useDroppableCollectionState: () => dropState,
+        useDroppableCollection: (props: {
+          onKeyDown?: (event: KeyboardEvent) => void;
+        }) => {
+          onKeyDown = props.onKeyDown;
+          return { collectionProps: {} };
+        },
+        useDroppableItem: () => ({ dropProps: {}, dropButtonProps: {}, isDropTarget: false }),
+        dropTargetDelegate: {
+          getDropTargetFromPoint: () => null,
+        },
+      };
+
+      try {
+        render(() => (
+          <Tree
+            items={createTestItems()}
+            aria-label="Computed RTL key tree"
+            dragAndDropHooks={dragAndDropHooks as any}
+          >
+            {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+          </Tree>
+        ));
+
+        expect(onKeyDown).toBeTypeOf('function');
+        expect(screen.queryByText('Item 1.1')).not.toBeInTheDocument();
+
+        onKeyDown!(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+        expect(screen.getByText('Item 1.1')).toBeInTheDocument();
+
+        onKeyDown!(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+        expect(screen.queryByText('Item 1.1')).not.toBeInTheDocument();
+      } finally {
+        computedStyleSpy.mockRestore();
+        document.dir = originalDir;
+      }
+    });
+
     it('should wire horizontal droppable keyboard delegate methods in ltr and rtl', () => {
       const dropState: DroppableCollectionState = {
         isDropTarget: false,
