@@ -1,11 +1,16 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { createRoot } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { useDragAndDrop } from '../src/useDragAndDrop';
 import type { DropTarget, DroppableCollectionState, DragPreviewRenderer } from '@proyecto-viviana/solid-stately';
+import { setGlobalDraggingCollectionRef } from '@proyecto-viviana/solidaria';
+
+afterEach(() => {
+  setGlobalDraggingCollectionRef(null);
+});
 
 describe('useDragAndDrop', () => {
   it('returns draggable hooks when getItems is provided', () => {
@@ -256,6 +261,26 @@ describe('useDragAndDrop', () => {
 
       dispose();
       expect(previewRef.current).toBeNull();
+    });
+  });
+
+  it('reports active global drag sessions via isVirtualDragging', () => {
+    createRoot((dispose) => {
+      const { dragAndDropHooks } = useDragAndDrop({
+        items: [{ id: 'a' }],
+        getItems: (keys) => Array.from(keys).map((key) => ({ 'text/plain': String(key) })),
+      });
+
+      expect(dragAndDropHooks.isVirtualDragging?.()).toBe(false);
+
+      const el = document.createElement('div');
+      setGlobalDraggingCollectionRef(el);
+      expect(dragAndDropHooks.isVirtualDragging?.()).toBe(true);
+
+      setGlobalDraggingCollectionRef(null);
+      expect(dragAndDropHooks.isVirtualDragging?.()).toBe(false);
+
+      dispose();
     });
   });
 });

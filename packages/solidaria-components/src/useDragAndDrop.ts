@@ -13,6 +13,7 @@ import {
   createDraggableItem,
   createDroppableCollection,
   createDroppableItem,
+  getGlobalDraggingCollectionRef,
   type DraggableCollectionOptions,
   type DraggableCollectionAria,
   type DraggableItemOptions,
@@ -196,7 +197,7 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
     hooks.useDraggableItem = (props, state) => createDraggableItem(() => props, state);
     hooks.DragPreview = DragPreview;
     hooks.renderDragPreview = renderDragPreview;
-    hooks.isVirtualDragging = () => false;
+    hooks.isVirtualDragging = () => getGlobalDraggingCollectionRef() != null;
   }
 
   if (isDroppable) {
