@@ -804,6 +804,8 @@ export {
   Tree,
   TreeItem,
   TreeItemContent,
+  TreeHeader,
+  TreeSection,
   TreeExpandButton,
   TreeSelectionCheckbox,
   TreeLoadMoreItem,
@@ -817,6 +819,8 @@ export {
   type TreeItemRenderProps,
   type TreeItemContentProps,
   type TreeItemContentRenderProps,
+  type TreeHeaderProps,
+  type TreeSectionProps,
   type TreeExpandButtonProps,
   type TreeLoadMoreItemProps,
 } from './Tree';

@@ -11,7 +11,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { Tree, TreeItem } from '../src/Tree';
+import { Tree, TreeItem, TreeHeader, TreeSection } from '../src/Tree';
 import { useDragAndDrop } from '../src/useDragAndDrop';
 import type {
   TreeItemData,
@@ -92,6 +92,26 @@ describe('Tree', () => {
 
       const tree = screen.getByRole('treegrid');
       expect(tree).toHaveClass('solidaria-Tree');
+    });
+
+    it('should render TreeSection wrapper with section semantics', () => {
+      render(() => (
+        <TreeSection>
+          <div>Section content</div>
+        </TreeSection>
+      ));
+
+      const section = screen.getByText('Section content').closest('[data-section]');
+      expect(section).toBeInTheDocument();
+      expect(section).toHaveClass('solidaria-Section');
+    });
+
+    it('should render TreeHeader wrapper with heading semantics', () => {
+      render(() => <TreeHeader>Section header</TreeHeader>);
+
+      const header = screen.getByRole('heading');
+      expect(header).toHaveTextContent('Section header');
+      expect(header).toHaveClass('solidaria-Header');
     });
 
     it('should render items with default class', () => {

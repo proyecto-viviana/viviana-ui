@@ -27,6 +27,8 @@ const REQUIRED_SYMBOLS = [
   'DropZone',
   'SharedElementTransition',
   'Virtualizer',
+  'TreeHeader',
+  'TreeSection',
  ] as const;
 
 const BACKLOG_SYMBOLS = [] as const;

@@ -55,7 +55,15 @@ import {
   useDndPersistedKeys,
   useRenderDropIndicator,
 } from './DragAndDrop';
-import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
+import {
+  CollectionRendererContext,
+  Section,
+  Header,
+  type CollectionRendererContextValue,
+  type SectionProps,
+  type HeaderProps,
+  useCollectionRenderer,
+} from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
 
 // ============================================
@@ -173,6 +181,9 @@ export interface TreeLoadMoreItemProps extends SlotProps {
   class?: ClassNameOrFunction<{ isLoading: boolean }>;
   style?: StyleOrFunction<{ isLoading: boolean }>;
 }
+
+export interface TreeSectionProps extends SectionProps {}
+export interface TreeHeaderProps extends HeaderProps {}
 
 // ============================================
 // CONTEXT
@@ -1233,8 +1244,18 @@ export function TreeItemContent<T extends object>(props: TreeItemContentProps<T>
   return <TreeItem {...props} />;
 }
 
+export function TreeSection(props: TreeSectionProps): JSX.Element {
+  return <Section {...props} />;
+}
+
+export function TreeHeader(props: TreeHeaderProps): JSX.Element {
+  return <Header {...props} />;
+}
+
 // Attach static properties
 Tree.Item = TreeItem;
 Tree.ExpandButton = TreeExpandButton;
 Tree.SelectionCheckbox = TreeSelectionCheckbox;
 Tree.LoadMoreItem = TreeLoadMoreItem;
+Tree.Section = TreeSection;
+Tree.Header = TreeHeader;
