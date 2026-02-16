@@ -447,6 +447,14 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
           getLastKey: () => state.collection.getLastKey?.() ?? null,
           getKeyBelow: (key) => state.collection.getKeyAfter?.(key) ?? null,
           getKeyAbove: (key) => state.collection.getKeyBefore?.(key) ?? null,
+          getKeyLeftOf: (key) =>
+            resolveDirection() === 'rtl'
+              ? state.collection.getKeyAfter?.(key) ?? null
+              : state.collection.getKeyBefore?.(key) ?? null,
+          getKeyRightOf: (key) =>
+            resolveDirection() === 'rtl'
+              ? state.collection.getKeyBefore?.(key) ?? null
+              : state.collection.getKeyAfter?.(key) ?? null,
           getKeyPageBelow: (key) => state.collection.getKeyAfter?.(key) ?? null,
           getKeyPageAbove: (key) => state.collection.getKeyBefore?.(key) ?? null,
         },

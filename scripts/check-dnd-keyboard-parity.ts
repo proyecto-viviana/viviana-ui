@@ -55,11 +55,16 @@ for (let i = 0; i < componentPaths.length; i += 1) {
   const source = componentSources[i];
   const hasUseDroppableCollectionCall = hasPattern(source, /useDroppableCollection\s*\(/);
   const hasKeyboardDelegateOption = hasPattern(source, /keyboardDelegate\s*:/);
+  const gridHasHorizontalMethods = path.endsWith("GridList.tsx")
+    ? hasPattern(source, /getKeyLeftOf\s*:/) && hasPattern(source, /getKeyRightOf\s*:/)
+    : true;
 
   results.push({
     target: path,
-    ok: hasUseDroppableCollectionCall && hasKeyboardDelegateOption,
-    detail: "passes keyboardDelegate into useDroppableCollection options",
+    ok: hasUseDroppableCollectionCall && hasKeyboardDelegateOption && gridHasHorizontalMethods,
+    detail: path.endsWith("GridList.tsx")
+      ? "passes keyboardDelegate into useDroppableCollection options with horizontal key delegates"
+      : "passes keyboardDelegate into useDroppableCollection options",
   });
 }
 
