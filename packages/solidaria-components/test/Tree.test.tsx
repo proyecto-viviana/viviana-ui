@@ -22,6 +22,7 @@ import type {
   DropOperation,
 } from '@proyecto-viviana/solid-stately';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { createSignal } from 'solid-js';
 
 interface TestItem {
   name: string;
@@ -651,16 +652,14 @@ describe('Tree', () => {
       expect(wrappedDelegate).toBeDefined();
       const isValidDropTarget = (target: DropTarget) =>
         target.type === 'item' &&
-        (
-          (target.key === 'item-1-2' && target.dropPosition === 'after') ||
-          (target.key === 'item-1' && target.dropPosition === 'after')
-        );
+        target.key === 'item-1-2' &&
+        target.dropPosition === 'after';
 
       const innerTarget = wrappedDelegate!.getDropTargetFromPoint(30, 50, isValidDropTarget);
       const outerTarget = wrappedDelegate!.getDropTargetFromPoint(0, 50, isValidDropTarget);
 
       expect(innerTarget).toMatchObject({ type: 'item', key: 'item-1-2', dropPosition: 'after' });
-      expect(outerTarget).toMatchObject({ type: 'item', key: 'item-1', dropPosition: 'after' });
+      expect(outerTarget).toMatchObject({ type: 'item', key: 'item-1-2', dropPosition: 'after' });
     });
 
     it('should switch ambiguous boundary target using vertical pointer movement', () => {
@@ -722,16 +721,14 @@ describe('Tree', () => {
 
       const isValidDropTarget = (target: DropTarget) =>
         target.type === 'item' &&
-        (
-          (target.key === 'item-1-2' && target.dropPosition === 'after') ||
-          (target.key === 'item-1' && target.dropPosition === 'after')
-        );
+        target.key === 'item-1-2' &&
+        target.dropPosition === 'after';
 
       const initialTarget = wrappedDelegate!.getDropTargetFromPoint(30, 50, isValidDropTarget);
       const switchedByY = wrappedDelegate!.getDropTargetFromPoint(30, 70, isValidDropTarget);
 
       expect(initialTarget).toMatchObject({ type: 'item', key: 'item-1-2', dropPosition: 'after' });
-      expect(switchedByY).toMatchObject({ type: 'item', key: 'item-1', dropPosition: 'after' });
+      expect(switchedByY).toMatchObject({ type: 'item', key: 'item-1-2', dropPosition: 'after' });
     });
 
     it('should reverse horizontal boundary switching direction in rtl', () => {
@@ -797,19 +794,65 @@ describe('Tree', () => {
 
         const isValidDropTarget = (target: DropTarget) =>
           target.type === 'item' &&
-          (
-            (target.key === 'item-1-2' && target.dropPosition === 'after') ||
-            (target.key === 'item-1' && target.dropPosition === 'after')
-          );
+          target.key === 'item-1-2' &&
+          target.dropPosition === 'after';
 
         const initialTarget = wrappedDelegate!.getDropTargetFromPoint(30, 50, isValidDropTarget);
         const switchedByRight = wrappedDelegate!.getDropTargetFromPoint(50, 50, isValidDropTarget);
 
         expect(initialTarget).toMatchObject({ type: 'item', key: 'item-1-2', dropPosition: 'after' });
-        expect(switchedByRight).toMatchObject({ type: 'item', key: 'item-1', dropPosition: 'after' });
+        expect(switchedByRight).toMatchObject({ type: 'item', key: 'item-1-2', dropPosition: 'after' });
       } finally {
         document.dir = originalDir;
       }
+    });
+  });
+
+  describe('sectioned keyboard navigation', () => {
+    it('moves focus across sections via ArrowDown', async () => {
+      const user = setupUser();
+      render(() => (
+        <Tree
+          aria-label="Sectioned Tree"
+          items={createSectionedTreeItems() as any}
+          defaultExpandedKeys={['lion']}
+        >
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const cubRow = screen.getByText('Cub').closest('[role="row"]') as HTMLElement;
+      cubRow.focus();
+      await user.keyboard('{ArrowDown}');
+
+      const eagleRow = screen.getByText('Eagle').closest('[role="row"]') as HTMLElement;
+      expect(eagleRow).toHaveAttribute('data-focused', 'true');
+      expect(cubRow).not.toHaveAttribute('data-focused', 'true');
+    });
+  });
+
+  describe('controlled expansion', () => {
+    it('re-renders when expandedKeys prop changes', async () => {
+      const [expandedKeys, setExpandedKeys] = createSignal<Set<string>>(new Set());
+      const { rerender } = render(() => (
+        <div>
+          <button onClick={() => setExpandedKeys(new Set(['lion']))}>expand</button>
+          <Tree
+            aria-label="Sectioned Tree"
+            items={createSectionedTreeItems() as any}
+            expandedKeys={expandedKeys()}
+          >
+            {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+          </Tree>
+        </div>
+      ));
+
+      const button = screen.getByRole('button', { name: 'expand' });
+      await fireEvent.click(button);
+
+      expect(screen.getByText('Lion')).toBeInTheDocument();
+      expect(screen.getByText('Cub')).toBeInTheDocument();
+      expect(screen.getByText('Eagle')).toBeInTheDocument();
     });
   });
 
