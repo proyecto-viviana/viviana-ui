@@ -540,7 +540,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
         const dir = window.getComputedStyle(menuRef).direction;
         if (dir === 'rtl') return 'rtl';
       }
-      return document.dir === 'rtl' ? 'rtl' : 'ltr';
+      return typeof document !== 'undefined' && document.dir === 'rtl' ? 'rtl' : 'ltr';
     };
     const dropTargetDelegate = hooks.dropTargetDelegate
       ?? parentCollectionRenderer?.dropTargetDelegate

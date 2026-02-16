@@ -337,7 +337,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
         const dir = window.getComputedStyle(el).direction;
         if (dir === 'rtl') return 'rtl';
       }
-      return document.dir === 'rtl' ? 'rtl' : 'ltr';
+      return typeof document !== 'undefined' && document.dir === 'rtl' ? 'rtl' : 'ltr';
     };
     const dropTargetDelegate = hooks.dropTargetDelegate
       ?? parentCollectionRenderer?.dropTargetDelegate

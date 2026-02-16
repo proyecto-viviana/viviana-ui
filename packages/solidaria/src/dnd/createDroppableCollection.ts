@@ -348,11 +348,11 @@ export function createDroppableCollection(
       if (opts.isDisabled) return;
       const resolveDirection = (): 'ltr' | 'rtl' => {
         const refEl = opts.ref();
-        if (refEl) {
+        if (refEl && typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
           const computedDir = window.getComputedStyle(refEl).direction;
           if (computedDir === 'rtl') return 'rtl';
         }
-        return document.dir === 'rtl' ? 'rtl' : 'ltr';
+        return typeof document !== 'undefined' && document.dir === 'rtl' ? 'rtl' : 'ltr';
       };
       const isRtl = resolveDirection() === 'rtl';
       const forwardHorizontalKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
