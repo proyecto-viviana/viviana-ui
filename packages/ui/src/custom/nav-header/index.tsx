@@ -1,5 +1,6 @@
 import type { JSX } from 'solid-js'
 import { Show } from 'solid-js'
+import { Button as HeadlessButton } from '@proyecto-viviana/solidaria-components'
 
 export interface NavHeaderProps {
   logo?: string
@@ -8,6 +9,7 @@ export interface NavHeaderProps {
   children?: JSX.Element
   menuIcon?: JSX.Element
   onMenuClick?: () => void
+  menuAriaLabel?: string
   class?: string
 }
 
@@ -29,13 +31,13 @@ export function NavHeader(props: NavHeaderProps) {
       <div class="flex-1 flex justify-end items-center pr-1 md:pr-8">
         {props.children}
         <Show when={props.menuIcon}>
-          <button
-            type="button"
+          <HeadlessButton
             class="md:hidden flex items-center justify-center"
-            onClick={props.onMenuClick}
+            onPress={() => props.onMenuClick?.()}
+            aria-label={props.menuAriaLabel ?? 'Open menu'}
           >
             {props.menuIcon}
-          </button>
+          </HeadlessButton>
         </Show>
       </div>
     </nav>

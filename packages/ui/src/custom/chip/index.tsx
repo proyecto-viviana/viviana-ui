@@ -1,4 +1,5 @@
 import { type JSX, Show } from 'solid-js'
+import { Button as HeadlessButton } from '@proyecto-viviana/solidaria-components'
 
 export type ChipVariant = 'primary' | 'secondary' | 'accent' | 'outline'
 
@@ -33,15 +34,14 @@ export function Chip(props: ChipProps) {
   }
 
   return (
-    <button
-      type="button"
+    <HeadlessButton
       class={`flex justify-center items-center h-6 w-auto rounded-full px-4 py-1 font-medium text-sm tracking-wide transition-colors ${variantStyles[variant()]} ${props.class ?? ''}`}
-      onClick={props.onClick}
+      onPress={() => props.onClick?.()}
     >
       <Show when={props.icon}>
         <span class="mr-1.5">{renderIcon()}</span>
       </Show>
       <span>{props.text}</span>
-    </button>
+    </HeadlessButton>
   )
 }

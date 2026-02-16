@@ -1,5 +1,6 @@
 import { Show, For } from 'solid-js'
 import { Avatar } from '../../avatar'
+import { Button as HeadlessButton } from '@proyecto-viviana/solidaria-components'
 
 export interface Message {
   id: string
@@ -23,10 +24,10 @@ export interface ConversationPreviewProps {
 
 export function ConversationPreview(props: ConversationPreviewProps) {
   return (
-    <button
+    <HeadlessButton
       type="button"
       class={`flex w-full items-center gap-3 rounded-xl p-3 hover:bg-bg-300 transition-colors text-left ${props.class ?? ''}`}
-      onClick={props.onClick}
+      onPress={() => props.onClick?.()}
     >
       <Avatar
         src={props.user.avatar}
@@ -50,7 +51,7 @@ export function ConversationPreview(props: ConversationPreviewProps) {
           {props.unreadCount}
         </span>
       </Show>
-    </button>
+    </HeadlessButton>
   )
 }
 

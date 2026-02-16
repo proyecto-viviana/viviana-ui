@@ -1,6 +1,7 @@
 import type { JSX } from 'solid-js'
 import { Show, For } from 'solid-js'
 import { Avatar } from '../../avatar'
+import { Button as HeadlessButton } from '@proyecto-viviana/solidaria-components'
 
 export interface EventCardProps {
   title: string
@@ -108,10 +109,9 @@ export interface EventListItemProps {
 
 export function EventListItem(props: EventListItemProps) {
   return (
-    <button
-      type="button"
+    <HeadlessButton
       class={`flex items-center gap-3 w-full p-2 rounded-lg hover:bg-bg-300 transition-colors text-left ${props.class ?? ''}`}
-      onClick={props.onClick}
+      onPress={() => props.onClick?.()}
     >
       <Show when={props.image}>
         <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
@@ -128,6 +128,6 @@ export function EventListItem(props: EventListItemProps) {
           <p class="text-sm text-primary-300 truncate">{props.subtitle}</p>
         </Show>
       </div>
-    </button>
+    </HeadlessButton>
   )
 }
