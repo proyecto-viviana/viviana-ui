@@ -170,14 +170,6 @@ export class ListDropTargetDelegate {
     return this.resolveNeighborTarget(target, direction, isValidDropTarget);
   }
 
-  getKeyboardPageNavigationTarget(
-    target: DropTarget | null,
-    direction: 'next' | 'previous',
-    isValidDropTarget: (target: DropTarget) => boolean
-  ): DropTarget | null {
-    return this.getKeyboardNavigationTarget(target, direction, isValidDropTarget);
-  }
-
   getDropTargetFromPoint(
     x: number,
     y: number,
