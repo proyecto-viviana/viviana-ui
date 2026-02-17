@@ -1,7 +1,13 @@
 import type { JSX } from 'solid-js'
 import { Show } from 'solid-js'
+import {
+  Alert as HeadlessAlert,
+  AlertDismissButton,
+  type AlertRenderProps,
+  type AlertVariant,
+} from '@proyecto-viviana/solidaria-components'
 
-export type AlertVariant = 'info' | 'success' | 'warning' | 'error'
+export type { AlertVariant }
 
 export interface AlertProps {
   children: JSX.Element
@@ -22,10 +28,16 @@ const variantStyles: Record<AlertVariant, string> = {
 export function Alert(props: AlertProps) {
   const variant = () => props.variant ?? 'info'
 
+  const getClassName = (_renderProps: AlertRenderProps): string => {
+    return `flex items-center min-h-[50px] font-normal rounded-lg px-4 py-2 ${variantStyles[variant()]} ${props.class ?? ''}`
+  }
+
   return (
-    <div
-      class={`flex items-center min-h-[50px] font-normal rounded-lg px-4 py-2 ${variantStyles[variant()]} ${props.class ?? ''}`}
-      role="alert"
+    <HeadlessAlert
+      variant={variant()}
+      isDismissible={props.dismissible}
+      onDismiss={props.onDismiss}
+      class={getClassName}
     >
       <div class="flex items-center gap-3 flex-1">
         <Show when={props.title}>
@@ -34,16 +46,14 @@ export function Alert(props: AlertProps) {
         </Show>
         <div class="flex-1">{props.children}</div>
         <Show when={props.dismissible}>
-          <button
-            type="button"
+          <AlertDismissButton
             class="hover:opacity-70 transition-opacity ml-2"
-            onClick={props.onDismiss}
             aria-label="Dismiss"
           >
             ✕
-          </button>
+          </AlertDismissButton>
         </Show>
       </div>
-    </div>
+    </HeadlessAlert>
   )
 }

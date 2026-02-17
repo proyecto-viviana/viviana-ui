@@ -1,4 +1,6 @@
 import type { Component, JSX } from 'solid-js'
+import { Icon as HeadlessIcon, type IconRenderProps } from '@proyecto-viviana/solidaria-components'
+import type { PressEvent } from '@proyecto-viviana/solidaria'
 
 export interface IconProps {
   /** The icon component to render (should accept size and color props) */
@@ -11,8 +13,8 @@ export interface IconProps {
   withShadow?: boolean
   /** Additional CSS class */
   class?: string
-  /** Click handler */
-  onClick?: () => void
+  /** Press handler for interactive icons. */
+  onPress?: (e: PressEvent) => void
   /** Accessible label for interactive icons. */
   'aria-label'?: string
   /** ID of an element that labels this icon. */
@@ -24,16 +26,38 @@ export interface IconProps {
  *
  * The shadow effect creates a 4px offset accent-colored duplicate
  * of the icon behind it for a stylized look.
+ *
+ * Behavior (element type, ARIA attributes) is owned by the headless Icon.
+ * This component only handles styling and visual composition.
  */
 export function Icon(props: IconProps): JSX.Element {
   const size = () => props.size ?? 24
   const color = () => props.color ?? 'var(--color-primary-500)'
   const IconComponent = props.icon
-  const className = () =>
-    `vui-icon ${props.withShadow ? 'vui-icon--with-shadow' : ''} ${props.class ?? ''}`
 
-  const iconContent = () => (
-    <>
+  const getClassName = (_renderProps: IconRenderProps): string => {
+    const classList = [
+      'vui-icon',
+    ]
+    if (props.withShadow) {
+      classList.push('vui-icon--with-shadow')
+    }
+    if (props.onPress) {
+      classList.push('vui-icon--button')
+    }
+    if (props.class) {
+      classList.push(props.class)
+    }
+    return classList.join(' ')
+  }
+
+  return (
+    <HeadlessIcon
+      onPress={props.onPress}
+      aria-label={props['aria-label']}
+      aria-labelledby={props['aria-labelledby']}
+      class={getClassName}
+    >
       {props.withShadow && (
         <div class="vui-icon__shadow" aria-hidden="true">
           <IconComponent size={size()} color="var(--color-accent)" />
@@ -42,24 +66,8 @@ export function Icon(props: IconProps): JSX.Element {
       <div class="vui-icon__main">
         <IconComponent size={size()} color={color()} />
       </div>
-    </>
+    </HeadlessIcon>
   )
-
-  if (props.onClick) {
-    return (
-      <button
-        type="button"
-        class={`${className()} vui-icon--button`}
-        onClick={props.onClick}
-        aria-label={props['aria-label']}
-        aria-labelledby={props['aria-labelledby']}
-      >
-        {iconContent()}
-      </button>
-    )
-  }
-
-  return <span class={className()}>{iconContent()}</span>
 }
 
 // Re-export common icons

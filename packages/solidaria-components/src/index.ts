@@ -901,3 +901,23 @@ export {
   type AriaLandmarkRole,
   type LandmarkController,
 } from './Landmark';
+
+// Alert
+export {
+  Alert,
+  AlertContext,
+  AlertDismissButton,
+  type AlertProps,
+  type AlertRenderProps,
+  type AlertVariant,
+  type AlertContextValue,
+  type AlertDismissButtonProps,
+} from './Alert';
+
+// Icon
+export {
+  Icon,
+  IconContext,
+  type IconProps,
+  type IconRenderProps,
+} from './Icon';
