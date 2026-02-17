@@ -167,9 +167,9 @@ export function Radio(props: RadioProps): JSX.Element {
     return [base, cursorClass, disabledClass, customClass].filter(Boolean).join(' ')
   }
 
-  // Static classes - will use a simplified visual style since we can't dynamically style based on state without render props
-  const circleClass = `relative flex items-center justify-center rounded-full border-2 transition-all duration-200 ${sizeStyle.circle} border-primary-600 bg-transparent hover:border-accent-300`
-  const dotClass = `rounded-full bg-accent transition-all duration-200 ${sizeStyle.dot}`
+  // Use data-selected attribute from headless Radio for conditional dot visibility via CSS
+  const circleClass = `relative flex items-center justify-center rounded-full border-2 transition-all duration-200 ${sizeStyle.circle} border-primary-600 bg-transparent hover:border-accent-300 [[data-selected]_&]:border-accent`
+  const dotClass = `rounded-full bg-accent transition-all duration-200 ${sizeStyle.dot} scale-0 [[data-selected]_&]:scale-100`
   const labelClass = `text-primary-200 ${sizeStyle.label}`
 
   return (

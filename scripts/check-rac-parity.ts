@@ -37,7 +37,8 @@ const TRACKED_SYMBOLS = [...REQUIRED_SYMBOLS, ...BACKLOG_SYMBOLS] as const;
 
 function parseNamedValueExports(source: string): Set<string> {
   const symbols = new Set<string>();
-  const exportRegex = /export\s*\{([\s\S]*?)\}\s*from\s*['"]([^'"]+)['"];/g;
+  // Keep matching within one export statement to avoid crossing a prior `export {X};`.
+  const exportRegex = /export\s*\{([^;]*?)\}\s*from\s*['"]([^'"]+)['"]\s*;?/g;
   let match: RegExpExecArray | null;
 
   while ((match = exportRegex.exec(source)) !== null) {

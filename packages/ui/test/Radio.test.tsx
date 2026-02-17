@@ -388,4 +388,38 @@ describe('RadioGroup', () => {
       expect(radio).toHaveAttribute('data-testid', 'custom-radio');
     });
   });
+
+  describe('selected visual state', () => {
+    it('selected radio has data-selected attribute on wrapper for CSS dot visibility', () => {
+      render(() => (
+        <RadioGroup aria-label="Test group" defaultValue="b">
+          <Radio value="a">Option A</Radio>
+          <Radio value="b">Option B</Radio>
+        </RadioGroup>
+      ));
+      const radios = screen.getAllByRole('radio');
+      // The headless Radio sets data-selected on the label wrapper
+      const wrapperA = radios[0].closest('label');
+      const wrapperB = radios[1].closest('label');
+      expect(wrapperA).not.toHaveAttribute('data-selected');
+      expect(wrapperB).toHaveAttribute('data-selected');
+    });
+
+    it('dot uses scale-0/scale-100 CSS classes for selected state visibility', () => {
+      render(() => (
+        <RadioGroup aria-label="Test group" defaultValue="a">
+          <Radio value="a">Option A</Radio>
+          <Radio value="b">Option B</Radio>
+        </RadioGroup>
+      ));
+      const radios = screen.getAllByRole('radio');
+      // The dot span is a child of the circle span, which is a sibling of the label text
+      const wrapperA = radios[0].closest('label')!;
+      const dotA = wrapperA.querySelector('.scale-0, .scale-100');
+      // The dot element should exist and use scale-based visibility classes
+      expect(dotA).toBeTruthy();
+      expect(dotA!.className).toContain('scale-0');
+      expect(dotA!.className).toContain('[[data-selected]_&]:scale-100');
+    });
+  });
 });

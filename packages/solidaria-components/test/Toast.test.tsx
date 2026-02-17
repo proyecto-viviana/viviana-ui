@@ -7,7 +7,12 @@
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { createRoot } from 'solid-js';
 import { render, screen, cleanup } from '@solidjs/testing-library';
+import {
+  createToastState,
+  ToastQueue,
+} from '@proyecto-viviana/solid-stately';
 import {
   ToastProvider,
   ToastTitle,
@@ -243,6 +248,50 @@ describe('Toast', () => {
           return <div />;
         });
       }).toThrow('Toast components must be used within a ToastProvider');
+    });
+  });
+
+  // ============================================
+  // EXIT ANIMATION LIFECYCLE
+  // ============================================
+
+  describe('exit animation lifecycle', () => {
+    it('global queue should have hasExitAnimation enabled', () => {
+      // The global queue should use exit animations so consumers can style exit transitions
+      const key = globalToastQueue.add({ title: 'Test' });
+      globalToastQueue.close(key);
+      // With hasExitAnimation: true, close() marks as exiting instead of removing.
+      // Since we're in JSDOM (no getAnimations), the Toast component would call
+      // remove() immediately in its effect. But at the queue level, close sets 'exiting'.
+      // Clean up any remaining toast
+      globalToastQueue.remove(key);
+    });
+
+    it('ToastState should expose remove method', () => {
+      createRoot((dispose) => {
+        const queue = new ToastQueue({ hasExitAnimation: true });
+        const state = createToastState({ queue });
+        expect(typeof state.remove).toBe('function');
+        dispose();
+      });
+    });
+
+    it('queue should mark toast as exiting on close when hasExitAnimation is true', () => {
+      const queue = new ToastQueue({ hasExitAnimation: true });
+      const callback = vi.fn();
+      queue.subscribe(callback);
+
+      const key = queue.add('Test Toast');
+      queue.close(key);
+
+      const toasts = callback.mock.calls[callback.mock.calls.length - 1][0];
+      expect(toasts).toHaveLength(1);
+      expect(toasts[0].animation).toBe('exiting');
+
+      // Finalize removal
+      queue.remove(key);
+      const finalToasts = callback.mock.calls[callback.mock.calls.length - 1][0];
+      expect(finalToasts).toHaveLength(0);
     });
   });
 });

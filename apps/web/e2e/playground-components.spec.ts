@@ -976,8 +976,9 @@ test.describe('Disclosure Component', () => {
     await checkNoHydrationErrors(errors);
   });
 
-  // TODO: HeadlessDisclosure button clicks not working - needs investigation
-  // The disclosure component has event handlers attached ($$click, $$pointerdown)
+  // Disclosure button clicks verified working (aria-expanded toggles correctly).
+  // Prior TODO was stale - SolidJS delegated events ($$click, $$pointerdown) work
+  // correctly with Playwright's force:true click and standard click.
   test('single disclosure expands and collapses', async ({ page }) => {
     const errors = await setupErrorCapture(page);
 

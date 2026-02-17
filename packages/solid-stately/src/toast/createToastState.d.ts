@@ -42,8 +42,13 @@ export interface ToastState<T> {
     visibleToasts: Accessor<QueuedToast<T>[]>;
     /** Adds a toast to the queue. */
     add: (content: T, options?: ToastOptions) => string;
-    /** Closes a toast by key. */
+    /** Closes a toast by key. Starts exit animation if hasExitAnimation is enabled. */
     close: (key: string) => void;
+    /**
+     * Removes a toast after exit animation completes.
+     * Call this from the component layer when the CSS exit animation finishes.
+     */
+    remove: (key: string) => void;
     /** Pauses all toast timers. */
     pauseAll: () => void;
     /** Resumes all toast timers. */

@@ -246,17 +246,60 @@ export function Tooltip(props: TooltipProps): JSX.Element {
   const state = () => context?.state ?? localState;
   const placement = () => props.placement ?? 'top';
 
-  // Only render when open
   const isOpen = () => state().isOpen();
 
+  // Exit animation state machine: 'closed' | 'open' | 'exiting'
+  // Keeps the tooltip mounted during exit animation so CSS transitions can play.
+  const [exitState, setExitState] = createSignal<'closed' | 'open' | 'exiting'>(
+    isOpen() ? 'open' : 'closed'
+  );
+
+  createEffect(() => {
+    const open = isOpen();
+    const current = exitState();
+    if (current === 'open' && !open) {
+      setExitState('exiting');
+    } else if ((current === 'closed' || current === 'exiting') && open) {
+      setExitState('open');
+    }
+  });
+
+  // Signal for the tooltip ref so we can observe exit animations
+  const [tooltipEl, setTooltipEl] = createSignal<HTMLDivElement | null>(null);
+
+  // When exiting, wait for CSS animations to finish, then set state to closed
+  createEffect(() => {
+    if (exitState() !== 'exiting') return;
+    const el = tooltipEl();
+    if (!el || !('getAnimations' in el)) {
+      setExitState('closed');
+      return;
+    }
+    const animations = el.getAnimations();
+    if (animations.length === 0) {
+      setExitState('closed');
+      return;
+    }
+    let canceled = false;
+    Promise.all(animations.map((a) => a.finished))
+      .then(() => { if (!canceled) setExitState((s) => s === 'exiting' ? 'closed' : s); })
+      .catch(() => { if (!canceled) setExitState((s) => s === 'exiting' ? 'closed' : s); });
+    onCleanup(() => { canceled = true; });
+  });
+
+  const shouldRender = () => isOpen() || exitState() === 'exiting';
+  const isExiting = () => exitState() === 'exiting';
+
   return (
-    <Show when={isOpen()}>
+    <Show when={shouldRender()}>
       <TooltipContent
         {...props}
         state={state()}
         contextTooltipProps={context?.tooltipProps ?? {}}
         placement={placement()}
         triggerRef={context?.triggerRef ?? (() => null)}
+        isExiting={isExiting()}
+        onTooltipRef={setTooltipEl}
       />
     </Show>
   );
@@ -271,6 +314,8 @@ function TooltipContent(
     contextTooltipProps: { id?: string };
     placement: 'top' | 'bottom' | 'left' | 'right';
     triggerRef: () => HTMLElement | null | undefined;
+    isExiting: boolean;
+    onTooltipRef: (el: HTMLDivElement | null) => void;
   }
 ): JSX.Element {
   if (isServer) {
@@ -290,9 +335,38 @@ function TooltipContent(
     visibility: 'visible' as 'hidden' | 'visible',
   });
 
+  // Enter animation state: starts true on mount, clears after first animation frame.
+  // Uses getAnimations() to detect CSS animations/transitions - if none exist (JSDOM,
+  // no CSS defined, reduced-motion), clears immediately.
+  const [isEntering, setIsEntering] = createSignal(true);
+
+  createEffect(() => {
+    if (!isEntering()) return;
+    if (!tooltipRef || !('getAnimations' in tooltipRef)) {
+      setIsEntering(false);
+      return;
+    }
+    // Cancel any premature CSS transitions triggered before layout
+    for (const anim of tooltipRef.getAnimations()) {
+      if (anim instanceof CSSTransition) {
+        anim.cancel();
+      }
+    }
+    const animations = tooltipRef.getAnimations();
+    if (animations.length === 0) {
+      setIsEntering(false);
+      return;
+    }
+    let canceled = false;
+    Promise.all(animations.map((a) => a.finished))
+      .then(() => { if (!canceled) setIsEntering(false); })
+      .catch(() => { if (!canceled) setIsEntering(false); });
+    onCleanup(() => { canceled = true; });
+  });
+
   const values = createMemo<TooltipRenderProps>(() => ({
-    isEntering: false, // TODO: animation support
-    isExiting: false,
+    isEntering: isEntering(),
+    isExiting: props.isExiting,
     placement: props.placement,
   }));
 
@@ -358,37 +432,36 @@ function TooltipContent(
     return true;
   };
 
-  // Set up positioning effect - runs when trigger ref is available
+  // Set up positioning effect - runs when trigger ref is available.
+  // Tracks pending rAF/setTimeout IDs so they can be canceled on cleanup.
   createEffect(() => {
     const trigger = props.triggerRef();
     if (!trigger) return;
 
-    // Initial position calculation - use requestAnimationFrame to ensure
-    // the element is rendered and has proper dimensions
-    // We may need multiple frames if the trigger ref hasn't resolved yet
     let retryCount = 0;
     const maxRetries = 5;
+    let pendingRaf = 0;
+    let pendingTimeout = 0;
 
     const tryUpdatePosition = () => {
+      pendingRaf = 0;
+      pendingTimeout = 0;
       const success = updatePosition();
       if (!success && retryCount < maxRetries) {
         retryCount++;
-        // In JSDOM, requestAnimationFrame may not trigger layout properly
-        // Use setTimeout for more reliable deferral across environments
-        setTimeout(tryUpdatePosition, 16); // ~60fps
+        pendingTimeout = window.setTimeout(tryUpdatePosition, 16);
       }
-      // If all retries fail, tooltip stays at 0,0 (test environments)
-      // The tooltip is visible by default, so it remains accessible
     };
 
-    // Initial attempt - use rAF for real browsers, then fall back to timeout retries
-    requestAnimationFrame(tryUpdatePosition);
+    pendingRaf = requestAnimationFrame(tryUpdatePosition);
 
     // Update on scroll/resize
     window.addEventListener('scroll', updatePosition, true);
     window.addEventListener('resize', updatePosition);
 
     onCleanup(() => {
+      if (pendingRaf) cancelAnimationFrame(pendingRaf);
+      if (pendingTimeout) clearTimeout(pendingTimeout);
       window.removeEventListener('scroll', updatePosition, true);
       window.removeEventListener('resize', updatePosition);
     });
@@ -400,6 +473,16 @@ function TooltipContent(
   // Extract ref from ariaTooltipProps to avoid type conflicts (SolidJS ref types are element-specific)
   const { ref: _ariaRef, ...cleanAriaProps } = ariaTooltipProps as Record<string, unknown>;
 
+  const setRef = (el: HTMLDivElement) => {
+    tooltipRef = el;
+    props.onTooltipRef(el);
+  };
+
+  // Clean up ref on unmount
+  onCleanup(() => {
+    props.onTooltipRef(null);
+  });
+
   return (
     <OverlayContainer>
       <div
@@ -407,7 +490,7 @@ function TooltipContent(
         {...props.contextTooltipProps}
         {...cleanAriaProps}
         role="tooltip"
-        ref={tooltipRef}
+        ref={setRef}
         class={renderProps.class()}
         style={{
           position: 'fixed',
@@ -416,6 +499,8 @@ function TooltipContent(
           ...renderProps.style(),
         }}
         data-placement={props.placement}
+        data-entering={isEntering() || undefined}
+        data-exiting={props.isExiting || undefined}
       >
         {renderProps.renderChildren()}
       </div>

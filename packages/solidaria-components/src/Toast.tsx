@@ -9,6 +9,8 @@ import {
   type JSX,
   createContext,
   createMemo,
+  createEffect,
+  onCleanup,
   splitProps,
   Show,
   useContext,
@@ -116,7 +118,7 @@ export function useToastContext(): ToastState<ToastContent> {
 /** Default global toast queue that can be used for app-wide toasts. */
 export const globalToastQueue = new ToastQueue<ToastContent>({
   maxVisibleToasts: 5,
-  hasExitAnimation: false, // TODO: Enable once exit animation handling is implemented
+  hasExitAnimation: true,
 });
 
 /**
@@ -334,6 +336,8 @@ export function Toast(props: ToastProps): JSX.Element {
     'style',
   ]);
 
+  let toastRef!: HTMLDivElement;
+
   // Get state from context
   const state = useToastContext();
 
@@ -372,11 +376,58 @@ export function Toast(props: ToastProps): JSX.Element {
     return { 'pointer-events': 'auto' as const, ...custom } as JSX.CSSProperties;
   };
 
+  // Exit animation lifecycle:
+  // When animation becomes 'exiting', wait for CSS animations/transitions to finish,
+  // then call state.remove() to finalize removal from the queue.
+  // In JSDOM or when no animations are running, remove immediately.
+  // Reduced-motion is handled by CSS (shorter/no animations), so the lifecycle
+  // naturally completes faster when the user prefers reduced motion.
+  createEffect(() => {
+    if (local.toast.animation !== 'exiting') return;
+    if (!toastRef) {
+      state.remove(local.toast.key);
+      return;
+    }
+
+    // Check if the element supports the Web Animations API
+    if (!('getAnimations' in toastRef)) {
+      state.remove(local.toast.key);
+      return;
+    }
+
+    const animations = toastRef.getAnimations();
+    if (animations.length === 0) {
+      // No CSS animations/transitions running - remove immediately
+      state.remove(local.toast.key);
+      return;
+    }
+
+    // Wait for all running animations to finish, then remove
+    let canceled = false;
+    Promise.all(animations.map((a) => a.finished))
+      .then(() => {
+        if (!canceled) {
+          state.remove(local.toast.key);
+        }
+      })
+      .catch(() => {
+        // Animation was canceled (e.g. element removed) - still clean up
+        if (!canceled) {
+          state.remove(local.toast.key);
+        }
+      });
+
+    onCleanup(() => {
+      canceled = true;
+    });
+  });
+
   // Extract ref from toastProps to avoid type conflicts
   const { ref: _ref, ...cleanToastProps } = toastAria.toastProps as Record<string, unknown>;
 
   return (
     <div
+      ref={toastRef}
       {...domProps()}
       {...cleanToastProps}
       class={renderProps.class()}

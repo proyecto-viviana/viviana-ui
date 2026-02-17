@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { createSignal } from 'solid-js';
 import { resetTooltipState } from '@proyecto-viviana/solid-stately';
 import { Tooltip, TooltipTrigger } from '../src/Tooltip';
 import { Button } from '../src/Button';
@@ -76,7 +77,6 @@ describe('TooltipTrigger', () => {
   });
 
   it('should support controlled open state with signals', () => {
-    const { createSignal } = require('solid-js');
     const [isOpen, setIsOpen] = createSignal(true);
 
     render(() => (
@@ -253,5 +253,37 @@ describe('Tooltip', () => {
 
     const tooltip = screen.getByTestId('tooltip') as HTMLElement;
     expect(tooltip.style.backgroundColor).toBe('black');
+  });
+
+  it('should expose isEntering and isExiting via render props', () => {
+    render(() => (
+      <TooltipTrigger isOpen>
+        <Button>Hover me</Button>
+        <Tooltip data-testid="tooltip">
+          {({ isEntering, isExiting }) => (
+            <span data-testid="content">
+              {isEntering ? 'entering' : isExiting ? 'exiting' : 'idle'}
+            </span>
+          )}
+        </Tooltip>
+      </TooltipTrigger>
+    ));
+
+    // In JSDOM (no getAnimations), isEntering should resolve to false immediately
+    const content = screen.getByTestId('content');
+    expect(content.textContent).toBe('idle');
+  });
+
+  it('should set data-placement but not data-exiting when open', () => {
+    render(() => (
+      <TooltipTrigger isOpen>
+        <Button>Hover me</Button>
+        <Tooltip data-testid="tooltip" placement="bottom">Content</Tooltip>
+      </TooltipTrigger>
+    ));
+
+    const tooltip = screen.getByTestId('tooltip');
+    expect(tooltip).toHaveAttribute('data-placement', 'bottom');
+    expect(tooltip).not.toHaveAttribute('data-exiting');
   });
 });
