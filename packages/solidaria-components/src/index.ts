@@ -179,6 +179,16 @@ export {
   type SharedElementRenderProps,
 } from './SharedElementTransition';
 
+// Layout base
+export {
+  Layout,
+  LayoutInfo,
+  Rect,
+  Size,
+  Point,
+  type InvalidationContext,
+} from './virtualizer/Layout';
+
 // Virtualizer
 export {
   Virtualizer,
@@ -192,7 +202,6 @@ export {
   type VirtualizerLayout,
   type VirtualizerLayoutClass,
   type VirtualizerContextValue,
-  type LayoutOptionsDelegate,
   type VirtualizerVisibleRange,
   type VirtualizerDropTarget,
   type VirtualizerDropOperationResolver,
@@ -201,10 +210,6 @@ export {
   type DefaultVirtualizerLayoutOptions,
   type GridLayoutOptions,
   type WaterfallLayoutOptions,
-  type LayoutInfo,
-  type Rect,
-  type Size,
-  type Point,
 } from './Virtualizer';
 
 // ProgressBar
