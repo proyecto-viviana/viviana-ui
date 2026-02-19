@@ -19,6 +19,7 @@
     "vite": "^7.3.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^5.0.0",
     "@cloudflare/vite-plugin": "^1.19.0",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/vite": "^4.1.18",
