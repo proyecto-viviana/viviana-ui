@@ -6,7 +6,7 @@ SolidJS port of Adobe's React Spectrum - accessible UI primitives with world-cla
 
 **What**: 4-layer component library (state → aria → components → styled) ported from React Spectrum to SolidJS
 **Why**: SolidJS lacks a mature accessible component library - this fills that gap
-**Status**: 2763 tests passing, Phases 1-29 complete
+**Status**: 3677 tests passing, Phases 1-29 + Endgame + Parity Completion complete
 
 ## IMPORTANT: Reference Code is Local
 
@@ -102,10 +102,11 @@ See [.claude/README.md](.claude/README.md) for full documentation:
 | 27 | Component Tests: GridList, Table, Separator, ProgressBar | +51 |
 | 28 | Component Tests: Tooltip, Link, Toast, FocusManagement | +24 |
 | 29 | Toolbar (all 4 layers) | +26 |
+| Endgame | Re-exports, Focusable/Pressable/Router, Data hooks, UI wrappers, Layout, Theme/Provider, Virtualizer docs | +132 |
+| Parity Completion | Barrel alignment, TextArea, DateRangePicker, ColorSwatchPicker, ColorEditor, ContextualHelpTrigger, OpenTransition, Theme system | +95 |
 
 ## Next Steps
 
 Future phases (not started):
-- Search Autocomplete
-- Virtualizer (for large lists)
-- ActionGroup / ActionBar
+- DropZone component
+- SharedElementTransition

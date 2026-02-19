@@ -6,10 +6,10 @@ A comprehensive SolidJS component library inspired by Adobe's React Aria and Rea
 
 | Package | Version | Description |
 |---------|---------|-------------|
-| [@proyecto-viviana/solid-stately](./packages/solid-stately) | 0.0.6 | State management for UI components (port of React Stately) |
-| [@proyecto-viviana/solidaria](./packages/solidaria) | 0.0.6 | Accessibility primitives (port of React Aria) |
-| [@proyecto-viviana/solidaria-components](./packages/solidaria-components) | 0.0.6 | Pre-wired headless components (port of React Aria Components) |
-| [@proyecto-viviana/ui](./packages/ui) | 0.1.7 | Styled UI components with Tailwind CSS |
+| [@proyecto-viviana/solid-stately](./packages/solid-stately) | 0.2.4 | State management for UI components (port of React Stately) |
+| [@proyecto-viviana/solidaria](./packages/solidaria) | 0.2.5 | Accessibility primitives (port of React Aria) |
+| [@proyecto-viviana/solidaria-components](./packages/solidaria-components) | 0.2.5 | Pre-wired headless components (port of React Aria Components) |
+| [@proyecto-viviana/ui](./packages/ui) | 0.3.5 | Styled UI components with Tailwind CSS |
 
 ## Architecture
 
