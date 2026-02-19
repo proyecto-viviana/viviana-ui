@@ -1,137 +1,127 @@
 import { createFileRoute } from "@tanstack/solid-router";
+import { useSilapseColors } from "@/utils/theme";
 
 export const Route = createFileRoute("/docs/installation")({
   component: InstallationPage,
 });
 
+const FONT_TITLE = "'Jost', system-ui, sans-serif";
+const FONT_MONO = "'JetBrains Mono', monospace";
+
 function InstallationPage() {
+  const getColors = useSilapseColors();
+  const colors = () => getColors();
+
+  const codeBlock = (code: string) => ({
+    background: colors().surface,
+    color: colors().text,
+    padding: "12px 14px",
+    "overflow-x": "auto" as const,
+    margin: "0.75rem 0",
+    "font-family": FONT_MONO,
+    "font-size": "12px",
+    border: `1px solid ${colors().muted}`,
+    "border-left": `3px solid ${colors().blue}`,
+  });
+
   return (
-    <div class="mx-auto max-w-3xl px-8 py-12">
-      <article class="prose">
-        <h1>Installation</h1>
-        <p>Install Proyecto Viviana packages using your preferred package manager or registry.</p>
+    <div style={{ "line-height": "1.6", "font-size": "14px", color: colors().textSecondary }}>
+      <h1
+        style={{
+          "font-family": FONT_TITLE, "font-size": "20px", "font-weight": "600",
+          margin: "0 0 16px 0", "padding-bottom": "10px", "padding-left": "12px",
+          "border-left": `3px solid ${colors().pink}`,
+          "border-bottom": `1px solid ${colors().pink}40`,
+          "letter-spacing": "-0.01em", color: colors().text,
+          filter: `drop-shadow(0 0 4px ${colors().pinkGlow})`,
+        }}
+      >
+        Installation
+      </h1>
 
-        <h2>From JSR (Recommended for Deno)</h2>
-        <pre>
-          <code>{`deno add jsr:@proyecto-viviana/ui jsr:@proyecto-viviana/solidaria`}</code>
-        </pre>
+      <p style={{ "margin-bottom": "1.5rem", "max-width": "60ch" }}>
+        Install Proyecto Viviana packages using your preferred package manager or registry.
+      </p>
 
-        <h2>From npm</h2>
-        <pre>
-          <code>{`npm install @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code>
-        </pre>
+      <SectionHeading color={colors().blue}>From JSR (Recommended for Deno)</SectionHeading>
+      <pre style={codeBlock("")}><code>{`deno add jsr:@proyecto-viviana/ui jsr:@proyecto-viviana/solidaria`}</code></pre>
 
-        <h2>Using bun</h2>
-        <pre>
-          <code>{`bun add @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code>
-        </pre>
+      <SectionHeading color={colors().blue}>From npm</SectionHeading>
+      <pre style={codeBlock("")}><code>{`npm install @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code></pre>
 
-        <h2>Using pnpm</h2>
-        <pre>
-          <code>{`pnpm add @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code>
-        </pre>
+      <SectionHeading color={colors().blue}>Using bun</SectionHeading>
+      <pre style={codeBlock("")}><code>{`bun add @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code></pre>
 
-        <h2>Peer Dependencies</h2>
-        <p>Make sure you have SolidJS installed:</p>
-        <pre>
-          <code>{`npm install solid-js`}</code>
-        </pre>
+      <SectionHeading color={colors().blue}>Using pnpm</SectionHeading>
+      <pre style={codeBlock("")}><code>{`pnpm add @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code></pre>
 
-        <h2>Package Overview</h2>
-        <p>Choose which packages to install based on your needs:</p>
+      <SectionHeading color={colors().blue}>Peer Dependencies</SectionHeading>
+      <p style={{ "margin-bottom": "0.75rem" }}>Make sure you have SolidJS installed:</p>
+      <pre style={codeBlock("")}><code>{`npm install solid-js`}</code></pre>
 
-        <div class="not-prose my-6 overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-bg-200">
-                <th class="py-2 pr-4 text-left font-semibold">Package</th>
-                <th class="py-2 pr-4 text-left font-semibold">Use Case</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-bg-100">
-              <tr>
-                <td class="py-2 pr-4">
-                  <code>@proyecto-viviana/ui</code>
-                </td>
-                <td class="py-2">Pre-styled components, ready to use</td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4">
-                  <code>@proyecto-viviana/solidaria</code>
-                </td>
-                <td class="py-2">ARIA hooks for custom components</td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4">
-                  <code>@proyecto-viviana/solidaria-components</code>
-                </td>
-                <td class="py-2">Headless components with render props</td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4">
-                  <code>@proyecto-viviana/solid-stately</code>
-                </td>
-                <td class="py-2">State management hooks only</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <SectionHeading color={colors().blue}>Package Overview</SectionHeading>
+      <p style={{ "margin-bottom": "0.75rem" }}>Choose which packages to install based on your needs:</p>
 
-        <h2>Tailwind CSS Setup</h2>
-        <p>
-          The UI components use Tailwind CSS v4. Add the theme variables to your CSS:
-        </p>
-        <pre>
-          <code>{`@import "tailwindcss";
+      <div style={{ margin: "0.75rem 0", "overflow-x": "auto", border: `1px solid ${colors().muted}`, background: colors().surface }}>
+        <table style={{ width: "100%", "font-size": "13px", "border-collapse": "collapse" }}>
+          <thead>
+            <tr style={{ "border-bottom": `1px solid ${colors().muted}` }}>
+              <th style={{ padding: "8px 12px", "text-align": "left", "font-weight": "600", "font-family": FONT_TITLE, "font-size": "10px", "text-transform": "uppercase", "letter-spacing": "0.1em", color: colors().pink }}>Package</th>
+              <th style={{ padding: "8px 12px", "text-align": "left", "font-weight": "600", "font-family": FONT_TITLE, "font-size": "10px", "text-transform": "uppercase", "letter-spacing": "0.1em", color: colors().pink }}>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <PkgRow pkg="@proyecto-viviana/ui" desc="Pre-styled components, ready to use" colors={colors()} />
+            <PkgRow pkg="@proyecto-viviana/solidaria" desc="ARIA hooks for custom components" colors={colors()} />
+            <PkgRow pkg="@proyecto-viviana/solidaria-components" desc="Headless components with render props" colors={colors()} />
+            <PkgRow pkg="@proyecto-viviana/solid-stately" desc="State management hooks only" colors={colors()} />
+          </tbody>
+        </table>
+      </div>
+
+      <SectionHeading color={colors().blue}>Tailwind CSS Setup</SectionHeading>
+      <p style={{ "margin-bottom": "0.75rem" }}>The UI components use Tailwind CSS v4. Add the theme variables to your CSS:</p>
+      <pre style={codeBlock("")}>
+        <code>{`@import "tailwindcss";
 
 @theme {
-  /* Primary colors */
-  --color-primary-50: #eef2ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-200: #c7d2fe;
-  --color-primary-300: #a5b4fc;
-  --color-primary-400: #818cf8;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
-  --color-primary-700: #4338ca;
-  --color-primary-800: #3730a3;
-  --color-primary-900: #312e81;
+  --color-primary-100: #ddf4ff;
+  --color-primary-200: #b6e3ff;
+  --color-primary-300: #80ccff;
+  --color-primary-400: #54aeff;
+  --color-primary-500: #4da0ff;
+  --color-primary-600: #3080f4;
 
-  /* Background colors */
-  --color-bg-50: #fafafa;
-  --color-bg-100: #f4f4f5;
-  --color-bg-200: #e4e4e7;
-  --color-bg-300: #d4d4d8;
-  --color-bg-400: #a1a1aa;
-  --color-bg-500: #71717a;
-  --color-bg-600: #52525b;
+  --color-bg-100: #333333;
+  --color-bg-200: #1a1a1a;
+  --color-bg-300: #111111;
+  --color-bg-400: #0a0a0a;
 
-  /* Accent colors */
-  --color-accent-500: #06b6d4;
-  --color-accent-600: #0891b2;
+  --color-accent: #ffa0d5;
+  --color-accent-200: #ffc9e9;
+  --color-accent-300: #f778ba;
 
-  /* Negative colors */
-  --color-negative-500: #ef4444;
-  --color-negative-600: #dc2626;
+  --font-sans: 'Sen', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }`}</code>
-        </pre>
+      </pre>
 
-        <h2>TypeScript Configuration</h2>
-        <p>For SolidJS JSX support, ensure your tsconfig includes:</p>
-        <pre>
-          <code>{`{
+      <SectionHeading color={colors().blue}>TypeScript Configuration</SectionHeading>
+      <p style={{ "margin-bottom": "0.75rem" }}>For SolidJS JSX support, ensure your tsconfig includes:</p>
+      <pre style={codeBlock("")}>
+        <code>{`{
   "compilerOptions": {
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "types": ["vite/client"]
   }
 }`}</code>
-        </pre>
+      </pre>
 
-        <h2>Deno Configuration</h2>
-        <p>For Deno projects, add to your deno.json:</p>
-        <pre>
-          <code>{`{
+      <SectionHeading color={colors().blue}>Deno Configuration</SectionHeading>
+      <p style={{ "margin-bottom": "0.75rem" }}>For Deno projects, add to your deno.json:</p>
+      <pre style={codeBlock("")}>
+        <code>{`{
   "imports": {
     "solid-js": "npm:solid-js@^1.9.0",
     "@proyecto-viviana/ui": "jsr:@proyecto-viviana/ui@^0.1.8",
@@ -142,8 +132,36 @@ function InstallationPage() {
     "jsxImportSource": "solid-js"
   }
 }`}</code>
-        </pre>
-      </article>
+      </pre>
     </div>
+  );
+}
+
+function SectionHeading(props: { color: string; children: string }) {
+  return (
+    <h2 style={{
+      "font-family": FONT_TITLE, "font-size": "15px", "font-weight": "600",
+      margin: "2rem 0 0.75rem 0", "padding-left": "10px",
+      "border-left": `2px solid ${props.color}`, color: "var(--color-primary-100)",
+    }}>
+      {props.children}
+    </h2>
+  );
+}
+
+function PkgRow(props: { pkg: string; desc: string; colors: ReturnType<ReturnType<typeof useSilapseColors>> }) {
+  return (
+    <tr style={{ "border-bottom": `1px solid ${props.colors.muted}` }}>
+      <td style={{ padding: "8px 12px" }}>
+        <code style={{
+          background: `${props.colors.blue}15`, color: props.colors.blue,
+          padding: "2px 6px", "font-family": "'JetBrains Mono', monospace",
+          "font-size": "12px", "font-weight": "500",
+          border: `1px solid ${props.colors.blue}40`,
+          "clip-path": "polygon(2px 0, 100% 0, calc(100% - 2px) 100%, 0 100%)",
+        }}>{props.pkg}</code>
+      </td>
+      <td style={{ padding: "8px 12px", color: props.colors.textSecondary }}>{props.desc}</td>
+    </tr>
   );
 }

@@ -19,7 +19,12 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       "~": path.resolve(__dirname, "./src"),
     },
-    dedupe: ["solid-js", "@tanstack/solid-router"],
+    dedupe: [
+      "solid-js",
+      "@tanstack/solid-router",
+      "@tanstack/router-core",
+      "@tanstack/history",
+    ],
   },
   optimizeDeps: {
     exclude: [
@@ -30,12 +35,12 @@ export default defineConfig({
     ],
   },
   plugins: [
+    tanstackStart(),
     viteSolid({ ssr: true }),
     tailwindcss(),
     tsConfigPaths({
       projects: ["./tsconfig.json"],
     }),
-    tanstackStart(),
     ...(isProd ? [cloudflare({ viteEnvironment: { name: "ssr" } })] : []),
   ],
 });

@@ -10,23 +10,24 @@
     "deploy": "bun run build && wrangler deploy"
   },
   "dependencies": {
-    "@proyecto-viviana/solidaria": "workspace:*",
-    "@proyecto-viviana/ui": "workspace:*",
-    "@tanstack/solid-router": "1.142.8",
-    "@tanstack/solid-start": "1.142.8",
-    "solid-icons": "^1.1.0",
-    "solid-js": "^1.9.10",
-    "vite": "^7.3.0"
+    "@proyecto-viviana/solidaria": "*",
+    "@proyecto-viviana/ui": "*",
+    "@tanstack/router-core": "1.161.1",
+    "@tanstack/solid-router": "1.161.1",
+    "@tanstack/solid-start": "1.161.1",
+    "solid-icons": "^1.2.0",
+    "solid-js": "^1.9.11",
+    "vite": "^7.3.1"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.10.2",
-    "@cloudflare/vite-plugin": "^1.19.0",
-    "@playwright/test": "^1.57.0",
-    "@tailwindcss/vite": "^4.1.18",
-    "playwright": "^1.57.0",
+    "@axe-core/playwright": "^4.11.1",
+    "@cloudflare/vite-plugin": "^1.25.2",
+    "@playwright/test": "^1.58.2",
+    "@tailwindcss/vite": "^4.2.0",
+    "playwright": "^1.58.2",
     "typescript": "^5.9.3",
     "vite-plugin-solid": "^2.11.10",
-    "vite-tsconfig-paths": "^6.0.3",
-    "wrangler": "^4.56.0"
+    "vite-tsconfig-paths": "^6.1.1",
+    "wrangler": "^4.67.0"
   }
 }

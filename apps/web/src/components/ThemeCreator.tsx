@@ -10,6 +10,15 @@ import {
   oklchToHex,
 } from '@/utils/color'
 
+function contrastText(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16) / 255
+  const g = parseInt(hex.slice(3, 5), 16) / 255
+  const b = parseInt(hex.slice(5, 7), 16) / 255
+  const lin = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+  const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+  return L > 0.179 ? '#06131d' : '#f4f8fa'
+}
+
 export interface ThemeCreatorProps {
   onThemeChange?: (cssVars: Record<string, string>) => void
 }
@@ -59,10 +68,22 @@ export function ThemeCreator(props: ThemeCreatorProps) {
     props.onThemeChange?.(cssVars)
   })
 
+  const [appearance, setAppearance] = createSignal<'dark' | 'light'>('dark')
+
+  // Sync appearance with data-theme attribute
+  createEffect(() => {
+    document.documentElement.setAttribute('data-theme', appearance())
+  })
+
   const modeOptions = [
     { value: 'light', label: 'Light' },
     { value: 'dim', label: 'Dim' },
     { value: 'dark', label: 'Dark' },
+  ]
+
+  const appearanceOptions = [
+    { value: 'dark', label: 'Dark' },
+    { value: 'light', label: 'Light' },
   ]
 
   return (
@@ -70,9 +91,19 @@ export function ThemeCreator(props: ThemeCreatorProps) {
       <h3 class="text-lg font-semibold text-primary-200 mb-4">Theme Creator</h3>
 
       <div class="flex flex-wrap gap-6">
-        {/* Mode Selector */}
+        {/* Appearance Selector (light/dark) */}
         <div class="flex flex-col gap-2">
-          <label class="text-sm text-primary-300">Mode</label>
+          <label class="text-sm text-primary-300">Appearance</label>
+          <TabSwitch
+            options={appearanceOptions}
+            value={appearance()}
+            onChange={(v) => setAppearance(v as 'dark' | 'light')}
+          />
+        </div>
+
+        {/* Palette Mode Selector */}
+        <div class="flex flex-col gap-2">
+          <label class="text-sm text-primary-300">Palette Mode</label>
           <TabSwitch
             options={modeOptions}
             value={mode()}
@@ -86,6 +117,7 @@ export function ThemeCreator(props: ThemeCreatorProps) {
           <div class="flex items-center gap-2">
             <input
               type="color"
+              aria-label="Primary color picker"
               value={primaryColor()}
               onInput={(e) => setPrimaryColor(e.currentTarget.value)}
               class="w-10 h-10 rounded cursor-pointer border border-primary-600 bg-transparent"
@@ -93,6 +125,7 @@ export function ThemeCreator(props: ThemeCreatorProps) {
             <div class="flex flex-col gap-1">
               <input
                 type="text"
+                aria-label="Primary color hex value"
                 value={primaryColor()}
                 onInput={(e) => {
                   const val = e.currentTarget.value
@@ -118,6 +151,7 @@ export function ThemeCreator(props: ThemeCreatorProps) {
           <div class="flex items-center gap-2">
             <input
               type="color"
+              aria-label="Background color picker"
               value={bgColor()}
               onInput={(e) => setBgColor(e.currentTarget.value)}
               class="w-10 h-10 rounded cursor-pointer border border-primary-600 bg-transparent"
@@ -125,6 +159,7 @@ export function ThemeCreator(props: ThemeCreatorProps) {
             <div class="flex flex-col gap-1">
               <input
                 type="text"
+                aria-label="Background color hex value"
                 value={bgColor()}
                 onInput={(e) => {
                   const val = e.currentTarget.value
@@ -150,6 +185,7 @@ export function ThemeCreator(props: ThemeCreatorProps) {
           <div class="flex items-center gap-2">
             <input
               type="color"
+              aria-label="Accent color picker"
               value={accentColor()}
               onInput={(e) => setAccentColor(e.currentTarget.value)}
               class="w-10 h-10 rounded cursor-pointer border border-primary-600 bg-transparent"
@@ -157,6 +193,7 @@ export function ThemeCreator(props: ThemeCreatorProps) {
             <div class="flex flex-col gap-1">
               <input
                 type="text"
+                aria-label="Accent color hex value"
                 value={accentColor()}
                 onInput={(e) => {
                   const val = e.currentTarget.value
@@ -184,6 +221,7 @@ export function ThemeCreator(props: ThemeCreatorProps) {
               setBgColor(defaultColors.bg)
               setAccentColor(defaultColors.accent)
               setMode('dark')
+              setAppearance('dark')
             }}
             class="px-3 py-2 text-sm bg-primary-700 text-primary-200 rounded hover:bg-primary-600 transition-colors"
           >
@@ -200,7 +238,7 @@ export function ThemeCreator(props: ThemeCreatorProps) {
             return (
               <div
                 class="w-8 h-8 rounded text-[10px] flex items-center justify-center font-mono"
-                style={{ background: palette()[shade], color: parseInt(shade) < 500 ? '#1D272E' : '#D9F2FF' }}
+                style={{ background: palette()[shade], color: contrastText(palette()[shade]) }}
               >
                 {shade}
               </div>

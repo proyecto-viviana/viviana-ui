@@ -61,10 +61,12 @@ function ErrorFallback(props: { error: Error; reset: () => void }) {
 
 function RootDocument(props: { children: JSX.Element }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <head>
         <HydrationScript />
         <HeadContent />
+        {/* Restore saved theme before paint to avoid flash */}
+        <script>{`(function(){try{var t=localStorage.getItem('pv-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}})()`}</script>
       </head>
       <body class="font-jost antialiased">
         <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>

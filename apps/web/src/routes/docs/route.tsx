@@ -1,192 +1,324 @@
-import { Outlet, createFileRoute, Link } from "@tanstack/solid-router";
-import { For, createSignal, Show } from "solid-js";
-import { PageLayout } from "@proyecto-viviana/ui";
+import { Outlet, createFileRoute, Link, useLocation } from "@tanstack/solid-router";
+import { For, createSignal, Show, onMount, onCleanup } from "solid-js";
 import { Header } from "@/components";
+import { useSilapseColors, useSilapseTheme } from "@/utils/theme";
+
+const FONT_TITLE = "'Jost', system-ui, sans-serif";
+const FONT_BODY = "'Sen', system-ui, sans-serif";
 
 export const Route = createFileRoute("/docs")({
   component: DocsLayout,
 });
 
-type NavItem = {
-  label: string;
-  href: string;
-};
-
-type NavSection = {
-  section: string;
-  items: NavItem[];
-};
-
+type NavItem = { label: string; href: string };
+type NavSection = { section: string; items: NavItem[] };
 type NavEntry = NavItem | NavSection;
 
 const componentPages = import.meta.glob("./components/*.tsx");
 const hookPages = import.meta.glob("./hooks/*.tsx");
 
 const componentOrder = [
-  // Form & Input
   "button", "checkbox", "textfield", "textarea", "numberfield", "searchfield", "slider", "switch", "combobox",
-  // Selection
   "select", "menu", "listbox",
-  // Navigation
   "tabs", "breadcrumbs", "link",
-  // Overlays
   "dialog", "alertdialog", "toast",
-  // Data Display
   "table", "gridlist", "tree", "progressbar", "meter", "badge",
-  // Calendar & Date
   "calendar", "rangecalendar", "datepicker", "daterangepicker", "datefield", "timefield",
-  // Color
   "color",
-  // Layout & Infrastructure
   "disclosure", "taggroup", "separator", "provider",
-  // Advanced
   "virtualizer",
 ];
 const hookOrder = ["create-button", "create-press"];
 
 const labelOverrides: Record<string, string> = {
-  textfield: "TextField",
-  textarea: "TextArea",
-  numberfield: "NumberField",
-  searchfield: "SearchField",
-  combobox: "ComboBox",
-  datepicker: "DatePicker",
-  daterangepicker: "DateRangePicker",
-  datefield: "DateField",
-  timefield: "TimeField",
-  rangecalendar: "RangeCalendar",
-  gridlist: "GridList",
-  progressbar: "ProgressBar",
-  taggroup: "TagGroup",
-  alertdialog: "AlertDialog",
-  virtualizer: "Virtualizer",
+  textfield: "TextField", textarea: "TextArea", numberfield: "NumberField",
+  searchfield: "SearchField", combobox: "ComboBox", datepicker: "DatePicker",
+  daterangepicker: "DateRangePicker", datefield: "DateField", timefield: "TimeField",
+  rangecalendar: "RangeCalendar", gridlist: "GridList", progressbar: "ProgressBar",
+  taggroup: "TagGroup", alertdialog: "AlertDialog", virtualizer: "Virtualizer",
 };
 
-function filePathToSlug(filePath: string) {
-  return filePath.split("/").at(-1)?.replace(".tsx", "") ?? "";
-}
+function filePathToSlug(p: string) { return p.split("/").at(-1)?.replace(".tsx", "") ?? ""; }
 
 function toTitleCase(slug: string) {
   if (slug in labelOverrides) return labelOverrides[slug];
-  return slug
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  return slug.split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
 }
 
 function toCamelCase(slug: string) {
   const [first, ...rest] = slug.split("-");
-  return `${first}${rest.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join("")}`;
+  return `${first}${rest.map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join("")}`;
 }
 
 function buildSectionItems(
   pages: Record<string, unknown>,
   basePath: "/docs/components" | "/docs/hooks",
   order: string[],
-  labelFormatter: (slug: string) => string
+  fmt: (s: string) => string,
 ): NavItem[] {
-  const routeItems = Object.keys(pages).map((filePath) => {
-    const slug = filePathToSlug(filePath);
-    return { slug, item: { label: labelFormatter(slug), href: `${basePath}/${slug}` } };
-  });
-
-  return routeItems
+  return Object.keys(pages)
+    .map((fp) => { const slug = filePathToSlug(fp); return { slug, item: { label: fmt(slug), href: `${basePath}/${slug}` } }; })
     .sort((a, b) => {
-      const aIndex = order.indexOf(a.slug);
-      const bIndex = order.indexOf(b.slug);
-      const aRank = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
-      const bRank = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
-      return aRank === bRank ? a.item.label.localeCompare(b.item.label) : aRank - bRank;
+      const ai = order.indexOf(a.slug), bi = order.indexOf(b.slug);
+      const ar = ai === -1 ? Infinity : ai, br = bi === -1 ? Infinity : bi;
+      return ar === br ? a.item.label.localeCompare(b.item.label) : ar - br;
     })
-    .map((entry) => entry.item);
+    .map((e) => e.item);
 }
 
 const navItems: NavEntry[] = [
   { label: "Getting Started", href: "/docs" },
   { label: "Installation", href: "/docs/installation" },
-  {
-    section: "Components",
-    items: buildSectionItems(componentPages, "/docs/components", componentOrder, toTitleCase),
-  },
-  {
-    section: "Hooks",
-    items: buildSectionItems(hookPages, "/docs/hooks", hookOrder, toCamelCase),
-  },
+  { section: "Components", items: buildSectionItems(componentPages, "/docs/components", componentOrder, toTitleCase) },
+  { section: "Hooks", items: buildSectionItems(hookPages, "/docs/hooks", hookOrder, toCamelCase) },
 ];
 
 function DocsLayout() {
-  const [expandedSections, setExpandedSections] = createSignal<Set<string>>(
-    new Set(["Components", "Hooks"])
-  );
+  const getColors = useSilapseColors();
+  const { isDark, toggleTheme } = useSilapseTheme();
+  const colors = () => getColors();
+  const location = useLocation();
+  const [isMobile, setIsMobile] = createSignal(false);
+  const [sidebarOpen, setSidebarOpen] = createSignal(false);
+  const [headerVisible, setHeaderVisible] = createSignal(true);
+  const [expandedSections, setExpandedSections] = createSignal<Set<string>>(new Set(["Components", "Hooks"]));
 
-  const toggleSection = (section: string) => {
-    setExpandedSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(section)) {
-        next.delete(section);
-      } else {
-        next.add(section);
-      }
-      return next;
-    });
+  const isActive = (href: string) => {
+    const path = location.pathname;
+    return href === "/docs" ? path === "/docs" || path === "/docs/" : path === href;
+  };
+
+  const toggleSection = (s: string) => {
+    setExpandedSections((prev) => { const next = new Set(prev); next.has(s) ? next.delete(s) : next.add(s); return next; });
+  };
+
+  const checkMobile = () => {
+    if (typeof window === "undefined") return;
+    setIsMobile(window.innerWidth < 768);
+    if (window.innerWidth >= 768) setSidebarOpen(false);
+  };
+
+  const handleScroll = () => {
+    if (typeof window === "undefined") return;
+    setHeaderVisible(window.scrollY < 80);
+  };
+
+  onMount(() => {
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+  });
+  onCleanup(() => {
+    if (typeof window === "undefined") return;
+    window.removeEventListener("resize", checkMobile);
+    window.removeEventListener("scroll", handleScroll);
+  });
+
+  const navLinkStyle = (href: string) => ({
+    display: "block",
+    width: "100%",
+    padding: "8px 14px",
+    "text-align": "left" as const,
+    background: isActive(href) ? colors().pink : "transparent",
+    border: "none",
+    "border-left": isActive(href) ? `3px solid ${colors().pink}` : "3px solid transparent",
+    color: isActive(href) ? colors().surface : colors().textSecondary,
+    "font-family": FONT_BODY,
+    "font-size": "12px",
+    "font-weight": isActive(href) ? "600" : "400",
+    "text-decoration": "none",
+    cursor: "pointer",
+    transition: "all 0.1s",
+  });
+
+  const handleLinkMouseOver = (href: string, e: MouseEvent) => {
+    if (!isActive(href)) {
+      (e.currentTarget as HTMLElement).style.background = `${colors().pink}20`;
+      (e.currentTarget as HTMLElement).style.color = colors().text;
+    }
+  };
+
+  const handleLinkMouseOut = (href: string, e: MouseEvent) => {
+    if (!isActive(href)) {
+      (e.currentTarget as HTMLElement).style.background = "transparent";
+      (e.currentTarget as HTMLElement).style.color = colors().textSecondary;
+    }
   };
 
   return (
-    <PageLayout>
+    <div
+      style={{
+        "min-height": "100vh",
+        background: colors().surface,
+        "font-family": FONT_BODY,
+        color: colors().text,
+        transition: "background 0.3s ease, color 0.3s ease",
+      }}
+    >
       <Header />
-      <div class="flex flex-1 pt-16 h-screen">
-        {/* Sidebar */}
-        <aside class="w-72 shrink-0 border-r border-primary-700/30 bg-bg-300/50 backdrop-blur-sm overflow-y-auto custom-scrollbar h-[calc(100vh-4rem)] sticky top-16">
-          {/* Sidebar header with gradient accent */}
-          <div class="sticky top-0 z-10 p-4 bg-bg-300/90 backdrop-blur-md border-b border-primary-700/20">
-            <div class="flex items-center gap-3">
-              <div class="w-2 h-8 rounded-full bg-linear-to-b from-accent to-primary-500" />
-              <div>
-                <p class="font-jost text-sm font-semibold text-primary-200">
-                  Documentation
-                </p>
-                <p class="text-xs text-primary-500">v0.3.5</p>
-              </div>
+
+      {/* Mobile overlay */}
+      <Show when={isMobile() && sidebarOpen()}>
+        <div onClick={() => setSidebarOpen(false)} style={{ position: "fixed", inset: "0", background: "rgba(0,0,0,0.8)", "z-index": "150" }} />
+      </Show>
+
+      {/* Mobile menu FAB */}
+      <Show when={isMobile()}>
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen())}
+          aria-label={sidebarOpen() ? "Close menu" : "Open menu"}
+          style={{
+            position: "fixed", bottom: "16px", right: "16px", "z-index": "160",
+            width: "44px", height: "44px", background: colors().pink,
+            color: isDark() ? colors().surface : "#fff",
+            border: "none", cursor: "pointer", display: "flex", "align-items": "center", "justify-content": "center",
+            "clip-path": "polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)",
+            filter: `drop-shadow(0 0 6px ${colors().pinkGlow})`,
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <Show when={sidebarOpen()} fallback={<><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>}>
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </Show>
+          </svg>
+        </button>
+      </Show>
+
+      <div style={{ display: "flex" }}>
+        {/* ─── Sidebar ─── */}
+        <nav
+          style={{
+            width: "260px", "min-width": "260px", height: "100vh",
+            position: "fixed", top: "0",
+            left: isMobile() ? (sidebarOpen() ? "0" : "-280px") : "0",
+            background: colors().surfaceElevated, "overflow-y": "auto", "z-index": "50",
+            transition: "left 0.2s ease", display: "flex", "flex-direction": "column",
+          }}
+        >
+          {/* SVG border on sidebar right edge — starts below header */}
+          <svg
+            style={{
+              position: "absolute", top: "72px", right: "0",
+              width: "2px", height: "calc(100% - 72px)", "pointer-events": "none",
+            }}
+          >
+            <line x1="1" y1="0" x2="1" y2="100%" stroke={colors().muted} stroke-width="1" />
+          </svg>
+
+          {/* Sidebar header — content reveals when main header scrolls away */}
+          <div
+            style={{
+              height: "72px", "min-height": "72px", padding: "0 14px",
+              display: "flex", "align-items": "center", "justify-content": "space-between",
+              "border-bottom": `1px solid ${colors().muted}`, background: colors().headerBg,
+            }}
+          >
+            <div
+              style={{
+                display: "flex", "align-items": "center", "justify-content": "space-between",
+                width: "100%",
+                opacity: headerVisible() ? "0" : "1",
+                transform: headerVisible() ? "translateY(-8px)" : "translateY(0)",
+                transition: "opacity 0.3s ease, transform 0.3s ease",
+                "pointer-events": headerVisible() ? "none" : "auto",
+              }}
+            >
+              <Show when={!isMobile()}>
+                <Link
+                  to="/"
+                  style={{
+                    display: "flex", "align-items": "center", gap: "10px",
+                    "text-decoration": "none", color: colors().text,
+                  }}
+                >
+                  <div style={{
+                    width: "28px", height: "28px", background: colors().pink,
+                    display: "flex", "align-items": "center", "justify-content": "center",
+                    "font-weight": "700", color: colors().surface,
+                    "font-size": "12px", "font-family": FONT_TITLE,
+                    "clip-path": "polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)",
+                    filter: `drop-shadow(0 0 4px ${colors().pinkGlow})`,
+                  }}>V</div>
+                  <div>
+                    <div style={{ "font-family": FONT_TITLE, "font-weight": "600", "font-size": "13px" }}>Proyecto Viviana</div>
+                    <div style={{ "font-size": "9px", color: colors().pink, "font-family": FONT_TITLE, "text-transform": "uppercase", "letter-spacing": "0.05em" }}>Documentation</div>
+                  </div>
+                </Link>
+                <button
+                  onClick={toggleTheme}
+                  title={isDark() ? "Switch to light mode" : "Switch to dark mode"}
+                  style={{
+                    display: "flex", "align-items": "center", "justify-content": "center",
+                    width: "28px", height: "28px", background: "transparent",
+                    border: `2px solid ${colors().muted}`, cursor: "pointer",
+                    "clip-path": "polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)",
+                  }}
+                >
+                  <Show when={isDark()}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors().blue} stroke-width="2.5">
+                      <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+                      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                      <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+                      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                  </Show>
+                  <Show when={!isDark()}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors().pink} stroke-width="2.5">
+                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                  </Show>
+                </button>
+              </Show>
+              <Show when={isMobile()}>
+                <span style={{ "font-family": FONT_TITLE, "font-weight": "600", "font-size": "11px", "text-transform": "uppercase", "letter-spacing": "1px", color: colors().textSecondary }}>
+                  Navigation
+                </span>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  style={{ background: "transparent", border: "none", padding: "4px", cursor: "pointer", color: colors().textSecondary }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </Show>
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav class="px-4 py-6" aria-label="Documentation navigation">
+          {/* Nav links */}
+          <div style={{ flex: "1", "overflow-y": "auto", padding: "8px 0" }}>
             <For each={navItems}>
               {(item) => {
                 if ("section" in item) {
                   const isExpanded = () => expandedSections().has(item.section);
-                  const contentId = `docs-section-${item.section.toLowerCase()}`;
-
                   return (
-                    <div class="mt-6 first:mt-0">
-                      {/* Section header */}
+                    <div style={{ "margin-top": "8px" }}>
                       <button
-                        class="w-full flex items-center justify-between px-3 py-2 mb-1 text-xs font-semibold uppercase tracking-wider text-primary-500 hover:text-primary-300 transition-colors rounded-lg hover:bg-primary-700/10"
                         onClick={() => toggleSection(item.section)}
                         aria-expanded={isExpanded()}
-                        aria-controls={contentId}
+                        style={{
+                          display: "flex", "align-items": "center", "justify-content": "space-between",
+                          width: "100%", padding: "6px 14px", background: "transparent", border: "none", cursor: "pointer",
+                          "font-family": FONT_TITLE, "font-size": "10px", "font-weight": "600",
+                          "text-transform": "uppercase", "letter-spacing": "0.1em", color: colors().textSecondary,
+                        }}
                       >
                         <span>{item.section}</span>
-                        <ChevronIcon
-                          class={`w-4 h-4 transition-transform duration-200 ${
-                            isExpanded() ? "rotate-180" : ""
-                          }`}
-                        />
+                        <svg style={{ width: "14px", height: "14px", transition: "transform 0.2s ease", transform: isExpanded() ? "rotate(180deg)" : "rotate(0deg)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" /></svg>
                       </button>
-
-                      {/* Section items */}
                       <Show when={isExpanded()}>
-                        <div id={contentId} class="space-y-0.5 animate-fade-in-up">
+                        <div>
                           <For each={item.items}>
-                            {(subItem) => (
+                            {(sub) => (
                               <Link
-                                to={subItem.href}
-                                class="sidebar-link"
-                                activeProps={{ class: "active" }}
+                                to={sub.href}
                                 activeOptions={{ exact: true }}
+                                onClick={() => { if (isMobile()) setSidebarOpen(false); }}
+                                style={navLinkStyle(sub.href)}
+                                onMouseOver={(e: MouseEvent) => handleLinkMouseOver(sub.href, e)}
+                                onMouseOut={(e: MouseEvent) => handleLinkMouseOut(sub.href, e)}
                               >
-                                {subItem.label}
+                                {sub.label}
                               </Link>
                             )}
                           </For>
@@ -195,64 +327,62 @@ function DocsLayout() {
                     </div>
                   );
                 }
-
                 return (
                   <Link
                     to={item.href}
-                    class="sidebar-link"
-                    activeProps={{ class: "active" }}
                     activeOptions={{ exact: true }}
+                    onClick={() => { if (isMobile()) setSidebarOpen(false); }}
+                    style={navLinkStyle(item.href)}
+                    onMouseOver={(e: MouseEvent) => handleLinkMouseOver(item.href, e)}
+                    onMouseOut={(e: MouseEvent) => handleLinkMouseOut(item.href, e)}
                   >
                     {item.label}
                   </Link>
                 );
               }}
             </For>
-          </nav>
+          </div>
 
-          {/* Sidebar footer */}
-          <div class="sticky bottom-0 p-4 bg-linear-to-t from-bg-300 to-transparent">
-            <a
-              href="https://github.com/proyecto-viviana/proyecto-viviana"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-2 px-3 py-2 text-sm text-primary-500 hover:text-primary-300 hover:bg-primary-700/10 rounded-lg transition-colors"
+          {/* Sidebar footer CTA */}
+          <div style={{ padding: "14px", "border-top": `1px solid ${colors().muted}` }}>
+            <Link
+              to="/playground"
+              style={{
+                display: "flex", "align-items": "center", "justify-content": "center", gap: "8px",
+                padding: "10px 14px", background: colors().blue,
+                color: colors().surface,
+                "text-decoration": "none", "font-weight": "600", "font-size": "12px", "font-family": FONT_BODY,
+                border: `2px solid ${colors().blue}`,
+                "clip-path": "polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)",
+                filter: `drop-shadow(0 0 4px ${colors().blueGlow})`, transition: "filter 0.2s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.filter = `drop-shadow(0 0 8px ${colors().blueGlow})`; }}
+              onMouseLeave={(e) => { e.currentTarget.style.filter = `drop-shadow(0 0 4px ${colors().blueGlow})`; }}
             >
-              <GitHubIcon class="w-4 h-4" />
-              <span>View on GitHub</span>
-            </a>
+              Open Playground
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </Link>
           </div>
-        </aside>
+        </nav>
 
-        {/* Main content */}
-        <main class="flex-1 overflow-auto custom-scrollbar h-[calc(100vh-4rem)]">
-          <div class="max-w-4xl mx-auto px-8 py-10">
-            <Outlet />
-          </div>
+        {/* Sidebar spacer (desktop) */}
+        <Show when={!isMobile()}>
+          <div style={{ width: "260px", "min-width": "260px" }} />
+        </Show>
+
+        {/* ─── Main content ─── */}
+        <main
+          class="docs-content"
+          style={{
+            flex: "1",
+            padding: isMobile() ? "24px 16px" : "32px 48px",
+            "max-width": "800px",
+            "min-width": "0",
+          }}
+        >
+          <Outlet />
         </main>
       </div>
-    </PageLayout>
-  );
-}
-
-function ChevronIcon(props: { class?: string }) {
-  return (
-    <svg
-      class={props.class}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      <path d="M6 9l6 6 6-6" />
-    </svg>
-  );
-}
-
-function GitHubIcon(props: { class?: string }) {
-  return (
-    <svg class={props.class} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-    </svg>
+    </div>
   );
 }

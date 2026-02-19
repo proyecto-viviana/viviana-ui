@@ -1,4 +1,5 @@
 import { type JSX, For, Show } from "solid-js";
+import { useSilapseColors } from "@/utils/theme";
 
 export interface PropDefinition {
   name: string;
@@ -14,20 +15,68 @@ export interface DocPageProps {
   children?: JSX.Element;
 }
 
+const FONT_TITLE = "'Jost', system-ui, sans-serif";
+const FONT_BODY = "'Sen', system-ui, sans-serif";
+const FONT_MONO = "'JetBrains Mono', monospace";
+
 export function DocPage(props: DocPageProps) {
+  const getColors = useSilapseColors();
+  const colors = () => getColors();
+
   return (
-    <div class="mx-auto max-w-3xl px-8 py-12">
-      <article class="prose">
-        <h1>{props.title}</h1>
-        <p>{props.description}</p>
+    <div style={{ "line-height": "1.6", "font-size": "14px", color: colors().textSecondary }}>
+      {/* Title — pink left-border accent with glow */}
+      <h1
+        style={{
+          "font-family": FONT_TITLE,
+          "font-size": "20px",
+          "font-weight": "600",
+          margin: "0 0 16px 0",
+          "padding-bottom": "10px",
+          "padding-left": "12px",
+          "border-left": `3px solid ${colors().pink}`,
+          "border-bottom": `1px solid ${colors().pink}40`,
+          "letter-spacing": "-0.01em",
+          color: colors().text,
+          filter: `drop-shadow(0 0 4px ${colors().pinkGlow})`,
+        }}
+      >
+        {props.title}
+      </h1>
 
-        <h2>Import</h2>
-        <pre>
-          <code>{props.importCode}</code>
-        </pre>
+      <p style={{ "margin-bottom": "1.5rem", "max-width": "60ch" }}>{props.description}</p>
 
-        {props.children}
-      </article>
+      {/* Import — code block with blue left-border */}
+      <h2
+        style={{
+          "font-family": FONT_TITLE,
+          "font-size": "15px",
+          "font-weight": "600",
+          margin: "2rem 0 0.75rem 0",
+          "padding-left": "10px",
+          "border-left": `2px solid ${colors().blue}`,
+          color: colors().text,
+        }}
+      >
+        Import
+      </h2>
+      <pre
+        style={{
+          background: colors().surface,
+          color: colors().text,
+          padding: "12px 14px",
+          "overflow-x": "auto",
+          margin: "0.75rem 0",
+          "font-family": FONT_MONO,
+          "font-size": "12px",
+          "border": `1px solid ${colors().muted}`,
+          "border-left": `3px solid ${colors().blue}`,
+        }}
+      >
+        <code>{props.importCode}</code>
+      </pre>
+
+      {props.children}
     </div>
   );
 }
@@ -40,21 +89,60 @@ export interface ExampleProps {
 }
 
 export function Example(props: ExampleProps) {
+  const getColors = useSilapseColors();
+  const colors = () => getColors();
+
   return (
-    <>
-      <h2>{props.title}</h2>
+    <section style={{ "margin-top": "2rem" }}>
+      {/* Section heading — blue left-border */}
+      <h2
+        style={{
+          "font-family": FONT_TITLE,
+          "font-size": "15px",
+          "font-weight": "600",
+          margin: "0 0 0.75rem 0",
+          "padding-left": "10px",
+          "border-left": `2px solid ${colors().blue}`,
+          color: colors().text,
+        }}
+      >
+        {props.title}
+      </h2>
       <Show when={props.description}>
-        <p>{props.description}</p>
+        <p style={{ "margin-bottom": "0.75rem" }}>{props.description}</p>
       </Show>
 
-      <div class="not-prose my-6 rounded-lg border border-bg-200 p-6 bg-bg-50">
+      {/* Live preview — angular, pink top-border */}
+      <div
+        class="not-prose"
+        style={{
+          margin: "0.75rem 0",
+          padding: "1.25rem",
+          background: colors().surfaceElevated,
+          border: `1px solid ${colors().muted}`,
+          "border-top": `2px solid ${colors().pink}`,
+        }}
+      >
         {props.children}
       </div>
 
-      <pre>
+      {/* Code block — blue left-border */}
+      <pre
+        style={{
+          background: colors().surface,
+          color: colors().text,
+          padding: "12px 14px",
+          "overflow-x": "auto",
+          margin: "0.75rem 0",
+          "font-family": FONT_MONO,
+          "font-size": "12px",
+          "border": `1px solid ${colors().muted}`,
+          "border-left": `3px solid ${colors().blue}`,
+        }}
+      >
         <code>{props.code}</code>
       </pre>
-    </>
+    </section>
   );
 }
 
@@ -63,50 +151,120 @@ export interface PropsTableProps {
 }
 
 export function PropsTable(props: PropsTableProps) {
+  const getColors = useSilapseColors();
+  const colors = () => getColors();
+
   return (
-    <>
-      <h2>Props</h2>
-      <div class="not-prose my-6 overflow-x-auto">
-        <table class="w-full text-sm">
+    <section style={{ "margin-top": "2rem" }}>
+      <h2
+        style={{
+          "font-family": FONT_TITLE,
+          "font-size": "15px",
+          "font-weight": "600",
+          margin: "0 0 0.75rem 0",
+          "padding-left": "10px",
+          "border-left": `2px solid ${colors().blue}`,
+          color: colors().text,
+        }}
+      >
+        Props
+      </h2>
+      <div
+        class="not-prose"
+        style={{
+          margin: "0.75rem 0",
+          "overflow-x": "auto",
+          border: `1px solid ${colors().muted}`,
+          background: colors().surface,
+        }}
+      >
+        <table style={{ width: "100%", "font-size": "13px", "border-collapse": "collapse" }}>
           <thead>
-            <tr class="border-b border-bg-200">
-              <th class="py-2 pr-4 text-left font-semibold">Prop</th>
-              <th class="py-2 pr-4 text-left font-semibold">Type</th>
-              <th class="py-2 pr-4 text-left font-semibold">Default</th>
-              <th class="py-2 text-left font-semibold">Description</th>
+            <tr style={{ "border-bottom": `1px solid ${colors().muted}` }}>
+              {["Prop", "Type", "Default", "Description"].map((h) => (
+                <th
+                  style={{
+                    padding: "8px 12px", "text-align": "left", "font-weight": "600",
+                    "font-family": FONT_TITLE, "font-size": "10px",
+                    "text-transform": "uppercase", "letter-spacing": "0.1em",
+                    color: colors().pink,
+                  }}
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
-          <tbody class="divide-y divide-bg-100">
+          <tbody>
             <For each={props.props}>
               {(prop) => (
-                <tr>
-                  <td class="py-2 pr-4">
-                    <code>{prop.name}</code>
+                <tr style={{ "border-bottom": `1px solid ${colors().muted}` }}>
+                  <td style={{ padding: "8px 12px" }}>
+                    <code
+                      style={{
+                        background: `${colors().blue}15`,
+                        color: colors().blue,
+                        padding: "2px 6px",
+                        "font-family": FONT_MONO,
+                        "font-size": "12px",
+                        "font-weight": "500",
+                        border: `1px solid ${colors().blue}40`,
+                        "clip-path": "polygon(2px 0, 100% 0, calc(100% - 2px) 100%, 0 100%)",
+                      }}
+                    >
+                      {prop.name}
+                    </code>
                   </td>
-                  <td class="py-2 pr-4 text-bg-500 font-mono text-xs">{prop.type}</td>
-                  <td class="py-2 pr-4 text-bg-400">
-                    <Show when={prop.default} fallback="-">
-                      <code>{prop.default}</code>
+                  <td style={{ padding: "8px 12px", "font-family": FONT_MONO, "font-size": "12px", color: colors().textSecondary }}>{prop.type}</td>
+                  <td style={{ padding: "8px 12px", color: colors().textSecondary }}>
+                    <Show when={prop.default} fallback="—">
+                      <code style={{ "font-family": FONT_MONO, "font-size": "12px" }}>{prop.default}</code>
                     </Show>
                   </td>
-                  <td class="py-2">{prop.description}</td>
+                  <td style={{ padding: "8px 12px", color: colors().textSecondary }}>{prop.description}</td>
                 </tr>
               )}
             </For>
           </tbody>
         </table>
       </div>
-    </>
+    </section>
   );
 }
 
 export function AccessibilitySection(props: { children: JSX.Element }) {
+  const getColors = useSilapseColors();
+  const colors = () => getColors();
+
   return (
-    <>
-      <h2>Accessibility</h2>
-      <div class="not-prose my-4 rounded-lg border-l-4 border-primary-400 bg-primary-50 p-4">
+    <section style={{ "margin-top": "2rem" }}>
+      <h2
+        style={{
+          "font-family": FONT_TITLE,
+          "font-size": "15px",
+          "font-weight": "600",
+          margin: "0 0 0.75rem 0",
+          "padding-left": "10px",
+          "border-left": `2px solid ${colors().blue}`,
+          color: colors().text,
+        }}
+      >
+        Accessibility
+      </h2>
+      <div
+        class="not-prose"
+        style={{
+          margin: "0.75rem 0",
+          padding: "12px 14px",
+          background: colors().surfaceElevated,
+          "border-left": `3px solid ${colors().blue}`,
+          "font-size": "13px",
+          "line-height": "1.6",
+          color: colors().textSecondary,
+        }}
+      >
         {props.children}
       </div>
-    </>
+    </section>
   );
 }

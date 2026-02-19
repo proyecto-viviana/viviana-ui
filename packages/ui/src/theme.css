@@ -26,50 +26,46 @@
   --breakpoint-xxs: 320px;
   --breakpoint-xs: 475px;
 
-  /* Background - Dark blue-gray */
-  --color-bg-100: #3B5260;
-  --color-bg-200: #293E4B;
-  --color-bg-300: #24313a;
-  --color-bg-400: #1D272E;
-  --color-bg-light: #515151;
+  /* Background - Silapse void greys (bg-100 darkened for AA contrast) */
+  --color-bg-100: #333333;
+  --color-bg-200: #1a1a1a;
+  --color-bg-300: #111111;
+  --color-bg-400: #0a0a0a;
+  --color-bg-light: #606060;
 
-  /* Accent - Pink */
-  --color-accent: #DF5C9A;
-  --color-accent-200: #FFB2D7;
-  --color-accent-300: #FF88C0;
-  --color-accent-500: #DF5C9A;
-  --color-accent-highlight: #e2a2be;
+  /* Primary - Silapse blue scale (500/600 brightened for AA on dark bgs) */
+  --color-primary-100: #ddf4ff;
+  --color-primary-200: #b6e3ff;
+  --color-primary-300: #80ccff;
+  --color-primary-400: #54aeff;
+  --color-primary-500: #4da0ff;
+  --color-primary-600: #3080f4;
+  --color-primary-700: #1158c7;
+  --color-primary-800: #0d419d;
 
-  /* Primary - Cyan/Blue */
-  --color-primary-100: #D9F2FF;
-  --color-primary-200: #D0E9F5;
-  --color-primary-300: #ADCCDC;
-  --color-primary-400: #B8DFFF;
-  --color-primary-500: #75ABC7;
-  --color-primary-600: #58748B;
-  --color-primary-700: #4F6D85;
-  --color-primary-800: #4C6477;
+  /* Accent - Silapse pink */
+  --color-accent: #ffa0d5;
+  --color-accent-200: #ffc9e9;
+  --color-accent-300: #f778ba;
+  --color-accent-500: #d84a8f;
+  --color-accent-highlight: #ffc9e9;
 
-  /* Success - Green */
+  /* Semantic colors from Silapse */
   --color-success-100: #E5FFF3;
-  --color-success-400: #C2FFC8;
-  --color-success-600: #559D87;
-
-  /* Warning - Yellow */
+  --color-success-400: #3fb950;
+  --color-success-600: #238636;
   --color-warning-100: #FFFBE5;
-  --color-warning-400: #FFDD87;
-  --color-warning-600: #9D8D55;
-
-  /* Danger - Red */
+  --color-warning-400: #d29922;
+  --color-warning-600: #966a13;
   --color-danger-100: #FFE5E5;
-  --color-danger-400: #FF8787;
-  --color-danger-600: #9D5555;
+  --color-danger-400: #f85149;
+  --color-danger-600: #da3633;
 
   /* Cards */
-  --color-cards-bg: #373737;
-  --color-cards-bg-load: #484848;
-  --color-correct: #83f1a7;
-  --color-incorrect: #e74c3c;
+  --color-cards-bg: #1a1a1a;
+  --color-cards-bg-load: #252525;
+  --color-correct: #3fb950;
+  --color-incorrect: #f85149;
 
   /* Typography */
   --font-sen: 'Sen', sans-serif;
@@ -93,9 +89,9 @@
 }
 
 .drop-shadow-logo {
-  filter: drop-shadow(0 0 10px rgba(223, 92, 154, 0.8));
+  filter: drop-shadow(0 0 10px rgba(255, 160, 213, 0.8));
 }
 
 .shadow-primary-chip {
-  box-shadow: 0 2px 8px rgba(79, 109, 133, 0.4);
+  box-shadow: 0 2px 8px rgba(17, 88, 199, 0.4);
 }

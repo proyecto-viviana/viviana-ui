@@ -182,9 +182,9 @@ export function generateAccentPalette(baseHex: string): Record<string, string> {
   }
 }
 
-// Default theme colors (current proyecto-viviana theme)
+// Default theme colors (Silapse design system)
 export const defaultColors = {
-  primary: '#75ABC7',
-  bg: '#1D272E',
-  accent: '#DF5C9A',
+  primary: '#4da0ff',
+  bg: '#0a0a0a',
+  accent: '#ffa0d5',
 }

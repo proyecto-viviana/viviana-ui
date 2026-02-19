@@ -4,58 +4,54 @@
 /* Scan UI package for Tailwind classes */
 @source "../../../packages/ui/src/**/*.tsx";
 
-/* Viviana UI Theme */
+/* Viviana UI Theme — Silapse Design System */
 @theme {
   /* Breakpoints */
   --breakpoint-xxs: 320px;
   --breakpoint-xs: 475px;
 
-  /* Background - Dark blue-gray */
-  --color-bg-100: #3B5260;
-  --color-bg-200: #293E4B;
-  --color-bg-300: #24313a;
-  --color-bg-400: #1D272E;
-  --color-bg-light: #515151;
+  /* Background - Silapse void greys (bg-100 darkened for AA contrast) */
+  --color-bg-100: #333333;
+  --color-bg-200: #1a1a1a;
+  --color-bg-300: #111111;
+  --color-bg-400: #0a0a0a;
+  --color-bg-light: #606060;
 
-  /* Accent - Pink */
-  --color-accent: #DF5C9A;
-  --color-accent-200: #FFB2D7;
-  --color-accent-300: #FF88C0;
-  --color-accent-500: #DF5C9A;
-  --color-accent-highlight: #e2a2be;
+  /* Primary - Silapse blue scale (500/600 brightened for AA on dark bgs) */
+  --color-primary-100: #ddf4ff;
+  --color-primary-200: #b6e3ff;
+  --color-primary-300: #80ccff;
+  --color-primary-400: #54aeff;
+  --color-primary-500: #4da0ff;
+  --color-primary-600: #3080f4;
+  --color-primary-700: #1158c7;
+  --color-primary-800: #0d419d;
 
-  /* Primary - Cyan/Blue */
-  --color-primary-100: #D9F2FF;
-  --color-primary-200: #D0E9F5;
-  --color-primary-300: #ADCCDC;
-  --color-primary-400: #B8DFFF;
-  --color-primary-500: #75ABC7;
-  --color-primary-600: #58748B;
-  --color-primary-700: #4F6D85;
-  --color-primary-800: #4C6477;
+  /* Accent - Silapse pink */
+  --color-accent: #ffa0d5;
+  --color-accent-200: #ffc9e9;
+  --color-accent-300: #f778ba;
+  --color-accent-500: #d84a8f;
+  --color-accent-highlight: #ffc9e9;
 
-  /* Success - Green */
+  /* Semantic colors from Silapse */
   --color-success-100: #E5FFF3;
-  --color-success-400: #C2FFC8;
-  --color-success-600: #559D87;
-
-  /* Warning - Yellow */
+  --color-success-400: #3fb950;
+  --color-success-600: #238636;
   --color-warning-100: #FFFBE5;
-  --color-warning-400: #FFDD87;
-  --color-warning-600: #9D8D55;
-
-  /* Danger - Red */
+  --color-warning-400: #d29922;
+  --color-warning-600: #966a13;
   --color-danger-100: #FFE5E5;
-  --color-danger-400: #FF8787;
-  --color-danger-600: #9D5555;
+  --color-danger-400: #f85149;
+  --color-danger-600: #da3633;
 
   /* Cards */
-  --color-cards-bg: #373737;
-  --color-cards-bg-load: #484848;
-  --color-correct: #83f1a7;
-  --color-incorrect: #e74c3c;
+  --color-cards-bg: #1a1a1a;
+  --color-cards-bg-load: #252525;
+  --color-correct: #3fb950;
+  --color-incorrect: #f85149;
 
-  /* Typography */
+  /* Typography (keep JetBrains Mono as Iosevka fallback) */
   --font-sen: 'Sen', sans-serif;
   --font-jost: 'Jost', sans-serif;
   --font-sans: 'Sen', sans-serif;
@@ -190,6 +186,12 @@
   }
 }
 
+/* Silapse wire pulse — animated dash traveling along SVG paths */
+@keyframes silapse-pulse {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -58; }
+}
+
 /* ===== ANIMATION UTILITIES ===== */
 .animate-gradient {
   background-size: 200% 200%;
@@ -282,66 +284,66 @@
 
 /* ===== GLASS MORPHISM UTILITIES ===== */
 .glass {
-  background: rgba(36, 49, 58, 0.6);
+  background: rgba(17, 17, 17, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(173, 204, 220, 0.1);
+  border: 1px solid rgba(128, 204, 255, 0.1);
 }
 
 .glass-subtle {
-  background: rgba(36, 49, 58, 0.4);
+  background: rgba(17, 17, 17, 0.4);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(173, 204, 220, 0.08);
+  border: 1px solid rgba(128, 204, 255, 0.08);
 }
 
 .glass-strong {
-  background: rgba(29, 39, 46, 0.8);
+  background: rgba(10, 10, 10, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(173, 204, 220, 0.15);
+  border: 1px solid rgba(128, 204, 255, 0.15);
 }
 
 /* ===== GLOW UTILITIES ===== */
 .glow-accent {
-  box-shadow: 0 0 20px rgba(223, 92, 154, 0.3),
-              0 0 40px rgba(223, 92, 154, 0.1);
+  box-shadow: 0 0 20px rgba(255, 160, 213, 0.3),
+              0 0 40px rgba(255, 160, 213, 0.1);
 }
 
 .glow-accent-strong {
-  box-shadow: 0 0 30px rgba(223, 92, 154, 0.5),
-              0 0 60px rgba(223, 92, 154, 0.2);
+  box-shadow: 0 0 30px rgba(255, 160, 213, 0.5),
+              0 0 60px rgba(255, 160, 213, 0.2);
 }
 
 .glow-primary {
-  box-shadow: 0 0 20px rgba(117, 171, 199, 0.3),
-              0 0 40px rgba(117, 171, 199, 0.1);
+  box-shadow: 0 0 20px rgba(77, 160, 255, 0.3),
+              0 0 40px rgba(77, 160, 255, 0.1);
 }
 
 .text-glow-accent {
-  text-shadow: 0 0 20px rgba(223, 92, 154, 0.5),
-               0 0 40px rgba(223, 92, 154, 0.3);
+  text-shadow: 0 0 20px rgba(255, 160, 213, 0.5),
+               0 0 40px rgba(255, 160, 213, 0.3);
 }
 
 .text-glow-primary {
-  text-shadow: 0 0 20px rgba(117, 171, 199, 0.5),
-               0 0 40px rgba(117, 171, 199, 0.3);
+  text-shadow: 0 0 20px rgba(77, 160, 255, 0.5),
+               0 0 40px rgba(77, 160, 255, 0.3);
 }
 
 /* ===== GRADIENT UTILITIES ===== */
 .gradient-mesh {
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(223, 92, 154, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(117, 171, 199, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 40% 60%, rgba(255, 136, 192, 0.1) 0%, transparent 40%),
+    radial-gradient(ellipse at 20% 20%, rgba(255, 160, 213, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(56, 139, 253, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 60%, rgba(247, 120, 186, 0.1) 0%, transparent 40%),
     var(--color-bg-300);
 }
 
 .gradient-mesh-animated {
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(223, 92, 154, 0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(117, 171, 199, 0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 40% 60%, rgba(255, 136, 192, 0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 20% 20%, rgba(255, 160, 213, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(56, 139, 253, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 60%, rgba(247, 120, 186, 0.15) 0%, transparent 40%),
     linear-gradient(135deg, var(--color-bg-300) 0%, var(--color-bg-400) 100%);
   background-size: 200% 200%;
   animation: gradient-shift 15s ease infinite;
@@ -366,24 +368,24 @@
 /* ===== DECORATIVE PATTERNS ===== */
 .pattern-grid {
   background-image:
-    linear-gradient(rgba(173, 204, 220, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(173, 204, 220, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(128, 204, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128, 204, 255, 0.03) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 .pattern-dots {
-  background-image: radial-gradient(rgba(173, 204, 220, 0.1) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(128, 204, 255, 0.1) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
 .pattern-crystal {
   background-image:
-    linear-gradient(30deg, rgba(223, 92, 154, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(223, 92, 154, 0.03) 87.5%, rgba(223, 92, 154, 0.03)),
-    linear-gradient(150deg, rgba(223, 92, 154, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(223, 92, 154, 0.03) 87.5%, rgba(223, 92, 154, 0.03)),
-    linear-gradient(30deg, rgba(223, 92, 154, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(223, 92, 154, 0.03) 87.5%, rgba(223, 92, 154, 0.03)),
-    linear-gradient(150deg, rgba(223, 92, 154, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(223, 92, 154, 0.03) 87.5%, rgba(223, 92, 154, 0.03)),
-    linear-gradient(60deg, rgba(117, 171, 199, 0.04) 25%, transparent 25.5%, transparent 75%, rgba(117, 171, 199, 0.04) 75%, rgba(117, 171, 199, 0.04)),
-    linear-gradient(60deg, rgba(117, 171, 199, 0.04) 25%, transparent 25.5%, transparent 75%, rgba(117, 171, 199, 0.04) 75%, rgba(117, 171, 199, 0.04));
+    linear-gradient(30deg, rgba(255, 160, 213, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 160, 213, 0.03) 87.5%, rgba(255, 160, 213, 0.03)),
+    linear-gradient(150deg, rgba(255, 160, 213, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 160, 213, 0.03) 87.5%, rgba(255, 160, 213, 0.03)),
+    linear-gradient(30deg, rgba(255, 160, 213, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 160, 213, 0.03) 87.5%, rgba(255, 160, 213, 0.03)),
+    linear-gradient(150deg, rgba(255, 160, 213, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 160, 213, 0.03) 87.5%, rgba(255, 160, 213, 0.03)),
+    linear-gradient(60deg, rgba(56, 139, 253, 0.04) 25%, transparent 25.5%, transparent 75%, rgba(56, 139, 253, 0.04) 75%, rgba(56, 139, 253, 0.04)),
+    linear-gradient(60deg, rgba(56, 139, 253, 0.04) 25%, transparent 25.5%, transparent 75%, rgba(56, 139, 253, 0.04) 75%, rgba(56, 139, 253, 0.04));
   background-size: 80px 140px;
   background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
 }
@@ -427,7 +429,7 @@
 }
 
 .hover-glow:hover {
-  box-shadow: 0 0 30px rgba(223, 92, 154, 0.3);
+  box-shadow: 0 0 30px rgba(255, 160, 213, 0.3);
 }
 
 .hover-scale {
@@ -449,12 +451,101 @@
   transform: rotateX(2deg) rotateY(-2deg);
 }
 
+/* ===== SILAPSE DESIGN SYSTEM UTILITIES ===== */
+
+/* Angular clip-path corners — signature Silapse aesthetic */
+.silapse-clip-sm {
+  clip-path: polygon(2px 0, 100% 0, calc(100% - 2px) 100%, 0 100%);
+}
+
+.silapse-clip {
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+}
+
+.silapse-clip-lg {
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+.silapse-clip-xl {
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+}
+
+/* Angular box clip (cuts all 4 corners) */
+.silapse-clip-box {
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+
+.silapse-clip-box-sm {
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+}
+
+.silapse-clip-box-lg {
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+
+/* Silapse neon glows (drop-shadow for clipped elements) */
+.silapse-glow-pink {
+  filter: drop-shadow(0 0 4px rgba(255, 160, 213, 0.6));
+}
+
+.silapse-glow-blue {
+  filter: drop-shadow(0 0 4px rgba(128, 204, 255, 0.6));
+}
+
+.silapse-glow-pink-strong {
+  filter: drop-shadow(0 0 8px rgba(255, 160, 213, 0.6));
+}
+
+.silapse-glow-blue-strong {
+  filter: drop-shadow(0 0 8px rgba(128, 204, 255, 0.6));
+}
+
+/* Silapse button base */
+.silapse-button {
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  transition: filter 0.15s ease, background 0.15s ease;
+  border: none;
+  cursor: pointer;
+  font-family: 'Jost', sans-serif;
+  font-weight: 600;
+}
+
+.silapse-button:hover {
+  filter: drop-shadow(0 0 6px rgba(255, 160, 213, 0.5));
+}
+
+/* Silapse accent borders */
+.silapse-border-bottom {
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.silapse-border-left {
+  border-left: 3px solid var(--color-accent);
+}
+
+/* Light mode Silapse glow overrides */
+[data-theme="light"] .silapse-glow-pink {
+  filter: drop-shadow(0 0 4px rgba(160, 37, 88, 0.4));
+}
+
+[data-theme="light"] .silapse-glow-blue {
+  filter: drop-shadow(0 0 4px rgba(30, 96, 144, 0.4));
+}
+
+[data-theme="light"] .silapse-glow-pink-strong {
+  filter: drop-shadow(0 0 8px rgba(160, 37, 88, 0.5));
+}
+
+[data-theme="light"] .silapse-glow-blue-strong {
+  filter: drop-shadow(0 0 8px rgba(30, 96, 144, 0.5));
+}
+
 /* ===== FOCUS STATES ===== */
 .focus-glow:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--color-bg-400),
               0 0 0 4px var(--color-accent-300),
-              0 0 20px rgba(223, 92, 154, 0.3);
+              0 0 20px rgba(255, 160, 213, 0.3);
 }
 
 /* ===== SCROLLBAR STYLING ===== */
@@ -480,6 +571,173 @@
 
 /* ===== SELECTION STYLING ===== */
 ::selection {
-  background: rgba(223, 92, 154, 0.3);
+  background: rgba(255, 160, 213, 0.3);
   color: var(--color-primary-100);
+}
+
+/* ===== DOCS CONTENT — Silapse overrides for doc page chrome ===== */
+/* Kill rounded corners on doc page wrappers (not inside live PV component demos) */
+.docs-content .not-prose > div,
+.docs-content .not-prose > table {
+  border-radius: 0;
+}
+
+/* Override old shadow utilities inside doc pages */
+.docs-content [class*="shadow-"] {
+  box-shadow: none;
+}
+
+/* Fix old text color tokens to use Silapse-compatible values */
+.docs-content .text-bg-300 { color: var(--color-primary-600); }
+.docs-content .text-bg-400 { color: var(--color-primary-500); }
+.docs-content .text-bg-500 { color: var(--color-primary-400); }
+.docs-content .text-bg-600 { color: var(--color-primary-300); }
+
+/* Fix old background tokens */
+.docs-content .bg-bg-100 { background: var(--color-bg-200); }
+.docs-content .bg-bg-200 { background: var(--color-bg-300); }
+.docs-content .bg-bg-300 { background: var(--color-bg-400); }
+
+/* Fix old border tokens */
+.docs-content .border-bg-200 { border-color: var(--color-bg-200); }
+.docs-content .border-bg-300 { border-color: var(--color-bg-100); }
+
+/* Force angular corners on doc page rounded elements */
+.docs-content .rounded-lg,
+.docs-content .rounded-xl,
+.docs-content .rounded-md {
+  border-radius: 0;
+}
+
+/* Keep rounded-full for small indicators like dots */
+
+/* Doc page links */
+.docs-content a:not([class]) {
+  color: var(--color-primary-300);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-primary-600);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.docs-content a:not([class]):hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* ===== LIGHT MODE ===== */
+[data-theme="light"] {
+  /* Backgrounds — very light, AA-verified against primary text */
+  --color-bg-100: #cddce4;
+  --color-bg-200: #dfeaef;
+  --color-bg-300: #ecf2f5;
+  --color-bg-400: #f4f8fa;
+  --color-bg-light: #ffffff;
+
+  /* Primary — dark enough for 4.5:1 AA on all light bgs */
+  --color-primary-100: #06131d;
+  --color-primary-200: #0c2436;
+  --color-primary-300: #133a54;
+  --color-primary-400: #195073;
+  --color-primary-500: #1e6090;
+  --color-primary-600: #2470a5;
+  --color-primary-700: #5ea8d0;
+  --color-primary-800: #9dcce4;
+
+  /* Accent — darker pinks for AA on light bgs */
+  --color-accent: #a02558;
+  --color-accent-200: #7d1c48;
+  --color-accent-300: #d4508a;
+  --color-accent-500: #8a1e4a;
+  --color-accent-highlight: #d4508a;
+
+  /* Semantic — darker for readability on light bgs */
+  --color-success-100: #E5FFF3;
+  --color-success-400: #1a7f37;
+  --color-success-600: #116329;
+  --color-warning-100: #FFFBE5;
+  --color-warning-400: #7d5200;
+  --color-warning-600: #654200;
+  --color-danger-100: #FFE5E5;
+  --color-danger-400: #cf222e;
+  --color-danger-600: #a40e26;
+
+  --color-cards-bg: #ecf2f5;
+  --color-cards-bg-load: #dfeaef;
+  --color-correct: #1a7f37;
+  --color-incorrect: #cf222e;
+}
+
+/* Light mode glass overrides */
+[data-theme="light"] .glass {
+  background: rgba(236, 242, 245, 0.6);
+  border-color: rgba(25, 80, 115, 0.1);
+}
+
+[data-theme="light"] .glass-subtle {
+  background: rgba(236, 242, 245, 0.4);
+  border-color: rgba(25, 80, 115, 0.08);
+}
+
+[data-theme="light"] .glass-strong {
+  background: rgba(244, 248, 250, 0.8);
+  border-color: rgba(25, 80, 115, 0.15);
+}
+
+/* Light mode glow overrides */
+[data-theme="light"] .glow-accent {
+  box-shadow: 0 0 20px rgba(160, 37, 88, 0.2),
+              0 0 40px rgba(160, 37, 88, 0.08);
+}
+
+[data-theme="light"] .glow-primary {
+  box-shadow: 0 0 20px rgba(25, 80, 115, 0.2),
+              0 0 40px rgba(25, 80, 115, 0.08);
+}
+
+/* Light mode selection */
+[data-theme="light"] ::selection {
+  background: rgba(160, 37, 88, 0.2);
+  color: var(--color-primary-100);
+}
+
+/* Light mode focus */
+[data-theme="light"] .focus-glow:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-bg-400),
+              0 0 0 4px var(--color-accent-300),
+              0 0 20px rgba(160, 37, 88, 0.2);
+}
+
+/* Light mode hover glow */
+[data-theme="light"] .hover-glow:hover {
+  box-shadow: 0 0 30px rgba(160, 37, 88, 0.15);
+}
+
+/* Light mode gradient mesh */
+[data-theme="light"] .gradient-mesh {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(160, 37, 88, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(25, 80, 115, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 60%, rgba(212, 80, 138, 0.04) 0%, transparent 40%),
+    var(--color-bg-300);
+}
+
+[data-theme="light"] .gradient-mesh-animated {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(160, 37, 88, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(25, 80, 115, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 60%, rgba(212, 80, 138, 0.06) 0%, transparent 40%),
+    linear-gradient(135deg, var(--color-bg-300) 0%, var(--color-bg-400) 100%);
+  background-size: 200% 200%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+/* Light mode decorative patterns */
+[data-theme="light"] .pattern-grid {
+  background-image:
+    linear-gradient(rgba(25, 80, 115, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(25, 80, 115, 0.05) 1px, transparent 1px);
+}
+
+[data-theme="light"] .pattern-dots {
+  background-image: radial-gradient(rgba(25, 80, 115, 0.1) 1px, transparent 1px);
 }

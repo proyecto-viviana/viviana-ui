@@ -18,7 +18,7 @@ export interface ContextualHelpTriggerProps {
    * Two children: [trigger element, help content].
    * The trigger renders as a menu item, the content opens in a popover.
    */
-  children: [JSX.Element, JSX.Element]
+  children?: [JSX.Element, JSX.Element]
   /** CSS class name. */
   class?: string
   /** Whether the trigger is disabled. */
@@ -105,7 +105,9 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
     contentRef?.focus()
   })
 
-  const [trigger, content] = local.children
+  const children = () => local.children ?? [null, null] as [JSX.Element, JSX.Element]
+  const trigger = () => children()[0]
+  const content = () => children()[1]
 
   return (
     <div
@@ -125,7 +127,7 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
         onKeyDown={handleKeyDown}
         class="solidaria-ContextualHelpTrigger-trigger"
       >
-        {trigger}
+        {trigger()}
       </div>
 
       <Show when={isOpen()}>
@@ -144,7 +146,7 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
             }
           }}
         >
-          {content}
+          {content()}
         </div>
       </Show>
     </div>
