@@ -456,6 +456,10 @@ export type {
   DragAndDropHooks,
 } from './dnd';
 
+// Shared Element
+export { SharedElement, SharedElementTransition } from './shared-element';
+export type { SharedElementProps, SharedElementTransitionProps } from './shared-element';
+
 // Heading
 export { Heading } from './text/Heading';
 export type { HeadingProps, HeadingLevel } from './text/Heading';

@@ -112,6 +112,7 @@ function App() {
 - **CalendarCard** - Calendar widgets
 - **Conversation** - Chat bubbles
 - **TimelineItem** - Timeline entries
+- **SharedElementTransition** - Scoped shared element animation helpers
 
 ## Hooks Reference
 
