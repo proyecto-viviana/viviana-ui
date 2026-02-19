@@ -90,6 +90,9 @@ function TextFieldError(props: { class?: string; children?: JSX.Element }): JSX.
 // COMPONENT
 // ============================================
 
+export { TextArea } from './TextArea';
+export type { TextAreaProps, TextAreaSize, TextAreaVariant } from './TextArea';
+
 export function TextField(props: TextFieldProps): JSX.Element {
   const [local, headlessProps] = splitProps(props, [
     'size',

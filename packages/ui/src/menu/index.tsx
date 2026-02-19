@@ -295,3 +295,11 @@ MenuTrigger.Button = MenuButton
 
 // Re-export Key type for convenience
 export type { Key }
+
+// Sub-component re-exports
+export { ActionMenu } from './ActionMenu';
+export type { ActionMenuProps } from './ActionMenu';
+export { SubmenuTrigger } from './SubmenuTrigger';
+export type { SubmenuTriggerProps } from './SubmenuTrigger';
+export { ContextualHelpTrigger } from './ContextualHelpTrigger';
+export type { ContextualHelpTriggerProps } from './ContextualHelpTrigger';

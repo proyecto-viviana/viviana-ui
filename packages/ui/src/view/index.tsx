@@ -22,3 +22,7 @@ export function View(props: ViewProps): JSX.Element {
   );
 }
 
+// Sub-component re-exports
+export { Content, ViewHeader, ViewFooter } from './Content';
+export type { ContentProps, ViewHeaderProps, ViewFooterProps } from './Content';
+

@@ -23,8 +23,8 @@ export { Avatar, AvatarGroup } from './avatar';
 export type { AvatarProps, AvatarGroupProps, AvatarSize } from './avatar';
 
 // Switch
-export { TabSwitch, ToggleSwitch } from './switch';
-export type { TabSwitchProps, ToggleSwitchProps, SwitchSize } from './switch';
+export { TabSwitch, ToggleSwitch, ToggleSwitch as Switch } from './switch';
+export type { TabSwitchProps, ToggleSwitchProps, ToggleSwitchProps as SwitchProps, SwitchSize } from './switch';
 
 // Checkbox
 export { Checkbox, CheckboxGroup } from './checkbox';
@@ -86,6 +86,10 @@ export type { PopoverProps, PopoverTriggerProps, PopoverHeaderProps, PopoverFoot
 export { TextField } from './textfield';
 export type { TextFieldProps, TextFieldSize, TextFieldVariant } from './textfield';
 
+// TextArea
+export { TextArea } from './textfield/TextArea';
+export type { TextAreaProps, TextAreaSize, TextAreaVariant } from './textfield/TextArea';
+
 // Link
 export { Link } from './link';
 export type { LinkProps, LinkVariant } from './link';
@@ -123,12 +127,12 @@ export { Toolbar } from './toolbar';
 export type { ToolbarProps, ToolbarSize, ToolbarVariant } from './toolbar';
 
 // ActionBar
-export { ActionBar } from './actionbar';
-export type { ActionBarProps } from './actionbar';
+export { ActionBar, ActionBarContainer } from './actionbar';
+export type { ActionBarProps, ActionBarContainerProps } from './actionbar';
 
 // ActionGroup
-export { ActionGroup, ActionButton } from './actiongroup';
-export type { ActionGroupProps, ActionButtonProps } from './actiongroup';
+export { ActionGroup } from './actiongroup';
+export type { ActionGroupProps } from './actiongroup';
 
 // ButtonGroup
 export { ButtonGroup } from './buttongroup';
@@ -302,6 +306,10 @@ export type { TimeFieldProps, TimeFieldSize, TimeValue } from './calendar/TimeFi
 export { DatePicker } from './calendar/DatePicker';
 export type { DatePickerProps, DatePickerSize } from './calendar/DatePicker';
 
+// DateRangePicker
+export { DateRangePicker } from './calendar/DateRangePicker';
+export type { DateRangePickerProps, DateRangePickerSize } from './calendar/DateRangePicker';
+
 // Table
 export {
   Table,
@@ -379,6 +387,14 @@ export type {
   ColorSize,
 } from './color';
 
+// ColorEditor
+export { ColorEditor } from './color/ColorEditor';
+export type { ColorEditorProps } from './color/ColorEditor';
+
+// ColorSwatchPicker
+export { ColorSwatchPicker, ColorSwatchPickerItem } from './color/ColorSwatchPicker';
+export type { ColorSwatchPickerProps, ColorSwatchPickerItemProps, SwatchPickerSize, SwatchPickerDensity, SwatchPickerRounding } from './color/ColorSwatchPicker';
+
 // Landmark
 export {
   Landmark,
@@ -440,15 +456,150 @@ export type {
   DragAndDropHooks,
 } from './dnd';
 
+// Heading
+export { Heading } from './text/Heading';
+export type { HeadingProps, HeadingLevel } from './text/Heading';
+
+// Keyboard
+export { StyledKeyboard } from './text/Keyboard';
+export type { KeyboardProps as StyledKeyboardProps } from './text/Keyboard';
+
+// ToggleButton
+export { ToggleButton } from './button/ToggleButton';
+export type { ToggleButtonProps, ToggleButtonSize } from './button/ToggleButton';
+
+// ActionButton
+export { ActionButton } from './button/ActionButton';
+export type { ActionButtonProps, ActionButtonSize } from './button/ActionButton';
+
+// ClearButton
+export { ClearButton } from './button/ClearButton';
+export type { ClearButtonProps, ClearButtonSize } from './button/ClearButton';
+
+// FieldButton
+export { FieldButton } from './button/FieldButton';
+export type { FieldButtonProps } from './button/FieldButton';
+
+// LogicButton
+export { LogicButton } from './button/LogicButton';
+export type { LogicButtonProps } from './button/LogicButton';
+
+// AlertDialog
+export { AlertDialog } from './dialog/AlertDialog';
+export type { AlertDialogProps, AlertDialogVariant } from './dialog/AlertDialog';
+
+// ActionMenu
+export { ActionMenu } from './menu/ActionMenu';
+export type { ActionMenuProps } from './menu/ActionMenu';
+
+// SubmenuTrigger
+export { SubmenuTrigger } from './menu/SubmenuTrigger';
+export type { SubmenuTriggerProps } from './menu/SubmenuTrigger';
+
+// ContextualHelpTrigger
+export { ContextualHelpTrigger } from './menu/ContextualHelpTrigger';
+export type { ContextualHelpTriggerProps } from './menu/ContextualHelpTrigger';
+
+// ProgressCircle
+export { ProgressCircle } from './progress/ProgressCircle';
+export type { ProgressCircleProps, ProgressCircleSize, ProgressCircleVariant } from './progress/ProgressCircle';
+
+// RangeSlider
+export { RangeSlider } from './slider/RangeSlider';
+export type { RangeSliderProps, RangeSliderSize } from './slider/RangeSlider';
+
+// Field
+export { Field } from './form/Field';
+export type { FieldProps, FieldSize } from './form/Field';
+
+// HelpText
+export { HelpText } from './form/HelpText';
+export type { HelpTextProps } from './form/HelpText';
+
+// StyledModal
+export { StyledModal } from './overlays/Modal';
+export type { StyledModalProps, ModalSize } from './overlays/Modal';
+
+// Overlay
+export { Overlay } from './overlays/Overlay';
+export type { OverlayProps } from './overlays/Overlay';
+
+// Tray
+export { Tray } from './overlays/Tray';
+export type { TrayProps } from './overlays/Tray';
+
+// OpenTransition
+export { OpenTransition } from './overlays/OpenTransition';
+export type { OpenTransitionProps } from './overlays/OpenTransition';
+
+// View Slots
+export { Content, ViewHeader, ViewFooter } from './view/Content';
+export type { ContentProps, ViewHeaderProps, ViewFooterProps } from './view/Content';
+
+// Illustration
+export { Illustration } from './icon/Illustration';
+export type { IllustrationProps, IllustrationSize } from './icon/Illustration';
+
+// UIIcon
+export { UIIcon } from './icon/UIIcon';
+export type { UIIconProps, UIIconSize } from './icon/UIIcon';
+
+// Virtualizer
+export {
+  Virtualizer,
+  VirtualizerContext,
+  useVirtualizerContext,
+  ListLayout,
+  GridLayout,
+  WaterfallLayout,
+  TableLayout,
+} from '@proyecto-viviana/solidaria-components';
+export type {
+  VirtualizerProps,
+  VirtualizerLayout,
+  VirtualizerLayoutClass,
+  VirtualizerContextValue,
+  VirtualizerVisibleRange,
+  VirtualizerDropTarget,
+  VirtualizerDropOperationResolver,
+  VirtualizerDropTargetResolver,
+  VirtualizerRangeContext,
+  DefaultVirtualizerLayoutOptions,
+  GridLayoutOptions,
+  WaterfallLayoutOptions,
+} from '@proyecto-viviana/solidaria-components';
+
+// Flex Layout
+export { Flex } from './layout/Flex';
+export type { FlexProps } from './layout/Flex';
+
+// Grid Layout
+export { Grid } from './layout/Grid';
+export type { GridProps } from './layout/Grid';
+
+// CSS Utilities
+export { fitContent, minmax, repeat } from './layout/css-utils';
+
 // Story utilities
 export { cx } from './story-utils';
+export { StoryErrorBoundary } from './story-utils/ErrorBoundary';
+export type { StoryErrorBoundaryProps } from './story-utils/ErrorBoundary';
+export { generatePowerset } from './story-utils/generatePowerset';
+export type { PropValues, PowersetItem } from './story-utils/generatePowerset';
 
 // Style macro compatibility
 export { s1 } from './style-macro-s1';
 
+// Provider
+export { Provider, useTheme, ThemeContext } from './provider';
+export type { ProviderProps, ThemeContextValue, ColorScheme, Scale } from './provider';
+
 // Theme compatibility
 export { themeExpressClass } from './theme-express';
-export { themeLightClass } from './theme-light';
+export { themeLightClass, lightTheme } from './theme-light';
+export { themeDarkClass, darkTheme } from './theme-dark';
+export { themeDefaultClass, defaultTheme } from './theme-default';
+export type { Theme } from './theme/types';
 
 // ============================================
 // CUSTOM COMPONENTS

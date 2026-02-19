@@ -9,3 +9,6 @@ export type {
   ProgressBarVariant,
 } from '../progress-bar';
 
+export { ProgressCircle } from './ProgressCircle';
+export type { ProgressCircleProps, ProgressCircleSize, ProgressCircleVariant } from './ProgressCircle';
+

@@ -43,3 +43,13 @@ export type {
   SimpleTooltipProps,
 } from '../tooltip';
 
+export { StyledModal, StyledModal as Modal } from './Modal';
+export type { StyledModalProps, ModalSize } from './Modal';
+export { Overlay } from './Overlay';
+export type { OverlayProps } from './Overlay';
+export { Tray } from './Tray';
+export type { TrayProps } from './Tray';
+
+export { OpenTransition } from './OpenTransition';
+export type { OpenTransitionProps } from './OpenTransition';
+
