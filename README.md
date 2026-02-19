@@ -304,6 +304,8 @@ function CustomCheckbox(props) {
 
 ## Development
 
+> Primary runtime: Deno >= 2.0. Bun is only invoked for the Vitest-based suites (`deno task test`, `deno task test:watch`, and `deno task test:e2e`). Every other task—build, dev server, guards, and benchmarks—runs under Deno.
+
 ### Prerequisites
 
 - [Deno](https://deno.com/) >= 2.0 (primary runtime)
