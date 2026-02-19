@@ -22,11 +22,44 @@ type NavEntry = NavItem | NavSection;
 const componentPages = import.meta.glob("./components/*.tsx");
 const hookPages = import.meta.glob("./hooks/*.tsx");
 
-const componentOrder = ["button", "checkbox", "dialog", "menu", "select", "table", "tabs", "textfield", "toast"];
+const componentOrder = [
+  // Form & Input
+  "button", "checkbox", "textfield", "textarea", "numberfield", "searchfield", "slider", "switch", "combobox",
+  // Selection
+  "select", "menu", "listbox",
+  // Navigation
+  "tabs", "breadcrumbs", "link",
+  // Overlays
+  "dialog", "alertdialog", "toast",
+  // Data Display
+  "table", "gridlist", "tree", "progressbar", "meter", "badge",
+  // Calendar & Date
+  "calendar", "rangecalendar", "datepicker", "daterangepicker", "datefield", "timefield",
+  // Color
+  "color",
+  // Layout & Infrastructure
+  "disclosure", "taggroup", "separator", "provider",
+  // Advanced
+  "virtualizer",
+];
 const hookOrder = ["create-button", "create-press"];
 
 const labelOverrides: Record<string, string> = {
   textfield: "TextField",
+  textarea: "TextArea",
+  numberfield: "NumberField",
+  searchfield: "SearchField",
+  combobox: "ComboBox",
+  datepicker: "DatePicker",
+  daterangepicker: "DateRangePicker",
+  datefield: "DateField",
+  timefield: "TimeField",
+  rangecalendar: "RangeCalendar",
+  gridlist: "GridList",
+  progressbar: "ProgressBar",
+  taggroup: "TagGroup",
+  alertdialog: "AlertDialog",
+  virtualizer: "Virtualizer",
 };
 
 function filePathToSlug(filePath: string) {
@@ -112,7 +145,7 @@ function DocsLayout() {
                 <p class="font-jost text-sm font-semibold text-primary-200">
                   Documentation
                 </p>
-                <p class="text-xs text-primary-500">v0.1.7</p>
+                <p class="text-xs text-primary-500">v0.3.5</p>
               </div>
             </div>
           </div>

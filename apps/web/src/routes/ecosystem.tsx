@@ -22,12 +22,18 @@ function Ecosystem() {
         {/* Core Packages */}
         <section class="mb-12">
           <h2 class="text-2xl font-semibold text-primary-200 mb-4">Core Packages</h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <ProjectCard
               name="@proyecto-viviana/ui"
               imageSrc="/images/ecosystem/ui.svg"
               size="sm"
               href="https://github.com/proyecto-viviana/proyecto-viviana/tree/main/packages/ui"
+            />
+            <ProjectCard
+              name="@proyecto-viviana/solidaria-components"
+              imageSrc="/images/ecosystem/solidaria.svg"
+              size="sm"
+              href="https://github.com/proyecto-viviana/proyecto-viviana/tree/main/packages/solidaria-components"
             />
             <ProjectCard
               name="@proyecto-viviana/solidaria"

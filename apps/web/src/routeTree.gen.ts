@@ -17,15 +17,41 @@ import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as DocsInstallationRouteImport } from './routes/docs/installation'
 import { Route as DocsHooksCreatePressRouteImport } from './routes/docs/hooks/create-press'
 import { Route as DocsHooksCreateButtonRouteImport } from './routes/docs/hooks/create-button'
+import { Route as DocsComponentsVirtualizerRouteImport } from './routes/docs/components/virtualizer'
+import { Route as DocsComponentsTreeRouteImport } from './routes/docs/components/tree'
 import { Route as DocsComponentsToastRouteImport } from './routes/docs/components/toast'
+import { Route as DocsComponentsTimefieldRouteImport } from './routes/docs/components/timefield'
 import { Route as DocsComponentsTextfieldRouteImport } from './routes/docs/components/textfield'
+import { Route as DocsComponentsTextareaRouteImport } from './routes/docs/components/textarea'
+import { Route as DocsComponentsTaggroupRouteImport } from './routes/docs/components/taggroup'
 import { Route as DocsComponentsTabsRouteImport } from './routes/docs/components/tabs'
 import { Route as DocsComponentsTableRouteImport } from './routes/docs/components/table'
+import { Route as DocsComponentsSwitchRouteImport } from './routes/docs/components/switch'
+import { Route as DocsComponentsSliderRouteImport } from './routes/docs/components/slider'
+import { Route as DocsComponentsSeparatorRouteImport } from './routes/docs/components/separator'
 import { Route as DocsComponentsSelectRouteImport } from './routes/docs/components/select'
+import { Route as DocsComponentsSearchfieldRouteImport } from './routes/docs/components/searchfield'
+import { Route as DocsComponentsRangecalendarRouteImport } from './routes/docs/components/rangecalendar'
+import { Route as DocsComponentsProviderRouteImport } from './routes/docs/components/provider'
+import { Route as DocsComponentsProgressbarRouteImport } from './routes/docs/components/progressbar'
+import { Route as DocsComponentsNumberfieldRouteImport } from './routes/docs/components/numberfield'
+import { Route as DocsComponentsMeterRouteImport } from './routes/docs/components/meter'
 import { Route as DocsComponentsMenuRouteImport } from './routes/docs/components/menu'
+import { Route as DocsComponentsLinkRouteImport } from './routes/docs/components/link'
+import { Route as DocsComponentsGridlistRouteImport } from './routes/docs/components/gridlist'
+import { Route as DocsComponentsDisclosureRouteImport } from './routes/docs/components/disclosure'
 import { Route as DocsComponentsDialogRouteImport } from './routes/docs/components/dialog'
+import { Route as DocsComponentsDaterangepickerRouteImport } from './routes/docs/components/daterangepicker'
+import { Route as DocsComponentsDatepickerRouteImport } from './routes/docs/components/datepicker'
+import { Route as DocsComponentsDatefieldRouteImport } from './routes/docs/components/datefield'
+import { Route as DocsComponentsComboboxRouteImport } from './routes/docs/components/combobox'
+import { Route as DocsComponentsColorRouteImport } from './routes/docs/components/color'
 import { Route as DocsComponentsCheckboxRouteImport } from './routes/docs/components/checkbox'
+import { Route as DocsComponentsCalendarRouteImport } from './routes/docs/components/calendar'
 import { Route as DocsComponentsButtonRouteImport } from './routes/docs/components/button'
+import { Route as DocsComponentsBreadcrumbsRouteImport } from './routes/docs/components/breadcrumbs'
+import { Route as DocsComponentsBadgeRouteImport } from './routes/docs/components/badge'
+import { Route as DocsComponentsAlertdialogRouteImport } from './routes/docs/components/alertdialog'
 
 const PlaygroundRoute = PlaygroundRouteImport.update({
   id: '/playground',
@@ -67,14 +93,40 @@ const DocsHooksCreateButtonRoute = DocsHooksCreateButtonRouteImport.update({
   path: '/hooks/create-button',
   getParentRoute: () => DocsRouteRoute,
 } as any)
+const DocsComponentsVirtualizerRoute =
+  DocsComponentsVirtualizerRouteImport.update({
+    id: '/components/virtualizer',
+    path: '/components/virtualizer',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
+const DocsComponentsTreeRoute = DocsComponentsTreeRouteImport.update({
+  id: '/components/tree',
+  path: '/components/tree',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
 const DocsComponentsToastRoute = DocsComponentsToastRouteImport.update({
   id: '/components/toast',
   path: '/components/toast',
   getParentRoute: () => DocsRouteRoute,
 } as any)
+const DocsComponentsTimefieldRoute = DocsComponentsTimefieldRouteImport.update({
+  id: '/components/timefield',
+  path: '/components/timefield',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
 const DocsComponentsTextfieldRoute = DocsComponentsTextfieldRouteImport.update({
   id: '/components/textfield',
   path: '/components/textfield',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsTextareaRoute = DocsComponentsTextareaRouteImport.update({
+  id: '/components/textarea',
+  path: '/components/textarea',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsTaggroupRoute = DocsComponentsTaggroupRouteImport.update({
+  id: '/components/taggroup',
+  path: '/components/taggroup',
   getParentRoute: () => DocsRouteRoute,
 } as any)
 const DocsComponentsTabsRoute = DocsComponentsTabsRouteImport.update({
@@ -87,9 +139,58 @@ const DocsComponentsTableRoute = DocsComponentsTableRouteImport.update({
   path: '/components/table',
   getParentRoute: () => DocsRouteRoute,
 } as any)
+const DocsComponentsSwitchRoute = DocsComponentsSwitchRouteImport.update({
+  id: '/components/switch',
+  path: '/components/switch',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsSliderRoute = DocsComponentsSliderRouteImport.update({
+  id: '/components/slider',
+  path: '/components/slider',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsSeparatorRoute = DocsComponentsSeparatorRouteImport.update({
+  id: '/components/separator',
+  path: '/components/separator',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
 const DocsComponentsSelectRoute = DocsComponentsSelectRouteImport.update({
   id: '/components/select',
   path: '/components/select',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsSearchfieldRoute =
+  DocsComponentsSearchfieldRouteImport.update({
+    id: '/components/searchfield',
+    path: '/components/searchfield',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
+const DocsComponentsRangecalendarRoute =
+  DocsComponentsRangecalendarRouteImport.update({
+    id: '/components/rangecalendar',
+    path: '/components/rangecalendar',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
+const DocsComponentsProviderRoute = DocsComponentsProviderRouteImport.update({
+  id: '/components/provider',
+  path: '/components/provider',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsProgressbarRoute =
+  DocsComponentsProgressbarRouteImport.update({
+    id: '/components/progressbar',
+    path: '/components/progressbar',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
+const DocsComponentsNumberfieldRoute =
+  DocsComponentsNumberfieldRouteImport.update({
+    id: '/components/numberfield',
+    path: '/components/numberfield',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
+const DocsComponentsMeterRoute = DocsComponentsMeterRouteImport.update({
+  id: '/components/meter',
+  path: '/components/meter',
   getParentRoute: () => DocsRouteRoute,
 } as any)
 const DocsComponentsMenuRoute = DocsComponentsMenuRouteImport.update({
@@ -97,9 +198,52 @@ const DocsComponentsMenuRoute = DocsComponentsMenuRouteImport.update({
   path: '/components/menu',
   getParentRoute: () => DocsRouteRoute,
 } as any)
+const DocsComponentsLinkRoute = DocsComponentsLinkRouteImport.update({
+  id: '/components/link',
+  path: '/components/link',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsGridlistRoute = DocsComponentsGridlistRouteImport.update({
+  id: '/components/gridlist',
+  path: '/components/gridlist',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsDisclosureRoute =
+  DocsComponentsDisclosureRouteImport.update({
+    id: '/components/disclosure',
+    path: '/components/disclosure',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
 const DocsComponentsDialogRoute = DocsComponentsDialogRouteImport.update({
   id: '/components/dialog',
   path: '/components/dialog',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsDaterangepickerRoute =
+  DocsComponentsDaterangepickerRouteImport.update({
+    id: '/components/daterangepicker',
+    path: '/components/daterangepicker',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
+const DocsComponentsDatepickerRoute =
+  DocsComponentsDatepickerRouteImport.update({
+    id: '/components/datepicker',
+    path: '/components/datepicker',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
+const DocsComponentsDatefieldRoute = DocsComponentsDatefieldRouteImport.update({
+  id: '/components/datefield',
+  path: '/components/datefield',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsComboboxRoute = DocsComponentsComboboxRouteImport.update({
+  id: '/components/combobox',
+  path: '/components/combobox',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsColorRoute = DocsComponentsColorRouteImport.update({
+  id: '/components/color',
+  path: '/components/color',
   getParentRoute: () => DocsRouteRoute,
 } as any)
 const DocsComponentsCheckboxRoute = DocsComponentsCheckboxRouteImport.update({
@@ -107,11 +251,33 @@ const DocsComponentsCheckboxRoute = DocsComponentsCheckboxRouteImport.update({
   path: '/components/checkbox',
   getParentRoute: () => DocsRouteRoute,
 } as any)
+const DocsComponentsCalendarRoute = DocsComponentsCalendarRouteImport.update({
+  id: '/components/calendar',
+  path: '/components/calendar',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
 const DocsComponentsButtonRoute = DocsComponentsButtonRouteImport.update({
   id: '/components/button',
   path: '/components/button',
   getParentRoute: () => DocsRouteRoute,
 } as any)
+const DocsComponentsBreadcrumbsRoute =
+  DocsComponentsBreadcrumbsRouteImport.update({
+    id: '/components/breadcrumbs',
+    path: '/components/breadcrumbs',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
+const DocsComponentsBadgeRoute = DocsComponentsBadgeRouteImport.update({
+  id: '/components/badge',
+  path: '/components/badge',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsAlertdialogRoute =
+  DocsComponentsAlertdialogRouteImport.update({
+    id: '/components/alertdialog',
+    path: '/components/alertdialog',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -120,15 +286,41 @@ export interface FileRoutesByFullPath {
   '/playground': typeof PlaygroundRoute
   '/docs/installation': typeof DocsInstallationRoute
   '/docs/': typeof DocsIndexRoute
+  '/docs/components/alertdialog': typeof DocsComponentsAlertdialogRoute
+  '/docs/components/badge': typeof DocsComponentsBadgeRoute
+  '/docs/components/breadcrumbs': typeof DocsComponentsBreadcrumbsRoute
   '/docs/components/button': typeof DocsComponentsButtonRoute
+  '/docs/components/calendar': typeof DocsComponentsCalendarRoute
   '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
+  '/docs/components/color': typeof DocsComponentsColorRoute
+  '/docs/components/combobox': typeof DocsComponentsComboboxRoute
+  '/docs/components/datefield': typeof DocsComponentsDatefieldRoute
+  '/docs/components/datepicker': typeof DocsComponentsDatepickerRoute
+  '/docs/components/daterangepicker': typeof DocsComponentsDaterangepickerRoute
   '/docs/components/dialog': typeof DocsComponentsDialogRoute
+  '/docs/components/disclosure': typeof DocsComponentsDisclosureRoute
+  '/docs/components/gridlist': typeof DocsComponentsGridlistRoute
+  '/docs/components/link': typeof DocsComponentsLinkRoute
   '/docs/components/menu': typeof DocsComponentsMenuRoute
+  '/docs/components/meter': typeof DocsComponentsMeterRoute
+  '/docs/components/numberfield': typeof DocsComponentsNumberfieldRoute
+  '/docs/components/progressbar': typeof DocsComponentsProgressbarRoute
+  '/docs/components/provider': typeof DocsComponentsProviderRoute
+  '/docs/components/rangecalendar': typeof DocsComponentsRangecalendarRoute
+  '/docs/components/searchfield': typeof DocsComponentsSearchfieldRoute
   '/docs/components/select': typeof DocsComponentsSelectRoute
+  '/docs/components/separator': typeof DocsComponentsSeparatorRoute
+  '/docs/components/slider': typeof DocsComponentsSliderRoute
+  '/docs/components/switch': typeof DocsComponentsSwitchRoute
   '/docs/components/table': typeof DocsComponentsTableRoute
   '/docs/components/tabs': typeof DocsComponentsTabsRoute
+  '/docs/components/taggroup': typeof DocsComponentsTaggroupRoute
+  '/docs/components/textarea': typeof DocsComponentsTextareaRoute
   '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
+  '/docs/components/timefield': typeof DocsComponentsTimefieldRoute
   '/docs/components/toast': typeof DocsComponentsToastRoute
+  '/docs/components/tree': typeof DocsComponentsTreeRoute
+  '/docs/components/virtualizer': typeof DocsComponentsVirtualizerRoute
   '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
   '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
 }
@@ -138,15 +330,41 @@ export interface FileRoutesByTo {
   '/playground': typeof PlaygroundRoute
   '/docs/installation': typeof DocsInstallationRoute
   '/docs': typeof DocsIndexRoute
+  '/docs/components/alertdialog': typeof DocsComponentsAlertdialogRoute
+  '/docs/components/badge': typeof DocsComponentsBadgeRoute
+  '/docs/components/breadcrumbs': typeof DocsComponentsBreadcrumbsRoute
   '/docs/components/button': typeof DocsComponentsButtonRoute
+  '/docs/components/calendar': typeof DocsComponentsCalendarRoute
   '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
+  '/docs/components/color': typeof DocsComponentsColorRoute
+  '/docs/components/combobox': typeof DocsComponentsComboboxRoute
+  '/docs/components/datefield': typeof DocsComponentsDatefieldRoute
+  '/docs/components/datepicker': typeof DocsComponentsDatepickerRoute
+  '/docs/components/daterangepicker': typeof DocsComponentsDaterangepickerRoute
   '/docs/components/dialog': typeof DocsComponentsDialogRoute
+  '/docs/components/disclosure': typeof DocsComponentsDisclosureRoute
+  '/docs/components/gridlist': typeof DocsComponentsGridlistRoute
+  '/docs/components/link': typeof DocsComponentsLinkRoute
   '/docs/components/menu': typeof DocsComponentsMenuRoute
+  '/docs/components/meter': typeof DocsComponentsMeterRoute
+  '/docs/components/numberfield': typeof DocsComponentsNumberfieldRoute
+  '/docs/components/progressbar': typeof DocsComponentsProgressbarRoute
+  '/docs/components/provider': typeof DocsComponentsProviderRoute
+  '/docs/components/rangecalendar': typeof DocsComponentsRangecalendarRoute
+  '/docs/components/searchfield': typeof DocsComponentsSearchfieldRoute
   '/docs/components/select': typeof DocsComponentsSelectRoute
+  '/docs/components/separator': typeof DocsComponentsSeparatorRoute
+  '/docs/components/slider': typeof DocsComponentsSliderRoute
+  '/docs/components/switch': typeof DocsComponentsSwitchRoute
   '/docs/components/table': typeof DocsComponentsTableRoute
   '/docs/components/tabs': typeof DocsComponentsTabsRoute
+  '/docs/components/taggroup': typeof DocsComponentsTaggroupRoute
+  '/docs/components/textarea': typeof DocsComponentsTextareaRoute
   '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
+  '/docs/components/timefield': typeof DocsComponentsTimefieldRoute
   '/docs/components/toast': typeof DocsComponentsToastRoute
+  '/docs/components/tree': typeof DocsComponentsTreeRoute
+  '/docs/components/virtualizer': typeof DocsComponentsVirtualizerRoute
   '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
   '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
 }
@@ -158,15 +376,41 @@ export interface FileRoutesById {
   '/playground': typeof PlaygroundRoute
   '/docs/installation': typeof DocsInstallationRoute
   '/docs/': typeof DocsIndexRoute
+  '/docs/components/alertdialog': typeof DocsComponentsAlertdialogRoute
+  '/docs/components/badge': typeof DocsComponentsBadgeRoute
+  '/docs/components/breadcrumbs': typeof DocsComponentsBreadcrumbsRoute
   '/docs/components/button': typeof DocsComponentsButtonRoute
+  '/docs/components/calendar': typeof DocsComponentsCalendarRoute
   '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
+  '/docs/components/color': typeof DocsComponentsColorRoute
+  '/docs/components/combobox': typeof DocsComponentsComboboxRoute
+  '/docs/components/datefield': typeof DocsComponentsDatefieldRoute
+  '/docs/components/datepicker': typeof DocsComponentsDatepickerRoute
+  '/docs/components/daterangepicker': typeof DocsComponentsDaterangepickerRoute
   '/docs/components/dialog': typeof DocsComponentsDialogRoute
+  '/docs/components/disclosure': typeof DocsComponentsDisclosureRoute
+  '/docs/components/gridlist': typeof DocsComponentsGridlistRoute
+  '/docs/components/link': typeof DocsComponentsLinkRoute
   '/docs/components/menu': typeof DocsComponentsMenuRoute
+  '/docs/components/meter': typeof DocsComponentsMeterRoute
+  '/docs/components/numberfield': typeof DocsComponentsNumberfieldRoute
+  '/docs/components/progressbar': typeof DocsComponentsProgressbarRoute
+  '/docs/components/provider': typeof DocsComponentsProviderRoute
+  '/docs/components/rangecalendar': typeof DocsComponentsRangecalendarRoute
+  '/docs/components/searchfield': typeof DocsComponentsSearchfieldRoute
   '/docs/components/select': typeof DocsComponentsSelectRoute
+  '/docs/components/separator': typeof DocsComponentsSeparatorRoute
+  '/docs/components/slider': typeof DocsComponentsSliderRoute
+  '/docs/components/switch': typeof DocsComponentsSwitchRoute
   '/docs/components/table': typeof DocsComponentsTableRoute
   '/docs/components/tabs': typeof DocsComponentsTabsRoute
+  '/docs/components/taggroup': typeof DocsComponentsTaggroupRoute
+  '/docs/components/textarea': typeof DocsComponentsTextareaRoute
   '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
+  '/docs/components/timefield': typeof DocsComponentsTimefieldRoute
   '/docs/components/toast': typeof DocsComponentsToastRoute
+  '/docs/components/tree': typeof DocsComponentsTreeRoute
+  '/docs/components/virtualizer': typeof DocsComponentsVirtualizerRoute
   '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
   '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
 }
@@ -179,15 +423,41 @@ export interface FileRouteTypes {
     | '/playground'
     | '/docs/installation'
     | '/docs/'
+    | '/docs/components/alertdialog'
+    | '/docs/components/badge'
+    | '/docs/components/breadcrumbs'
     | '/docs/components/button'
+    | '/docs/components/calendar'
     | '/docs/components/checkbox'
+    | '/docs/components/color'
+    | '/docs/components/combobox'
+    | '/docs/components/datefield'
+    | '/docs/components/datepicker'
+    | '/docs/components/daterangepicker'
     | '/docs/components/dialog'
+    | '/docs/components/disclosure'
+    | '/docs/components/gridlist'
+    | '/docs/components/link'
     | '/docs/components/menu'
+    | '/docs/components/meter'
+    | '/docs/components/numberfield'
+    | '/docs/components/progressbar'
+    | '/docs/components/provider'
+    | '/docs/components/rangecalendar'
+    | '/docs/components/searchfield'
     | '/docs/components/select'
+    | '/docs/components/separator'
+    | '/docs/components/slider'
+    | '/docs/components/switch'
     | '/docs/components/table'
     | '/docs/components/tabs'
+    | '/docs/components/taggroup'
+    | '/docs/components/textarea'
     | '/docs/components/textfield'
+    | '/docs/components/timefield'
     | '/docs/components/toast'
+    | '/docs/components/tree'
+    | '/docs/components/virtualizer'
     | '/docs/hooks/create-button'
     | '/docs/hooks/create-press'
   fileRoutesByTo: FileRoutesByTo
@@ -197,15 +467,41 @@ export interface FileRouteTypes {
     | '/playground'
     | '/docs/installation'
     | '/docs'
+    | '/docs/components/alertdialog'
+    | '/docs/components/badge'
+    | '/docs/components/breadcrumbs'
     | '/docs/components/button'
+    | '/docs/components/calendar'
     | '/docs/components/checkbox'
+    | '/docs/components/color'
+    | '/docs/components/combobox'
+    | '/docs/components/datefield'
+    | '/docs/components/datepicker'
+    | '/docs/components/daterangepicker'
     | '/docs/components/dialog'
+    | '/docs/components/disclosure'
+    | '/docs/components/gridlist'
+    | '/docs/components/link'
     | '/docs/components/menu'
+    | '/docs/components/meter'
+    | '/docs/components/numberfield'
+    | '/docs/components/progressbar'
+    | '/docs/components/provider'
+    | '/docs/components/rangecalendar'
+    | '/docs/components/searchfield'
     | '/docs/components/select'
+    | '/docs/components/separator'
+    | '/docs/components/slider'
+    | '/docs/components/switch'
     | '/docs/components/table'
     | '/docs/components/tabs'
+    | '/docs/components/taggroup'
+    | '/docs/components/textarea'
     | '/docs/components/textfield'
+    | '/docs/components/timefield'
     | '/docs/components/toast'
+    | '/docs/components/tree'
+    | '/docs/components/virtualizer'
     | '/docs/hooks/create-button'
     | '/docs/hooks/create-press'
   id:
@@ -216,15 +512,41 @@ export interface FileRouteTypes {
     | '/playground'
     | '/docs/installation'
     | '/docs/'
+    | '/docs/components/alertdialog'
+    | '/docs/components/badge'
+    | '/docs/components/breadcrumbs'
     | '/docs/components/button'
+    | '/docs/components/calendar'
     | '/docs/components/checkbox'
+    | '/docs/components/color'
+    | '/docs/components/combobox'
+    | '/docs/components/datefield'
+    | '/docs/components/datepicker'
+    | '/docs/components/daterangepicker'
     | '/docs/components/dialog'
+    | '/docs/components/disclosure'
+    | '/docs/components/gridlist'
+    | '/docs/components/link'
     | '/docs/components/menu'
+    | '/docs/components/meter'
+    | '/docs/components/numberfield'
+    | '/docs/components/progressbar'
+    | '/docs/components/provider'
+    | '/docs/components/rangecalendar'
+    | '/docs/components/searchfield'
     | '/docs/components/select'
+    | '/docs/components/separator'
+    | '/docs/components/slider'
+    | '/docs/components/switch'
     | '/docs/components/table'
     | '/docs/components/tabs'
+    | '/docs/components/taggroup'
+    | '/docs/components/textarea'
     | '/docs/components/textfield'
+    | '/docs/components/timefield'
     | '/docs/components/toast'
+    | '/docs/components/tree'
+    | '/docs/components/virtualizer'
     | '/docs/hooks/create-button'
     | '/docs/hooks/create-press'
   fileRoutesById: FileRoutesById
@@ -294,6 +616,20 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof DocsHooksCreateButtonRouteImport
       parentRoute: typeof DocsRouteRoute
     }
+    '/docs/components/virtualizer': {
+      id: '/docs/components/virtualizer'
+      path: '/components/virtualizer'
+      fullPath: '/docs/components/virtualizer'
+      preLoaderRoute: typeof DocsComponentsVirtualizerRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/tree': {
+      id: '/docs/components/tree'
+      path: '/components/tree'
+      fullPath: '/docs/components/tree'
+      preLoaderRoute: typeof DocsComponentsTreeRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
     '/docs/components/toast': {
       id: '/docs/components/toast'
       path: '/components/toast'
@@ -301,11 +637,32 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof DocsComponentsToastRouteImport
       parentRoute: typeof DocsRouteRoute
     }
+    '/docs/components/timefield': {
+      id: '/docs/components/timefield'
+      path: '/components/timefield'
+      fullPath: '/docs/components/timefield'
+      preLoaderRoute: typeof DocsComponentsTimefieldRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
     '/docs/components/textfield': {
       id: '/docs/components/textfield'
       path: '/components/textfield'
       fullPath: '/docs/components/textfield'
       preLoaderRoute: typeof DocsComponentsTextfieldRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/textarea': {
+      id: '/docs/components/textarea'
+      path: '/components/textarea'
+      fullPath: '/docs/components/textarea'
+      preLoaderRoute: typeof DocsComponentsTextareaRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/taggroup': {
+      id: '/docs/components/taggroup'
+      path: '/components/taggroup'
+      fullPath: '/docs/components/taggroup'
+      preLoaderRoute: typeof DocsComponentsTaggroupRouteImport
       parentRoute: typeof DocsRouteRoute
     }
     '/docs/components/tabs': {
@@ -322,11 +679,74 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof DocsComponentsTableRouteImport
       parentRoute: typeof DocsRouteRoute
     }
+    '/docs/components/switch': {
+      id: '/docs/components/switch'
+      path: '/components/switch'
+      fullPath: '/docs/components/switch'
+      preLoaderRoute: typeof DocsComponentsSwitchRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/slider': {
+      id: '/docs/components/slider'
+      path: '/components/slider'
+      fullPath: '/docs/components/slider'
+      preLoaderRoute: typeof DocsComponentsSliderRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/separator': {
+      id: '/docs/components/separator'
+      path: '/components/separator'
+      fullPath: '/docs/components/separator'
+      preLoaderRoute: typeof DocsComponentsSeparatorRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
     '/docs/components/select': {
       id: '/docs/components/select'
       path: '/components/select'
       fullPath: '/docs/components/select'
       preLoaderRoute: typeof DocsComponentsSelectRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/searchfield': {
+      id: '/docs/components/searchfield'
+      path: '/components/searchfield'
+      fullPath: '/docs/components/searchfield'
+      preLoaderRoute: typeof DocsComponentsSearchfieldRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/rangecalendar': {
+      id: '/docs/components/rangecalendar'
+      path: '/components/rangecalendar'
+      fullPath: '/docs/components/rangecalendar'
+      preLoaderRoute: typeof DocsComponentsRangecalendarRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/provider': {
+      id: '/docs/components/provider'
+      path: '/components/provider'
+      fullPath: '/docs/components/provider'
+      preLoaderRoute: typeof DocsComponentsProviderRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/progressbar': {
+      id: '/docs/components/progressbar'
+      path: '/components/progressbar'
+      fullPath: '/docs/components/progressbar'
+      preLoaderRoute: typeof DocsComponentsProgressbarRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/numberfield': {
+      id: '/docs/components/numberfield'
+      path: '/components/numberfield'
+      fullPath: '/docs/components/numberfield'
+      preLoaderRoute: typeof DocsComponentsNumberfieldRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/meter': {
+      id: '/docs/components/meter'
+      path: '/components/meter'
+      fullPath: '/docs/components/meter'
+      preLoaderRoute: typeof DocsComponentsMeterRouteImport
       parentRoute: typeof DocsRouteRoute
     }
     '/docs/components/menu': {
@@ -336,11 +756,67 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof DocsComponentsMenuRouteImport
       parentRoute: typeof DocsRouteRoute
     }
+    '/docs/components/link': {
+      id: '/docs/components/link'
+      path: '/components/link'
+      fullPath: '/docs/components/link'
+      preLoaderRoute: typeof DocsComponentsLinkRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/gridlist': {
+      id: '/docs/components/gridlist'
+      path: '/components/gridlist'
+      fullPath: '/docs/components/gridlist'
+      preLoaderRoute: typeof DocsComponentsGridlistRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/disclosure': {
+      id: '/docs/components/disclosure'
+      path: '/components/disclosure'
+      fullPath: '/docs/components/disclosure'
+      preLoaderRoute: typeof DocsComponentsDisclosureRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
     '/docs/components/dialog': {
       id: '/docs/components/dialog'
       path: '/components/dialog'
       fullPath: '/docs/components/dialog'
       preLoaderRoute: typeof DocsComponentsDialogRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/daterangepicker': {
+      id: '/docs/components/daterangepicker'
+      path: '/components/daterangepicker'
+      fullPath: '/docs/components/daterangepicker'
+      preLoaderRoute: typeof DocsComponentsDaterangepickerRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/datepicker': {
+      id: '/docs/components/datepicker'
+      path: '/components/datepicker'
+      fullPath: '/docs/components/datepicker'
+      preLoaderRoute: typeof DocsComponentsDatepickerRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/datefield': {
+      id: '/docs/components/datefield'
+      path: '/components/datefield'
+      fullPath: '/docs/components/datefield'
+      preLoaderRoute: typeof DocsComponentsDatefieldRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/combobox': {
+      id: '/docs/components/combobox'
+      path: '/components/combobox'
+      fullPath: '/docs/components/combobox'
+      preLoaderRoute: typeof DocsComponentsComboboxRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/color': {
+      id: '/docs/components/color'
+      path: '/components/color'
+      fullPath: '/docs/components/color'
+      preLoaderRoute: typeof DocsComponentsColorRouteImport
       parentRoute: typeof DocsRouteRoute
     }
     '/docs/components/checkbox': {
@@ -350,11 +826,39 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof DocsComponentsCheckboxRouteImport
       parentRoute: typeof DocsRouteRoute
     }
+    '/docs/components/calendar': {
+      id: '/docs/components/calendar'
+      path: '/components/calendar'
+      fullPath: '/docs/components/calendar'
+      preLoaderRoute: typeof DocsComponentsCalendarRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
     '/docs/components/button': {
       id: '/docs/components/button'
       path: '/components/button'
       fullPath: '/docs/components/button'
       preLoaderRoute: typeof DocsComponentsButtonRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/breadcrumbs': {
+      id: '/docs/components/breadcrumbs'
+      path: '/components/breadcrumbs'
+      fullPath: '/docs/components/breadcrumbs'
+      preLoaderRoute: typeof DocsComponentsBreadcrumbsRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/badge': {
+      id: '/docs/components/badge'
+      path: '/components/badge'
+      fullPath: '/docs/components/badge'
+      preLoaderRoute: typeof DocsComponentsBadgeRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/alertdialog': {
+      id: '/docs/components/alertdialog'
+      path: '/components/alertdialog'
+      fullPath: '/docs/components/alertdialog'
+      preLoaderRoute: typeof DocsComponentsAlertdialogRouteImport
       parentRoute: typeof DocsRouteRoute
     }
   }
@@ -363,15 +867,41 @@ declare module '@tanstack/solid-router' {
 interface DocsRouteRouteChildren {
   DocsInstallationRoute: typeof DocsInstallationRoute
   DocsIndexRoute: typeof DocsIndexRoute
+  DocsComponentsAlertdialogRoute: typeof DocsComponentsAlertdialogRoute
+  DocsComponentsBadgeRoute: typeof DocsComponentsBadgeRoute
+  DocsComponentsBreadcrumbsRoute: typeof DocsComponentsBreadcrumbsRoute
   DocsComponentsButtonRoute: typeof DocsComponentsButtonRoute
+  DocsComponentsCalendarRoute: typeof DocsComponentsCalendarRoute
   DocsComponentsCheckboxRoute: typeof DocsComponentsCheckboxRoute
+  DocsComponentsColorRoute: typeof DocsComponentsColorRoute
+  DocsComponentsComboboxRoute: typeof DocsComponentsComboboxRoute
+  DocsComponentsDatefieldRoute: typeof DocsComponentsDatefieldRoute
+  DocsComponentsDatepickerRoute: typeof DocsComponentsDatepickerRoute
+  DocsComponentsDaterangepickerRoute: typeof DocsComponentsDaterangepickerRoute
   DocsComponentsDialogRoute: typeof DocsComponentsDialogRoute
+  DocsComponentsDisclosureRoute: typeof DocsComponentsDisclosureRoute
+  DocsComponentsGridlistRoute: typeof DocsComponentsGridlistRoute
+  DocsComponentsLinkRoute: typeof DocsComponentsLinkRoute
   DocsComponentsMenuRoute: typeof DocsComponentsMenuRoute
+  DocsComponentsMeterRoute: typeof DocsComponentsMeterRoute
+  DocsComponentsNumberfieldRoute: typeof DocsComponentsNumberfieldRoute
+  DocsComponentsProgressbarRoute: typeof DocsComponentsProgressbarRoute
+  DocsComponentsProviderRoute: typeof DocsComponentsProviderRoute
+  DocsComponentsRangecalendarRoute: typeof DocsComponentsRangecalendarRoute
+  DocsComponentsSearchfieldRoute: typeof DocsComponentsSearchfieldRoute
   DocsComponentsSelectRoute: typeof DocsComponentsSelectRoute
+  DocsComponentsSeparatorRoute: typeof DocsComponentsSeparatorRoute
+  DocsComponentsSliderRoute: typeof DocsComponentsSliderRoute
+  DocsComponentsSwitchRoute: typeof DocsComponentsSwitchRoute
   DocsComponentsTableRoute: typeof DocsComponentsTableRoute
   DocsComponentsTabsRoute: typeof DocsComponentsTabsRoute
+  DocsComponentsTaggroupRoute: typeof DocsComponentsTaggroupRoute
+  DocsComponentsTextareaRoute: typeof DocsComponentsTextareaRoute
   DocsComponentsTextfieldRoute: typeof DocsComponentsTextfieldRoute
+  DocsComponentsTimefieldRoute: typeof DocsComponentsTimefieldRoute
   DocsComponentsToastRoute: typeof DocsComponentsToastRoute
+  DocsComponentsTreeRoute: typeof DocsComponentsTreeRoute
+  DocsComponentsVirtualizerRoute: typeof DocsComponentsVirtualizerRoute
   DocsHooksCreateButtonRoute: typeof DocsHooksCreateButtonRoute
   DocsHooksCreatePressRoute: typeof DocsHooksCreatePressRoute
 }
@@ -379,15 +909,41 @@ interface DocsRouteRouteChildren {
 const DocsRouteRouteChildren: DocsRouteRouteChildren = {
   DocsInstallationRoute: DocsInstallationRoute,
   DocsIndexRoute: DocsIndexRoute,
+  DocsComponentsAlertdialogRoute: DocsComponentsAlertdialogRoute,
+  DocsComponentsBadgeRoute: DocsComponentsBadgeRoute,
+  DocsComponentsBreadcrumbsRoute: DocsComponentsBreadcrumbsRoute,
   DocsComponentsButtonRoute: DocsComponentsButtonRoute,
+  DocsComponentsCalendarRoute: DocsComponentsCalendarRoute,
   DocsComponentsCheckboxRoute: DocsComponentsCheckboxRoute,
+  DocsComponentsColorRoute: DocsComponentsColorRoute,
+  DocsComponentsComboboxRoute: DocsComponentsComboboxRoute,
+  DocsComponentsDatefieldRoute: DocsComponentsDatefieldRoute,
+  DocsComponentsDatepickerRoute: DocsComponentsDatepickerRoute,
+  DocsComponentsDaterangepickerRoute: DocsComponentsDaterangepickerRoute,
   DocsComponentsDialogRoute: DocsComponentsDialogRoute,
+  DocsComponentsDisclosureRoute: DocsComponentsDisclosureRoute,
+  DocsComponentsGridlistRoute: DocsComponentsGridlistRoute,
+  DocsComponentsLinkRoute: DocsComponentsLinkRoute,
   DocsComponentsMenuRoute: DocsComponentsMenuRoute,
+  DocsComponentsMeterRoute: DocsComponentsMeterRoute,
+  DocsComponentsNumberfieldRoute: DocsComponentsNumberfieldRoute,
+  DocsComponentsProgressbarRoute: DocsComponentsProgressbarRoute,
+  DocsComponentsProviderRoute: DocsComponentsProviderRoute,
+  DocsComponentsRangecalendarRoute: DocsComponentsRangecalendarRoute,
+  DocsComponentsSearchfieldRoute: DocsComponentsSearchfieldRoute,
   DocsComponentsSelectRoute: DocsComponentsSelectRoute,
+  DocsComponentsSeparatorRoute: DocsComponentsSeparatorRoute,
+  DocsComponentsSliderRoute: DocsComponentsSliderRoute,
+  DocsComponentsSwitchRoute: DocsComponentsSwitchRoute,
   DocsComponentsTableRoute: DocsComponentsTableRoute,
   DocsComponentsTabsRoute: DocsComponentsTabsRoute,
+  DocsComponentsTaggroupRoute: DocsComponentsTaggroupRoute,
+  DocsComponentsTextareaRoute: DocsComponentsTextareaRoute,
   DocsComponentsTextfieldRoute: DocsComponentsTextfieldRoute,
+  DocsComponentsTimefieldRoute: DocsComponentsTimefieldRoute,
   DocsComponentsToastRoute: DocsComponentsToastRoute,
+  DocsComponentsTreeRoute: DocsComponentsTreeRoute,
+  DocsComponentsVirtualizerRoute: DocsComponentsVirtualizerRoute,
   DocsHooksCreateButtonRoute: DocsHooksCreateButtonRoute,
   DocsHooksCreatePressRoute: DocsHooksCreatePressRoute,
 }

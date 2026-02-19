@@ -11,6 +11,9 @@ export const SECTION_IDS = [
   "calendar", "datepicker", "toast",
   "table", "gridlist", "tree", "rangecalendar", "datefield", "timefield",
   "colorslider", "colorarea", "colorwheel", "colorfield", "colorswatch",
+  "textarea", "daterangepicker", "colorswatchpicker", "coloreditor",
+  "contextualhelp", "rangeslider", "alertdialog", "actionmenu",
+  "flex", "grid", "theme",
 ] as const;
 
 export type SectionId = typeof SECTION_IDS[number];
@@ -67,6 +70,17 @@ const SECTION_NAMES: Record<SectionId, string> = {
   colorwheel: "Color Wheel",
   colorfield: "Color Field",
   colorswatch: "Color Swatch",
+  textarea: "TextArea",
+  daterangepicker: "Date Range Picker",
+  colorswatchpicker: "Color Swatch Picker",
+  coloreditor: "Color Editor",
+  contextualhelp: "Contextual Help",
+  rangeslider: "Range Slider",
+  alertdialog: "Alert Dialog",
+  actionmenu: "Action Menu",
+  flex: "Flex Layout",
+  grid: "Grid Layout",
+  theme: "Theme / Provider",
 };
 
 interface SectionControlPanelProps {

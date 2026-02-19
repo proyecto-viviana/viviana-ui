@@ -1,5 +1,5 @@
 import { type Accessor, createSignal, For } from 'solid-js'
-import { RangeCalendar, DateField, TimeField } from '@proyecto-viviana/ui'
+import { RangeCalendar, DateField, TimeField, DateRangePicker, ColorSwatchPicker, ColorSwatchPickerItem, ColorEditor } from '@proyecto-viviana/ui'
 import {
   Table,
   TableHeader,
@@ -25,7 +25,7 @@ import {
   ColorFieldInput,
   ColorSwatch,
 } from '@proyecto-viviana/solidaria-components'
-import { type DateValue, type RangeValue, type TimeValue, parseColor, type Color } from '@proyecto-viviana/solid-stately'
+import { CalendarDateClass as CalendarDate, type DateValue, type RangeValue, type TimeValue, parseColor, type Color } from '@proyecto-viviana/solid-stately'
 import { Section, type SectionId } from '@/components/playground/sections'
 
 export interface PlaygroundDataColorSectionsProps {
@@ -77,6 +77,18 @@ export function PlaygroundDataColorSections(props: PlaygroundDataColorSectionsPr
 
       <Section id="colorswatch" visibleSections={props.visibleSections} title="Color Swatch" description="Display a color preview">
         <ColorSwatchDemo />
+      </Section>
+
+      <Section id="daterangepicker" visibleSections={props.visibleSections} title="Date Range Picker" description="Select a start and end date with calendar popup" class="lg:col-span-2">
+        <DateRangePickerDemo />
+      </Section>
+
+      <Section id="colorswatchpicker" visibleSections={props.visibleSections} title="Color Swatch Picker" description="Pick a color from a palette of swatches">
+        <ColorSwatchPickerDemo />
+      </Section>
+
+      <Section id="coloreditor" visibleSections={props.visibleSections} title="Color Editor" description="Full-featured color editing widget">
+        <ColorEditorDemo />
       </Section>
     </>
   )
@@ -558,6 +570,87 @@ function ColorSwatchDemo() {
           class="w-12 h-12 rounded-lg"
         />
         <span class="text-sm text-primary-300">{selectedColor()}</span>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// DATE RANGE PICKER DEMO
+// ============================================
+
+function DateRangePickerDemo() {
+  const [range, setRange] = createSignal<RangeValue<DateValue> | null>(null);
+
+  return (
+    <div class="space-y-4">
+      <div class="grid gap-6 sm:grid-cols-2">
+        <DateRangePicker
+          label="Trip Dates"
+          value={range()}
+          onChange={setRange}
+        />
+        <DateRangePicker
+          label="Disabled"
+          isDisabled
+        />
+      </div>
+      <p class="text-xs text-primary-400">
+        Range: {range() ? `${range()!.start?.toString()} – ${range()!.end?.toString()}` : 'None'}
+      </p>
+    </div>
+  );
+}
+
+// ============================================
+// COLOR SWATCH PICKER DEMO
+// ============================================
+
+function ColorSwatchPickerDemo() {
+  const [color, setColor] = createSignal<Color>(parseColor('#3b82f6'));
+
+  const swatchColors = [
+    '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6',
+    '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#6366f1',
+  ];
+
+  return (
+    <div class="space-y-4">
+      <ColorSwatchPicker
+        value={color()}
+        onChange={setColor}
+        aria-label="Pick a color"
+      >
+        <For each={swatchColors}>
+          {(c) => (
+            <ColorSwatchPickerItem color={parseColor(c)} />
+          )}
+        </For>
+      </ColorSwatchPicker>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded border border-bg-400" style={{ background: color().toString('css') }} />
+        <span class="text-sm text-primary-300">{color().toString('css')}</span>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// COLOR EDITOR DEMO
+// ============================================
+
+function ColorEditorDemo() {
+  const [color, setColor] = createSignal<Color>(parseColor('hsl(200, 100%, 50%)'));
+
+  return (
+    <div class="space-y-4">
+      <ColorEditor
+        value={color()}
+        onChange={setColor}
+      />
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded border border-bg-400" style={{ background: color().toString('css') }} />
+        <span class="text-sm text-primary-300">{color().toString('css')}</span>
       </div>
     </div>
   );

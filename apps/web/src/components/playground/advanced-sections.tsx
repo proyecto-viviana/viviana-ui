@@ -44,6 +44,16 @@ import {
   ComboBoxListBox as StyledComboBoxListBox,
   ComboBoxOption as StyledComboBoxOption,
   defaultContainsFilter,
+  TextArea,
+  AlertDialog,
+  ActionMenu,
+  RangeSlider,
+  ContextualHelpTrigger,
+  Flex,
+  Grid,
+  Provider,
+  useTheme,
+  TextField,
 } from '@proyecto-viviana/ui'
 import {
   createCheckboxGroup,
@@ -118,6 +128,9 @@ const DATA_COLOR_SECTION_IDS: SectionId[] = [
   'colorwheel',
   'colorfield',
   'colorswatch',
+  'daterangepicker',
+  'colorswatchpicker',
+  'coloreditor',
 ]
 
 const PlaygroundDataColorSections = lazy(() =>
@@ -453,6 +466,206 @@ export function PlaygroundAdvancedSections(props: PlaygroundAdvancedSectionsProp
                 >
                   With Action
                 </Button>
+              </div>
+            </div>
+          </Section>
+
+          {/* ============================================ */}
+          {/* TEXTAREA */}
+          {/* ============================================ */}
+          <Section id="textarea" visibleSections={props.visibleSections} title="TextArea" description="Multi-line text input with auto-resize" class="lg:col-span-2">
+            <div class="space-y-6">
+              <div class="grid gap-6 sm:grid-cols-2">
+                <TextArea
+                  label="Description"
+                  placeholder="Enter a description..."
+                  description="Tell us about yourself"
+                />
+                <TextArea
+                  label="With Validation"
+                  placeholder="Required field..."
+                  isRequired
+                  isInvalid
+                  errorMessage="This field is required"
+                />
+              </div>
+              <div class="grid gap-6 sm:grid-cols-3">
+                <TextArea label="Small" size="sm" placeholder="Small..." />
+                <TextArea label="Medium" size="md" placeholder="Medium..." />
+                <TextArea label="Large" size="lg" placeholder="Large..." />
+              </div>
+              <TextArea label="Disabled" value="Cannot edit this" isDisabled />
+            </div>
+          </Section>
+
+          {/* ============================================ */}
+          {/* ALERT DIALOG */}
+          {/* ============================================ */}
+          <Section id="alertdialog" visibleSections={props.visibleSections} title="Alert Dialog" description="Confirmation dialog requiring user action">
+            <div class="space-y-4">
+              <AlertDialog
+                title="Delete Item"
+                variant="destructive"
+                primaryActionLabel="Delete"
+                cancelLabel="Cancel"
+                onPrimaryAction={() => props.onLastAction('AlertDialog: deleted')}
+                onCancel={() => props.onLastAction('AlertDialog: cancelled')}
+                trigger={<Button variant="negative">Delete Item</Button>}
+              >
+                Are you sure you want to delete this item? This action cannot be undone.
+              </AlertDialog>
+              <AlertDialog
+                title="Save Changes"
+                variant="confirmation"
+                primaryActionLabel="Save"
+                cancelLabel="Discard"
+                onPrimaryAction={() => props.onLastAction('AlertDialog: saved')}
+                onCancel={() => props.onLastAction('AlertDialog: discarded')}
+                trigger={<Button variant="primary">Save Changes</Button>}
+              >
+                You have unsaved changes. Would you like to save them before leaving?
+              </AlertDialog>
+            </div>
+          </Section>
+
+          {/* ============================================ */}
+          {/* ACTION MENU */}
+          {/* ============================================ */}
+          <Section id="actionmenu" visibleSections={props.visibleSections} title="Action Menu" description="Simplified menu trigger with action items">
+            <div class="flex flex-wrap gap-4">
+              <ActionMenu
+                label="Actions"
+                onAction={(key) => props.onLastAction(`ActionMenu: ${key}`)}
+                items={[
+                  { id: 'edit', label: 'Edit' },
+                  { id: 'duplicate', label: 'Duplicate' },
+                  { id: 'archive', label: 'Archive' },
+                  { id: 'delete', label: 'Delete' },
+                ]}
+              />
+              <ActionMenu
+                label="More Options"
+                variant="secondary"
+                onAction={(key) => props.onLastAction(`ActionMenu: ${key}`)}
+                items={[
+                  { id: 'settings', label: 'Settings' },
+                  { id: 'help', label: 'Help' },
+                  { id: 'about', label: 'About' },
+                ]}
+              />
+            </div>
+          </Section>
+
+          {/* ============================================ */}
+          {/* RANGE SLIDER */}
+          {/* ============================================ */}
+          <Section id="rangeslider" visibleSections={props.visibleSections} title="Range Slider" description="Dual-thumb slider for selecting a range" class="lg:col-span-2">
+            <RangeSliderDemo onChange={(start, end) => props.onLastAction(`Range: ${start}–${end}`)} />
+          </Section>
+
+          {/* ============================================ */}
+          {/* CONTEXTUAL HELP */}
+          {/* ============================================ */}
+          <Section id="contextualhelp" visibleSections={props.visibleSections} title="Contextual Help" description="Help button with popover content">
+            <div class="flex flex-wrap gap-4 items-center">
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-primary-200">Setting Name</span>
+                <ContextualHelpTrigger
+                  title="What is this?"
+                  content="This setting controls the behavior of the feature. Enabling it will allow the system to process requests in real-time."
+                />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-primary-200">Advanced Option</span>
+                <ContextualHelpTrigger
+                  title="Advanced Configuration"
+                  content="This option is for advanced users. Changing it may affect system performance."
+                  variant="info"
+                />
+              </div>
+            </div>
+          </Section>
+
+          {/* ============================================ */}
+          {/* FLEX LAYOUT */}
+          {/* ============================================ */}
+          <Section id="flex" visibleSections={props.visibleSections} title="Flex Layout" description="Flexible box layout component" class="lg:col-span-2">
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Row (default)</h4>
+                <Flex gap="md" wrap>
+                  <Button variant="primary">Item 1</Button>
+                  <Button variant="secondary">Item 2</Button>
+                  <Button variant="accent">Item 3</Button>
+                </Flex>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Column with alignment</h4>
+                <Flex direction="column" gap="sm" alignItems="start">
+                  <Button variant="primary">First</Button>
+                  <Button variant="secondary">Second</Button>
+                  <Button variant="accent">Third</Button>
+                </Flex>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Space between</h4>
+                <Flex justifyContent="space-between" alignItems="center" class="bg-bg-300 p-4 rounded-lg">
+                  <span class="text-primary-200">Left</span>
+                  <span class="text-primary-200">Center</span>
+                  <span class="text-primary-200">Right</span>
+                </Flex>
+              </div>
+            </div>
+          </Section>
+
+          {/* ============================================ */}
+          {/* GRID LAYOUT */}
+          {/* ============================================ */}
+          <Section id="grid" visibleSections={props.visibleSections} title="Grid Layout" description="CSS Grid layout component" class="lg:col-span-2">
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">3-column grid</h4>
+                <Grid columns={3} gap="md">
+                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">1</div>
+                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">2</div>
+                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">3</div>
+                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">4</div>
+                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">5</div>
+                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">6</div>
+                </Grid>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-primary-300 mb-2">Auto-fill responsive</h4>
+                <Grid columns="repeat(auto-fill, minmax(120px, 1fr))" gap="sm">
+                  <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">A</div>
+                  <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">B</div>
+                  <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">C</div>
+                  <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">D</div>
+                  <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">E</div>
+                </Grid>
+              </div>
+            </div>
+          </Section>
+
+          {/* ============================================ */}
+          {/* THEME / PROVIDER */}
+          {/* ============================================ */}
+          <Section id="theme" visibleSections={props.visibleSections} title="Theme / Provider" description="Theme context and color scheme switching" class="lg:col-span-2">
+            <div class="space-y-6">
+              <p class="text-sm text-primary-300">
+                The Provider component wraps your application and provides theme context including color scheme (light/dark) and scale.
+              </p>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div class="p-4 rounded-lg bg-bg-200 border border-primary-700/30">
+                  <h4 class="text-sm font-medium text-primary-200 mb-2">Current Theme</h4>
+                  <ThemeInfoDisplay />
+                </div>
+                <div class="p-4 rounded-lg bg-bg-200 border border-primary-700/30">
+                  <h4 class="text-sm font-medium text-primary-200 mb-2">Usage</h4>
+                  <pre class="text-xs text-primary-400 font-mono whitespace-pre-wrap">{`<Provider colorScheme="dark">
+  <App />
+</Provider>`}</pre>
+                </div>
               </div>
             </div>
           </Section>
@@ -2218,5 +2431,67 @@ function DatePickerRangeDemo() {
       placeholderValue={today}
     />
   )
+}
+
+// ============================================
+// Range Slider Demo
+// ============================================
+
+function RangeSliderDemo(props: { onChange?: (start: number, end: number) => void }) {
+  const [range, setRange] = createSignal({ start: 20, end: 80 })
+
+  return (
+    <div class="space-y-8">
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">Basic Range Slider</h4>
+        <div class="max-w-md">
+          <RangeSlider
+            label="Price Range"
+            value={range()}
+            onChange={(val) => {
+              setRange(val)
+              props.onChange?.(val.start, val.end)
+            }}
+          />
+        </div>
+      </div>
+      <div>
+        <h4 class="text-sm font-medium text-primary-200 mb-3">With Formatting</h4>
+        <div class="max-w-md">
+          <RangeSlider
+            label="Budget"
+            defaultValue={{ start: 200, end: 800 }}
+            minValue={0}
+            maxValue={1000}
+            step={50}
+            formatOptions={{ style: 'currency', currency: 'USD' }}
+          />
+        </div>
+      </div>
+      <p class="text-xs text-primary-400">
+        Range: {range().start} – {range().end}
+      </p>
+    </div>
+  )
+}
+
+// ============================================
+// Theme Info Display
+// ============================================
+
+function ThemeInfoDisplay() {
+  try {
+    const theme = useTheme()
+    return (
+      <div class="space-y-1 text-sm text-primary-300">
+        <p>Color scheme: <strong class="text-primary-200">{theme?.colorScheme ?? 'default'}</strong></p>
+        <p>Scale: <strong class="text-primary-200">{theme?.scale ?? 'medium'}</strong></p>
+      </div>
+    )
+  } catch {
+    return (
+      <p class="text-sm text-primary-400">No Provider context available — using defaults.</p>
+    )
+  }
 }
 

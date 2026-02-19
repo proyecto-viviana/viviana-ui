@@ -1,6 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/solid-router";
 import { createSignal, For, onMount, Show } from "solid-js";
-import { Button, GitHubIcon, PageLayout } from "@proyecto-viviana/ui";
+import {
+  Button,
+  GitHubIcon,
+  PageLayout,
+  TextField,
+  Checkbox,
+  ProgressBar,
+  Slider as StyledSlider,
+  Separator,
+  Tooltip,
+  TooltipTrigger,
+  ToastProvider,
+  ToastRegion,
+  toastSuccess,
+  Tabs as StyledTabs,
+  TabList as StyledTabList,
+  Tab as StyledTab,
+  TabPanel as StyledTabPanel,
+} from "@proyecto-viviana/ui";
 import { createButton } from "@proyecto-viviana/solidaria";
 import { Header } from "@/components";
 
@@ -10,17 +28,21 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   return (
+    <ToastProvider useGlobalQueue>
     <PageLayout>
       <Header />
       <main class="relative overflow-hidden">
         <Hero />
         <Features />
         <ComponentShowcase />
+        <ComponentShowcaseExpanded />
         <CodeExample />
         <CallToAction />
         <Footer />
       </main>
+      <ToastRegion placement="bottom-end" />
     </PageLayout>
+    </ToastProvider>
   );
 }
 
@@ -80,7 +102,7 @@ function Hero() {
             <span class="relative inline-flex rounded-full h-2 w-2 bg-accent" />
           </span>
           <span class="text-sm font-medium text-primary-300">
-            2300+ Tests Passing
+            3600+ Tests Passing
           </span>
         </div>
 
@@ -474,6 +496,181 @@ function ComponentShowcase() {
         </div>
       </div>
     </section>
+  );
+}
+
+/* ============================================
+   COMPONENT SHOWCASE EXPANDED - More Components
+   ============================================ */
+function ComponentShowcaseExpanded() {
+  const [textValue, setTextValue] = createSignal("");
+  const [checked, setChecked] = createSignal(false);
+  const [sliderVal, setSliderVal] = createSignal(60);
+  const [activeTab, setActiveTab] = createSignal<string | number>("overview");
+
+  const tabItems = [
+    { id: "overview", label: "Overview" },
+    { id: "features", label: "Features" },
+    { id: "api", label: "API" },
+  ];
+
+  return (
+    <section class="relative py-24 overflow-hidden">
+      <div class="absolute inset-0 bg-bg-300" />
+      <div class="absolute inset-0 pattern-dots opacity-20" />
+      <div class="absolute top-0 right-1/3 w-80 h-80 bg-primary-500/5 rounded-full blur-[120px]" />
+
+      <div class="relative z-10 max-w-5xl mx-auto px-6">
+        <div class="text-center mb-12">
+          <h2 class="font-jost text-3xl sm:text-4xl font-bold text-primary-100 mb-4">
+            60+ Components, One Library
+          </h2>
+          <p class="text-primary-300 max-w-xl mx-auto">
+            From form controls to data display — every component is accessible, keyboard navigable, and production-ready.
+          </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Row 1: Form Components */}
+          <ShowcaseCard title="Form Controls" accent="from-accent to-primary-500">
+            <div class="space-y-3">
+              <TextField
+                label="Email"
+                placeholder="you@example.com"
+                value={textValue()}
+                onChange={setTextValue}
+                size="sm"
+              />
+              <div class="flex items-center gap-2">
+                <Checkbox isSelected={checked()} onChange={setChecked} size="sm">
+                  Subscribe to updates
+                </Checkbox>
+              </div>
+              <Button
+                variant="accent"
+                size="sm"
+                isDisabled={!textValue() || !checked()}
+                onPress={() => {}}
+              >
+                {textValue() && checked() ? "Ready!" : "Fill form first"}
+              </Button>
+            </div>
+          </ShowcaseCard>
+
+          {/* Row 1: Slider */}
+          <ShowcaseCard title="Slider" accent="from-primary-400 to-primary-600">
+            <div class="space-y-3">
+              <StyledSlider
+                label="Volume"
+                value={sliderVal()}
+                onChange={setSliderVal}
+                minValue={0}
+                maxValue={100}
+              />
+              <div class="flex items-center gap-2">
+                <div
+                  class="h-6 rounded-full bg-linear-to-r from-primary-700 to-accent transition-all duration-200"
+                  style={{ width: `${sliderVal()}%` }}
+                />
+                <span class="text-xs text-primary-400">{sliderVal()}%</span>
+              </div>
+            </div>
+          </ShowcaseCard>
+
+          {/* Row 1: Tooltip + Toast */}
+          <ShowcaseCard title="Overlay Components" accent="from-success-400 to-success-600">
+            <div class="space-y-3">
+              <div>
+                <p class="text-xs text-primary-400 mb-2">Tooltip on hover/focus</p>
+                <TooltipTrigger>
+                  <Button variant="secondary" size="sm">Hover or focus me</Button>
+                  <Tooltip placement="top" showArrow>
+                    I'm a tooltip!
+                  </Tooltip>
+                </TooltipTrigger>
+              </div>
+              <Separator />
+              <div>
+                <p class="text-xs text-primary-400 mb-2">Toast notifications</p>
+                <Button
+                  variant="positive"
+                  size="sm"
+                  onPress={() => toastSuccess("Action completed!")}
+                >
+                  Trigger Toast
+                </Button>
+              </div>
+            </div>
+          </ShowcaseCard>
+
+          {/* Row 2: Progress */}
+          <ShowcaseCard title="Progress & Feedback" accent="from-warning-400 to-warning-600">
+            <div class="space-y-3">
+              <ProgressBar value={25} label="Uploading" variant="primary" />
+              <ProgressBar value={65} label="Processing" variant="accent" />
+              <ProgressBar value={90} label="Almost done" variant="success" />
+              <ProgressBar isIndeterminate label="Loading..." />
+            </div>
+          </ShowcaseCard>
+
+          {/* Row 2: Tabs */}
+          <ShowcaseCard title="Tabs" accent="from-accent-200 to-accent" class="sm:col-span-2">
+            <StyledTabs<{ id: string; label: string }>
+              items={tabItems}
+              getKey={(item) => item.id}
+              getTextValue={(item) => item.label}
+              selectedKey={activeTab()}
+              onSelectionChange={setActiveTab}
+              variant="pill"
+            >
+              <StyledTabList>
+                {(item: { id: string; label: string }) => (
+                  <StyledTab id={item.id}>{item.label}</StyledTab>
+                )}
+              </StyledTabList>
+              <StyledTabPanel>
+                <div class="pt-3 text-sm text-primary-400">
+                  <Show when={activeTab() === "overview"}>
+                    <p>Full-featured accessible component library for SolidJS, with 3677+ tests.</p>
+                  </Show>
+                  <Show when={activeTab() === "features"}>
+                    <p>WAI-ARIA compliant, keyboard navigable, SSR ready, fine-grained reactivity.</p>
+                  </Show>
+                  <Show when={activeTab() === "api"}>
+                    <p>Four layers: solid-stately → solidaria → solidaria-components → ui.</p>
+                  </Show>
+                </div>
+              </StyledTabPanel>
+            </StyledTabs>
+          </ShowcaseCard>
+        </div>
+
+        <div class="mt-8 text-center">
+          <Link to="/playground">
+            <Button variant="accent" buttonStyle="outline" size="lg" class="hover-lift">
+              Explore All Components →
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ShowcaseCard(props: {
+  title: string;
+  accent: string;
+  children: any;
+  class?: string;
+}) {
+  return (
+    <div class={`relative p-5 rounded-xl glass hover-lift group ${props.class ?? ""}`}>
+      <div class={`absolute top-0 left-0 right-0 h-0.5 rounded-t-xl bg-linear-to-r ${props.accent} opacity-60`} />
+      <h3 class="font-jost text-sm font-semibold text-primary-300 mb-3 uppercase tracking-wider">
+        {props.title}
+      </h3>
+      {props.children}
+    </div>
   );
 }
 

@@ -191,6 +191,17 @@ const ADVANCED_SECTION_IDS: SectionId[] = [
   'colorwheel',
   'colorfield',
   'colorswatch',
+  'textarea',
+  'daterangepicker',
+  'colorswatchpicker',
+  'coloreditor',
+  'contextualhelp',
+  'rangeslider',
+  'alertdialog',
+  'actionmenu',
+  'flex',
+  'grid',
+  'theme',
 ]
 
 const PlaygroundAdvancedSections = lazy(() =>
