@@ -62,6 +62,12 @@ export interface VirtualizerLayoutClass<O> {
   new (): VirtualizerLayout<O>;
 }
 
+export type VirtualizerKeyboardNavigationOverride = (
+  target: DropTarget | null,
+  direction: 'next' | 'previous',
+  isValidDropTarget: (target: DropTarget) => boolean
+) => DropTarget | null;
+
 export interface VirtualizerContextValue<O = unknown> {
   layout: VirtualizerLayout<O>;
   layoutOptions?: O;
@@ -73,6 +79,8 @@ export interface VirtualizerContextValue<O = unknown> {
   setDropTargetItemCountResolver: ((resolver: (() => number) | undefined) => void);
   setDropTargetIndexResolver: ((resolver: ((key: string | number) => number | null) | undefined) => void);
   setDropOperationResolver: ((resolver: VirtualizerDropOperationResolver | undefined) => void);
+  setKeyboardNavigationOverride: ((override: VirtualizerKeyboardNavigationOverride | undefined) => void);
+  getBaseKeyboardNavigationTarget: VirtualizerKeyboardNavigationOverride;
 }
 
 export type VirtualizerDropTargetResolver = (target: VirtualizerDropTarget) => VirtualizerDropTarget;
@@ -158,6 +166,9 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     ((key: string | number) => number | null) | undefined
   >(undefined);
   const [dropOperationResolver, setDropOperationResolver] = createSignal<VirtualizerDropOperationResolver | undefined>(
+    undefined
+  );
+  const [keyboardNavigationOverride, setKeyboardNavigationOverride] = createSignal<VirtualizerKeyboardNavigationOverride | undefined>(
     undefined
   );
   let containerRef: HTMLDivElement | undefined;
@@ -260,6 +271,9 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
   const assignDropOperationResolver = (resolver: VirtualizerDropOperationResolver | undefined): void => {
     setDropOperationResolver(() => resolver);
   };
+  const assignKeyboardNavigationOverride = (override: VirtualizerKeyboardNavigationOverride | undefined): void => {
+    setKeyboardNavigationOverride(() => override);
+  };
   const toCollectionDropTarget = (target: VirtualizerDropTarget): DropTarget => {
     if (target.type === 'root') return { type: 'root' };
     const key = target.key ?? target.index;
@@ -318,7 +332,7 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     if (allowedOperations.includes('link')) return 'link';
     return allowedOperations.find((operation) => operation !== 'cancel') ?? 'cancel';
   };
-  const getKeyboardNavigationTarget = (
+  const getBaseKeyboardNavigationTarget = (
     target: DropTarget | null,
     direction: 'next' | 'previous',
     isValidDropTarget: (target: DropTarget) => boolean
@@ -467,6 +481,19 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     }
     return findNavigationTarget(currentIndex, 1);
   };
+  const getKeyboardNavigationTarget = (
+    target: DropTarget | null,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null => {
+    // If a collection component (e.g. Tree) has installed a keyboard navigation override,
+    // delegate to it. This enables collection-aware navigation (tree branch traversal, etc.).
+    const override = keyboardNavigationOverride();
+    if (override) {
+      return override(target, direction, isValidDropTarget);
+    }
+    return getBaseKeyboardNavigationTarget(target, direction, isValidDropTarget);
+  };
   const getKeyboardPageNavigationTarget = (
     target: DropTarget | null,
     direction: 'next' | 'previous',
@@ -586,6 +613,8 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     setDropTargetItemCountResolver: assignDropTargetItemCountResolver,
     setDropTargetIndexResolver: assignDropTargetIndexResolver,
     setDropOperationResolver: assignDropOperationResolver,
+    setKeyboardNavigationOverride: assignKeyboardNavigationOverride,
+    getBaseKeyboardNavigationTarget,
   }));
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     renderItem: (item) => item as JSX.Element,

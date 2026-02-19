@@ -27,11 +27,14 @@ const REQUIRED_SYMBOLS = [
   'DropZone',
   'SharedElementTransition',
   'Virtualizer',
-  'TreeHeader',
-  'TreeSection',
  ] as const;
 
-const BACKLOG_SYMBOLS = [] as const;
+// solidaria-only additions not exported by upstream RAC — tracked here
+// to preserve visibility without generating misleading parity warnings.
+const BACKLOG_SYMBOLS = [
+  'TreeHeader',
+  'TreeSection',
+] as const;
 
 const TRACKED_SYMBOLS = [...REQUIRED_SYMBOLS, ...BACKLOG_SYMBOLS] as const;
 

@@ -91,6 +91,18 @@ export interface Collection<T = unknown> extends Iterable<CollectionNode<T>> {
 }
 
 /**
+ * Structural shape expected when inferring collection item properties
+ * (key, textValue, etc.) from plain objects without explicit getKey/getTextValue/getDisabled.
+ */
+export interface CollectionItemLike {
+  key?: Key;
+  id?: Key;
+  textValue?: string;
+  label?: string;
+  isDisabled?: boolean;
+}
+
+/**
  * Props for items in a collection.
  */
 export interface ItemProps<T = unknown> {

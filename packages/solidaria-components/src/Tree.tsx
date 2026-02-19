@@ -260,7 +260,12 @@ function resolveTreeDirection(element: HTMLElement | null): 'ltr' | 'rtl' {
 function createTreeDropTargetDelegate<T extends object>(
   delegate: TreeDropTargetDelegate,
   state: TreeState<T, TreeCollection<T>>,
-  direction: 'ltr' | 'rtl'
+  direction: 'ltr' | 'rtl',
+  baseKeyboardNav?: (
+    target: DropTarget | null,
+    direction: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ) => DropTarget | null
 ): TreeDropTargetDelegate {
   const pointerTracking: PointerTrackingState = {
     lastY: 0,
@@ -449,6 +454,195 @@ function createTreeDropTargetDelegate<T extends object>(
     return potentialTargets[targetIndex];
   };
 
+  // --- Tree-aware keyboard DnD navigation (RAC parity) ---
+  const getKeyboardNavigationTarget = (
+    target: DropTarget | null,
+    dir: 'next' | 'previous',
+    isValidDropTarget: (target: DropTarget) => boolean
+  ): DropTarget | null => {
+    const collection = state.collection;
+
+    // If the target key is not a visible row (e.g. collapsed/hidden child node),
+    // fall back to the base (non-override) index-based navigation to avoid infinite recursion.
+    // The collection keyMap contains ALL nodes (even collapsed), so check visible rows instead.
+    if (target && target.type === 'item') {
+      const node = collection.getItem(target.key);
+      const isVisibleRow = node != null && (node as TreeNode<T> & { rowIndex?: number }).rowIndex != null;
+      if (!isVisibleRow) {
+        return baseKeyboardNav?.(target, dir, isValidDropTarget) ?? null;
+      }
+    }
+
+    // Helpers
+    const tryValid = (t: DropTarget): DropTarget | null =>
+      isValidDropTarget(t) ? t : null;
+
+    const getNodeNextKey = (node: TreeNode<T> | null | undefined): Key | null => {
+      if (!node) return null;
+      return (node as TreeNode<T> & { nextKey?: Key | null }).nextKey ?? null;
+    };
+
+    const isExpanded = (key: Key): boolean => {
+      const node = collection.getItem(key);
+      if (!node || !node.hasChildNodes) return false;
+      return state.expandedKeys.has(key);
+    };
+
+    const getFirstChildItemKey = (key: Key): Key | null => {
+      for (const child of collection.getChildren(key)) {
+        if (child.type === 'item') return child.key;
+      }
+      return null;
+    };
+
+    const getLastChildItemKey = (key: Key): Key | null => {
+      let lastKey: Key | null = null;
+      for (const child of collection.getChildren(key)) {
+        if (child.type === 'item') lastKey = child.key;
+      }
+      return lastKey;
+    };
+
+    // Find the deepest last expanded descendant (for "previous" from 'after')
+    const getDeepestLastChild = (key: Key): Key => {
+      let current = key;
+      while (isExpanded(current)) {
+        const lastChild = getLastChildItemKey(current);
+        if (lastChild == null) break;
+        current = lastChild;
+      }
+      return current;
+    };
+
+    if (dir === 'next') {
+      // From null → root
+      if (!target) {
+        return tryValid({ type: 'root' });
+      }
+      // From root → first item 'before'
+      if (target.type === 'root') {
+        const firstKey = collection.getFirstKey();
+        if (firstKey != null) {
+          return tryValid({ type: 'item', key: firstKey, dropPosition: 'before' });
+        }
+        return null;
+      }
+      if (target.type === 'item') {
+        switch (target.dropPosition) {
+          case 'before':
+            return tryValid({ type: 'item', key: target.key, dropPosition: 'on' })
+              ?? tryValid({ type: 'item', key: target.key, dropPosition: 'after' });
+          case 'on': {
+            // If item is expanded and has children, go to first child 'before'
+            if (isExpanded(target.key)) {
+              const firstChild = getFirstChildItemKey(target.key);
+              if (firstChild != null) {
+                return tryValid({ type: 'item', key: firstChild, dropPosition: 'before' })
+                  ?? tryValid({ type: 'item', key: firstChild, dropPosition: 'on' });
+              }
+            }
+            // Otherwise, next item in collection or 'after'
+            const nextKey = collection.getKeyAfter(target.key);
+            const targetNode = collection.getItem(target.key);
+            const nextNode = nextKey != null ? collection.getItem(nextKey) : null;
+            if (targetNode && nextNode && nextNode.level != null && targetNode.level != null && nextNode.level >= targetNode.level) {
+              return tryValid({ type: 'item', key: nextNode.key, dropPosition: 'before' })
+                ?? tryValid({ type: 'item', key: target.key, dropPosition: 'after' });
+            }
+            return tryValid({ type: 'item', key: target.key, dropPosition: 'after' });
+          }
+          case 'after': {
+            // If item is expanded (and we're at 'after'), first child
+            if (isExpanded(target.key)) {
+              const firstChild = getFirstChildItemKey(target.key);
+              if (firstChild != null) {
+                return tryValid({ type: 'item', key: firstChild, dropPosition: 'before' })
+                  ?? tryValid({ type: 'item', key: firstChild, dropPosition: 'on' });
+              }
+            }
+            // Check if this is the last sibling at its level
+            const targetNode = collection.getItem(target.key);
+            const nextSiblingKey = getNodeNextKey(targetNode);
+            if (nextSiblingKey != null) {
+              const nextSibling = collection.getItem(nextSiblingKey);
+              if (nextSibling?.type === 'item') {
+                return tryValid({ type: 'item', key: nextSibling.key, dropPosition: 'before' })
+                  ?? tryValid({ type: 'item', key: nextSibling.key, dropPosition: 'on' });
+              }
+            }
+            // Traverse up to parent when at last sibling
+            if (targetNode?.parentKey != null) {
+              const parentNode = collection.getItem(targetNode.parentKey);
+              const parentNextKey = getNodeNextKey(parentNode);
+              const parentNextNode = parentNextKey != null ? collection.getItem(parentNextKey) : null;
+              if (parentNextNode?.type === 'item') {
+                return tryValid({ type: 'item', key: parentNextNode.key, dropPosition: 'before' });
+              }
+              if (parentNode?.type === 'item') {
+                return tryValid({ type: 'item', key: parentNode.key, dropPosition: 'after' });
+              }
+            }
+            // Reached end — try next item in flat collection
+            const nextKey = collection.getKeyAfter(target.key);
+            if (nextKey != null) {
+              return tryValid({ type: 'item', key: nextKey, dropPosition: 'before' })
+                ?? tryValid({ type: 'item', key: nextKey, dropPosition: 'on' });
+            }
+            // Wrap to root
+            return tryValid({ type: 'root' });
+          }
+        }
+      }
+      return null;
+    }
+
+    // dir === 'previous'
+    // From null or root → last root-level item 'after'
+    if (!target || target.type === 'root') {
+      const lastKey = collection.getLastKey();
+      if (lastKey != null) {
+        // Find root-level ancestor of last key
+        let rootKey = lastKey;
+        let node = collection.getItem(lastKey);
+        while (node?.parentKey != null) {
+          rootKey = node.parentKey;
+          node = collection.getItem(rootKey);
+        }
+        return tryValid({ type: 'item', key: rootKey, dropPosition: 'after' });
+      }
+      return null;
+    }
+
+    if (target.type === 'item') {
+      switch (target.dropPosition) {
+        case 'after': {
+          // If expanded with children, go to deepest last child 'after'
+          const deepest = getDeepestLastChild(target.key);
+          if (deepest !== target.key) {
+            return tryValid({ type: 'item', key: deepest, dropPosition: 'after' })
+              ?? tryValid({ type: 'item', key: target.key, dropPosition: 'on' });
+          }
+          return tryValid({ type: 'item', key: target.key, dropPosition: 'on' });
+        }
+        case 'on':
+          return tryValid({ type: 'item', key: target.key, dropPosition: 'before' });
+        case 'before': {
+          // Move to the previous sibling's deepest last child 'after'
+          const prevKey = collection.getKeyBefore(target.key);
+          if (prevKey != null) {
+            const deepest = getDeepestLastChild(prevKey);
+            return tryValid({ type: 'item', key: deepest, dropPosition: 'after' })
+              ?? tryValid({ type: 'item', key: prevKey, dropPosition: 'on' });
+          }
+          // No previous — go to root
+          return tryValid({ type: 'root' });
+        }
+      }
+    }
+
+    return null;
+  };
+
   return {
     getDropTargetFromPoint(x, y, isValidDropTarget) {
       const baseTarget = delegate.getDropTargetFromPoint(x, y, isValidDropTarget);
@@ -494,7 +688,7 @@ function createTreeDropTargetDelegate<T extends object>(
       pointerTracking.boundaryContext = null;
       return potentialTargets[0];
     },
-    getKeyboardNavigationTarget: delegate.getKeyboardNavigationTarget?.bind(delegate),
+    getKeyboardNavigationTarget,
     getKeyboardPageNavigationTarget: delegate.getKeyboardPageNavigationTarget?.bind(delegate),
   };
 }
@@ -720,7 +914,8 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const dropTargetDelegate = createTreeDropTargetDelegate(
       baseDropTargetDelegate as TreeDropTargetDelegate,
       state,
-      direction
+      direction,
+      virtualizer?.getBaseKeyboardNavigationTarget
     );
     return hooks.useDroppableCollection(
       {
@@ -868,6 +1063,31 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     if (!renderRange) return result;
     return result.filter((index) => index >= renderRange.start && index < renderRange.end);
   };
+  // Install tree-aware keyboard navigation override into the Virtualizer (if present).
+  // This replaces the generic index-based navigation with collection-level semantics
+  // (tree branch traversal, level-aware wrapping — RAC parity item #36).
+  createEffect(() => {
+    if (!virtualizer) return;
+    const direction = resolveTreeDirection(ref());
+    const parentDelegate: TreeDropTargetDelegate = {
+      getDropTargetFromPoint: parentCollectionRenderer?.dropTargetDelegate?.getDropTargetFromPoint
+        ?? ((_x, _y, _v) => null),
+      getKeyboardNavigationTarget: parentCollectionRenderer?.dropTargetDelegate?.getKeyboardNavigationTarget,
+      getKeyboardPageNavigationTarget: parentCollectionRenderer?.dropTargetDelegate?.getKeyboardPageNavigationTarget,
+    };
+    const treeDelegate = createTreeDropTargetDelegate(
+      parentDelegate, state, direction,
+      virtualizer.getBaseKeyboardNavigationTarget
+    );
+    virtualizer.setKeyboardNavigationOverride(
+      treeDelegate.getKeyboardNavigationTarget
+        ? (target, dir, isValid) => treeDelegate.getKeyboardNavigationTarget!(target, dir, isValid)
+        : undefined
+    );
+    onCleanup(() => {
+      virtualizer.setKeyboardNavigationOverride(undefined);
+    });
+  });
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     ...parentCollectionRenderer,
     renderItem: (item) => item as JSX.Element,

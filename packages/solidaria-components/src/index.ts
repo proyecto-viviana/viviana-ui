@@ -891,6 +891,21 @@ export {
   type ColorSwatchPickerItemProps,
 } from './Color';
 
+// ContextualHelpTrigger
+export {
+  ContextualHelpTrigger,
+  type ContextualHelpTriggerProps,
+  type ContextualHelpTriggerRenderProps,
+} from './ContextualHelpTrigger';
+
+// ColorEditor
+export {
+  ColorEditor,
+  type ColorEditorProps,
+  type ColorEditorRenderProps,
+  type ColorEditorColorSpace,
+} from './ColorEditor';
+
 // Landmark
 export {
   Landmark,
@@ -901,6 +916,35 @@ export {
   type AriaLandmarkRole,
   type LandmarkController,
 } from './Landmark';
+
+// ActionBar
+export {
+  ActionBar,
+  ActionBarContainer,
+  ActionBarSelectionCount,
+  ActionBarClearButton,
+  ActionBarContext,
+  useActionBarContext,
+  type ActionBarProps,
+  type ActionBarRenderProps,
+  type ActionBarContainerProps,
+  type ActionBarSelectionCountProps,
+  type ActionBarClearButtonProps,
+  type ActionBarContextValue,
+} from './ActionBar';
+
+// ActionGroup
+export {
+  ActionGroup,
+  ActionGroupContext,
+  ActionGroupStateContext,
+  useActionGroupContext,
+  type ActionGroupProps,
+  type ActionGroupRenderProps,
+  type ActionGroupItemRenderProps,
+  type ActionGroupItem,
+  type ActionGroupContextValue,
+} from './ActionGroup';
 
 // Alert
 export {
@@ -921,3 +965,67 @@ export {
   type IconProps,
   type IconRenderProps,
 } from './Icon';
+
+// Focusable
+export {
+  Focusable,
+  type FocusableProps,
+} from './Focusable';
+
+// Pressable
+export {
+  Pressable,
+  type PressableProps,
+} from './Pressable';
+
+// RouterProvider
+export {
+  RouterProvider,
+  RouterContext,
+  useRouter,
+  type RouterProviderProps,
+  type RouterContextValue,
+  type RouterOptions,
+} from './RouterProvider';
+
+// ============================================
+// RE-EXPORTS FROM LOWER LAYERS
+// ============================================
+
+// DnD utilities
+export { DIRECTORY_DRAG_TYPE } from '@proyecto-viviana/solid-stately';
+export { isDirectoryDropItem, isFileDropItem, isTextDropItem } from '@proyecto-viviana/solidaria';
+export { createDrag as useDrag, createDrop as useDrop } from '@proyecto-viviana/solidaria';
+
+// i18n
+export { isRTL, I18nProvider, useLocale, createFilter as useFilter } from '@proyecto-viviana/solidaria';
+
+// SSR
+export { SSRProvider } from '@proyecto-viviana/solidaria';
+
+// Color + Form
+export { parseColor, FormValidationContext } from '@proyecto-viviana/solid-stately';
+
+// Toast alias
+export { ToastQueue as UNSTABLE_ToastQueue } from '@proyecto-viviana/solid-stately';
+
+// Data hooks (aliased to match RAC's useXxx naming)
+export {
+  createListData,
+  createListData as useListData,
+  createTreeData,
+  createTreeData as useTreeData,
+  createAsyncList,
+  createAsyncList as useAsyncList,
+  getColorChannels,
+  type ListOptions,
+  type ListData,
+  type TreeOptions,
+  type TreeData,
+  type TreeDataNode,
+  type AsyncListOptions,
+  type AsyncListData,
+  type AsyncListLoadFunction,
+  type SortDescriptor,
+  type LoadingState,
+} from '@proyecto-viviana/solid-stately';

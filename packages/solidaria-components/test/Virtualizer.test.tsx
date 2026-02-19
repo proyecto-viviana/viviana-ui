@@ -1934,4 +1934,196 @@ describe('Virtualizer', () => {
     // Ancestor row is offscreen and should not be in current virtual window.
     expect(screen.queryByTestId('tree-offscreen-drop-after-1')).not.toBeInTheDocument();
   });
+
+  it('tree keyboard DnD navigates into expanded children from parent on-position', () => {
+    // RAC parity: from parent 'on', next should go to first child 'before'
+    // when the parent is expanded (tree branch boundary wrapping).
+    // Tree installs its keyboard nav override into the Virtualizer context.
+    function Consumer(): JSX.Element {
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      return (
+        <output data-testid="tree-keyboard-dnd-into-children">
+          {JSON.stringify({
+            nextFromParentOn:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 'parent', dropPosition: 'on' },
+                'next',
+                () => true
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    const items = [
+      {
+        key: 'parent',
+        value: { name: 'Parent' },
+        textValue: 'Parent',
+        children: [
+          { key: 'child-1', value: { name: 'Child 1' }, textValue: 'Child 1' },
+          { key: 'child-2', value: { name: 'Child 2' }, textValue: 'Child 2' },
+        ],
+      },
+      { key: 'sibling', value: { name: 'Sibling' }, textValue: 'Sibling' },
+    ];
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20 }}>
+        <Tree items={items} defaultExpandedKeys={['parent']} aria-label="Tree DnD keyboard test">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('tree-keyboard-dnd-into-children').textContent || '{}');
+    // When parent is expanded, next from 'on' goes to first child
+    expect(parsed.nextFromParentOn).toMatchObject({
+      type: 'item',
+      key: 'child-1',
+      dropPosition: 'before',
+    });
+  });
+
+  it('tree keyboard DnD traverses up to parent sibling from last child after-position', () => {
+    // RAC parity: from last child 'after', next should traverse up to parent's next sibling
+    function Consumer(): JSX.Element {
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      return (
+        <output data-testid="tree-keyboard-dnd-exit-branch">
+          {JSON.stringify({
+            nextFromLastChildAfter:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 'child-2', dropPosition: 'after' },
+                'next',
+                () => true
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    const items = [
+      {
+        key: 'parent',
+        value: { name: 'Parent' },
+        textValue: 'Parent',
+        children: [
+          { key: 'child-1', value: { name: 'Child 1' }, textValue: 'Child 1' },
+          { key: 'child-2', value: { name: 'Child 2' }, textValue: 'Child 2' },
+        ],
+      },
+      { key: 'sibling', value: { name: 'Sibling' }, textValue: 'Sibling' },
+    ];
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20 }}>
+        <Tree items={items} defaultExpandedKeys={['parent']} aria-label="Tree DnD exit branch test">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('tree-keyboard-dnd-exit-branch').textContent || '{}');
+    // From last child 'after', next navigates to sibling 'before'
+    expect(parsed.nextFromLastChildAfter).toMatchObject({
+      type: 'item',
+      key: 'sibling',
+      dropPosition: 'before',
+    });
+  });
+
+  it('tree keyboard DnD previous from child goes to deepest last expanded descendant', () => {
+    // RAC parity: previous from 'before' goes to deepest expanded child of previous item
+    function Consumer(): JSX.Element {
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      return (
+        <output data-testid="tree-keyboard-dnd-previous-deep">
+          {JSON.stringify({
+            previousFromSiblingBefore:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 'sibling', dropPosition: 'before' },
+                'previous',
+                () => true
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    const items = [
+      {
+        key: 'parent',
+        value: { name: 'Parent' },
+        textValue: 'Parent',
+        children: [
+          { key: 'child-1', value: { name: 'Child 1' }, textValue: 'Child 1' },
+          { key: 'child-2', value: { name: 'Child 2' }, textValue: 'Child 2' },
+        ],
+      },
+      { key: 'sibling', value: { name: 'Sibling' }, textValue: 'Sibling' },
+    ];
+
+    render(() => (
+      <Virtualizer layout={{}} layoutOptions={{ itemSize: 20 }}>
+        <Tree items={items} defaultExpandedKeys={['parent']} aria-label="Tree DnD previous deep test">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('tree-keyboard-dnd-previous-deep').textContent || '{}');
+    // Previous from sibling 'before' should go to child-2 'after' (deepest last child of parent)
+    expect(parsed.previousFromSiblingBefore).toMatchObject({
+      type: 'item',
+      key: 'child-2',
+      dropPosition: 'after',
+    });
+  });
+
+  it('grid keyboard DnD wraps to boundary targets at collection edges', () => {
+    // Grid boundary wrapping: from last item 'after', next wraps to first item 'before'
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      const collection = createMemo(() => useCollectionRenderer<unknown>());
+      ctx()?.setDropTargetItemCountResolver(() => 6);
+      ctx()?.setDropTargetIndexResolver((key) => Number(key));
+      return (
+        <output data-testid="grid-keyboard-dnd-wrap">
+          {JSON.stringify({
+            nextFromLastAfter:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 5, dropPosition: 'after' },
+                'next',
+                (target) => target.type === 'item'
+              ) ?? null,
+            previousFromFirstBefore:
+              collection()?.dropTargetDelegate?.getKeyboardNavigationTarget?.(
+                { type: 'item', key: 0, dropPosition: 'before' },
+                'previous',
+                (target) => target.type === 'item'
+              ) ?? null,
+          })}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer
+        layout={GridLayout}
+        layoutOptions={{ itemSize: 40, columns: 3, viewportWidth: 300 }}
+      >
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    const parsed = JSON.parse(screen.getByTestId('grid-keyboard-dnd-wrap').textContent || '{}');
+    // From last item 'after', next wraps to first item 'before'
+    expect(parsed.nextFromLastAfter).toMatchObject({ type: 'item', key: 0, dropPosition: 'before' });
+    // From first item 'before', previous wraps to last item 'after'
+    expect(parsed.previousFromFirstBefore).toMatchObject({ type: 'item', key: 5, dropPosition: 'after' });
+  });
 });

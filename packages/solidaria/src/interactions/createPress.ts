@@ -84,8 +84,8 @@ function isPressedValue(isPressed: Accessor<boolean> | boolean | undefined): boo
   return isPressed ?? false;
 }
 
-// Symbol to track if a link click was handled by us
-const LINK_CLICKED = Symbol('linkClicked');
+// Track which links have been programmatically clicked to avoid double activation
+const linkClickedSet = new WeakSet<HTMLElement>();
 
 // CSS for preventing double-tap zoom delay
 let pressableCSSInjected = false;
@@ -685,12 +685,12 @@ export function createPress(props: CreatePressProps = {}): PressResult {
 
     // Handle link activation with non-Enter keys (Space)
     // Native links only respond to Enter, but we want Space to work too
-    if (e.key === ' ' && isHTMLAnchorLink(target) && !(target as any)[LINK_CLICKED]) {
-      (target as any)[LINK_CLICKED] = true;
+    if (e.key === ' ' && isHTMLAnchorLink(target) && !linkClickedSet.has(target as HTMLElement)) {
+      linkClickedSet.add(target as HTMLElement);
       openLink(target as HTMLAnchorElement, e);
       // Clean up the marker
       setTimeout(() => {
-        delete (target as any)[LINK_CLICKED];
+        linkClickedSet.delete(target as HTMLElement);
       }, 0);
     }
 

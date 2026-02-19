@@ -24,10 +24,12 @@ function format(results: CheckResult[]): string {
 }
 
 const virtualizerPath = "packages/solidaria-components/src/Virtualizer.tsx";
+const treePath = "packages/solidaria-components/src/Tree.tsx";
 const testsPath = "packages/solidaria-components/test/Virtualizer.test.tsx";
 
-const [virtualizerSource, testsSource] = await Promise.all([
+const [virtualizerSource, treeSource, testsSource] = await Promise.all([
   Deno.readTextFile(virtualizerPath),
+  Deno.readTextFile(treePath),
   Deno.readTextFile(testsPath),
 ]);
 
@@ -54,6 +56,28 @@ const results: CheckResult[] = [
       has(testsSource, /keyboard delegate falls back to opposite direction when forward scan has no valid targets/) &&
       has(testsSource, /keyboard page delegate falls back to opposite direction when forward scan has no valid targets/),
     detail: "regression tests cover opposite-direction fallback for keyboard + page delegates",
+  },
+  {
+    target: treePath,
+    ok:
+      has(treeSource, /getKeyboardNavigationTarget/) &&
+      has(treeSource, /isExpanded/) &&
+      has(treeSource, /getFirstChildItemKey/) &&
+      has(treeSource, /getDeepestLastChild/),
+    detail: "tree drop target delegate includes tree-aware keyboard DnD navigation",
+  },
+  {
+    target: testsPath,
+    ok:
+      has(testsSource, /tree keyboard DnD navigates into expanded children/) &&
+      has(testsSource, /tree keyboard DnD traverses up to parent sibling/) &&
+      has(testsSource, /tree keyboard DnD previous from child goes to deepest last expanded descendant/),
+    detail: "regression tests cover tree branch-boundary wrapping edge cases",
+  },
+  {
+    target: testsPath,
+    ok: has(testsSource, /grid keyboard DnD wraps to boundary targets at collection edges/),
+    detail: "regression tests cover grid boundary wrapping edge cases",
   },
 ];
 

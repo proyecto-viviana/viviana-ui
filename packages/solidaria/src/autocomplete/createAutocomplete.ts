@@ -212,7 +212,7 @@ export function createAutocomplete<T = unknown>(
 
   // Handle keyboard navigation
   const onKeyDown = (e: KeyboardEvent) => {
-    if ((e as any).isComposing) {
+    if ('isComposing' in e && e.isComposing) {
       return
     }
 

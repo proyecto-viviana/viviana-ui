@@ -116,7 +116,7 @@ const AXIS_SIZE: Record<string, SizeAxis> = {
   left: 'width',
 };
 
-const TOTAL_SIZE: Record<string, string> = {
+const TOTAL_SIZE: Record<SizeAxis, 'totalWidth' | 'totalHeight'> = {
   width: 'totalWidth',
   height: 'totalHeight',
 };
@@ -307,7 +307,7 @@ function computePosition(
   if (placement === axis) {
     const containerHeight = isContainerPositioned
       ? containerDimensions[size]
-      : (containerDimensions as any)[TOTAL_SIZE[size]];
+      : containerDimensions[TOTAL_SIZE[size]];
     position[FLIPPED_DIRECTION[axis] as keyof Position] = Math.floor(
       containerHeight - childOffset[axis] + offset
     );
@@ -333,7 +333,7 @@ function getMaxHeight(
   const overlayTop =
     (position.top != null
       ? position.top
-      : (containerDimensions as any)[TOTAL_SIZE.height] -
+      : containerDimensions[TOTAL_SIZE.height] -
         (position.bottom ?? 0) -
         overlayHeight) - (containerDimensions.scroll.top ?? 0);
 
@@ -620,7 +620,7 @@ export function getRect(node: Element, ignoreScale: boolean) {
   let width = bWidth;
   let height = bHeight;
 
-  if (ignoreScale && node instanceof (node.ownerDocument.defaultView as any).HTMLElement) {
+  if (ignoreScale && node instanceof (node.ownerDocument.defaultView?.HTMLElement ?? HTMLElement)) {
     width = (node as HTMLElement).offsetWidth;
     height = (node as HTMLElement).offsetHeight;
   }
@@ -690,8 +690,8 @@ function isContainingBlock(node: Element): boolean {
     /transform|perspective/.test(style.willChange) ||
     style.filter !== 'none' ||
     style.contain === 'paint' ||
-    ('backdropFilter' in style && (style as any).backdropFilter !== 'none') ||
-    ('WebkitBackdropFilter' in style && (style as any).WebkitBackdropFilter !== 'none')
+    ('backdropFilter' in style && style.getPropertyValue('backdrop-filter') !== 'none') ||
+    ('WebkitBackdropFilter' in style && style.getPropertyValue('-webkit-backdrop-filter') !== 'none')
   );
 }
 

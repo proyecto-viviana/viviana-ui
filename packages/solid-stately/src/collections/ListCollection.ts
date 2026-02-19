@@ -3,7 +3,7 @@
  * Provides a Collection interface over an array of nodes.
  */
 
-import type { Collection, CollectionNode, Key } from './types';
+import type { Collection, CollectionItemLike, CollectionNode, Key } from './types';
 
 /**
  * A basic implementation of Collection for list-based components.
@@ -123,9 +123,15 @@ export function createListCollection<T>(
   } = {}
 ): ListCollection<T> {
   const {
-    getKey = (item: T, index: number) => (item as any).key ?? (item as any).id ?? index,
-    getTextValue = (item: T) => (item as any).textValue ?? (item as any).label ?? String(item),
-    getDisabled = (item: T) => (item as any).isDisabled ?? false,
+    getKey = (item: T, index: number) => {
+      const o = item as CollectionItemLike;
+      return o.key ?? o.id ?? index;
+    },
+    getTextValue = (item: T) => {
+      const o = item as CollectionItemLike;
+      return o.textValue ?? o.label ?? String(item);
+    },
+    getDisabled = (item: T) => (item as CollectionItemLike).isDisabled ?? false,
   } = options;
 
   const nodes: CollectionNode<T>[] = items.map((item, index) => ({
@@ -133,7 +139,7 @@ export function createListCollection<T>(
     key: getKey(item, index),
     value: item,
     textValue: getTextValue(item),
-    rendered: null as any, // Will be set by component
+    rendered: null!, // Will be set by component
     level: 0,
     index,
     parentKey: null,

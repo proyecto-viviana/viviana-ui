@@ -128,7 +128,7 @@ export function createOverlay(
 
   // Handle the escape key
   const onKeyDown: JSX.EventHandler<HTMLElement, KeyboardEvent> = (e) => {
-    if (e.key === 'Escape' && !isKeyboardDismissDisabled && !(e as any).nativeEvent?.isComposing) {
+    if (e.key === 'Escape' && !isKeyboardDismissDisabled && !e.isComposing) {
       e.stopPropagation();
       e.preventDefault();
       onHide();

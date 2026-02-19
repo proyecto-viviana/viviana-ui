@@ -10,6 +10,7 @@ import { ListCollection } from './ListCollection';
 import { createSelectionState, type SelectionState } from './createSelectionState';
 import type {
   Collection,
+  CollectionItemLike,
   CollectionNode,
   DisabledBehavior,
   FocusStrategy,
@@ -76,17 +77,18 @@ export function createListState<T = unknown>(
     const items = p.items ?? [];
 
     const nodes: CollectionNode<T>[] = items.map((item, index) => {
-      const key = p.getKey?.(item) ?? (item as any).key ?? (item as any).id ?? index;
+      const o = item as CollectionItemLike;
+      const key = p.getKey?.(item) ?? o.key ?? o.id ?? index;
       const textValue =
-        p.getTextValue?.(item) ?? (item as any).textValue ?? (item as any).label ?? String(item);
-      const isDisabled = p.getDisabled?.(item) ?? (item as any).isDisabled ?? false;
+        p.getTextValue?.(item) ?? o.textValue ?? o.label ?? String(item);
+      const isDisabled = p.getDisabled?.(item) ?? o.isDisabled ?? false;
 
       return {
         type: 'item' as const,
         key,
         value: item,
         textValue,
-        rendered: null as any,
+        rendered: null!,
         level: 0,
         index,
         parentKey: null,

@@ -204,8 +204,9 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
     overlay.style.left = '';
     overlay.style.right = '';
 
-    Object.keys(result.position).forEach((key) => {
-      (overlay.style as any)[key] = (result.position as any)[key] + 'px';
+    const pos = result.position as Record<string, number | undefined>;
+    Object.keys(pos).forEach((key) => {
+      overlay.style.setProperty(key, pos[key] + 'px');
     });
     overlay.style.maxHeight = result.maxHeight != null ? result.maxHeight + 'px' : '';
 
