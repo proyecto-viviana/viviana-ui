@@ -44,6 +44,12 @@ bun.lockb
 
 react-spectrum
 
+# Playwright CLI artifacts
+.playwright-cli/
+/table-page-screenshot.png
+/table-page-snapshot.yaml
+/table-page.png
+
 # Local
 .DS_Store
 .mcp.json

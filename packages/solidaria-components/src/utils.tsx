@@ -100,7 +100,9 @@ export function useRenderProps<T extends object>(
   props: RenderPropsBase<T> & { defaultClassName?: string },
   values: Accessor<T>
 ): RenderPropsResult<T> {
-  const { children, class: className, style, defaultClassName = '' } = props;
+  // Don't destructure children — access lazily to avoid eager evaluation
+  // that would trigger child component creation before context providers mount.
+  const { class: className, style, defaultClassName = '' } = props;
 
   // Compute class and style eagerly (they don't depend on context)
   const computedClass = createMemo(() => {
@@ -118,17 +120,18 @@ export function useRenderProps<T extends object>(
   });
 
   // Return object with explicit function for rendering children
-  // This avoids the getter pattern that causes SSR issues
+  // Children are accessed lazily during render (inside context providers)
   return {
     class: computedClass,
     style: computedStyle,
     renderChildren: () => {
       const currentValues = values();
+      const children = props.children;
       return typeof children === 'function'
         ? children(currentValues)
         : children;
     },
-    children,
+    get children() { return props.children; },
     values,
   };
 }

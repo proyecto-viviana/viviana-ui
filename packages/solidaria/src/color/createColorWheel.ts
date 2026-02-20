@@ -107,6 +107,9 @@ export function createColorWheel(
     }
   };
 
+  // Hue spectrum conic gradient
+  const conicGradient = `conic-gradient(from 90deg, hsl(0, 100%, 50%), hsl(30, 100%, 50%), hsl(60, 100%, 50%), hsl(90, 100%, 50%), hsl(120, 100%, 50%), hsl(150, 100%, 50%), hsl(180, 100%, 50%), hsl(210, 100%, 50%), hsl(240, 100%, 50%), hsl(270, 100%, 50%), hsl(300, 100%, 50%), hsl(330, 100%, 50%), hsl(360, 100%, 50%))`;
+
   // Track props (the wheel container)
   const trackProps = createMemo(() => {
     const s = getState();
@@ -120,6 +123,13 @@ export function createColorWheel(
       style: {
         position: 'relative' as const,
         'touch-action': 'none',
+        'border-radius': '50%',
+        background: conicGradient,
+        // Use radial-gradient mask to cut out center hole (creates ring shape)
+        // 35% inner radius leaves a nice thick ring
+        '-webkit-mask-image': 'radial-gradient(circle, transparent 35%, black 36%)',
+        'mask-image': 'radial-gradient(circle, transparent 35%, black 36%)',
+        'forced-color-adjust': 'none',
       },
       'data-disabled': s.isDisabled || p.isDisabled || undefined,
     };

@@ -206,6 +206,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     'class',
     'title',
     'description',
+    'children',
   ])
 
   const size = () => local.size ?? 'md'

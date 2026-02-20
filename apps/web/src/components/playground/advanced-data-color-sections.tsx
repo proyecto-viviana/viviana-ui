@@ -490,7 +490,7 @@ function ColorWheelDemo() {
       >
         {() => (
           <>
-            <ColorWheelTrack class="rounded-full" />
+            <ColorWheelTrack class="rounded-full w-48 h-48" />
             <ColorWheelThumb class="w-4 h-4 rounded-full border-2 border-white shadow-md" />
           </>
         )}

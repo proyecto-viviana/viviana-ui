@@ -346,10 +346,10 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     isEmpty: stateProps.items.length === 0,
   }));
 
-  // Resolve render props
+  // Resolve render props (class and style only — children rendered directly in JSX
+  // to avoid eager evaluation before context providers mount)
   const renderProps = useRenderProps(
     {
-      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Table',
@@ -502,7 +502,9 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
             data-empty={stateProps.items.length === 0 || undefined}
             data-drop-target={isRootDropTarget() || undefined}
           >
-            {renderProps.renderChildren()}
+            {typeof props.children === 'function'
+              ? props.children(renderValues())
+              : props.children}
           </table>
         </CollectionRendererContext.Provider>
       </TableStateContext.Provider>
@@ -622,10 +624,9 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     isHovered: isHovered(),
   }));
 
-  // Resolve render props
+  // Resolve render props (children rendered directly in JSX to avoid eager evaluation)
   const renderProps = useRenderProps(
     {
-      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Table-column',
@@ -661,7 +662,9 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
       data-focused={state.focusedKey === local.id || undefined}
       data-focus-visible={(isFocusVisible() && state.focusedKey === local.id) || undefined}
     >
-      {renderProps.renderChildren()}
+      {typeof props.children === 'function'
+        ? props.children(renderValues())
+        : props.children}
     </th>
   );
 }
@@ -952,10 +955,9 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     isDisabled,
   }));
 
-  // Resolve render props
+  // Resolve render props (children rendered directly in JSX to avoid eager evaluation)
   const renderProps = useRenderProps(
     {
-      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Table-row',
@@ -1004,7 +1006,9 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
         data-dragging={draggableItem()?.isDragging || undefined}
         data-drop-target={droppableItem()?.isDropTarget || undefined}
       >
-        {renderProps.renderChildren()}
+        {typeof props.children === 'function'
+          ? props.children(renderValues())
+          : props.children}
       </tr>
     </TableRowContext.Provider>
   );
@@ -1084,10 +1088,9 @@ export function TableCell(props: TableCellProps): JSX.Element {
     isHovered: isHovered(),
   }));
 
-  // Resolve render props
+  // Resolve render props (children rendered directly in JSX to avoid eager evaluation)
   const renderProps = useRenderProps(
     {
-      children: props.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Table-cell',
@@ -1122,7 +1125,9 @@ export function TableCell(props: TableCellProps): JSX.Element {
       data-pressed={isPressed || undefined}
       data-hovered={isHovered() || undefined}
     >
-      {renderProps.renderChildren()}
+      {typeof props.children === 'function'
+        ? props.children(renderValues())
+        : props.children}
     </td>
   );
 }

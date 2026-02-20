@@ -26,6 +26,8 @@ export interface AlertDialogProps {
   title: string;
   /** The content/message of the alert dialog. */
   children: JSX.Element;
+  /** The trigger element that opens the dialog. */
+  trigger?: JSX.Element;
   /** The variant of the alert dialog. @default 'confirmation' */
   variant?: AlertDialogVariant;
   /** Label for the primary action button. @default 'Confirm' */
@@ -70,7 +72,7 @@ const variantStyles: Record<AlertDialogVariant, { icon: string; buttonVariant: s
  */
 export function AlertDialog(props: AlertDialogProps): JSX.Element {
   const [local] = splitProps(props, [
-    'title', 'children', 'variant', 'primaryActionLabel', 'cancelLabel',
+    'title', 'children', 'trigger', 'variant', 'primaryActionLabel', 'cancelLabel',
     'onPrimaryAction', 'onCancel', 'isOpen', 'onOpenChange', 'autoFocusButton',
     'class', 'isDismissable',
   ]);
@@ -80,6 +82,7 @@ export function AlertDialog(props: AlertDialogProps): JSX.Element {
 
   return (
     <HeadlessDialogTrigger isOpen={local.isOpen} onOpenChange={local.onOpenChange}>
+      {local.trigger}
       <HeadlessModalOverlay
         isDismissable={local.isDismissable ?? false}
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"

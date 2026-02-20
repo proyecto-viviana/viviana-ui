@@ -61,45 +61,41 @@ function BreadcrumbsPage() {
       <Example
         title="Basic Breadcrumbs"
         description="A simple breadcrumb trail showing page hierarchy. The last item is the current page and is not a link."
-        code={`<Breadcrumbs>
-  <BreadcrumbItem id="home" href="#">Home</BreadcrumbItem>
-  <BreadcrumbItem id="products" href="#">Products</BreadcrumbItem>
-  <BreadcrumbItem id="electronics" href="#">Electronics</BreadcrumbItem>
-  <BreadcrumbItem id="laptops">Laptops</BreadcrumbItem>
+        code={`<Breadcrumbs items={basicCrumbs}>
+  {(crumb) => (
+    <BreadcrumbItem id={crumb.id} href={crumb.href}>
+      {crumb.label}
+    </BreadcrumbItem>
+  )}
 </Breadcrumbs>`}
       >
-        <Breadcrumbs>
-          <BreadcrumbItem id="home" href="#">
-            Home
-          </BreadcrumbItem>
-          <BreadcrumbItem id="products" href="#">
-            Products
-          </BreadcrumbItem>
-          <BreadcrumbItem id="electronics" href="#">
-            Electronics
-          </BreadcrumbItem>
-          <BreadcrumbItem id="laptops">Laptops</BreadcrumbItem>
+        <Breadcrumbs items={basicCrumbs}>
+          {(crumb: BreadcrumbEntry) => (
+            <BreadcrumbItem id={crumb.id} href={crumb.href}>
+              {crumb.label}
+            </BreadcrumbItem>
+          )}
         </Breadcrumbs>
       </Example>
 
       <Example
         title="Interactive Navigation"
         description="Click any breadcrumb to navigate back to that level. The trail updates to reflect the new location."
-        code={`<Breadcrumbs onAction={handleNavigate}>
-  {crumbs().map((crumb) => (
+        code={`<Breadcrumbs items={crumbs()} onAction={handleNavigate}>
+  {(crumb) => (
     <BreadcrumbItem id={crumb.id} href={crumb.href}>
       {crumb.label}
     </BreadcrumbItem>
-  ))}
+  )}
 </Breadcrumbs>`}
       >
         <div>
-          <Breadcrumbs onAction={(key) => handleNavigate(String(key))}>
-            {crumbs().map((crumb) => (
+          <Breadcrumbs items={crumbs()} onAction={(key) => handleNavigate(String(key))}>
+            {(crumb: BreadcrumbEntry) => (
               <BreadcrumbItem id={crumb.id} href={crumb.href}>
                 {crumb.label}
               </BreadcrumbItem>
-            ))}
+            )}
           </Breadcrumbs>
           <p class="mt-2 text-sm text-bg-500">
             Current page: <strong>{currentPage()}</strong>
@@ -119,33 +115,43 @@ function BreadcrumbsPage() {
       <Example
         title="Size Variants"
         description="Breadcrumbs support different sizes to match surrounding content."
-        code={`<Breadcrumbs size="S">...</Breadcrumbs>
-<Breadcrumbs size="M">...</Breadcrumbs>
-<Breadcrumbs size="L">...</Breadcrumbs>`}
+        code={`<Breadcrumbs size="sm" items={dashboardCrumbs}>
+  {(crumb) => (
+    <BreadcrumbItem id={crumb.id} href={crumb.href}>
+      {crumb.label}
+    </BreadcrumbItem>
+  )}
+</Breadcrumbs>`}
       >
         <div class="space-y-4">
           <div>
             <p class="text-xs text-bg-400 mb-1">Small</p>
-            <Breadcrumbs size="S">
-              <BreadcrumbItem id="home" href="#">Home</BreadcrumbItem>
-              <BreadcrumbItem id="settings" href="#">Settings</BreadcrumbItem>
-              <BreadcrumbItem id="profile">Profile</BreadcrumbItem>
+            <Breadcrumbs size="sm" items={dashboardCrumbs}>
+              {(crumb: BreadcrumbEntry) => (
+                <BreadcrumbItem id={crumb.id} href={crumb.href}>
+                  {crumb.label}
+                </BreadcrumbItem>
+              )}
             </Breadcrumbs>
           </div>
           <div>
             <p class="text-xs text-bg-400 mb-1">Medium (default)</p>
-            <Breadcrumbs size="M">
-              <BreadcrumbItem id="home" href="#">Home</BreadcrumbItem>
-              <BreadcrumbItem id="settings" href="#">Settings</BreadcrumbItem>
-              <BreadcrumbItem id="profile">Profile</BreadcrumbItem>
+            <Breadcrumbs size="md" items={dashboardCrumbs}>
+              {(crumb: BreadcrumbEntry) => (
+                <BreadcrumbItem id={crumb.id} href={crumb.href}>
+                  {crumb.label}
+                </BreadcrumbItem>
+              )}
             </Breadcrumbs>
           </div>
           <div>
             <p class="text-xs text-bg-400 mb-1">Large</p>
-            <Breadcrumbs size="L">
-              <BreadcrumbItem id="home" href="#">Home</BreadcrumbItem>
-              <BreadcrumbItem id="settings" href="#">Settings</BreadcrumbItem>
-              <BreadcrumbItem id="profile">Profile</BreadcrumbItem>
+            <Breadcrumbs size="lg" items={dashboardCrumbs}>
+              {(crumb: BreadcrumbEntry) => (
+                <BreadcrumbItem id={crumb.id} href={crumb.href}>
+                  {crumb.label}
+                </BreadcrumbItem>
+              )}
             </Breadcrumbs>
           </div>
         </div>
@@ -154,20 +160,20 @@ function BreadcrumbsPage() {
       <Example
         title="File Path Breadcrumbs"
         description="Breadcrumbs work well for displaying file or folder navigation paths."
-        code={`<Breadcrumbs>
-  <BreadcrumbItem id="root" href="#">Root</BreadcrumbItem>
-  <BreadcrumbItem id="src" href="#">src</BreadcrumbItem>
-  <BreadcrumbItem id="components" href="#">components</BreadcrumbItem>
-  <BreadcrumbItem id="ui" href="#">ui</BreadcrumbItem>
-  <BreadcrumbItem id="button">Button.tsx</BreadcrumbItem>
+        code={`<Breadcrumbs items={deepCrumbs}>
+  {(crumb) => (
+    <BreadcrumbItem id={crumb.id} href={crumb.href}>
+      {crumb.label}
+    </BreadcrumbItem>
+  )}
 </Breadcrumbs>`}
       >
-        <Breadcrumbs>
-          {deepCrumbs.map((crumb) => (
+        <Breadcrumbs items={deepCrumbs}>
+          {(crumb: BreadcrumbEntry) => (
             <BreadcrumbItem id={crumb.id} href={crumb.href}>
               {crumb.label}
             </BreadcrumbItem>
-          ))}
+          )}
         </Breadcrumbs>
       </Example>
 
@@ -175,14 +181,19 @@ function BreadcrumbsPage() {
       <PropsTable
         props={[
           {
+            name: "items",
+            type: "T[]",
+            description: "Data items to render as breadcrumb entries",
+          },
+          {
             name: "children",
-            type: "JSX.Element",
-            description: "BreadcrumbItem elements representing the navigation trail",
+            type: "(item: T) => JSX.Element",
+            description: "Render function called for each item to produce BreadcrumbItem elements",
           },
           {
             name: "size",
-            type: "'S' | 'M' | 'L'",
-            default: "'M'",
+            type: "'sm' | 'md' | 'lg'",
+            default: "'md'",
             description: "Size variant affecting font size and spacing",
           },
           {

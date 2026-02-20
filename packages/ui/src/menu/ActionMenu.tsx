@@ -9,8 +9,10 @@ import {
   MenuTrigger as HeadlessMenuTrigger,
   MenuButton as HeadlessMenuButton,
   Menu as HeadlessMenu,
+  MenuItem as HeadlessMenuItem,
   type MenuProps as HeadlessMenuProps,
   type MenuTriggerRenderProps,
+  type MenuItemRenderProps,
 } from '@proyecto-viviana/solidaria-components';
 
 // ============================================
@@ -70,8 +72,36 @@ export function ActionMenu<T>(props: ActionMenuProps<T>): JSX.Element {
       </HeadlessMenuButton>
       <HeadlessMenu
         {...menuProps}
+        aria-label={local.label ?? 'Actions'}
         class={`absolute z-50 mt-1 min-w-[12rem] rounded-lg border-2 border-primary-600 bg-bg-400 shadow-lg overflow-hidden py-1 ${local.class ?? ''}`}
-      />
+      >
+        {(item: T) => {
+          const menuItem = item as { id?: string | number; label?: string; textValue?: string };
+          const label = menuItem.label ?? menuItem.textValue ?? String(menuItem.id ?? '');
+          return (
+            <HeadlessMenuItem
+              id={menuItem.id}
+              textValue={label}
+              class={(renderProps: MenuItemRenderProps) => {
+                const base = 'flex items-center cursor-pointer transition-colors duration-150 outline-none text-base py-2 px-4';
+                let colorClass: string;
+                if (renderProps.isDisabled) {
+                  colorClass = 'text-primary-500 cursor-not-allowed';
+                } else if (renderProps.isFocused || renderProps.isHovered) {
+                  colorClass = 'bg-bg-300 text-primary-100';
+                } else {
+                  colorClass = 'text-primary-200';
+                }
+                const pressedClass = renderProps.isPressed ? 'bg-bg-200' : '';
+                const focusClass = renderProps.isFocusVisible ? 'ring-2 ring-inset ring-accent-300' : '';
+                return [base, colorClass, pressedClass, focusClass].filter(Boolean).join(' ');
+              }}
+            >
+              {label}
+            </HeadlessMenuItem>
+          );
+        }}
+      </HeadlessMenu>
     </HeadlessMenuTrigger>
   );
 }

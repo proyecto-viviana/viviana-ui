@@ -82,16 +82,16 @@ function ProgressBarPage() {
       <Example
         title="Sizes"
         description="Progress bars are available in multiple sizes."
-        code={`<ProgressBar label="Small" value={40} size="S" />
-<ProgressBar label="Medium" value={60} size="M" />
-<ProgressBar label="Large" value={75} size="L" />
-<ProgressBar label="Extra Large" value={90} size="XL" />`}
+        code={`<ProgressBar label="Small" value={40} size="sm" />
+<ProgressBar label="Medium" value={60} size="md" />
+<ProgressBar label="Large" value={75} size="lg" />
+<ProgressBar label="Extra Large" value={90} size="lg" />`}
       >
         <div class="space-y-4 max-w-md">
-          <ProgressBar label="Small" value={40} size="S" />
-          <ProgressBar label="Medium" value={60} size="M" />
-          <ProgressBar label="Large" value={75} size="L" />
-          <ProgressBar label="Extra Large" value={90} size="XL" />
+          <ProgressBar label="Small" value={40} size="sm" />
+          <ProgressBar label="Medium" value={60} size="md" />
+          <ProgressBar label="Large" value={75} size="lg" />
+          <ProgressBar label="Large (alt)" value={90} size="lg" />
         </div>
       </Example>
 

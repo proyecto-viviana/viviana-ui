@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import { createSignal } from "solid-js";
+import { type JSX, type FlowComponent, createSignal, onMount, Show } from "solid-js";
+import { isServer } from "solid-js/web";
 import type { Key } from "@proyecto-viviana/solid-stately";
 import {
   Table,
@@ -12,6 +13,13 @@ import {
   TableSelectAllCheckbox,
 } from "@proyecto-viviana/ui";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
+
+/** Renders children only on the client after hydration. Same component tree on server/client for hydration compat. */
+const ClientOnly: FlowComponent<{ fallback?: JSX.Element }> = (props) => {
+  const [ready, setReady] = createSignal(false);
+  if (!isServer) onMount(() => setReady(true));
+  return <Show when={ready()} fallback={props.fallback}>{props.children}</Show>;
+};
 
 type UserRow = {
   id: string;
@@ -84,22 +92,24 @@ function TablePage() {
   </TableBody>
 </Table>`}
       >
-        <Table items={sampleData} columns={baseColumns} aria-label="Users table" getKey={(user) => user.id}>
-          <TableHeader>
-            <TableColumn id="name">Name</TableColumn>
-            <TableColumn id="email">Email</TableColumn>
-            <TableColumn id="role">Role</TableColumn>
-          </TableHeader>
-          <TableBody<UserRow>>
-            {(user) => (
-              <TableRow id={user.id}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        <ClientOnly fallback={<p class="text-sm text-bg-400">Loading table...</p>}>
+          <Table items={sampleData} columns={baseColumns} aria-label="Users table" getKey={(user) => user.id}>
+            <TableHeader>
+              <TableColumn id="name">Name</TableColumn>
+              <TableColumn id="email">Email</TableColumn>
+              <TableColumn id="role">Role</TableColumn>
+            </TableHeader>
+            <TableBody<UserRow>>
+              {(user) => (
+                <TableRow id={user.id}>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.role}</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </ClientOnly>
       </Example>
 
       <Example
@@ -126,45 +136,47 @@ function TablePage() {
   </TableBody>
 </Table>`}
       >
-        <div>
-          <Table
-            items={sampleData}
-            columns={selectableColumns}
-            aria-label="Selectable users table"
-            getKey={(user) => user.id}
-            selectionMode="multiple"
-            selectedKeys={selectedKeys()}
-            onSelectionChange={(keys) => {
-              if (keys === "all") {
-                setSelectedKeys(new Set(sampleData.map((user) => user.id)));
-                return;
-              }
-              setSelectedKeys(new Set([...keys].map((key) => String(key))));
-            }}
-          >
-            <TableHeader>
-              <TableColumn id="selection">
-                <TableSelectAllCheckbox />
-              </TableColumn>
-              <TableColumn id="name">Name</TableColumn>
-              <TableColumn id="email">Email</TableColumn>
-              <TableColumn id="role">Role</TableColumn>
-            </TableHeader>
-            <TableBody<UserRow>>
-              {(user) => (
-                <TableRow id={user.id}>
-                  <TableSelectionCheckbox rowKey={user.id} />
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          <p class="mt-2 text-sm text-bg-500">
-            Selected: {selectedKeys().size > 0 ? [...selectedKeys()].join(", ") : "None"}
-          </p>
-        </div>
+        <ClientOnly fallback={<p class="text-sm text-bg-400">Loading table...</p>}>
+          <div>
+            <Table
+              items={sampleData}
+              columns={selectableColumns}
+              aria-label="Selectable users table"
+              getKey={(user) => user.id}
+              selectionMode="multiple"
+              selectedKeys={selectedKeys()}
+              onSelectionChange={(keys) => {
+                if (keys === "all") {
+                  setSelectedKeys(new Set(sampleData.map((user) => user.id)));
+                  return;
+                }
+                setSelectedKeys(new Set([...keys].map((key) => String(key))));
+              }}
+            >
+              <TableHeader>
+                <TableColumn id="selection">
+                  <TableSelectAllCheckbox />
+                </TableColumn>
+                <TableColumn id="name">Name</TableColumn>
+                <TableColumn id="email">Email</TableColumn>
+                <TableColumn id="role">Role</TableColumn>
+              </TableHeader>
+              <TableBody<UserRow>>
+                {(user) => (
+                  <TableRow id={user.id}>
+                    <TableSelectionCheckbox rowKey={user.id} />
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.role}</TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+            <p class="mt-2 text-sm text-bg-500">
+              Selected: {selectedKeys().size > 0 ? [...selectedKeys()].join(", ") : "None"}
+            </p>
+          </div>
+        </ClientOnly>
       </Example>
 
       <Example
@@ -179,33 +191,35 @@ function TablePage() {
   ...
 </Table>`}
       >
-        <Table
-          items={sampleData}
-          columns={sortableColumns}
-          aria-label="Sortable users table"
-          getKey={(user) => user.id}
-        >
-          <TableHeader>
-            <TableColumn id="name" allowsSorting>
-              Name
-            </TableColumn>
-            <TableColumn id="email" allowsSorting>
-              Email
-            </TableColumn>
-            <TableColumn id="role" allowsSorting>
-              Role
-            </TableColumn>
-          </TableHeader>
-          <TableBody<UserRow>>
-            {(user) => (
-              <TableRow id={user.id}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        <ClientOnly fallback={<p class="text-sm text-bg-400">Loading table...</p>}>
+          <Table
+            items={sampleData}
+            columns={sortableColumns}
+            aria-label="Sortable users table"
+            getKey={(user) => user.id}
+          >
+            <TableHeader>
+              <TableColumn id="name" allowsSorting>
+                Name
+              </TableColumn>
+              <TableColumn id="email" allowsSorting>
+                Email
+              </TableColumn>
+              <TableColumn id="role" allowsSorting>
+                Role
+              </TableColumn>
+            </TableHeader>
+            <TableBody<UserRow>>
+              {(user) => (
+                <TableRow id={user.id}>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.role}</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </ClientOnly>
       </Example>
 
       <h2>Table Props</h2>

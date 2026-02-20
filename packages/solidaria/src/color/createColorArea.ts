@@ -5,7 +5,8 @@
  */
 
 import { createMemo, type Accessor } from 'solid-js';
-import type { ColorAreaState } from '@proyecto-viviana/solid-stately';
+import type { ColorAreaState, ColorChannel } from '@proyecto-viviana/solid-stately';
+import { parseColor } from '@proyecto-viviana/solid-stately';
 import { createId } from '../ssr';
 import type { AriaColorAreaOptions, ColorAreaAria } from './types';
 
@@ -184,13 +185,78 @@ export function createColorArea(
     };
   });
 
+  // Generate gradient background for the color area
+  const generateGradient = (): Record<string, string> => {
+    const s = getState();
+    const value = s.value;
+    const xCh = s.xChannel;
+    const yCh = s.yChannel;
+    const zCh = s.zChannel;
+    const zValue = value.getChannelValue(zCh);
+    const end = 'right';
+
+    const hue = (color: { withChannelValue: (ch: ColorChannel, v: number) => { toString: (f: string) => string } }) =>
+      [0, 60, 120, 180, 240, 300, 360].map(h => color.withChannelValue('hue', h).toString('css')).join(', ');
+
+    const hslChannels: Record<string, (c: ReturnType<typeof parseColor>) => string> = {
+      hue,
+      saturation: (color) => `${color.withChannelValue('saturation', 0).toString('css')}, transparent`,
+      lightness: () => 'black, transparent, white',
+    };
+
+    const hsbChannels: Record<string, (c: ReturnType<typeof parseColor>) => string> = {
+      hue,
+      saturation: (color) => `${color.withChannelValue('saturation', 0).toString('css')}, transparent`,
+      brightness: () => 'black, transparent',
+    };
+
+    switch (value.getColorSpace()) {
+      case 'rgb': {
+        const rgb = parseColor('rgb(0, 0, 0)');
+        return {
+          background: [
+            `linear-gradient(to ${end}, ${rgb.withChannelValue(xCh, 0).toString('css')}, ${rgb.withChannelValue(xCh, 255).toString('css')})`,
+            `linear-gradient(to top, ${rgb.withChannelValue(yCh, 0).toString('css')}, ${rgb.withChannelValue(yCh, 255).toString('css')})`,
+            rgb.withChannelValue(zCh, zValue).toString('css'),
+          ].join(','),
+          'background-blend-mode': 'screen',
+        };
+      }
+      case 'hsl': {
+        const channels = value.getColorChannels();
+        const base = parseColor('hsl(0, 100%, 50%)').withChannelValue(zCh, zValue);
+        const bg = channels
+          .filter((c: ColorChannel) => c !== zCh)
+          .map((c: ColorChannel) => `linear-gradient(to ${c === xCh ? end : 'top'}, ${hslChannels[c]?.(base as ReturnType<typeof parseColor>) ?? ''})`)
+          .reverse();
+        if (zCh === 'hue') bg.push(base.toString('css'));
+        return { background: bg.join(', ') };
+      }
+      case 'hsb': {
+        const channels = value.getColorChannels();
+        const base = parseColor('hsb(0, 100%, 100%)').withChannelValue(zCh, zValue);
+        const bg = channels
+          .filter((c: ColorChannel) => c !== zCh)
+          .map((c: ColorChannel) => `linear-gradient(to ${c === xCh ? end : 'top'}, ${hsbChannels[c]?.(base as ReturnType<typeof parseColor>) ?? ''})`)
+          .reverse();
+        if (zCh === 'hue') bg.push(base.toString('css'));
+        return { background: bg.join(', ') };
+      }
+      default:
+        return {};
+    }
+  };
+
   // Gradient props (the visual area)
   const gradientProps = createMemo(() => {
+    const gradientStyles = generateGradient();
     return {
       role: 'presentation' as const,
       style: {
         width: '100%',
         height: '100%',
+        'forced-color-adjust': 'none',
+        ...gradientStyles,
       },
     };
   });

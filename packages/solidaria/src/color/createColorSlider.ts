@@ -83,15 +83,54 @@ export function createColorSlider(
     }
   };
 
+  // Generate gradient background for the slider track
+  const generateBackground = () => {
+    const s = getState();
+    const value = s.value;
+    const channel = s.channel;
+    const to = 'right';
+
+    switch (channel) {
+      case 'hue': {
+        const stops = [0, 60, 120, 180, 240, 300, 360]
+          .map(hue => value.withChannelValue('hue', hue).toString('css'))
+          .join(', ');
+        return `linear-gradient(to ${to}, ${stops})`;
+      }
+      case 'lightness': {
+        const min = s.minValue;
+        const max = s.maxValue;
+        const start = value.withChannelValue(channel, min).toString('css');
+        const middle = value.withChannelValue(channel, (max - min) / 2).toString('css');
+        const end = value.withChannelValue(channel, max).toString('css');
+        return `linear-gradient(to ${to}, ${start}, ${middle}, ${end})`;
+      }
+      case 'saturation':
+      case 'brightness':
+      case 'red':
+      case 'green':
+      case 'blue':
+      case 'alpha': {
+        const start = value.withChannelValue(channel, s.minValue).toString('css');
+        const end = value.withChannelValue(channel, s.maxValue).toString('css');
+        return `linear-gradient(to ${to}, ${start}, ${end})`;
+      }
+      default:
+        return undefined;
+    }
+  };
+
   // Track props
   const trackProps = createMemo(() => {
     const s = getState();
+    const bg = generateBackground();
     return {
       role: 'presentation' as const,
       onMouseDown: onTrackMouseDown,
       style: {
         position: 'relative' as const,
         'touch-action': 'none',
+        ...(bg ? { background: bg, 'forced-color-adjust': 'none' } : {}),
       },
       'data-disabled': s.isDisabled || undefined,
     };

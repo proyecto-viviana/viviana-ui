@@ -1,84 +1,54 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Tree, TreeItem, TreeItemContent, TreeExpandButton } from "@proyecto-viviana/solidaria-components";
-import type { Key } from "@proyecto-viviana/solid-stately";
+import { Tree, TreeItem } from "@proyecto-viviana/ui";
+import type { Key, TreeItemData } from "@proyecto-viviana/solid-stately";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 type FileNode = {
-  id: string;
   name: string;
-  children?: FileNode[];
 };
 
-const fileSystemData: FileNode[] = [
-  {
-    id: "src",
-    name: "src",
-    children: [
-      {
-        id: "components",
-        name: "components",
-        children: [
-          { id: "Button.tsx", name: "Button.tsx" },
-          { id: "Dialog.tsx", name: "Dialog.tsx" },
-          { id: "Menu.tsx", name: "Menu.tsx" },
-        ],
-      },
-      {
-        id: "hooks",
-        name: "hooks",
-        children: [
-          { id: "useAuth.ts", name: "useAuth.ts" },
-          { id: "useTheme.ts", name: "useTheme.ts" },
-        ],
-      },
-      { id: "index.ts", name: "index.ts" },
-    ],
-  },
-  {
-    id: "tests",
-    name: "tests",
-    children: [
-      { id: "Button.test.tsx", name: "Button.test.tsx" },
-      { id: "Dialog.test.tsx", name: "Dialog.test.tsx" },
-    ],
-  },
-  { id: "package.json", name: "package.json" },
-  { id: "tsconfig.json", name: "tsconfig.json" },
+function fileItem(key: string, name: string, children?: TreeItemData<FileNode>[]): TreeItemData<FileNode> {
+  return { key, value: { name }, textValue: name, children };
+}
+
+const fileSystemData: TreeItemData<FileNode>[] = [
+  fileItem("src", "src", [
+    fileItem("components", "components", [
+      fileItem("Button.tsx", "Button.tsx"),
+      fileItem("Dialog.tsx", "Dialog.tsx"),
+      fileItem("Menu.tsx", "Menu.tsx"),
+    ]),
+    fileItem("hooks", "hooks", [
+      fileItem("useAuth.ts", "useAuth.ts"),
+      fileItem("useTheme.ts", "useTheme.ts"),
+    ]),
+    fileItem("index.ts", "index.ts"),
+  ]),
+  fileItem("tests", "tests", [
+    fileItem("Button.test.tsx", "Button.test.tsx"),
+    fileItem("Dialog.test.tsx", "Dialog.test.tsx"),
+  ]),
+  fileItem("package.json", "package.json"),
+  fileItem("tsconfig.json", "tsconfig.json"),
 ];
 
-const orgChartData: FileNode[] = [
-  {
-    id: "ceo",
-    name: "CEO - Maria Garcia",
-    children: [
-      {
-        id: "cto",
-        name: "CTO - James Chen",
-        children: [
-          { id: "lead-fe", name: "Frontend Lead - Anna Lee" },
-          { id: "lead-be", name: "Backend Lead - Omar Hassan" },
-          { id: "lead-infra", name: "Infra Lead - Kenji Tanaka" },
-        ],
-      },
-      {
-        id: "cfo",
-        name: "CFO - Sarah Miller",
-        children: [
-          { id: "accounting", name: "Accounting - David Park" },
-          { id: "finance", name: "Finance - Lisa Wong" },
-        ],
-      },
-      {
-        id: "cmo",
-        name: "CMO - Robert Taylor",
-        children: [
-          { id: "marketing", name: "Marketing - Emily Davis" },
-          { id: "sales", name: "Sales - Michael Brown" },
-        ],
-      },
-    ],
-  },
+const orgChartData: TreeItemData<FileNode>[] = [
+  fileItem("ceo", "CEO - Maria Garcia", [
+    fileItem("cto", "CTO - James Chen", [
+      fileItem("lead-fe", "Frontend Lead - Anna Lee"),
+      fileItem("lead-be", "Backend Lead - Omar Hassan"),
+      fileItem("lead-infra", "Infra Lead - Kenji Tanaka"),
+    ]),
+    fileItem("cfo", "CFO - Sarah Miller", [
+      fileItem("accounting", "Accounting - David Park"),
+      fileItem("finance", "Finance - Lisa Wong"),
+    ]),
+    fileItem("cmo", "CMO - Robert Taylor", [
+      fileItem("marketing", "Marketing - Emily Davis"),
+      fileItem("sales", "Sales - Michael Brown"),
+    ]),
+  ]),
 ];
 
 export const Route = createFileRoute("/docs/components/tree")({
@@ -91,80 +61,40 @@ function TreePage() {
     new Set(["src", "components"])
   );
 
-  function renderTreeItems(items: FileNode[]) {
-    return items.map((item) => (
-      <TreeItem id={item.id} textValue={item.name}>
-        <TreeItemContent>
-          {(renderProps) => (
-            <div
-              class="flex items-center gap-2 py-1 px-2 rounded cursor-default select-none"
-              style={{ "padding-left": `${(renderProps.level ?? 0) * 16 + 8}px` }}
-              data-selected={renderProps.isSelected || undefined}
-              data-focused={renderProps.isFocused || undefined}
-            >
-              {item.children && item.children.length > 0 ? (
-                <TreeExpandButton class="w-4 h-4 flex items-center justify-center text-bg-400 hover:text-bg-600 transition-transform">
-                  <svg
-                    class="w-3 h-3"
-                    classList={{ "rotate-90": renderProps.isExpanded }}
-                    viewBox="0 0 12 12"
-                    fill="currentColor"
-                  >
-                    <path d="M4.5 2l4 4-4 4" />
-                  </svg>
-                </TreeExpandButton>
-              ) : (
-                <span class="w-4" />
-              )}
-              <span class="text-sm">
-                {item.children ? "\u{1F4C1}" : "\u{1F4C4}"} {item.name}
-              </span>
-            </div>
-          )}
-        </TreeItemContent>
-        {item.children && renderTreeItems(item.children)}
-      </TreeItem>
-    ));
-  }
-
   return (
     <DocPage
       title="Tree"
       description="Tree displays hierarchical data in an expandable and collapsible structure. It supports keyboard navigation, selection, and accessible tree patterns for file browsers, org charts, and nested data."
-      importCode={`import { Tree, TreeItem, TreeItemContent, TreeExpandButton } from '@proyecto-viviana/solidaria-components';`}
+      importCode={`import { Tree, TreeItem } from '@proyecto-viviana/ui';`}
     >
       <Example
         title="Basic Tree View"
         description="A file system tree with expand/collapse functionality. Click the arrow icons to expand or collapse folders."
-        code={`const fileSystemData = [
-  {
-    id: "src", name: "src",
-    children: [
-      { id: "components", name: "components", children: [...] },
-      { id: "hooks", name: "hooks", children: [...] },
-      { id: "index.ts", name: "index.ts" },
-    ],
-  },
-  { id: "package.json", name: "package.json" },
-];
-
-<Tree
+        code={`<Tree
   aria-label="File system"
   items={fileSystemData}
   expandedKeys={expandedKeys()}
   onExpandedChange={setExpandedKeys}
 >
-  {renderTreeItems(fileSystemData)}
+  {(item) => (
+    <TreeItem id={item.key} textValue={item.textValue}>
+      {item.value.name}
+    </TreeItem>
+  )}
 </Tree>`}
       >
-        <div class="border border-bg-200 rounded-lg p-3 bg-white max-w-md">
+        <div class="max-w-md">
           <Tree
             aria-label="File system"
             items={fileSystemData}
             expandedKeys={expandedKeys()}
             onExpandedChange={(keys) => setExpandedKeys(new Set(keys))}
           >
-            {renderTreeItems(fileSystemData)}
+            {(item) => (
+              <TreeItem id={item.key} textValue={item.textValue}>
+                {item.value.name}
+              </TreeItem>
+            )}
           </Tree>
         </div>
       </Example>
@@ -179,10 +109,14 @@ function TreePage() {
   selectedKeys={selectedKeys()}
   onSelectionChange={setSelectedKeys}
 >
-  {renderTreeItems(orgChartData)}
+  {(item) => (
+    <TreeItem id={item.key} textValue={item.textValue}>
+      {item.value.name}
+    </TreeItem>
+  )}
 </Tree>`}
       >
-        <div class="border border-bg-200 rounded-lg p-3 bg-white max-w-md">
+        <div class="max-w-md">
           <Tree
             aria-label="Organization chart"
             items={orgChartData}
@@ -191,9 +125,9 @@ function TreePage() {
             onSelectionChange={(keys) => {
               if (keys === "all") {
                 const allKeys = new Set<Key>();
-                function collectKeys(nodes: FileNode[]) {
+                function collectKeys(nodes: TreeItemData<FileNode>[]) {
                   for (const node of nodes) {
-                    allKeys.add(node.id);
+                    allKeys.add(node.key);
                     if (node.children) collectKeys(node.children);
                   }
                 }
@@ -205,7 +139,11 @@ function TreePage() {
             }}
             defaultExpandedKeys={new Set(["ceo", "cto", "cfo", "cmo"])}
           >
-            {renderTreeItems(orgChartData)}
+            {(item) => (
+              <TreeItem id={item.key} textValue={item.textValue}>
+                {item.value.name}
+              </TreeItem>
+            )}
           </Tree>
           <p class="mt-3 text-sm text-bg-500">
             Selected: {selectedKeys().size > 0 ? [...selectedKeys()].join(", ") : "None"}
@@ -275,24 +213,18 @@ function TreePage() {
           },
           {
             name: "children",
-            type: "JSX.Element",
-            description: "TreeItemContent and nested TreeItem children",
-          },
-        ]}
-      />
-
-      <h2>TreeExpandButton Props</h2>
-      <PropsTable
-        props={[
-          {
-            name: "children",
-            type: "JSX.Element",
-            description: "Expand/collapse indicator content (e.g. an arrow icon)",
+            type: "JSX.Element | ((renderProps) => JSX.Element)",
+            description: "Content of the tree item, or a render function for custom content",
           },
           {
-            name: "class",
+            name: "icon",
+            type: "() => JSX.Element",
+            description: "Optional icon to display before the content",
+          },
+          {
+            name: "description",
             type: "string",
-            description: "CSS class for the expand button",
+            description: "Optional description text below the label",
           },
         ]}
       />

@@ -89,16 +89,16 @@ function MeterPage() {
       <Example
         title="Sizes"
         description="Meters are available in multiple sizes to fit different contexts."
-        code={`<Meter label="Small" value={40} size="S" />
-<Meter label="Medium" value={60} size="M" />
-<Meter label="Large" value={75} size="L" />
-<Meter label="Extra Large" value={85} size="XL" />`}
+        code={`<Meter label="Small" value={40} size="sm" />
+<Meter label="Medium" value={60} size="md" />
+<Meter label="Large" value={75} size="lg" />
+<Meter label="Extra Large" value={85} size="lg" />`}
       >
         <div class="space-y-4 max-w-md">
-          <Meter label="Small" value={40} size="S" />
-          <Meter label="Medium" value={60} size="M" />
-          <Meter label="Large" value={75} size="L" />
-          <Meter label="Extra Large" value={85} size="XL" />
+          <Meter label="Small" value={40} size="sm" />
+          <Meter label="Medium" value={60} size="md" />
+          <Meter label="Large" value={75} size="lg" />
+          <Meter label="Large (alt)" value={85} size="lg" />
         </div>
       </Example>
 

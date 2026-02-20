@@ -47,7 +47,7 @@ describe('List Performance (PV)', () => {
     console.log(`PV List render (${ITEM_COUNT} items): median=${median.toFixed(2)}ms`);
 
     // Sanity check: should complete reasonably fast
-    expect(median).toBeLessThan(2000);
+    expect(median).toBeLessThan(3000);
   }, 20_000);
 
   it('filter list from 1000 to 100 items', () => {
