@@ -29,7 +29,7 @@ export interface SelectionIndicatorRenderProps {
   isSelected: boolean;
 }
 
-export interface SelectionIndicatorProps extends SlotProps {
+export interface SelectionIndicatorProps extends SlotProps, Omit<JSX.HTMLAttributes<HTMLSpanElement>, 'class' | 'style' | 'children'> {
   /** Optional controlled selected state override. */
   isSelected?: boolean;
   /** Whether to keep mounted when not selected. */
@@ -46,7 +46,7 @@ export interface SelectionIndicatorProps extends SlotProps {
  * SelectionIndicator renders when its parent item is selected.
  */
 export function SelectionIndicator(props: SelectionIndicatorProps): JSX.Element {
-  const [local] = splitProps(props, ['isSelected', 'shouldForceMount', 'children', 'class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['isSelected', 'shouldForceMount', 'children', 'class', 'style', 'slot']);
 
   const context = useContext(SelectionIndicatorContext);
   const isSelected = () => local.isSelected ?? context?.isSelected() ?? false;
@@ -68,6 +68,7 @@ export function SelectionIndicator(props: SelectionIndicatorProps): JSX.Element 
   return (
     <Show when={local.shouldForceMount || isSelected()}>
       <span
+        {...domProps}
         aria-hidden="true"
         class={renderProps.class()}
         style={renderProps.style()}

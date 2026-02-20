@@ -57,7 +57,8 @@ export interface TagGroupRenderProps {
 
 export interface TagGroupProps
   extends Omit<AriaTagGroupProps, 'id'>,
-    SlotProps {
+    SlotProps,
+    Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children'> {
   /** The children of the component. */
   children?: JSX.Element;
   /** The CSS className for the element. */
@@ -73,7 +74,7 @@ export interface TagListRenderProps {
   isFocused: boolean;
 }
 
-export interface TagListProps<T> extends SlotProps {
+export interface TagListProps<T> extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children'> {
   /** The items to display in the tag list. */
   items: T[];
   /** Function to render each item. */
@@ -184,15 +185,17 @@ export function useTagGroupContext(): TagGroupContextValue | null {
  * ```
  */
 export function TagGroup(props: TagGroupProps): JSX.Element {
-  const [local] = splitProps(props, [
+  const [local, domProps] = splitProps(props, [
     'class',
     'style',
     'slot',
+    'children',
   ]);
 
   // We need TagList to provide the state, so TagGroup just provides context
   return (
     <div
+      {...domProps}
       class={typeof local.class === 'string' ? local.class : 'solidaria-TagGroup'}
       style={typeof local.style === 'object' ? local.style : undefined}
       slot={local.slot}
@@ -210,12 +213,13 @@ export function TagGroup(props: TagGroupProps): JSX.Element {
  * TagList contains the list of tags within a TagGroup.
  */
 export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T>): JSX.Element {
-  const [local] = splitProps(props, [
+  const [local, domProps] = splitProps(props, [
     'items',
     'class',
     'style',
     'slot',
     'renderEmptyState',
+    'children',
     'selectionMode',
     'selectionBehavior',
     'selectedKeys',
@@ -298,6 +302,7 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
       <TagListStateContext.Provider value={state}>
         <div
           ref={setGridRef}
+          {...domProps}
           {...tagGroupAria.gridProps}
           class={renderProps.class()}
           style={renderProps.style()}

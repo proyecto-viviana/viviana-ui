@@ -315,7 +315,7 @@ export function NumberFieldGroup(props: { children?: JSX.Element; class?: string
  * The input element for a number field.
  */
 export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(NumberFieldContext);
   if (!context) {
@@ -367,6 +367,7 @@ export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
 
   return (
     <input
+      {...domProps}
       {...cleanInputProps()}
       {...cleanFocusProps()}
       {...cleanHoverProps()}
@@ -385,7 +386,7 @@ export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
  * The increment button for a number field.
  */
 export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(NumberFieldContext);
   if (!context) {
@@ -445,6 +446,7 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
 
   return (
     <button
+      {...domProps}
       {...cleanButtonProps()}
       {...cleanPressProps()}
       {...cleanHoverProps()}
@@ -463,7 +465,7 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
  * The decrement button for a number field.
  */
 export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(NumberFieldContext);
   if (!context) {
@@ -523,6 +525,7 @@ export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProp
 
   return (
     <button
+      {...domProps}
       {...cleanButtonProps()}
       {...cleanPressProps()}
       {...cleanHoverProps()}

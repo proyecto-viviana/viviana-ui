@@ -516,7 +516,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
  * A header row in a table containing column headers.
  */
 export function TableHeader(props: TableHeaderProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   // Get context
   const context = useContext(TableContext);
@@ -547,8 +547,8 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
   };
 
   return (
-    <thead {...cleanRowGroupProps()} class={renderProps.class()} style={renderProps.style()}>
-      <tr role="row">{props.children}</tr>
+    <thead {...domProps} {...cleanRowGroupProps()} class={renderProps.class()} style={renderProps.style()}>
+      <tr role="row">{local.children}</tr>
     </thead>
   );
 }
@@ -557,7 +557,7 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
  * A column header in a table.
  */
 export function TableColumn(props: TableColumnProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot', 'id', 'allowsSorting']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'id', 'allowsSorting', 'children']);
 
   // Get context
   const context = useContext(TableContext);
@@ -651,6 +651,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
   return (
     <th
       ref={setRef}
+      {...domProps}
       {...cleanColumnHeaderProps()}
       {...cleanHoverProps()}
       {...cleanFocusProps()}
@@ -662,9 +663,9 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
       data-focused={state.focusedKey === local.id || undefined}
       data-focus-visible={(isFocusVisible() && state.focusedKey === local.id) || undefined}
     >
-      {typeof props.children === 'function'
-        ? props.children(renderValues())
-        : props.children}
+      {typeof local.children === 'function'
+        ? local.children(renderValues())
+        : local.children}
     </th>
   );
 }
@@ -673,7 +674,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
  * The body of a table containing data rows.
  */
 export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['items', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore']);
+  const [local, domProps] = splitProps(props, ['items', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore', 'children']);
 
   // Get context
   const context = useContext(TableContext);
@@ -766,7 +767,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
   const spacerColSpan = () => context.columns.length + (context.showSelectionCheckboxes ? 1 : 0);
 
   return (
-    <tbody {...cleanRowGroupProps()} class={renderProps.class()} style={renderProps.style()}>
+    <tbody {...domProps} {...cleanRowGroupProps()} class={renderProps.class()} style={renderProps.style()}>
       <Show when={isEmpty() && local.renderEmptyState} fallback={
         <>
           {virtualRange()?.offsetTop
@@ -786,7 +787,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
                 <>
                   {beforeIndicator()}
                   {onIndicator()}
-                  {props.children?.(item)}
+                  {local.children?.(item)}
                   {afterIndicator()}
                 </>
               );
@@ -871,7 +872,7 @@ export function TableLoadMoreItem(props: TableLoadMoreItemProps): JSX.Element {
  * A row in a table.
  */
 export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot', 'id', 'item', 'onAction']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'id', 'item', 'onAction', 'children']);
 
   // Get context
   const context = useContext(TableContext);
@@ -988,6 +989,7 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     <TableRowContext.Provider value={rowContextValue}>
       <tr
         ref={setRef}
+        {...domProps}
         {...mergeProps(
           cleanRowProps(),
           cleanHoverProps(),
@@ -1006,9 +1008,9 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
         data-dragging={draggableItem()?.isDragging || undefined}
         data-drop-target={droppableItem()?.isDropTarget || undefined}
       >
-        {typeof props.children === 'function'
-          ? props.children(renderValues())
-          : props.children}
+        {typeof local.children === 'function'
+          ? local.children(renderValues())
+          : local.children}
       </tr>
     </TableRowContext.Provider>
   );
@@ -1018,7 +1020,7 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
  * A cell in a table row.
  */
 export function TableCell(props: TableCellProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot', 'id']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'id', 'children']);
 
   // Get context
   const tableContext = useContext(TableContext);
@@ -1115,6 +1117,7 @@ export function TableCell(props: TableCellProps): JSX.Element {
   return (
     <td
       ref={setRef}
+      {...domProps}
       {...cleanCellProps()}
       {...cleanHoverProps()}
       {...cleanFocusProps()}
@@ -1125,9 +1128,9 @@ export function TableCell(props: TableCellProps): JSX.Element {
       data-pressed={isPressed || undefined}
       data-hovered={isHovered() || undefined}
     >
-      {typeof props.children === 'function'
-        ? props.children(renderValues())
-        : props.children}
+      {typeof local.children === 'function'
+        ? local.children(renderValues())
+        : local.children}
     </td>
   );
 }

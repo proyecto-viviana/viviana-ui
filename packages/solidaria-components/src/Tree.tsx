@@ -151,7 +151,7 @@ export interface TreeItemRenderProps {
   level: number;
 }
 
-export interface TreeItemProps<T extends object> extends SlotProps {
+export interface TreeItemProps<T extends object> extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children' | 'id'> {
   /** The unique key for the item. */
   id: Key;
   /** The item value. */
@@ -1256,7 +1256,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
  * An item in a tree.
  */
 export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element {
-  const [local] = splitProps(props, [
+  const [local, domProps] = splitProps(props, [
     'class',
     'style',
     'slot',
@@ -1264,6 +1264,7 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
     'item',
     'textValue',
     'onAction',
+    'children',
   ]);
 
   // Get state from context
@@ -1400,6 +1401,7 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
     <TreeItemContext.Provider value={itemContextValue() as unknown as TreeItemContextValue<object>}>
       <div
         ref={setRef}
+        {...domProps}
         {...mergeProps(
           cleanRowProps(),
           cleanHoverProps(),

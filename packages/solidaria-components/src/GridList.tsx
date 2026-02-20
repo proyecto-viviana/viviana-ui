@@ -127,7 +127,7 @@ export interface GridListItemRenderProps {
   isDisabled: boolean;
 }
 
-export interface GridListItemProps<T extends object> extends SlotProps {
+export interface GridListItemProps<T extends object> extends SlotProps, Omit<JSX.HTMLAttributes<HTMLLIElement>, 'class' | 'style' | 'children' | 'id'> {
   /** The unique key for the item. */
   id: Key;
   /** The item value. */
@@ -604,7 +604,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
  * An item in a grid list.
  */
 export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX.Element {
-  const [local] = splitProps(props, [
+  const [local, domProps] = splitProps(props, [
     'class',
     'style',
     'slot',
@@ -612,6 +612,7 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
     'item',
     'textValue',
     'onAction',
+    'children',
   ]);
 
   // Get state from context
@@ -724,6 +725,7 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
   return (
     <li
       ref={setRef}
+      {...domProps}
       {...mergeProps(
         cleanRowProps(),
         cleanHoverProps(),

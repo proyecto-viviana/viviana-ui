@@ -243,7 +243,7 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
  * The track element of a color slider.
  */
 export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(ColorSliderContext);
   if (!context) {
@@ -284,6 +284,7 @@ export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
 
   return (
     <div
+      {...domProps}
       ref={setTrackRef}
       {...cleanTrackProps()}
       class={renderProps.class()}
@@ -300,7 +301,7 @@ export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
  * The thumb element of a color slider.
  */
 export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(ColorSliderContext);
   if (!context) {
@@ -362,6 +363,7 @@ export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
 
   return (
     <div
+      {...domProps}
       {...cleanThumbProps()}
       {...cleanFocusProps()}
       {...cleanHoverProps()}
@@ -588,7 +590,7 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
  * The gradient background of a color area.
  */
 export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(ColorAreaContext);
   if (!context) {
@@ -628,6 +630,7 @@ export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
 
   return (
     <div
+      {...domProps}
       {...cleanGradientProps()}
       class={renderProps.class()}
       style={mergedStyle()}
@@ -642,7 +645,7 @@ export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
  * The thumb element of a color area.
  */
 export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(ColorAreaContext);
   if (!context) {
@@ -704,6 +707,7 @@ export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
 
   return (
     <div
+      {...domProps}
       {...cleanThumbProps()}
       {...cleanFocusProps()}
       {...cleanHoverProps()}
@@ -901,7 +905,7 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
  * The track element of a color wheel.
  */
 export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(ColorWheelContext);
   if (!context) {
@@ -942,6 +946,7 @@ export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
 
   return (
     <div
+      {...domProps}
       ref={setWheelRef}
       {...cleanTrackProps()}
       class={renderProps.class()}
@@ -958,7 +963,7 @@ export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
  * The thumb element of a color wheel.
  */
 export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(ColorWheelContext);
   if (!context) {
@@ -1020,6 +1025,7 @@ export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
 
   return (
     <div
+      {...domProps}
       {...cleanThumbProps()}
       {...cleanFocusProps()}
       {...cleanHoverProps()}
@@ -1207,7 +1213,7 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
  * The input element of a color field.
  */
 export function ColorFieldInput(props: ColorFieldInputProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(ColorFieldContext);
   if (!context) {
@@ -1263,6 +1269,7 @@ export function ColorFieldInput(props: ColorFieldInputProps): JSX.Element {
 
   return (
     <input
+      {...domProps}
       {...cleanInputProps()}
       {...cleanFocusProps()}
       {...cleanHoverProps()}

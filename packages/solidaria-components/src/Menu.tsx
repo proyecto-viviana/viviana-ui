@@ -245,7 +245,7 @@ export function SubmenuTrigger(props: SubmenuTriggerProps): JSX.Element {
 /**
  * A button that opens a menu.
  */
-export interface MenuButtonProps extends SlotProps {
+export interface MenuButtonProps extends SlotProps, Omit<JSX.HTMLAttributes<HTMLButtonElement>, 'class' | 'style' | 'children'> {
   /** The children of the button. A function may be provided to receive render props. */
   children?: RenderChildren<MenuTriggerRenderProps>;
   /** The CSS className for the element. */
@@ -259,7 +259,7 @@ export interface MenuButtonProps extends SlotProps {
 export interface MenuSectionProps extends SectionProps {}
 
 export function MenuButton(props: MenuButtonProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot', 'isDisabled']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'isDisabled', 'children']);
 
   // Get trigger context
   const context = useContext(MenuTriggerContext);
@@ -329,6 +329,7 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
 
   return (
     <button
+      {...domProps}
       {...cleanTriggerProps()}
       {...cleanButtonProps()}
       {...cleanFocusProps()}

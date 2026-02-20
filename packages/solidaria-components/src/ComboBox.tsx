@@ -478,7 +478,7 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
  * Label element for a combobox.
  */
 export function ComboBoxLabel(props: ComboBoxLabelProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(ComboBoxContext);
   if (!context) {
@@ -492,11 +492,12 @@ export function ComboBoxLabel(props: ComboBoxLabelProps): JSX.Element {
 
   return (
     <label
+      {...domProps}
       {...cleanLabelProps()}
       class={local.class}
       style={local.style}
     >
-      {props.children}
+      {local.children}
     </label>
   );
 }
@@ -505,7 +506,7 @@ export function ComboBoxLabel(props: ComboBoxLabelProps): JSX.Element {
  * Description element for a combobox.
  */
 export function ComboBoxDescription(props: ComboBoxDescriptionProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(ComboBoxContext);
   if (!context) {
@@ -519,11 +520,12 @@ export function ComboBoxDescription(props: ComboBoxDescriptionProps): JSX.Elemen
 
   return (
     <div
+      {...domProps}
       {...cleanDescriptionProps()}
       class={local.class}
       style={local.style}
     >
-      {props.children}
+      {local.children}
     </div>
   );
 }
@@ -532,7 +534,7 @@ export function ComboBoxDescription(props: ComboBoxDescriptionProps): JSX.Elemen
  * Error message element for a combobox.
  */
 export function ComboBoxErrorMessage(props: ComboBoxErrorMessageProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(ComboBoxContext);
   if (!context) {
@@ -546,11 +548,12 @@ export function ComboBoxErrorMessage(props: ComboBoxErrorMessageProps): JSX.Elem
 
   return (
     <div
+      {...domProps}
       {...cleanErrorMessageProps()}
       class={local.class}
       style={local.style}
     >
-      {props.children}
+      {local.children}
     </div>
   );
 }
@@ -559,7 +562,7 @@ export function ComboBoxErrorMessage(props: ComboBoxErrorMessageProps): JSX.Elem
  * The text input for a combobox.
  */
 export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   // Get context
   const context = useContext(ComboBoxContext);
@@ -588,7 +591,7 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: props.children,
+      children: local.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ComboBox-input',
@@ -608,6 +611,7 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
 
   return (
     <input
+      {...domProps}
       ref={(el) => setInputRef(el)}
       {...cleanInputProps()}
       {...cleanHoverProps()}
@@ -661,7 +665,7 @@ export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
  * The trigger button for a combobox.
  */
 export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   // Get context
   const context = useContext(ComboBoxContext);
@@ -692,7 +696,7 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: props.children,
+      children: local.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ComboBox-button',
@@ -712,6 +716,7 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
 
   return (
     <button
+      {...domProps}
       ref={(el) => setButtonRef(el)}
       {...cleanButtonProps()}
       {...cleanHoverProps()}
@@ -731,7 +736,7 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
  * The listbox popup for a combobox.
  */
 export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   // Get context
   const context = useContext(ComboBoxContext);
@@ -817,6 +822,7 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
   return (
     <Show when={isOpen()}>
       <ul
+        {...domProps}
         ref={setupMouseDownHandler}
         {...cleanContextProps()}
         {...cleanListBoxProps()}
@@ -824,7 +830,7 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
         style={renderProps.style()}
         data-focused={state.isFocused() || undefined}
       >
-        <Show when={props.children} fallback={
+        <Show when={local.children} fallback={
           <For each={items()}>
             {(node) => (
               <ComboBoxOption id={node.key}>
@@ -834,7 +840,7 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
           </For>
         }>
           <For each={items()}>
-            {(node) => node.value != null ? props.children!(node.value) : null}
+            {(node) => node.value != null ? (local.children as Function)!(node.value) : null}
           </For>
         </Show>
       </ul>

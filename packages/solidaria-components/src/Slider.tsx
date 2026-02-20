@@ -94,7 +94,7 @@ export interface SliderTrackRenderProps {
   orientation: SliderOrientation;
 }
 
-export interface SliderTrackProps extends SlotProps {
+export interface SliderTrackProps extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children'> {
   /** The children of the track. */
   children?: RenderChildren<SliderTrackRenderProps>;
   /** The CSS className for the element. */
@@ -120,7 +120,7 @@ export interface SliderThumbRenderProps {
   valuePercent: number;
 }
 
-export interface SliderThumbProps extends SlotProps {
+export interface SliderThumbProps extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children'> {
   /** The children of the thumb. */
   children?: RenderChildren<SliderThumbRenderProps>;
   /** The CSS className for the element. */
@@ -136,7 +136,7 @@ export interface SliderOutputRenderProps {
   formattedValue: string;
 }
 
-export interface SliderOutputProps extends SlotProps {
+export interface SliderOutputProps extends SlotProps, Omit<JSX.HTMLAttributes<HTMLElement>, 'class' | 'style' | 'children'> {
   /** The children of the output. */
   children?: RenderChildren<SliderOutputRenderProps>;
   /** The CSS className for the element. */
@@ -301,7 +301,7 @@ export function Slider(props: SliderProps): JSX.Element {
  * The track element of a slider.
  */
 export function SliderTrack(props: SliderTrackProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(SliderContext);
   if (!context) {
@@ -344,6 +344,7 @@ export function SliderTrack(props: SliderTrackProps): JSX.Element {
 
   return (
     <div
+      {...domProps}
       ref={setTrackRef}
       {...cleanTrackProps()}
       class={renderProps.class()}
@@ -361,7 +362,7 @@ export function SliderTrack(props: SliderTrackProps): JSX.Element {
  * The thumb element of a slider.
  */
 export function SliderThumb(props: SliderThumbProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(SliderContext);
   if (!context) {
@@ -425,6 +426,7 @@ export function SliderThumb(props: SliderThumbProps): JSX.Element {
 
   return (
     <div
+      {...domProps}
       {...cleanThumbProps()}
       {...cleanFocusProps()}
       {...cleanHoverProps()}
@@ -445,7 +447,7 @@ export function SliderThumb(props: SliderThumbProps): JSX.Element {
  * The output element of a slider, displaying the current value.
  */
 export function SliderOutput(props: SliderOutputProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(SliderContext);
   if (!context) {
@@ -488,6 +490,7 @@ export function SliderOutput(props: SliderOutputProps): JSX.Element {
 
   return (
     <output
+      {...domProps}
       {...cleanOutputProps()}
       class={renderProps.class()}
       style={renderProps.style()}

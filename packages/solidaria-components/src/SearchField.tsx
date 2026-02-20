@@ -86,7 +86,7 @@ export interface SearchFieldInputRenderProps {
   isInvalid: boolean;
 }
 
-export interface SearchFieldInputProps extends SlotProps {
+export interface SearchFieldInputProps extends SlotProps, Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'class' | 'style'> {
   /** The CSS className for the element. */
   class?: ClassNameOrFunction<SearchFieldInputRenderProps>;
   /** The inline style for the element. */
@@ -102,7 +102,7 @@ export interface SearchFieldClearButtonRenderProps {
   isDisabled: boolean;
 }
 
-export interface SearchFieldClearButtonProps extends SlotProps {
+export interface SearchFieldClearButtonProps extends SlotProps, Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, 'class' | 'style' | 'children'> {
   /** The children of the button. */
   children?: RenderChildren<SearchFieldClearButtonRenderProps>;
   /** The CSS className for the element. */
@@ -324,7 +324,7 @@ export function SearchFieldLabel(props: { children?: JSX.Element; class?: string
  * The input element for a search field.
  */
 export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(SearchFieldContext);
   if (!context) {
@@ -376,6 +376,7 @@ export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
 
   return (
     <input
+      {...domProps}
       ref={context.setInputRef}
       {...cleanInputProps()}
       {...cleanFocusProps()}
@@ -395,7 +396,7 @@ export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
  * The clear button for a search field.
  */
 export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   const context = useContext(SearchFieldContext);
   if (!context) {
@@ -454,6 +455,7 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
   return (
     <Show when={!isEmpty()}>
       <button
+        {...domProps}
         type="button"
         aria-label={context.clearButtonProps['aria-label']}
         tabIndex={context.clearButtonProps.tabIndex}

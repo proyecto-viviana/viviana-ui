@@ -11,7 +11,7 @@ import { type JSX, createSignal, splitProps, Show, onCleanup, onMount, createEff
 // TYPES
 // ============================================
 
-export interface ContextualHelpTriggerProps {
+export interface ContextualHelpTriggerProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'children'> {
   /** Whether the menu item is currently unavailable (shows different styling). */
   isUnavailable?: boolean
   /**
@@ -49,7 +49,7 @@ export interface ContextualHelpTriggerRenderProps {
  * ```
  */
 export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.Element {
-  const [local] = splitProps(props, ['isUnavailable', 'children', 'class', 'isDisabled'])
+  const [local, domProps] = splitProps(props, ['isUnavailable', 'children', 'class', 'isDisabled'])
   const [isOpen, setIsOpen] = createSignal(false)
   let triggerRef: HTMLDivElement | undefined
   let contentRef: HTMLDivElement | undefined
@@ -111,6 +111,7 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
 
   return (
     <div
+      {...domProps}
       class={`solidaria-ContextualHelpTrigger ${local.class ?? ''}`}
       style={{ position: 'relative', display: 'inline-block' }}
     >

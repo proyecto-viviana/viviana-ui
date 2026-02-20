@@ -415,7 +415,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
  * The trigger button for a select.
  */
 export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   // Get context
   const context = useContext(SelectContext);
@@ -463,6 +463,7 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
 
   return (
     <button
+      {...domProps}
       {...cleanTriggerProps()}
       {...cleanHoverProps()}
       type="button"
@@ -488,7 +489,7 @@ function defaultSelectValueChildren<T>(values: SelectValueRenderProps<T>) {
  * Displays the selected value in a select.
  */
 export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot', 'placeholder']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'placeholder', 'children']);
 
   // Get context
   const context = useContext(SelectContext);
@@ -529,6 +530,7 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
 
   return (
     <span
+      {...domProps}
       {...valueProps}
       class={renderProps.class()}
       style={renderProps.style()}
@@ -543,7 +545,7 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
  * The listbox popup for a select.
  */
 export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
-  const [local] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
 
   // Get context
   const context = useContext(SelectContext);
@@ -607,6 +609,7 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
       <FocusScope restoreFocus autoFocus>
         <ul
           ref={(el) => (listBoxRef = el)}
+          {...domProps}
           {...cleanMenuProps()}
           {...cleanListBoxProps()}
           class={renderProps.class()}
