@@ -176,7 +176,7 @@ export function DateField<T extends DateValue = CalendarDate>(
               }
 
               const focusClass = isFocused && isEditable
-                ? 'bg-accent text-white'
+                ? 'bg-accent text-bg-400'
                 : '';
 
               return `${base} ${stateClass} ${focusClass}`.trim();

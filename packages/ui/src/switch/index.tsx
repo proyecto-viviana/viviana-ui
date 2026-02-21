@@ -52,8 +52,8 @@ export function TabSwitch(props: TabSwitchProps): JSX.Element {
     return value ? new Set<Key>([value]) : new Set<Key>()
   })
 
-  const textSelected = 'font-extrabold text-primary-100'
-  const textUnselected = 'font-medium text-primary-500 tracking-wider'
+  const textSelected = 'font-extrabold text-primary-100 tracking-wider'
+  const textUnselected = 'font-medium text-primary-300 tracking-wider'
   const optionCount = createMemo(() => Math.max(options().length, 1))
   const indicatorStyle = createMemo(() => ({
     width: `calc(100% / ${optionCount()})`,
@@ -66,7 +66,7 @@ export function TabSwitch(props: TabSwitchProps): JSX.Element {
   return (
     <div class={`relative bg-bg-400 rounded-full w-[250px] ${props.class ?? ''}`}>
       <div
-        class="left-0 top-0 transition-all duration-300 ease-in-out z-0 absolute bg-primary-600 rounded-full h-8 border-l-2 border-r-2 border-accent-300"
+        class="left-0 top-0 transition-all duration-300 ease-in-out z-0 absolute bg-primary-700 rounded-full h-8 border-l-2 border-r-2 border-accent-300"
         style={indicatorStyle()}
       />
       <HeadlessToggleButtonGroup
@@ -80,9 +80,9 @@ export function TabSwitch(props: TabSwitchProps): JSX.Element {
           <HeadlessToggleButton
             toggleKey={option.value}
             onClick={() => props.onChange?.(option.value)}
-            class={({ isSelected }) =>
+            class={() =>
               `transition-all ease-in-out duration-300 z-10 text-lg flex justify-center items-center rounded-full ${
-                isSelected ? textSelected : textUnselected
+                selectedValue() === option.value ? textSelected : textUnselected
               }`
             }
           >

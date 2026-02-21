@@ -11,7 +11,7 @@ function Ecosystem() {
     <PageLayout withHeader>
       <Header />
 
-      <div class="mx-auto max-w-6xl px-6 py-12">
+      <main id="main-content" class="mx-auto max-w-6xl px-6 py-12">
         <h1 class="text-4xl font-semibold text-primary-100 drop-shadow-title-card">
           Ecosystem.
         </h1>
@@ -81,7 +81,7 @@ function Ecosystem() {
             />
           </div>
         </section>
-      </div>
+      </main>
     </PageLayout>
   )
 }

@@ -193,7 +193,7 @@ export function Calendar<T extends DateValue = CalendarDate>(
               if (isDisabled) {
                 stateClass = 'text-primary-600 cursor-not-allowed';
               } else if (isSelected) {
-                stateClass = 'bg-accent text-white font-medium';
+                stateClass = 'bg-accent text-bg-400 font-medium';
               } else if (isOutsideMonth) {
                 stateClass = 'text-primary-600';
               } else if (isToday) {

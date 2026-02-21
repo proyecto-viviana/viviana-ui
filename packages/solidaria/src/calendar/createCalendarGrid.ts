@@ -121,10 +121,9 @@ export function createCalendarGrid<T extends CalendarState>(
     onKeyDown: handleKeyDown,
   }));
 
-  // Header props
-  const headerProps = createMemo(() => ({
-    role: 'row',
-  }));
+  // Header props are intentionally empty. Consumers render this on <thead>,
+  // which already has correct table semantics.
+  const headerProps = createMemo(() => ({}));
 
   return {
     get gridProps() {

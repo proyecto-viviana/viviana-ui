@@ -83,6 +83,8 @@ export function createTag<T>(
     return state.isSelected(key());
   });
 
+  const isSelectable = createMemo(() => state.selectionMode() !== 'none');
+
   const isFocused = createMemo(() => {
     return state.focusedKey() === key();
   });
@@ -147,9 +149,9 @@ export function createTag<T>(
     get rowProps() {
       return mergeProps(domProps(), focusableProps as Record<string, unknown>, pressProps as Record<string, unknown>, {
         id: rowId,
-        role: 'row',
+        role: 'option',
         tabIndex: tabIndex(),
-        'aria-selected': isSelected(),
+        'aria-selected': isSelectable() ? isSelected() : undefined,
         'aria-disabled': isDisabled() || undefined,
         onKeyDown: handleKeyDown,
       });
@@ -157,7 +159,7 @@ export function createTag<T>(
     get gridCellProps() {
       return {
         id: cellId,
-        role: 'gridcell',
+        role: 'presentation',
         'aria-describedby': allowsRemoving() ? removeButtonId : undefined,
       };
     },

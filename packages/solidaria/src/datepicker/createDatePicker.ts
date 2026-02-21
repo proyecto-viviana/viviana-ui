@@ -134,12 +134,9 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
     });
   });
 
-  // Field props
-  const fieldProps = createMemo(() => ({
-    'aria-haspopup': 'dialog' as const,
-    'aria-expanded': overlayState.isOpen,
-    'aria-controls': overlayState.isOpen ? dialogId : undefined,
-  }));
+  // Field props are applied to DateInput (a non-popup container), so avoid
+  // popup trigger attributes like aria-expanded/aria-haspopup here.
+  const fieldProps = createMemo(() => ({}));
 
   // Button props
   const buttonProps = createMemo(() => {

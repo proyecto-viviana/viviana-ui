@@ -46,7 +46,7 @@ describe('GridList', () => {
 
       const list = document.querySelector('.solidaria-GridList');
       expect(list).toBeTruthy();
-      expect(list?.tagName).toBe('UL');
+      expect(list?.tagName).toBe('DIV');
     });
 
     it('should render with custom class', () => {

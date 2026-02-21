@@ -372,6 +372,7 @@ function DocsLayout() {
 
         {/* ─── Main content ─── */}
         <main
+          id="main-content"
           class="docs-content"
           style={{
             flex: "1",

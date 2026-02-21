@@ -166,7 +166,7 @@ export function RangeCalendar<T extends DateValue = CalendarDate>(
 
       {/* Calendar grid */}
       <RangeCalendarGrid
-        class="w-full border-collapse"
+        class="w-full border-collapse [&_.solidaria-RangeCalendarHeaderCell]:text-primary-200"
       >
         {(date) => (
           <RangeCalendarCell
@@ -196,13 +196,13 @@ export function RangeCalendar<T extends DateValue = CalendarDate>(
                 stateClass = 'text-primary-600 cursor-not-allowed';
               } else if (isSelectionStart && isSelectionEnd) {
                 // Single day selection
-                stateClass = 'bg-accent text-white font-medium';
+                stateClass = 'bg-accent text-bg-400 font-medium';
                 roundedClass = 'rounded-md';
               } else if (isSelectionStart) {
-                stateClass = 'bg-accent text-white font-medium';
+                stateClass = 'bg-accent text-bg-400 font-medium';
                 roundedClass = 'rounded-l-md rounded-r-none';
               } else if (isSelectionEnd) {
-                stateClass = 'bg-accent text-white font-medium';
+                stateClass = 'bg-accent text-bg-400 font-medium';
                 roundedClass = 'rounded-r-md rounded-l-none';
               } else if (isSelected) {
                 stateClass = 'bg-accent/20 text-primary-100';

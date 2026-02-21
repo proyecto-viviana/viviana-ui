@@ -127,7 +127,7 @@ export interface GridListItemRenderProps {
   isDisabled: boolean;
 }
 
-export interface GridListItemProps<T extends object> extends SlotProps, Omit<JSX.HTMLAttributes<HTMLLIElement>, 'class' | 'style' | 'children' | 'id'> {
+export interface GridListItemProps<T extends object> extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children' | 'id'> {
   /** The unique key for the item. */
   id: Key;
   /** The item value. */
@@ -546,7 +546,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     <GridListContext.Provider value={contextValue() as unknown as GridListContextValue<object>}>
       <GridListStateContext.Provider value={state as unknown as GridState<object, GridCollection<object>>}>
         <CollectionRendererContext.Provider value={collectionRenderer()}>
-          <ul
+          <div
             ref={setRef}
             {...mergeProps(
               domProps(),
@@ -567,7 +567,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
             ) : (
               <>
                 {virtualRange()?.offsetTop
-                  ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
+                  ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
                   : null}
                 <For each={visibleItems()}>
                   {(item, index) => {
@@ -586,14 +586,14 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
                   }}
                 </For>
                 {virtualRange()?.offsetBottom
-                  ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
+                  ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
                   : null}
               </>
             )}
             {local.hasMore && local.onLoadMore && (
               <GridListLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
             )}
-          </ul>
+          </div>
         </CollectionRendererContext.Provider>
       </GridListStateContext.Provider>
     </GridListContext.Provider>
@@ -624,7 +624,7 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
   const listContext = useContext(GridListContext) as GridListContextValue<T> | null;
 
   // Create ref signal
-  const [ref, setRef] = createSignal<HTMLLIElement | null>(null);
+  const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
 
   // Find or create the item node
   const itemNode = createMemo(() => {
@@ -723,7 +723,7 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
   };
 
   return (
-    <li
+    <div
       ref={setRef}
       {...domProps}
       {...mergeProps(
@@ -745,7 +745,7 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
       data-drop-target={droppableItem()?.isDropTarget || undefined}
     >
       <div {...gridCellProps}>{renderProps.renderChildren()}</div>
-    </li>
+    </div>
   );
 }
 
@@ -769,7 +769,7 @@ export function GridListSelectionCheckbox(props: { itemKey: Key }): JSX.Element 
 }
 
 export function GridListLoadMoreItem(props: GridListLoadMoreItemProps): JSX.Element {
-  let ref: HTMLLIElement | undefined;
+  let ref: HTMLDivElement | undefined;
   const [isPending, setIsPending] = createSignal(false);
   const isLoading = () => !!props.isLoading || isPending();
 
@@ -805,7 +805,7 @@ export function GridListLoadMoreItem(props: GridListLoadMoreItemProps): JSX.Elem
   );
 
   return (
-    <li
+    <div
       ref={ref}
       role="row"
       tabIndex={0}
@@ -817,7 +817,7 @@ export function GridListLoadMoreItem(props: GridListLoadMoreItemProps): JSX.Elem
       data-loading={isLoading() || undefined}
     >
       {renderProps.renderChildren()}
-    </li>
+    </div>
   );
 }
 

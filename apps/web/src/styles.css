@@ -17,39 +17,39 @@
   --color-bg-400: #0a0a0a;
   --color-bg-light: #606060;
 
-  /* Primary - Silapse blue scale (500/600 brightened for AA on dark bgs) */
+  /* Primary - tuned for AAA contrast in showcase dark surfaces */
   --color-primary-100: #ddf4ff;
   --color-primary-200: #b6e3ff;
   --color-primary-300: #80ccff;
-  --color-primary-400: #54aeff;
-  --color-primary-500: #4da0ff;
+  --color-primary-400: #6ac3ff;
+  --color-primary-500: #63b9ff;
   --color-primary-600: #3080f4;
-  --color-primary-700: #1158c7;
-  --color-primary-800: #0d419d;
+  --color-primary-700: #00377f;
+  --color-primary-800: #002a60;
 
-  /* Accent - Silapse pink */
-  --color-accent: #ffa0d5;
-  --color-accent-200: #ffc9e9;
+  /* Accent - lifted for stronger dark-surface text contrast */
+  --color-accent: #ffd6ec;
+  --color-accent-200: #ffe5f4;
   --color-accent-300: #f778ba;
   --color-accent-500: #d84a8f;
-  --color-accent-highlight: #ffc9e9;
+  --color-accent-highlight: #ffe5f4;
 
-  /* Semantic colors from Silapse */
+  /* Semantic colors tuned for AAA contrast in dark UI */
   --color-success-100: #E5FFF3;
-  --color-success-400: #3fb950;
-  --color-success-600: #238636;
+  --color-success-400: #7ae89a;
+  --color-success-600: #145a24;
   --color-warning-100: #FFFBE5;
-  --color-warning-400: #d29922;
-  --color-warning-600: #966a13;
+  --color-warning-400: #ffd27a;
+  --color-warning-600: #63440c;
   --color-danger-100: #FFE5E5;
-  --color-danger-400: #f85149;
-  --color-danger-600: #da3633;
+  --color-danger-400: #ff9a95;
+  --color-danger-600: #9b2321;
 
   /* Cards */
   --color-cards-bg: #1a1a1a;
   --color-cards-bg-load: #252525;
-  --color-correct: #3fb950;
-  --color-incorrect: #f85149;
+  --color-correct: #7ae89a;
+  --color-incorrect: #ff9a95;
 
   /* Typography (keep JetBrains Mono as Iosevka fallback) */
   --font-sen: 'Sen', sans-serif;

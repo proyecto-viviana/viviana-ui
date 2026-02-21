@@ -82,6 +82,10 @@ export function createTagGroup<T>(
   const id = createId(getProps().id);
   const descriptionId = createId();
   const errorMessageId = createId();
+  const getFallbackAriaLabel = () => {
+    const p = getProps();
+    return !p.label && !p['aria-label'] && !p['aria-labelledby'] ? 'Tag list' : undefined;
+  };
 
   // Filter DOM props
   const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
@@ -89,7 +93,7 @@ export function createTagGroup<T>(
   // Create label handling
   const { labelProps, fieldProps } = createLabel({
     get label() { return getProps().label; },
-    get 'aria-label'() { return getProps()['aria-label']; },
+    get 'aria-label'() { return getProps()['aria-label'] ?? getFallbackAriaLabel(); },
     get 'aria-labelledby'() { return getProps()['aria-labelledby']; },
     labelElementType: 'span',
   });
@@ -130,7 +134,8 @@ export function createTagGroup<T>(
 
       return mergeProps(domProps(), fieldProps as Record<string, unknown>, {
         id,
-        role: hasItems ? 'grid' : 'group',
+        role: hasItems ? 'listbox' : 'group',
+        'aria-multiselectable': hasItems && state.selectionMode() === 'multiple' ? true : undefined,
         'aria-atomic': false,
         'aria-relevant': 'additions',
         'aria-describedby': getAriaDescribedBy(),

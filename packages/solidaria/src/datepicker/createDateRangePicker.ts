@@ -83,18 +83,14 @@ export function createDateRangePicker<T extends RangeCalendarState>(
     });
   });
 
+  // Start/end field props are applied to non-trigger visual containers in UI
+  // wrappers. Keep stable IDs only; popup trigger semantics belong on button.
   const startFieldProps = createMemo(() => ({
     id: startFieldId,
-    'aria-haspopup': 'dialog' as const,
-    'aria-expanded': overlayState.isOpen,
-    'aria-controls': overlayState.isOpen ? dialogId : undefined,
   }));
 
   const endFieldProps = createMemo(() => ({
     id: endFieldId,
-    'aria-haspopup': 'dialog' as const,
-    'aria-expanded': overlayState.isOpen,
-    'aria-controls': overlayState.isOpen ? dialogId : undefined,
   }));
 
   const buttonProps = createMemo(() => {

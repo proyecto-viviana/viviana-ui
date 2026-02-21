@@ -17,9 +17,9 @@ export interface ChipProps {
 }
 
 const variantStyles: Record<ChipVariant, string> = {
-  primary: 'bg-primary-700 text-primary-200 shadow-primary-chip',
-  secondary: 'bg-primary-600 text-primary-100 hover:bg-primary-500',
-  accent: 'bg-accent text-white',
+  primary: 'bg-primary-700 text-primary-100 shadow-primary-chip',
+  secondary: 'bg-primary-700 text-primary-100 hover:bg-primary-600',
+  accent: 'bg-accent text-bg-400',
   outline: 'bg-transparent border border-primary-500 text-primary-300',
 }
 

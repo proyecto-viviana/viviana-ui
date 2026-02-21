@@ -1,7 +1,7 @@
 /**
  * ContextualHelpTrigger headless component
  *
- * A menu item that opens contextual help in a popover or dialog.
+ * A button trigger that opens contextual help in a popover or dialog.
  * Uses existing overlay infrastructure.
  */
 
@@ -11,12 +11,12 @@ import { type JSX, createSignal, splitProps, Show, onCleanup, onMount, createEff
 // TYPES
 // ============================================
 
-export interface ContextualHelpTriggerProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'children'> {
-  /** Whether the menu item is currently unavailable (shows different styling). */
+export interface ContextualHelpTriggerProps extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, 'class' | 'children'> {
+  /** Whether the trigger is currently unavailable (shows different styling). */
   isUnavailable?: boolean
   /**
    * Two children: [trigger element, help content].
-   * The trigger renders as a menu item, the content opens in a popover.
+   * The trigger renders as a button, the content opens in a popover.
    */
   children?: [JSX.Element, JSX.Element]
   /** CSS class name. */
@@ -36,7 +36,7 @@ export interface ContextualHelpTriggerRenderProps {
 // ============================================
 
 /**
- * A trigger within a menu that opens contextual help content.
+ * A trigger that opens contextual help content.
  *
  * @example
  * ```tsx
@@ -49,9 +49,9 @@ export interface ContextualHelpTriggerRenderProps {
  * ```
  */
 export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['isUnavailable', 'children', 'class', 'isDisabled'])
+  const [local, triggerProps] = splitProps(props, ['isUnavailable', 'children', 'class', 'isDisabled'])
   const [isOpen, setIsOpen] = createSignal(false)
-  let triggerRef: HTMLDivElement | undefined
+  let triggerRef: HTMLButtonElement | undefined
   let contentRef: HTMLDivElement | undefined
 
   const isUnavailable = () => local.isUnavailable ?? false
@@ -65,11 +65,34 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
 
   const close = () => setIsOpen(false)
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      toggle()
-    } else if (e.key === 'Escape' && isOpen()) {
+  const callHandler = <E extends Event>(
+    handler: JSX.EventHandlerUnion<HTMLButtonElement, E> | undefined,
+    event: E
+  ) => {
+    if (!handler) return
+    if (Array.isArray(handler)) {
+      handler[1].call(handler[0], event)
+      return
+    }
+    if (typeof handler === 'function') {
+      (handler as (evt: E) => void)(event)
+      return
+    }
+    if (typeof handler === 'object' && 'handleEvent' in handler && typeof handler.handleEvent === 'function') {
+      (handler.handleEvent as (evt: E) => void)(event)
+    }
+  }
+
+  const handleTriggerClick = (e: MouseEvent) => {
+    callHandler(triggerProps.onClick, e)
+    if (e.defaultPrevented) return
+    toggle()
+  }
+
+  const handleTriggerKeyDown = (e: KeyboardEvent) => {
+    callHandler(triggerProps.onKeyDown, e)
+    if (e.defaultPrevented) return
+    if (e.key === 'Escape' && isOpen()) {
       e.preventDefault()
       e.stopPropagation()
       close()
@@ -111,25 +134,24 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
 
   return (
     <div
-      {...domProps}
       class={`solidaria-ContextualHelpTrigger ${local.class ?? ''}`}
       style={{ position: 'relative', display: 'inline-block' }}
     >
-      <div
+      <button
+        {...triggerProps}
+        type="button"
         ref={triggerRef}
-        role="menuitem"
-        tabIndex={0}
         aria-haspopup="dialog"
         aria-expanded={isOpen()}
-        aria-disabled={isDisabled() || undefined}
         data-unavailable={isUnavailable() || undefined}
         data-disabled={isDisabled() || undefined}
-        onClick={toggle}
-        onKeyDown={handleKeyDown}
+        disabled={isDisabled()}
+        onClick={handleTriggerClick}
+        onKeyDown={handleTriggerKeyDown}
         class="solidaria-ContextualHelpTrigger-trigger"
       >
         {trigger()}
-      </div>
+      </button>
 
       <Show when={isOpen()}>
         <div

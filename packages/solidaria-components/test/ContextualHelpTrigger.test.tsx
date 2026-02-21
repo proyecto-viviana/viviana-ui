@@ -12,9 +12,9 @@ describe('ContextualHelpTrigger (headless)', () => {
   ];
 
   describe('basic rendering', () => {
-    it('renders trigger as menuitem', () => {
+    it('renders trigger as button', () => {
       render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-      expect(screen.getByRole('menuitem')).toBeInTheDocument();
+      expect(screen.getByRole('button')).toBeInTheDocument();
       expect(screen.getByText('Help trigger')).toBeInTheDocument();
     });
 
@@ -27,25 +27,13 @@ describe('ContextualHelpTrigger (headless)', () => {
   describe('open/close behavior', () => {
     it('opens help popover on click', () => {
       render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-      fireEvent.click(screen.getByRole('menuitem'));
-      expect(screen.getByText('Help content goes here')).toBeInTheDocument();
-    });
-
-    it('opens on Enter key', () => {
-      render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-      fireEvent.keyDown(screen.getByRole('menuitem'), { key: 'Enter' });
-      expect(screen.getByText('Help content goes here')).toBeInTheDocument();
-    });
-
-    it('opens on Space key', () => {
-      render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-      fireEvent.keyDown(screen.getByRole('menuitem'), { key: ' ' });
+      fireEvent.click(screen.getByRole('button'));
       expect(screen.getByText('Help content goes here')).toBeInTheDocument();
     });
 
     it('closes on Escape', () => {
       render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-      fireEvent.click(screen.getByRole('menuitem'));
+      fireEvent.click(screen.getByRole('button'));
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -53,7 +41,7 @@ describe('ContextualHelpTrigger (headless)', () => {
 
     it('toggles on repeated click', () => {
       render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-      const trigger = screen.getByRole('menuitem');
+      const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       fireEvent.click(trigger);
@@ -64,12 +52,12 @@ describe('ContextualHelpTrigger (headless)', () => {
   describe('accessibility', () => {
     it('trigger has aria-haspopup="dialog"', () => {
       render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-      expect(screen.getByRole('menuitem').getAttribute('aria-haspopup')).toBe('dialog');
+      expect(screen.getByRole('button').getAttribute('aria-haspopup')).toBe('dialog');
     });
 
     it('trigger has aria-expanded when open', () => {
       render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-      const trigger = screen.getByRole('menuitem');
+      const trigger = screen.getByRole('button');
       expect(trigger.getAttribute('aria-expanded')).toBe('false');
       fireEvent.click(trigger);
       expect(trigger.getAttribute('aria-expanded')).toBe('true');
@@ -77,7 +65,7 @@ describe('ContextualHelpTrigger (headless)', () => {
 
     it('content has role="dialog"', () => {
       render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-      fireEvent.click(screen.getByRole('menuitem'));
+      fireEvent.click(screen.getByRole('button'));
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });
@@ -87,14 +75,16 @@ describe('ContextualHelpTrigger (headless)', () => {
       render(() => (
         <ContextualHelpTrigger isUnavailable>{defaultChildren}</ContextualHelpTrigger>
       ));
-      expect(screen.getByRole('menuitem').hasAttribute('data-unavailable')).toBe(true);
+      expect(screen.getByRole('button').hasAttribute('data-unavailable')).toBe(true);
     });
 
-    it('isDisabled prevents opening', () => {
+    it('isDisabled sets disabled and prevents opening', () => {
       render(() => (
         <ContextualHelpTrigger isDisabled>{defaultChildren}</ContextualHelpTrigger>
       ));
-      fireEvent.click(screen.getByRole('menuitem'));
+      const trigger = screen.getByRole('button');
+      expect(trigger).toBeDisabled();
+      fireEvent.click(trigger);
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });

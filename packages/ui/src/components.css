@@ -125,16 +125,16 @@
   border-bottom: 1px solid var(--color-primary-200);
 }
 
-/* Secondary = bg-primary-600, text-primary-100 */
+/* Secondary = darker blue for AA-safe text contrast */
 .vui-button--fill.vui-button--secondary {
-  background: var(--color-primary-600);
+  background: var(--color-primary-700);
   color: var(--color-primary-100);
 }
 
-/* Accent = bg-accent, text-white */
+/* Accent = light pink background with dark foreground for contrast */
 .vui-button--fill.vui-button--accent {
   background: var(--color-accent);
-  color: white;
+  color: var(--color-bg-400);
 }
 
 .vui-button--fill.vui-button--accent:hover:not(:disabled) {
@@ -145,14 +145,14 @@
 /* Positive = bg-success-600, text-success-100, border-success-400 */
 .vui-button--fill.vui-button--positive {
   background: var(--color-success-600);
-  color: var(--color-success-100);
+  color: #ffffff;
   border: 1px solid var(--color-success-400);
 }
 
 /* Negative = bg-danger-600, text-danger-100, border-danger-400 */
 .vui-button--fill.vui-button--negative {
   background: var(--color-danger-600);
-  color: var(--color-danger-100);
+  color: #ffffff;
   border: 1px solid var(--color-danger-400);
 }
 
@@ -273,12 +273,12 @@
 
 .vui-chip--accent {
   background: var(--color-accent);
-  color: white;
+  color: var(--color-bg-400);
 }
 
 .vui-chip--success {
   background: var(--color-success-600);
-  color: var(--color-success-100);
+  color: #ffffff;
 }
 
 .vui-chip--warning {
@@ -288,7 +288,7 @@
 
 .vui-chip--danger {
   background: var(--color-danger-600);
-  color: var(--color-danger-100);
+  color: #ffffff;
 }
 
 /* ===== BADGE COMPONENT ===== */
@@ -309,12 +309,12 @@
 
 .vui-badge--accent {
   background: var(--color-accent);
-  color: white;
+  color: var(--color-bg-400);
 }
 
 .vui-badge--success {
   background: var(--color-success-600);
-  color: var(--color-success-100);
+  color: #ffffff;
 }
 
 .vui-badge--warning {
@@ -324,7 +324,7 @@
 
 .vui-badge--danger {
   background: var(--color-danger-600);
-  color: var(--color-danger-100);
+  color: #ffffff;
 }
 
 /* ===== ALERT COMPONENT ===== */
@@ -845,6 +845,7 @@
   border-radius: 0.75rem;
   border: 1px solid var(--color-bg-300);
   background: var(--color-bg-200);
+  color: var(--color-primary-100);
   transition: box-shadow 0.2s, border-color 0.2s;
 }
 

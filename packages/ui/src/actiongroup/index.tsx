@@ -64,7 +64,7 @@ function getContainerClassName(renderProps: ActionGroupRenderProps, extraClass?:
 
 function getItemClassName(renderProps: ActionGroupItemRenderProps): string {
   const stateClass = renderProps.isSelected
-    ? 'bg-accent text-white'
+    ? 'bg-accent text-bg-400'
     : 'bg-transparent text-primary-200 hover:bg-bg-400';
   const disabledClass = renderProps.isDisabled
     ? 'cursor-not-allowed opacity-50'

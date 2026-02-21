@@ -166,7 +166,7 @@ export function TimeField<T extends TimeValue = TimeValue>(
               }
 
               const focusClass = isFocused && isEditable
-                ? 'bg-accent text-white'
+                ? 'bg-accent text-bg-400'
                 : '';
 
               return `${base} ${stateClass} ${focusClass}`.trim();

@@ -1536,6 +1536,7 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
         <StyledBreadcrumbs<BreadcrumbData>
           items={breadcrumbItems}
           getKey={(item: BreadcrumbData) => item.id}
+          aria-label="Default breadcrumbs demo"
         >
           {(item: BreadcrumbData) => (
             <StyledBreadcrumbItem
@@ -1556,6 +1557,7 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
           items={breadcrumbItems}
           getKey={(item: BreadcrumbData) => item.id}
           variant="subtle"
+          aria-label="Subtle breadcrumbs demo"
         >
           {(item: BreadcrumbData) => (
             <StyledBreadcrumbItem
@@ -1580,6 +1582,7 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
               items={breadcrumbItems.slice(0, 3)}
               getKey={(item: BreadcrumbData) => item.id}
               size="sm"
+              aria-label="Small breadcrumbs demo"
             >
               {(item: BreadcrumbData) => (
                 <StyledBreadcrumbItem
@@ -1599,6 +1602,7 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
               items={breadcrumbItems.slice(0, 3)}
               getKey={(item: BreadcrumbData) => item.id}
               size="md"
+              aria-label="Medium breadcrumbs demo"
             >
               {(item: BreadcrumbData) => (
                 <StyledBreadcrumbItem
@@ -1618,6 +1622,7 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
               items={breadcrumbItems.slice(0, 3)}
               getKey={(item: BreadcrumbData) => item.id}
               size="lg"
+              aria-label="Large breadcrumbs demo"
             >
               {(item: BreadcrumbData) => (
                 <StyledBreadcrumbItem
@@ -2494,4 +2499,3 @@ function ThemeInfoDisplay() {
     )
   }
 }
-

@@ -13,13 +13,13 @@ describe('ContextualHelpTrigger (ui)', () => {
 
   it('renders styled trigger', () => {
     render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-    expect(screen.getByRole('menuitem')).toBeInTheDocument();
+    expect(screen.getByRole('button')).toBeInTheDocument();
     expect(screen.getByText('Need help?')).toBeInTheDocument();
   });
 
   it('popover has styled content', () => {
     render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-    fireEvent.click(screen.getByRole('menuitem'));
+    fireEvent.click(screen.getByRole('button'));
     expect(screen.getByText('This is the help content.')).toBeInTheDocument();
   });
 
@@ -33,7 +33,7 @@ describe('ContextualHelpTrigger (ui)', () => {
 
   it('opens and closes correctly', () => {
     render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
-    const trigger = screen.getByRole('menuitem');
+    const trigger = screen.getByRole('button');
 
     // Open
     fireEvent.click(trigger);

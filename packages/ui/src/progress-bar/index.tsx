@@ -4,7 +4,7 @@
  * Styled progress bar component built on top of solidaria-components.
  */
 
-import { type JSX, splitProps, Show } from 'solid-js';
+import { type JSX, splitProps, Show, createUniqueId } from 'solid-js';
 import {
   ProgressBar as HeadlessProgressBar,
   type ProgressBarRenderProps as HeadlessProgressBarRenderProps,
@@ -100,6 +100,7 @@ export function ProgressBar(props: ProgressBarProps): JSX.Element {
   const size = () => local.size ?? 'md';
   const variant = () => local.variant ?? 'primary';
   const sizeConfig = () => sizeStyles[size()];
+  const labelId = createUniqueId();
   const renderChildren = ({ valueText, percentage, isIndeterminate }: HeadlessProgressBarRenderProps) => {
     const showValueLabel = local.showValueLabel ?? !isIndeterminate;
     const fillWidth = isIndeterminate ? '30%' : `${percentage ?? 0}%`;
@@ -109,7 +110,7 @@ export function ProgressBar(props: ProgressBarProps): JSX.Element {
         <Show when={local.label || showValueLabel}>
           <div class={`flex justify-between items-center mb-1 ${sizeConfig().text}`}>
             <Show when={local.label}>
-              <span class="text-primary-200 font-medium">{local.label}</span>
+              <span id={labelId} class="text-primary-200 font-medium">{local.label}</span>
             </Show>
             <Show when={showValueLabel && !isIndeterminate}>
               <span class="text-primary-300">{valueText}</span>
@@ -132,7 +133,8 @@ export function ProgressBar(props: ProgressBarProps): JSX.Element {
   return (
     <HeadlessProgressBar
       {...headlessProps}
-      label={local.label}
+      aria-labelledby={headlessProps['aria-labelledby'] ?? (!headlessProps['aria-label'] && local.label ? labelId : undefined)}
+      aria-label={headlessProps['aria-label']}
       class={`w-full ${local.class ?? ''}`}
       children={renderChildren}
     />

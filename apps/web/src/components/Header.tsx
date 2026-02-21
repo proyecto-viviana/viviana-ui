@@ -134,6 +134,12 @@ export function Header() {
 
   return (
     <>
+      <a
+        href="#main-content"
+        class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[210] focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:rounded-md focus:bg-bg-300 focus:text-primary-100"
+      >
+        Skip to main content
+      </a>
       <header
         style={{
           position: "fixed",

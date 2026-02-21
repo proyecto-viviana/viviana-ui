@@ -361,25 +361,31 @@ describe('TagGroup', () => {
       expect(tagList).toHaveAttribute('aria-label', 'Test Tags');
     });
 
-    it('should have grid role', () => {
-      render(() => <TestTagGroup />);
+    it('should apply fallback aria-label when no explicit label is provided', () => {
+      render(() => (
+        <TagGroup>
+          <TagList items={sampleItems}>
+            {(item) => <Tag id={item.id}>{item.name}</Tag>}
+          </TagList>
+        </TagGroup>
+      ));
 
-      const grid = screen.getByRole('grid');
-      expect(grid).toBeInTheDocument();
+      const listbox = screen.getByRole('listbox');
+      expect(listbox).toHaveAttribute('aria-label', 'Tag list');
     });
 
-    it('should have row role on tags', () => {
+    it('should have listbox role', () => {
       render(() => <TestTagGroup />);
 
-      const rows = screen.getAllByRole('row');
-      expect(rows.length).toBe(4);
+      const listbox = screen.getByRole('listbox');
+      expect(listbox).toBeInTheDocument();
     });
 
-    it('should have gridcell role in tags', () => {
+    it('should have option role on tags', () => {
       render(() => <TestTagGroup />);
 
-      const gridcells = screen.getAllByRole('gridcell');
-      expect(gridcells.length).toBe(4);
+      const options = screen.getAllByRole('option');
+      expect(options.length).toBe(4);
     });
   });
 

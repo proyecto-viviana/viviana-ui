@@ -260,6 +260,9 @@ export function createSlider(
     });
   });
 
+  const labelledBy = () => (fieldProps as { 'aria-labelledby'?: string })['aria-labelledby'];
+  const ariaLabel = () => (fieldProps as { 'aria-label'?: string })['aria-label'];
+
   return {
     get labelProps() {
       return labelProps as JSX.HTMLAttributes<HTMLElement>;
@@ -305,7 +308,8 @@ export function createSlider(
           'aria-valuetext': state.getFormattedValue(),
           'aria-orientation': state.orientation,
           'aria-disabled': state.isDisabled || undefined,
-          'aria-labelledby': (labelProps as { id?: string }).id,
+          'aria-labelledby': labelledBy(),
+          'aria-label': labelledBy() ? undefined : ariaLabel(),
           onPointerDown: onThumbPointerDown,
           onKeyDown: onThumbKeyDown,
           onFocus,

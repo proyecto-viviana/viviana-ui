@@ -5,7 +5,7 @@
  * Built on top of solidaria-components.
  */
 
-import { type JSX, splitProps, Show } from 'solid-js'
+import { type JSX, splitProps, Show, createUniqueId } from 'solid-js'
 import {
   Slider as HeadlessSlider,
   SliderTrack as HeadlessSliderTrack,
@@ -87,12 +87,12 @@ export function Slider(props: SliderProps): JSX.Element {
 
   const size = () => sizeStyles[local.size ?? 'md']
   const orientation = (): SliderOrientation => headlessProps.orientation ?? 'horizontal'
+  const labelId = createUniqueId()
 
   const containerClasses = () => {
     const base = orientation() === 'vertical' ? 'flex flex-col w-fit' : 'flex flex-col w-full'
-    const disabledClass = headlessProps.isDisabled ? 'opacity-60' : ''
     const custom = local.class || ''
-    return [base, disabledClass, custom].filter(Boolean).join(' ')
+    return [base, custom].filter(Boolean).join(' ')
   }
 
   const labelRowClasses = () => {
@@ -180,14 +180,15 @@ export function Slider(props: SliderProps): JSX.Element {
   return (
     <HeadlessSlider
       {...headlessProps}
-      aria-label={headlessProps['aria-label'] ?? local.label}
+      aria-labelledby={headlessProps['aria-labelledby'] ?? (!headlessProps['aria-label'] && local.label ? labelId : undefined)}
+      aria-label={headlessProps['aria-label']}
       class={containerClasses()}
       children={(_renderProps: SliderRenderProps) => (
         <>
           <Show when={local.label || showOutput()}>
             <div class={labelRowClasses()}>
               <Show when={local.label}>
-                <span class={labelClasses()}>{local.label}</span>
+                <span id={labelId} class={labelClasses()}>{local.label}</span>
               </Show>
               <Show when={showOutput()}>
                 <HeadlessSliderOutput class={outputClasses()} />

@@ -37,7 +37,7 @@ export function LogicButton(props: LogicButtonProps): JSX.Element {
     if (renderProps.isDisabled) {
       stateClass = 'bg-bg-300 text-primary-500 cursor-not-allowed';
     } else if (renderProps.isSelected) {
-      stateClass = 'bg-accent text-white';
+      stateClass = 'bg-accent text-bg-400';
     } else {
       stateClass = 'bg-bg-400 text-primary-300 border border-primary-600';
     }

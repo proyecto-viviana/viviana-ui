@@ -53,8 +53,8 @@ export function ToggleButton(props: ToggleButtonProps): JSX.Element {
       stateClass = 'bg-bg-300 text-primary-500 border-primary-600 cursor-not-allowed';
     } else if (renderProps.isSelected) {
       stateClass = renderProps.isHovered
-        ? 'bg-accent-400 text-white border-accent-400'
-        : 'bg-accent text-white border-accent';
+        ? 'bg-accent-400 text-bg-400 border-accent-400'
+        : 'bg-accent text-bg-400 border-accent';
     } else if (renderProps.isHovered) {
       stateClass = 'bg-bg-200 text-primary-100 border-primary-500';
     } else {

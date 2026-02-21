@@ -20,7 +20,10 @@ function TestMeter(props: {
     get maxValue() { return props.maxValue; },
     get valueLabel() { return props.valueLabel; },
     get label() { return props.label; },
-    get 'aria-label'() { return props['aria-label']; },
+    get 'aria-label'() {
+      if (props['aria-label']) return props['aria-label'];
+      return props.label ? undefined : 'Test meter';
+    },
   });
 
   return (
@@ -32,12 +35,11 @@ function TestMeter(props: {
 }
 
 describe('createMeter', () => {
-  it('should render with meter role (with progressbar fallback)', () => {
+  it('should render with meter role', () => {
     render(() => <TestMeter value={25} />);
     const meter = screen.getByTestId('meter');
     expect(meter).toBeInTheDocument();
-    // The role includes both 'meter' and 'progressbar' for fallback
-    expect(meter).toHaveAttribute('role', 'meter progressbar');
+    expect(meter).toHaveAttribute('role', 'meter');
   });
 
   it('should have aria-valuenow', () => {

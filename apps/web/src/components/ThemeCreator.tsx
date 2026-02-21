@@ -10,15 +10,6 @@ import {
   oklchToHex,
 } from '@/utils/color'
 
-function contrastText(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16) / 255
-  const g = parseInt(hex.slice(3, 5), 16) / 255
-  const b = parseInt(hex.slice(5, 7), 16) / 255
-  const lin = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
-  const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
-  return L > 0.179 ? '#06131d' : '#f4f8fa'
-}
-
 export interface ThemeCreatorProps {
   onThemeChange?: (cssVars: Record<string, string>) => void
 }
@@ -238,9 +229,15 @@ export function ThemeCreator(props: ThemeCreatorProps) {
             return (
               <div
                 class="w-8 h-8 rounded text-[10px] flex items-center justify-center font-mono"
-                style={{ background: palette()[shade], color: contrastText(palette()[shade]) }}
+                style={{ background: palette()[shade] }}
+                aria-label={`Primary shade ${shade}`}
               >
-                {shade}
+                <span
+                  class="rounded-[2px] px-0.5 leading-none font-bold"
+                  style={{ background: '#06131d', color: '#f4f8fa' }}
+                >
+                  {shade}
+                </span>
               </div>
             )
           }}

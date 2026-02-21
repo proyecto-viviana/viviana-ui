@@ -149,7 +149,7 @@ export function SkipLink(props: SkipLinkProps): JSX.Element {
     // Show when focused
     'focus:translate-y-0',
     // Styling
-    'z-50 px-4 py-2 bg-accent text-white font-medium rounded-br-lg',
+    'z-50 px-4 py-2 bg-accent text-bg-400 font-medium rounded-br-lg',
     'transition-transform duration-200',
     'focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2',
     customClass,

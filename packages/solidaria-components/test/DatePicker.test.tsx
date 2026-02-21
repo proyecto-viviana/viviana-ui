@@ -85,13 +85,24 @@ describe('DatePicker', () => {
       expect(segments.length).toBe(3); // month, day, year
     });
 
-    it('should wire DateInput with datepicker field ARIA props', async () => {
+    it('should not apply popup trigger ARIA attrs to DateInput container', async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
       const input = document.querySelector('.solidaria-DateInput');
       expect(input).toBeInTheDocument();
-      expect(input).toHaveAttribute('aria-haspopup', 'dialog');
+      expect(input).not.toHaveAttribute('aria-haspopup');
+      expect(input).not.toHaveAttribute('aria-expanded');
+    });
+
+    it('should apply popup trigger ARIA attrs to DatePickerButton', async () => {
+      render(() => <TestDatePicker />);
+      await waitForDatePickerHydration();
+
+      const button = document.querySelector('.solidaria-DatePickerButton');
+      expect(button).toBeInTheDocument();
+      expect(button).toHaveAttribute('aria-haspopup', 'dialog');
+      expect(button).toHaveAttribute('aria-expanded', 'false');
     });
 
     it('should render picker button', async () => {

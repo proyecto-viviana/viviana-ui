@@ -118,7 +118,7 @@ export interface TabPanelAria {
   tabPanelProps: {
     id: string;
     role: 'tabpanel';
-    'aria-labelledby': string;
+    'aria-labelledby'?: string;
     'aria-label'?: string;
     'aria-describedby'?: string;
     tabIndex: number;
@@ -418,11 +418,19 @@ export function createTab<T>(
     tabProps: {
       id: tabId,
       role: 'tab',
-      'aria-selected': isSelected(),
-      'aria-disabled': isDisabled() || undefined,
-      'aria-controls': isSelected() ? tabPanelId : undefined,
+      get 'aria-selected'() {
+        return isSelected();
+      },
+      get 'aria-disabled'() {
+        return isDisabled() || undefined;
+      },
+      get 'aria-controls'() {
+        return isSelected() ? tabPanelId : undefined;
+      },
       'aria-label': props['aria-label'],
-      tabIndex: isSelected() && !isDisabled() ? 0 : -1,
+      get tabIndex() {
+        return isSelected() && !isDisabled() ? 0 : -1;
+      },
       onKeyDown: handleKeyDown,
       onMouseDown: handleMouseDown,
       onPointerDown: handlePointerDown,
@@ -445,27 +453,42 @@ export function createTabPanel<T>(
   props: AriaTabPanelProps,
   state: TabListState<T> | null
 ): TabPanelAria {
-  // If state is null, the panel is always visible (for SSR scenarios)
+  const fallbackId = createId();
+
+  // Shared panel pattern: if no explicit id is provided, associate the panel
+  // with the currently selected tab.
+  const associatedKey = createMemo<Key | null>(() => {
+    if (state === null) return null;
+    return props.id ?? state.selectedKey();
+  });
+
+  // If state is null, the panel is always visible (SSR fallback).
   const isSelected = createMemo(() => {
     if (state === null) return true;
-    if (props.id === undefined) return false;
+    if (props.id === undefined) {
+      return state.selectedKey() !== null;
+    }
     return state.selectedKey() === props.id;
   });
 
-  // Generate IDs based on the associated tab key
-  const tabPanelId = state && props.id !== undefined
-    ? generateTabPanelId(state, props.id)
-    : createId();
-
-  const tabId = state && props.id !== undefined
-    ? generateTabId(state, props.id)
-    : '';
-
   return {
     tabPanelProps: {
-      id: tabPanelId,
+      get id() {
+        const key = associatedKey();
+        if (state && key !== null) {
+          return generateTabPanelId(state, key);
+        }
+        return fallbackId;
+      },
       role: 'tabpanel',
-      'aria-labelledby': props['aria-labelledby'] ?? tabId,
+      get 'aria-labelledby'() {
+        if (props['aria-labelledby']) return props['aria-labelledby'];
+        const key = associatedKey();
+        if (state && key !== null) {
+          return generateTabId(state, key);
+        }
+        return undefined;
+      },
       'aria-label': props['aria-label'],
       'aria-describedby': props['aria-describedby'],
       // Make panel focusable if no tabbable children

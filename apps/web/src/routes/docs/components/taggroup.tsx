@@ -274,7 +274,7 @@ function TagGroupPage() {
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
           <li>
-            Uses <code>role="grid"</code> with <code>role="row"</code> for each tag
+            Uses <code>role="listbox"</code> with <code>role="option"</code> for each tag
           </li>
           <li>Arrow keys navigate between tags</li>
           <li>Delete or Backspace removes focused tag when removable</li>

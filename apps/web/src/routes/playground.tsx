@@ -242,9 +242,9 @@ function Playground() {
     <PageLayout withHeader>
       <Header />
 
-      <div class="mx-auto max-w-6xl px-6 py-12">
+      <main id="main-content" class="mx-auto max-w-6xl px-6 py-12">
         {/* Enhanced header */}
-        <header class="mb-10 relative">
+        <section class="mb-10 relative" aria-labelledby="playground-heading">
           {/* Background decoration */}
           <div class="absolute -top-4 -left-4 w-24 h-24 rounded-full bg-accent/10 blur-2xl" />
           <div class="absolute top-8 right-0 w-32 h-32 rounded-full bg-primary-500/10 blur-3xl" />
@@ -258,7 +258,7 @@ function Playground() {
               <span class="text-xs font-medium text-accent-200">Interactive Demo</span>
             </div>
 
-            <h1 class="font-jost text-4xl sm:text-5xl font-bold text-primary-100 mb-4">
+            <h1 id="playground-heading" class="font-jost text-4xl sm:text-5xl font-bold text-primary-100 mb-4">
               Component{' '}
               <span class="gradient-text-animated">Playground</span>
             </h1>
@@ -267,14 +267,14 @@ function Playground() {
               Toggle sections, customize themes, and see everything in action.
             </p>
 
-            <div class="flex items-center gap-4 mt-6 text-sm text-primary-500">
+            <div class="flex items-center gap-4 mt-6 text-sm text-primary-300">
               <span class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-success-400" />
                 Last action: {lastAction()}
               </span>
             </div>
           </div>
-        </header>
+        </section>
 
         {/* Theme Creator */}
         <div class="mb-8 rounded-2xl border border-primary-700/30 bg-bg-300/50 backdrop-blur-sm overflow-hidden">
@@ -286,7 +286,7 @@ function Playground() {
                 </svg>
               </div>
               <div>
-                <h3 class="font-jost text-lg font-semibold text-primary-200">Theme Creator</h3>
+                <h2 class="font-jost text-lg font-semibold text-primary-200">Theme Creator</h2>
                 <p class="text-xs text-primary-500">Customize colors in real-time</p>
               </div>
             </div>
@@ -298,7 +298,7 @@ function Playground() {
 
         {/* Theme Preview Area */}
         <div class="p-6 rounded-xl bg-bg-200 border border-bg-300 mb-8" style={themeStyle()}>
-          <h3 class="text-lg font-semibold text-primary-200 mb-4">Theme Preview</h3>
+          <h2 class="text-lg font-semibold text-primary-200 mb-4">Theme Preview</h2>
           <div class="flex flex-wrap gap-3">
             <Button>Primary</Button>
             <Button variant="secondary">Secondary</Button>
@@ -547,7 +547,11 @@ function Playground() {
             <div class="space-y-4">
               <div class="flex items-center gap-4">
                 <span class="text-sm text-primary-200">Toggle:</span>
-                <ToggleSwitch isSelected={toggleOn()} onChange={setToggleOn} />
+                <ToggleSwitch
+                  aria-label="Toggle demo switch"
+                  isSelected={toggleOn()}
+                  onChange={setToggleOn}
+                />
                 <span class="text-sm text-primary-300">{toggleOn() ? 'On' : 'Off'}</span>
               </div>
               <div>
@@ -997,7 +1001,7 @@ function Playground() {
             </Suspense>
           </Show>
         </div>
-      </div>
+      </main>
       <ToastRegion placement="bottom-end" />
     </PageLayout>
     </ToastProvider>

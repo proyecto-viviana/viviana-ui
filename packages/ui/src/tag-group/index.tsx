@@ -85,7 +85,7 @@ const sizeStyles = {
 const variantStyles = {
   default: {
     tag: 'bg-bg-400 text-primary-200 hover:bg-bg-300',
-    selected: 'bg-accent text-white',
+    selected: 'bg-accent text-bg-400',
     disabled: 'opacity-50 cursor-not-allowed',
   },
   outline: {
@@ -94,8 +94,8 @@ const variantStyles = {
     disabled: 'opacity-50 cursor-not-allowed',
   },
   solid: {
-    tag: 'bg-primary-600 text-primary-100 hover:bg-primary-500',
-    selected: 'bg-accent text-white',
+    tag: 'bg-primary-700 text-primary-100 hover:bg-primary-600',
+    selected: 'bg-accent text-bg-400',
     disabled: 'opacity-50 cursor-not-allowed',
   },
 };

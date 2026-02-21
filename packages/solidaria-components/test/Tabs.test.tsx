@@ -525,5 +525,42 @@ describe('Tabs', () => {
       const panel = screen.getByRole('tabpanel');
       expect(panel).toHaveAttribute('aria-labelledby');
     });
+
+    it('keeps aria-controls/aria-labelledby valid for shared panel pattern', async () => {
+      render(() => (
+        <Tabs<TestTab>
+          items={testTabs}
+          getKey={(item) => item.id}
+          defaultSelectedKey="tab1"
+        >
+          <TabList>
+            {(item) => <Tab id={item.id}>{item.label}</Tab>}
+          </TabList>
+          <TabPanel>
+            Shared panel
+          </TabPanel>
+        </Tabs>
+      ));
+
+      const selectedBefore = screen.getAllByRole('tab').find((t) => t.getAttribute('aria-selected') === 'true');
+      expect(selectedBefore).toBeDefined();
+      const controlsBefore = selectedBefore?.getAttribute('aria-controls');
+      expect(controlsBefore).toBeTruthy();
+
+      const panelBefore = screen.getByRole('tabpanel');
+      expect(panelBefore.id).toBe(controlsBefore);
+      expect(panelBefore.getAttribute('aria-labelledby')).toBe(selectedBefore?.id);
+
+      const tabs = screen.getAllByRole('tab');
+      await user.click(tabs[1]);
+
+      const selectedAfter = screen.getAllByRole('tab').find((t) => t.getAttribute('aria-selected') === 'true');
+      const controlsAfter = selectedAfter?.getAttribute('aria-controls');
+      expect(controlsAfter).toBeTruthy();
+
+      const panelAfter = screen.getByRole('tabpanel');
+      expect(panelAfter.id).toBe(controlsAfter);
+      expect(panelAfter.getAttribute('aria-labelledby')).toBe(selectedAfter?.id);
+    });
   });
 });

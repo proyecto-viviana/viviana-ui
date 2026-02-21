@@ -70,13 +70,13 @@ export function ConversationBubble(props: ConversationBubbleProps) {
       <div
         class={`max-w-[70%] rounded-2xl px-4 py-2 ${
           isUser()
-            ? 'bg-accent text-white rounded-br-sm'
+            ? 'bg-accent text-bg-400 rounded-br-sm'
             : 'bg-bg-300 text-primary-100 rounded-bl-sm'
         }`}
       >
         <p>{props.content}</p>
         <Show when={props.timestamp}>
-          <span class={`text-xs ${isUser() ? 'text-white/70' : 'text-primary-500'}`}>
+          <span class={`text-xs ${isUser() ? 'text-bg-300' : 'text-primary-500'}`}>
             {props.timestamp}
           </span>
         </Show>

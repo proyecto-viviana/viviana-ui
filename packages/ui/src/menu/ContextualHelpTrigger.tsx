@@ -93,6 +93,7 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
         '[&_.solidaria-ContextualHelpTrigger-trigger]:flex [&_.solidaria-ContextualHelpTrigger-trigger]:items-center',
         '[&_.solidaria-ContextualHelpTrigger-trigger]:py-2 [&_.solidaria-ContextualHelpTrigger-trigger]:px-4',
         '[&_.solidaria-ContextualHelpTrigger-trigger]:cursor-pointer',
+        '[&_.solidaria-ContextualHelpTrigger-trigger]:bg-transparent [&_.solidaria-ContextualHelpTrigger-trigger]:border-0',
         '[&_.solidaria-ContextualHelpTrigger-trigger]:text-primary-200',
         '[&_.solidaria-ContextualHelpTrigger-trigger]:outline-none',
         '[&_.solidaria-ContextualHelpTrigger-trigger]:hover:bg-bg-300',

@@ -101,7 +101,7 @@ const variantStyles = {
     tab: {
       base: 'rounded-md transition-all duration-200',
       default: 'text-primary-400 hover:text-primary-200 hover:bg-bg-400',
-      selected: 'bg-accent text-primary-100 shadow-sm',
+      selected: 'bg-accent text-bg-400 shadow-sm',
       disabled: 'text-primary-600 cursor-not-allowed',
     },
   },

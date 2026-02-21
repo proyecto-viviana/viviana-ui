@@ -92,7 +92,7 @@ const sizeStyles = {
 }
 
 const buttonVariants = {
-  primary: 'bg-accent text-bg-500 border-accent hover:bg-accent-300 hover:border-accent-300',
+  primary: 'bg-accent text-bg-400 border-accent hover:bg-accent-300 hover:border-accent-300',
   secondary: 'bg-bg-400 text-primary-200 border-primary-600 hover:bg-bg-300 hover:border-accent-300',
   quiet: 'bg-transparent text-primary-200 border-transparent hover:bg-bg-300',
 }

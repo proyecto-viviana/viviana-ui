@@ -216,12 +216,12 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
   }
 
   const defaultEmptyState = () => (
-    <li class="py-8 text-center text-primary-400">
+    <div class="py-8 text-center text-primary-400">
       <div class="flex flex-col items-center gap-2">
         <EmptyIcon class="w-12 h-12 text-primary-500" />
         <span>No items</span>
       </div>
-    </li>
+    </div>
   )
 
   const contextValue = () => ({ size: size(), variant: variant(), layout: layout() })
