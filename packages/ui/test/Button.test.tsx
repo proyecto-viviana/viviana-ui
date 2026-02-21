@@ -282,8 +282,19 @@ describe('Button', () => {
     });
   });
 
-  // Note: The following features from @react-spectrum are not yet implemented:
-  // - elementType="a" (anchor button) - would need to change Button to support polymorphism
-  // - isPending (loading state) - requires spinner component and i18n
-  // These are tracked in the roadmap for future implementation.
+  describe('pending', () => {
+    it('sets data-pending when isPending is true', () => {
+      render(() => <Button isPending>Loading</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('data-pending');
+    });
+
+    it('does not call onPress while pending', async () => {
+      render(() => <Button isPending onPress={onPressSpy}>Loading</Button>);
+      const button = screen.getByRole('button');
+
+      await user.click(button);
+      expect(onPressSpy).not.toHaveBeenCalled();
+    });
+  });
 });

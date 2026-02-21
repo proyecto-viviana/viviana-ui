@@ -4,6 +4,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
 import { ToggleButton, type ToggleButtonRenderProps } from '../src/ToggleButton';
+import { ToggleButtonGroup } from '../src/ToggleButtonGroup';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 describe('ToggleButton', () => {
@@ -80,5 +81,23 @@ describe('ToggleButton', () => {
       </ToggleButton>
     ));
     expect(screen.getByText('Not Selected')).toBeInTheDocument();
+  });
+
+  it('reflects group disabled state in render props and data attributes', () => {
+    render(() => (
+      <ToggleButtonGroup isDisabled selectionMode="multiple" aria-label="Formatting">
+        {() => (
+          <ToggleButton id="pin" aria-label="Pin">
+            {(props: ToggleButtonRenderProps) => (
+              <span data-testid="label">{props.isDisabled ? 'Disabled' : 'Enabled'}</span>
+            )}
+          </ToggleButton>
+        )}
+      </ToggleButtonGroup>
+    ));
+
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('data-disabled');
+    expect(screen.getByTestId('label')).toHaveTextContent('Disabled');
   });
 });

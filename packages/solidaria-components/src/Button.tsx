@@ -16,6 +16,7 @@ import {
   createButton,
   createFocusRing,
   createHover,
+  mergeProps,
   type AriaButtonProps,
   type PressEvent,
 } from '@proyecto-viviana/solidaria';
@@ -44,6 +45,8 @@ export interface ButtonRenderProps {
   isFocusVisible: boolean;
   /** Whether the button is disabled. */
   isDisabled: boolean;
+  /** Whether the button is currently in a pending state. */
+  isPending: boolean;
 }
 
 export interface ButtonProps
@@ -55,6 +58,8 @@ export interface ButtonProps
   class?: ClassNameOrFunction<ButtonRenderProps>;
   /** The inline style for the element. */
   style?: StyleOrFunction<ButtonRenderProps>;
+  /** Whether the button is in a pending state. */
+  isPending?: boolean;
 }
 
 // ============================================
@@ -85,12 +90,16 @@ export const ButtonContext = createContext<ButtonProps | null>(null);
  * ```
  */
 export function Button(props: ButtonProps): JSX.Element {
+  const contextProps = useContext(ButtonContext);
+  const mergedProps = (contextProps ? mergeProps(contextProps, props) : props) as ButtonProps;
+
   // Split props
-  const [local, ariaProps] = splitProps(props, [
+  const [local, ariaProps] = splitProps(mergedProps, [
     'children',
     'class',
     'style',
     'slot',
+    'isPending',
   ]);
 
   // Check if inside a DialogTrigger or PopoverTrigger - if so, toggle on press
@@ -110,6 +119,8 @@ export function Button(props: ButtonProps): JSX.Element {
     return !!disabled;
   };
 
+  const resolvePending = (): boolean => !!local.isPending;
+
   let buttonEl: HTMLButtonElement | undefined;
 
   // Explicit trigger ownership: a button toggles overlays only when it is the
@@ -121,6 +132,9 @@ export function Button(props: ButtonProps): JSX.Element {
 
   // Wrap onPress to also toggle dialog/popover if this is a trigger button
   const handlePress = (e: PressEvent) => {
+    if (resolvePending()) {
+      return;
+    }
     // Call original onPress if provided
     if (typeof ariaProps.onPress === 'function') {
       ariaProps.onPress(e);
@@ -138,8 +152,23 @@ export function Button(props: ButtonProps): JSX.Element {
   const buttonAria = createButton({
     ...ariaProps,
     onPress: handlePress,
+    get onPressStart() {
+      return resolvePending() ? undefined : ariaProps.onPressStart;
+    },
+    get onPressEnd() {
+      return resolvePending() ? undefined : ariaProps.onPressEnd;
+    },
+    get onPressUp() {
+      return resolvePending() ? undefined : ariaProps.onPressUp;
+    },
+    get onPressChange() {
+      return resolvePending() ? undefined : ariaProps.onPressChange;
+    },
+    get onClick() {
+      return resolvePending() ? undefined : ariaProps.onClick;
+    },
     get isDisabled() {
-      return resolveDisabled();
+      return resolveDisabled() || resolvePending();
     },
   });
 
@@ -149,23 +178,25 @@ export function Button(props: ButtonProps): JSX.Element {
   // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
-      return resolveDisabled();
+      return resolveDisabled() || resolvePending();
     },
   });
 
   // Render props values
   const renderValues = createMemo<ButtonRenderProps>(() => ({
     isHovered: isHovered(),
-    isPressed: buttonAria.isPressed(),
+    isPressed: buttonAria.isPressed() && !resolvePending(),
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible(),
     isDisabled: resolveDisabled(),
+    isPending: resolvePending(),
   }));
 
   // Resolve render props
   const renderProps = useRenderProps(
     {
-      children: props.children,
+      // Use merged children so ButtonContext can supply slot/default content.
+      children: local.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-Button',
@@ -227,13 +258,23 @@ export function Button(props: ButtonProps): JSX.Element {
       {...cleanButtonProps()}
       {...cleanFocusProps()}
       {...cleanHoverProps()}
+      type={
+        (buttonAria.buttonProps as Record<string, unknown>).type === 'submit' && resolvePending()
+          ? 'button'
+          : (buttonAria.buttonProps as Record<string, unknown>).type as
+              | 'button'
+              | 'submit'
+              | 'reset'
+              | undefined
+      }
       class={renderProps.class()}
       style={renderProps.style()}
-      data-pressed={buttonAria.isPressed() || undefined}
+      data-pressed={(buttonAria.isPressed() && !resolvePending()) || undefined}
       data-hovered={isHovered() || undefined}
       data-focused={isFocused() || undefined}
       data-focus-visible={isFocusVisible() || undefined}
       data-disabled={resolveDisabled() || undefined}
+      data-pending={resolvePending() || undefined}
     >
       {renderProps.renderChildren()}
     </button>

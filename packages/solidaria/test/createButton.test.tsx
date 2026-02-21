@@ -91,6 +91,21 @@ describe('createButton', () => {
       expect(buttonProps.target).toBe('_blank');
       expect(buttonProps.rel).toBe('noopener noreferrer');
     });
+
+    it('removes href when anchor button is disabled', () => {
+      const { buttonProps } = createButton({
+        elementType: 'a',
+        href: 'https://example.com',
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        isDisabled: true,
+      });
+
+      expect(buttonProps.href).toBeUndefined();
+      expect(buttonProps.target).toBe('_blank');
+      expect(buttonProps.rel).toBe('noopener noreferrer');
+      expect(buttonProps['aria-disabled']).toBe(true);
+    });
   });
 
   describe('ARIA attributes', () => {

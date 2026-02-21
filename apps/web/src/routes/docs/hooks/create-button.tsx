@@ -19,16 +19,14 @@ function CreateButtonPage() {
       <h2>Usage</h2>
       <pre>
         <code>{`function CustomButton(props) {
-  let ref;
   const { buttonProps, isPressed } = createButton({
     onPress: props.onPress,
     isDisabled: props.isDisabled,
-  }, () => ref);
+  });
 
   return (
     <button
       {...buttonProps}
-      ref={ref}
       class={isPressed() ? 'pressed' : ''}
     >
       {props.children}
@@ -41,15 +39,13 @@ function CreateButtonPage() {
         title="Custom Styled Button"
         description="Build a button with custom styling while maintaining accessibility."
         code={`function GradientButton(props) {
-  let ref;
   const { buttonProps, isPressed } = createButton({
     onPress: props.onPress,
-  }, () => ref);
+  });
 
   return (
     <button
       {...buttonProps}
-      ref={ref}
       class={\`gradient-btn \${isPressed() ? 'scale-95' : ''}\`}
     >
       {props.children}
@@ -71,14 +67,12 @@ function CreateButtonPage() {
         title="Button as Link"
         description="Create an accessible link that looks like a button."
         code={`function ButtonLink(props) {
-  let ref;
   const { buttonProps } = createButton({
     elementType: 'a',
-    onPress: () => window.open(props.href, '_blank'),
-  }, () => ref);
+  });
 
   return (
-    <a {...buttonProps} ref={ref} href={props.href}>
+    <a {...buttonProps} href={props.href}>
       {props.children}
     </a>
   );
@@ -169,21 +163,6 @@ function CreateButtonPage() {
           },
         ]}
       />
-
-      <h2>Ref Pattern</h2>
-      <p>
-        The ref must be passed as an accessor function <code>() =&gt; ref</code> due to SolidJS's
-        reactivity model. The ref may not be available at the time the hook is called.
-      </p>
-      <pre>
-        <code>{`// Correct: Pass ref as accessor
-let ref;
-const { buttonProps } = createButton(props, () => ref);
-<button ref={ref} {...buttonProps} />
-
-// Incorrect: ref would be undefined
-const { buttonProps } = createButton(props, ref);`}</code>
-      </pre>
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">

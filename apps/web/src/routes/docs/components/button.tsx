@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Button } from "@proyecto-viviana/ui";
+import { Button, Link } from "@proyecto-viviana/ui";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/docs/components/button")({
@@ -14,7 +14,7 @@ function ButtonPage() {
     <DocPage
       title="Button"
       description="Buttons allow users to perform actions with a single click or tap. They are the primary way users interact with your application."
-      importCode={`import { Button } from '@proyecto-viviana/ui';`}
+      importCode={`import { Button, Link } from '@proyecto-viviana/ui';`}
     >
       <Example
         title="Variants"
@@ -74,15 +74,15 @@ function ButtonPage() {
       </Example>
 
       <Example
-        title="As Link"
-        description="Buttons can render as links while maintaining button semantics."
-        code={`<Button href="https://example.com" target="_blank">
-  Open Link
-</Button>`}
+        title="Navigation"
+        description="Use Link for navigation semantics and Button for actions."
+        code={`<Link href="https://github.com/proyecto-viviana" target="_blank" rel="noopener noreferrer">
+  View on GitHub
+</Link>`}
       >
-        <Button variant="accent" href="https://github.com/proyecto-viviana" target="_blank">
+        <Link href="https://github.com/proyecto-viviana" target="_blank" rel="noopener noreferrer">
           View on GitHub
-        </Button>
+        </Link>
       </Example>
 
       <PropsTable
@@ -121,20 +121,16 @@ function ButtonPage() {
             description: "Handler called when press ends",
           },
           {
-            name: "href",
-            type: "string",
-            description: "URL to navigate to (renders as <a>)",
-          },
-          {
-            name: "target",
-            type: "string",
-            description: "Link target (_blank, _self, etc.)",
-          },
-          {
             name: "type",
             type: "'button' | 'submit' | 'reset'",
             default: "'button'",
             description: "Button type for forms",
+          },
+          {
+            name: "isPending",
+            type: "boolean",
+            default: "false",
+            description: "Whether the button is in a pending/loading state",
           },
           {
             name: "children",
@@ -159,7 +155,7 @@ function ButtonPage() {
             Focus ring visible only on keyboard navigation (not mouse clicks)
           </li>
           <li>
-            Disabled state communicated via <code>aria-disabled</code>
+            Disabled state communicated via native <code>disabled</code> semantics
           </li>
           <li>Press events normalize mouse, touch, and keyboard interactions</li>
         </ul>

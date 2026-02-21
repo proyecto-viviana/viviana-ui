@@ -2,10 +2,15 @@
 export {
   createButton,
   createToggleButton,
+  createToggleButtonGroup,
+  createToggleButtonGroupItem,
   type AriaButtonProps,
   type ButtonAria,
   type AriaToggleButtonProps,
   type ToggleButtonAria,
+  type AriaToggleButtonGroupProps,
+  type ToggleButtonGroupAria,
+  type AriaToggleButtonGroupItemProps,
 } from './button';
 
 // ActionGroup

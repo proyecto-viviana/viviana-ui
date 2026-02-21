@@ -5,8 +5,16 @@
  * Parity target: react-aria-components/src/ToggleButtonGroup.tsx
  */
 
-import { type JSX, createContext, createMemo, createSignal, splitProps, useContext } from 'solid-js';
-import type { Key } from '@proyecto-viviana/solid-stately';
+import { type JSX, createContext, createMemo, splitProps, useContext } from 'solid-js';
+import {
+  createToggleButtonGroup,
+  mergeProps,
+} from '@proyecto-viviana/solidaria';
+import {
+  createToggleGroupState,
+  type Key,
+  type ToggleGroupState,
+} from '@proyecto-viviana/solid-stately';
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -19,12 +27,14 @@ import {
 export interface ToggleButtonGroupRenderProps {
   orientation: 'horizontal' | 'vertical';
   isDisabled: boolean;
+  state: ToggleGroupState;
 }
 
 export interface ToggleButtonGroupProps
   extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'style' | 'onSelectionChange'>,
     SlotProps {
   selectionMode?: 'single' | 'multiple';
+  disallowEmptySelection?: boolean;
   selectedKeys?: Iterable<Key>;
   defaultSelectedKeys?: Iterable<Key>;
   onSelectionChange?: (keys: Set<Key>) => void;
@@ -35,24 +45,15 @@ export interface ToggleButtonGroupProps
   style?: StyleOrFunction<ToggleButtonGroupRenderProps>;
 }
 
-export interface ToggleButtonGroupStateContextValue {
-  isDisabled: () => boolean;
-  selectionMode: () => 'single' | 'multiple';
-  isSelected: (key: Key) => boolean;
-  toggleKey: (key: Key) => void;
-}
-
 export const ToggleButtonGroupContext = createContext<ToggleButtonGroupProps | null>(null);
-export const ToggleButtonGroupStateContext = createContext<ToggleButtonGroupStateContextValue | null>(null);
+export const ToggleButtonGroupStateContext = createContext<ToggleGroupState | null>(null);
 export const ToggleGroupStateContext = ToggleButtonGroupStateContext;
-
-function toKeySet(keys?: Iterable<Key>): Set<Key> {
-  return new Set(keys ? Array.from(keys) : []);
-}
+export type ToggleButtonGroupStateContextValue = ToggleGroupState;
 
 export function ToggleButtonGroup(props: ToggleButtonGroupProps): JSX.Element {
   const [local, domProps] = splitProps(props, [
     'selectionMode',
+    'disallowEmptySelection',
     'selectedKeys',
     'defaultSelectedKeys',
     'onSelectionChange',
@@ -62,47 +63,36 @@ export function ToggleButtonGroup(props: ToggleButtonGroupProps): JSX.Element {
     'class',
     'style',
     'slot',
+    'aria-label',
+    'aria-labelledby',
   ]);
 
-  const [uncontrolledSelectedKeys, setUncontrolledSelectedKeys] = createSignal<Set<Key>>(
-    toKeySet(local.defaultSelectedKeys)
-  );
-
-  const isControlled = createMemo(() => local.selectedKeys != null);
-  const selectionMode = () => local.selectionMode ?? 'single';
-  const selectedKeys = createMemo(() =>
-    isControlled() ? toKeySet(local.selectedKeys) : uncontrolledSelectedKeys()
-  );
-
-  const setSelectedKeys = (keys: Set<Key>) => {
-    if (!isControlled()) {
-      setUncontrolledSelectedKeys(keys);
-    }
-    local.onSelectionChange?.(keys);
-  };
-
-  const toggleKey = (key: Key) => {
-    const next = new Set(selectedKeys());
-    if (selectionMode() === 'single') {
-      if (next.has(key)) next.delete(key);
-      else {
-        next.clear();
-        next.add(key);
-      }
-    } else if (next.has(key)) {
-      next.delete(key);
-    } else {
-      next.add(key);
-    }
-    setSelectedKeys(next);
-  };
-
-  const stateContext = createMemo<ToggleButtonGroupStateContextValue>(() => ({
-    isDisabled: () => !!local.isDisabled,
-    selectionMode,
-    isSelected: (key) => selectedKeys().has(key),
-    toggleKey,
+  const state = createToggleGroupState(() => ({
+    selectionMode: local.selectionMode,
+    disallowEmptySelection: local.disallowEmptySelection,
+    selectedKeys: local.selectedKeys,
+    defaultSelectedKeys: local.defaultSelectedKeys,
+    onSelectionChange: local.onSelectionChange,
+    isDisabled: !!local.isDisabled,
   }));
+
+  const { groupProps } = createToggleButtonGroup(
+    {
+      get orientation() {
+        return local.orientation;
+      },
+      get isDisabled() {
+        return !!local.isDisabled;
+      },
+      get 'aria-label'() {
+        return local['aria-label'];
+      },
+      get 'aria-labelledby'() {
+        return local['aria-labelledby'];
+      },
+    },
+    state
+  );
 
   const renderProps = useRenderProps(
     {
@@ -114,15 +104,18 @@ export function ToggleButtonGroup(props: ToggleButtonGroupProps): JSX.Element {
     () => ({
       orientation: local.orientation ?? 'horizontal',
       isDisabled: !!local.isDisabled,
+      state,
     })
   );
 
-  const filteredDomProps = filterDOMProps(domProps, { global: true });
+  const filteredDomProps = createMemo(() => filterDOMProps(domProps, { global: true }));
+  const mergedGroupProps = createMemo(() =>
+    mergeProps(filteredDomProps(), groupProps as Record<string, unknown>)
+  );
 
   return (
     <div
-      {...filteredDomProps}
-      role="group"
+      {...(mergedGroupProps() as JSX.HTMLAttributes<HTMLDivElement>)}
       class={renderProps.class()}
       style={renderProps.style()}
       slot={local.slot}
@@ -130,7 +123,7 @@ export function ToggleButtonGroup(props: ToggleButtonGroupProps): JSX.Element {
       data-disabled={local.isDisabled || undefined}
     >
       <ToggleButtonGroupContext.Provider value={props}>
-        <ToggleButtonGroupStateContext.Provider value={stateContext()}>
+        <ToggleButtonGroupStateContext.Provider value={state}>
           {renderProps.renderChildren()}
         </ToggleButtonGroupStateContext.Provider>
       </ToggleButtonGroupContext.Provider>
@@ -138,6 +131,6 @@ export function ToggleButtonGroup(props: ToggleButtonGroupProps): JSX.Element {
   );
 }
 
-export function useToggleButtonGroupStateContext(): ToggleButtonGroupStateContextValue | null {
+export function useToggleButtonGroupStateContext(): ToggleGroupState | null {
   return useContext(ToggleButtonGroupStateContext);
 }

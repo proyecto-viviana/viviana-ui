@@ -93,7 +93,7 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
     };
 
     if (isLink) {
-      additionalProps.href = props.href;
+      additionalProps.href = disabled ? undefined : props.href;
       additionalProps.target = props.target;
       additionalProps.rel = props.rel;
     }

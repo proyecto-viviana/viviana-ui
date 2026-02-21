@@ -1,8 +1,11 @@
 // Toggle
 export {
   createToggleState,
+  createToggleGroupState,
   type ToggleStateOptions,
   type ToggleState,
+  type ToggleGroupProps,
+  type ToggleGroupState,
 } from './toggle';
 
 // Autocomplete

@@ -271,6 +271,33 @@ describe('Button', () => {
     });
   });
 
+  describe('pending state', () => {
+    it('should expose pending state via data attribute and render props', () => {
+      render(() => (
+        <Button
+          isPending
+          class={(props: ButtonRenderProps) => props.isPending ? 'pending' : 'ready'}
+        >
+          Test
+        </Button>
+      ));
+
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('data-pending');
+      expect(button).toHaveClass('pending');
+    });
+
+    it('should disable press interaction while pending', async () => {
+      const onPress = vi.fn();
+      render(() => <Button isPending onPress={onPress}>Test</Button>);
+
+      const button = screen.getByRole('button');
+      await user.click(button);
+      expect(onPress).not.toHaveBeenCalled();
+      expect(button).toBeDisabled();
+    });
+  });
+
   describe('button type', () => {
     it('should default to type="button"', () => {
       render(() => <Button>Test</Button>);

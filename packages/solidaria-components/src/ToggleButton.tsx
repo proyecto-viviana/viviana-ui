@@ -10,11 +10,14 @@ import {
   createContext,
   createMemo,
   splitProps,
+  useContext,
 } from 'solid-js';
 import {
   createToggleButton,
+  createToggleButtonGroupItem,
   createFocusRing,
   createHover,
+  mergeProps,
   type AriaToggleButtonProps,
 } from '@proyecto-viviana/solidaria';
 import type { Key } from '@proyecto-viviana/solid-stately';
@@ -42,6 +45,8 @@ export interface ToggleButtonProps
     SlotProps {
   /** Key used when inside ToggleButtonGroup selection state. */
   toggleKey?: Key;
+  /** Preferred group key prop, parity with RAC item id usage. */
+  id?: Key;
   children?: RenderChildren<ToggleButtonRenderProps>;
   class?: ClassNameOrFunction<ToggleButtonRenderProps>;
   style?: StyleOrFunction<ToggleButtonRenderProps>;
@@ -49,50 +54,47 @@ export interface ToggleButtonProps
 
 export const ToggleButtonContext = createContext<ToggleButtonProps | null>(null);
 
+function resolveDisabledValue(
+  isDisabled: AriaToggleButtonProps['isDisabled']
+): boolean {
+  if (typeof isDisabled === 'function') {
+    return isDisabled();
+  }
+  return !!isDisabled;
+}
+
 export function ToggleButton(props: ToggleButtonProps): JSX.Element {
-  const [local, ariaProps] = splitProps(props, ['children', 'class', 'style', 'slot', 'toggleKey']);
+  const contextProps = useContext(ToggleButtonContext);
+  const mergedProps = (contextProps ? mergeProps(contextProps, props) : props) as ToggleButtonProps;
+
+  const [local, ariaProps] = splitProps(mergedProps, [
+    'children',
+    'class',
+    'style',
+    'slot',
+    'toggleKey',
+    'id',
+  ]);
   const groupState = useToggleButtonGroupStateContext();
+  const groupKey = local.id ?? local.toggleKey;
 
-  const resolveDisabled = (): boolean => {
-    const disabled = ariaProps.isDisabled;
-    if (typeof disabled === 'function') return disabled();
-    return !!disabled;
-  };
+  const toggleAria = groupState && groupKey != null
+    ? createToggleButtonGroupItem(
+      {
+        ...ariaProps,
+        id: groupKey,
+      },
+      groupState
+    )
+    : createToggleButton(ariaProps);
 
-  const resolvedGroupKey = createMemo<Key | null>(() => {
-    if (!groupState) return null;
-    if (local.toggleKey != null) return local.toggleKey;
-    return null;
-  });
-
-  const isSelectedFromGroup = () => {
-    const key = resolvedGroupKey();
-    if (!groupState || key == null) return undefined;
-    return groupState.isSelected(key);
-  };
-
-  const toggleAria = createToggleButton({
-    ...ariaProps,
-    get isSelected() {
-      const selected = isSelectedFromGroup();
-      return selected === undefined ? ariaProps.isSelected : selected;
-    },
-    onChange(isSelected) {
-      const key = resolvedGroupKey();
-      if (groupState && key != null) {
-        groupState.toggleKey(key);
-      }
-      ariaProps.onChange?.(isSelected);
-    },
-    get isDisabled() {
-      return resolveDisabled() || !!groupState?.isDisabled();
-    },
-  });
+  const isDisabled = () =>
+    resolveDisabledValue(ariaProps.isDisabled) || !!groupState?.isDisabled;
 
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
-      return resolveDisabled();
+      return isDisabled();
     },
   });
 
@@ -101,13 +103,13 @@ export function ToggleButton(props: ToggleButtonProps): JSX.Element {
     isPressed: toggleAria.isPressed(),
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible(),
-    isDisabled: resolveDisabled(),
+    isDisabled: isDisabled(),
     isSelected: toggleAria.isSelected(),
   }));
 
   const renderProps = useRenderProps(
     {
-      children: props.children,
+      children: local.children,
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-ToggleButton',
@@ -118,6 +120,7 @@ export function ToggleButton(props: ToggleButtonProps): JSX.Element {
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps, { global: true });
     delete (filtered as Record<string, unknown>).onClick;
+    delete (filtered as Record<string, unknown>).id;
     return filtered;
   });
 
@@ -142,11 +145,12 @@ export function ToggleButton(props: ToggleButtonProps): JSX.Element {
       {...cleanHoverProps()}
       class={renderProps.class()}
       style={renderProps.style()}
+      slot={local.slot}
       data-pressed={toggleAria.isPressed() || undefined}
       data-hovered={isHovered() || undefined}
       data-focused={isFocused() || undefined}
       data-focus-visible={isFocusVisible() || undefined}
-      data-disabled={resolveDisabled() || undefined}
+      data-disabled={isDisabled() || undefined}
       data-selected={toggleAria.isSelected() || undefined}
     >
       {renderProps.renderChildren()}
