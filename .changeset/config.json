@@ -1,0 +1,20 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "proyecto-viviana/proyecto-viviana"
+    }
+  ],
+  "commit": false,
+  "fixed": [],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "@proyecto-viviana/web",
+    "@proyecto-viviana/solidaria-test-utils",
+    "@proyecto-viviana/ui-test-utils"
+  ]
+}

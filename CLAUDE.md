@@ -44,9 +44,10 @@ deno task build       # Build all packages with Deno/esbuild
 ### Publishing
 
 ```bash
-deno task publish:npm   # Publish to npm
-deno task publish:jsr   # Publish to JSR (jsr.io)
-deno task version:set <version>  # Sync versions across all packages
+npm run changeset         # Create release note + bump intent
+npm run changeset:status  # Preview release plan
+npm run changeset:version # Apply version bumps + changelogs
+npm run changeset:publish # Build + publish releasable packages to npm
 ```
 
 ## Key Patterns
@@ -84,6 +85,7 @@ See [.claude/README.md](.claude/README.md) for full documentation:
 - [Architecture](.claude/docs/architecture.md) - Package design & decisions
 - [Getting Started](.claude/docs/getting-started.md) - Setup & workflow
 - [Contributing](.claude/docs/contributing.md) - How to add components
+- [Changesets Runbook](.claude/docs/changesets-runbook.md) - Release/version workflow
 - [Roadmap](.claude/docs/roadmap.md) - Development phases
 - [Patterns](.claude/reference/patterns.md) - SolidJS-specific patterns
 

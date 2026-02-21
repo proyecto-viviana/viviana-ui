@@ -339,7 +339,9 @@ deno task dev
 | `deno task test` | Run tests once (uses Bun runtime) |
 | `deno task test:watch` | Run tests in watch mode (uses Bun runtime) |
 | `deno task typecheck` | TypeScript type checking |
-| `deno task release` | Build and publish packages |
+| `npm run changeset` | Create a changeset for releasable package changes |
+| `npm run changeset:version` | Apply version bumps + changelog updates |
+| `npm run changeset:publish` | Build and publish changed packages to npm |
 
 ### Project Structure
 

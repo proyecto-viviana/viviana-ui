@@ -24,17 +24,22 @@
     "a11y:full": "bun run a11y:axe:playground && bun run a11y:smoke",
     "a11y:ci": "bun run a11y:full",
     "typecheck": "deno task typecheck",
-    "version:patch": "npm version patch --workspaces --no-git-tag-version",
-    "version:minor": "npm version minor --workspaces --no-git-tag-version",
-    "version:major": "npm version major --workspaces --no-git-tag-version",
-    "publish:packages": "npm publish --workspace=packages/solid-stately && npm publish --workspace=packages/solidaria && npm publish --workspace=packages/solidaria-components && npm publish --workspace=packages/ui",
-    "release": "bun run build && bun run publish:packages"
+    "changeset": "changeset",
+    "changeset:status": "changeset status --since=origin/main",
+    "sync:manifest-versions": "node scripts/manifest-versions.mjs --fix",
+    "check:manifest-versions": "node scripts/manifest-versions.mjs --check",
+    "changeset:version": "changeset version && npm run sync:manifest-versions",
+    "changeset:publish": "npm run build && changeset publish",
+    "release": "npm run changeset:publish",
+    "release:local": "npm run changeset:version && npm run changeset:publish"
   },
   "dependencies": {
     "brotli-size": "^4.0.0",
     "gzip-size": "^7.0.0"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.0",
     "@solidjs/testing-library": "^0.8.10",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.1",

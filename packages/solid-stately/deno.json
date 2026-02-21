@@ -1,6 +1,6 @@
 {
   "name": "@proyecto-viviana/solid-stately",
-  "version": "0.0.7",
+  "version": "0.2.4",
   "license": "Apache-2.0",
   "exports": "./src/index.ts",
   "tasks": {
@@ -17,6 +17,11 @@
     "jsx": "react-jsx",
     "jsxImportSource": "solid-js",
     "strict": true,
-    "lib": ["dom", "dom.iterable", "esnext", "deno.ns"]
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "deno.ns"
+    ]
   }
 }
