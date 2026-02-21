@@ -6,7 +6,7 @@ SolidJS port of Adobe's React Spectrum - accessible UI primitives with world-cla
 
 **What**: 4-layer component library (state → aria → components → styled) ported from React Spectrum to SolidJS
 **Why**: SolidJS lacks a mature accessible component library - this fills that gap
-**Status**: 3677 tests passing, Phases 1-29 + Endgame + Parity Completion complete
+**Status**: 3730 tests passing, Phases 1-29 + Endgame + Parity Completion complete
 
 ## IMPORTANT: Reference Code is Local
 
@@ -71,6 +71,13 @@ const { inputProps, labelProps } = createTextField(props);
 return <><label {...labelProps} /><input {...inputProps} /></>;
 ```
 
+**splitProps with DOM forwarding** - Always capture rest props in sub-components:
+```tsx
+// ✅ Captures domProps (aria-label, data-testid, etc.) for forwarding
+const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+return <button {...domProps} {...ariaProps}>{local.children}</button>;
+```
+
 ## Documentation
 
 See [.claude/README.md](.claude/README.md) for full documentation:
@@ -104,6 +111,7 @@ See [.claude/README.md](.claude/README.md) for full documentation:
 | 29 | Toolbar (all 4 layers) | +26 |
 | Endgame | Re-exports, Focusable/Pressable/Router, Data hooks, UI wrappers, Layout, Theme/Provider, Virtualizer docs | +132 |
 | Parity Completion | Barrel alignment, TextArea, DateRangePicker, ColorSwatchPicker, ColorEditor, ContextualHelpTrigger, OpenTransition, Theme system | +95 |
+| Quality Hardening | splitProps DOM attribute forwarding fix (35 components), regression test suite (50 tests with DOM snapshots) | +50 |
 
 ## Next Steps
 
