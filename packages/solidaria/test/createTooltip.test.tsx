@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, fireEvent, screen } from '@solidjs/testing-library';
-import { createSignal, Show } from 'solid-js';
+import { createSignal, createRoot, Show } from 'solid-js';
 import { createTooltipTriggerState, resetTooltipState } from '@proyecto-viviana/solid-stately';
 import { createTooltip, createTooltipTrigger } from '../src/tooltip';
 
@@ -357,6 +357,41 @@ describe('createTooltipTrigger - hover behavior', () => {
     // Tooltip should be hidden
     expect(screen.queryByTestId('tooltip')).toBeNull();
   });
+
+  it('does not close tooltip on non-press keyboard keys', () => {
+    function TestComponent() {
+      let ref: HTMLButtonElement | undefined;
+      const state = createTooltipTriggerState({ delay: 0 });
+      const { triggerProps, tooltipProps } = createTooltipTrigger(
+        {},
+        state,
+        () => ref
+      );
+
+      return (
+        <>
+          <button ref={ref} {...triggerProps} data-testid="trigger">
+            Hover me
+          </button>
+          <Show when={state.isOpen()}>
+            <div {...tooltipProps} data-testid="tooltip" role="tooltip">
+              Tooltip content
+            </div>
+          </Show>
+        </>
+      );
+    }
+
+    render(() => <TestComponent />);
+    const trigger = screen.getByTestId('trigger');
+
+    fireEvent.pointerEnter(trigger);
+    vi.advanceTimersByTime(0);
+    expect(screen.queryByTestId('tooltip')).not.toBeNull();
+
+    fireEvent.keyDown(trigger, { key: 'ArrowRight' });
+    expect(screen.queryByTestId('tooltip')).not.toBeNull();
+  });
 });
 
 describe('createTooltipTrigger - focus behavior', () => {
@@ -374,23 +409,31 @@ describe('createTooltipTrigger - focus behavior', () => {
   // which uses module-level state that doesn't reset properly between tests in jsdom.
   // This tests the state API directly instead of relying on the modality detection.
   it('tooltip state responds to open() calls', () => {
-    const state = createTooltipTriggerState({ delay: 0 });
+    createRoot((dispose) => {
+      const state = createTooltipTriggerState({ delay: 0 });
 
-    expect(state.isOpen()).toBe(false);
+      expect(state.isOpen()).toBe(false);
 
-    // Open with immediate=true (simulates focus-visible)
-    state.open(true);
-    expect(state.isOpen()).toBe(true);
+      // Open with immediate=true (simulates focus-visible)
+      state.open(true);
+      expect(state.isOpen()).toBe(true);
+
+      dispose();
+    });
   });
 
   it('tooltip state responds to close() calls', () => {
-    const state = createTooltipTriggerState({ delay: 0, defaultOpen: true });
+    createRoot((dispose) => {
+      const state = createTooltipTriggerState({ delay: 0, defaultOpen: true });
 
-    expect(state.isOpen()).toBe(true);
+      expect(state.isOpen()).toBe(true);
 
-    // Close immediately
-    state.close(true);
-    expect(state.isOpen()).toBe(false);
+      // Close immediately
+      state.close(true);
+      expect(state.isOpen()).toBe(false);
+
+      dispose();
+    });
   });
 
   it('tooltip triggerProps include focus and blur handlers', () => {

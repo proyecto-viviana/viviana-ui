@@ -109,12 +109,20 @@ export function createPopover(
   // Overlay behavior (dismiss handling)
   const { overlayProps, underlayProps } = createOverlay(
     {
-      isOpen: state.isOpen(),
+      get isOpen() {
+        return state.isOpen();
+      },
       onClose: state.close,
       shouldCloseOnBlur: true,
-      isDismissable: !isNonModal() || isSubmenu(),
-      isKeyboardDismissDisabled: isKeyboardDismissDisabled(),
-      shouldCloseOnInteractOutside,
+      get isDismissable() {
+        return !isNonModal() || isSubmenu();
+      },
+      get isKeyboardDismissDisabled() {
+        return isKeyboardDismissDisabled();
+      },
+      get shouldCloseOnInteractOutside() {
+        return shouldCloseOnInteractOutside;
+      },
     },
     () => groupRef() ?? popoverRef()
   );
@@ -129,13 +137,19 @@ export function createPopover(
     ...props,
     targetRef: triggerRef,
     overlayRef: popoverRef,
-    isOpen: state.isOpen(),
-    onClose: isNonModal() && !isSubmenu() ? state.close : null,
+    get isOpen() {
+      return state.isOpen();
+    },
+    get onClose() {
+      return isNonModal() && !isSubmenu() ? state.close : null;
+    },
   });
 
   // Prevent scroll when modal popover is open
   createPreventScroll({
-    isDisabled: isNonModal() || !state.isOpen(),
+    get isDisabled() {
+      return isNonModal() || !state.isOpen();
+    },
   });
 
   // Aria-hide outside elements

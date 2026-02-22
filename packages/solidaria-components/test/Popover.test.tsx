@@ -348,9 +348,9 @@ describe('Popover', () => {
       const outsideArea = screen.getByTestId('outside')
       await user.click(outsideArea)
 
-      // Popover should close
-      // Note: This depends on createOverlay's interact-outside behavior
-      // May need adjustment based on actual implementation
+      await waitFor(() => {
+        expect(screen.queryByTestId('popover-content')).not.toBeInTheDocument()
+      })
     })
   })
 
@@ -442,8 +442,7 @@ describe('Popover', () => {
       await user.click(button)
       await user.keyboard('{Escape}')
 
-      expect(openChangeStates).toContain(true)  // When opened
-      expect(openChangeStates).toContain(false) // When closed
+      expect(openChangeStates).toEqual([true, false])
     })
   })
 

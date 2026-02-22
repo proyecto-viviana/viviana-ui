@@ -8,6 +8,7 @@
 
 import { type JSX, createMemo } from 'solid-js';
 import { type DisclosureGroupState } from '@proyecto-viviana/solid-stately';
+import { access, type MaybeAccessor } from '../utils/reactivity';
 
 // ============================================
 // TYPES
@@ -48,12 +49,14 @@ export interface DisclosureGroupAria {
  * ```
  */
 export function createDisclosureGroup(
-  props: AriaDisclosureGroupProps,
+  props: MaybeAccessor<AriaDisclosureGroupProps>,
   state: DisclosureGroupState
 ): DisclosureGroupAria {
+  const getProps = () => access(props);
+
   const groupProps = createMemo<JSX.HTMLAttributes<HTMLElement>>(() => ({
     role: 'group',
-    'aria-disabled': props.isDisabled || state.isDisabled || undefined,
+    'aria-disabled': getProps().isDisabled || state.isDisabled || undefined,
   }));
 
   return {

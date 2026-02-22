@@ -51,6 +51,9 @@ interface InternalModalContextValue {
 
 const InternalModalContext = createContext<InternalModalContextValue | null>(null)
 
+// Stack of visible modals, used to ensure only the top-most modal dismisses on Escape/outside interaction.
+const visibleModals: Array<() => Element | null> = []
+
 // ============================================
 // TYPES
 // ============================================
@@ -320,6 +323,7 @@ function ModalContent(props: ModalProps & { internalContext: InternalModalContex
   ])
 
   let modalRef!: HTMLDivElement
+  const modalRefAccessor = () => modalRef ?? null
 
   // Get state from parent OverlayTriggerStateContext (provided by ModalOverlay)
   const parentState = useContext(OverlayTriggerStateContext)
@@ -333,6 +337,24 @@ function ModalContent(props: ModalProps & { internalContext: InternalModalContex
     if (local.isOpen !== undefined) return local.isOpen
     return parentState?.isOpen ?? false
   }
+
+  // Keep this modal in a global stack so nested modals dismiss in top-down order.
+  createEffect(() => {
+    if (!isOpen()) return
+
+    if (!visibleModals.includes(modalRefAccessor)) {
+      visibleModals.push(modalRefAccessor)
+    }
+
+    onCleanup(() => {
+      const index = visibleModals.indexOf(modalRefAccessor)
+      if (index >= 0) {
+        visibleModals.splice(index, 1)
+      }
+    })
+  })
+
+  const isTopMostModal = () => visibleModals[visibleModals.length - 1] === modalRefAccessor
 
   const close = () => {
     if (local.isOpen !== undefined) {
@@ -361,9 +383,11 @@ function ModalContent(props: ModalProps & { internalContext: InternalModalContex
     if (!isOpen() || !isDismissable()) return
 
     createInteractOutside({
-      ref: () => modalRef ?? null,
+      ref: modalRefAccessor,
       onInteractOutside: () => {
-        close()
+        if (isTopMostModal()) {
+          close()
+        }
       },
       isDisabled: false,
     })
@@ -374,7 +398,7 @@ function ModalContent(props: ModalProps & { internalContext: InternalModalContex
     if (!isOpen() || isKeyboardDismissDisabled()) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && !e.isComposing && isTopMostModal()) {
         e.preventDefault()
         e.stopPropagation()
         close()

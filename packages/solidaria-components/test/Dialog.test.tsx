@@ -64,19 +64,13 @@ describe('Dialog', () => {
 
     const dialog = screen.getByRole('dialog')
     const heading = screen.getByRole('heading')
-    // Dialog creates a unique titleId and provides it through DialogContext
-    // The Heading consumes that context and sets the id
-    // dialog.aria-labelledby should point to the same ID
     const labelledBy = dialog.getAttribute('aria-labelledby')
     const headingId = heading.getAttribute('id')
 
-    // Both should have IDs (the same one from context)
+    // Dialog and heading should always be linked for accessible naming.
     expect(labelledBy).toBeTruthy()
-    // Heading might not get the ID if context isn't propagating - this is a known issue
-    // For now, just verify dialog has aria-labelledby
-    if (headingId) {
-      expect(labelledBy).toBe(headingId)
-    }
+    expect(headingId).toBeTruthy()
+    expect(labelledBy).toBe(headingId)
   })
 
   it('should support custom Heading levels', () => {
@@ -273,6 +267,7 @@ describe('DialogTrigger', () => {
     vi.runAllTimers()
 
     expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(onOpenChange).toHaveBeenCalledTimes(2)
   })
 })
 

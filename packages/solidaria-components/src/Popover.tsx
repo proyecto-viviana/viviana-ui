@@ -284,12 +284,8 @@ export function Popover(props: PopoverProps): JSX.Element {
 
   const popoverAria = createPopover(
     {
-      get triggerRef() {
-        return getTriggerRef
-      },
-      get popoverRef() {
-        return () => popoverRef ?? null
-      },
+      triggerRef: getTriggerRef,
+      popoverRef: () => popoverRef ?? null,
       get placement() {
         return local.placement
       },
@@ -402,11 +398,12 @@ export function Popover(props: PopoverProps): JSX.Element {
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
+      if (event.defaultPrevented) return
       close()
     }
 
-    document.addEventListener('keydown', onKeyDown, true)
-    onCleanup(() => document.removeEventListener('keydown', onKeyDown, true))
+    document.addEventListener('keydown', onKeyDown)
+    onCleanup(() => document.removeEventListener('keydown', onKeyDown))
   })
 
   return (

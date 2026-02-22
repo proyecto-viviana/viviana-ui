@@ -52,18 +52,16 @@ export function createOverlay(
   props: AriaOverlayProps,
   ref: () => Element | null
 ): OverlayAria {
-  const {
-    onClose,
-    shouldCloseOnBlur,
-    isOpen,
-    isDismissable = false,
-    isKeyboardDismissDisabled = false,
-    shouldCloseOnInteractOutside,
-  } = props;
+  const onClose = () => props.onClose;
+  const shouldCloseOnBlur = () => props.shouldCloseOnBlur;
+  const isOpen = () => props.isOpen ?? false;
+  const isDismissable = () => props.isDismissable ?? false;
+  const isKeyboardDismissDisabled = () => props.isKeyboardDismissDisabled ?? false;
+  const shouldCloseOnInteractOutside = () => props.shouldCloseOnInteractOutside;
 
   // Add the overlay ref to the stack of visible overlays on mount, and remove on unmount.
   createEffect(() => {
-    if (isOpen && !visibleOverlays.includes(ref)) {
+    if (isOpen() && !visibleOverlays.includes(ref)) {
       visibleOverlays.push(ref);
     }
 
@@ -77,13 +75,15 @@ export function createOverlay(
 
   // Only hide the overlay when it is the topmost visible overlay in the stack
   const onHide = () => {
-    if (visibleOverlays[visibleOverlays.length - 1] === ref && onClose) {
-      onClose();
+    const close = onClose();
+    if (visibleOverlays[visibleOverlays.length - 1] === ref && close) {
+      close();
     }
   };
 
   const onInteractOutsideStart = (e: PointerEvent) => {
-    if (!shouldCloseOnInteractOutside || shouldCloseOnInteractOutside(e.target as Element)) {
+    const shouldClose = shouldCloseOnInteractOutside();
+    if (!shouldClose || shouldClose(e.target as Element)) {
       if (visibleOverlays[visibleOverlays.length - 1] === ref) {
         e.stopPropagation();
         e.preventDefault();
@@ -92,7 +92,8 @@ export function createOverlay(
   };
 
   const onInteractOutside = (e: PointerEvent) => {
-    if (!shouldCloseOnInteractOutside || shouldCloseOnInteractOutside(e.target as Element)) {
+    const shouldClose = shouldCloseOnInteractOutside();
+    if (!shouldClose || shouldClose(e.target as Element)) {
       if (visibleOverlays[visibleOverlays.length - 1] === ref) {
         e.stopPropagation();
         e.preventDefault();
@@ -101,17 +102,25 @@ export function createOverlay(
     }
   };
 
-  // Handle clicking outside the overlay to close it
-  createInteractOutside({
-    ref,
-    onInteractOutside: isDismissable && isOpen ? onInteractOutside : undefined,
-    onInteractOutsideStart,
-    isDisabled: !isDismissable || !isOpen,
+  // Handle clicking outside the overlay to close it.
+  createEffect(() => {
+    if (!isDismissable() || !isOpen()) {
+      return;
+    }
+
+    createInteractOutside({
+      ref,
+      onInteractOutside,
+      onInteractOutsideStart,
+      isDisabled: false,
+    });
   });
 
   // Handle focus within for blur detection
   const { focusWithinProps } = createFocusWithin({
-    isDisabled: !shouldCloseOnBlur,
+    get isDisabled() {
+      return !shouldCloseOnBlur();
+    },
     onBlurWithin: (e) => {
       // Do not close if relatedTarget is null, which means focus is lost to the body.
       // That can happen when switching tabs, or due to a browser bug.
@@ -120,15 +129,16 @@ export function createOverlay(
         return;
       }
 
-      if (!shouldCloseOnInteractOutside || shouldCloseOnInteractOutside(e.relatedTarget as Element)) {
-        onClose?.();
+      const shouldClose = shouldCloseOnInteractOutside();
+      if (!shouldClose || shouldClose(e.relatedTarget as Element)) {
+        onClose()?.();
       }
     },
   });
 
   // Handle the escape key
   const onKeyDown: JSX.EventHandler<HTMLElement, KeyboardEvent> = (e) => {
-    if (e.key === 'Escape' && !isKeyboardDismissDisabled && !e.isComposing) {
+    if (e.key === 'Escape' && !isKeyboardDismissDisabled() && !e.isComposing) {
       e.stopPropagation();
       e.preventDefault();
       onHide();

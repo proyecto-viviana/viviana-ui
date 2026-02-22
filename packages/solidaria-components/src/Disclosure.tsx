@@ -162,17 +162,17 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
   ]);
 
   // Create group state
-  const state = createDisclosureGroupState({
+  const state = createDisclosureGroupState(() => ({
     allowsMultipleExpanded: local.allowsMultipleExpanded,
     isDisabled: local.isDisabled,
     expandedKeys: local.expandedKeys,
     defaultExpandedKeys: local.defaultExpandedKeys,
     onExpandedChange: local.onExpandedChange,
-  });
+  }));
 
   // Create group accessibility props
   const { groupProps } = createDisclosureGroup(
-    { isDisabled: local.isDisabled },
+    () => ({ isDisabled: local.isDisabled }),
     state
   );
 

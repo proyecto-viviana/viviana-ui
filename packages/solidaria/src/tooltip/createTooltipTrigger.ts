@@ -103,11 +103,9 @@ export function createTooltipTrigger(
   state: TooltipTriggerState,
   ref: () => HTMLElement | null | undefined
 ): TooltipTriggerAria {
-  const {
-    isDisabled = false,
-    trigger,
-    shouldCloseOnPress = true,
-  } = props;
+  const isDisabled = () => props.isDisabled ?? false;
+  const trigger = () => props.trigger;
+  const shouldCloseOnPress = () => props.shouldCloseOnPress ?? true;
 
   const tooltipId = createId();
 
@@ -148,7 +146,7 @@ export function createTooltipTrigger(
   });
 
   const onHoverStart = () => {
-    if (trigger === 'focus') {
+    if (trigger() === 'focus') {
       return;
     }
     // Hover events (onPointerEnter) only fire from pointer interactions,
@@ -158,7 +156,7 @@ export function createTooltipTrigger(
   };
 
   const onHoverEnd = () => {
-    if (trigger === 'focus') {
+    if (trigger() === 'focus') {
       return;
     }
     isFocused = false;
@@ -166,13 +164,20 @@ export function createTooltipTrigger(
     handleHide();
   };
 
-  const onPressStart = () => {
-    if (!shouldCloseOnPress) {
+  const closeOnPress = () => {
+    if (!shouldCloseOnPress()) {
       return;
     }
     isFocused = false;
     isHovered = false;
     handleHide(true);
+  };
+
+  const onKeyDownPress = (event: KeyboardEvent) => {
+    if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar') {
+      return;
+    }
+    closeOnPress();
   };
 
   const onFocus = () => {
@@ -190,13 +195,13 @@ export function createTooltipTrigger(
   };
 
   const { hoverProps } = createHover({
-    isDisabled,
+    isDisabled: isDisabled(),
     onHoverStart,
     onHoverEnd,
   });
 
   const { focusableProps } = createFocusable({
-    isDisabled,
+    isDisabled: isDisabled(),
     onFocus,
     onBlur,
   });
@@ -207,8 +212,8 @@ export function createTooltipTrigger(
     get 'aria-describedby'() {
       return state.isOpen() ? tooltipId : undefined;
     },
-    onPointerDown: onPressStart,
-    onKeyDown: onPressStart,
+    onPointerDown: closeOnPress,
+    onKeyDown: onKeyDownPress,
     // Remove tabIndex set by focusableProps to avoid overriding
     tabIndex: undefined,
   };

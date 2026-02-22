@@ -8,6 +8,7 @@
 import {
   type JSX,
   createContext,
+  createEffect,
   createMemo,
   createUniqueId,
   splitProps,
@@ -162,8 +163,7 @@ export function Dialog(props: DialogProps): JSX.Element {
         return ariaProps['aria-label']
       },
       get 'aria-labelledby'() {
-        // Use provided labelledby, or fall back to trigger id if no title
-        return ariaProps['aria-labelledby'] ?? triggerContext?.triggerId
+        return ariaProps['aria-labelledby']
       },
       get 'aria-describedby'() {
         return ariaProps['aria-describedby']
@@ -180,7 +180,10 @@ export function Dialog(props: DialogProps): JSX.Element {
 
   const close = () => {
     local.onClose?.()
-    overlayState?.close()
+    if (overlayState) {
+      overlayState.close()
+      return
+    }
     triggerContext?.state.close()
   }
 
@@ -241,26 +244,46 @@ export function Heading(props: HeadingProps): JSX.Element {
   const dialogContext = useContext(DialogContext)
   const level = () => props.level ?? 2
   const id = () => dialogContext?.titleId
+  let headingRef: HTMLHeadingElement | undefined
+
+  createEffect(() => {
+    const el = headingRef
+    if (!el) return
+
+    const contextId = id()
+    if (contextId) {
+      el.id = contextId
+      return
+    }
+
+    if (!el.id) {
+      const dialog = el.closest('[role="dialog"],[role="alertdialog"]')
+      const labelledBy = dialog?.getAttribute('aria-labelledby')
+      if (labelledBy && !el.ownerDocument.getElementById(labelledBy)) {
+        el.id = labelledBy
+      }
+    }
+  })
 
   return (
     <Switch>
       <Match when={level() === 1}>
-        <h1 id={id()} class={props.class}>{props.children}</h1>
+        <h1 ref={headingRef} id={id()} class={props.class}>{props.children}</h1>
       </Match>
       <Match when={level() === 2}>
-        <h2 id={id()} class={props.class}>{props.children}</h2>
+        <h2 ref={headingRef} id={id()} class={props.class}>{props.children}</h2>
       </Match>
       <Match when={level() === 3}>
-        <h3 id={id()} class={props.class}>{props.children}</h3>
+        <h3 ref={headingRef} id={id()} class={props.class}>{props.children}</h3>
       </Match>
       <Match when={level() === 4}>
-        <h4 id={id()} class={props.class}>{props.children}</h4>
+        <h4 ref={headingRef} id={id()} class={props.class}>{props.children}</h4>
       </Match>
       <Match when={level() === 5}>
-        <h5 id={id()} class={props.class}>{props.children}</h5>
+        <h5 ref={headingRef} id={id()} class={props.class}>{props.children}</h5>
       </Match>
       <Match when={level() === 6}>
-        <h6 id={id()} class={props.class}>{props.children}</h6>
+        <h6 ref={headingRef} id={id()} class={props.class}>{props.children}</h6>
       </Match>
     </Switch>
   )

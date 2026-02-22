@@ -196,6 +196,51 @@ describe('Modal', () => {
       // Should not call onOpenChange since isDismissable is false
       expect(onOpenChange).not.toHaveBeenCalledWith(false);
     });
+
+    it('should close only the top-most modal on Escape when nested', async () => {
+      const onOuterOpenChange = vi.fn();
+      const onInnerOpenChange = vi.fn();
+
+      render(() => (
+        <>
+          <Modal isOpen onOpenChange={onOuterOpenChange}>
+            <div>Outer Modal</div>
+          </Modal>
+          <Modal isOpen onOpenChange={onInnerOpenChange}>
+            <div>Inner Modal</div>
+          </Modal>
+        </>
+      ));
+
+      await user.keyboard('{Escape}');
+
+      expect(onInnerOpenChange).toHaveBeenCalledWith(false);
+      expect(onOuterOpenChange).not.toHaveBeenCalledWith(false);
+    });
+
+    it('should close only the top-most dismissable modal on outside click', async () => {
+      const onOuterOpenChange = vi.fn();
+      const onInnerOpenChange = vi.fn();
+
+      render(() => (
+        <div>
+          <Modal isOpen onOpenChange={onOuterOpenChange} isDismissable>
+            <div>Outer Modal</div>
+          </Modal>
+          <Modal isOpen onOpenChange={onInnerOpenChange} isDismissable>
+            <div>Inner Modal</div>
+          </Modal>
+          <button>Outside Button</button>
+        </div>
+      ));
+
+      await user.click(screen.getByText('Outside Button'));
+
+      await waitFor(() => {
+        expect(onInnerOpenChange).toHaveBeenCalledWith(false);
+      });
+      expect(onOuterOpenChange).not.toHaveBeenCalledWith(false);
+    });
   });
 
   // ============================================

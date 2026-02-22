@@ -11,6 +11,7 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, waitFor } from '@solidjs/testing-library';
+import { createSignal } from 'solid-js';
 import {
   Disclosure,
   DisclosureTrigger,
@@ -478,6 +479,38 @@ describe('Disclosure', () => {
 
       expect(trigger1).toBeDisabled();
       expect(trigger2).toBeDisabled();
+    });
+
+    it('should react to isDisabled changes on DisclosureGroup', async () => {
+      const [isDisabled, setIsDisabled] = createSignal(false);
+
+      render(() => (
+        <>
+          <button data-testid="toggle-disabled" onClick={() => setIsDisabled((prev) => !prev)}>
+            Toggle disabled
+          </button>
+          <DisclosureGroup isDisabled={isDisabled()}>
+            <Disclosure id="item1">
+              <DisclosureTrigger>Item 1</DisclosureTrigger>
+              <DisclosurePanel>Content 1</DisclosurePanel>
+            </Disclosure>
+            <Disclosure id="item2">
+              <DisclosureTrigger>Item 2</DisclosureTrigger>
+              <DisclosurePanel>Content 2</DisclosurePanel>
+            </Disclosure>
+          </DisclosureGroup>
+        </>
+      ));
+
+      const trigger1 = screen.getByRole('button', { name: 'Item 1' });
+      const toggle = screen.getByTestId('toggle-disabled');
+
+      expect(trigger1).not.toBeDisabled();
+
+      await user.click(toggle);
+      await waitFor(() => {
+        expect(trigger1).toBeDisabled();
+      });
     });
 
     it('should have default class on group', () => {
