@@ -279,6 +279,160 @@ test.describe('Playground Page', () => {
     await checkNoHydrationErrors(errors);
   });
 
+  test('table section exposes tabbable grid and keyboard row selection', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'table');
+
+    const grid = section.getByRole('grid', { name: 'Team members' }).first();
+    await expect(grid).toBeVisible();
+    await expect(grid).toHaveAttribute('tabindex', '0');
+
+    await grid.focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Space');
+
+    const selectedSummary = section.locator('p', { hasText: 'Selected:' }).first();
+    await expect(selectedSummary).toBeVisible();
+    await expect(selectedSummary).not.toContainText('None');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('gridlist section supports keyboard selection from focused grid', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'gridlist');
+
+    const grid = section.getByRole('grid', { name: 'File categories' }).first();
+    await expect(grid).toBeVisible();
+    await expect(grid).toHaveAttribute('tabindex', '0');
+
+    await grid.focus();
+    await page.keyboard.press('Space');
+
+    const selectedSummary = section.locator('p', { hasText: 'Selected:' }).first();
+    await expect(selectedSummary).toBeVisible();
+    await expect(selectedSummary).not.toContainText('None');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('tree section supports keyboard selection from focused treegrid', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'tree');
+
+    const tree = section.getByRole('treegrid', { name: 'Project structure' }).first();
+    await expect(tree).toBeVisible();
+    await expect(tree).toHaveAttribute('tabindex', '0');
+
+    await tree.focus();
+    await page.keyboard.press('Space');
+
+    const selectedSummary = section.locator('p', { hasText: 'Selected:' }).first();
+    await expect(selectedSummary).toBeVisible();
+    await expect(selectedSummary).not.toContainText('None');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('tree section expands and collapses nested branches from expand buttons', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'tree');
+
+    const getUtilsRow = () => section.locator('[role="row"]').filter({ hasText: 'utils' }).first();
+
+    await expect(getUtilsRow()).toBeVisible();
+    await expect(getUtilsRow().getByRole('button')).toHaveAttribute('aria-label', 'Expand');
+
+    await getUtilsRow().getByRole('button').click();
+    await expect(section.getByText('helpers.ts')).toBeVisible();
+    await expect(getUtilsRow().getByRole('button')).toHaveAttribute('aria-label', 'Collapse');
+
+    await getUtilsRow().getByRole('button').click();
+    await expect(section.getByText('helpers.ts')).toHaveCount(0);
+    await expect(getUtilsRow().getByRole('button')).toHaveAttribute('aria-label', 'Expand');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('calendar section supports month navigation and updates selection text', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'calendar');
+
+    const heading = section.locator('header h2').first();
+    await expect(heading).toBeVisible();
+    const beforeHeading = await heading.textContent();
+
+    await section.getByRole('button', { name: 'Next month' }).first().click();
+    const afterHeading = await heading.textContent();
+    expect(afterHeading).toBeTruthy();
+    expect(afterHeading).not.toBe(beforeHeading);
+
+    const dayButton = section.locator('div[role="button"]').filter({ hasText: /^15$/ }).first();
+    await expect(dayButton).toBeVisible();
+    await dayButton.click();
+
+    const selectedText = section.locator('p', { hasText: 'Selected:' }).first();
+    await expect(selectedText).toBeVisible();
+    await expect(selectedText).not.toContainText('None');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('alert section exposes alert role and supports dismissible alerts', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'alert');
+
+    await expect(section.getByRole('alert')).toHaveCount(4);
+    await expect(section).toContainText('Something went wrong.');
+
+    await section.getByRole('button', { name: 'Dismiss' }).first().click();
+    await expect(section.getByRole('alert')).toHaveCount(4);
+    await expect(page.getByText('Last action: Alert dismissed')).toBeVisible();
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('dropzone section exposes drop target semantics and handles drop callbacks', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'dropzone');
+
+    const activeZone = section.getByTestId('dropzone-active');
+    const disabledZone = section.getByTestId('dropzone-disabled');
+    await expect(activeZone).toBeVisible();
+    await expect(disabledZone).toBeVisible();
+
+    await expect(section.getByRole('button', { name: 'Upload files drop zone' })).toHaveCount(1);
+    await expect(section.getByRole('button', { name: 'Disabled drop zone' })).toBeDisabled();
+
+    await activeZone.evaluate((element) => {
+      const dataTransfer = new DataTransfer();
+      const event = new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer });
+      element.dispatchEvent(event);
+    });
+    await expect(page.getByText('Last action: DropZone: drop event')).toBeVisible();
+
+    await expect(disabledZone).toHaveAttribute('data-disabled', 'true');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('filetrigger section forwards file selection and keeps disabled trigger inert', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'filetrigger');
+
+    const input = section.locator('input[type="file"]').first();
+    await input.setInputFiles({
+      name: 'avatar.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from('file-content'),
+    });
+
+    await expect(page.getByText('Last action: File selected: avatar.png')).toBeVisible();
+    await expect(section.locator('input[type="file"]').nth(1)).toBeDisabled();
+
+    await checkNoHydrationErrors(errors);
+  });
+
   test('disclosure section supports keyboard toggle on headless disclosure', async ({ page }) => {
     const errors = await setupErrorCapture(page);
     const section = await ensureSectionVisible(page, 'disclosure');
@@ -307,6 +461,106 @@ test.describe('Playground Page', () => {
     await section2.click();
     await expect(section2).toHaveAttribute('aria-expanded', 'true');
     await expect(section1).toHaveAttribute('aria-expanded', 'false');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('contextualhelp section opens dialog with trigger linkage and closes on Escape', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'contextualhelp');
+
+    const trigger = section.getByRole('button', { name: 'What is this?' }).first();
+    await expect(trigger).toBeVisible();
+    await trigger.click();
+
+    const dialog = page
+      .getByRole('dialog')
+      .filter({ hasText: 'This setting controls the behavior of the feature.' })
+      .first();
+    await expect(dialog).toBeVisible();
+
+    const triggerId = await trigger.getAttribute('id');
+    expect(triggerId).toBeTruthy();
+    if (!triggerId) {
+      throw new Error('ContextualHelp trigger missing id');
+    }
+    await expect(dialog).toHaveAttribute('aria-labelledby', triggerId);
+
+    const dialogId = await dialog.getAttribute('id');
+    expect(dialogId).toBeTruthy();
+    if (!dialogId) {
+      throw new Error('ContextualHelp dialog missing id');
+    }
+    await expect(trigger).toHaveAttribute('aria-controls', dialogId);
+
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog').filter({ hasText: 'This setting controls the behavior of the feature.' })).toHaveCount(0);
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('contextualhelp section closes on outside interaction', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'contextualhelp');
+
+    const trigger = section.getByRole('button', { name: 'Advanced Configuration' }).first();
+    await expect(trigger).toBeVisible();
+    await trigger.click();
+
+    const dialog = page
+      .getByRole('dialog')
+      .filter({ hasText: 'This option is for advanced users.' })
+      .first();
+    await expect(dialog).toBeVisible();
+
+    await page.locator('body').click({ position: { x: 1, y: 1 } });
+    await expect(page.getByRole('dialog').filter({ hasText: 'This option is for advanced users.' })).toHaveCount(0);
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('toast section renders notification region and toasts from trigger buttons', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'toast');
+
+    await section.getByRole('button', { name: 'Success Toast' }).first().click();
+    await section.getByRole('button', { name: 'Error Toast' }).first().click();
+
+    const region = page.getByRole('region', { name: 'Notifications' }).first();
+    await expect(region).toBeVisible();
+    await expect(region.getByRole('alertdialog')).toHaveCount(2);
+    await expect(region).toContainText('Changes saved successfully!');
+    await expect(region).toContainText('Something went wrong. Please try again.');
+
+    await checkNoHydrationErrors(errors);
+  });
+
+  test('toast section links title/description ids and supports dismiss', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+    const section = await ensureSectionVisible(page, 'toast');
+
+    await section.getByRole('button', { name: 'With Description' }).first().click();
+
+    const toast = page.getByRole('alertdialog').filter({ hasText: 'Custom Toast' }).first();
+    await expect(toast).toBeVisible();
+    await expect(toast).toContainText('This toast has both title and description with a longer timeout.');
+
+    const labelledBy = await toast.getAttribute('aria-labelledby');
+    expect(labelledBy).toBeTruthy();
+    if (!labelledBy) {
+      throw new Error('Toast missing aria-labelledby');
+    }
+    await expect(toast.locator(`#${labelledBy}`)).toHaveCount(1);
+
+    const describedBy = await toast.getAttribute('aria-describedby');
+    expect(describedBy).toBeTruthy();
+    if (!describedBy) {
+      throw new Error('Toast missing aria-describedby');
+    }
+    await expect(toast.locator(`#${describedBy}`)).toHaveCount(1);
+
+    await toast.getByRole('button', { name: 'Dismiss' }).click();
+    await expect(page.getByRole('alertdialog').filter({ hasText: 'Custom Toast' })).toHaveCount(0);
 
     await checkNoHydrationErrors(errors);
   });

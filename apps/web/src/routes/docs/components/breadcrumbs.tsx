@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Breadcrumbs, BreadcrumbItem } from "@proyecto-viviana/ui";
+import { Breadcrumbs, BreadcrumbItem } from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 type BreadcrumbEntry = {
@@ -56,7 +56,7 @@ function BreadcrumbsPage() {
     <DocPage
       title="Breadcrumbs"
       description="Breadcrumbs show a navigational hierarchy of pages, helping users understand where they are within a site and navigate back to parent sections."
-      importCode={`import { Breadcrumbs, BreadcrumbItem } from '@proyecto-viviana/ui';`}
+      importCode={`import { Breadcrumbs, BreadcrumbItem } from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic Breadcrumbs"

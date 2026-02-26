@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { TextArea } from "@proyecto-viviana/ui";
+import { TextArea } from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/docs/components/textarea")({
@@ -14,7 +14,7 @@ function TextAreaPage() {
     <DocPage
       title="TextArea"
       description="A multi-line text input with label, description, and validation support. Shares the same accessibility and styling patterns as TextField."
-      importCode={`import { TextArea } from '@proyecto-viviana/ui';`}
+      importCode={`import { TextArea } from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic Usage"

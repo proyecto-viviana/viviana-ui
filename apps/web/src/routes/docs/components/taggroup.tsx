@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { TagGroup } from "@proyecto-viviana/ui";
+import { TagGroup } from "@proyecto-viviana/silapse";
 import type { Key } from "@proyecto-viviana/solid-stately";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
@@ -58,7 +58,7 @@ function TagGroupPage() {
     <DocPage
       title="TagGroup"
       description="TagGroup displays a collection of tags that can be removable or selectable. Use tags to categorize content, filter results, or represent user selections."
-      importCode={`import { TagGroup } from '@proyecto-viviana/ui';`}
+      importCode={`import { TagGroup } from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Removable Tags"
@@ -239,6 +239,11 @@ function TagGroupPage() {
             name: "selectedKeys",
             type: "Set<Key> | 'all'",
             description: "Currently selected tag keys (controlled)",
+          },
+          {
+            name: "defaultSelectedKeys",
+            type: "Iterable<Key>",
+            description: "Default selected tag keys (uncontrolled)",
           },
           {
             name: "onSelectionChange",

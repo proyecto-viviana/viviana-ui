@@ -44,16 +44,16 @@ function InstallationPage() {
       </p>
 
       <SectionHeading color={colors().blue}>From JSR (Recommended for Deno)</SectionHeading>
-      <pre style={codeBlock("")}><code>{`deno add jsr:@proyecto-viviana/ui jsr:@proyecto-viviana/solidaria`}</code></pre>
+      <pre style={codeBlock("")}><code>{`deno add jsr:@proyecto-viviana/silapse jsr:@proyecto-viviana/solidaria`}</code></pre>
 
       <SectionHeading color={colors().blue}>From npm</SectionHeading>
-      <pre style={codeBlock("")}><code>{`npm install @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code></pre>
+      <pre style={codeBlock("")}><code>{`npm install @proyecto-viviana/silapse @proyecto-viviana/solidaria`}</code></pre>
 
       <SectionHeading color={colors().blue}>Using bun</SectionHeading>
-      <pre style={codeBlock("")}><code>{`bun add @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code></pre>
+      <pre style={codeBlock("")}><code>{`bun add @proyecto-viviana/silapse @proyecto-viviana/solidaria`}</code></pre>
 
       <SectionHeading color={colors().blue}>Using pnpm</SectionHeading>
-      <pre style={codeBlock("")}><code>{`pnpm add @proyecto-viviana/ui @proyecto-viviana/solidaria`}</code></pre>
+      <pre style={codeBlock("")}><code>{`pnpm add @proyecto-viviana/silapse @proyecto-viviana/solidaria`}</code></pre>
 
       <SectionHeading color={colors().blue}>Peer Dependencies</SectionHeading>
       <p style={{ "margin-bottom": "0.75rem" }}>Make sure you have SolidJS installed:</p>
@@ -71,7 +71,7 @@ function InstallationPage() {
             </tr>
           </thead>
           <tbody>
-            <PkgRow pkg="@proyecto-viviana/ui" desc="Pre-styled components, ready to use" colors={colors()} />
+            <PkgRow pkg="@proyecto-viviana/silapse" desc="Pre-styled components, ready to use" colors={colors()} />
             <PkgRow pkg="@proyecto-viviana/solidaria" desc="ARIA hooks for custom components" colors={colors()} />
             <PkgRow pkg="@proyecto-viviana/solidaria-components" desc="Headless components with render props" colors={colors()} />
             <PkgRow pkg="@proyecto-viviana/solid-stately" desc="State management hooks only" colors={colors()} />
@@ -124,7 +124,7 @@ function InstallationPage() {
         <code>{`{
   "imports": {
     "solid-js": "npm:solid-js@^1.9.0",
-    "@proyecto-viviana/ui": "jsr:@proyecto-viviana/ui@^0.1.8",
+    "@proyecto-viviana/silapse": "jsr:@proyecto-viviana/silapse@^0.1.8",
     "@proyecto-viviana/solidaria": "jsr:@proyecto-viviana/solidaria@^0.0.7"
   },
   "compilerOptions": {

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/solid-router";
-import { GitHubIcon } from "@proyecto-viviana/ui";
+import { GitHubIcon } from "@proyecto-viviana/silapse";
 import { createSignal, onMount, onCleanup, Show } from "solid-js";
 import { useSilapseTheme, useSilapseColors } from "@/utils/theme";
 

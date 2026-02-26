@@ -1,5 +1,5 @@
 import { type Accessor, createSignal, For } from 'solid-js'
-import { RangeCalendar, DateField, TimeField, DateRangePicker, ColorSwatchPicker, ColorSwatchPickerItem, ColorEditor } from '@proyecto-viviana/ui'
+import { RangeCalendar, DateField, TimeField, DateRangePicker, ColorSwatchPicker, ColorSwatchPickerItem, ColorEditor } from '@proyecto-viviana/silapse'
 import {
   Table,
   TableHeader,
@@ -315,6 +315,7 @@ function RangeCalendarDemo() {
     <div class="space-y-2">
       <RangeCalendar
         aria-label="Select date range"
+        defaultFocusedValue={new CalendarDate(2024, 6, 15)}
         value={range()}
         onChange={setRange}
       />

@@ -11,7 +11,7 @@ import {
   TableCell,
   TableSelectionCheckbox,
   TableSelectAllCheckbox,
-} from "@proyecto-viviana/ui";
+} from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 /** Renders children only on the client after hydration. Same component tree on server/client for hydration compat. */
@@ -70,7 +70,7 @@ function TablePage() {
   TableBody,
   TableRow,
   TableCell
-} from '@proyecto-viviana/ui';`}
+} from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic Table"

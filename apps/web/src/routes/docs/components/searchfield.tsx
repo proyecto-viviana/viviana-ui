@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { SearchField } from "@proyecto-viviana/ui";
+import { SearchField } from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/docs/components/searchfield")({
@@ -15,7 +15,7 @@ function SearchFieldPage() {
     <DocPage
       title="SearchField"
       description="A search input with a built-in clear button and optional search icon. Supports submit events, clear events, and keyboard shortcuts (Escape to clear)."
-      importCode={`import { SearchField } from '@proyecto-viviana/ui';`}
+      importCode={`import { SearchField } from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic Usage"

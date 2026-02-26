@@ -8,7 +8,7 @@ import {
   ComboBoxListBox,
   ComboBoxOption,
   defaultContainsFilter,
-} from "@proyecto-viviana/ui";
+} from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/docs/components/combobox")({
@@ -45,7 +45,7 @@ function ComboBoxPage() {
   ComboBoxListBox,
   ComboBoxOption,
   defaultContainsFilter,
-} from '@proyecto-viviana/ui';`}
+} from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic with Filtering"

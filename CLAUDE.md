@@ -6,7 +6,7 @@ SolidJS port of Adobe's React Spectrum - accessible UI primitives with world-cla
 
 **What**: 4-layer component library (state → aria → components → styled) ported from React Spectrum to SolidJS
 **Why**: SolidJS lacks a mature accessible component library - this fills that gap
-**Status**: 3730 tests passing, Phases 1-29 + Endgame + Parity Completion complete
+**Status**: 4110+ tests passing, Phases 1-31 + Endgame + Parity Completion + A11y Wave 1 + Component Parity Waves 0-7 complete
 
 ## IMPORTANT: Reference Code is Local
 
@@ -114,9 +114,19 @@ See [.claude/README.md](.claude/README.md) for full documentation:
 | Endgame | Re-exports, Focusable/Pressable/Router, Data hooks, UI wrappers, Layout, Theme/Provider, Virtualizer docs | +132 |
 | Parity Completion | Barrel alignment, TextArea, DateRangePicker, ColorSwatchPicker, ColorEditor, ContextualHelpTrigger, OpenTransition, Theme system | +95 |
 | Quality Hardening | splitProps DOM attribute forwarding fix (35 components), regression test suite (50 tests with DOM snapshots) | +50 |
+| A11y Wave 1 | axe-core scans, ARIA ID integrity, DOM forwarding for 12 Core Controls (Button, Link, Separator, Checkbox, Switch, RadioGroup, TextField, TextArea, SearchField, NumberField, ProgressBar, Meter) | +71 |
+| 30 | Autocomplete (all 4 layers) | +30 |
+| 31 | Performance benchmarking (bundle-size, runtime) | +10 |
+| Parity Waves 0-1 | Core Actions & Forms deep-dive (Button, Link, Checkbox, Switch, RadioGroup, TextField, SearchField, NumberField) | +80 |
+| Parity Waves 2-3 | Selection/Navigation & Overlays (ListBox, Menu, Select, ComboBox, Tabs, Breadcrumbs, Dialog, Toast, TagGroup) | +120 |
+| Parity Waves 4-5 | Date/Time & Data Collections (Calendar, RangeCalendar, DatePicker, DateRangePicker, TimeField, Table, GridList, Tree) | +100 |
+| Parity Waves 6-7 | Color/Advanced & Utility/Infra (ColorArea, ColorSlider, ColorWheel, Slider, ActionBar, ActionGroup, DropZone, Focusable, Pressable, VisuallyHidden, RouterProvider, Collection) | +90 |
+| Package Rename | ui → silapse (Silapse Design System rebrand) | — |
 
 ## Next Steps
 
 Future phases (not started):
+- A11y Wave 2-8 (Selection, Overlays, Dates, Collections, Color, Utilities, Styled)
+- SharedElementTransition depth checks
+- Playground axe-core automation
 - DropZone component
-- SharedElementTransition

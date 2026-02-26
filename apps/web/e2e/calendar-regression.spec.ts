@@ -2,6 +2,10 @@ import { test, expect, type Page } from '@playwright/test';
 
 const CALENDAR_SECTION = 'section[data-testid="section-calendar"]';
 const RANGE_CALENDAR_SECTION = 'section[data-testid="section-rangecalendar"]';
+const DATE_FIELD_SECTION = 'section[data-testid="section-datefield"]';
+const TIME_FIELD_SECTION = 'section[data-testid="section-timefield"]';
+const DATE_PICKER_SECTION = 'section[data-testid="section-datepicker"]';
+const DATE_RANGE_PICKER_SECTION = 'section[data-testid="section-daterangepicker"]';
 
 async function setupErrorCapture(page: Page) {
   const errors: string[] = [];
@@ -139,6 +143,117 @@ test.describe('Playground Calendar Regression', () => {
     await expect
       .poll(() => rangeCalendarSection.getByRole('gridcell').count(), { timeout: 30_000 })
       .toBeGreaterThan(20);
+
+    await checkNoRuntimeErrors(errors);
+  });
+
+  test('range calendar selection updates summary text', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await expectVisibleCount(page, 0);
+    await toggleSection(page, 'rangecalendar');
+    await expectVisibleCount(page, 1);
+
+    const rangeCalendarSection = page.locator(RANGE_CALENDAR_SECTION);
+    await expect(rangeCalendarSection).toBeVisible();
+
+    const start = rangeCalendarSection
+      .locator('[role="button"][aria-label*="June 10, 2024"]')
+      .first();
+    await start.dispatchEvent('pointerdown');
+    const end = rangeCalendarSection
+      .locator('[role="button"][aria-label*="June 15, 2024"]')
+      .first();
+    await end.dispatchEvent('pointerdown');
+
+    await expect(rangeCalendarSection.getByText('Range: 2024-06-10 - 2024-06-15')).toBeVisible();
+    await checkNoRuntimeErrors(errors);
+  });
+
+  test('date field section exposes labeled segmented field', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await expectVisibleCount(page, 0);
+    await toggleSection(page, 'datefield');
+    await expectVisibleCount(page, 1);
+
+    const dateFieldSection = page.locator(DATE_FIELD_SECTION);
+    await expect(dateFieldSection).toBeVisible();
+
+    const group = dateFieldSection.getByRole('group', { name: 'Birth Date' }).first();
+    await expect(group).toBeVisible();
+    await expect(group.locator('[role="spinbutton"]')).toHaveCount(3);
+
+    await checkNoRuntimeErrors(errors);
+  });
+
+  test('time field section exposes labeled segmented field and keyboard segment navigation', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await expectVisibleCount(page, 0);
+    await toggleSection(page, 'timefield');
+    await expectVisibleCount(page, 1);
+
+    const timeFieldSection = page.locator(TIME_FIELD_SECTION);
+    await expect(timeFieldSection).toBeVisible();
+
+    const group = timeFieldSection.getByRole('group', { name: 'Meeting Time' }).first();
+    await expect(group).toBeVisible();
+
+    const segments = group.locator('[role="spinbutton"]');
+    expect(await segments.count()).toBeGreaterThan(1);
+    const firstSegment = segments.first();
+    const secondSegment = segments.nth(1);
+
+    await firstSegment.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(secondSegment).toBeFocused();
+
+    await checkNoRuntimeErrors(errors);
+  });
+
+  test('date picker section exposes labeled segmented field and opens calendar popup', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await expectVisibleCount(page, 0);
+    await toggleSection(page, 'datepicker');
+    await expectVisibleCount(page, 1);
+
+    const datePickerSection = page.locator(DATE_PICKER_SECTION);
+    await expect(datePickerSection).toBeVisible();
+
+    const group = datePickerSection.getByRole('group', { name: 'Event Date' }).first();
+    await expect(group).toBeVisible();
+    await expect(group.locator('[role="spinbutton"]')).toHaveCount(3);
+
+    const trigger = datePickerSection.getByRole('button', { name: /open calendar/i }).first();
+    await trigger.click();
+    await expect(page.getByRole('dialog', { name: 'Calendar' }).first()).toBeVisible();
+
+    await checkNoRuntimeErrors(errors);
+  });
+
+  test('date range picker section exposes labeled range fields and keyboard-open behavior', async ({ page }) => {
+    const errors = await setupErrorCapture(page);
+
+    await expectVisibleCount(page, 0);
+    await toggleSection(page, 'daterangepicker');
+    await expectVisibleCount(page, 1);
+
+    const dateRangePickerSection = page.locator(DATE_RANGE_PICKER_SECTION);
+    await expect(dateRangePickerSection).toBeVisible();
+
+    const group = dateRangePickerSection.getByRole('group', { name: 'Trip Dates' }).first();
+    await expect(group).toBeVisible();
+
+    const startField = group.locator('[aria-label="Start date"]').first();
+    const endField = group.locator('[aria-label="End date"]').first();
+    await expect(startField).toBeVisible();
+    await expect(endField).toBeVisible();
+
+    await startField.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('dialog', { name: 'Range calendar' }).first()).toBeVisible();
 
     await checkNoRuntimeErrors(errors);
   });

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Tabs, TabList, Tab, TabPanel } from "@proyecto-viviana/ui";
+import { Tabs, TabList, Tab, TabPanel } from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 type TabItem = {
@@ -44,7 +44,7 @@ function TabsPage() {
     <DocPage
       title="Tabs"
       description="Tabs organize content into separate views where only one view is visible at a time. Users can switch between views by selecting the corresponding tab."
-      importCode={`import { Tabs, TabList, Tab, TabPanel } from '@proyecto-viviana/ui';`}
+      importCode={`import { Tabs, TabList, Tab, TabPanel } from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic Usage"

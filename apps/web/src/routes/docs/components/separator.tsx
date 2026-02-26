@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import { Separator } from "@proyecto-viviana/ui";
+import { Separator } from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/docs/components/separator")({
@@ -11,7 +11,7 @@ function SeparatorPage() {
     <DocPage
       title="Separator"
       description="A visual divider between groups of content. Supports horizontal and vertical orientations, multiple sizes, and visual variants."
-      importCode={`import { Separator } from '@proyecto-viviana/ui';`}
+      importCode={`import { Separator } from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Horizontal"

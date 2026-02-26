@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { DateRangePicker } from "@proyecto-viviana/ui";
+import { DateRangePicker } from "@proyecto-viviana/silapse";
 import {
   CalendarDateClass as CalendarDate,
   type DateValue,
@@ -27,7 +27,7 @@ function DateRangePickerPage() {
     <DocPage
       title="DateRangePicker"
       description="A date range picker lets users select a start and end date using a combined input with a range calendar popup. It is ideal for filtering by date ranges, booking stays, or defining time spans."
-      importCode={`import { DateRangePicker } from '@proyecto-viviana/ui';
+      importCode={`import { DateRangePicker } from '@proyecto-viviana/silapse';
 import {
   CalendarDateClass as CalendarDate,
   type DateValue,

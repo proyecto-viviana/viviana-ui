@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/solid-router";
-import { Button } from "@proyecto-viviana/ui";
+import { Button } from "@proyecto-viviana/silapse";
 import { useSilapseColors } from "@/utils/theme";
 
 export const Route = createFileRoute("/docs/")({
@@ -54,7 +54,7 @@ function GettingStartedPage() {
       </div>
 
       <pre style={{ background: colors().surface, color: colors().text, padding: "12px 14px", "overflow-x": "auto", margin: "0.75rem 0", "font-family": FONT_MONO, "font-size": "12px", border: `1px solid ${colors().muted}`, "border-left": `3px solid ${colors().blue}` }}>
-        <code>{`import { Button } from '@proyecto-viviana/ui';
+        <code>{`import { Button } from '@proyecto-viviana/silapse';
 
 function App() {
   const [pressed, setPressed] = createSignal(false);
@@ -75,7 +75,7 @@ function App() {
         <ArchRow name="@proyecto-viviana/solid-stately" desc="State management hooks (createToggleState, createListState, etc.)" color={colors().pink} border={colors().muted} />
         <ArchRow name="@proyecto-viviana/solidaria" desc="ARIA hooks for accessibility (createButton, createMenu, etc.)" color={colors().blue} border={colors().muted} />
         <ArchRow name="@proyecto-viviana/solidaria-components" desc="Headless components with render props (Button, Menu, Dialog, etc.)" color={colors().pink} border={colors().muted} />
-        <ArchRow name="@proyecto-viviana/ui" desc="Styled components ready to use (Button, Select, Table, etc.)" color={colors().blue} border={colors().muted} />
+        <ArchRow name="@proyecto-viviana/silapse" desc="Styled components ready to use (Button, Select, Table, etc.)" color={colors().blue} border={colors().muted} />
       </div>
 
       <SectionHeading color={colors().blue}>Next Steps</SectionHeading>

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Checkbox, CheckboxGroup } from "@proyecto-viviana/ui";
+import { Checkbox, CheckboxGroup } from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/docs/components/checkbox")({
@@ -15,7 +15,7 @@ function CheckboxPage() {
     <DocPage
       title="Checkbox"
       description="Checkboxes allow users to select one or more items from a set, or to turn an option on or off."
-      importCode={`import { Checkbox, CheckboxGroup } from '@proyecto-viviana/ui';`}
+      importCode={`import { Checkbox, CheckboxGroup } from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic Usage"

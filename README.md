@@ -9,7 +9,7 @@ A comprehensive SolidJS component library inspired by Adobe's React Aria and Rea
 | [@proyecto-viviana/solid-stately](./packages/solid-stately) | 0.2.4 | State management for UI components (port of React Stately) |
 | [@proyecto-viviana/solidaria](./packages/solidaria) | 0.2.5 | Accessibility primitives (port of React Aria) |
 | [@proyecto-viviana/solidaria-components](./packages/solidaria-components) | 0.2.5 | Pre-wired headless components (port of React Aria Components) |
-| [@proyecto-viviana/ui](./packages/ui) | 0.3.5 | Styled UI components with Tailwind CSS |
+| [@proyecto-viviana/silapse](./packages/silapse) | 0.3.5 | Styled UI components with Tailwind CSS |
 
 ## Architecture
 
@@ -17,7 +17,7 @@ The library follows a 4-layer architecture pattern:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                    @proyecto-viviana/ui              │  Styled components
+│                    @proyecto-viviana/silapse              │  Styled components
 │         (Tailwind CSS, design tokens, variants)      │
 └─────────────────────────────────────────────────────┘
                           │
@@ -43,7 +43,7 @@ The library follows a 4-layer architecture pattern:
 
 ```bash
 # For styled components (recommended)
-bun add @proyecto-viviana/ui solid-js
+bun add @proyecto-viviana/silapse solid-js
 
 # For headless components
 bun add @proyecto-viviana/solidaria-components solid-js
@@ -55,8 +55,8 @@ bun add @proyecto-viviana/solidaria @proyecto-viviana/solid-stately solid-js
 ### Basic Usage
 
 ```tsx
-import { Button, TextField, Select } from '@proyecto-viviana/ui';
-import '@proyecto-viviana/ui/styles.css';
+import { Button, TextField, Select } from '@proyecto-viviana/silapse';
+import '@proyecto-viviana/silapse/styles.css';
 
 function App() {
   return (
@@ -184,8 +184,8 @@ function App() {
 ### Using Styled Components
 
 ```tsx
-import { Button, TextField, Checkbox, Select } from '@proyecto-viviana/ui';
-import '@proyecto-viviana/ui/styles.css';
+import { Button, TextField, Checkbox, Select } from '@proyecto-viviana/silapse';
+import '@proyecto-viviana/silapse/styles.css';
 
 function Form() {
   const [name, setName] = createSignal('');
@@ -405,7 +405,7 @@ proyecto-viviana/
 │   │       ├── Tabs.tsx
 │   │       └── Breadcrumbs.tsx
 │   │
-│   └── ui/                     # Styled components
+│   └── silapse/                     # Styled components
 │       └── src/
 │           ├── button/         # Styled button
 │           ├── checkbox/       # Styled checkbox

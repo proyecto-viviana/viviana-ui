@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { ToggleSwitch } from "@proyecto-viviana/ui";
+import { ToggleSwitch } from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/docs/components/switch")({
@@ -15,7 +15,7 @@ function SwitchPage() {
     <DocPage
       title="Switch"
       description="A toggle switch for binary on/off states. An alternative to checkboxes when the immediate effect of the change should be visually apparent."
-      importCode={`import { ToggleSwitch } from '@proyecto-viviana/ui';`}
+      importCode={`import { ToggleSwitch } from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic Usage"

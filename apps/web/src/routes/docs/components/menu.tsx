@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Menu, MenuItem, MenuTrigger, MenuButton, MenuSeparator, Button } from "@proyecto-viviana/ui";
+import { Menu, MenuItem, MenuTrigger, MenuButton, MenuSeparator, Button } from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 type MenuDocItem = {
@@ -64,7 +64,7 @@ function MenuPage() {
   MenuTrigger,
   MenuButton,
   MenuSeparator
-} from '@proyecto-viviana/ui';`}
+} from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic Usage"

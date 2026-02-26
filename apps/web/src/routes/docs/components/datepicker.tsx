@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { DatePicker } from "@proyecto-viviana/ui";
+import { DatePicker } from "@proyecto-viviana/silapse";
 import {
   CalendarDateClass as CalendarDate,
   type DateValue,
@@ -22,7 +22,7 @@ function DatePickerPage() {
     <DocPage
       title="DatePicker"
       description="A date picker combines a segmented date input field with a dropdown calendar popup. Users can type a date directly into the field using the keyboard, or open the calendar to select a date visually."
-      importCode={`import { DatePicker } from '@proyecto-viviana/ui';
+      importCode={`import { DatePicker } from '@proyecto-viviana/silapse';
 import { CalendarDateClass as CalendarDate } from '@proyecto-viviana/solid-stately';`}
     >
       <Example

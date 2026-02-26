@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import { Badge, Button } from "@proyecto-viviana/ui";
+import { Badge, Button } from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/docs/components/badge")({
@@ -11,7 +11,7 @@ function BadgePage() {
     <DocPage
       title="Badge"
       description="A small numeric or status indicator, typically shown attached to another element. Used for notification counts, status indicators, and labels."
-      importCode={`import { Badge } from '@proyecto-viviana/ui';`}
+      importCode={`import { Badge } from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Variants"

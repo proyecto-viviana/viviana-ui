@@ -92,7 +92,7 @@ import {
   RangeCalendar,
   DateField,
   TimeField,
-} from '@proyecto-viviana/ui'
+} from '@proyecto-viviana/silapse'
 import {
   createButton,
   createCheckboxGroup,
@@ -174,12 +174,17 @@ const ADVANCED_SECTION_IDS: SectionId[] = [
   'styled-searchfield',
   'styled-slider',
   'styled-combobox',
+  'actiongroup',
+  'toolbar',
+  'actionbar',
   'disclosure',
   'meter',
   'taggroup',
   'calendar',
   'datepicker',
   'toast',
+  'dropzone',
+  'filetrigger',
   'table',
   'gridlist',
   'tree',

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/solid-router";
 import { createSignal, onMount } from "solid-js";
-import { GitHubIcon, PageLayout } from "@proyecto-viviana/ui";
+import { GitHubIcon, PageLayout } from "@proyecto-viviana/silapse";
 import { Header } from "@/components";
 import { useSilapseColors, useSilapseTheme } from "@/utils/theme";
 

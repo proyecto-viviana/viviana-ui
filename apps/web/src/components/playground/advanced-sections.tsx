@@ -37,6 +37,10 @@ import {
   NumberField as StyledNumberField,
   SearchField as StyledSearchField,
   Slider as StyledSlider,
+  ActionGroup as StyledActionGroup,
+  Toolbar as StyledToolbar,
+  ActionBar as StyledActionBar,
+  ActionBarContainer as StyledActionBarContainer,
   ComboBox as StyledComboBox,
   ComboBoxInputGroup as StyledComboBoxInputGroup,
   ComboBoxInput as StyledComboBoxInput,
@@ -49,12 +53,14 @@ import {
   ActionMenu,
   RangeSlider,
   ContextualHelpTrigger,
+  DropZone,
+  FileTrigger,
   Flex,
   Grid,
   Provider,
   useTheme,
   TextField,
-} from '@proyecto-viviana/ui'
+} from '@proyecto-viviana/silapse'
 import {
   createCheckboxGroup,
   createCheckboxGroupItem,
@@ -197,6 +203,18 @@ export function PlaygroundAdvancedSections(props: PlaygroundAdvancedSectionsProp
 
           <Section id="styled-combobox" visibleSections={props.visibleSections} title="Styled ComboBox (ui)" description="Filterable dropdown with text input" class="lg:col-span-2">
             <StyledComboBoxDemo onSelectionChange={(key) => props.onLastAction(`ComboBox: ${key}`)} />
+          </Section>
+
+          <Section id="actiongroup" visibleSections={props.visibleSections} title="ActionGroup (ui)" description="Toolbar-like action cluster with optional selection modes" class="lg:col-span-2">
+            <ActionGroupDemo onLastAction={props.onLastAction} />
+          </Section>
+
+          <Section id="toolbar" visibleSections={props.visibleSections} title="Toolbar (ui)" description="Keyboard-navigable toolbar with orientation variants" class="lg:col-span-2">
+            <ToolbarDemo onLastAction={props.onLastAction} />
+          </Section>
+
+          <Section id="actionbar" visibleSections={props.visibleSections} title="ActionBar (ui)" description="Selection-aware bulk actions with escape-to-clear support" class="lg:col-span-2">
+            <ActionBarDemo onLastAction={props.onLastAction} />
           </Section>
 
           {/* Disclosure Section */}
@@ -467,6 +485,49 @@ export function PlaygroundAdvancedSections(props: PlaygroundAdvancedSectionsProp
                   With Action
                 </Button>
               </div>
+            </div>
+          </Section>
+
+          {/* DropZone Section */}
+          <Section id="dropzone" visibleSections={props.visibleSections} title="DropZone" description="Drag and drop target for files" class="lg:col-span-2">
+            <div class="space-y-4">
+              <DropZone
+                data-testid="dropzone-active"
+                aria-label="Upload files drop zone"
+                onDrop={() => props.onLastAction('DropZone: drop event')}
+                class="min-h-[120px] flex items-center justify-center"
+              >
+                <div class="text-center">
+                  <p class="text-primary-200 font-medium">Drop files here</p>
+                  <p class="text-primary-400 text-sm mt-1">or drag items over this area</p>
+                </div>
+              </DropZone>
+              <DropZone
+                data-testid="dropzone-disabled"
+                aria-label="Disabled drop zone"
+                isDisabled
+                class="min-h-[80px] flex items-center justify-center"
+              >
+                <p class="text-primary-300 text-sm">Disabled drop zone</p>
+              </DropZone>
+            </div>
+          </Section>
+
+          {/* FileTrigger Section */}
+          <Section id="filetrigger" visibleSections={props.visibleSections} title="FileTrigger" description="Open native file picker from custom trigger" class="lg:col-span-2">
+            <div class="space-y-4">
+              <FileTrigger
+                acceptedFileTypes={['image/png', 'image/jpeg']}
+                onSelect={(files) => {
+                  const first = files?.[0];
+                  props.onLastAction(first ? `File selected: ${first.name}` : 'File selection canceled');
+                }}
+              >
+                <Button variant="primary">Choose file</Button>
+              </FileTrigger>
+              <FileTrigger disabled>
+                <Button variant="secondary" buttonStyle="outline">Disabled picker</Button>
+              </FileTrigger>
             </div>
           </Section>
 
@@ -2289,6 +2350,166 @@ function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
         Slider with keyboard support (arrows, Page Up/Down, Home/End) and drag functionality.
         Supports custom ranges, steps, and number formatting.
       </p>
+    </div>
+  )
+}
+
+interface DemoActionItem {
+  id: string
+  label: string
+}
+
+function ActionGroupDemo(props: { onLastAction: (value: string) => void }) {
+  const items: DemoActionItem[] = [
+    { id: 'cut', label: 'Cut' },
+    { id: 'copy', label: 'Copy' },
+    { id: 'paste', label: 'Paste' },
+  ]
+
+  const [selectionMode, setSelectionMode] = createSignal<'none' | 'single' | 'multiple'>('single')
+  const [selectedKeys, setSelectedKeys] = createSignal<Set<string | number>>(new Set(['copy']))
+
+  const handleSelectionChange = (keys: 'all' | Set<string | number>) => {
+    if (keys === 'all') {
+      return
+    }
+    setSelectedKeys(keys)
+    props.onLastAction(`ActionGroup selection: ${Array.from(keys).join(', ') || 'none'}`)
+  }
+
+  return (
+    <div class="space-y-4">
+      <div class="flex flex-wrap gap-2">
+        <Button
+          variant={selectionMode() === 'none' ? 'primary' : 'secondary'}
+          size="sm"
+          onPress={() => setSelectionMode('none')}
+        >
+          No selection
+        </Button>
+        <Button
+          variant={selectionMode() === 'single' ? 'primary' : 'secondary'}
+          size="sm"
+          onPress={() => setSelectionMode('single')}
+        >
+          Single
+        </Button>
+        <Button
+          variant={selectionMode() === 'multiple' ? 'primary' : 'secondary'}
+          size="sm"
+          onPress={() => setSelectionMode('multiple')}
+        >
+          Multiple
+        </Button>
+      </div>
+
+      <StyledActionGroup<DemoActionItem>
+        aria-label="Editor actions"
+        items={items}
+        selectionMode={selectionMode()}
+        selectedKeys={selectedKeys()}
+        onSelectionChange={handleSelectionChange}
+        onAction={(key) => props.onLastAction(`ActionGroup action: ${String(key)}`)}
+      >
+        {(item) => item.label}
+      </StyledActionGroup>
+
+      <p class="text-xs text-primary-400">
+        Mode: {selectionMode()} | Selected: {Array.from(selectedKeys()).join(', ') || 'none'}
+      </p>
+    </div>
+  )
+}
+
+function ToolbarDemo(props: { onLastAction: (value: string) => void }) {
+  return (
+    <div class="space-y-6">
+      <div>
+        <h4 class="text-sm font-medium text-primary-300 mb-2">Horizontal Toolbar</h4>
+        <StyledToolbar aria-label="Text formatting toolbar">
+          <button
+            type="button"
+            class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100"
+            onClick={() => props.onLastAction('Toolbar: bold')}
+          >
+            Bold
+          </button>
+          <button
+            type="button"
+            class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100"
+            onClick={() => props.onLastAction('Toolbar: italic')}
+          >
+            Italic
+          </button>
+          <button
+            type="button"
+            class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100"
+            onClick={() => props.onLastAction('Toolbar: underline')}
+          >
+            Underline
+          </button>
+        </StyledToolbar>
+      </div>
+
+      <div>
+        <h4 class="text-sm font-medium text-primary-300 mb-2">Vertical Toolbar</h4>
+        <StyledToolbar orientation="vertical" variant="bordered" aria-label="Edit toolbar">
+          <button type="button" class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100">Cut</button>
+          <button type="button" class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100">Copy</button>
+          <button type="button" class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100">Paste</button>
+        </StyledToolbar>
+      </div>
+    </div>
+  )
+}
+
+function ActionBarDemo(props: { onLastAction: (value: string) => void }) {
+  const [selectedCount, setSelectedCount] = createSignal(2)
+
+  const clearSelection = () => {
+    setSelectedCount(0)
+    props.onLastAction('ActionBar: clear selection')
+  }
+
+  return (
+    <div class="space-y-4">
+      <div class="flex flex-wrap gap-2">
+        <Button size="sm" variant="secondary" onPress={() => setSelectedCount((c) => Math.max(c - 1, 0))}>
+          -1 selected
+        </Button>
+        <Button size="sm" variant="secondary" onPress={() => setSelectedCount((c) => Math.min(c + 1, 9))}>
+          +1 selected
+        </Button>
+        <Button size="sm" variant="secondary" onPress={clearSelection}>
+          Clear all
+        </Button>
+      </div>
+
+      <StyledActionBarContainer>
+        <div class="rounded-lg border border-primary-700/30 bg-bg-300 p-4 text-sm text-primary-200">
+          Selected rows (mock): {selectedCount()}
+        </div>
+        <StyledActionBar
+          selectedItemCount={selectedCount()}
+          onClearSelection={clearSelection}
+          aria-label="Bulk actions toolbar"
+        >
+          <button
+            type="button"
+            class="rounded bg-bg-400 px-3 py-1 text-sm text-primary-100 hover:bg-bg-500"
+            onClick={() => props.onLastAction('ActionBar: archive')}
+          >
+            Archive
+          </button>
+          <button
+            type="button"
+            class="rounded bg-bg-400 px-3 py-1 text-sm text-primary-100 hover:bg-bg-500"
+            onClick={() => props.onLastAction('ActionBar: delete')}
+          >
+            Delete
+          </button>
+        </StyledActionBar>
+      </StyledActionBarContainer>
     </div>
   )
 }

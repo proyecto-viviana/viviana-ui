@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { TimeField } from "@proyecto-viviana/ui";
+import { TimeField } from "@proyecto-viviana/silapse";
 import {
   type TimeValue,
 } from "@proyecto-viviana/solid-stately";
@@ -26,7 +26,7 @@ function TimeFieldPage() {
     <DocPage
       title="TimeField"
       description="A time field allows users to enter a time value using individually editable segments for hours, minutes, and optionally seconds. Each segment supports keyboard input with arrow keys for incrementing and decrementing."
-      importCode={`import { TimeField } from '@proyecto-viviana/ui';
+      importCode={`import { TimeField } from '@proyecto-viviana/silapse';
 import { type TimeValue } from '@proyecto-viviana/solid-stately';`}
     >
       <Example

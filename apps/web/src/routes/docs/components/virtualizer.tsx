@@ -5,7 +5,7 @@ import {
   ListLayout,
   GridLayout,
   WaterfallLayout,
-} from "@proyecto-viviana/ui";
+} from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 const listItems = Array.from({ length: 1000 }, (_, i) => ({
@@ -34,7 +34,7 @@ function VirtualizerPage() {
   GridLayout,
   WaterfallLayout,
   TableLayout
-} from '@proyecto-viviana/ui';`}
+} from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic List"

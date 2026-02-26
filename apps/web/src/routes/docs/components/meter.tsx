@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Meter, Button } from "@proyecto-viviana/ui";
+import { Meter, Button } from "@proyecto-viviana/silapse";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/docs/components/meter")({
@@ -29,7 +29,7 @@ function MeterPage() {
     <DocPage
       title="Meter"
       description="Meter represents a quantity within a known range, such as disk usage, signal strength, or a relevance score. Unlike ProgressBar, Meter displays a static value rather than tracking progress toward completion."
-      importCode={`import { Meter } from '@proyecto-viviana/ui';`}
+      importCode={`import { Meter } from '@proyecto-viviana/silapse';`}
     >
       <Example
         title="Basic Meter"
@@ -216,7 +216,7 @@ function MeterPage() {
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
           <li>
-            Uses <code>role="meter"</code> (with <code>role="progressbar"</code> fallback for older screen readers)
+            Uses <code>role="meter"</code>
           </li>
           <li>
             Exposes <code>aria-valuenow</code>, <code>aria-valuemin</code>, and <code>aria-valuemax</code>
