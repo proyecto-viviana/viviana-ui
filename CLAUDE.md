@@ -6,7 +6,7 @@ SolidJS port of Adobe's React Spectrum - accessible UI primitives with world-cla
 
 **What**: 4-layer component library (state → aria → components → styled) ported from React Spectrum to SolidJS
 **Why**: SolidJS lacks a mature accessible component library - this fills that gap
-**Status**: 4110+ tests passing, Phases 1-31 + Endgame + Parity Completion + A11y Wave 1 + Component Parity Waves 0-7 complete
+**Status**: 4128+ tests passing, Phases 1-31 + Endgame + Parity Completion + A11y Wave 1 + Component Parity Waves 0-7 + Performance Optimization complete
 
 ## IMPORTANT: Reference Code is Local
 
@@ -122,6 +122,7 @@ See [.claude/README.md](.claude/README.md) for full documentation:
 | Parity Waves 4-5 | Date/Time & Data Collections (Calendar, RangeCalendar, DatePicker, DateRangePicker, TimeField, Table, GridList, Tree) | +100 |
 | Parity Waves 6-7 | Color/Advanced & Utility/Infra (ColorArea, ColorSlider, ColorWheel, Slider, ActionBar, ActionGroup, DropZone, Focusable, Pressable, VisuallyHidden, RouterProvider, Collection) | +90 |
 | Package Rename | ui → silapse (Silapse Design System rebrand) | — |
+| Perf Optimization | Memoize collection/selection state accessors (3x ListBox speedup), silapse context values | — |
 
 ## Next Steps
 
