@@ -17,7 +17,7 @@ When porting or referencing React Aria/Spectrum:
 react-spectrum/packages/@react-stately/    → State hooks (reference for solid-stately)
 react-spectrum/packages/@react-aria/       → ARIA hooks (reference for solidaria)
 react-spectrum/packages/react-aria-components/ → Components (reference for solidaria-components)
-react-spectrum/packages/@react-spectrum/s2/src/ → S2 styled (reference for ui)
+react-spectrum/packages/@react-spectrum/s2/src/ → S2 styled (reference for silapse)
 ```
 
 ## Package Architecture
@@ -29,7 +29,7 @@ solidaria              → ARIA hooks (createButton, createMenu, etc.)
        ↓
 solidaria-components   → Headless components with render props
        ↓
-ui                     → Styled components (Tailwind CSS)
+silapse                → Styled components (Tailwind CSS)
 ```
 
 ## Commands
@@ -128,6 +128,4 @@ See [.claude/README.md](.claude/README.md) for full documentation:
 
 Future phases (not started):
 - A11y Wave 2-8 (Selection, Overlays, Dates, Collections, Color, Utilities, Styled)
-- SharedElementTransition depth checks
 - Playground axe-core automation
-- DropZone component
