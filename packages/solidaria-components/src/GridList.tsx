@@ -45,6 +45,7 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { SharedElementTransition } from './SharedElementTransition';
 import { type DragAndDropHooks } from './useDragAndDrop';
 import {
   CollectionRendererContext,
@@ -563,6 +564,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
             data-empty={isEmpty() || undefined}
             data-drop-target={isRootDropTarget() || undefined}
           >
+            <SharedElementTransition>
             {isEmpty() && local.renderEmptyState ? (
               local.renderEmptyState()
             ) : (
@@ -591,6 +593,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
                   : null}
               </>
             )}
+            </SharedElementTransition>
             {local.hasMore && local.onLoadMore && (
               <GridListLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
             )}

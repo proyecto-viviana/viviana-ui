@@ -45,6 +45,7 @@ import {
   type SlotProps,
   useRenderProps,
 } from './utils';
+import { SharedElementTransition } from './SharedElementTransition';
 import { type DragAndDropHooks } from './useDragAndDrop';
 import {
   CollectionRendererContext,
@@ -667,6 +668,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
               data-disabled={resolveDisabled() || undefined}
               data-drop-target={isRootDropTarget() || undefined}
             >
+              <SharedElementTransition>
               {hasSections()
                 ? (
                   <For each={sectionedRenderEntries()}>
@@ -732,6 +734,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
                       : null}
                   </>
                 )}
+              </SharedElementTransition>
             </ul>
           </>
         </CollectionRendererContext.Provider>

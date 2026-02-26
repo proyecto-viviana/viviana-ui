@@ -1,7 +1,10 @@
 /**
  * SharedElementTransition primitives for solidaria-components.
  *
- * Provides a scope for SharedElement instances and basic enter/exit state.
+ * Provides FLIP-based shared element animations when elements move between
+ * parents within a scope. Captures geometry snapshots on unmount and applies
+ * transition animations on mount.
+ *
  * Parity target: react-aria-components/src/SharedElementTransition.tsx
  */
 
@@ -15,6 +18,7 @@ import {
   splitProps,
   useContext,
   Show,
+  on,
 } from 'solid-js';
 import {
   type ClassNameOrFunction,
@@ -26,8 +30,18 @@ import {
 
 type SharedElementLifecycle = 'hidden' | 'entering' | 'visible' | 'exiting';
 
+/** Safe wrapper — jsdom doesn't implement the Web Animations API. */
+function getAnimations(el: HTMLElement): Animation[] {
+  return typeof el.getAnimations === 'function' ? el.getAnimations() : [];
+}
+
+interface Snapshot {
+  rect: DOMRect;
+  style: [string, string][];
+}
+
 interface SharedElementScope {
-  names: Set<string>;
+  snapshots: { [name: string]: Snapshot };
 }
 
 const SharedElementContext = createContext<SharedElementScope | null>(null);
@@ -41,11 +55,11 @@ export interface SharedElementTransitionProps {
 }
 
 /**
- * A scope for SharedElement instances.
+ * A scope for SharedElements, which animate between parents.
  */
 export function SharedElementTransition(props: SharedElementTransitionProps): JSX.Element {
   const scope: SharedElementScope = {
-    names: new Set<string>(),
+    snapshots: {},
   };
 
   return (
@@ -60,17 +74,22 @@ export interface SharedElementRenderProps {
   isExiting: boolean;
 }
 
-export interface SharedElementProps
+export interface SharedElementPropsBase
   extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'style'> {
-  name: string;
-  isVisible?: boolean;
   children?: RenderChildren<SharedElementRenderProps>;
   class?: ClassNameOrFunction<SharedElementRenderProps>;
   style?: StyleOrFunction<SharedElementRenderProps>;
 }
 
+export interface SharedElementProps extends SharedElementPropsBase {
+  name: string;
+  isVisible?: boolean;
+  ref?: HTMLDivElement | ((el: HTMLDivElement) => void);
+}
+
 /**
- * An element that can participate in shared element transition scopes.
+ * An element that animates between its old and new position when moving
+ * between parents within a SharedElementTransition scope.
  */
 export function SharedElement(props: SharedElementProps): JSX.Element | null {
   const scope = useContext(SharedElementContext);
@@ -78,45 +97,132 @@ export function SharedElement(props: SharedElementProps): JSX.Element | null {
     throw new Error('<SharedElement> must be rendered inside a <SharedElementTransition>');
   }
 
-  const [local, domProps] = splitProps(props, ['name', 'isVisible', 'children', 'class', 'style']);
+  const [local, domProps] = splitProps(props, [
+    'name', 'isVisible', 'children', 'class', 'style', 'ref',
+  ]);
+
   const [lifecycle, setLifecycle] = createSignal<SharedElementLifecycle>(
     local.isVisible === false ? 'hidden' : 'visible'
   );
 
+  let elementRef: HTMLDivElement | undefined;
   let frame: number | undefined;
 
-  createEffect(() => {
-    const isVisible = local.isVisible !== false;
-    const current = lifecycle();
-
-    if (isVisible && current === 'hidden') {
-      setLifecycle('entering');
-      frame = requestAnimationFrame(() => {
-        frame = undefined;
-        setLifecycle('visible');
-      });
-      return;
+  const setRef = (el: HTMLDivElement) => {
+    elementRef = el;
+    // Forward ref to consumer
+    const userRef = local.ref;
+    if (typeof userRef === 'function') {
+      userRef(el);
+    } else if (userRef !== undefined) {
+      // Direct assignment for ref={myVar} pattern
+      (local as any).ref = el;
     }
+  };
 
-    if (!isVisible && (current === 'visible' || current === 'entering')) {
-      setLifecycle('exiting');
-      frame = requestAnimationFrame(() => {
+  // Handle visibility transitions with FLIP animation
+  createEffect(on(
+    () => local.isVisible !== false,
+    (isVisible) => {
+      const name = local.name;
+      const element = elementRef;
+
+      if (frame != null) {
+        cancelAnimationFrame(frame);
         frame = undefined;
-        setLifecycle('hidden');
-      });
+      }
+
+      if (isVisible && element) {
+        const prevSnapshot = scope.snapshots[name];
+
+        if (prevSnapshot) {
+          // FLIP: Element is transitioning from a previous instance.
+          setLifecycle('visible');
+          const animations = getAnimations(element);
+
+          // Set properties to animate from.
+          const values = prevSnapshot.style.map(([property, prevValue]) => {
+            const value = (element.style as any)[property];
+            if (property === 'translate') {
+              const prevRect = prevSnapshot.rect;
+              const currentRect = element.getBoundingClientRect();
+              const deltaX = prevRect.left - currentRect.left;
+              const deltaY = prevRect.top - currentRect.top;
+              element.style.translate = `${deltaX}px ${deltaY}px`;
+            } else {
+              (element.style as any)[property] = prevValue;
+            }
+            return [property, value] as [string, string];
+          });
+
+          // Cancel any new animations triggered by these properties.
+          for (const a of getAnimations(element)) {
+            if (!animations.includes(a)) {
+              a.cancel();
+            }
+          }
+
+          // Remove overrides after one frame to animate to the current values.
+          frame = requestAnimationFrame(() => {
+            frame = undefined;
+            for (const [property, value] of values) {
+              (element.style as any)[property] = value;
+            }
+          });
+
+          delete scope.snapshots[name];
+        } else {
+          // No previous instance exists, apply the entering state.
+          queueMicrotask(() => setLifecycle('entering'));
+          frame = requestAnimationFrame(() => {
+            frame = undefined;
+            setLifecycle('visible');
+          });
+        }
+      } else if (!isVisible && element) {
+        // Wait a microtask to check if a snapshot still exists (meaning no new
+        // SharedElement consumed it), then enter exiting state.
+        queueMicrotask(() => {
+          if (scope.snapshots[name]) {
+            delete scope.snapshots[name];
+            setLifecycle('exiting');
+            // Wait for animations to finish before hiding.
+            Promise.all(getAnimations(element).map(a => a.finished))
+              .then(() => setLifecycle('hidden'))
+              .catch(() => {});
+          } else {
+            // Snapshot was consumed by another instance, unmount immediately.
+            setLifecycle('hidden');
+          }
+        });
+      } else if (isVisible) {
+        // Element not yet in DOM, entering fresh
+        setLifecycle('entering');
+        frame = requestAnimationFrame(() => {
+          frame = undefined;
+          setLifecycle('visible');
+        });
+      }
     }
-  });
+  ));
 
-  createEffect(() => {
-    scope.names.add(local.name);
-    onCleanup(() => {
-      scope.names.delete(local.name);
-    });
-  });
-
+  // Capture snapshot on cleanup (unmount)
   onCleanup(() => {
     if (frame != null) {
       cancelAnimationFrame(frame);
+    }
+
+    const element = elementRef;
+    if (element && element.isConnected && !element.hasAttribute('data-exiting')) {
+      // Store a snapshot of the rectangle and computed style for transitioning properties.
+      const style = window.getComputedStyle(element);
+      if (style.transitionProperty !== 'none') {
+        const transitionProperty = style.transitionProperty.split(/\s*,\s*/);
+        scope.snapshots[local.name] = {
+          rect: element.getBoundingClientRect(),
+          style: transitionProperty.map(p => [p, (style as any)[p]]),
+        };
+      }
     }
   });
 
@@ -138,6 +244,7 @@ export function SharedElement(props: SharedElementProps): JSX.Element | null {
   return (
     <Show when={lifecycle() !== 'hidden'}>
       <div
+        ref={setRef}
         {...filteredDomProps()}
         class={renderProps.class()}
         style={renderProps.style()}

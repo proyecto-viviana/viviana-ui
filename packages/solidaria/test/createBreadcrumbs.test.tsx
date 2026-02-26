@@ -61,7 +61,7 @@ describe('createBreadcrumbItem', () => {
     expect(item).not.toHaveAttribute('href');
   });
 
-  it.skip('forwards id and labeling props', () => {
+  it('forwards id and labeling props', () => {
     render(() => (
       <TestBreadcrumbItem
         id="crumb-products"

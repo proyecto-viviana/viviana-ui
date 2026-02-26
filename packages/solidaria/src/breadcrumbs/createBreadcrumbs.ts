@@ -155,8 +155,10 @@ export function createBreadcrumbItem(
     const p = getProps();
     const current = isCurrent();
 
-    // Start with link props
-    let baseProps: Record<string, unknown> = linkProps;
+    // Start with link props, forwarding id if provided
+    let baseProps: Record<string, unknown> = p.id
+      ? mergeProps(linkProps, { id: p.id })
+      : linkProps;
 
     // Add aria-current for current page
     if (current) {

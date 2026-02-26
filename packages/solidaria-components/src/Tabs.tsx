@@ -45,6 +45,7 @@ import {
   SelectionIndicatorContext,
   type SelectionIndicatorContextValue,
 } from './SelectionIndicator';
+import { SharedElementTransition } from './SharedElementTransition';
 
 export {
   SelectionIndicator,
@@ -376,7 +377,9 @@ function TabListInner<T>(props: {
       data-orientation={state.orientation()}
       data-disabled={state.isDisabled() || undefined}
     >
-      <For each={items()}>{(item) => props.children?.(item)}</For>
+      <SharedElementTransition>
+        <For each={items()}>{(item) => props.children?.(item)}</For>
+      </SharedElementTransition>
     </div>
   );
 }

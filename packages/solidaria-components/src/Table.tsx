@@ -49,6 +49,7 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { SharedElementTransition } from './SharedElementTransition';
 import { type DragAndDropHooks } from './useDragAndDrop';
 import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
 import { useVirtualizerContext } from './Virtualizer';
@@ -768,6 +769,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
 
   return (
     <tbody {...domProps} {...cleanRowGroupProps()} class={renderProps.class()} style={renderProps.style()}>
+      <SharedElementTransition>
       <Show when={isEmpty() && local.renderEmptyState} fallback={
         <>
           {virtualRange()?.offsetTop
@@ -804,6 +806,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
       }>
         {local.renderEmptyState?.()}
       </Show>
+      </SharedElementTransition>
       <Show when={local.hasMore && local.onLoadMore}>
         <TableLoadMoreItem
           onLoadMore={local.onLoadMore!}

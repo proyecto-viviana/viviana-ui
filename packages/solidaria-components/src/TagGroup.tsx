@@ -39,6 +39,7 @@ import {
   filterDOMProps,
   dataAttr,
 } from './utils';
+import { SharedElementTransition } from './SharedElementTransition';
 import {
   SelectionIndicatorContext,
   type SelectionIndicatorContextValue,
@@ -323,14 +324,16 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
           data-empty={dataAttr(local.items.length === 0)}
           data-focused={dataAttr(isFocused())}
         >
-          <Show
-            when={local.items.length > 0}
-            fallback={local.renderEmptyState?.()}
-          >
-            <For each={local.items}>
-              {(item) => props.children(item)}
-            </For>
-          </Show>
+          <SharedElementTransition>
+            <Show
+              when={local.items.length > 0}
+              fallback={local.renderEmptyState?.()}
+            >
+              <For each={local.items}>
+                {(item) => props.children(item)}
+              </For>
+            </Show>
+          </SharedElementTransition>
         </div>
       </TagListStateContext.Provider>
     </TagGroupContext.Provider>

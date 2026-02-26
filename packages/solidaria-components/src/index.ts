@@ -174,8 +174,10 @@ export {
 export {
   SharedElementTransition,
   SharedElement,
+  useHasSharedElementTransitionScope,
   type SharedElementTransitionProps,
   type SharedElementProps,
+  type SharedElementPropsBase,
   type SharedElementRenderProps,
 } from './SharedElementTransition';
 

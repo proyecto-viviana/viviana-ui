@@ -48,6 +48,7 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { SharedElementTransition } from './SharedElementTransition';
 import { type DragAndDropHooks } from './useDragAndDrop';
 import {
   getNormalizedDropTargetKey,
@@ -1212,6 +1213,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
             data-selection-mode={stateProps.selectionMode !== 'none' ? stateProps.selectionMode : undefined}
             data-allows-dragging={hasDraggableDnd() || undefined}
           >
+            <SharedElementTransition>
             {isEmpty() && local.renderEmptyState ? (
               local.renderEmptyState()
             ) : (
@@ -1256,6 +1258,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
                   : null}
               </>
             )}
+            </SharedElementTransition>
             {local.hasMore && local.onLoadMore && (
               <TreeLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
             )}

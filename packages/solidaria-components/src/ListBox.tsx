@@ -40,6 +40,7 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { SharedElementTransition } from './SharedElementTransition';
 import {
   SelectionIndicatorContext,
   type SelectionIndicatorContextValue,
@@ -500,6 +501,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
               data-empty={isEmpty() || undefined}
               data-drop-target={isRootDropTarget() || undefined}
             >
+              <SharedElementTransition>
               {isEmpty() && local.renderEmptyState
                 ? local.renderEmptyState()
                 : hasSections()
@@ -568,6 +570,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
                     </>
                   )
               }
+              </SharedElementTransition>
               {local.hasMore && local.onLoadMore && (
                 <ListBoxLoadMoreItem
                   onLoadMore={local.onLoadMore}
