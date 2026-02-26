@@ -1012,10 +1012,18 @@ ComboBox.ErrorMessage = ComboBoxErrorMessage;
 export { defaultContainsFilter };
 
 function createComboBoxListStateAdapter<T>(state: ComboBoxState<T>): ListState<T> {
-  const selectedKeys = () => {
+  const selectedKeys = createMemo(() => {
     const key = state.selectedKey();
     return key != null ? new Set<Key>([key]) : new Set<Key>();
-  };
+  });
+
+  const disabledKeys = createMemo(() => {
+    const keys = new Set<Key>();
+    for (const node of state.collection()) {
+      if (node.isDisabled) keys.add(node.key);
+    }
+    return keys;
+  });
 
   return {
     collection: state.collection,
@@ -1028,13 +1036,7 @@ function createComboBoxListStateAdapter<T>(state: ComboBoxState<T>): ListState<T
     selectionBehavior: () => 'replace',
     disallowEmptySelection: () => true,
     selectedKeys,
-    disabledKeys: () => {
-      const keys = new Set<Key>();
-      for (const node of state.collection()) {
-        if (node.isDisabled) keys.add(node.key);
-      }
-      return keys;
-    },
+    disabledKeys,
     disabledBehavior: () => 'all',
     isEmpty: () => selectedKeys().size === 0,
     isSelectAll: () => false,

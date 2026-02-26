@@ -3,7 +3,7 @@
  * Based on @react-stately/selection.
  */
 
-import { createSignal, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from 'solid-js';
 import { access, type MaybeAccessor } from '../utils';
 import type {
   Collection,
@@ -107,18 +107,18 @@ export function createSelectionState(
     return getProps().disallowEmptySelection ?? false;
   };
 
-  const selectedKeys: Accessor<Selection> = () => {
+  const selectedKeys: Accessor<Selection> = createMemo(() => {
     const p = getProps();
     if (p.selectedKeys !== undefined) {
       return normalizeSelection(p.selectedKeys);
     }
     return internalSelectedKeys();
-  };
+  });
 
-  const disabledKeys: Accessor<Set<Key>> = () => {
+  const disabledKeys: Accessor<Set<Key>> = createMemo(() => {
     const keys = getProps().disabledKeys;
     return keys ? new Set(keys) : new Set();
-  };
+  });
 
   const disabledBehavior: Accessor<DisabledBehavior> = () => {
     return getProps().disabledBehavior ?? 'all';

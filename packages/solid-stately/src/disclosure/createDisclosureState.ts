@@ -3,7 +3,7 @@
  * Based on @react-stately/disclosure useDisclosureState and useDisclosureGroupState
  */
 
-import { createSignal, createEffect, type Accessor } from 'solid-js';
+import { createSignal, createEffect, createMemo, type Accessor } from 'solid-js';
 import { access, type MaybeAccessor } from '../utils';
 
 // ============================================
@@ -121,11 +121,11 @@ export function createDisclosureGroupState(
     new Set(propsAccessor().defaultExpandedKeys ?? [])
   );
 
-  // Determine expanded keys (controlled vs uncontrolled)
-  const expandedKeys: Accessor<Set<Key>> = () => {
+  // Determine expanded keys (controlled vs uncontrolled, memoized)
+  const expandedKeys: Accessor<Set<Key>> = createMemo(() => {
     const p = propsAccessor();
     return p.expandedKeys !== undefined ? new Set(p.expandedKeys) : internalKeys();
-  };
+  });
 
   const setExpandedKeys = (keys: Set<Key>) => {
     const p = propsAccessor();

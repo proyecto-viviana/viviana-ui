@@ -4,7 +4,7 @@
  * Based on @react-stately/list.
  */
 
-import { createSignal, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from 'solid-js';
 import { access, type MaybeAccessor } from '../utils';
 import { ListCollection } from './ListCollection';
 import { createSelectionState, type SelectionState } from './createSelectionState';
@@ -71,8 +71,8 @@ export function createListState<T = unknown>(
 ): ListState<T> {
   const getProps = () => access(props);
 
-  // Build collection from items
-  const collection: Accessor<Collection<T>> = () => {
+  // Build collection from items (memoized to avoid rebuilding on every access)
+  const collection: Accessor<Collection<T>> = createMemo(() => {
     const p = getProps();
     const items = p.items ?? [];
 
@@ -99,10 +99,10 @@ export function createListState<T = unknown>(
     });
 
     return new ListCollection(nodes);
-  };
+  });
 
-  // Combine disabled keys from props and items
-  const combinedDisabledKeys = (): Iterable<Key> => {
+  // Combine disabled keys from props and items (memoized)
+  const combinedDisabledKeys = createMemo((): Iterable<Key> => {
     const p = getProps();
     const propsDisabled = p.disabledKeys ? [...p.disabledKeys] : [];
     const itemDisabled: Key[] = [];
@@ -115,7 +115,7 @@ export function createListState<T = unknown>(
     }
 
     return [...new Set([...propsDisabled, ...itemDisabled])];
-  };
+  });
 
   // Create selection state
   const selectionState = createSelectionState({

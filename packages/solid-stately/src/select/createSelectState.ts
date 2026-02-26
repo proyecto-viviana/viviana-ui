@@ -3,7 +3,7 @@
  * Based on @react-stately/select useSelectState.
  */
 
-import { createSignal, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from 'solid-js';
 import { access, type MaybeAccessor } from '../utils';
 import { createListState } from '../collections/createListState';
 import { createOverlayTriggerState } from '../overlays';
@@ -159,7 +159,7 @@ export function createSelectState<T = unknown>(
     getProps().onSelectionChangeKeys?.(key != null ? new Set([key]) : new Set<Key>());
   };
 
-  const selectedKeys: Accessor<Selection> = () => {
+  const selectedKeys: Accessor<Selection> = createMemo(() => {
     if (selectionMode() === 'multiple') {
       if (isControlledMultiple()) {
         const keys = getProps().selectedKeys;
@@ -170,7 +170,7 @@ export function createSelectState<T = unknown>(
 
     const key = selectedKey();
     return key != null ? new Set([key]) : new Set();
-  };
+  });
 
   const setSelectedKeys = (keys: Iterable<Key>) => {
     const next = new Set(keys);
@@ -234,14 +234,14 @@ export function createSelectState<T = unknown>(
     },
   });
 
-  // Get the selected item from the collection
-  const selectedItem: Accessor<CollectionNode<T> | null> = () => {
+  // Get the selected item from the collection (memoized)
+  const selectedItem: Accessor<CollectionNode<T> | null> = createMemo(() => {
     const key = selectedKey();
     if (key == null) return null;
     return listState.collection().getItem(key);
-  };
+  });
 
-  const selectedItems: Accessor<CollectionNode<T>[]> = () => {
+  const selectedItems: Accessor<CollectionNode<T>[]> = createMemo(() => {
     const keys = selectedKeys();
     if (keys === 'all') {
       return Array.from(listState.collection());
@@ -253,7 +253,7 @@ export function createSelectState<T = unknown>(
       if (item) items.push(item);
     }
     return items;
-  };
+  });
 
   return {
     // Collection

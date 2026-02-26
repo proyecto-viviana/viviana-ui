@@ -818,12 +818,20 @@ function toTextValue(value: unknown): string | undefined {
 }
 
 function createSelectListStateAdapter<T>(state: SelectState<T>): ListState<T> {
-  const selectedKeys = () => {
+  const selectedKeys = createMemo(() => {
     const keys = state.selectedKeys();
     return keys === 'all'
       ? new Set(Array.from(state.collection()).map((item) => item.key))
       : keys;
-  };
+  });
+
+  const disabledKeys = createMemo(() => {
+    const keys = new Set<Key>();
+    for (const node of state.collection()) {
+      if (node.isDisabled) keys.add(node.key);
+    }
+    return keys;
+  });
 
   return {
     collection: state.collection,
@@ -836,13 +844,7 @@ function createSelectListStateAdapter<T>(state: SelectState<T>): ListState<T> {
     selectionBehavior: () => 'replace',
     disallowEmptySelection: () => true,
     selectedKeys,
-    disabledKeys: () => {
-      const keys = new Set<Key>();
-      for (const node of state.collection()) {
-        if (node.isDisabled) keys.add(node.key);
-      }
-      return keys;
-    },
+    disabledKeys,
     disabledBehavior: () => 'all',
     isEmpty: () => selectedKeys().size === 0,
     isSelectAll: () => state.selectedKeys() === 'all',

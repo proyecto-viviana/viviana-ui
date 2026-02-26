@@ -3,7 +3,7 @@
  * Based on @react-stately/tabs.
  */
 
-import { createComputed, createSignal, type Accessor } from 'solid-js';
+import { createComputed, createMemo, createSignal, type Accessor } from 'solid-js';
 import { access, type MaybeAccessor } from '../utils';
 import { ListCollection } from '../collections/ListCollection';
 import type {
@@ -82,7 +82,7 @@ export function createTabListState<T = unknown>(
   const getProps = () => access(props);
 
   // Build collection from items
-  const collection: Accessor<Collection<T>> = () => {
+  const collection: Accessor<Collection<T>> = createMemo(() => {
     const p = getProps();
     const items = p.items ?? [];
 
@@ -109,10 +109,10 @@ export function createTabListState<T = unknown>(
     });
 
     return new ListCollection(nodes);
-  };
+  });
 
-  // Compute disabled keys
-  const disabledKeys: Accessor<Set<Key>> = () => {
+  // Compute disabled keys (memoized to avoid rebuilding Set per access)
+  const disabledKeys: Accessor<Set<Key>> = createMemo(() => {
     const p = getProps();
     const result = new Set<Key>(p.disabledKeys ?? []);
 
@@ -124,7 +124,7 @@ export function createTabListState<T = unknown>(
     }
 
     return result;
-  };
+  });
 
   // Check if a key is disabled
   const isKeyDisabled = (key: Key): boolean => {

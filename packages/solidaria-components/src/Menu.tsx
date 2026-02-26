@@ -490,7 +490,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   const shouldRender = () => triggerContext ? triggerContext.state.isOpen() : true;
   const parentCollectionRenderer = useCollectionRenderer<unknown>();
   const virtualizer = useVirtualizerContext();
-  const getItemNodes = () => Array.from(state.collection()).filter((node) => node.type === 'item');
+  const getItemNodes = createMemo(() => Array.from(state.collection()).filter((node) => node.type === 'item'));
   const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
     const node = getItemNodes()[index];
     if (!node) return null;

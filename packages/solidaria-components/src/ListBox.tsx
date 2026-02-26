@@ -298,7 +298,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
 
   const isEmpty = () => stateProps.items.length === 0;
   const parentCollectionRenderer = useCollectionRenderer<unknown>();
-  const getItemNodes = () => Array.from(state.collection()).filter((node) => node.type === 'item');
+  const getItemNodes = createMemo(() => Array.from(state.collection()).filter((node) => node.type === 'item'));
   const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
     const node = getItemNodes()[index];
     if (!node) return null;

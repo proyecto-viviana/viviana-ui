@@ -374,7 +374,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     return rest;
   };
   const parentCollectionRenderer = useCollectionRenderer<T>();
-  const getItemNodes = () => Array.from(state.collection).filter((node) => node.type === 'item');
+  const getItemNodes = createMemo(() => Array.from(state.collection).filter((node) => node.type === 'item'));
   const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
     const node = getItemNodes()[index];
     if (!node) return null;

@@ -46,8 +46,9 @@ describe('List Performance (PV)', () => {
 
     console.log(`PV List render (${ITEM_COUNT} items): median=${median.toFixed(2)}ms`);
 
-    // Sanity check: should complete reasonably fast
-    expect(median).toBeLessThan(3000);
+    // After memoization fix: styled ListBox median is ~800ms on this machine.
+    // Threshold set at 2000ms for CI headroom.
+    expect(median).toBeLessThan(2000);
   }, 20_000);
 
   it('filter list from 1000 to 100 items', () => {
