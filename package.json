@@ -9,7 +9,7 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "bun run --cwd packages/solid-stately build && bun run --cwd packages/solidaria build && bun run --cwd packages/solidaria-components build && bun run --cwd packages/ui build",
+    "build": "bun run --cwd packages/solid-stately build && bun run --cwd packages/solidaria build && bun run --cwd packages/solidaria-components build && bun run --cwd packages/silapse build",
     "build:web": "bun run --cwd apps/web build",
     "dev": "bun run --cwd apps/web dev",
     "start": "bun run --cwd apps/web start",
@@ -40,6 +40,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.0",
+    "axe-core": "^4.10.0",
     "@solidjs/testing-library": "^0.8.10",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.1",

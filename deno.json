@@ -6,17 +6,17 @@
     "./packages/solidaria",
     "./packages/solidaria-components",
     "./packages/solidaria-test-utils",
-    "./packages/ui-test-utils",
-    "./packages/ui",
+    "./packages/silapse-test-utils",
+    "./packages/silapse",
     "./apps/web"
   ],
   "tasks": {
-    "install": "npm install",
-    "build": "deno task typecheck && deno task build:stately && deno task build:solidaria && deno task build:components && deno task build:ui",
+    "install": "deno install",
+    "build": "deno task typecheck && deno task build:stately && deno task build:solidaria && deno task build:components && deno task build:silapse",
     "build:stately": "deno run -A scripts/build.ts solid-stately",
     "build:solidaria": "deno run -A scripts/build.ts solidaria",
     "build:components": "deno run -A scripts/build.ts solidaria-components",
-    "build:ui": "deno run -A scripts/build.ts ui",
+    "build:silapse": "deno run -A scripts/build.ts silapse",
     "test": "bun run vitest run",
     "test:watch": "bun run vitest",
     "test:e2e": "cd apps/web && bun run playwright test",
@@ -60,9 +60,9 @@
     "@proyecto-viviana/solid-stately": "./packages/solid-stately/src/index.ts",
     "@proyecto-viviana/solidaria": "./packages/solidaria/src/index.ts",
     "@proyecto-viviana/solidaria-components": "./packages/solidaria-components/src/index.ts",
-    "@proyecto-viviana/ui": "./packages/ui/src/index.ts",
+    "@proyecto-viviana/silapse": "./packages/silapse/src/index.ts",
     "@proyecto-viviana/solidaria-test-utils": "./packages/solidaria-test-utils/src/index.ts",
-    "@proyecto-viviana/ui-test-utils": "./packages/ui-test-utils/src/index.ts"
+    "@proyecto-viviana/silapse-test-utils": "./packages/silapse-test-utils/src/index.ts"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

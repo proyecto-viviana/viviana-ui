@@ -1,2 +1,2 @@
 // Proyecto Viviana - Full Library (all exports)
-export * from '@proyecto-viviana/ui';
+export * from '@proyecto-viviana/silapse';

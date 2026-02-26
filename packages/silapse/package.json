@@ -1,0 +1,65 @@
+{
+  "name": "@proyecto-viviana/silapse",
+  "version": "0.3.5",
+  "description": "Styled UI components for SolidJS - inspired by React Spectrum",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "solid": "./src/index.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./theme.css": {
+      "import": "./dist/theme.css",
+      "default": "./src/theme.css"
+    },
+    "./styles.css": {
+      "import": "./dist/styles.css",
+      "default": "./src/styles.css"
+    },
+    "./components.css": {
+      "import": "./dist/components.css",
+      "default": "./src/components.css"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "tsup && rm -f tsconfig.build.tsbuildinfo && tsc -p tsconfig.build.json",
+    "dev": "tsup --watch",
+    "prepublishOnly": "echo 'Use deno task release from root'"
+  },
+  "dependencies": {
+    "@proyecto-viviana/solidaria-components": "^0.2.5"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.9.0"
+  },
+  "devDependencies": {
+    "solid-js": "^1.9.11"
+  },
+  "keywords": [
+    "solid",
+    "solidjs",
+    "silapse",
+    "components",
+    "design-system"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/proyecto-viviana/proyecto-viviana"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

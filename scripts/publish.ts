@@ -23,7 +23,7 @@ const packageOrder = [
   "solid-stately",
   "solidaria",
   "solidaria-components",
-  "ui",
+  "silapse",
 ];
 
 // Map of package names to their npm package names
@@ -31,7 +31,7 @@ const packageNameMap: Record<string, string> = {
   "solid-stately": "@proyecto-viviana/solid-stately",
   "solidaria": "@proyecto-viviana/solidaria",
   "solidaria-components": "@proyecto-viviana/solidaria-components",
-  "ui": "@proyecto-viviana/ui",
+  "silapse": "@proyecto-viviana/silapse",
 };
 
 async function readPackageJson(pkgDir: string): Promise<PackageInfo> {

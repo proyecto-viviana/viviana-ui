@@ -23,12 +23,11 @@ export default defineConfig({
       "solid-js",
       "@tanstack/solid-router",
       "@tanstack/router-core",
-      "@tanstack/history",
     ],
   },
   optimizeDeps: {
     exclude: [
-      "@proyecto-viviana/ui",
+      "@proyecto-viviana/silapse",
       "@proyecto-viviana/solidaria",
       "@proyecto-viviana/solidaria-components",
       "@proyecto-viviana/solid-stately",

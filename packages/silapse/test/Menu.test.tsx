@@ -1,0 +1,399 @@
+/**
+ * @vitest-environment jsdom
+ */
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@solidjs/testing-library';
+import { setupUser } from '@proyecto-viviana/silapse-test-utils';
+import {
+  MenuTrigger,
+  MenuButton,
+  Menu,
+  MenuItem,
+  MenuSeparator,
+} from '../src/menu';
+
+/** Minimal menu items for testing. */
+const items = [
+  { id: 'edit', label: 'Edit' },
+  { id: 'duplicate', label: 'Duplicate' },
+  { id: 'delete', label: 'Delete' },
+];
+
+describe('Menu (silapse)', () => {
+  describe('MenuTrigger', () => {
+    it('renders wrapper div with relative inline-block', () => {
+      const { container } = render(() => (
+        <MenuTrigger>
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const wrapper = container.querySelector('.relative.inline-block');
+      expect(wrapper).toBeInTheDocument();
+    });
+  });
+
+  describe('MenuButton', () => {
+    it('renders as a button element', () => {
+      render(() => (
+        <MenuTrigger>
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const button = screen.getByRole('button');
+      expect(button).toBeInTheDocument();
+      expect(button.textContent).toContain('Actions');
+    });
+
+    it('applies secondary variant classes by default', () => {
+      render(() => (
+        <MenuTrigger>
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const button = screen.getByRole('button');
+      // secondary: 'bg-bg-400 text-primary-200 border-primary-600'
+      expect(button.className).toContain('bg-bg-400');
+      expect(button.className).toContain('border-primary-600');
+    });
+
+    it('applies primary variant classes', () => {
+      render(() => (
+        <MenuTrigger>
+          <MenuButton variant="primary">Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const button = screen.getByRole('button');
+      expect(button.className).toContain('bg-accent');
+      expect(button.className).toContain('border-accent');
+    });
+
+    it('applies quiet variant classes', () => {
+      render(() => (
+        <MenuTrigger>
+          <MenuButton variant="quiet">Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const button = screen.getByRole('button');
+      expect(button.className).toContain('bg-transparent');
+      expect(button.className).toContain('border-transparent');
+    });
+
+    it('applies md size classes by default', () => {
+      render(() => (
+        <MenuTrigger>
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const button = screen.getByRole('button');
+      // md button: 'h-10 text-base px-4 gap-2'
+      expect(button.className).toContain('h-10');
+      expect(button.className).toContain('px-4');
+    });
+
+    it('applies sm size classes', () => {
+      render(() => (
+        <MenuTrigger size="sm">
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const button = screen.getByRole('button');
+      // sm button: 'h-8 text-sm px-3 gap-2'
+      expect(button.className).toContain('h-8');
+      expect(button.className).toContain('px-3');
+    });
+
+    it('applies lg size classes', () => {
+      render(() => (
+        <MenuTrigger size="lg">
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const button = screen.getByRole('button');
+      // lg button: 'h-12 text-lg px-5 gap-3'
+      expect(button.className).toContain('h-12');
+      expect(button.className).toContain('px-5');
+    });
+
+    it('renders chevron SVG', () => {
+      render(() => (
+        <MenuTrigger>
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const button = screen.getByRole('button');
+      const svg = button.querySelector('svg');
+      expect(svg).toBeInTheDocument();
+      // Chevron path: "M19 9l-7 7-7-7"
+      const path = svg?.querySelector('path');
+      expect(path?.getAttribute('d')).toContain('M19 9l-7 7-7-7');
+    });
+  });
+
+  describe('Menu container', () => {
+    it('renders as ul with role="menu" when open', () => {
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const menu = screen.getByRole('menu');
+      expect(menu).toBeInTheDocument();
+      expect(menu.tagName).toBe('UL');
+    });
+
+    it('applies size-based padding class', () => {
+      render(() => (
+        <MenuTrigger defaultOpen size="sm">
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const menu = screen.getByRole('menu');
+      // sm menu: 'py-1'
+      expect(menu.className).toContain('py-1');
+    });
+
+    it('supports visible label wiring via aria-labelledby', () => {
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Actions</MenuButton>
+          <Menu
+            label="Actions menu"
+            items={items}
+            getKey={(i) => i.id}
+          >
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const menu = screen.getByRole('menu', { name: 'Actions menu' });
+      expect(menu).toHaveAttribute('aria-labelledby');
+    });
+
+    it('disables all menu items when the menu is disabled', () => {
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Actions</MenuButton>
+          <Menu isDisabled items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const menu = screen.getByRole('menu');
+      expect(menu).toHaveAttribute('aria-disabled', 'true');
+      for (const item of screen.getAllByRole('menuitem')) {
+        expect(item).toHaveAttribute('aria-disabled', 'true');
+      }
+    });
+
+    it('does not trigger onAction when the menu is disabled', async () => {
+      const user = setupUser();
+      const onAction = vi.fn();
+
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Actions</MenuButton>
+          <Menu
+            isDisabled
+            onAction={onAction}
+            items={items}
+            getKey={(i) => i.id}
+            aria-label="Actions"
+          >
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      await user.click(screen.getByText('Edit'));
+      expect(onAction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('MenuItem', () => {
+    it('renders label text', () => {
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      expect(screen.getByText('Edit')).toBeInTheDocument();
+      expect(screen.getByText('Duplicate')).toBeInTheDocument();
+      expect(screen.getByText('Delete')).toBeInTheDocument();
+    });
+
+    it('renders icon when provided', () => {
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Actions</MenuButton>
+          <Menu
+            items={[{ id: 'settings', label: 'Settings' }]}
+            getKey={(i) => i.id}
+            aria-label="Actions"
+          >
+            {(item) => (
+              <MenuItem
+                id={item.id}
+                icon={() => <svg data-testid="menu-icon" />}
+              >
+                {item.label}
+              </MenuItem>
+            )}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      expect(screen.getByTestId('menu-icon')).toBeInTheDocument();
+    });
+
+    it('renders shortcut when provided', () => {
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Actions</MenuButton>
+          <Menu
+            items={[{ id: 'save', label: 'Save' }]}
+            getKey={(i) => i.id}
+            aria-label="Actions"
+          >
+            {(item) => (
+              <MenuItem id={item.id} shortcut="Ctrl+S">
+                {item.label}
+              </MenuItem>
+            )}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      expect(screen.getByText('Ctrl+S')).toBeInTheDocument();
+    });
+
+    it('applies destructive styling', () => {
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Actions</MenuButton>
+          <Menu
+            items={[{ id: 'delete', label: 'Delete' }]}
+            getKey={(i) => i.id}
+            aria-label="Actions"
+          >
+            {(item) => (
+              <MenuItem id={item.id} isDestructive>
+                {item.label}
+              </MenuItem>
+            )}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const menuItems = screen.getAllByRole('menuitem');
+      const deleteItem = menuItems.find((el) =>
+        el.textContent?.includes('Delete')
+      );
+      expect(deleteItem?.className).toContain('text-danger-400');
+    });
+
+    it('applies disabled styling', () => {
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Actions</MenuButton>
+          <Menu
+            items={[{ id: 'locked', label: 'Locked' }]}
+            getKey={(i) => i.id}
+            aria-label="Actions"
+          >
+            {(item) => (
+              <MenuItem id={item.id} isDisabled>
+                {item.label}
+              </MenuItem>
+            )}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const menuItems = screen.getAllByRole('menuitem');
+      const disabledItem = menuItems.find((el) =>
+        el.textContent?.includes('Locked')
+      );
+      expect(disabledItem?.className).toContain('text-primary-500');
+      expect(disabledItem?.className).toContain('cursor-not-allowed');
+    });
+  });
+
+  describe('MenuSeparator', () => {
+    it('renders with role="separator" and border class', () => {
+      render(() => <MenuSeparator />);
+
+      const separator = screen.getByRole('separator');
+      expect(separator).toBeInTheDocument();
+      expect(separator.className).toContain('border-t');
+      expect(separator.className).toContain('border-primary-600');
+    });
+  });
+
+  describe('size context propagation', () => {
+    it('propagates lg size from MenuTrigger to MenuItem', () => {
+      render(() => (
+        <MenuTrigger defaultOpen size="lg">
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => <MenuItem id={item.id}>{item.label}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const menuItems = screen.getAllByRole('menuitem');
+      // lg item: 'text-lg py-2.5 px-5 gap-3'
+      expect(menuItems[0].className).toContain('text-lg');
+      expect(menuItems[0].className).toContain('px-5');
+    });
+  });
+});

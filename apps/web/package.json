@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@proyecto-viviana/solidaria": "*",
-    "@proyecto-viviana/ui": "*",
+    "@proyecto-viviana/silapse": "*",
     "@tanstack/router-core": "1.161.1",
     "@tanstack/solid-router": "1.161.1",
     "@tanstack/solid-start": "1.161.1",

@@ -12,7 +12,7 @@ const packageDirs = [
   "packages/solid-stately",
   "packages/solidaria",
   "packages/solidaria-components",
-  "packages/ui",
+  "packages/silapse",
 ];
 
 const mode = process.argv.includes("--fix") ? "fix" : "check";

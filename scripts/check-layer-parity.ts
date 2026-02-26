@@ -41,8 +41,8 @@ const reactStatelyDiff = diff(reactStatelyExpected, solidStatelyActual);
 const reactSpectrumUiExpected = listDirs('react-spectrum/packages/@react-spectrum').filter((name) =>
   !['provider', 'utils', 's2', 'theme-dark', 'theme-default', 's2-icon', 's2-illustrations'].includes(name)
 );
-const uiActual = listDirs('packages/ui/src').filter((name) => !['provider', 'utils', 'styles', 'types'].includes(name));
-const uiDiff = diff(reactSpectrumUiExpected, uiActual);
+const silapseActual = listDirs('packages/silapse/src').filter((name) => !['provider', 'utils', 'styles', 'types'].includes(name));
+const silapseDiff = diff(reactSpectrumUiExpected, silapseActual);
 
 console.log('4-layer module parity check');
 console.log('');
@@ -58,11 +58,11 @@ console.log(formatList(reactStatelyDiff.missing));
 console.log(`- extra: ${reactStatelyDiff.extra.length}`);
 console.log(formatList(reactStatelyDiff.extra));
 console.log('');
-console.log('@react-spectrum/* -> ui (report-only)');
-console.log(`- missing: ${uiDiff.missing.length}`);
-console.log(formatList(uiDiff.missing));
-console.log(`- extra: ${uiDiff.extra.length}`);
-console.log(formatList(uiDiff.extra));
+console.log('@react-spectrum/* -> silapse (report-only)');
+console.log(`- missing: ${silapseDiff.missing.length}`);
+console.log(formatList(silapseDiff.missing));
+console.log(`- extra: ${silapseDiff.extra.length}`);
+console.log(formatList(silapseDiff.extra));
 
 if (reactAriaDiff.missing.length > 0 || reactStatelyDiff.missing.length > 0) {
   Deno.exit(1);

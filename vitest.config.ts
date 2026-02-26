@@ -26,9 +26,9 @@ export default defineConfig({
       '@proyecto-viviana/solid-stately': resolve(__dirname, 'packages/solid-stately/src/index.ts'),
       '@proyecto-viviana/solidaria': resolve(__dirname, 'packages/solidaria/src/index.ts'),
       '@proyecto-viviana/solidaria-components': resolve(__dirname, 'packages/solidaria-components/src/index.ts'),
-      '@proyecto-viviana/ui': resolve(__dirname, 'packages/ui/src/index.ts'),
+      '@proyecto-viviana/silapse': resolve(__dirname, 'packages/silapse/src/index.ts'),
       '@proyecto-viviana/solidaria-test-utils': resolve(__dirname, 'packages/solidaria-test-utils/src/index.ts'),
-      '@proyecto-viviana/ui-test-utils': resolve(__dirname, 'packages/ui-test-utils/src/index.ts'),
+      '@proyecto-viviana/silapse-test-utils': resolve(__dirname, 'packages/silapse-test-utils/src/index.ts'),
     },
   },
 });

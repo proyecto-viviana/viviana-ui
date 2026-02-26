@@ -1,5 +1,5 @@
 // Proyecto Viviana - Multiple Components
-import { Button, TextField, Checkbox, Select, SelectOption } from '@proyecto-viviana/ui';
+import { Button, TextField, Checkbox, Select, SelectOption } from '@proyecto-viviana/silapse';
 
 export function App() {
   return (

@@ -15,6 +15,6 @@
   "ignore": [
     "@proyecto-viviana/web",
     "@proyecto-viviana/solidaria-test-utils",
-    "@proyecto-viviana/ui-test-utils"
+    "@proyecto-viviana/silapse-test-utils"
   ]
 }

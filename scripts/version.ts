@@ -15,7 +15,7 @@ const packages = [
   "packages/solid-stately",
   "packages/solidaria",
   "packages/solidaria-components",
-  "packages/ui",
+  "packages/silapse",
 ];
 
 async function updateJsonFile(filePath: string, version: string) {

@@ -182,7 +182,7 @@ async function main() {
     environment: {
       node: process.version,
       esbuild: esbuild.version,
-      pv_version: await getPackageVersion('@proyecto-viviana/ui'),
+      pv_version: await getPackageVersion('@proyecto-viviana/silapse'),
       rs_version: await getPackageVersion('@adobe/react-spectrum'),
     },
     scenarios: {} as any,

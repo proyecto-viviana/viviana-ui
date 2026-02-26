@@ -1,0 +1,97 @@
+/*
+ * Viviana UI Theme - Tailwind v4
+ *
+ * IMPORTANT: Due to Tailwind v4's @theme processing, the @theme block
+ * should be COPIED into your app's CSS, not imported via @import.
+ *
+ * Usage:
+ *
+ * 1. Add fonts in HTML <head>:
+ *    <link rel="preconnect" href="https://fonts.googleapis.com">
+ *    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ *    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Sen:wght@400..800&display=swap" rel="stylesheet">
+ *
+ * 2. In your app's CSS:
+ *    @import "tailwindcss";
+ *
+ *    @theme {
+ *      // Copy the @theme block below into your CSS
+ *    }
+ *
+ *    @import "proyecto-viviana-silapse/components.css";
+ */
+
+@theme {
+  /* Breakpoints */
+  --breakpoint-xxs: 320px;
+  --breakpoint-xs: 475px;
+
+  /* Background - Silapse void greys (bg-100 darkened for AA contrast) */
+  --color-bg-100: #333333;
+  --color-bg-200: #1a1a1a;
+  --color-bg-300: #111111;
+  --color-bg-400: #0a0a0a;
+  --color-bg-light: #606060;
+
+  /* Primary - Silapse blue scale (500/600 brightened for AA on dark bgs) */
+  --color-primary-100: #ddf4ff;
+  --color-primary-200: #b6e3ff;
+  --color-primary-300: #80ccff;
+  --color-primary-400: #54aeff;
+  --color-primary-500: #4da0ff;
+  --color-primary-600: #3080f4;
+  --color-primary-700: #1158c7;
+  --color-primary-800: #0d419d;
+
+  /* Accent - Silapse pink */
+  --color-accent: #ffa0d5;
+  --color-accent-200: #ffc9e9;
+  --color-accent-300: #f778ba;
+  --color-accent-500: #d84a8f;
+  --color-accent-highlight: #ffc9e9;
+
+  /* Semantic colors from Silapse */
+  --color-success-100: #E5FFF3;
+  --color-success-400: #3fb950;
+  --color-success-600: #238636;
+  --color-warning-100: #FFFBE5;
+  --color-warning-400: #d29922;
+  --color-warning-600: #966a13;
+  --color-danger-100: #FFE5E5;
+  --color-danger-400: #f85149;
+  --color-danger-600: #da3633;
+
+  /* Cards */
+  --color-cards-bg: #1a1a1a;
+  --color-cards-bg-load: #252525;
+  --color-correct: #3fb950;
+  --color-incorrect: #f85149;
+
+  /* Typography */
+  --font-sen: 'Sen', sans-serif;
+  --font-jost: 'Jost', sans-serif;
+  --font-sans: 'Sen', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Font utility classes */
+.font-sen {
+  font-family: 'Sen', sans-serif;
+}
+
+.font-jost {
+  font-family: 'Jost', sans-serif;
+}
+
+/* Custom drop shadows */
+.drop-shadow-title-card {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.drop-shadow-logo {
+  filter: drop-shadow(0 0 10px rgba(255, 160, 213, 0.8));
+}
+
+.shadow-primary-chip {
+  box-shadow: 0 2px 8px rgba(17, 88, 199, 0.4);
+}

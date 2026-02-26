@@ -57,10 +57,10 @@ const packages: Record<string, PackageConfig> = {
     ],
     ssr: true,
   },
-  ui: {
-    name: "ui",
-    entry: "packages/ui/src/index.ts",
-    outDir: "packages/ui/dist",
+  silapse: {
+    name: "silapse",
+    entry: "packages/silapse/src/index.ts",
+    outDir: "packages/silapse/dist",
     external: [
       "solid-js",
       "solid-js/web",
@@ -126,7 +126,7 @@ async function buildPackage(config: PackageConfig) {
     });
   }
 
-  // Copy CSS files (for ui package)
+  // Copy CSS files (for silapse package)
   if (config.cssFiles) {
     console.log(`  → Copying CSS files`);
     const srcDir = join(rootDir, "packages", config.name, "src");
@@ -172,7 +172,7 @@ async function main() {
   if (!packageName) {
     console.log("Building all packages...\n");
     // Build in dependency order
-    for (const name of ["solid-stately", "solidaria", "solidaria-components", "ui"]) {
+    for (const name of ["solid-stately", "solidaria", "solidaria-components", "silapse"]) {
       await buildPackage(packages[name]);
     }
   } else if (packages[packageName]) {

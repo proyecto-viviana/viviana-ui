@@ -8,7 +8,7 @@
 const RAC_COMPONENTS_INDEX = 'react-spectrum/packages/react-aria-components/src/index.ts';
 const SOLIDARIA_COMPONENTS_INDEX = 'packages/solidaria-components/src/index.ts';
 const REACT_SPECTRUM_DIR = 'react-spectrum/packages/@react-spectrum';
-const UI_SRC_DIR = 'packages/ui/src';
+const SILAPSE_SRC_DIR = 'packages/silapse/src';
 
 type ExportSet = Set<string>;
 type ParsedExports = {
@@ -145,8 +145,8 @@ async function collectModuleExports(
   return aggregated;
 }
 
-function resolveLocalUIIndex(name: string): string | undefined {
-  const base = ensurePath(UI_SRC_DIR, name);
+function resolveLocalSilapseIndex(name: string): string | undefined {
+  const base = ensurePath(SILAPSE_SRC_DIR, name);
   const candidates = [
     `${base}/index.ts`,
     `${base}/index.tsx`,
@@ -204,7 +204,7 @@ async function run(): Promise<void> {
   console.log('');
 
   const packages = await listReactSpectrumPackages();
-  console.log('\n=== UI export diff per @react-spectrum package ===');
+  console.log('\n=== Silapse export diff per @react-spectrum package ===');
   const moduleCache = new Map<string, ExportSet>();
   for (const pkg of packages) {
     const upstreamPath = ensurePath(REACT_SPECTRUM_DIR, pkg, 'src', 'index.ts');
@@ -212,15 +212,15 @@ async function run(): Promise<void> {
     if (!upstreamSource) continue;
     const upstreamExports = parseNamedExports(upstreamSource).names;
 
-    const localIndex = resolveLocalUIIndex(pkg);
+    const localIndex = resolveLocalSilapseIndex(pkg);
     if (!localIndex) {
-      console.log(`- ${pkg}: missing local UI entry`);
+      console.log(`- ${pkg}: missing local silapse entry`);
       continue;
     }
 
     const localExports = await collectModuleExports(localIndex, moduleCache);
     if (localExports.size === 0) {
-      console.log(`- ${pkg}: cannot read local UI index (${localIndex})`);
+      console.log(`- ${pkg}: cannot read local silapse index (${localIndex})`);
       continue;
     }
 

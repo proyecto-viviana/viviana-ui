@@ -7,7 +7,7 @@ const releasablePaths = [
   "packages/solid-stately/",
   "packages/solidaria/",
   "packages/solidaria-components/",
-  "packages/ui/",
+  "packages/silapse/",
 ];
 
 function getChangedFiles() {

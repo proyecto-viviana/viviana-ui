@@ -7,7 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, cleanup } from '@solidjs/testing-library';
 import { createSignal } from 'solid-js';
-import { Button } from '@proyecto-viviana/ui';
+import { Button } from '@proyecto-viviana/silapse';
 
 describe('Button Performance (PV)', () => {
   const ITERATIONS = 10;
