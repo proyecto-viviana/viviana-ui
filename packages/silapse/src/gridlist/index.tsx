@@ -8,7 +8,7 @@
  * and uses grid keyboard navigation.
  */
 
-import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js'
+import { type JSX, splitProps, createContext, createMemo, useContext, Show } from 'solid-js'
 import {
   GridList as HeadlessGridList,
   GridListItem as HeadlessGridListItem,
@@ -224,7 +224,7 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     </div>
   )
 
-  const contextValue = () => ({ size: size(), variant: variant(), layout: layout() })
+  const contextValue = createMemo(() => ({ size: size(), variant: variant(), layout: layout() }))
 
   return (
     <GridListSizeContext.Provider value={contextValue()}>

@@ -8,7 +8,7 @@
  * supporting keyboard navigation and selection.
  */
 
-import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js'
+import { type JSX, splitProps, createContext, createMemo, useContext, Show } from 'solid-js'
 import {
   Tree as HeadlessTree,
   TreeItem as HeadlessTreeItem,
@@ -213,7 +213,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     </div>
   )
 
-  const contextValue = () => ({ size: size(), variant: variant() })
+  const contextValue = createMemo(() => ({ size: size(), variant: variant() }))
 
   return (
     <TreeSizeContext.Provider value={contextValue()}>

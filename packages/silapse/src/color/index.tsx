@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's color picker patterns.
  */
 
-import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js'
+import { type JSX, splitProps, createContext, createMemo, useContext, Show } from 'solid-js'
 import {
   ColorSlider as HeadlessColorSlider,
   ColorSliderTrack as HeadlessColorSliderTrack,
@@ -162,7 +162,7 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
     return [base, stateClass, customClass].filter(Boolean).join(' ')
   }
 
-  const contextValue = () => ({ size: size() })
+  const contextValue = createMemo(() => ({ size: size() }))
 
   return (
     <ColorSizeContext.Provider value={contextValue()}>
@@ -273,7 +273,7 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
     return [base, stateClass, customClass].filter(Boolean).join(' ')
   }
 
-  const contextValue = () => ({ size: size() })
+  const contextValue = createMemo(() => ({ size: size() }))
 
   return (
     <ColorSizeContext.Provider value={contextValue()}>
@@ -358,7 +358,7 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
     return [base, stateClass, customClass].filter(Boolean).join(' ')
   }
 
-  const contextValue = () => ({ size: size() })
+  const contextValue = createMemo(() => ({ size: size() }))
 
   return (
     <ColorSizeContext.Provider value={contextValue()}>
@@ -456,7 +456,7 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
     return [base, stateClass, customClass].filter(Boolean).join(' ')
   }
 
-  const contextValue = () => ({ size: size() })
+  const contextValue = createMemo(() => ({ size: size() }))
 
   return (
     <ColorSizeContext.Provider value={contextValue()}>

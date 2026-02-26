@@ -4,7 +4,7 @@
  * Styled grid of selectable color swatches.
  */
 
-import { type JSX, splitProps, createContext, useContext } from 'solid-js'
+import { type JSX, splitProps, createContext, createMemo, useContext } from 'solid-js'
 import {
   ColorSwatchPicker as HeadlessColorSwatchPicker,
   ColorSwatchPickerItem as HeadlessColorSwatchPickerItem,
@@ -112,10 +112,10 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
   const density = () => local.density ?? 'regular'
   const rounding = () => local.rounding ?? 'none'
 
-  const contextValue = (): SwatchPickerContextValue => ({
+  const contextValue = createMemo((): SwatchPickerContextValue => ({
     size: size(),
     rounding: rounding(),
-  })
+  }))
 
   return (
     <SwatchPickerContext.Provider value={contextValue()}>

@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's Table component patterns.
  */
 
-import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js'
+import { type JSX, splitProps, createContext, createMemo, useContext, Show } from 'solid-js'
 import {
   Table as HeadlessTable,
   TableHeader as HeadlessTableHeader,
@@ -231,7 +231,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     return [base, sizeClass, stateClass, focusClass, customClass].filter(Boolean).join(' ')
   }
 
-  const contextValue = () => ({ size: size(), variant: variant() })
+  const contextValue = createMemo(() => ({ size: size(), variant: variant() }))
 
   return (
     <TableSizeContext.Provider value={contextValue()}>
