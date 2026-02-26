@@ -60,8 +60,6 @@ export function createMeter(props: AriaMeterProps = {}): MeterAria {
     get meterProps() {
       return {
         ...progressBarProps,
-        // Use a single valid role token. Browsers that do not support
-        // role="meter" will gracefully expose fallback semantics.
         role: 'meter',
       };
     },

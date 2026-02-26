@@ -4,6 +4,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
 import { Separator } from '../src/Separator';
+import { assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 describe('Separator', () => {
   it('should render with default class', () => {
@@ -100,5 +101,27 @@ describe('Separator', () => {
     render(() => <Separator orientation="vertical" elementType="span" />);
     const separator = screen.getByRole('separator');
     expect(separator.tagName).toBe('SPAN');
+  });
+
+  describe('a11y validation', () => {
+    it('axe: horizontal', async () => {
+      const { container } = render(() => <Separator />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: vertical', async () => {
+      const { container } = render(() => <Separator orientation="vertical" />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: no dangling refs with aria-labelledby', () => {
+      render(() => (
+        <>
+          <span id="sep-label">Section</span>
+          <Separator aria-labelledby="sep-label" />
+        </>
+      ));
+      assertAriaIdIntegrity(document.body);
+    });
   });
 });

@@ -140,6 +140,7 @@ interface NumberFieldContextValue {
   isInvalid: boolean;
   isRequired: boolean;
   isReadOnly: boolean;
+  setInputRef: (el: HTMLInputElement) => void;
 }
 
 export const NumberFieldContext = createContext<NumberFieldContextValue | null>(null);
@@ -157,7 +158,30 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
     props,
     ['children', 'class', 'style', 'slot'],
     ['value', 'defaultValue', 'onChange', 'minValue', 'maxValue', 'step', 'locale', 'formatOptions'],
-    ['label', 'aria-label', 'aria-labelledby', 'aria-describedby', 'isDisabled', 'isReadOnly', 'isRequired', 'isInvalid', 'description', 'errorMessage', 'id', 'autoFocus', 'name']
+    [
+      'label',
+      'aria-label',
+      'aria-labelledby',
+      'aria-describedby',
+      'isDisabled',
+      'isReadOnly',
+      'isRequired',
+      'isInvalid',
+      'description',
+      'errorMessage',
+      'id',
+      'autoFocus',
+      'name',
+      'form',
+      'onFocus',
+      'onBlur',
+      'onFocusChange',
+      'onKeyDown',
+      'onKeyUp',
+      'onPaste',
+      'onCopy',
+      'onCut',
+    ]
   );
 
   // Create number field state
@@ -196,17 +220,83 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
 
   // Ref for the input
   let inputRef: HTMLInputElement | undefined;
+  const setInputRef = (el: HTMLInputElement) => {
+    inputRef = el;
+  };
 
   // Create number field aria props
-  const {
-    labelProps,
-    groupProps,
-    inputProps,
-    incrementButtonProps,
-    decrementButtonProps,
-    descriptionProps,
-    errorMessageProps,
-  } = createNumberField(ariaProps, state, () => inputRef ?? null);
+  const numberFieldAria = createNumberField(
+    {
+      get label() {
+        return ariaProps.label;
+      },
+      get 'aria-label'() {
+        return ariaProps['aria-label'];
+      },
+      get 'aria-labelledby'() {
+        return ariaProps['aria-labelledby'];
+      },
+      get 'aria-describedby'() {
+        return ariaProps['aria-describedby'];
+      },
+      get isDisabled() {
+        return ariaProps.isDisabled;
+      },
+      get isReadOnly() {
+        return ariaProps.isReadOnly;
+      },
+      get isRequired() {
+        return ariaProps.isRequired;
+      },
+      get isInvalid() {
+        return ariaProps.isInvalid;
+      },
+      get description() {
+        return ariaProps.description;
+      },
+      get errorMessage() {
+        return ariaProps.errorMessage;
+      },
+      get id() {
+        return ariaProps.id;
+      },
+      get autoFocus() {
+        return ariaProps.autoFocus;
+      },
+      get name() {
+        return ariaProps.name;
+      },
+      get form() {
+        return ariaProps.form;
+      },
+      get onFocus() {
+        return ariaProps.onFocus;
+      },
+      get onBlur() {
+        return ariaProps.onBlur;
+      },
+      get onFocusChange() {
+        return ariaProps.onFocusChange;
+      },
+      get onKeyDown() {
+        return ariaProps.onKeyDown;
+      },
+      get onKeyUp() {
+        return ariaProps.onKeyUp;
+      },
+      get onPaste() {
+        return ariaProps.onPaste;
+      },
+      get onCopy() {
+        return ariaProps.onCopy;
+      },
+      get onCut() {
+        return ariaProps.onCut;
+      },
+    },
+    state,
+    () => inputRef ?? null
+  );
 
   // Render props values
   const renderValues = createMemo<NumberFieldRenderProps>(() => ({
@@ -231,24 +321,47 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
   // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
 
+  const contextValue: NumberFieldContextValue = {
+    state,
+    get inputProps() {
+      return numberFieldAria.inputProps;
+    },
+    get incrementButtonProps() {
+      return numberFieldAria.incrementButtonProps;
+    },
+    get decrementButtonProps() {
+      return numberFieldAria.decrementButtonProps;
+    },
+    get labelProps() {
+      return numberFieldAria.labelProps;
+    },
+    get groupProps() {
+      return numberFieldAria.groupProps;
+    },
+    get descriptionProps() {
+      return numberFieldAria.descriptionProps;
+    },
+    get errorMessageProps() {
+      return numberFieldAria.errorMessageProps;
+    },
+    get isDisabled() {
+      return ariaProps.isDisabled ?? false;
+    },
+    get isInvalid() {
+      return ariaProps.isInvalid ?? false;
+    },
+    get isRequired() {
+      return ariaProps.isRequired ?? false;
+    },
+    get isReadOnly() {
+      return ariaProps.isReadOnly ?? false;
+    },
+    setInputRef,
+  };
+
   return (
     <NumberFieldStateContext.Provider value={state}>
-      <NumberFieldContext.Provider
-        value={{
-          state,
-          inputProps,
-          incrementButtonProps,
-          decrementButtonProps,
-          labelProps,
-          groupProps,
-          descriptionProps,
-          errorMessageProps,
-          isDisabled: ariaProps.isDisabled ?? false,
-          isInvalid: ariaProps.isInvalid ?? false,
-          isRequired: ariaProps.isRequired ?? false,
-          isReadOnly: ariaProps.isReadOnly ?? false,
-        }}
-      >
+      <NumberFieldContext.Provider value={contextValue}>
         <div
           {...domProps()}
           class={renderProps.class()}
@@ -315,7 +428,7 @@ export function NumberFieldGroup(props: { children?: JSX.Element; class?: string
  * The input element for a number field.
  */
 export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot']);
 
   const context = useContext(NumberFieldContext);
   if (!context) {
@@ -368,6 +481,7 @@ export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
   return (
     <input
       {...domProps}
+      ref={context.setInputRef}
       {...cleanInputProps()}
       {...cleanFocusProps()}
       {...cleanHoverProps()}
@@ -399,7 +513,7 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
       return context.isDisabled || !context.state.canIncrement();
     },
     onPress: () => {
-      context.state.increment();
+      (context.incrementButtonProps.onClick as ((e?: MouseEvent) => void) | undefined)?.();
     },
   });
 
@@ -478,7 +592,7 @@ export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProp
       return context.isDisabled || !context.state.canDecrement();
     },
     onPress: () => {
-      context.state.decrement();
+      (context.decrementButtonProps.onClick as ((e?: MouseEvent) => void) | undefined)?.();
     },
   });
 

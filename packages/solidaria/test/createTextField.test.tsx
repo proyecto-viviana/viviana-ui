@@ -105,7 +105,7 @@ describe('createTextField hook', () => {
     it('without type prop if inputElementType is textarea', () => {
       const type = 'search';
       const pattern = /pattern/.source;
-      const props = renderTextFieldHook({ type, pattern, inputElementType: 'textarea' });
+      const props = renderTextFieldHook({ type, pattern, inputElementType: 'textarea', 'aria-label': 'Notes' });
       expect(props.type).toBeUndefined();
       expect(props.pattern).toBeUndefined();
     });

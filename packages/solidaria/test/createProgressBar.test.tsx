@@ -22,7 +22,10 @@ function TestProgressBar(props: {
     get valueLabel() { return props.valueLabel; },
     get isIndeterminate() { return props.isIndeterminate; },
     get label() { return props.label; },
-    get 'aria-label'() { return props['aria-label']; },
+    get 'aria-label'() {
+      if (props['aria-label']) return props['aria-label'];
+      return props.label ? undefined : 'Test progress';
+    },
   });
 
   return (

@@ -59,7 +59,7 @@ export function createMenuItem<T>(
 
   // Computed states
   const isDisabled: Accessor<boolean> = () => {
-    return getProps().isDisabled ?? state.isDisabled(getProps().key);
+    return Boolean(getData()?.isDisabled || getProps().isDisabled || state.isDisabled(getProps().key));
   };
 
   const isFocused: Accessor<boolean> = () => {

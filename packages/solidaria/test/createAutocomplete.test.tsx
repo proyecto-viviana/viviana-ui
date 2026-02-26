@@ -12,6 +12,8 @@ function TestAutocomplete(props: {
   filter?: (textValue: string, inputValue: string) => boolean
   onInputChange?: (value: string) => void
   items?: { id: string; name: string }[]
+  collectionId?: string
+  collectionAriaLabel?: string
 }) {
   const items = props.items ?? [
     { id: '1', name: 'Apple' },
@@ -31,6 +33,8 @@ function TestAutocomplete(props: {
       inputRef: () => inputRef,
       collectionRef: () => collectionRef,
       filter: props.filter,
+      collectionId: props.collectionId,
+      collectionAriaLabel: props.collectionAriaLabel,
     },
     state
   )
@@ -93,6 +97,25 @@ describe('createAutocomplete', () => {
     expect(listbox).toHaveAttribute('id', controlsId)
   })
 
+  it('should not force a default collection aria-label', () => {
+    render(() => <TestAutocomplete />)
+
+    const listbox = screen.getByTestId('listbox')
+    expect(listbox).not.toHaveAttribute('aria-label')
+  })
+
+  it('should allow overriding collection id and aria-label', () => {
+    render(() => (
+      <TestAutocomplete collectionId="custom-listbox" collectionAriaLabel="Fruit suggestions" />
+    ))
+
+    const input = screen.getByTestId('input')
+    const listbox = screen.getByTestId('listbox')
+    expect(input).toHaveAttribute('aria-controls', 'custom-listbox')
+    expect(listbox).toHaveAttribute('id', 'custom-listbox')
+    expect(listbox).toHaveAttribute('aria-label', 'Fruit suggestions')
+  })
+
   it('should filter items based on input value', () => {
     const filter = (textValue: string, inputValue: string) =>
       textValue.toLowerCase().includes(inputValue.toLowerCase())
@@ -152,6 +175,22 @@ describe('createAutocomplete', () => {
 
     fireEvent.keyDown(input, { key: 'ArrowDown' })
     expect(input).toBeInTheDocument()
+  })
+
+  it('should forward keyboard event data to collection', () => {
+    render(() => <TestAutocomplete />)
+
+    const input = screen.getByTestId('input')
+    const listbox = screen.getByTestId('listbox')
+    const keySpy = vi.fn()
+
+    listbox.addEventListener('keydown', (e) => {
+      keySpy((e as KeyboardEvent).key)
+    })
+
+    fireEvent.keyDown(input, { key: 'a', code: 'KeyA' })
+
+    expect(keySpy).toHaveBeenCalledWith('a')
   })
 
   it('should handle Escape key', () => {

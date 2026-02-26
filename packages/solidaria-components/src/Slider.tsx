@@ -474,6 +474,10 @@ export function SliderOutput(props: SliderOutputProps): JSX.Element {
   );
 
   // Clean props
+  const cleanDomProps = () => {
+    const { ref: _ref, ...rest } = domProps as Record<string, unknown>;
+    return rest;
+  };
   const cleanOutputProps = () => {
     const { ref: _ref, ...rest } = outputProps as Record<string, unknown>;
     return rest;
@@ -490,7 +494,7 @@ export function SliderOutput(props: SliderOutputProps): JSX.Element {
 
   return (
     <output
-      {...domProps}
+      {...cleanDomProps()}
       {...cleanOutputProps()}
       class={renderProps.class()}
       style={renderProps.style()}

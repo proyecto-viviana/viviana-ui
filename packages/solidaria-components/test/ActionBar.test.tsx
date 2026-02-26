@@ -81,6 +81,25 @@ describe('ActionBar (headless)', () => {
       ));
       expect(screen.getByRole('toolbar')).toHaveAttribute('aria-label', 'Bulk actions');
     });
+
+    it('supports aria-labelledby without forcing aria-label fallback', () => {
+      render(() => (
+        <>
+          <span id="bulk-actions-label">Bulk actions</span>
+          <ActionBar
+            selectedItemCount={1}
+            onClearSelection={() => {}}
+            aria-labelledby="bulk-actions-label"
+          >
+            <span>actions</span>
+          </ActionBar>
+        </>
+      ));
+
+      const toolbar = screen.getByRole('toolbar');
+      expect(toolbar).toHaveAttribute('aria-labelledby', 'bulk-actions-label');
+      expect(toolbar).not.toHaveAttribute('aria-label');
+    });
   });
 
   describe('keyboard', () => {
@@ -107,6 +126,50 @@ describe('ActionBar (headless)', () => {
 
       const toolbar = screen.getByRole('toolbar');
       fireEvent.keyDown(toolbar, { key: 'Enter' });
+      expect(onClear).not.toHaveBeenCalled();
+    });
+
+    it('supports toolbar arrow and Home/End navigation between actions', () => {
+      render(() => (
+        <ActionBar selectedItemCount={5} onClearSelection={() => {}}>
+          <button>Edit</button>
+          <button>Duplicate</button>
+          <button>Delete</button>
+        </ActionBar>
+      ));
+
+      const edit = screen.getByRole('button', { name: 'Edit' });
+      const duplicate = screen.getByRole('button', { name: 'Duplicate' });
+      const del = screen.getByRole('button', { name: 'Delete' });
+
+      edit.focus();
+      fireEvent.keyDown(edit, { key: 'ArrowRight' });
+      expect(document.activeElement).toBe(duplicate);
+
+      fireEvent.keyDown(duplicate, { key: 'End' });
+      expect(document.activeElement).toBe(del);
+
+      fireEvent.keyDown(del, { key: 'Home' });
+      expect(document.activeElement).toBe(edit);
+    });
+
+    it('calls user onKeyDown handler and respects defaultPrevented', () => {
+      const onClear = vi.fn();
+      const onKeyDown = vi.fn((e: KeyboardEvent) => e.preventDefault());
+
+      render(() => (
+        <ActionBar
+          selectedItemCount={5}
+          onClearSelection={onClear}
+          onKeyDown={onKeyDown}
+        >
+          <button>Delete</button>
+        </ActionBar>
+      ));
+
+      const toolbar = screen.getByRole('toolbar');
+      fireEvent.keyDown(toolbar, { key: 'Escape' });
+      expect(onKeyDown).toHaveBeenCalledOnce();
       expect(onClear).not.toHaveBeenCalled();
     });
   });

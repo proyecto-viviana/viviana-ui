@@ -120,6 +120,21 @@ describe('ListBox', () => {
       expect(listbox).toHaveAttribute('aria-label', 'Animals');
     });
 
+    it('renders a visible label element when label prop is provided', () => {
+      render(() => (
+        <ListBox<TestItem>
+          label={<span>Animals label</span>}
+          items={testItems}
+          getKey={(item) => item.id}
+        >
+          {(item) => <ListBoxOption id={item.id}>{item.name}</ListBoxOption>}
+        </ListBox>
+      ));
+
+      expect(screen.getByText('Animals label')).toBeInTheDocument();
+      expect(screen.getByRole('listbox')).toHaveAttribute('aria-labelledby');
+    });
+
     it('falls back to document direction when getComputedStyle is unavailable', () => {
       const originalDir = document.dir;
       document.dir = 'rtl';
@@ -320,6 +335,7 @@ describe('ListBox', () => {
       const dragAndDropHooks = {
         useDroppableCollectionState: () => dropState,
         useDroppableCollection: () => ({ collectionProps: {} }),
+        useDropIndicator: () => ({ dropIndicatorProps: {}, isDropTarget: true, isHidden: false }),
         dropTargetDelegate: {
           getDropTargetFromPoint: () => null,
           getDropOperation: () => 'move' as const,
@@ -577,6 +593,19 @@ describe('ListBox', () => {
       expect(options[0]).toHaveAttribute('data-focused');
     });
 
+    it('should expose aria-activedescendant on the listbox during keyboard navigation', async () => {
+      render(() => (
+        <TestListBox listBoxProps={{ selectionMode: 'single' }} />
+      ));
+
+      const listbox = screen.getByRole('listbox');
+      listbox.focus();
+      await user.keyboard('{ArrowDown}');
+
+      const options = screen.getAllByRole('option');
+      expect(listbox).toHaveAttribute('aria-activedescendant', options[0].id);
+    });
+
     it('should move focus with Arrow Up', async () => {
       render(() => (
         <TestListBox listBoxProps={{ selectionMode: 'single' }} />
@@ -740,6 +769,12 @@ describe('ListBox', () => {
       const dogOption = options.find((o) => o.textContent === 'Dog');
       // Disabled items have aria-disabled
       expect(dogOption).toHaveAttribute('aria-disabled', 'true');
+      const listbox = screen.getByRole('listbox');
+      listbox.focus();
+      await user.keyboard('{ArrowDown}');
+      expect(options[0]).toHaveAttribute('data-focused');
+      await user.keyboard('{ArrowDown}');
+      expect(options[2]).toHaveAttribute('data-focused');
     });
 
     it('should support isDisabled on the entire listbox', () => {
@@ -754,6 +789,37 @@ describe('ListBox', () => {
 
       const listbox = screen.getByRole('listbox');
       expect(listbox).toHaveAttribute('data-disabled');
+    });
+
+    it('should mark all options disabled when listbox isDisabled', () => {
+      render(() => (
+        <TestListBox
+          listBoxProps={{
+            selectionMode: 'single',
+            isDisabled: true,
+          }}
+        />
+      ));
+
+      for (const option of screen.getAllByRole('option')) {
+        expect(option).toHaveAttribute('aria-disabled', 'true');
+      }
+    });
+
+    it('should not select items when listbox isDisabled', () => {
+      const onSelectionChange = vi.fn();
+      render(() => (
+        <TestListBox
+          listBoxProps={{
+            selectionMode: 'single',
+            isDisabled: true,
+            onSelectionChange,
+          }}
+        />
+      ));
+
+      firePointerClick(screen.getByText('Cat'));
+      expect(onSelectionChange).not.toHaveBeenCalled();
     });
   });
 
@@ -849,6 +915,42 @@ describe('ListBox', () => {
       firePointerUp(options[0]);
       fireEvent.click(options[0], { detail: 1 });
       expect(options[0]).not.toHaveAttribute('data-pressed');
+    });
+
+    it('selects on pointer down when shouldSelectOnPressUp is false', () => {
+      const onSelectionChange = vi.fn();
+      render(() => (
+        <TestListBox
+          listBoxProps={{
+            selectionMode: 'single',
+            shouldSelectOnPressUp: false,
+            onSelectionChange,
+          }}
+        />
+      ));
+
+      firePointerDown(screen.getByText('Cat'));
+      expect(onSelectionChange).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not select on pointer down by default', () => {
+      const onSelectionChange = vi.fn();
+      render(() => (
+        <TestListBox
+          listBoxProps={{
+            selectionMode: 'single',
+            onSelectionChange,
+          }}
+        />
+      ));
+
+      const option = screen.getByText('Cat');
+      firePointerDown(option);
+      expect(onSelectionChange).not.toHaveBeenCalled();
+
+      firePointerUp(option);
+      fireEvent.click(option, { detail: 1 });
+      expect(onSelectionChange).toHaveBeenCalledTimes(1);
     });
   });
 

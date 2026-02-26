@@ -87,6 +87,18 @@ export function createSearchField(
     get autoComplete() {
       return getProps().autoComplete;
     },
+    get inputMode() {
+      return getProps().inputMode;
+    },
+    get autoCorrect() {
+      return getProps().autoCorrect;
+    },
+    get autoCapitalize() {
+      return getProps().autoCapitalize;
+    },
+    get spellCheck() {
+      return getProps().spellCheck;
+    },
     get maxLength() {
       return getProps().maxLength;
     },
@@ -95,6 +107,48 @@ export function createSearchField(
     },
     get pattern() {
       return getProps().pattern;
+    },
+    get onFocus() {
+      return getProps().onFocus;
+    },
+    get onBlur() {
+      return getProps().onBlur;
+    },
+    get onFocusChange() {
+      return getProps().onFocusChange;
+    },
+    get onKeyDown() {
+      return getProps().onKeyDown;
+    },
+    get onKeyUp() {
+      return getProps().onKeyUp;
+    },
+    get onCopy() {
+      return getProps().onCopy;
+    },
+    get onCut() {
+      return getProps().onCut;
+    },
+    get onPaste() {
+      return getProps().onPaste;
+    },
+    get onCompositionStart() {
+      return getProps().onCompositionStart;
+    },
+    get onCompositionEnd() {
+      return getProps().onCompositionEnd;
+    },
+    get onCompositionUpdate() {
+      return getProps().onCompositionUpdate;
+    },
+    get onSelect() {
+      return getProps().onSelect;
+    },
+    get onBeforeInput() {
+      return getProps().onBeforeInput;
+    },
+    get onInput() {
+      return getProps().onInput;
     },
     type: 'search',
     onChange: (value: string) => {
@@ -136,6 +190,7 @@ export function createSearchField(
   // Handle clear button click
   const onClearButtonClick = () => {
     const p = getProps();
+    if (p.isDisabled || p.isReadOnly) return;
     state.setValue('');
     p.onClear?.();
     // Focus the input after clearing
@@ -153,12 +208,12 @@ export function createSearchField(
     },
     get inputProps() {
       return mergeProps(
-        textFieldAria.inputProps as Record<string, unknown>,
         {
           onKeyDown,
           // Clear defaultValue since it's handled by state
           defaultValue: undefined,
-        } as Record<string, unknown>
+        } as Record<string, unknown>,
+        textFieldAria.inputProps as Record<string, unknown>
       ) as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
     get clearButtonProps() {

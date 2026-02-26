@@ -13,6 +13,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@solidjs/testing-library';
 import { Meter } from '../src/Meter';
+import { assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 describe('Meter', () => {
   afterEach(() => {
@@ -197,6 +198,7 @@ describe('Meter', () => {
 
       const meter = screen.getByRole('meter');
       expect(meter).toBeInTheDocument();
+      expect(meter).toHaveAttribute('role', 'meter');
     });
 
     it('should have aria-label when provided', () => {
@@ -294,6 +296,33 @@ describe('Meter', () => {
       ));
 
       expect(screen.getByTestId('value')).toHaveTextContent('Half full');
+    });
+  });
+
+  describe('a11y validation', () => {
+    it('axe: default', async () => {
+      const { container } = render(() => <Meter aria-label="Storage" value={50} />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: custom min/max', async () => {
+      const { container } = render(() => <Meter aria-label="CPU" value={75} minValue={0} maxValue={200} />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: with valueLabel', async () => {
+      const { container } = render(() => <Meter aria-label="Disk" value={80} valueLabel="80% used" />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: no dangling refs', () => {
+      render(() => <Meter aria-label="Memory" value={60} />);
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('DOM: data-testid forwards', () => {
+      render(() => <Meter aria-label="Meter" value={50} data-testid="my-meter" />);
+      expect(screen.getByTestId('my-meter')).toBeInTheDocument();
     });
   });
 });

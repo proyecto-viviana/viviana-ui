@@ -6,6 +6,7 @@
  */
 
 import {
+  type Accessor,
   type JSX,
   createContext,
   createMemo,
@@ -13,11 +14,16 @@ import {
   useContext,
   For,
 } from 'solid-js';
+import { Dynamic } from 'solid-js/web';
 import {
   createBreadcrumbs,
   createBreadcrumbItem,
+  createFocusRing,
+  createHover,
+  mergeProps,
   type AriaBreadcrumbsProps,
   type AriaBreadcrumbItemProps,
+  type PressEvent,
 } from '@proyecto-viviana/solidaria';
 import {
   type RenderChildren,
@@ -44,6 +50,8 @@ export interface BreadcrumbsProps<T> extends Omit<AriaBreadcrumbsProps, 'isDisab
   getKey?: (item: T) => string | number;
   /** Whether the breadcrumbs are disabled. */
   isDisabled?: boolean;
+  /** Handler called when a breadcrumb item is activated. */
+  onAction?: (key: string | number) => void;
   /** The children of the component - render function for each item. */
   children: (item: T) => JSX.Element;
   /** The CSS className for the element. */
@@ -83,10 +91,23 @@ export interface BreadcrumbItemProps extends Omit<AriaBreadcrumbItemProps, 'isDi
 // ============================================
 
 interface BreadcrumbsContextValue {
-  isDisabled: boolean;
+  isDisabled: Accessor<boolean>;
+  onAction?: (key: string | number) => void;
 }
 
 export const BreadcrumbsContext = createContext<BreadcrumbsContextValue | null>(null);
+
+interface BreadcrumbItemContextValue {
+  itemKey: string | number | null;
+  isLast: Accessor<boolean>;
+}
+
+export const BreadcrumbItemContext = createContext<BreadcrumbItemContextValue | null>(null);
+
+function defaultItemKey(item: unknown, index: number): string | number {
+  const maybeItem = item as { key?: string | number; id?: string | number };
+  return maybeItem.key ?? maybeItem.id ?? index;
+}
 
 // ============================================
 // COMPONENTS
@@ -98,12 +119,14 @@ export const BreadcrumbsContext = createContext<BreadcrumbsContextValue | null>(
 export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
   const [local, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'items', 'getKey', 'isDisabled'],
+    ['children', 'class', 'style', 'slot', 'items', 'getKey', 'isDisabled', 'onAction'],
     ['aria-label', 'aria-labelledby', 'aria-describedby']
   );
 
   const isDisabled = () => local.isDisabled ?? false;
   const items = () => local.items ?? [];
+  const getItemKey = (item: T, index: number): string | number =>
+    local.getKey?.(item) ?? defaultItemKey(item, index);
 
   // Create breadcrumbs aria props
   const { navProps } = createBreadcrumbs({
@@ -140,7 +163,7 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
 
   return (
-    <BreadcrumbsContext.Provider value={{ isDisabled: isDisabled() }}>
+    <BreadcrumbsContext.Provider value={{ isDisabled, onAction: local.onAction }}>
       <nav
         {...navProps}
         {...domProps()}
@@ -150,11 +173,18 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
       >
         <ol style={{ display: 'flex', 'align-items': 'center', 'list-style': 'none', margin: 0, padding: 0 }}>
           <For each={items()}>
-            {(item) => (
-              <li style={{ display: 'flex', 'align-items': 'center' }}>
-                {props.children(item)}
-              </li>
-            )}
+            {(item, index) => {
+              const itemKey = getItemKey(item, index());
+              const isLast = () => index() === items().length - 1;
+
+              return (
+                <li style={{ display: 'flex', 'align-items': 'center' }}>
+                  <BreadcrumbItemContext.Provider value={{ itemKey, isLast }}>
+                    {props.children(item)}
+                  </BreadcrumbItemContext.Provider>
+                </li>
+              );
+            }}
           </For>
         </ol>
       </nav>
@@ -175,11 +205,24 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
 
   // Get context
   const context = useContext(BreadcrumbsContext);
-  const isDisabled = () => local.isDisabled ?? context?.isDisabled ?? false;
-  const isCurrent = () => ariaProps.isCurrent ?? false;
+  const itemContext = useContext(BreadcrumbItemContext);
+  const isDisabled = () => local.isDisabled ?? context?.isDisabled() ?? false;
+  const isCurrent = () => ariaProps.isCurrent ?? itemContext?.isLast() ?? false;
+  const itemKey = () => itemContext?.itemKey ?? null;
+
+  const handlePress = (e: PressEvent) => {
+    ariaProps.onPress?.(e);
+    const key = itemKey();
+    if (key !== null && !isCurrent() && !isDisabled()) {
+      context?.onAction?.(key);
+    }
+  };
 
   // Create breadcrumb item aria props
   const { itemProps, isPressed } = createBreadcrumbItem({
+    get id() {
+      return ariaProps.id;
+    },
     get isCurrent() {
       return isCurrent();
     },
@@ -199,7 +242,7 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
       return ariaProps.elementType;
     },
     get onPress() {
-      return ariaProps.onPress;
+      return handlePress;
     },
     get onPressStart() {
       return ariaProps.onPressStart;
@@ -210,22 +253,61 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     get onClick() {
       return ariaProps.onClick;
     },
+    get onFocus() {
+      return ariaProps.onFocus;
+    },
+    get onBlur() {
+      return ariaProps.onBlur;
+    },
+    get onFocusChange() {
+      return ariaProps.onFocusChange;
+    },
+    get onKeyDown() {
+      return ariaProps.onKeyDown;
+    },
+    get onKeyUp() {
+      return ariaProps.onKeyUp;
+    },
+    get autoFocus() {
+      return ariaProps.autoFocus;
+    },
     get 'aria-label'() {
       return ariaProps['aria-label'];
+    },
+    get 'aria-labelledby'() {
+      return ariaProps['aria-labelledby'];
+    },
+    get 'aria-describedby'() {
+      return ariaProps['aria-describedby'];
     },
     get 'aria-current'() {
       return ariaProps['aria-current'];
     },
   });
 
+  const { isFocused, isFocusVisible, focusProps } = createFocusRing();
+  const { isHovered, hoverProps } = createHover({
+    get isDisabled() {
+      return isDisabled();
+    },
+  });
+  const mergedItemProps = createMemo(() =>
+    mergeProps(
+      itemProps as Record<string, unknown>,
+      focusProps as Record<string, unknown>,
+      hoverProps as Record<string, unknown>
+    )
+  );
+  const elementType = () => ariaProps.elementType ?? 'a';
+
   // Render props values
   const renderValues = createMemo<BreadcrumbItemRenderProps>(() => ({
     isCurrent: isCurrent(),
     isDisabled: isDisabled(),
     isPressed: isPressed(),
-    isFocused: false, // Would need focus tracking
-    isFocusVisible: false, // Would need focus visible tracking
-    isHovered: false, // Would need hover tracking
+    isFocused: isFocused(),
+    isFocusVisible: isFocusVisible(),
+    isHovered: isHovered(),
   }));
 
   // Resolve render props
@@ -247,16 +329,20 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
   };
 
   return (
-    <a
-      {...(itemProps as Record<string, unknown>)}
+    <Dynamic
+      component={elementType()}
+      {...mergedItemProps()}
       class={renderProps.class()}
       style={mergedStyle()}
       data-current={isCurrent() || undefined}
       data-disabled={isDisabled() || undefined}
       data-pressed={isPressed() || undefined}
+      data-focused={isFocused() || undefined}
+      data-focus-visible={isFocusVisible() || undefined}
+      data-hovered={isHovered() || undefined}
     >
       {renderProps.renderChildren()}
-    </a>
+    </Dynamic>
   );
 }
 

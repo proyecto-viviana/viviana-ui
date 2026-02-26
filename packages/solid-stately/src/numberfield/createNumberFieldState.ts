@@ -107,6 +107,10 @@ function snapToStep(value: number, step: number, min?: number): number {
   return handleDecimalOperation('+', base, steps * step);
 }
 
+function isValidStep(step: number | undefined): step is number {
+  return step != null && !isNaN(step) && step > 0;
+}
+
 /**
  * Creates state for a number field.
  */
@@ -143,6 +147,12 @@ export function createNumberFieldState(
     normalized = normalized.replace(/[^\d.\-]/g, '');
 
     const parsed = parseFloat(normalized);
+    if (isNaN(parsed)) return parsed;
+
+    if (opts.style === 'percent') {
+      return parsed / 100;
+    }
+
     return parsed;
   };
 
@@ -153,9 +163,11 @@ export function createNumberFieldState(
   };
 
   // Determine step value
+  const hasCustomStep = createMemo(() => isValidStep(getProps().step));
+
   const step = createMemo(() => {
     const p = getProps();
-    if (p.step != null) return p.step;
+    if (hasCustomStep()) return p.step as number;
     // Default step for percent is 0.01
     if (p.formatOptions?.style === 'percent') return 0.01;
     return 1;
@@ -165,13 +177,25 @@ export function createNumberFieldState(
   const [inputValue, setInputValueInternal] = createSignal<string>('');
   const [numberValue, setNumberValue] = createSignal<number>(NaN);
 
+  const applyConstraints = (value: number): number => {
+    const p = getProps();
+    if (isNaN(value)) return NaN;
+
+    if (hasCustomStep()) {
+      return clamp(snapToStep(value, step(), p.minValue), p.minValue, p.maxValue);
+    }
+
+    return clamp(value, p.minValue, p.maxValue);
+  };
+
   // Initialize from props
   const initValue = () => {
     const p = getProps();
     const initial = p.value ?? p.defaultValue;
     if (initial != null) {
-      setNumberValue(initial);
-      setInputValueInternal(formatNumber(initial));
+      const constrained = applyConstraints(initial);
+      setNumberValue(constrained);
+      setInputValueInternal(formatNumber(constrained));
     }
   };
 
@@ -189,10 +213,32 @@ export function createNumberFieldState(
     ensureInitialized();
     const p = getProps();
     if (p.value !== undefined) {
-      return p.value;
+      return applyConstraints(p.value);
     }
     return numberValue();
   });
+
+  let lastControlledValue: number | undefined = undefined;
+  const syncControlledValue = () => {
+    const p = getProps();
+    if (p.value === undefined) {
+      lastControlledValue = undefined;
+      return;
+    }
+
+    const constrained = applyConstraints(p.value);
+    if (lastControlledValue === undefined || !Object.is(lastControlledValue, constrained)) {
+      lastControlledValue = constrained;
+      setNumberValue(constrained);
+      setInputValueInternal(formatNumber(constrained));
+    }
+  };
+
+  const parsedInputValue = () => {
+    ensureInitialized();
+    syncControlledValue();
+    return parseNumber(inputValue());
+  };
 
   // Validate partial input
   const validate = (value: string): boolean => {
@@ -213,19 +259,22 @@ export function createNumberFieldState(
   // Set input value with validation
   const setInputValue = (value: string) => {
     ensureInitialized();
+    syncControlledValue();
     setInputValueInternal(value);
   };
 
   // Commit the current input value
   const commit = () => {
     ensureInitialized();
+    syncControlledValue();
     const p = getProps();
     const input = inputValue();
 
     if (input === '' || input === '-') {
       // Clear value
       setNumberValue(NaN);
-      setInputValueInternal('');
+      setInputValueInternal(p.value === undefined ? '' : formatNumber(actualNumberValue()));
+      p.onChange?.(NaN);
       return;
     }
 
@@ -237,20 +286,14 @@ export function createNumberFieldState(
       return;
     }
 
-    // Clamp and snap
-    parsed = clamp(parsed, p.minValue, p.maxValue);
-    parsed = snapToStep(parsed, step(), p.minValue);
+    // Clamp and optionally snap to custom step.
+    parsed = applyConstraints(parsed);
 
     // Update state
     setNumberValue(parsed);
     setInputValueInternal(formatNumber(parsed));
 
-    // Notify change
-    if (p.value === undefined) {
-      p.onChange?.(parsed);
-    } else {
-      p.onChange?.(parsed);
-    }
+    p.onChange?.(parsed);
   };
 
   // Check if can increment
@@ -259,11 +302,14 @@ export function createNumberFieldState(
     const p = getProps();
     if (p.isDisabled || p.isReadOnly) return false;
 
-    const current = actualNumberValue();
+    const current = parsedInputValue();
     if (isNaN(current)) return true; // Can start from min
 
     if (p.maxValue == null) return true;
-    return handleDecimalOperation('+', current, step()) <= p.maxValue;
+    return (
+      snapToStep(current, step(), p.minValue) > current ||
+      handleDecimalOperation('+', current, step()) <= p.maxValue
+    );
   });
 
   // Check if can decrement
@@ -272,34 +318,42 @@ export function createNumberFieldState(
     const p = getProps();
     if (p.isDisabled || p.isReadOnly) return false;
 
-    const current = actualNumberValue();
+    const current = parsedInputValue();
     if (isNaN(current)) return true; // Can start from max
 
     if (p.minValue == null) return true;
-    return handleDecimalOperation('-', current, step()) >= p.minValue;
+    return (
+      snapToStep(current, step(), p.minValue) < current ||
+      handleDecimalOperation('-', current, step()) >= p.minValue
+    );
   });
+
+  const safeNextStep = (operation: '+' | '-', minOrMaxValue: number = 0): number => {
+    const p = getProps();
+    const parsed = parsedInputValue();
+
+    if (isNaN(parsed)) {
+      const base = isNaN(minOrMaxValue) ? 0 : minOrMaxValue;
+      return clamp(snapToStep(base, step(), p.minValue), p.minValue, p.maxValue);
+    }
+
+    const snapped = snapToStep(parsed, step(), p.minValue);
+    if ((operation === '+' && snapped > parsed) || (operation === '-' && snapped < parsed)) {
+      return clamp(snapped, p.minValue, p.maxValue);
+    }
+
+    const next = handleDecimalOperation(operation, parsed, step());
+    return clamp(snapToStep(next, step(), p.minValue), p.minValue, p.maxValue);
+  };
 
   // Increment by step
   const increment = () => {
     ensureInitialized();
+    syncControlledValue();
     const p = getProps();
     if (p.isDisabled || p.isReadOnly) return;
 
-    let current = actualNumberValue();
-
-    if (isNaN(current)) {
-      // Start from min or 0
-      current = p.minValue ?? 0;
-    } else {
-      // Snap and increment
-      current = snapToStep(current, step(), p.minValue);
-      current = handleDecimalOperation('+', current, step());
-    }
-
-    // Clamp
-    current = clamp(current, p.minValue, p.maxValue);
-
-    // Update
+    const current = safeNextStep('+', p.minValue);
     setNumberValue(current);
     setInputValueInternal(formatNumber(current));
     p.onChange?.(current);
@@ -308,24 +362,11 @@ export function createNumberFieldState(
   // Decrement by step
   const decrement = () => {
     ensureInitialized();
+    syncControlledValue();
     const p = getProps();
     if (p.isDisabled || p.isReadOnly) return;
 
-    let current = actualNumberValue();
-
-    if (isNaN(current)) {
-      // Start from max or 0
-      current = p.maxValue ?? 0;
-    } else {
-      // Snap and decrement
-      current = snapToStep(current, step(), p.minValue);
-      current = handleDecimalOperation('-', current, step());
-    }
-
-    // Clamp
-    current = clamp(current, p.minValue, p.maxValue);
-
-    // Update
+    const current = safeNextStep('-', p.maxValue);
     setNumberValue(current);
     setInputValueInternal(formatNumber(current));
     p.onChange?.(current);
@@ -334,6 +375,7 @@ export function createNumberFieldState(
   // Set to max
   const incrementToMax = () => {
     ensureInitialized();
+    syncControlledValue();
     const p = getProps();
     if (p.isDisabled || p.isReadOnly) return;
 
@@ -348,6 +390,7 @@ export function createNumberFieldState(
   // Set to min
   const decrementToMin = () => {
     ensureInitialized();
+    syncControlledValue();
     const p = getProps();
     if (p.isDisabled || p.isReadOnly) return;
 
@@ -361,6 +404,7 @@ export function createNumberFieldState(
   return {
     get inputValue() {
       ensureInitialized();
+      syncControlledValue();
       return inputValue;
     },
     get numberValue() {

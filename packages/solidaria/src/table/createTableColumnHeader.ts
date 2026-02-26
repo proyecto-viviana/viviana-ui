@@ -39,7 +39,7 @@ export function createTableColumnHeader<T extends object>(
     const p = props();
     const s = state();
 
-    if (p.allowsSorting && (e.key === 'Enter' || e.key === ' ')) {
+    if (p.allowsSorting && (e.key === 'Enter' || e.key === ' ' || e.key === 'Space' || e.key === 'Spacebar')) {
       e.preventDefault();
       s.sort(p.node.key);
     }

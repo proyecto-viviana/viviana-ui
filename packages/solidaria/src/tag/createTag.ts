@@ -89,11 +89,86 @@ export function createTag<T>(
     return state.focusedKey() === key();
   });
 
+  const getFirstFocusableKey = (): Key | null => {
+    const collection = state.collection();
+    let candidate = collection.getFirstKey();
+    while (candidate != null && state.isDisabled(candidate)) {
+      candidate = collection.getKeyAfter(candidate);
+    }
+    return candidate;
+  };
+
+  const getLastFocusableKey = (): Key | null => {
+    const collection = state.collection();
+    let candidate = collection.getLastKey();
+    while (candidate != null && state.isDisabled(candidate)) {
+      candidate = collection.getKeyBefore(candidate);
+    }
+    return candidate;
+  };
+
+  const getNextFocusableKey = (fromKey: Key): Key | null => {
+    const collection = state.collection();
+    let candidate = collection.getKeyAfter(fromKey);
+    while (candidate != null && state.isDisabled(candidate)) {
+      candidate = collection.getKeyAfter(candidate);
+    }
+
+    if (candidate != null) {
+      return candidate;
+    }
+
+    return getFirstFocusableKey();
+  };
+
+  const getPreviousFocusableKey = (fromKey: Key): Key | null => {
+    const collection = state.collection();
+    let candidate = collection.getKeyBefore(fromKey);
+    while (candidate != null && state.isDisabled(candidate)) {
+      candidate = collection.getKeyBefore(candidate);
+    }
+
+    if (candidate != null) {
+      return candidate;
+    }
+
+    return getLastFocusableKey();
+  };
+
+  const focusKey = (nextKey: Key | null) => {
+    if (nextKey == null) {
+      return;
+    }
+
+    state.setFocusedKey(nextKey);
+    const currentElement = ref();
+
+    if (!currentElement) {
+      return;
+    }
+
+    if (nextKey === key()) {
+      currentElement.focus();
+      return;
+    }
+
+    const tagList = currentElement.parentElement;
+    if (!tagList) {
+      return;
+    }
+
+    const nextTag = Array.from(tagList.querySelectorAll<HTMLElement>('[role="option"]'))
+      .find((el) => el.getAttribute('data-key') === String(nextKey));
+
+    nextTag?.focus();
+  };
+
   // Handle press for selection
   const { pressProps, isPressed } = createPress({
     isDisabled,
     onPress: () => {
       if (!isDisabled()) {
+        state.setFocusedKey(key());
         state.toggleSelection(key());
       }
     },
@@ -102,11 +177,37 @@ export function createTag<T>(
   // Handle focusable
   const { focusableProps } = createFocusable({
     isDisabled,
+    onFocus: () => {
+      state.setFocusedKey(key());
+    },
   }, ref);
 
-  // Handle keyboard for removal
+  // Handle keyboard for navigation and removal
   const handleKeyDown = (e: KeyboardEvent) => {
     if (isDisabled()) return;
+
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        e.preventDefault();
+        focusKey(getNextFocusableKey(key()));
+        return;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        e.preventDefault();
+        focusKey(getPreviousFocusableKey(key()));
+        return;
+      case 'Home':
+        e.preventDefault();
+        focusKey(getFirstFocusableKey());
+        return;
+      case 'End':
+        e.preventDefault();
+        focusKey(getLastFocusableKey());
+        return;
+      default:
+        break;
+    }
 
     if (e.key === 'Delete' || e.key === 'Backspace') {
       e.preventDefault();
@@ -129,10 +230,35 @@ export function createTag<T>(
   // Compute tabIndex
   const tabIndex = createMemo(() => {
     if (isDisabled()) return -1;
-    // If this is the focused item, or if nothing is focused yet
-    if (isFocused() || state.focusedKey() === null) {
+
+    if (isFocused()) {
       return 0;
     }
+
+    if (state.focusedKey() !== null) {
+      return -1;
+    }
+
+    const collection = state.collection();
+    let defaultTabStop: Key | null = null;
+
+    if (state.selectionMode() !== 'none') {
+      for (const item of collection) {
+        if (!state.isDisabled(item.key) && state.isSelected(item.key)) {
+          defaultTabStop = item.key;
+          break;
+        }
+      }
+    }
+
+    if (defaultTabStop == null) {
+      defaultTabStop = getFirstFocusableKey();
+    }
+
+    if (key() === defaultTabStop) {
+      return 0;
+    }
+
     return -1;
   });
 
@@ -151,6 +277,7 @@ export function createTag<T>(
         id: rowId,
         role: 'option',
         tabIndex: tabIndex(),
+        'data-key': String(key()),
         'aria-selected': isSelectable() ? isSelected() : undefined,
         'aria-disabled': isDisabled() || undefined,
         onKeyDown: handleKeyDown,

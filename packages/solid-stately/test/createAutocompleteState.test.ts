@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi } from 'vitest'
-import { createRoot } from 'solid-js'
+import { createRoot, createSignal } from 'solid-js'
 import { createAutocompleteState } from '../src/autocomplete'
 
 describe('createAutocompleteState', () => {
@@ -53,6 +53,22 @@ describe('createAutocompleteState', () => {
       // setInputValue should still call onInputChange but not update internal value
       state.setInputValue('new')
       expect(state.inputValue()).toBe('controlled')
+      dispose()
+    })
+  })
+
+  it('should react to controlled value updates', () => {
+    createRoot((dispose) => {
+      const [value, setValue] = createSignal('initial')
+      const state = createAutocompleteState({
+        get inputValue() {
+          return value()
+        },
+      })
+
+      expect(state.inputValue()).toBe('initial')
+      setValue('updated')
+      expect(state.inputValue()).toBe('updated')
       dispose()
     })
   })

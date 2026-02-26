@@ -589,7 +589,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
   });
 
   // Create column header aria props
-  const { columnHeaderProps } = createTableColumnHeader<object>(
+  const columnHeaderAria = createTableColumnHeader<object>(
     () => ({
       node: columnNode(),
       allowsSorting: local.allowsSorting,
@@ -636,7 +636,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
 
   // Remove ref from spread props
   const cleanColumnHeaderProps = () => {
-    const { ref: _ref1, ...rest } = columnHeaderProps as Record<string, unknown>;
+    const { ref: _ref1, ...rest } = columnHeaderAria.columnHeaderProps as Record<string, unknown>;
     return rest;
   };
   const cleanHoverProps = () => {
@@ -905,7 +905,7 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
   });
 
   // Create row aria props
-  const { rowProps, isSelected, isDisabled, isPressed } = createTableRow<object>(
+  const rowAria = createTableRow<object>(
     () => ({
       node: rowNode(),
       onAction: local.onAction,
@@ -913,11 +913,14 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     () => state as TableState<object, TableCollection<object>>,
     ref
   );
+  const isSelected = () => rowAria.isSelected;
+  const isDisabled = () => rowAria.isDisabled;
+  const isPressed = () => rowAria.isPressed;
 
   // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
-      return isDisabled;
+      return isDisabled();
     },
   });
 
@@ -948,12 +951,12 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
 
   // Render props values
   const renderValues = createMemo<TableRowRenderProps>(() => ({
-    isSelected,
+    isSelected: isSelected(),
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible() && isFocused(),
-    isPressed,
+    isPressed: isPressed(),
     isHovered: isHovered(),
-    isDisabled,
+    isDisabled: isDisabled(),
   }));
 
   // Resolve render props (children rendered directly in JSX to avoid eager evaluation)
@@ -968,7 +971,7 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
 
   // Remove ref from spread props
   const cleanRowProps = () => {
-    const { ref: _ref1, ...rest } = rowProps as Record<string, unknown>;
+    const { ref: _ref1, ...rest } = rowAria.rowProps as Record<string, unknown>;
     return rest;
   };
   const cleanHoverProps = () => {
@@ -999,12 +1002,12 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
         )}
         class={renderProps.class()}
         style={renderProps.style()}
-        data-selected={isSelected || undefined}
+        data-selected={isSelected() || undefined}
         data-focused={isFocused() || undefined}
         data-focus-visible={(isFocusVisible() && isFocused()) || undefined}
-        data-pressed={isPressed || undefined}
+        data-pressed={isPressed() || undefined}
         data-hovered={isHovered() || undefined}
-        data-disabled={isDisabled || undefined}
+        data-disabled={isDisabled() || undefined}
         data-dragging={draggableItem()?.isDragging || undefined}
         data-drop-target={droppableItem()?.isDropTarget || undefined}
       >
@@ -1063,13 +1066,14 @@ export function TableCell(props: TableCellProps): JSX.Element {
   });
 
   // Create cell aria props
-  const { gridCellProps, isPressed } = createTableCell<object>(
+  const cellAria = createTableCell<object>(
     () => ({
       node: cellNode(),
     }),
     () => state as TableState<object, TableCollection<object>>,
     ref
   );
+  const isPressed = () => cellAria.isPressed;
 
   // Create hover
   const { isHovered, hoverProps } = createHover({
@@ -1086,7 +1090,7 @@ export function TableCell(props: TableCellProps): JSX.Element {
   const renderValues = createMemo<TableCellRenderProps>(() => ({
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible() && isFocused(),
-    isPressed,
+    isPressed: isPressed(),
     isHovered: isHovered(),
   }));
 
@@ -1102,7 +1106,7 @@ export function TableCell(props: TableCellProps): JSX.Element {
 
   // Remove ref from spread props
   const cleanCellProps = () => {
-    const { ref: _ref1, ...rest } = gridCellProps as Record<string, unknown>;
+    const { ref: _ref1, ...rest } = cellAria.gridCellProps as Record<string, unknown>;
     return rest;
   };
   const cleanHoverProps = () => {
@@ -1125,7 +1129,7 @@ export function TableCell(props: TableCellProps): JSX.Element {
       style={renderProps.style()}
       data-focused={isFocused() || undefined}
       data-focus-visible={(isFocusVisible() && isFocused()) || undefined}
-      data-pressed={isPressed || undefined}
+      data-pressed={isPressed() || undefined}
       data-hovered={isHovered() || undefined}
     >
       {typeof local.children === 'function'
@@ -1146,12 +1150,12 @@ export function TableSelectionCheckbox(props: { rowKey: Key }): JSX.Element {
 
   const { state } = context;
 
-  const { checkboxProps } = createTableSelectionCheckbox<object>(
+  const selectionCheckboxAria = createTableSelectionCheckbox<object>(
     () => ({ key: props.rowKey }),
     () => state as TableState<object, TableCollection<object>>
   );
 
-  return <input {...checkboxProps} />;
+  return <input {...selectionCheckboxAria.checkboxProps} />;
 }
 
 /**
@@ -1165,11 +1169,11 @@ export function TableSelectAllCheckbox(): JSX.Element {
 
   const { state } = context;
 
-  const { checkboxProps } = createTableSelectAllCheckbox<object>(
+  const selectAllCheckboxAria = createTableSelectAllCheckbox<object>(
     () => state as TableState<object, TableCollection<object>>
   );
 
-  return <input {...checkboxProps} />;
+  return <input {...selectAllCheckboxAria.checkboxProps} />;
 }
 
 // Attach components as static properties

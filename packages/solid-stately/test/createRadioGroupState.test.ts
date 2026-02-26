@@ -274,6 +274,22 @@ describe('createRadioGroupState', () => {
         const state = createRadioGroupState({});
 
         expect(state.isInvalid).toBe(false);
+        expect(state.displayValidation().isInvalid).toBe(false);
+        expect(state.displayValidation().validationDetails.valid).toBe(true);
+        expect(state.displayValidation().validationErrors).toEqual([]);
+
+        dispose();
+      });
+    });
+
+    it('should expose invalid displayValidation details when invalid', () => {
+      createRoot((dispose) => {
+        const state = createRadioGroupState({ isInvalid: true });
+
+        expect(state.displayValidation().isInvalid).toBe(true);
+        expect(state.displayValidation().validationDetails.customError).toBe(true);
+        expect(state.displayValidation().validationDetails.valid).toBe(false);
+        expect(state.displayValidation().validationErrors).toEqual([]);
 
         dispose();
       });
@@ -365,6 +381,33 @@ describe('createRadioGroupState', () => {
 
         dispose();
       });
+    });
+  });
+
+  describe('form validation lifecycle', () => {
+    it('commits native validation when selection changes', async () => {
+      let dispose!: () => void;
+      let state!: ReturnType<typeof createRadioGroupState>;
+
+      createRoot((rootDispose) => {
+        dispose = rootDispose;
+        state = createRadioGroupState({
+          validationBehavior: 'native',
+          validate: () => 'Selection is invalid',
+        });
+
+        // Native behavior does not show validation until commit.
+        expect(state.displayValidation().isInvalid).toBe(false);
+      });
+
+      // Selecting commits validation in radio state.
+      state.setSelectedValue('dogs');
+      await Promise.resolve();
+
+      expect(state.displayValidation().isInvalid).toBe(true);
+      expect(state.displayValidation().validationErrors).toEqual(['Selection is invalid']);
+
+      dispose();
     });
   });
 });

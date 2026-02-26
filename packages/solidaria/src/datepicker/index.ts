@@ -19,6 +19,13 @@ export {
   type TimeFieldAria,
 } from './createTimeField';
 
+// Time Segment
+export {
+  createTimeSegment,
+  type AriaTimeSegmentProps,
+  type TimeSegmentAria,
+} from './createTimeSegment';
+
 // Date Picker
 export {
   createDatePicker,

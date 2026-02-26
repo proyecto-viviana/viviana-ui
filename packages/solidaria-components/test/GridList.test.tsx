@@ -502,6 +502,56 @@ describe('GridList', () => {
       const list = document.querySelector('.solidaria-GridList');
       expect(list).toBeTruthy();
     });
+
+    it('supports keyboard selection from focused grid container with Space', () => {
+      render(() => (
+        <GridList
+          items={testItems}
+          getKey={(item) => item.id}
+          aria-label="Fruits"
+          selectionMode="multiple"
+        >
+          {(item) => (
+            <GridListItem id={item.id} textValue={item.name}>
+              {item.name}
+            </GridListItem>
+          )}
+        </GridList>
+      ));
+
+      const grid = screen.getByRole('grid', { name: 'Fruits' });
+      const rows = screen.getAllByRole('row');
+      expect(rows[0]).toHaveAttribute('aria-selected', 'false');
+
+      fireEvent.focus(grid);
+      fireEvent.keyDown(grid, { key: ' ' });
+
+      expect(rows[0]).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('supports keyboard action from focused grid container with Enter', () => {
+      const onAction = vi.fn();
+      render(() => (
+        <GridList
+          items={testItems}
+          getKey={(item) => item.id}
+          aria-label="Fruits"
+          onAction={onAction}
+        >
+          {(item) => (
+            <GridListItem id={item.id} textValue={item.name}>
+              {item.name}
+            </GridListItem>
+          )}
+        </GridList>
+      ));
+
+      const grid = screen.getByRole('grid', { name: 'Fruits' });
+      fireEvent.focus(grid);
+      fireEvent.keyDown(grid, { key: 'Enter' });
+
+      expect(onAction).toHaveBeenCalledWith(1);
+    });
   });
 
   // ============================================

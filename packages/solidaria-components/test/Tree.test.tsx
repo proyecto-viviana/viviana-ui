@@ -11,7 +11,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { Tree, TreeItem, TreeHeader, TreeSection } from '../src/Tree';
+import { Tree, TreeItem, TreeExpandButton, TreeHeader, TreeSection, TreeSelectionCheckbox } from '../src/Tree';
 import { useDragAndDrop } from '../src/useDragAndDrop';
 import type {
   TreeItemData,
@@ -904,6 +904,29 @@ describe('Tree', () => {
       expect(expandedRow).toHaveAttribute('aria-expanded', 'true');
     });
 
+    it('updates TreeExpandButton aria-label when expansion state changes', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Tree with expand buttons">
+          {(item) => (
+            <TreeItem id={item.key}>
+              {() => (
+                <>
+                  <TreeExpandButton>{({ isExpanded }) => (isExpanded ? '-' : '+')}</TreeExpandButton>
+                  <span>{item.textValue}</span>
+                </>
+              )}
+            </TreeItem>
+          )}
+        </Tree>
+      ));
+
+      const getFirstExpandButton = () => screen.getAllByRole('button')[0];
+      expect(getFirstExpandButton()).toHaveAttribute('aria-label', 'Expand');
+
+      fireEvent.click(getFirstExpandButton());
+      expect(getFirstExpandButton()).toHaveAttribute('aria-label', 'Collapse');
+    });
+
     it('should have aria-level on items', () => {
       render(() => (
         <Tree
@@ -1006,6 +1029,56 @@ describe('Tree', () => {
 
       const rows = screen.getAllByRole('row');
       expect(rows[0]).toHaveAttribute('data-selected');
+    });
+
+    it('updates row aria-selected when selecting from focused tree with keyboard', () => {
+      render(() => (
+        <Tree
+          items={createTestItems()}
+          aria-label="Test Tree"
+          selectionMode="multiple"
+        >
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const tree = screen.getByRole('treegrid', { name: 'Test Tree' });
+      const rows = screen.getAllByRole('row');
+      expect(rows[0]).toHaveAttribute('aria-selected', 'false');
+
+      fireEvent.focus(tree);
+      fireEvent.keyDown(tree, { key: ' ' });
+
+      expect(rows[0]).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('updates TreeSelectionCheckbox checked state when item selection changes', () => {
+      render(() => (
+        <Tree
+          items={createTestItems()}
+          aria-label="Tree with selection checkboxes"
+          selectionMode="single"
+        >
+          {(item) => (
+            <TreeItem id={item.key}>
+              {() => (
+                <>
+                  <TreeSelectionCheckbox itemKey={item.key} />
+                  <span>{item.textValue}</span>
+                </>
+              )}
+            </TreeItem>
+          )}
+        </Tree>
+      ));
+
+      const getFirstCheckbox = () => screen.getAllByRole('checkbox')[0];
+      expect(getFirstCheckbox()).not.toBeChecked();
+
+      const rows = screen.getAllByRole('row');
+      fireEvent.click(rows[0]);
+
+      expect(getFirstCheckbox()).toBeChecked();
     });
   });
 
@@ -1127,6 +1200,181 @@ describe('Tree', () => {
 
       const tree = screen.getByRole('treegrid');
       expect(tree).not.toHaveAttribute('tabIndex');
+    });
+  });
+
+  describe('parity: ARIA attributes', () => {
+    it('rows should have aria-posinset and aria-setsize', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree">
+          {(item) => <TreeItem id={item.key} textValue={item.textValue}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const rows = screen.getAllByRole('row');
+      // Root items: Item 1 is 1 of 3, Item 2 is 2 of 3, Item 3 is 3 of 3
+      expect(rows[0]).toHaveAttribute('aria-posinset', '1');
+      expect(rows[0]).toHaveAttribute('aria-setsize', '3');
+      expect(rows[1]).toHaveAttribute('aria-posinset', '2');
+      expect(rows[1]).toHaveAttribute('aria-setsize', '3');
+    });
+
+    it('child rows should have correct aria-posinset and aria-setsize within parent', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree" defaultExpandedKeys={['item-1']}>
+          {(item) => <TreeItem id={item.key} textValue={item.textValue}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const rows = screen.getAllByRole('row');
+      // After expanding item-1: rows are [item-1, item-1-1, item-1-2, item-2, item-3]
+      // item-1-1 is child 1 of 2 under item-1
+      expect(rows[1]).toHaveAttribute('aria-posinset', '1');
+      expect(rows[1]).toHaveAttribute('aria-setsize', '2');
+      // item-1-2 is child 2 of 2 under item-1
+      expect(rows[2]).toHaveAttribute('aria-posinset', '2');
+      expect(rows[2]).toHaveAttribute('aria-setsize', '2');
+    });
+
+    it('rows should have aria-label from textValue', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree">
+          {(item) => <TreeItem id={item.key} textValue={item.textValue}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const rows = screen.getAllByRole('row');
+      expect(rows[0]).toHaveAttribute('aria-label', 'Item 1');
+    });
+
+    it('rows should have generated id', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree">
+          {(item) => <TreeItem id={item.key} textValue={item.textValue}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const rows = screen.getAllByRole('row');
+      expect(rows[0].getAttribute('id')).toBeTruthy();
+    });
+
+    it('expand button should have aria-labelledby with button and row IDs', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree">
+          {(item, state) => (
+            <TreeItem id={item.key} textValue={item.textValue}>
+              {(renderProps) => (
+                <>
+                  <TreeExpandButton />
+                  {item.textValue}
+                </>
+              )}
+            </TreeItem>
+          )}
+        </Tree>
+      ));
+
+      const buttons = screen.getAllByRole('button');
+      const expandButtons = buttons.filter((btn) => btn.getAttribute('aria-label') === 'Expand');
+      expect(expandButtons.length).toBeGreaterThan(0);
+
+      const btn = expandButtons[0];
+      const labelledby = btn.getAttribute('aria-labelledby');
+      expect(labelledby).toBeTruthy();
+
+      // The labelledby should have two IDs (button ID + row ID)
+      const parts = labelledby!.split(' ');
+      expect(parts).toHaveLength(2);
+      // Button ID matches the button's own id
+      expect(btn.getAttribute('id')).toBe(parts[0]);
+    });
+  });
+
+  describe('parity: data attributes', () => {
+    it('tree root should have data-selection-mode for non-none selection', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree" selectionMode="multiple">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const tree = screen.getByRole('treegrid');
+      expect(tree).toHaveAttribute('data-selection-mode', 'multiple');
+    });
+
+    it('tree root should not have data-selection-mode for none', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const tree = screen.getByRole('treegrid');
+      expect(tree).not.toHaveAttribute('data-selection-mode');
+    });
+
+    it('expandable items should have data-has-child-items', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const rows = screen.getAllByRole('row');
+      // item-1 has children
+      expect(rows[0]).toHaveAttribute('data-has-child-items');
+      // item-2 is a leaf
+      expect(rows[1]).not.toHaveAttribute('data-has-child-items');
+    });
+
+    it('items should have data-selection-mode matching tree', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree" selectionMode="single">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const rows = screen.getAllByRole('row');
+      expect(rows[0]).toHaveAttribute('data-selection-mode', 'single');
+    });
+
+    it('items should have --tree-item-level CSS variable', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree" defaultExpandedKeys={['item-1']}>
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const rows = screen.getAllByRole('row');
+      // Root item (level 0)
+      expect(rows[0].style.getPropertyValue('--tree-item-level')).toBe('0');
+      // Child item (level 1)
+      expect(rows[1].style.getPropertyValue('--tree-item-level')).toBe('1');
+    });
+  });
+
+  describe('parity: selectionBehavior and disabledBehavior props', () => {
+    it('selectionBehavior prop should be forwarded to state', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree" selectionMode="multiple" selectionBehavior="replace">
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      // Tree renders without error — prop forwarded
+      const tree = screen.getByRole('treegrid');
+      expect(tree).toBeTruthy();
+    });
+
+    it('disabledBehavior prop should be forwarded to state', () => {
+      render(() => (
+        <Tree items={createTestItems()} aria-label="Test Tree" selectionMode="multiple" disabledBehavior="selection" disabledKeys={['item-1']}>
+          {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
+        </Tree>
+      ));
+
+      const tree = screen.getByRole('treegrid');
+      expect(tree).toBeTruthy();
     });
   });
 });

@@ -209,10 +209,12 @@ interface SelectContextValue<T> {
   state: SelectState<T>;
   triggerProps: JSX.HTMLAttributes<HTMLElement>;
   valueProps: JSX.HTMLAttributes<HTMLElement>;
+  labelProps: JSX.HTMLAttributes<HTMLElement>;
   menuProps: JSX.HTMLAttributes<HTMLElement>;
   isOpen: Accessor<boolean>;
   isFocused: Accessor<boolean>;
   isFocusVisible: Accessor<boolean>;
+  isDisabled: Accessor<boolean>;
   placeholder?: string;
   items: T[];
   renderItem?: (item: T) => JSX.Element;
@@ -235,6 +237,14 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     ['class', 'style', 'slot'],
     ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'selectionMode', 'selectedKey', 'defaultSelectedKey', 'selectedKeys', 'defaultSelectedKeys', 'onSelectionChange', 'onSelectionChangeKeys', 'isOpen', 'defaultOpen', 'onOpenChange', 'name']
   );
+
+  const resolveDisabled = (): boolean => {
+    const disabled = ariaProps.isDisabled;
+    if (typeof disabled === 'function') {
+      return (disabled as () => boolean)();
+    }
+    return !!disabled;
+  };
 
   // Create select state
   const state = createSelectState<T>({
@@ -284,7 +294,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
       return stateProps.onOpenChange;
     },
     get isDisabled() {
-      return ariaProps.isDisabled;
+      return resolveDisabled();
     },
     get isRequired() {
       return ariaProps.isRequired;
@@ -292,7 +302,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
   });
 
   // Create select aria props
-  const { triggerProps, valueProps, menuProps, isFocused, isFocusVisible, isOpen } = createSelect<T>(
+  const { labelProps, triggerProps, valueProps, menuProps, isFocused, isFocusVisible, isOpen } = createSelect<T>(
     ariaProps,
     state
   );
@@ -300,7 +310,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
   // Create hover for wrapper
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
-      return ariaProps.isDisabled;
+      return resolveDisabled();
     },
   });
 
@@ -309,7 +319,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     isOpen: isOpen(),
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible(),
-    isDisabled: !!ariaProps.isDisabled,
+    isDisabled: resolveDisabled(),
     isRequired: !!ariaProps.isRequired,
     isSelected: state.selectionMode() === 'multiple'
       ? state.selectedKeys() === 'all' || (state.selectedKeys() as Set<Key>).size > 0
@@ -337,13 +347,17 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
     return rest;
   };
+  const cleanLabelProps = () => {
+    const { ref: _ref, ...rest } = labelProps as Record<string, unknown>;
+    return rest;
+  };
 
   // Create hidden select for form submission
   const { containerProps, selectProps: hiddenSelectProps } = createHiddenSelect({
     state,
     name: stateProps.name,
     get isDisabled() {
-      return ariaProps.isDisabled;
+      return resolveDisabled();
     },
   });
 
@@ -353,10 +367,12 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
         state,
         triggerProps,
         valueProps,
+        labelProps,
         menuProps,
         isOpen,
         isFocused,
         isFocusVisible,
+        isDisabled: resolveDisabled,
         placeholder: ariaProps.placeholder,
         items: stateProps.items,
       }}
@@ -370,7 +386,7 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
           data-open={isOpen() || undefined}
           data-focused={isFocused() || undefined}
           data-focus-visible={isFocusVisible() || undefined}
-          data-disabled={ariaProps.isDisabled || undefined}
+          data-disabled={resolveDisabled() || undefined}
           data-required={ariaProps.isRequired || undefined}
           data-hovered={isHovered() || undefined}
         >
@@ -404,6 +420,9 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
               </For>
             </select>
           </div>
+          <Show when={ariaProps.label}>
+            <span {...cleanLabelProps()}>{ariaProps.label as JSX.Element}</span>
+          </Show>
           {props.children}
         </div>
       </SelectStateContext.Provider>
@@ -573,7 +592,12 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
 
   // Create listbox aria props - reuse select's internal list state via collection
   const { listBoxProps } = createListBox(
-    menuProps as unknown as AriaListBoxProps,
+    {
+      ...(menuProps as unknown as AriaListBoxProps),
+      get isDisabled() {
+        return state.isDisabled;
+      },
+    },
     createSelectListStateAdapter(state)
   );
 
@@ -654,16 +678,17 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
     throw new Error('SelectOption must be used within a Select');
   }
   const state = context as SelectState<T>;
+  const selectContext = useContext(SelectContext) as SelectContextValue<T> | null;
 
   // Create option aria props - adapt select state to list state interface
   const optionAria = createOption<T>(
     {
       key: local.id,
       get isDisabled() {
-        return ariaProps.isDisabled;
+        return Boolean(ariaProps.isDisabled || selectContext?.isDisabled());
       },
       get 'aria-label'() {
-        return ariaProps['aria-label'];
+        return ariaProps['aria-label'] ?? local.textValue;
       },
     },
     {
@@ -727,6 +752,9 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
     },
     renderValues
   );
+  const hasPrimitiveLabel = () => {
+    return typeof props.children === 'string' || typeof props.children === 'number';
+  };
 
   const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
     isSelected: optionAria.isSelected,
@@ -734,7 +762,14 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
 
   // Remove ref from spread props
   const cleanOptionProps = () => {
-    const { ref: _ref1, ...rest } = optionAria.optionProps as Record<string, unknown>;
+    const {
+      ref: _ref1,
+      'aria-describedby': _ariaDescribedby,
+      ...rest
+    } = optionAria.optionProps as Record<string, unknown>;
+    if (!hasPrimitiveLabel() && rest['aria-label'] == null) {
+      delete rest['aria-labelledby'];
+    }
     return rest;
   };
   const cleanHoverProps = () => {
@@ -756,7 +791,9 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
         data-hovered={isHovered() || undefined}
         data-disabled={optionAria.isDisabled() || undefined}
       >
-        {renderProps.renderChildren()}
+        {hasPrimitiveLabel()
+          ? <span {...optionAria.labelProps}>{renderProps.renderChildren()}</span>
+          : renderProps.renderChildren()}
       </li>
     </SelectionIndicatorContext.Provider>
   );

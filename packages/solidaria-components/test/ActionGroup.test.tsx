@@ -66,6 +66,22 @@ describe('ActionGroup (headless)', () => {
   });
 
   describe('selection', () => {
+    it('calls onAction in none selection mode', () => {
+      const onAction = vi.fn();
+      render(() => (
+        <ActionGroup
+          items={items}
+          aria-label="Formatting"
+          onAction={onAction}
+        >
+          {(item) => item.label}
+        </ActionGroup>
+      ));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Bold' }));
+      expect(onAction).toHaveBeenCalledWith('bold');
+    });
+
     it('selects item on click in single selection mode', () => {
       const onSelectionChange = vi.fn();
       render(() => (
@@ -112,6 +128,22 @@ describe('ActionGroup (headless)', () => {
 
       expect(screen.getByRole('radio', { name: 'Italic' })).toHaveAttribute('aria-checked', 'true');
     });
+
+    it('uses selected key as default roving tab stop', () => {
+      render(() => (
+        <ActionGroup
+          items={items}
+          selectionMode="single"
+          defaultSelectedKeys={['italic']}
+          aria-label="Formatting"
+        >
+          {(item) => item.label}
+        </ActionGroup>
+      ));
+
+      expect(screen.getByRole('radio', { name: 'Bold' })).toHaveAttribute('tabindex', '-1');
+      expect(screen.getByRole('radio', { name: 'Italic' })).toHaveAttribute('tabindex', '0');
+    });
   });
 
   describe('keyboard navigation', () => {
@@ -141,6 +173,40 @@ describe('ActionGroup (headless)', () => {
       bold.focus();
       fireEvent.keyDown(bold, { key: 'ArrowLeft' });
       expect(document.activeElement).toBe(underline);
+    });
+
+    it('supports Home/End navigation', () => {
+      render(() => (
+        <ActionGroup items={items} aria-label="Formatting">
+          {(item) => item.label}
+        </ActionGroup>
+      ));
+
+      const bold = screen.getByRole('button', { name: 'Bold' });
+      const underline = screen.getByRole('button', { name: 'Underline' });
+
+      bold.focus();
+      fireEvent.keyDown(bold, { key: 'End' });
+      expect(document.activeElement).toBe(underline);
+
+      fireEvent.keyDown(underline, { key: 'Home' });
+      expect(document.activeElement).toBe(bold);
+    });
+
+    it('updates selection while arrow navigating in single mode', () => {
+      render(() => (
+        <ActionGroup items={items} selectionMode="single" aria-label="Formatting">
+          {(item) => item.label}
+        </ActionGroup>
+      ));
+
+      const bold = screen.getByRole('radio', { name: 'Bold' });
+      const italic = screen.getByRole('radio', { name: 'Italic' });
+
+      bold.focus();
+      fireEvent.keyDown(bold, { key: 'ArrowRight' });
+      expect(document.activeElement).toBe(italic);
+      expect(italic).toHaveAttribute('data-selected');
     });
   });
 

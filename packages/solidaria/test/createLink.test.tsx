@@ -10,6 +10,10 @@ import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 // Test component that uses createLink
 function TestLink(props: {
   href?: string;
+  hrefLang?: string;
+  download?: string | boolean;
+  ping?: string;
+  referrerPolicy?: string;
   isDisabled?: boolean;
   onPress?: () => void;
   onClick?: () => void;
@@ -27,6 +31,10 @@ function TestLink(props: {
 
   const { linkProps, isPressed } = createLink({
     get href() { return props.href; },
+    get hrefLang() { return props.hrefLang; },
+    get download() { return props.download; },
+    get ping() { return props.ping; },
+    get referrerPolicy() { return props.referrerPolicy as any; },
     get isDisabled() { return props.isDisabled; },
     get onPress() { return props.onPress; },
     get onClick() { return props.onClick; },
@@ -60,6 +68,33 @@ describe('createLink', () => {
     const link = screen.getByRole('link');
     expect(link.tagName).toBe('A');
     expect(link).toHaveAttribute('href', 'https://example.com');
+  });
+
+  it('should support additional link DOM props for anchor links', () => {
+    render(() => (
+      <TestLink
+        href="https://example.com"
+        hrefLang="es"
+        download="file.txt"
+        ping="https://example.com/ping"
+        referrerPolicy="no-referrer"
+      />
+    ));
+    const link = screen.getByRole('link');
+
+    expect(link).toHaveAttribute('hreflang', 'es');
+    expect(link).toHaveAttribute('download', 'file.txt');
+    expect(link).toHaveAttribute('ping', 'https://example.com/ping');
+    expect(link).toHaveAttribute('referrerpolicy', 'no-referrer');
+  });
+
+  it('should not forward anchor-only props when rendered as non-anchor', () => {
+    render(() => <TestLink hrefLang="es" download="file.txt" />);
+    const link = screen.getByRole('link');
+
+    expect(link.tagName).toBe('SPAN');
+    expect(link).not.toHaveAttribute('hreflang');
+    expect(link).not.toHaveAttribute('download');
   });
 
   it('should support disabled state', () => {

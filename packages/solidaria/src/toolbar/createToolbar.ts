@@ -7,7 +7,6 @@
 
 import {
   createSignal,
-  createEffect,
   onMount,
   onCleanup,
   type Accessor,
@@ -102,6 +101,47 @@ function getActiveElement(doc: Document): Element | null {
     activeElement = activeElement.shadowRoot.activeElement
   }
   return activeElement
+}
+
+const TEXT_INPUT_TYPES = new Set([
+  '',
+  'text',
+  'search',
+  'url',
+  'tel',
+  'password',
+  'email',
+  'number',
+  'date',
+  'datetime-local',
+  'month',
+  'time',
+  'week',
+])
+
+function isTextInputLikeElement(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) {
+    return false
+  }
+
+  if (target.isContentEditable || !!target.closest('[contenteditable="true"]')) {
+    return true
+  }
+
+  if (target.getAttribute('role') === 'textbox') {
+    return true
+  }
+
+  if (target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) {
+    return true
+  }
+
+  if (target instanceof HTMLInputElement) {
+    const type = target.type.toLowerCase()
+    return TEXT_INPUT_TYPES.has(type)
+  }
+
+  return false
 }
 
 function createFocusManager(ref: Accessor<HTMLElement | undefined>): FocusManager {
@@ -258,8 +298,34 @@ export function createToolbar(props: AriaToolbarProps = {}): ToolbarAria {
 
   // Keyboard event handler
   const onKeyDown = (e: KeyboardEvent) => {
+    const root = toolbarRef
+    if (!root) return
+
     // Don't handle if nested toolbar (parent handles navigation)
     if (isInToolbar()) return
+
+    const target = e.target
+    if (!(target instanceof Element) || !root.contains(target)) {
+      return
+    }
+
+    // Let modified shortcuts pass through.
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+      return
+    }
+
+    // Text entry controls should keep arrow/home/end for caret/value navigation.
+    if (isTextInputLikeElement(target)) {
+      switch (e.key) {
+        case 'ArrowRight':
+        case 'ArrowLeft':
+        case 'ArrowDown':
+        case 'ArrowUp':
+        case 'Home':
+        case 'End':
+          return
+      }
+    }
 
     const dir = locale().direction
     const isRTL = dir === 'rtl'
@@ -299,6 +365,14 @@ export function createToolbar(props: AriaToolbarProps = {}): ToolbarAria {
           focusManager.focusPrevious({ tabbable: true })
           handled = true
         }
+        break
+      case 'Home':
+        focusManager.focusFirst({ tabbable: true })
+        handled = true
+        break
+      case 'End':
+        focusManager.focusLast({ tabbable: true })
+        handled = true
         break
       case 'Tab':
         // Store the last focused element for re-entry

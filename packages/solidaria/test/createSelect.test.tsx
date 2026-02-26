@@ -377,6 +377,67 @@ describe('createSelect', () => {
 
       unmount();
     });
+
+    it('skips disabled first item on ArrowRight when no item is selected', () => {
+      const { getByRole, unmount } = render(() => {
+        const state = createTestState({
+          disabledKeys: ['a'],
+        });
+        const { triggerProps, selectedItem } = createSelect({ 'aria-label': 'Select' }, state);
+
+        return (
+          <button {...triggerProps}>
+            {selectedItem()?.value?.label || 'None'}
+          </button>
+        );
+      });
+
+      const trigger = getByRole('combobox');
+      fireEvent.keyDown(trigger, { key: 'ArrowRight' });
+      expect(trigger.textContent).toBe('Banana');
+
+      unmount();
+    });
+
+    it('focuses first enabled item when opening with ArrowDown', () => {
+      const { getByRole, unmount } = render(() => {
+        const state = createTestState({
+          disabledKeys: ['a'],
+        });
+        const { triggerProps, isOpen } = createSelect({ 'aria-label': 'Select' }, state);
+
+        return (
+          <button {...triggerProps}>
+            {isOpen() ? `open:${state.focusedKey()}` : 'closed'}
+          </button>
+        );
+      });
+
+      const trigger = getByRole('combobox');
+      fireEvent.keyDown(trigger, { key: 'ArrowDown' });
+      expect(trigger.textContent).toBe('open:b');
+
+      unmount();
+    });
+
+    it('does not type-select when disabled', () => {
+      const { getByRole, unmount } = render(() => {
+        const state = createTestState();
+        const { triggerProps, selectedItem } = createSelect({ isDisabled: true }, state);
+
+        return (
+          <button {...triggerProps} data-testid="trigger">
+            {selectedItem()?.value?.label || 'None'}
+          </button>
+        );
+      });
+
+      const trigger = getByRole('combobox');
+      fireEvent.keyDown(trigger, { key: 'c' });
+      expect(trigger.textContent).toBe('None');
+
+      unmount();
+    });
   });
 
   describe('focus handling', () => {

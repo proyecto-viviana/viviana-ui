@@ -5,7 +5,7 @@
  * Uses existing overlay infrastructure.
  */
 
-import { type JSX, createSignal, splitProps, Show, onCleanup, onMount, createEffect } from 'solid-js'
+import { type JSX, createSignal, splitProps, Show, onCleanup, createEffect, createUniqueId } from 'solid-js'
 
 // ============================================
 // TYPES
@@ -51,6 +51,8 @@ export interface ContextualHelpTriggerRenderProps {
 export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.Element {
   const [local, triggerProps] = splitProps(props, ['isUnavailable', 'children', 'class', 'isDisabled'])
   const [isOpen, setIsOpen] = createSignal(false)
+  const triggerId = createUniqueId()
+  const contentId = createUniqueId()
   let triggerRef: HTMLButtonElement | undefined
   let contentRef: HTMLDivElement | undefined
 
@@ -113,12 +115,12 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
     }
   }
 
-  onMount(() => {
+  createEffect(() => {
+    if (!isOpen()) return
     document.addEventListener('mousedown', handleDocumentClick)
-  })
-
-  onCleanup(() => {
-    document.removeEventListener('mousedown', handleDocumentClick)
+    onCleanup(() => {
+      document.removeEventListener('mousedown', handleDocumentClick)
+    })
   })
 
   // Focus trap: return focus to trigger on close
@@ -140,9 +142,11 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
       <button
         {...triggerProps}
         type="button"
+        id={triggerId}
         ref={triggerRef}
         aria-haspopup="dialog"
         aria-expanded={isOpen()}
+        aria-controls={isOpen() ? contentId : undefined}
         data-unavailable={isUnavailable() || undefined}
         data-disabled={isDisabled() || undefined}
         disabled={isDisabled()}
@@ -155,8 +159,10 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
 
       <Show when={isOpen()}>
         <div
+          id={contentId}
           ref={contentRef}
           role="dialog"
+          aria-labelledby={triggerId}
           tabIndex={-1}
           class="solidaria-ContextualHelpTrigger-content"
           style={{ position: 'absolute', 'z-index': '50' }}

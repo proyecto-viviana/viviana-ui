@@ -6,6 +6,7 @@
  */
 
 import {
+  type Accessor,
   type JSX,
   createContext,
   createMemo,
@@ -166,7 +167,7 @@ export interface TabPanelProps extends AriaTabPanelProps, SlotProps {
 
 interface TabsContextValue<T> {
   state: TabListState<T>;
-  items: T[];
+  items: Accessor<T[]>;
 }
 
 export const TabsContext = createContext<TabsContextValue<unknown> | null>(null);
@@ -244,7 +245,7 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
 
   return (
-    <TabsContext.Provider value={{ state, items: stateProps.items ?? [] }}>
+    <TabsContext.Provider value={{ state, items: () => stateProps.items ?? [] }}>
       <TabsStateContext.Provider value={state}>
         <div
           {...domProps()}
@@ -298,7 +299,7 @@ function TabListInner<T>(props: {
   children?: (item: T) => JSX.Element;
 }): JSX.Element {
   const state = props.context.state as TabListState<T>;
-  const items = props.context.items as T[];
+  const items = props.context.items as Accessor<T[]>;
 
   // Create tab list aria props
   const { tabListProps } = createTabList<T>(props.ariaProps as AriaTabListProps, state);
@@ -375,7 +376,7 @@ function TabListInner<T>(props: {
       data-orientation={state.orientation()}
       data-disabled={state.isDisabled() || undefined}
     >
-      <For each={items}>{(item) => props.children?.(item)}</For>
+      <For each={items()}>{(item) => props.children?.(item)}</For>
     </div>
   );
 }
@@ -418,6 +419,8 @@ function TabInner(props: {
   ariaProps: Omit<TabProps, 'children' | 'class' | 'style' | 'slot' | 'id'>;
   children?: RenderChildren<TabRenderProps>;
 }): JSX.Element {
+  let tabRef: HTMLDivElement | undefined;
+
   // Create tab aria props
   const tabAria = createTab<unknown>(
     {
@@ -429,7 +432,8 @@ function TabInner(props: {
         return props.ariaProps['aria-label'];
       },
     },
-    props.state
+    props.state,
+    () => tabRef ?? null
   );
 
   // Create hover
@@ -467,6 +471,7 @@ function TabInner(props: {
   return (
     <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
       <div
+        ref={tabRef}
         id={tabAria.tabProps.id}
         role={tabAria.tabProps.role}
         aria-selected={tabAria.isSelected()}

@@ -39,6 +39,7 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
     onDropActivate: getProps().onDropActivate,
     onDropExit: getProps().onDropExit,
     onDrop: getProps().onDrop,
+    hasDropButton: getProps().hasDropButton,
     isDisabled: getProps().isDisabled,
   }));
 

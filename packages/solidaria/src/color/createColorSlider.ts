@@ -32,17 +32,61 @@ export function createColorSlider(
     return s.value.getChannelName(s.channel, 'en-US');
   });
 
-  // Handle track click
-  const onTrackMouseDown = (e: MouseEvent) => {
+  const updateFromClientX = (clientX: number) => {
     if (getProps().isDisabled || getState().isDisabled) return;
 
     const track = trackRef();
     if (!track) return;
 
     const rect = track.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
+    const percent = (clientX - rect.left) / rect.width;
     getState().setThumbPercent(Math.max(0, Math.min(1, percent)));
+  };
+
+  const endDrag = (target: EventTarget | null, pointerId?: number) => {
+    const s = getState();
+    if (!s.isDragging) return;
+    s.setDragging(false);
+    if (pointerId == null) return;
+    (target as HTMLElement | null)?.releasePointerCapture?.(pointerId);
+  };
+
+  // Handle pointer interaction on the track
+  const onTrackPointerDown = (e: PointerEvent) => {
+    if (getProps().isDisabled || getState().isDisabled) return;
+    updateFromClientX(e.clientX);
     getState().setDragging(true);
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    e.preventDefault();
+  };
+
+  const onTrackPointerMove = (e: PointerEvent) => {
+    if (!getState().isDragging) return;
+    updateFromClientX(e.clientX);
+  };
+
+  const onTrackPointerUp = (e: PointerEvent) => {
+    endDrag(e.currentTarget, e.pointerId);
+  };
+
+  const onTrackPointerCancel = (e: PointerEvent) => {
+    endDrag(e.currentTarget, e.pointerId);
+  };
+
+  const onTrackMouseDown = (e: MouseEvent) => {
+    if (getProps().isDisabled || getState().isDisabled) return;
+    updateFromClientX(e.clientX);
+    getState().setDragging(true);
+    e.preventDefault();
+  };
+
+  const onTrackMouseMove = (e: MouseEvent) => {
+    if (!getState().isDragging) return;
+    updateFromClientX(e.clientX);
+  };
+
+  const onTrackMouseUp = (e: MouseEvent) => {
+    endDrag(e.currentTarget);
   };
 
   // Handle keyboard
@@ -126,11 +170,17 @@ export function createColorSlider(
     const bg = generateBackground();
     return {
       role: 'presentation' as const,
+      onPointerDown: onTrackPointerDown,
+      onPointerMove: onTrackPointerMove,
+      onPointerUp: onTrackPointerUp,
+      onPointerCancel: onTrackPointerCancel,
       onMouseDown: onTrackMouseDown,
+      onMouseMove: onTrackMouseMove,
+      onMouseUp: onTrackMouseUp,
       style: {
         position: 'relative' as const,
         'touch-action': 'none',
-        ...(bg ? { background: bg, 'forced-color-adjust': 'none' } : {}),
+        ...(bg ? { background: bg, 'forced-color-adjust': 'none' as const } : {}),
       },
       'data-disabled': s.isDisabled || undefined,
     };

@@ -21,7 +21,10 @@ import {
 } from '../src/Select';
 import { SelectionIndicator } from '../src/SelectionIndicator';
 import type { Key } from '@proyecto-viviana/solid-stately';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import {
+  setupUser,
+  assertAriaIdIntegrity,
+} from '@proyecto-viviana/solidaria-test-utils';
 
 // Setup userEvent
 const user = setupUser();
@@ -106,6 +109,28 @@ describe('Select', () => {
       // Select trigger uses combobox role per ARIA spec
       const trigger = screen.getByRole('combobox');
       expect(trigger).toBeInTheDocument();
+    });
+
+    it('should wire visible label via aria-labelledby', () => {
+      render(() => (
+        <Select<TestItem>
+          label="Animals"
+          items={testItems}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.name}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectListBox>
+            {(item) => <SelectOption id={item.id}>{item.name}</SelectOption>}
+          </SelectListBox>
+        </Select>
+      ));
+
+      const trigger = screen.getByRole('combobox', { name: 'Animals' });
+      const label = screen.getByText('Animals');
+      expect(trigger.getAttribute('aria-labelledby')).toContain(label.id);
     });
   });
 
@@ -396,6 +421,34 @@ describe('Select', () => {
       const trigger = screen.getByRole('combobox');
       expect(trigger).toHaveAttribute('data-disabled');
     });
+
+    it('should mark all options disabled when select isDisabled', () => {
+      render(() => (
+        <TestSelect selectProps={{ defaultOpen: true, isDisabled: true }} />
+      ));
+
+      const listbox = screen.getByRole('listbox');
+      expect(listbox).toHaveAttribute('aria-disabled', 'true');
+      for (const option of screen.getAllByRole('option')) {
+        expect(option).toHaveAttribute('aria-disabled', 'true');
+      }
+    });
+
+    it('should not select options when select isDisabled', async () => {
+      const onSelectionChange = vi.fn();
+      render(() => (
+        <TestSelect
+          selectProps={{
+            defaultOpen: true,
+            isDisabled: true,
+            onSelectionChange,
+          }}
+        />
+      ));
+
+      await user.click(screen.getByRole('option', { name: 'Cat' }));
+      expect(onSelectionChange).not.toHaveBeenCalled();
+    });
   });
 
   // ============================================
@@ -480,6 +533,68 @@ describe('Select', () => {
 
       const options = screen.getAllByRole('option');
       expect(options).toHaveLength(3);
+    });
+
+    it('does not emit dangling aria-describedby on simple options', () => {
+      render(() => <TestSelect selectProps={{ defaultOpen: true }} />);
+
+      const options = screen.getAllByRole('option');
+      expect(options[0]).not.toHaveAttribute('aria-describedby');
+    });
+
+    it('drops generated aria-labelledby for non-primitive option content', () => {
+      render(() => (
+        <Select<TestItem>
+          aria-label="Test Select"
+          items={testItems}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.name}
+          defaultOpen
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectListBox>
+            {(item) => (
+              <SelectOption id={item.id} textValue={item.name}>
+                <span><strong>{item.name}</strong></span>
+              </SelectOption>
+            )}
+          </SelectListBox>
+        </Select>
+      ));
+
+      const options = screen.getAllByRole('option');
+      expect(options[0]).not.toHaveAttribute('aria-labelledby');
+    });
+  });
+
+  // ============================================
+  // A11Y RISK AREA: ARIA ID integrity
+  // ============================================
+
+  describe('a11y ARIA ID integrity', () => {
+    it('trigger aria-controls resolves to listbox when open', async () => {
+      render(() => <TestSelect selectProps={{ defaultOpen: true }} />);
+
+      // Select trigger may render as button or combobox depending on state
+      const trigger = document.querySelector('.solidaria-SelectTrigger') ||
+        screen.queryByRole('button') ||
+        screen.queryByRole('combobox');
+      expect(trigger).toBeTruthy();
+
+      const controlsId = trigger!.getAttribute('aria-controls');
+      if (controlsId) {
+        expect(document.getElementById(controlsId)).toBeTruthy();
+      }
+
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('no dangling ARIA IDs in closed state', () => {
+      render(() => <TestSelect />);
+
+      assertAriaIdIntegrity(document.body);
     });
   });
 });

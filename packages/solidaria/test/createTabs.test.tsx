@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, fireEvent, screen } from '@solidjs/testing-library';
-import { createSignal, For, Show, type Accessor } from 'solid-js';
+import { createRoot, createSignal, For, Show, type Accessor } from 'solid-js';
 import {
   createTabList,
   createTab,
@@ -230,6 +230,29 @@ describe('createTabs', () => {
       fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
 
       expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+    });
+
+    it('ArrowRight moves DOM focus to the next tab', () => {
+      render(() => <TestTabs aria-label="Test Tabs" orientation="horizontal" />);
+
+      const tabs = screen.getAllByRole('tab');
+      tabs[0].focus();
+
+      fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
+      expect(document.activeElement).toBe(tabs[1]);
+    });
+
+    it('Arrow navigation emits one selection change in automatic mode', () => {
+      const onSelectionChange = vi.fn();
+      render(() => <TestTabs aria-label="Test Tabs" onSelectionChange={onSelectionChange} />);
+
+      const tabs = screen.getAllByRole('tab');
+      tabs[0].focus();
+
+      fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
+
+      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledTimes(1);
     });
 
     it('ArrowLeft moves to previous tab', () => {
@@ -481,9 +504,10 @@ describe('createTabs', () => {
       fireEvent.click(tabs[1]);
 
       expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledTimes(1);
     });
 
-    it('clicking the already selected tab still fires onSelectionChange', () => {
+    it('clicking the already selected tab does not emit onSelectionChange', () => {
       const onSelectionChange = vi.fn();
       render(() => <TestTabs aria-label="Test Tabs" onSelectionChange={onSelectionChange} />);
 
@@ -491,7 +515,7 @@ describe('createTabs', () => {
       // First tab is already selected
       fireEvent.click(tabs[0]);
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab1');
+      expect(onSelectionChange).not.toHaveBeenCalled();
     });
 
     it('updates tabpanel content when tab changes', () => {
@@ -691,6 +715,16 @@ describe('createTabs', () => {
       // Selection should change to next tab
       expect(onSelectionChange).toHaveBeenCalledWith('tab2');
     });
+
+    it('focusing the selected tab does not emit selection change', () => {
+      const onSelectionChange = vi.fn();
+      render(() => <TestTabs aria-label="Test Tabs" onSelectionChange={onSelectionChange} />);
+
+      const tabs = screen.getAllByRole('tab');
+      tabs[0].focus();
+
+      expect(onSelectionChange).not.toHaveBeenCalled();
+    });
   });
 
   describe('dynamic updates', () => {
@@ -734,6 +768,22 @@ describe('createTabs', () => {
       // First tab should still be selected
       expect(remainingTabs[0]).toHaveAttribute('aria-selected', 'true');
     });
+
+    it('reselects first enabled tab when the selected tab is removed', () => {
+      const [items, setItems] = createSignal(defaultItems);
+
+      render(() => <TestTabs aria-label="Test Tabs" items={items()} defaultSelectedKey="tab2" />);
+
+      let tabs = screen.getAllByRole('tab');
+      expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
+
+      setItems(defaultItems.filter((item) => item.key !== 'tab2'));
+
+      tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(2);
+      expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByRole('tabpanel')).toHaveTextContent('Tab 1 body');
+    });
   });
 });
 
@@ -763,31 +813,36 @@ describe('createTabPanel', () => {
   });
 
   it('supports aria-label override', () => {
-    // Test with custom panel props
-    const state = createTabListState({
-      items: defaultItems,
-      getKey: (item) => item.key,
+    createRoot((dispose) => {
+      const state = createTabListState({
+        items: defaultItems,
+        getKey: (item) => item.key,
+      });
+
+      const { tabPanelProps } = createTabPanel(
+        { id: 'tab1', 'aria-label': 'Custom Panel Label' },
+        state
+      );
+
+      expect(tabPanelProps['aria-label']).toBe('Custom Panel Label');
+      dispose();
     });
-
-    const { tabPanelProps } = createTabPanel(
-      { id: 'tab1', 'aria-label': 'Custom Panel Label' },
-      state
-    );
-
-    expect(tabPanelProps['aria-label']).toBe('Custom Panel Label');
   });
 
   it('supports aria-describedby', () => {
-    const state = createTabListState({
-      items: defaultItems,
-      getKey: (item) => item.key,
+    createRoot((dispose) => {
+      const state = createTabListState({
+        items: defaultItems,
+        getKey: (item) => item.key,
+      });
+
+      const { tabPanelProps } = createTabPanel(
+        { id: 'tab1', 'aria-describedby': 'description-id' },
+        state
+      );
+
+      expect(tabPanelProps['aria-describedby']).toBe('description-id');
+      dispose();
     });
-
-    const { tabPanelProps } = createTabPanel(
-      { id: 'tab1', 'aria-describedby': 'description-id' },
-      state
-    );
-
-    expect(tabPanelProps['aria-describedby']).toBe('description-id');
   });
 });

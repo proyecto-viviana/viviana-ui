@@ -125,11 +125,15 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
   // Group props
   const groupProps = createMemo(() => {
     const p = getProps();
+    const isInvalid = p.isInvalid || state.isInvalid();
 
     return mergeProps(labelFieldProps as Record<string, unknown>, {
       id,
       role: 'group',
       'aria-disabled': p.isDisabled || state.isDisabled() || undefined,
+      'aria-readonly': p.isReadOnly || state.isReadOnly() || undefined,
+      'aria-required': p.isRequired || state.isRequired() || undefined,
+      'aria-invalid': isInvalid || undefined,
       'aria-describedby': getAriaDescribedBy(),
     });
   });

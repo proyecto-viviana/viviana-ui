@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, waitFor } from '@solidjs/testing-library';
+import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
 import {
   RangeCalendar,
   RangeCalendarHeading,
@@ -119,6 +119,35 @@ describe('RangeCalendar', () => {
       const calendar = document.querySelector('.my-range-calendar');
       expect(calendar).toBeInTheDocument();
     });
+
+    it('should mark trailing dates as outside month in an offset grid', async () => {
+      render(() => (
+        <RangeCalendar
+          aria-label="Dual month range calendar"
+          visibleMonths={2}
+          defaultFocusedValue={new CalendarDate(2024, 1, 15)}
+        >
+          <RangeCalendarGrid>
+            {(date) => <RangeCalendarCell date={date} />}
+          </RangeCalendarGrid>
+          <RangeCalendarGrid offset={{ months: 1 }}>
+            {(date) => <RangeCalendarCell date={date} />}
+          </RangeCalendarGrid>
+        </RangeCalendar>
+      ));
+      await waitForRangeCalendarHydration();
+
+      const grids = document.querySelectorAll('table[role="grid"]');
+      expect(grids.length).toBe(2);
+
+      const secondGridButtons = grids[1]?.querySelectorAll('div[role="button"]') ?? [];
+      const januaryButton = Array.from(secondGridButtons).find((button) =>
+        button.getAttribute('aria-label')?.includes('January')
+      );
+
+      expect(januaryButton).toBeTruthy();
+      expect(januaryButton).toHaveAttribute('data-outside-month');
+    });
   });
 
   // ============================================
@@ -164,6 +193,35 @@ describe('RangeCalendar', () => {
       await waitFor(() => {
         expect(heading?.textContent).toContain('July');
       });
+    });
+
+    it('should follow RTL arrow direction for day navigation', async () => {
+      const previousDir = document.documentElement.getAttribute('dir');
+      document.documentElement.setAttribute('dir', 'rtl');
+
+      try {
+        render(() => (
+          <TestRangeCalendar
+            calendarProps={{ defaultFocusedValue: new CalendarDate(2024, 6, 15) }}
+          />
+        ));
+        await waitForRangeCalendarHydration();
+
+        const day15 = screen.getByRole('button', { name: /June 15, 2024/i });
+        day15.focus();
+        fireEvent.keyDown(day15, { key: 'ArrowRight' });
+
+        await waitFor(() => {
+          const day14 = screen.getByRole('button', { name: /June 14, 2024/i });
+          expect(day14).toHaveFocus();
+        });
+      } finally {
+        if (previousDir) {
+          document.documentElement.setAttribute('dir', previousDir);
+        } else {
+          document.documentElement.removeAttribute('dir');
+        }
+      }
     });
   });
 
@@ -227,6 +285,34 @@ describe('RangeCalendar', () => {
 
       const selectedCells = document.querySelectorAll('[data-selected]');
       expect(selectedCells.length).toBeGreaterThan(0);
+    });
+
+    it('should fire onChange once after completing a range selection', async () => {
+      const onChange = vi.fn();
+      render(() => (
+        <TestRangeCalendar
+          calendarProps={{
+            onChange,
+            defaultFocusedValue: new CalendarDate(2024, 6, 15),
+          }}
+        />
+      ));
+      await waitForRangeCalendarHydration();
+
+      const start = screen.getByRole('button', { name: /June 10, 2024/i });
+      fireEvent.pointerDown(start);
+      fireEvent.pointerUp(start);
+      const end = screen.getByRole('button', { name: /June 15, 2024/i });
+      fireEvent.pointerDown(end);
+      fireEvent.pointerUp(end);
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledTimes(1);
+      });
+      expect(onChange.mock.calls[0][0]).toMatchObject({
+        start: expect.objectContaining({ day: 10 }),
+        end: expect.objectContaining({ day: 15 }),
+      });
     });
 
     it('should mark selection start and end', async () => {

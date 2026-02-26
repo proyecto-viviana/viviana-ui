@@ -4,6 +4,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@solidjs/testing-library';
 import { ColorEditor } from '../src/ColorEditor';
+import { parseColor } from '@proyecto-viviana/solid-stately';
+import { ColorSwatch } from '../src/Color';
 
 describe('ColorEditor (headless)', () => {
   describe('basic rendering', () => {
@@ -38,10 +40,10 @@ describe('ColorEditor (headless)', () => {
   });
 
   describe('color space', () => {
-    it('defaults to hsb color space', () => {
+    it('defaults to hex color space', () => {
       const { container } = render(() => <ColorEditor />);
       const editor = container.querySelector('.solidaria-ColorEditor');
-      expect(editor?.getAttribute('data-color-space')).toBe('hsb');
+      expect(editor?.getAttribute('data-color-space')).toBe('hex');
     });
 
     it('changes color space via selector', () => {
@@ -57,6 +59,13 @@ describe('ColorEditor (headless)', () => {
       const select = screen.getByLabelText('Color format') as HTMLSelectElement;
       const options = Array.from(select.options).map(o => o.value);
       expect(options).toContain('hex');
+    });
+
+    it('accepts string value/defaultValue inputs via ColorPicker contract', () => {
+      const { container } = render(() => <ColorEditor value="#3366ff" defaultValue="#ff0000" />);
+      const editor = container.querySelector('.solidaria-ColorEditor');
+      expect(editor).toBeInTheDocument();
+      expect(editor?.getAttribute('data-color-space')).toBe('hex');
     });
 
     it('calls onColorSpaceChange when space changes', () => {
@@ -93,6 +102,19 @@ describe('ColorEditor (headless)', () => {
       expect(screen.getByTestId('custom')).toBeInTheDocument();
       // Default layout should not be present
       expect(screen.queryByLabelText('Color format')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('state synchronization', () => {
+    it('provides color context to custom children', () => {
+      render(() => (
+        <ColorEditor defaultValue={parseColor('#ff0000')}>
+          <ColorSwatch aria-label="Preview swatch" />
+        </ColorEditor>
+      ));
+
+      const swatch = screen.getByRole('img', { name: 'Preview swatch' });
+      expect((swatch as HTMLElement).style.backgroundColor).toBe('rgb(255, 0, 0)');
     });
   });
 });

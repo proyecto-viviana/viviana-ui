@@ -12,7 +12,7 @@ import {
   type CheckboxRenderProps,
   type CheckboxGroupRenderProps,
 } from '../src/Checkbox';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { setupUser, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
 
@@ -415,6 +415,59 @@ describe('CheckboxGroup', () => {
       ));
 
       expect(screen.getByText('Selected: a, b')).toBeInTheDocument();
+    });
+  });
+
+  describe('a11y validation', () => {
+    it('axe: default Checkbox', async () => {
+      const { container } = render(() => <Checkbox>Accept terms</Checkbox>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: checked', async () => {
+      const { container } = render(() => <Checkbox defaultSelected>Accept terms</Checkbox>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: indeterminate', async () => {
+      const { container } = render(() => <Checkbox isIndeterminate>Select all</Checkbox>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: disabled', async () => {
+      const { container } = render(() => <Checkbox isDisabled>Disabled option</Checkbox>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: invalid', async () => {
+      const { container } = render(() => <Checkbox isInvalid>Required field</Checkbox>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: CheckboxGroup', async () => {
+      const { container } = render(() => (
+        <CheckboxGroup aria-label="Options">
+          <Checkbox value="a">Option A</Checkbox>
+          <Checkbox value="b">Option B</Checkbox>
+        </CheckboxGroup>
+      ));
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: CheckboxGroup no dangling refs', () => {
+      render(() => (
+        <CheckboxGroup aria-label="Options" defaultValue={['a']}>
+          <Checkbox value="a">Option A</Checkbox>
+          <Checkbox value="b">Option B</Checkbox>
+        </CheckboxGroup>
+      ));
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('DOM: data-testid forwards on Checkbox', () => {
+      render(() => <Checkbox data-testid="terms-cb">Accept terms</Checkbox>);
+      const elements = screen.getAllByTestId('terms-cb');
+      expect(elements.length).toBeGreaterThanOrEqual(1);
     });
   });
 });

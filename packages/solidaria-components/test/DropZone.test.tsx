@@ -19,11 +19,29 @@ function createDataTransferStub(): DataTransfer {
   } as unknown as DataTransfer;
 }
 
+function createClipboardDataStub(text: string): DataTransfer {
+  return {
+    items: [{ kind: 'string', type: 'text/plain' }] as unknown as DataTransferItemList,
+    types: ['text/plain'],
+    files: [] as unknown as FileList,
+    dropEffect: 'copy',
+    effectAllowed: 'copy',
+    getData: (type: string) => (type === 'text/plain' ? text : ''),
+    setData: () => {},
+    clearData: () => {},
+    setDragImage: () => {},
+  } as unknown as DataTransfer;
+}
+
 describe('DropZone', () => {
   it('renders with default class', () => {
     render(() => <DropZone>Drop files</DropZone>);
-    const zone = screen.getByRole('group');
+    const zone = document.querySelector('.solidaria-DropZone') as HTMLDivElement;
+    expect(zone).toBeInTheDocument();
     expect(zone).toHaveClass('solidaria-DropZone');
+
+    const button = screen.getByRole('button', { name: 'Drop files' });
+    expect(button).toBeInTheDocument();
   });
 
   it('calls onDrop handler on drop event', () => {
@@ -34,7 +52,8 @@ describe('DropZone', () => {
       </DropZone>
     ));
 
-    const zone = screen.getByRole('group');
+    const zone = document.querySelector('.solidaria-DropZone') as HTMLDivElement;
+    expect(zone).toBeInTheDocument();
     const dataTransfer = createDataTransferStub();
     fireEvent.drop(zone, {
       dataTransfer,
@@ -47,8 +66,37 @@ describe('DropZone', () => {
 
   it('sets disabled state attributes', () => {
     render(() => <DropZone isDisabled>Drop files</DropZone>);
-    const zone = screen.getByRole('group');
+    const zone = document.querySelector('.solidaria-DropZone') as HTMLDivElement;
+    expect(zone).toBeInTheDocument();
     expect(zone).toHaveAttribute('data-disabled');
-    expect(zone).toHaveAttribute('tabindex', '-1');
+
+    const button = screen.getByRole('button', { name: 'Drop files' });
+    expect(button).toBeDisabled();
+  });
+
+  it('maps hidden button paste to onDrop copy events', () => {
+    const onDrop = vi.fn();
+    render(() => (
+      <DropZone onDrop={onDrop}>
+        Drop files
+      </DropZone>
+    ));
+
+    const button = screen.getByRole('button', { name: 'Drop files' });
+    const clipboardData = createClipboardDataStub('pasted text');
+    fireEvent.paste(button, { clipboardData });
+
+    expect(onDrop).toHaveBeenCalledTimes(1);
+    expect(onDrop.mock.calls[0][0]).toEqual(
+      expect.objectContaining({
+        type: 'drop',
+        dropOperation: 'copy',
+      })
+    );
+  });
+
+  it('uses explicit aria-label for hidden drop button', () => {
+    render(() => <DropZone aria-label="Upload area">Drop files</DropZone>);
+    expect(screen.getByRole('button', { name: 'Upload area' })).toBeInTheDocument();
   });
 });

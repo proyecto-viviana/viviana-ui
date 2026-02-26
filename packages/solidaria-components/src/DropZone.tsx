@@ -5,11 +5,13 @@
  * Parity target: react-aria-components/src/DropZone.tsx
  */
 
-import { type JSX, createContext, createMemo, splitProps } from 'solid-js';
+import { type JSX, createContext, createMemo, createSignal, splitProps } from 'solid-js';
 import {
   createDrop,
   createFocusRing,
   createHover,
+  readFromDataTransfer,
+  type HoverEvents,
   type AriaDropOptions,
 } from '@proyecto-viviana/solidaria';
 import {
@@ -20,6 +22,7 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { VisuallyHidden } from './VisuallyHidden';
 
 export interface DropZoneRenderProps {
   isHovered: boolean;
@@ -32,6 +35,7 @@ export interface DropZoneRenderProps {
 export interface DropZoneProps
   extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'style' | 'onDrop'>,
     Omit<AriaDropOptions, 'hasDropButton'>,
+    HoverEvents,
     SlotProps {
   children?: RenderChildren<DropZoneRenderProps>;
   class?: ClassNameOrFunction<DropZoneRenderProps>;
@@ -39,16 +43,34 @@ export interface DropZoneProps
 }
 
 export const DropZoneContext = createContext<DropZoneProps | null>(null);
+const DEFAULT_DROPZONE_LABEL = 'Drop files';
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled]):not([type="hidden"])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+  '[contenteditable="true"]',
+].join(',');
+
+function isFocusableElement(target: Element): boolean {
+  return target instanceof HTMLElement && target.matches(FOCUSABLE_SELECTOR);
+}
 
 /**
  * A drop zone is an area into which one or multiple objects can be dropped.
  */
 export function DropZone(props: DropZoneProps): JSX.Element {
-  const [local, dropProps, domProps] = splitProps(
+  const [local, dropProps, hoverEventProps, domProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
-    ['getDropOperation', 'getDropOperationForPoint', 'onDropEnter', 'onDropMove', 'onDropActivate', 'onDropExit', 'onDrop', 'isDisabled']
+    ['children', 'class', 'style', 'slot', 'aria-label', 'aria-labelledby'],
+    ['getDropOperation', 'getDropOperationForPoint', 'onDropEnter', 'onDropMove', 'onDropActivate', 'onDropExit', 'onDrop', 'isDisabled'],
+    ['onHoverStart', 'onHoverEnd', 'onHoverChange']
   );
+
+  const [dropZoneRef, setDropZoneRef] = createSignal<HTMLDivElement | null>(null);
+  const [dropButtonRef, setDropButtonRef] = createSignal<HTMLButtonElement | null>(null);
 
   const dropAria = createDrop(() => ({
     getDropOperation: dropProps.getDropOperation,
@@ -58,14 +80,16 @@ export function DropZone(props: DropZoneProps): JSX.Element {
     onDropActivate: dropProps.onDropActivate,
     onDropExit: dropProps.onDropExit,
     onDrop: dropProps.onDrop,
+    hasDropButton: true,
     isDisabled: dropProps.isDisabled,
   }));
 
-  const { isHovered, hoverProps } = createHover({
-    get isDisabled() {
-      return dropProps.isDisabled;
-    },
-  });
+  const { isHovered, hoverProps } = createHover(() => ({
+    isDisabled: dropProps.isDisabled,
+    onHoverStart: hoverEventProps.onHoverStart,
+    onHoverEnd: hoverEventProps.onHoverEnd,
+    onHoverChange: hoverEventProps.onHoverChange,
+  }));
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
   const renderValues = createMemo<DropZoneRenderProps>(() => ({
@@ -100,15 +124,70 @@ export function DropZone(props: DropZoneProps): JSX.Element {
     const { ref: _ref, ...rest } = focusProps as Record<string, unknown>;
     return rest;
   };
+  const cleanDropButtonProps = () => {
+    const { ref: _ref, ...rest } = dropAria.dropButtonProps as Record<string, unknown>;
+    return rest;
+  };
+
+  const onRootClick: JSX.EventHandler<HTMLDivElement, MouseEvent> = (e) => {
+    const onClick = (filteredDomProps() as JSX.HTMLAttributes<HTMLDivElement>).onClick as
+      | JSX.EventHandler<HTMLDivElement, MouseEvent>
+      | undefined;
+    onClick?.(e);
+    if (e.defaultPrevented || dropProps.isDisabled) {
+      return;
+    }
+
+    const root = dropZoneRef();
+    const hiddenButton = dropButtonRef();
+    if (!root || !hiddenButton) {
+      return;
+    }
+
+    let target: Element | null = e.target instanceof Element ? e.target : root;
+    while (target && root.contains(target)) {
+      if (isFocusableElement(target)) {
+        return;
+      }
+      if (target === root) {
+        hiddenButton.focus();
+        return;
+      }
+      target = target.parentElement;
+    }
+  };
+
+  const onHiddenButtonPaste: JSX.EventHandler<HTMLButtonElement, ClipboardEvent> = (e) => {
+    if (dropProps.isDisabled || !e.clipboardData) {
+      return;
+    }
+
+    const items = readFromDataTransfer(e.clipboardData);
+    if (items.length === 0) {
+      return;
+    }
+
+    e.preventDefault();
+    dropProps.onDrop?.({
+      type: 'drop',
+      x: 0,
+      y: 0,
+      items,
+      dropOperation: 'copy',
+    });
+  };
+
+  const dropButtonAriaLabel = createMemo(
+    () => local['aria-label'] ?? (!local['aria-labelledby'] ? DEFAULT_DROPZONE_LABEL : undefined)
+  );
 
   return (
     <div
+      ref={setDropZoneRef}
       {...filteredDomProps()}
       {...cleanDropProps()}
       {...cleanHoverProps()}
-      {...cleanFocusProps()}
-      role="group"
-      tabIndex={dropProps.isDisabled ? -1 : 0}
+      onClick={onRootClick}
       class={renderProps.class()}
       style={renderProps.style()}
       slot={local.slot}
@@ -118,6 +197,16 @@ export function DropZone(props: DropZoneProps): JSX.Element {
       data-drop-target={dropAria.isDropTarget || undefined}
       data-disabled={dropProps.isDisabled || undefined}
     >
+      <VisuallyHidden>
+        <button
+          ref={setDropButtonRef}
+          {...cleanDropButtonProps()}
+          {...cleanFocusProps()}
+          aria-label={dropButtonAriaLabel()}
+          aria-labelledby={local['aria-labelledby']}
+          onPaste={onHiddenButtonPaste}
+        />
+      </VisuallyHidden>
       {renderProps.renderChildren()}
     </div>
   );

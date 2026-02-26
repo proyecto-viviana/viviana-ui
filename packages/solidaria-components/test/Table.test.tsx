@@ -4,6 +4,7 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
+import { createSignal } from 'solid-js';
 import { useDragAndDrop } from '../src/useDragAndDrop';
 import {
   Table,
@@ -431,6 +432,58 @@ describe('Table', () => {
       const table = document.querySelector('.solidaria-Table');
       expect(table).toBeTruthy();
     });
+
+    it('updates row aria-selected when selecting from focused grid with keyboard', () => {
+      render(() => <TestTable selectionMode="multiple" />);
+
+      const grid = screen.getByRole('grid', { name: 'Pokemon' });
+      const getFirstDataRow = () => screen.getByText('Pikachu').closest('[role="row"]');
+      expect(getFirstDataRow()).toBeTruthy();
+      expect(getFirstDataRow()).toHaveAttribute('aria-selected', 'false');
+
+      fireEvent.focus(grid);
+      fireEvent.keyDown(grid, { key: ' ' });
+
+      expect(getFirstDataRow()).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('updates TableSelectionCheckbox checked state when row selection changes', () => {
+      const singleRow = [testData[0]];
+      render(() => (
+        <Table
+          items={singleRow}
+          columns={[{ key: 'select', name: 'Select' }]}
+          getKey={(item: any) => item.id}
+          aria-label="Pokemon single row"
+          selectionMode="single"
+        >
+          {() => (
+            <>
+              <TableHeader>
+                <TableColumn id="select">{() => <>Select</>}</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {(item: any) => (
+                  <TableRow id={item.id} item={item}>
+                    {() => (
+                      <TableCell>{() => <TableSelectionCheckbox rowKey={item.id} />}</TableCell>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+            </>
+          )}
+        </Table>
+      ));
+
+      const getCheckbox = () => screen.getByRole('checkbox');
+      expect(getCheckbox()).not.toBeChecked();
+
+      const rows = screen.getAllByRole('row');
+      fireEvent.click(rows[1]);
+
+      expect(getCheckbox()).toBeChecked();
+    });
   });
 
   // ============================================
@@ -518,6 +571,44 @@ describe('Table', () => {
       const sortedColumn = document.querySelector('[data-sort-direction="ascending"]');
       expect(sortedColumn).toBeTruthy();
     });
+
+    it('updates aria-sort when sortable column is activated', () => {
+      render(() => {
+        const [sortDescriptor, setSortDescriptor] = createSignal<{ column: string | number; direction: 'ascending' | 'descending' } | undefined>(undefined);
+
+        return (
+          <Table
+            items={testData}
+            columns={testColumns}
+            getKey={(item: any) => item.id}
+            aria-label="Pokemon"
+            sortDescriptor={sortDescriptor() as any}
+            onSortChange={(descriptor) => setSortDescriptor(descriptor as { column: string | number; direction: 'ascending' | 'descending' })}
+          >
+            {() => (
+              <>
+                <TableHeader>
+                  <TableColumn id="name" allowsSorting>{() => <>Name</>}</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {(item: any) => (
+                    <TableRow id={item.id}>
+                      {() => <TableCell>{() => <>{item.name}</>}</TableCell>}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </>
+            )}
+          </Table>
+        );
+      });
+
+      const nameColumn = screen.getByRole('columnheader', { name: 'Name' });
+      expect(nameColumn).toHaveAttribute('aria-sort', 'none');
+
+      fireEvent.click(nameColumn);
+      expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveAttribute('aria-sort', 'ascending');
+    });
   });
 
   // ============================================
@@ -537,6 +628,14 @@ describe('Table', () => {
 
       const grid = document.querySelector('[role="grid"]');
       expect(grid).toBeTruthy();
+    });
+
+    it('keeps the grid tabbable when rows are present', () => {
+      render(() => <TestTable />);
+
+      const grid = document.querySelector('[role="grid"]');
+      expect(grid).toBeTruthy();
+      expect(grid).toHaveAttribute('tabindex', '0');
     });
   });
 

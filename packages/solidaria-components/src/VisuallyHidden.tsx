@@ -7,34 +7,20 @@
 
 import { type JSX, type ParentProps, splitProps } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
+import { createVisuallyHidden, mergeProps } from '@proyecto-viviana/solidaria';
 
 // ============================================
 // TYPES
 // ============================================
 
-export interface VisuallyHiddenProps extends ParentProps {
+export interface VisuallyHiddenProps extends ParentProps, JSX.HTMLAttributes<HTMLElement> {
   /** The element type to render. @default 'span' */
   elementType?: keyof JSX.IntrinsicElements;
   /** Whether the element should be focusable when focused. */
   isFocusable?: boolean;
+  /** Inline style object merged with visually hidden styles. */
+  style?: JSX.CSSProperties;
 }
-
-// ============================================
-// STYLES
-// ============================================
-
-const visuallyHiddenStyles: JSX.CSSProperties = {
-  border: '0',
-  clip: 'rect(0 0 0 0)',
-  'clip-path': 'inset(50%)',
-  height: '1px',
-  margin: '-1px',
-  overflow: 'hidden',
-  padding: '0',
-  position: 'absolute',
-  width: '1px',
-  'white-space': 'nowrap',
-};
 
 // ============================================
 // COMPONENT
@@ -44,15 +30,23 @@ const visuallyHiddenStyles: JSX.CSSProperties = {
  * VisuallyHidden hides its children visually, while keeping content visible to screen readers.
  */
 export function VisuallyHidden(props: VisuallyHiddenProps): JSX.Element {
-  const [local, others] = splitProps(props, ['elementType', 'isFocusable']);
+  const [local, others] = splitProps(props, ['elementType', 'isFocusable', 'style']);
+  const { visuallyHiddenProps } = createVisuallyHidden(() => ({
+    style: local.style,
+    isFocusable: local.isFocusable,
+  }));
 
   const elementType = () => local.elementType ?? 'span';
+  const mergedProps = () =>
+    mergeProps<Record<string, unknown>>(
+      others as unknown as Record<string, unknown>,
+      visuallyHiddenProps() as unknown as Record<string, unknown>
+    );
 
   return (
     <Dynamic
       component={elementType()}
-      style={visuallyHiddenStyles}
-      {...others}
+      {...mergedProps()}
     >
       {props.children}
     </Dynamic>

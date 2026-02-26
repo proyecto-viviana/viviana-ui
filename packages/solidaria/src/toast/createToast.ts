@@ -19,6 +19,10 @@ export interface AriaToastProps<T> {
   toast: QueuedToast<T>;
   /** The toast state from createToastState. */
   state: ToastState<T>;
+  /** Whether the rendered toast includes a title element. */
+  hasTitle?: boolean;
+  /** Whether the rendered toast includes a description element. */
+  hasDescription?: boolean;
 }
 
 export interface ToastAria {
@@ -70,6 +74,8 @@ export interface ToastAria {
 export function createToast<T>(props: AriaToastProps<T>): ToastAria {
   const titleId = createId();
   const descriptionId = createId();
+  const hasTitle = props.hasTitle ?? true;
+  const hasDescription = props.hasDescription ?? true;
 
   const close = () => {
     props.state.close(props.toast.key);
@@ -79,8 +85,8 @@ export function createToast<T>(props: AriaToastProps<T>): ToastAria {
   const toastProps = createMemo<JSX.HTMLAttributes<HTMLElement>>(() => ({
     role: 'alertdialog',
     'aria-modal': 'false',
-    'aria-labelledby': titleId,
-    'aria-describedby': descriptionId,
+    'aria-labelledby': hasTitle ? titleId : undefined,
+    'aria-describedby': hasDescription ? descriptionId : undefined,
     'data-animation': props.toast.animation,
     'data-key': props.toast.key,
   }));

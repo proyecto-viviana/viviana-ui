@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@solidjs/testing-library'
 import { createToolbar } from '../src/toolbar'
 import { I18nProvider } from '../src/i18n'
@@ -133,6 +133,26 @@ describe('createToolbar', () => {
       expect(document.activeElement).toBe(buttons[0])
     })
 
+    it('should navigate to first and last with Home/End', () => {
+      render(() => (
+        <TestToolbar aria-label="Tools">
+          <button>Cut</button>
+          <button>Copy</button>
+          <button>Paste</button>
+        </TestToolbar>
+      ))
+
+      const buttons = screen.getAllByRole('button')
+      buttons[1].focus()
+      expect(document.activeElement).toBe(buttons[1])
+
+      fireEvent.keyDown(buttons[1], { key: 'End' })
+      expect(document.activeElement).toBe(buttons[2])
+
+      fireEvent.keyDown(buttons[2], { key: 'Home' })
+      expect(document.activeElement).toBe(buttons[0])
+    })
+
     it('should not wrap at boundaries', () => {
       render(() => (
         <TestToolbar aria-label="Tools">
@@ -188,6 +208,34 @@ describe('createToolbar', () => {
 
       fireEvent.keyDown(buttons[0], { key: 'ArrowLeft' })
       expect(document.activeElement).toBe(buttons[0])
+    })
+
+    it('should not hijack arrow/home/end keys from text inputs', () => {
+      render(() => (
+        <TestToolbar aria-label="Tools">
+          <input aria-label="Search" />
+          <button>Apply</button>
+        </TestToolbar>
+      ))
+
+      const search = screen.getByRole('textbox', { name: 'Search' })
+      const apply = screen.getByRole('button', { name: 'Apply' })
+
+      search.focus()
+      expect(document.activeElement).toBe(search)
+
+      fireEvent.keyDown(search, { key: 'ArrowRight' })
+      expect(document.activeElement).toBe(search)
+
+      fireEvent.keyDown(search, { key: 'End' })
+      expect(document.activeElement).toBe(search)
+
+      fireEvent.keyDown(search, { key: 'Home' })
+      expect(document.activeElement).toBe(search)
+
+      apply.focus()
+      fireEvent.keyDown(apply, { key: 'ArrowLeft' })
+      expect(document.activeElement).toBe(search)
     })
   })
 

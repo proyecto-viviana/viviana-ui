@@ -38,6 +38,24 @@ export interface AriaNumberFieldProps {
   autoFocus?: boolean;
   /** The name for the form input. */
   name?: string;
+  /** The form element this input belongs to. */
+  form?: string;
+  /** Handler for focus events. */
+  onFocus?: JSX.EventHandler<HTMLInputElement, FocusEvent>;
+  /** Handler for blur events. */
+  onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent>;
+  /** Handler called when focus state changes. */
+  onFocusChange?: (isFocused: boolean) => void;
+  /** Handler for key down events. */
+  onKeyDown?: JSX.EventHandler<HTMLInputElement, KeyboardEvent>;
+  /** Handler for key up events. */
+  onKeyUp?: JSX.EventHandler<HTMLInputElement, KeyboardEvent>;
+  /** Handler for paste events. */
+  onPaste?: JSX.EventHandler<HTMLInputElement, ClipboardEvent>;
+  /** Handler for copy events. */
+  onCopy?: JSX.EventHandler<HTMLInputElement, ClipboardEvent>;
+  /** Handler for cut events. */
+  onCut?: JSX.EventHandler<HTMLInputElement, ClipboardEvent>;
 }
 
 export interface NumberFieldAria {
@@ -114,44 +132,70 @@ export function createNumberField(
   };
 
   // Handle input blur - commit value
-  const onInputBlur: JSX.EventHandler<HTMLInputElement, FocusEvent> = () => {
+  const onInputBlur: JSX.EventHandler<HTMLInputElement, FocusEvent> = (e) => {
     state.commit();
+    const p = getProps();
+    p.onBlur?.(e);
+    p.onFocusChange?.(false);
+  };
+
+  const onInputFocus: JSX.EventHandler<HTMLInputElement, FocusEvent> = (e) => {
+    const p = getProps();
+    p.onFocus?.(e);
+    p.onFocusChange?.(true);
   };
 
   // Handle keyboard events
   const onKeyDown: JSX.EventHandler<HTMLInputElement, KeyboardEvent> = (e) => {
     const p = getProps();
-    if (p.isDisabled || p.isReadOnly) return;
+    if (p.isDisabled || p.isReadOnly) {
+      p.onKeyDown?.(e);
+      return;
+    }
 
+    let handled = false;
     switch (e.key) {
       case 'ArrowUp':
+        handled = true;
         e.preventDefault();
         state.increment();
         break;
       case 'ArrowDown':
+        handled = true;
         e.preventDefault();
         state.decrement();
         break;
       case 'PageUp':
+        handled = true;
         e.preventDefault();
         state.incrementToMax();
         break;
       case 'PageDown':
+        handled = true;
         e.preventDefault();
         state.decrementToMin();
         break;
       case 'Home':
+        handled = true;
         e.preventDefault();
         state.decrementToMin();
         break;
       case 'End':
+        handled = true;
         e.preventDefault();
         state.incrementToMax();
         break;
       case 'Enter':
+        handled = true;
         state.commit();
         break;
     }
+
+    p.onKeyDown?.(e);
+  };
+
+  const onKeyUp: JSX.EventHandler<HTMLInputElement, KeyboardEvent> = (e) => {
+    getProps().onKeyUp?.(e);
   };
 
   // Handle increment button
@@ -186,6 +230,7 @@ export function createNumberField(
       return {
         role: 'group',
         'aria-disabled': getProps().isDisabled || undefined,
+        'aria-invalid': getProps().isInvalid || undefined,
       } as JSX.HTMLAttributes<HTMLElement>;
     },
     get inputProps() {
@@ -215,9 +260,15 @@ export function createNumberField(
           readOnly: isReadOnly || undefined,
           value: state.inputValue(),
           onChange: onInputChange,
+          onFocus: onInputFocus,
           onBlur: onInputBlur,
           onKeyDown,
+          onKeyUp,
+          onPaste: p.onPaste,
+          onCopy: p.onCopy,
+          onCut: p.onCut,
           name: p.name,
+          form: p.form,
           autoFocus: p.autoFocus,
         } as Record<string, unknown>
       ) as JSX.InputHTMLAttributes<HTMLInputElement>;

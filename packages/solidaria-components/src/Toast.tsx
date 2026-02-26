@@ -103,6 +103,13 @@ export interface ToastProps {
 
 export const ToastContext = createContext<ToastState<ToastContent> | null>(null);
 
+interface ToastAriaContextValue {
+  titleProps: JSX.HTMLAttributes<HTMLElement>;
+  descriptionProps: JSX.HTMLAttributes<HTMLElement>;
+}
+
+const ToastAriaContext = createContext<ToastAriaContextValue | null>(null);
+
 export function useToastContext(): ToastState<ToastContent> {
   const context = useContext(ToastContext);
   if (!context) {
@@ -345,6 +352,8 @@ export function Toast(props: ToastProps): JSX.Element {
   const toastAria = createToast({
     toast: local.toast,
     state,
+    hasTitle: !!local.toast.content.title,
+    hasDescription: !!local.toast.content.description,
   });
 
   // Render props values
@@ -425,18 +434,43 @@ export function Toast(props: ToastProps): JSX.Element {
   // Extract ref from toastProps to avoid type conflicts
   const { ref: _ref, ...cleanToastProps } = toastAria.toastProps as Record<string, unknown>;
 
+  // Ensure ARIA title/description IDs are present on rendered sub-components,
+  // even when children are pre-composed outside the Toast provider owner.
+  createEffect(() => {
+    if (!toastRef) return;
+
+    const titleId = (toastAria.titleProps as Record<string, unknown>).id as string | undefined;
+    const descriptionId = (toastAria.descriptionProps as Record<string, unknown>).id as string | undefined;
+
+    if (titleId) {
+      const titleEl = toastRef.querySelector('[data-solidaria-toast-title]');
+      if (titleEl instanceof HTMLElement) {
+        titleEl.id = titleId;
+      }
+    }
+
+    if (descriptionId) {
+      const descriptionEl = toastRef.querySelector('[data-solidaria-toast-description]');
+      if (descriptionEl instanceof HTMLElement) {
+        descriptionEl.id = descriptionId;
+      }
+    }
+  });
+
   return (
-    <div
-      ref={toastRef}
-      {...domProps()}
-      {...cleanToastProps}
-      class={renderProps.class()}
-      style={mergedStyle()}
-      data-animation={local.toast.animation}
-      data-type={local.toast.content.type}
-    >
-      {renderProps.renderChildren()}
-    </div>
+    <ToastAriaContext.Provider value={{ titleProps: toastAria.titleProps, descriptionProps: toastAria.descriptionProps }}>
+      <div
+        ref={toastRef}
+        {...domProps()}
+        {...cleanToastProps}
+        class={renderProps.class()}
+        style={mergedStyle()}
+        data-animation={local.toast.animation}
+        data-type={local.toast.content.type}
+      >
+        {renderProps.renderChildren()}
+      </div>
+    </ToastAriaContext.Provider>
   );
 }
 
@@ -454,8 +488,11 @@ export interface ToastTitleProps {
  * ToastTitle renders the toast title with proper accessibility attributes.
  */
 export function ToastTitle(props: ToastTitleProps): JSX.Element {
+  const context = useContext(ToastAriaContext);
+  const { ref: _ref, ...ariaTitleProps } = (context?.titleProps ?? {}) as Record<string, unknown>;
+
   return (
-    <div class={props.class} style={props.style}>
+    <div data-solidaria-toast-title="" {...ariaTitleProps} class={props.class} style={props.style}>
       {props.children}
     </div>
   );
@@ -471,8 +508,11 @@ export interface ToastDescriptionProps {
  * ToastDescription renders the toast description with proper accessibility attributes.
  */
 export function ToastDescription(props: ToastDescriptionProps): JSX.Element {
+  const context = useContext(ToastAriaContext);
+  const { ref: _ref, ...ariaDescriptionProps } = (context?.descriptionProps ?? {}) as Record<string, unknown>;
+
   return (
-    <div class={props.class} style={props.style}>
+    <div data-solidaria-toast-description="" {...ariaDescriptionProps} class={props.class} style={props.style}>
       {props.children}
     </div>
   );

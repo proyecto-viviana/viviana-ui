@@ -63,6 +63,10 @@ export interface AriaAutocompleteOptions<T = unknown> {
   inputRef: Accessor<HTMLInputElement | undefined>
   /** Ref accessor for the collection element. */
   collectionRef: Accessor<HTMLElement | undefined>
+  /** Optional id override for the controlled collection element. */
+  collectionId?: string
+  /** Optional accessible name for the controlled collection element. */
+  collectionAriaLabel?: string
   /**
    * An optional filter function used to determine if an option should be included.
    * @param textValue - The text value of the item
@@ -88,6 +92,22 @@ export interface AutocompleteAria<T = unknown> {
   collectionProps: CollectionOptions
   /** A filter function that returns if the item should be shown. */
   filter?: (textValue: string) => boolean
+}
+
+function toKeyboardEventInit(e: KeyboardEvent): KeyboardEventInit {
+  return {
+    key: e.key,
+    code: e.code,
+    location: e.location,
+    repeat: e.repeat,
+    isComposing: e.isComposing,
+    ctrlKey: e.ctrlKey,
+    shiftKey: e.shiftKey,
+    altKey: e.altKey,
+    metaKey: e.metaKey,
+    bubbles: e.bubbles,
+    cancelable: e.cancelable,
+  }
 }
 
 // ============================================
@@ -139,11 +159,13 @@ export function createAutocomplete<T = unknown>(
     inputRef,
     collectionRef,
     filter,
+    collectionId: collectionIdProp,
+    collectionAriaLabel,
     disableAutoFocusFirst = false,
     disableVirtualFocus = false,
   } = props
 
-  const collectionId = createId()
+  const collectionId = collectionIdProp ?? createId()
   const [shouldUseVirtualFocus] = createSignal(!disableVirtualFocus)
   let lastInputType = ''
 
@@ -218,6 +240,7 @@ export function createAutocomplete<T = unknown>(
 
     const focusedNodeId = state.focusedNodeId()
     const collection = collectionRef()
+    const ownerDocument = getOwnerDocument(inputRef() ?? collection)
 
     switch (e.key) {
       case 'Escape':
@@ -265,7 +288,7 @@ export function createAutocomplete<T = unknown>(
       case 'Enter':
         // Trigger click on focused item
         if (focusedNodeId) {
-          const item = document.getElementById(focusedNodeId)
+          const item = ownerDocument?.getElementById(focusedNodeId)
           if (item) {
             item.click()
             e.preventDefault()
@@ -279,12 +302,12 @@ export function createAutocomplete<T = unknown>(
       e.stopPropagation()
 
       if (focusedNodeId) {
-        const item = document.getElementById(focusedNodeId)
+        const item = ownerDocument?.getElementById(focusedNodeId)
         if (item) {
-          item.dispatchEvent(new KeyboardEvent(e.type, e))
+          item.dispatchEvent(new KeyboardEvent(e.type, toKeyboardEventInit(e)))
         }
       } else {
-        collection.dispatchEvent(new KeyboardEvent(e.type, e))
+        collection.dispatchEvent(new KeyboardEvent(e.type, toKeyboardEventInit(e)))
       }
     }
   }
@@ -332,7 +355,7 @@ export function createAutocomplete<T = unknown>(
     },
     collectionProps: {
       id: collectionId,
-      'aria-label': 'Suggestions',
+      'aria-label': collectionAriaLabel,
       shouldUseVirtualFocus: shouldUseVirtualFocus(),
       disallowTypeAhead: shouldUseVirtualFocus(),
     },

@@ -20,7 +20,7 @@ import {
   NumberFieldIncrementButton,
   NumberFieldDecrementButton,
 } from '../src/NumberField';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { setupUser, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
 
@@ -81,7 +81,7 @@ describe('NumberField', () => {
 
     it('should render with label', () => {
       render(() => (
-        <NumberField>
+        <NumberField aria-label="Quantity">
           {() => (
             <>
               <NumberFieldLabel>Quantity</NumberFieldLabel>
@@ -159,6 +159,19 @@ describe('NumberField', () => {
       expect(onChange).toHaveBeenCalledWith(10);
     });
 
+    it('should return focus to input after increment button click', async () => {
+      render(() => <TestNumberField fieldProps={{ defaultValue: 5 }} />);
+
+      const input = screen.getByRole('spinbutton');
+      const incrementButton = screen.getByRole('button', { name: /increase/i });
+      input.focus();
+      expect(input).toHaveFocus();
+
+      await user.click(incrementButton);
+
+      expect(screen.getByRole('spinbutton')).toHaveFocus();
+    });
+
     it('should disable increment button at maxValue', () => {
       render(() => <TestNumberField fieldProps={{ value: 10, maxValue: 10 }} />);
 
@@ -203,6 +216,18 @@ describe('NumberField', () => {
       await waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(4);
       });
+    });
+
+    it('should forward onKeyDown and onKeyUp from props', async () => {
+      const onKeyDown = vi.fn();
+      const onKeyUp = vi.fn();
+      render(() => <TestNumberField fieldProps={{ onKeyDown, onKeyUp }} />);
+
+      const input = screen.getByRole('spinbutton');
+      await user.type(input, '1');
+
+      expect(onKeyDown).toHaveBeenCalled();
+      expect(onKeyUp).toHaveBeenCalled();
     });
   });
 
@@ -382,6 +407,44 @@ describe('NumberField', () => {
       await user.click(incrementButton);
 
       expect(onChange).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('a11y validation', () => {
+    it('axe: default', async () => {
+      const { container } = render(() => <TestNumberField />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: with value', async () => {
+      const { container } = render(() => <TestNumberField fieldProps={{ defaultValue: 42 }} />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: disabled', async () => {
+      const { container } = render(() => <TestNumberField fieldProps={{ isDisabled: true }} />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: invalid', async () => {
+      const { container } = render(() => <TestNumberField fieldProps={{ isInvalid: true }} />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: with min/max', async () => {
+      const { container } = render(() => <TestNumberField fieldProps={{ minValue: 0, maxValue: 100, defaultValue: 50 }} />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: no dangling refs', () => {
+      render(() => <TestNumberField fieldProps={{ defaultValue: 5 }} />);
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('DOM: data-testid forwards', () => {
+      render(() => <TestNumberField fieldProps={{ 'data-testid': 'qty' } as any} />);
+      const field = document.querySelector('.solidaria-NumberField');
+      expect(field).toHaveAttribute('data-testid', 'qty');
     });
   });
 });

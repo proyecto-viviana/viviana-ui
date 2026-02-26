@@ -9,6 +9,7 @@
  */
 
 import {
+  type Accessor,
   type JSX,
   createContext,
   createEffect,
@@ -646,19 +647,22 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
   });
 
   // Create item aria props
-  const { rowProps, gridCellProps, isSelected, isDisabled, isPressed } = createGridListItem<T, GridCollection<T>>(
+  const itemAria = createGridListItem<T, GridCollection<T>>(
     () => ({
       node: itemNode(),
       onAction: local.onAction,
     }),
     () => state,
-    ref
+    ref as Accessor<HTMLLIElement | null>
   );
+  const isSelected = () => itemAria.isSelected;
+  const isDisabled = () => itemAria.isDisabled;
+  const isPressed = () => itemAria.isPressed;
 
   // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
-      return isDisabled;
+      return isDisabled();
     },
   });
 
@@ -689,12 +693,12 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
 
   // Render props values
   const renderValues = createMemo<GridListItemRenderProps>(() => ({
-    isSelected,
+    isSelected: isSelected(),
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible() && isFocused(),
-    isPressed,
+    isPressed: isPressed(),
     isHovered: isHovered(),
-    isDisabled,
+    isDisabled: isDisabled(),
   }));
 
   // Resolve render props
@@ -710,7 +714,7 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
 
   // Remove ref from spread props
   const cleanRowProps = () => {
-    const { ref: _ref1, ...rest } = rowProps as Record<string, unknown>;
+    const { ref: _ref1, ...rest } = itemAria.rowProps as Record<string, unknown>;
     return rest;
   };
   const cleanHoverProps = () => {
@@ -735,16 +739,16 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
       )}
       class={renderProps.class()}
       style={renderProps.style()}
-      data-selected={isSelected || undefined}
+      data-selected={isSelected() || undefined}
       data-focused={isFocused() || undefined}
       data-focus-visible={(isFocusVisible() && isFocused()) || undefined}
-      data-pressed={isPressed || undefined}
+      data-pressed={isPressed() || undefined}
       data-hovered={isHovered() || undefined}
-      data-disabled={isDisabled || undefined}
+      data-disabled={isDisabled() || undefined}
       data-dragging={draggableItem()?.isDragging || undefined}
       data-drop-target={droppableItem()?.isDropTarget || undefined}
     >
-      <div {...gridCellProps}>{renderProps.renderChildren()}</div>
+      <div {...itemAria.gridCellProps}>{renderProps.renderChildren()}</div>
     </div>
   );
 }
@@ -760,12 +764,12 @@ export function GridListSelectionCheckbox(props: { itemKey: Key }): JSX.Element 
 
   const state = context as GridState<object, GridCollection<object>>;
 
-  const { checkboxProps } = createGridListSelectionCheckbox<object, GridCollection<object>>(
+  const checkboxAria = createGridListSelectionCheckbox<object, GridCollection<object>>(
     () => ({ key: props.itemKey }),
     () => state
   );
 
-  return <input {...checkboxProps} />;
+  return <input {...checkboxAria.checkboxProps} />;
 }
 
 export function GridListLoadMoreItem(props: GridListLoadMoreItemProps): JSX.Element {

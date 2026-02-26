@@ -31,6 +31,8 @@ export interface BreadcrumbsAria {
 }
 
 export interface AriaBreadcrumbItemProps extends Omit<AriaLinkProps, 'aria-current'> {
+  /** The DOM id for the breadcrumb item. */
+  id?: string;
   /** Whether this is the current/last item in the breadcrumb trail. */
   isCurrent?: boolean;
   /** The type of current location for aria-current. @default 'page' */
@@ -59,8 +61,9 @@ export function createBreadcrumbs(
   const getNavProps = (): Record<string, unknown> => {
     const p = getProps();
 
-    // Default aria-label to "Breadcrumbs" if not provided
-    const ariaLabel = p['aria-label'] ?? 'Breadcrumbs';
+    // Only apply a default label when no other label source exists.
+    const ariaLabel =
+      p['aria-label'] ?? (p['aria-labelledby'] ? undefined : 'Breadcrumbs');
 
     return mergeProps(
       filterDOMProps(p as Record<string, unknown>, { labelable: true }),
@@ -89,9 +92,6 @@ export function createBreadcrumbItem(
   const isDisabled = () => getProps().isDisabled ?? false;
   const elementType = () => getProps().elementType ?? 'a';
 
-  // Check if element is a heading
-  const isHeading = () => /^h[1-6]$/.test(elementType());
-
   // Use createLink for base link behavior
   // Current items are treated as disabled (can't navigate to current page)
   const { linkProps, isPressed } = createLink({
@@ -102,7 +102,7 @@ export function createBreadcrumbItem(
       return elementType();
     },
     get href() {
-      return getProps().href;
+      return isCurrent() ? undefined : getProps().href;
     },
     get target() {
       return getProps().target;
@@ -155,8 +155,8 @@ export function createBreadcrumbItem(
     const p = getProps();
     const current = isCurrent();
 
-    // Start with link props (unless it's a heading)
-    let baseProps: Record<string, unknown> = isHeading() ? {} : linkProps;
+    // Start with link props
+    let baseProps: Record<string, unknown> = linkProps;
 
     // Add aria-current for current page
     if (current) {
@@ -165,13 +165,6 @@ export function createBreadcrumbItem(
         'aria-current': ariaCurrent,
       });
 
-      // Adjust tabIndex for current item
-      // If autoFocus is true, we want the item focusable
-      if (p.autoFocus) {
-        baseProps = mergeProps(baseProps, {
-          tabIndex: -1,
-        });
-      }
     }
 
     // Add aria-disabled for disabled items

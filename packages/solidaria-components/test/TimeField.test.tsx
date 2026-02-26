@@ -11,9 +11,17 @@
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, waitFor } from '@solidjs/testing-library';
+import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
 import { Time } from '@internationalized/date';
-import { TimeField, TimeInput, TimeSegment } from '../src/TimeField';
+import { I18nProvider } from '@proyecto-viviana/solidaria';
+import {
+  TimeField,
+  TimeFieldLabel,
+  TimeFieldDescription,
+  TimeFieldErrorMessage,
+  TimeInput,
+  TimeSegment,
+} from '../src/TimeField';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
@@ -194,6 +202,34 @@ describe('TimeField', () => {
   // ============================================
 
   describe('keyboard interactions', () => {
+    it('should navigate to next segment with ArrowRight', async () => {
+      render(() => <TestTimeField fieldProps={{ defaultValue: new Time(10, 30) }} />);
+      await waitForTimeFieldHydration();
+
+      const spinbuttons = screen.getAllByRole('spinbutton');
+      expect(spinbuttons.length).toBeGreaterThan(1);
+
+      spinbuttons[0].focus();
+      fireEvent.keyDown(spinbuttons[0], { key: 'ArrowRight' });
+      expect(spinbuttons[1]).toHaveFocus();
+    });
+
+    it('should follow RTL segment navigation with ArrowRight', async () => {
+      render(() => (
+        <I18nProvider locale="he-IL">
+          <TestTimeField fieldProps={{ defaultValue: new Time(10, 30) }} />
+        </I18nProvider>
+      ));
+      await waitForTimeFieldHydration();
+
+      const spinbuttons = screen.getAllByRole('spinbutton');
+      expect(spinbuttons.length).toBeGreaterThan(1);
+
+      spinbuttons[1].focus();
+      fireEvent.keyDown(spinbuttons[1], { key: 'ArrowRight' });
+      expect(spinbuttons[0]).toHaveFocus();
+    });
+
     it('should increment with ArrowUp', async () => {
       const onChange = vi.fn();
       render(() => (
@@ -245,6 +281,23 @@ describe('TimeField', () => {
       const hourSegment = spinbuttons[0];
       hourSegment.focus();
       await user.keyboard('5');
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalled();
+      });
+    });
+
+    it('should accept full-width digits in numeric input', async () => {
+      const onChange = vi.fn();
+      render(() => (
+        <TestTimeField fieldProps={{ defaultValue: new Time(10, 30), onChange }} />
+      ));
+      await waitForTimeFieldHydration();
+
+      const spinbuttons = screen.getAllByRole('spinbutton');
+      const hourSegment = spinbuttons[0];
+      hourSegment.focus();
+      fireEvent.keyDown(hourSegment, { key: '１' });
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalled();
@@ -357,6 +410,54 @@ describe('TimeField', () => {
 
       const hourSegment = document.querySelector('[data-type="hour"]');
       expect(hourSegment).toHaveAttribute('aria-valuenow');
+    });
+
+    it('wires visible label to field aria-labelledby', async () => {
+      render(() => (
+        <TimeField label="Meeting time">
+          <TimeFieldLabel>Meeting time</TimeFieldLabel>
+          <TimeInput>
+            {(segment) => <TimeSegment segment={segment} />}
+          </TimeInput>
+        </TimeField>
+      ));
+      await waitForTimeFieldHydration();
+
+      const group = document.querySelector('.solidaria-TimeField') as HTMLElement;
+      const label = screen.getByText('Meeting time');
+
+      expect(label.tagName).toBe('SPAN');
+      expect(label).toHaveAttribute('id');
+      expect(group).toHaveAttribute('aria-labelledby');
+      expect(group.getAttribute('aria-labelledby')).toContain(label.getAttribute('id'));
+    });
+
+    it('wires description and error message to aria-describedby', async () => {
+      render(() => (
+        <TimeField
+          aria-label="Time"
+          isInvalid
+          description="Choose your preferred time"
+          errorMessage="Time is required"
+        >
+          <TimeInput>
+            {(segment) => <TimeSegment segment={segment} />}
+          </TimeInput>
+          <TimeFieldDescription>Choose your preferred time</TimeFieldDescription>
+          <TimeFieldErrorMessage>Time is required</TimeFieldErrorMessage>
+        </TimeField>
+      ));
+      await waitForTimeFieldHydration();
+
+      const group = document.querySelector('.solidaria-TimeField') as HTMLElement;
+      const description = screen.getByText('Choose your preferred time');
+      const error = screen.getByText('Time is required');
+
+      expect(description).toHaveAttribute('id');
+      expect(error).toHaveAttribute('id');
+      expect(group).toHaveAttribute('aria-describedby');
+      expect(group.getAttribute('aria-describedby')).toContain(description.getAttribute('id'));
+      expect(group.getAttribute('aria-describedby')).toContain(error.getAttribute('id'));
     });
   });
 

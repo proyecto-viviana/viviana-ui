@@ -10,6 +10,7 @@ import {
   type Accessor,
   createContext,
   createMemo,
+  onCleanup,
   splitProps,
   useContext,
   For,
@@ -62,6 +63,8 @@ export interface ComboBoxRenderProps {
   isDisabled: boolean;
   /** Whether the combobox is required. */
   isRequired: boolean;
+  /** Whether the combobox is invalid. */
+  isInvalid: boolean;
   /** Whether a value is selected. */
   isSelected: boolean;
   /** The current input value. */
@@ -109,6 +112,14 @@ export interface ComboBoxProps<T>
   menuTrigger?: 'focus' | 'input' | 'manual';
   /** The name of the combobox, used when submitting an HTML form. */
   name?: string;
+  /**
+   * Controls what value is submitted in forms.
+   * - 'key': submit the selected key via hidden input (default)
+   * - 'text': submit the text input value
+   *
+   * When allowsCustomValue is true, formValue is forced to 'text'.
+   */
+  formValue?: 'key' | 'text';
   /** The children of the component (compound components: ComboBoxInput, ComboBoxButton, ComboBoxListBox). */
   children: JSX.Element;
   /** The CSS className for the element. */
@@ -267,6 +278,8 @@ interface ComboBoxContextValue<T> {
   setInputRef: (el: HTMLInputElement | null) => void;
   buttonRef: () => HTMLElement | null;
   setButtonRef: (el: HTMLElement | null) => void;
+  listBoxRef: () => HTMLElement | null;
+  setListBoxRef: (el: HTMLElement | null) => void;
 }
 
 export const ComboBoxContext = createContext<ComboBoxContextValue<unknown> | null>(null);
@@ -283,7 +296,7 @@ export const ComboBoxValueContext = ComboBoxContext;
 export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['class', 'style', 'slot'],
+    ['class', 'style', 'slot', 'children'],
     [
       'items',
       'getKey',
@@ -304,12 +317,14 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
       'allowsEmptyCollection',
       'menuTrigger',
       'name',
+      'formValue',
     ]
   );
 
   // Refs
   let inputRef: HTMLInputElement | null = null;
   let buttonRef: HTMLElement | null = null;
+  let listBoxRef: HTMLElement | null = null;
 
   // Create combobox state
   const state = createComboBoxState<T>({
@@ -378,12 +393,25 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
     },
   });
 
+  const effectiveFormValue = createMemo<'key' | 'text'>(() => {
+    if (stateProps.allowsCustomValue) {
+      return 'text';
+    }
+    return stateProps.formValue ?? 'key';
+  });
+
   // Create combobox aria props
   const comboBoxAria = createComboBox<T>(
-    ariaProps,
+    {
+      ...ariaProps,
+      get name() {
+        return effectiveFormValue() === 'text' ? stateProps.name : undefined;
+      },
+    },
     state,
     () => inputRef,
-    () => buttonRef
+    () => buttonRef,
+    () => listBoxRef
   );
 
   // Create hover for wrapper
@@ -400,6 +428,7 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
     isFocusVisible: comboBoxAria.isFocusVisible(),
     isDisabled: !!ariaProps.isDisabled,
     isRequired: !!ariaProps.isRequired,
+    isInvalid: !!ariaProps.isInvalid,
     isSelected: state.selectedKey() != null,
     inputValue: state.inputValue(),
   }));
@@ -444,6 +473,8 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
         setInputRef: (el) => { inputRef = el; },
         buttonRef: () => buttonRef,
         setButtonRef: (el) => { buttonRef = el; },
+        listBoxRef: () => listBoxRef,
+        setListBoxRef: (el) => { listBoxRef = el; },
       }}
     >
       <ComboBoxStateContext.Provider value={state}>
@@ -457,17 +488,18 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
           data-focus-visible={comboBoxAria.isFocusVisible() || undefined}
           data-disabled={ariaProps.isDisabled || undefined}
           data-required={ariaProps.isRequired || undefined}
+          data-invalid={ariaProps.isInvalid || undefined}
           data-hovered={isHovered() || undefined}
         >
-          {/* Hidden input for form submission */}
-          <Show when={stateProps.name}>
+          {/* Hidden input for key-based form submission parity */}
+          <Show when={stateProps.name && effectiveFormValue() === 'key'}>
             <input
               type="hidden"
               name={stateProps.name}
               value={state.selectedKey()?.toString() ?? ''}
             />
           </Show>
-          {props.children}
+          {local.children}
         </div>
       </ComboBoxStateContext.Provider>
     </ComboBoxContext.Provider>
@@ -681,15 +713,12 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
     },
   });
 
-  // Track pressed state
-  let isPressed = false;
-
   // Render props values
   const renderValues = createMemo<ComboBoxButtonRenderProps>(() => ({
     isOpen: isOpen(),
     isFocused: isFocused(),
     isHovered: isHovered(),
-    isPressed,
+    isPressed: isOpen(),
     isDisabled: state.isDisabled,
   }));
 
@@ -743,7 +772,14 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
   if (!context) {
     throw new Error('ComboBoxListBox must be used within a ComboBox');
   }
-  const { listBoxProps: contextListBoxProps, state: comboBoxState, isOpen, inputRef } = context;
+  const {
+    listBoxProps: contextListBoxProps,
+    state: comboBoxState,
+    isOpen,
+    inputRef,
+    buttonRef,
+    setListBoxRef,
+  } = context;
   const state = comboBoxState as ComboBoxState<T>;
 
   // Ref for the listbox element (for click outside detection)
@@ -756,7 +792,11 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
       // Don't close if clicking the input or button
       const target = e.target as HTMLElement;
       const input = inputRef();
+      const button = buttonRef();
       if (input?.contains(target)) {
+        return;
+      }
+      if (button?.contains(target)) {
         return;
       }
       if (isOpen()) {
@@ -805,8 +845,14 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
   // This is critical - if we don't prevent default, the input loses focus
   // and the blur handler closes the menu before the click can be processed
   // We need to attach this in the ref callback to use capture phase
+  let cleanupFocusGuard: (() => void) | undefined;
+
   const setupMouseDownHandler = (el: HTMLUListElement) => {
+    cleanupFocusGuard?.();
+    cleanupFocusGuard = undefined;
+
     listBoxRef = el;
+    setListBoxRef(el);
     if (el) {
       const mouseHandler = (e: MouseEvent) => {
         e.preventDefault();
@@ -816,8 +862,17 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
       };
       el.addEventListener('mousedown', mouseHandler, true); // capture phase
       el.addEventListener('pointerdown', pointerHandler, true); // capture phase
+      cleanupFocusGuard = () => {
+        el.removeEventListener('mousedown', mouseHandler, true);
+        el.removeEventListener('pointerdown', pointerHandler, true);
+      };
     }
   };
+
+  onCleanup(() => {
+    cleanupFocusGuard?.();
+    setListBoxRef(null);
+  });
 
   return (
     <Show when={isOpen()}>

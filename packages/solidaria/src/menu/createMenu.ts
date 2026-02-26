@@ -102,6 +102,7 @@ interface MenuData {
   id: string;
   onAction?: (key: Key) => void;
   onClose?: () => void;
+  isDisabled?: boolean;
 }
 
 export function getMenuData(state: MenuState): MenuData | undefined {
@@ -133,14 +134,22 @@ export function createMenu<T>(
   // Filter DOM props
   const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
-  // Share data with child menu items
-  createEffect(() => {
+  const updateSharedData = () => {
     const p = getProps();
     menuData.set(state, {
       id,
       onAction: p.onAction,
       onClose: p.onClose,
+      isDisabled: p.isDisabled,
     });
+  };
+
+  // Ensure menu items created in the same render pass can read parent metadata.
+  updateSharedData();
+
+  // Share data with child menu items
+  createEffect(() => {
+    updateSharedData();
 
     onCleanup(() => {
       menuData.delete(state);

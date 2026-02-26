@@ -24,6 +24,8 @@ export interface AriaTreeProps {
   onAction?: (key: Key) => void;
   /** Whether the tree is disabled. */
   isDisabled?: boolean;
+  /** The writing direction for the tree. Determines expand/collapse key mapping. */
+  direction?: 'ltr' | 'rtl';
 }
 
 /**
@@ -44,6 +46,8 @@ export interface AriaTreeItemProps<T = unknown> {
   isVirtualized?: boolean;
   /** Handler called when this item's action is triggered. */
   onAction?: () => void;
+  /** The text value for the item (used for aria-label on the row). */
+  textValue?: string;
 }
 
 /**

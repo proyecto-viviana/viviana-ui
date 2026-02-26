@@ -11,7 +11,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@solidjs/testing-library';
 import { Button, type ButtonRenderProps } from '../src/Button';
-import { setupUser, firePointerDown, firePointerUp } from '@proyecto-viviana/solidaria-test-utils';
+import { ToggleButton } from '../src/ToggleButton';
+import { setupUser, firePointerDown, firePointerUp, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser and pointer helpers are consolidated in solidaria-test-utils.
 
@@ -347,5 +348,71 @@ describe('Button', () => {
       const button = screen.getByRole('button');
       expect(button).toHaveAttribute('aria-expanded', 'true');
     });
+  });
+
+  describe('a11y validation', () => {
+    it('axe: default state', async () => {
+      const { container } = render(() => <Button>Click me</Button>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: disabled', async () => {
+      const { container } = render(() => <Button isDisabled>Click me</Button>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: icon-only with aria-label', async () => {
+      const { container } = render(() => <Button aria-label="Close">✕</Button>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: pending state', async () => {
+      const { container } = render(() => <Button isPending>Save</Button>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: no dangling refs with aria-describedby', () => {
+      render(() => (
+        <>
+          <span id="btn-desc">Help text</span>
+          <Button aria-describedby="btn-desc">Action</Button>
+        </>
+      ));
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('DOM: aria-label forwards', () => {
+      render(() => <Button aria-label="Save file">Save</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('aria-label', 'Save file');
+    });
+
+    it('DOM: id forwards', () => {
+      render(() => <Button id="my-btn">Test</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('id', 'my-btn');
+    });
+  });
+});
+
+describe('ToggleButton a11y validation', () => {
+  it('axe: default', async () => {
+    const { container } = render(() => <ToggleButton>Bold</ToggleButton>);
+    await assertNoA11yViolations(container);
+  });
+
+  it('axe: selected', async () => {
+    const { container } = render(() => <ToggleButton isSelected>Bold</ToggleButton>);
+    await assertNoA11yViolations(container);
+  });
+
+  it('axe: disabled', async () => {
+    const { container } = render(() => <ToggleButton isDisabled>Bold</ToggleButton>);
+    await assertNoA11yViolations(container);
+  });
+
+  it('ARIA ID: no dangling refs', () => {
+    render(() => <ToggleButton>Bold</ToggleButton>);
+    assertAriaIdIntegrity(document.body);
   });
 });

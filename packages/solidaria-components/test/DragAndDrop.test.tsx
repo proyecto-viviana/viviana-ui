@@ -236,7 +236,14 @@ describe('DragAndDrop parity primitives', () => {
   it('useRenderDropIndicator renders during virtual dragging even when target is not active', () => {
     function Probe() {
       const renderDropIndicator = useRenderDropIndicator(
-        { isVirtualDragging: () => true },
+        {
+          isVirtualDragging: () => true,
+          useDropIndicator: () => ({
+            dropIndicatorProps: {},
+            isDropTarget: false,
+            isHidden: true,
+          }),
+        },
         { isDropTarget: () => false }
       );
       return (
@@ -256,6 +263,11 @@ describe('DragAndDrop parity primitives', () => {
         {
           renderDropIndicator: (target) => <div data-testid={`custom-${target.key}`} />,
           isVirtualDragging: () => true,
+          useDropIndicator: () => ({
+            dropIndicatorProps: {},
+            isDropTarget: false,
+            isHidden: true,
+          }),
         },
         { isDropTarget: () => false }
       );
@@ -268,5 +280,21 @@ describe('DragAndDrop parity primitives', () => {
 
     render(() => <Probe />);
     expect(screen.getByTestId('custom-x')).toBeInTheDocument();
+  });
+
+  it('useRenderDropIndicator returns undefined when useDropIndicator is absent', () => {
+    function Probe() {
+      const renderDropIndicator = useRenderDropIndicator(
+        {
+          renderDropIndicator: (target) => <div data-testid={`custom-${target.key}`} />,
+          isVirtualDragging: () => true,
+        },
+        { isDropTarget: () => true }
+      );
+      return <output data-testid="no-drop-hook">{String(renderDropIndicator == null)}</output>;
+    }
+
+    render(() => <Probe />);
+    expect(screen.getByTestId('no-drop-hook').textContent).toBe('true');
   });
 });

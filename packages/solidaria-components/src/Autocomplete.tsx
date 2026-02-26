@@ -125,7 +125,7 @@ export function Autocomplete<T = unknown>(props: AutocompleteProps<T>): JSX.Elem
   const [stateProps, ariaProps, local] = splitProps(
     props,
     ['inputValue', 'defaultInputValue', 'onInputChange'],
-    ['filter', 'disableAutoFocusFirst', 'disableVirtualFocus']
+    ['filter', 'disableAutoFocusFirst', 'disableVirtualFocus', 'collectionId', 'collectionAriaLabel']
   )
 
   // Create state

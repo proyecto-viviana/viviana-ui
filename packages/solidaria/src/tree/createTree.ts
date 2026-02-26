@@ -65,6 +65,10 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
     const p = props();
     const collection = s.collection;
     const focusedKey = s.focusedKey;
+    const direction = p.direction ?? 'ltr';
+    // In RTL, ArrowLeft expands and ArrowRight collapses (opposite of LTR)
+    const expandKey = direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
+    const collapseKey = direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
 
     if (p.isDisabled) return;
 
@@ -99,35 +103,30 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
         }
         break;
       }
-      case 'ArrowRight': {
-        e.preventDefault();
-        if (focusedKey != null) {
-          const node = collection.getItem(focusedKey);
-          if (node?.isExpandable) {
-            if (!s.isExpanded(focusedKey)) {
-              // Expand the node
-              s.expandKey(focusedKey);
-            } else {
-              // Move to first child
-              const children = [...collection.getChildren(focusedKey)];
-              if (children.length > 0) {
-                s.setFocusedKey(children[0].key);
-              }
-            }
-          }
-        }
-        break;
-      }
+      case 'ArrowRight':
       case 'ArrowLeft': {
         e.preventDefault();
         if (focusedKey != null) {
           const node = collection.getItem(focusedKey);
-          if (node?.isExpandable && s.isExpanded(focusedKey)) {
-            // Collapse the node
-            s.collapseKey(focusedKey);
-          } else if (node?.parentKey != null) {
-            // Move to parent
-            s.setFocusedKey(node.parentKey);
+          if (e.key === expandKey) {
+            // Expand or move to first child
+            if (node?.isExpandable) {
+              if (!s.isExpanded(focusedKey)) {
+                s.expandKey(focusedKey);
+              } else {
+                const children = [...collection.getChildren(focusedKey)];
+                if (children.length > 0) {
+                  s.setFocusedKey(children[0].key);
+                }
+              }
+            }
+          } else if (e.key === collapseKey) {
+            // Collapse or move to parent
+            if (node?.isExpandable && s.isExpanded(focusedKey)) {
+              s.collapseKey(focusedKey);
+            } else if (node?.parentKey != null) {
+              s.setFocusedKey(node.parentKey);
+            }
           }
         }
         break;
@@ -153,6 +152,22 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
         if ((e.ctrlKey || e.metaKey) && s.selectionMode === 'multiple') {
           e.preventDefault();
           s.selectAll();
+        }
+        break;
+      }
+      case ' ':
+      case 'Space':
+      case 'Spacebar': {
+        if (focusedKey != null && s.selectionMode !== 'none' && !s.isDisabled(focusedKey)) {
+          e.preventDefault();
+          s.toggleSelection(focusedKey);
+        }
+        break;
+      }
+      case 'Enter': {
+        if (focusedKey != null && !s.isDisabled(focusedKey)) {
+          e.preventDefault();
+          p.onAction?.(focusedKey);
         }
         break;
       }

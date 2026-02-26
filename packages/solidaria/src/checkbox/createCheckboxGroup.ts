@@ -13,7 +13,7 @@ import { createFocusWithin } from '../interactions/createFocusWithin';
 import { filterDOMProps } from '../utils/filterDOMProps';
 import { mergeProps } from '../utils/mergeProps';
 import { type MaybeAccessor, access } from '../utils/reactivity';
-import { type CheckboxGroupState, type CheckboxGroupProps } from '@proyecto-viviana/solid-stately';
+import { type CheckboxGroupState, type CheckboxGroupProps, type ValidityState } from '@proyecto-viviana/solid-stately';
 
 // ============================================
 // TYPES
@@ -45,6 +45,10 @@ export interface CheckboxGroupAria {
   errorMessageProps: JSX.HTMLAttributes<HTMLElement>;
   /** Whether the checkbox group is invalid. */
   isInvalid: boolean;
+  /** Validation errors, if any. */
+  validationErrors: string[];
+  /** Validation details, if any. */
+  validationDetails: ValidityState;
 }
 
 // WeakMap to share data between checkbox group and checkbox group items
@@ -75,8 +79,15 @@ export function createCheckboxGroup(
   state: CheckboxGroupState
 ): CheckboxGroupAria {
   const getProps = () => access(props);
+  const displayValidation = () => state.displayValidation();
+  const validationErrors = () => displayValidation().validationErrors;
+  const validationDetails = () => displayValidation().validationDetails;
 
-  const isInvalid = () => state.isInvalid;
+  const isInvalid = () => displayValidation().isInvalid;
+  const fallbackErrorMessage = () => {
+    const errors = validationErrors();
+    return errors.length > 0 ? errors : undefined;
+  };
 
   // Use field for label association
   const { labelProps, fieldProps, descriptionProps, errorMessageProps } = createField({
@@ -86,7 +97,7 @@ export function createCheckboxGroup(
     get 'aria-describedby'() { return getProps()['aria-describedby']; },
     get 'aria-details'() { return getProps()['aria-details']; },
     get description() { return getProps().description; },
-    get errorMessage() { return getProps().errorMessage ?? (isInvalid() ? 'Invalid selection' : undefined); },
+    get errorMessage() { return getProps().errorMessage ?? fallbackErrorMessage(); },
     get isInvalid() { return isInvalid(); },
     // Checkbox group is not an HTML input element so it
     // shouldn't be labeled by a <label> element.
@@ -99,7 +110,7 @@ export function createCheckboxGroup(
     form: getProps().form,
     descriptionId: descriptionProps.id,
     errorMessageId: errorMessageProps.id,
-    validationBehavior: 'aria',
+    validationBehavior: getProps().validationBehavior ?? 'aria',
   });
 
   // Filter DOM props
@@ -132,6 +143,12 @@ export function createCheckboxGroup(
     },
     get isInvalid() {
       return isInvalid();
+    },
+    get validationErrors() {
+      return validationErrors();
+    },
+    get validationDetails() {
+      return validationDetails();
     },
   };
 }

@@ -13,9 +13,10 @@ import {
   TextField,
   Input,
   Label,
+  TextArea,
   type TextFieldRenderProps,
 } from '../src/TextField';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { setupUser, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
 
@@ -266,6 +267,107 @@ describe('TextField', () => {
       ));
 
       expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+    });
+  });
+
+  describe('a11y validation', () => {
+    // Note: TextField's Label+Input sub-components require render function children
+    // {() => ...} so context is available. For axe scans, we use aria-label on Input
+    // directly since the Label→Input htmlFor wiring has a known SolidJS context timing
+    // issue (see wave-1-results.md for details).
+
+    it('axe: default', async () => {
+      const { container } = render(() => (
+        <TextField aria-label="Name">
+          {() => <Input />}
+        </TextField>
+      ));
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: disabled', async () => {
+      const { container } = render(() => (
+        <TextField aria-label="Name" isDisabled>
+          {() => <Input />}
+        </TextField>
+      ));
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: invalid', async () => {
+      const { container } = render(() => (
+        <TextField aria-label="Name" isInvalid>
+          {() => <Input />}
+        </TextField>
+      ));
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: required', async () => {
+      const { container } = render(() => (
+        <TextField aria-label="Name" isRequired>
+          {() => <Input />}
+        </TextField>
+      ));
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: no dangling refs', () => {
+      render(() => (
+        <TextField aria-label="Name">
+          {() => <Input />}
+        </TextField>
+      ));
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('DOM: data-testid forwards', () => {
+      render(() => (
+        <TextField aria-label="Name" data-testid="name-field">
+          <input />
+        </TextField>
+      ));
+      expect(screen.getByTestId('name-field')).toBeInTheDocument();
+    });
+
+    it('DOM: aria-label forwards to input', () => {
+      render(() => (
+        <TextField aria-label="Name">
+          {() => <Input />}
+        </TextField>
+      ));
+      const input = screen.getByRole('textbox');
+      expect(input).toHaveAttribute('aria-label', 'Name');
+    });
+  });
+
+  describe('TextArea a11y validation', () => {
+    it('axe: default TextArea', async () => {
+      const { container } = render(() => (
+        <TextField aria-label="Description">
+          {() => <TextArea />}
+        </TextField>
+      ));
+      await assertNoA11yViolations(container);
+    });
+
+    it('renders textarea element', () => {
+      render(() => (
+        <TextField aria-label="Description">
+          {() => <TextArea />}
+        </TextField>
+      ));
+      const textarea = document.querySelector('textarea');
+      expect(textarea).toBeInTheDocument();
+    });
+
+    it('ARIA ID: TextArea no dangling refs', () => {
+      render(() => (
+        <TextField aria-label="Description">
+          {() => <TextArea />}
+        </TextField>
+      ));
+      assertAriaIdIntegrity(document.body);
     });
   });
 });

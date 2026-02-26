@@ -1,10 +1,31 @@
-import { LayoutInfo, Point, Rect } from './virtualizer/Layout';
-
 /**
  * Layout primitives for solidaria-components Virtualizer.
  *
  * These are lightweight parity contracts inspired by RAC virtualizer layout APIs.
  */
+
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface Size {
+  width: number;
+  height: number;
+}
+
+export interface LayoutInfo {
+  key: string | number;
+  index: number;
+  rect: Rect;
+}
 
 export interface VirtualizerVisibleRange {
   start: number;

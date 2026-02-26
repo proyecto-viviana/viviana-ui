@@ -12,7 +12,7 @@ import {
   useAutocompleteState,
   useAutocompleteCollection,
 } from '../src/Autocomplete'
-import { For, Show } from 'solid-js'
+import { For, Show, createSignal } from 'solid-js'
 
 // Simple test input component
 function TestInput() {
@@ -55,6 +55,7 @@ function TestList(props: { items: { id: string; name: string }[] }) {
       ref={ctx.collectionRef}
       id={ctx.collectionProps.id}
       role="listbox"
+      aria-label={ctx.collectionProps['aria-label']}
       data-testid="list"
     >
       <For each={filteredItems()}>
@@ -117,6 +118,21 @@ describe('Autocomplete', () => {
     expect(list).toHaveAttribute('role', 'listbox')
   })
 
+  it('supports overriding collection id and aria-label', () => {
+    render(() => (
+      <Autocomplete collectionId="custom-listbox" collectionAriaLabel="Fruit suggestions">
+        <TestInput />
+        <TestList items={testItems} />
+      </Autocomplete>
+    ))
+
+    const input = screen.getByTestId('input')
+    const list = screen.getByTestId('list')
+    expect(input).toHaveAttribute('aria-controls', 'custom-listbox')
+    expect(list).toHaveAttribute('id', 'custom-listbox')
+    expect(list).toHaveAttribute('aria-label', 'Fruit suggestions')
+  })
+
   it('filters items based on input value', () => {
     const filter = (textValue: string, inputValue: string) =>
       textValue.toLowerCase().includes(inputValue.toLowerCase())
@@ -168,6 +184,29 @@ describe('Autocomplete', () => {
 
     const input = screen.getByTestId('input') as HTMLInputElement
     expect(input.value).toBe('controlled')
+  })
+
+  it('reacts to controlled input value changes', () => {
+    let setValue: ((value: string) => void) | undefined
+
+    function ControlledAutocomplete() {
+      const [value, _setValue] = createSignal('initial')
+      setValue = _setValue
+
+      return (
+        <Autocomplete inputValue={value()}>
+          <TestInput />
+          <TestList items={testItems} />
+        </Autocomplete>
+      )
+    }
+
+    render(() => <ControlledAutocomplete />)
+
+    const input = screen.getByTestId('input') as HTMLInputElement
+    expect(input.value).toBe('initial')
+    setValue?.('updated')
+    expect(input.value).toBe('updated')
   })
 
   it('supports default input value', () => {

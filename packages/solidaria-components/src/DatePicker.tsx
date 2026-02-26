@@ -117,7 +117,7 @@ export interface DatePickerProps<T extends DateValue = DateValue>
 }
 
 export interface DateRangePickerProps<T extends DateValue = DateValue>
-  extends Omit<AriaDateRangePickerProps, 'id' | 'isDisabled' | 'isReadOnly' | 'isRequired'>,
+  extends Omit<AriaDateRangePickerProps, 'id' | 'isDisabled' | 'isReadOnly'>,
     Omit<RangeCalendarStateProps<T>, 'locale'>,
     SlotProps {
   children?: JSX.Element;
@@ -312,11 +312,15 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
   };
 
   // Render props values
+  const isInvalid = createMemo(
+    () => fieldState.isInvalid() || Boolean((rest as { isInvalid?: boolean }).isInvalid)
+  );
+
   const renderValues = createMemo<DatePickerRenderProps>(() => ({
     isDisabled: fieldState.isDisabled(),
     isReadOnly: fieldState.isReadOnly(),
     isRequired: fieldState.isRequired(),
-    isInvalid: fieldState.isInvalid(),
+    isInvalid: isInvalid(),
     isOpen: overlayState.isOpen,
   }));
 
@@ -353,7 +357,7 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
               data-disabled={dataAttr(fieldState.isDisabled())}
               data-readonly={dataAttr(fieldState.isReadOnly())}
               data-required={dataAttr(fieldState.isRequired())}
-              data-invalid={dataAttr(fieldState.isInvalid())}
+              data-invalid={dataAttr(isInvalid())}
               data-open={dataAttr(overlayState.isOpen)}
             >
               {props.children}
@@ -384,7 +388,7 @@ function DateRangePickerInner<T extends DateValue = CalendarDate>(
 ): JSX.Element {
   const [local, stateProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
+    ['children', 'class', 'style', 'slot', 'shouldCloseOnSelect'],
     [
       'value',
       'defaultValue',
@@ -415,7 +419,15 @@ function DateRangePickerInner<T extends DateValue = CalendarDate>(
     toggle: () => setIsOpen((prev) => !prev),
   };
 
-  const calendarState = createRangeCalendarState(stateProps);
+  const calendarState = createRangeCalendarState({
+    ...stateProps,
+    onChange: (value) => {
+      stateProps.onChange?.(value);
+      if (local.shouldCloseOnSelect !== false && value?.start && value?.end) {
+        overlayState.close();
+      }
+    },
+  });
   const pickerAria = createDateRangePicker(
     () => ({
       ...(rest as Record<string, unknown>),
@@ -424,6 +436,13 @@ function DateRangePickerInner<T extends DateValue = CalendarDate>(
     }),
     calendarState as unknown as RangeCalendarState<DateValue>,
     overlayState as AriaDatePickerState
+  );
+
+  const isInvalid = createMemo(
+    () => Boolean((rest as { isInvalid?: boolean }).isInvalid) || calendarState.validationState() === 'invalid'
+  );
+  const isRequired = createMemo(
+    () => Boolean((rest as { isRequired?: boolean }).isRequired)
   );
 
   const contextValue: DateRangePickerContextValue = {
@@ -440,8 +459,8 @@ function DateRangePickerInner<T extends DateValue = CalendarDate>(
   const renderValues = createMemo<DateRangePickerRenderProps>(() => ({
     isDisabled: calendarState.isDisabled(),
     isReadOnly: calendarState.isReadOnly(),
-    isRequired: false,
-    isInvalid: false,
+    isRequired: isRequired(),
+    isInvalid: isInvalid(),
     isOpen: overlayState.isOpen,
   }));
 
@@ -464,6 +483,8 @@ function DateRangePickerInner<T extends DateValue = CalendarDate>(
             style={renderProps.style()}
             data-disabled={dataAttr(calendarState.isDisabled())}
             data-readonly={dataAttr(calendarState.isReadOnly())}
+            data-required={dataAttr(isRequired())}
+            data-invalid={dataAttr(isInvalid())}
             data-open={dataAttr(overlayState.isOpen)}
           >
             {props.children}
@@ -582,6 +603,90 @@ export interface DatePickerContentProps extends SlotProps {
 }
 
 export interface DateRangePickerContentProps extends DatePickerContentProps {}
+
+export interface DatePickerLabelProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function DatePickerLabel(props: DatePickerLabelProps): JSX.Element {
+  const context = useDatePickerContext();
+  return (
+    <span {...context.pickerAria.labelProps} class={props.class}>
+      {props.children}
+    </span>
+  );
+}
+
+export interface DatePickerDescriptionProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function DatePickerDescription(props: DatePickerDescriptionProps): JSX.Element {
+  const context = useDatePickerContext();
+  return (
+    <p {...context.pickerAria.descriptionProps} class={props.class}>
+      {props.children}
+    </p>
+  );
+}
+
+export interface DatePickerErrorMessageProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function DatePickerErrorMessage(props: DatePickerErrorMessageProps): JSX.Element {
+  const context = useDatePickerContext();
+  return (
+    <p {...context.pickerAria.errorMessageProps} class={props.class}>
+      {props.children}
+    </p>
+  );
+}
+
+export interface DateRangePickerLabelProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function DateRangePickerLabel(props: DateRangePickerLabelProps): JSX.Element {
+  const context = useDateRangePickerContext();
+  return (
+    <span {...context.pickerAria.labelProps} class={props.class}>
+      {props.children}
+    </span>
+  );
+}
+
+export interface DateRangePickerDescriptionProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function DateRangePickerDescription(props: DateRangePickerDescriptionProps): JSX.Element {
+  const context = useDateRangePickerContext();
+  return (
+    <p {...context.pickerAria.descriptionProps} class={props.class}>
+      {props.children}
+    </p>
+  );
+}
+
+export interface DateRangePickerErrorMessageProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function DateRangePickerErrorMessage(props: DateRangePickerErrorMessageProps): JSX.Element {
+  const context = useDateRangePickerContext();
+  return (
+    <p {...context.pickerAria.errorMessageProps} class={props.class}>
+      {props.children}
+    </p>
+  );
+}
 
 /**
  * The content area of the date picker (typically contains a Calendar).

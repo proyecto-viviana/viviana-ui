@@ -17,7 +17,7 @@ import {
   SearchFieldInput,
   SearchFieldClearButton,
 } from '../src/SearchField';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { setupUser, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
 
@@ -69,7 +69,7 @@ describe('SearchField', () => {
 
     it('should render with label', () => {
       render(() => (
-        <SearchField>
+        <SearchField aria-label="Search">
           {() => (
             <>
               <SearchFieldLabel>Search</SearchFieldLabel>
@@ -200,6 +200,16 @@ describe('SearchField', () => {
       await user.keyboard('{Enter}');
 
       expect(onSubmit).toHaveBeenCalledWith('hello');
+    });
+
+    it('should forward onKeyDown to the input element', async () => {
+      const onKeyDown = vi.fn();
+      render(() => <TestSearchField fieldProps={{ onKeyDown }} />);
+
+      const input = screen.getByRole('searchbox');
+      await user.type(input, 'a');
+
+      expect(onKeyDown).toHaveBeenCalled();
     });
   });
 
@@ -336,6 +346,39 @@ describe('SearchField', () => {
 
       const field = document.querySelector('.solidaria-SearchField');
       expect(field).not.toHaveAttribute('data-empty');
+    });
+  });
+
+  describe('a11y validation', () => {
+    it('axe: empty state', async () => {
+      const { container } = render(() => <TestSearchField />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: with value (clear button visible)', async () => {
+      const { container } = render(() => <TestSearchField fieldProps={{ defaultValue: 'query' }} />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: disabled', async () => {
+      const { container } = render(() => <TestSearchField fieldProps={{ isDisabled: true }} />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: invalid', async () => {
+      const { container } = render(() => <TestSearchField fieldProps={{ isInvalid: true }} />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: no dangling refs', () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello' }} />);
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('DOM: data-testid forwards', () => {
+      render(() => <TestSearchField fieldProps={{ 'data-testid': 'search' } as any} />);
+      const field = document.querySelector('.solidaria-SearchField');
+      expect(field).toHaveAttribute('data-testid', 'search');
     });
   });
 });

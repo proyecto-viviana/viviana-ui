@@ -10,6 +10,7 @@
 import { type Accessor, type JSX, createMemo, createSignal } from 'solid-js';
 import { createFocusWithin } from '../interactions/createFocusWithin';
 import { access, type MaybeAccessor } from '../utils';
+import { mergeProps } from '../utils/mergeProps';
 
 // ============================================
 // TYPES
@@ -102,10 +103,10 @@ export function createVisuallyHidden(
   });
 
   // Compute combined styles
-  const combinedStyles = createMemo<JSX.CSSProperties>(() => {
+  const combinedStyles = createMemo<JSX.CSSProperties | undefined>(() => {
     if (isFocused()) {
       // If focused, show the element (for skip links, etc.)
-      return style() ?? {};
+      return style();
     } else if (style()) {
       return { ...visuallyHiddenStyles, ...style() };
     } else {
@@ -114,8 +115,22 @@ export function createVisuallyHidden(
   });
 
   const visuallyHiddenProps = createMemo<JSX.HTMLAttributes<HTMLElement>>(() => ({
-    ...focusWithinProps,
-    style: combinedStyles(),
+    ...mergeProps(
+      focusWithinProps as unknown as Record<string, unknown>,
+      isFocusable()
+        ? {
+            onFocusIn: () => setIsFocused(true),
+            onFocusOut: (e: FocusEvent) => {
+              const currentTarget = e.currentTarget as Element | null;
+              const relatedTarget = e.relatedTarget as Element | null;
+              if (currentTarget && !currentTarget.contains(relatedTarget)) {
+                setIsFocused(false);
+              }
+            },
+          }
+        : {},
+      { style: combinedStyles() }
+    ),
   }));
 
   return {

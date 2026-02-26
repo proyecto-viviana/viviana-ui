@@ -2,9 +2,10 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
+import { render, screen, fireEvent } from '@solidjs/testing-library';
 import { Link } from '../src/Link';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { RouterProvider } from '../src/RouterProvider';
+import { setupUser, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 describe('Link', () => {
   it('should render a link with default class', () => {
@@ -31,6 +32,44 @@ describe('Link', () => {
     const link = screen.getByRole('link');
     expect(link.tagName).toBe('A');
     expect(link).toHaveAttribute('href', 'https://example.com');
+  });
+
+  it('should resolve href using RouterProvider useHref', () => {
+    render(() => (
+      <RouterProvider navigate={() => {}} useHref={(href) => `/app${href}`}>
+        <Link href="/docs">Docs</Link>
+      </RouterProvider>
+    ));
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('href', '/app/docs');
+  });
+
+  it('should navigate via RouterProvider for client-side same-origin links', () => {
+    const navigate = vi.fn();
+    render(() => (
+      <RouterProvider navigate={navigate}>
+        <Link href="/docs" routerOptions={{ replace: true }}>
+          Docs
+        </Link>
+      </RouterProvider>
+    ));
+    const link = screen.getByRole('link');
+    fireEvent.click(link);
+    expect(navigate).toHaveBeenCalledWith('/docs', { replace: true });
+  });
+
+  it('should not navigate via RouterProvider for target _blank links', () => {
+    const navigate = vi.fn();
+    render(() => (
+      <RouterProvider navigate={navigate}>
+        <Link href="/docs" target="_blank">
+          Docs
+        </Link>
+      </RouterProvider>
+    ));
+    const link = screen.getByRole('link');
+    fireEvent.click(link);
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it('should support render props', async () => {
@@ -159,6 +198,26 @@ describe('Link', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
+  it('should support anchor-specific link attributes', () => {
+    render(() => (
+      <Link
+        href="https://example.com/file"
+        hrefLang="es"
+        download="guide.pdf"
+        ping="https://example.com/ping"
+        referrerPolicy="no-referrer"
+      >
+        Test
+      </Link>
+    ));
+    const link = screen.getByRole('link');
+
+    expect(link).toHaveAttribute('hreflang', 'es');
+    expect(link).toHaveAttribute('download', 'guide.pdf');
+    expect(link).toHaveAttribute('ping', 'https://example.com/ping');
+    expect(link).toHaveAttribute('referrerpolicy', 'no-referrer');
+  });
+
   it('should render as span when disabled with href', () => {
     render(() => (
       <Link href="https://example.com" isDisabled>
@@ -221,5 +280,33 @@ describe('Link', () => {
     render(() => <Link aria-label="Go home">🏠</Link>);
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('aria-label', 'Go home');
+  });
+
+  describe('a11y validation', () => {
+    it('axe: with href', async () => {
+      const { container } = render(() => <Link href="https://example.com">Example</Link>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: disabled', async () => {
+      const { container } = render(() => <Link isDisabled>Disabled link</Link>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: aria-current="page"', async () => {
+      const { container } = render(() => <Link href="/home" aria-current="page">Home</Link>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: no dangling refs', () => {
+      render(() => <Link href="https://example.com">Example</Link>);
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('DOM: id forwards', () => {
+      render(() => <Link id="nav-link" href="/home">Home</Link>);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('id', 'nav-link');
+    });
   });
 });

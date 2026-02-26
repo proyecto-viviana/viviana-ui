@@ -1,8 +1,9 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@solidjs/testing-library'
+import { createSignal } from 'solid-js'
 import { Toolbar, ToolbarContext } from '../src/Toolbar'
 import { Button } from '../src/Button'
 import { Separator } from '../src/Separator'
@@ -189,6 +190,35 @@ describe('Toolbar', () => {
     expect(document.activeElement).toBe(alignLeft)
   })
 
+  it('supports Home/End keyboard navigation', async () => {
+    const user = setupUser()
+
+    render(() => (
+      <Toolbar aria-label="Tools">
+        {() => (
+          <>
+            <Button>Cut</Button>
+            <Button>Copy</Button>
+            <Button>Paste</Button>
+          </>
+        )}
+      </Toolbar>
+    ))
+
+    const cut = screen.getByRole('button', { name: 'Cut' })
+    const copy = screen.getByRole('button', { name: 'Copy' })
+    const paste = screen.getByRole('button', { name: 'Paste' })
+
+    copy.focus()
+    expect(document.activeElement).toBe(copy)
+
+    await user.keyboard('{End}')
+    expect(document.activeElement).toBe(paste)
+
+    await user.keyboard('{Home}')
+    expect(document.activeElement).toBe(cut)
+  })
+
   it('supports keyboard navigation vertical', async () => {
     const user = setupUser()
 
@@ -312,6 +342,27 @@ describe('Toolbar', () => {
     ))
 
     const toolbar = screen.getByRole('toolbar')
+    expect(toolbar).toHaveAttribute('data-orientation', 'vertical')
+  })
+
+  it('reacts to orientation prop changes', () => {
+    const [orientation, setOrientation] = createSignal<'horizontal' | 'vertical'>('horizontal')
+
+    render(() => (
+      <>
+        <button onClick={() => setOrientation('vertical')}>Set vertical</button>
+        <Toolbar orientation={orientation()} aria-label="Tools">
+          {() => <Button>Cut</Button>}
+        </Toolbar>
+      </>
+    ))
+
+    const toolbar = screen.getByRole('toolbar')
+    expect(toolbar).toHaveAttribute('aria-orientation', 'horizontal')
+    expect(toolbar).toHaveAttribute('data-orientation', 'horizontal')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Set vertical' }))
+    expect(toolbar).toHaveAttribute('aria-orientation', 'vertical')
     expect(toolbar).toHaveAttribute('data-orientation', 'vertical')
   })
 

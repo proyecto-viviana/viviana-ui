@@ -5,7 +5,7 @@
  * Based on @react-aria/calendar useCalendarGrid
  */
 
-import { createMemo, onMount, onCleanup } from 'solid-js';
+import { createMemo } from 'solid-js';
 import { type MaybeAccessor } from '../utils/reactivity';
 import type { CalendarState, CalendarDate } from '@proyecto-viviana/solid-stately';
 
@@ -47,17 +47,32 @@ export function createCalendarGrid<T extends CalendarState>(
   const weekDays = createMemo(() => state.weekDays());
 
   // Handle keyboard navigation
+  const isRTL = (): boolean => {
+    const element = ref?.();
+    const scopedDirection = element?.closest('[dir]')?.getAttribute('dir');
+    const documentDirection = typeof document !== 'undefined' ? document.dir : '';
+    return (scopedDirection ?? documentDirection) === 'rtl';
+  };
+
   const handleKeyDown = (e: KeyboardEvent) => {
     if (state.isDisabled()) return;
 
     switch (e.key) {
       case 'ArrowLeft':
         e.preventDefault();
-        state.focusPreviousDay();
+        if (isRTL()) {
+          state.focusNextDay();
+        } else {
+          state.focusPreviousDay();
+        }
         break;
       case 'ArrowRight':
         e.preventDefault();
-        state.focusNextDay();
+        if (isRTL()) {
+          state.focusPreviousDay();
+        } else {
+          state.focusNextDay();
+        }
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -96,19 +111,14 @@ export function createCalendarGrid<T extends CalendarState>(
         e.preventDefault();
         state.selectFocusedDate();
         break;
+      case 'Escape':
+        if ('setAnchorDate' in state && typeof state.setAnchorDate === 'function') {
+          e.preventDefault();
+          state.setAnchorDate(null);
+        }
+        break;
     }
   };
-
-  // Register keyboard listener
-  onMount(() => {
-    const element = ref?.();
-    if (element) {
-      element.addEventListener('keydown', handleKeyDown);
-      onCleanup(() => {
-        element.removeEventListener('keydown', handleKeyDown);
-      });
-    }
-  });
 
   // Grid props
   const gridProps = createMemo(() => ({

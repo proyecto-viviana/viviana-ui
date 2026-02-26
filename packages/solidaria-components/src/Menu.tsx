@@ -174,6 +174,7 @@ export interface SubmenuTriggerProps extends MenuTriggerProps {}
 
 interface MenuContextValue<T> {
   state: MenuState<T>;
+  isDisabled: () => boolean;
   dragAndDropHooks?: DragAndDropHooks<T>;
   dragState?: unknown;
   dropState?: unknown;
@@ -396,9 +397,26 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     },
   });
 
+  const resolveDisabled = (): boolean => {
+    const disabled = ariaProps.isDisabled;
+    if (typeof disabled === 'function') {
+      return (disabled as () => boolean)();
+    }
+    return !!disabled;
+  };
+
   // Create menu aria props
-  const { menuProps } = createMenu(
+  const { menuProps, labelProps } = createMenu(
     {
+      get isDisabled() {
+        return resolveDisabled();
+      },
+      get label() {
+        return ariaProps.label;
+      },
+      get onAction() {
+        return stateProps.onAction;
+      },
       get onClose() {
         return stateProps.onClose ?? (() => triggerContext?.state.close());
       },
@@ -407,6 +425,9 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
       },
       get 'aria-labelledby'() {
         return ariaProps['aria-labelledby'];
+      },
+      get 'aria-describedby'() {
+        return ariaProps['aria-describedby'];
       },
     },
     state
@@ -456,6 +477,10 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   };
   const cleanFocusProps = () => {
     const { ref: _ref3, ...rest } = focusProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanLabelProps = () => {
+    const { ref: _ref4, ...rest } = labelProps as Record<string, unknown>;
     return rest;
   };
 
@@ -616,6 +641,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     <MenuContext.Provider
       value={{
         state,
+        isDisabled: resolveDisabled,
         dragAndDropHooks: stateProps.dragAndDropHooks,
         dragState: dragState(),
         dropState: dropState(),
@@ -623,85 +649,91 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     >
       <MenuStateContext.Provider value={state}>
         <CollectionRendererContext.Provider value={collectionRenderer()}>
-          <ul
-            ref={setMenuRef}
-            {...mergeProps(
-              cleanMenuProps(),
-              cleanTriggerMenuProps(),
-              cleanFocusProps(),
-              (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
-            )}
-            class={renderProps.class()}
-            style={renderProps.style()}
-            data-focused={state.isFocused() || undefined}
-            data-drop-target={isRootDropTarget() || undefined}
-          >
-            {hasSections()
-              ? (
-                <For each={sectionedRenderEntries()}>
-                  {(entry) =>
-                    entry.type === 'section'
-                      ? (
-                        <li role="presentation" data-section-wrapper>
-                          <Section class="solidaria-Menu-section">
-                            {entry.section.title != null && (
-                              <Header class="solidaria-Menu-sectionHeader">{entry.section.title}</Header>
-                            )}
-                            <Group class="solidaria-Menu-sectionGroup">
-                              <ul role="group" aria-label={entry.section['aria-label']}>
-                                <For each={entry.items}>
-                                  {(indexedItem) => (
-                                    <>
-                                      {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'before')}
-                                      {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'on')}
-                                      {props.children?.(indexedItem.item)}
-                                      {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'after')}
-                                    </>
-                                  )}
-                                </For>
-                              </ul>
-                            </Group>
-                          </Section>
-                        </li>
-                      )
-                      : (
-                        <>
-                          {collectionRenderer().renderDropIndicator?.(entry.item.index, 'before')}
-                          {collectionRenderer().renderDropIndicator?.(entry.item.index, 'on')}
-                          {props.children?.(entry.item.item)}
-                          {collectionRenderer().renderDropIndicator?.(entry.item.index, 'after')}
-                        </>
-                      )
-                  }
-                </For>
-              )
-              : (
-                <>
-                  {virtualRange()?.offsetTop
-                    ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
-                    : null}
-                  <For each={visibleItems()}>
-                    {(item, index) => {
-                      const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-                      const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
-                      const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
-                      const afterIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'after');
-                      return (
-                        <>
-                          {beforeIndicator()}
-                          {onIndicator()}
-                          {props.children?.(item as T)}
-                          {afterIndicator()}
-                        </>
-                      );
-                    }}
-                  </For>
-                  {virtualRange()?.offsetBottom
-                    ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
-                    : null}
-                </>
+          <>
+            <Show when={ariaProps.label}>
+              <span {...cleanLabelProps()}>{ariaProps.label as JSX.Element}</span>
+            </Show>
+            <ul
+              ref={setMenuRef}
+              {...mergeProps(
+                cleanMenuProps(),
+                cleanTriggerMenuProps(),
+                cleanFocusProps(),
+                (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
               )}
-          </ul>
+              class={renderProps.class()}
+              style={renderProps.style()}
+              data-focused={state.isFocused() || undefined}
+              data-disabled={resolveDisabled() || undefined}
+              data-drop-target={isRootDropTarget() || undefined}
+            >
+              {hasSections()
+                ? (
+                  <For each={sectionedRenderEntries()}>
+                    {(entry) =>
+                      entry.type === 'section'
+                        ? (
+                          <li role="presentation" data-section-wrapper>
+                            <Section class="solidaria-Menu-section">
+                              {entry.section.title != null && (
+                                <Header class="solidaria-Menu-sectionHeader">{entry.section.title}</Header>
+                              )}
+                              <Group class="solidaria-Menu-sectionGroup">
+                                <ul role="group" aria-label={entry.section['aria-label']}>
+                                  <For each={entry.items}>
+                                    {(indexedItem) => (
+                                      <>
+                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'before')}
+                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'on')}
+                                        {props.children?.(indexedItem.item)}
+                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'after')}
+                                      </>
+                                    )}
+                                  </For>
+                                </ul>
+                              </Group>
+                            </Section>
+                          </li>
+                        )
+                        : (
+                          <>
+                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'before')}
+                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'on')}
+                            {props.children?.(entry.item.item)}
+                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'after')}
+                          </>
+                        )
+                    }
+                  </For>
+                )
+                : (
+                  <>
+                    {virtualRange()?.offsetTop
+                      ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
+                      : null}
+                    <For each={visibleItems()}>
+                      {(item, index) => {
+                        const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                        const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
+                        const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
+                        const afterIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'after');
+                        return (
+                          <>
+                            {beforeIndicator()}
+                            {onIndicator()}
+                            {props.children?.(item as T)}
+                            {afterIndicator()}
+                          </>
+                        );
+                      }}
+                    </For>
+                    {virtualRange()?.offsetBottom
+                      ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
+                      : null}
+                  </>
+                )}
+            </ul>
+          </>
         </CollectionRendererContext.Provider>
       </MenuStateContext.Provider>
     </MenuContext.Provider>
@@ -746,10 +778,10 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     {
       key: local.id,
       get isDisabled() {
-        return ariaProps.isDisabled;
+        return Boolean(ariaProps.isDisabled || menuContext?.isDisabled());
       },
       get 'aria-label'() {
-        return ariaProps['aria-label'];
+        return ariaProps['aria-label'] ?? local.textValue;
       },
       get onAction() {
         return local.onAction;
@@ -785,10 +817,20 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     },
     renderValues
   );
+  const hasPrimitiveLabel = () => {
+    return typeof props.children === 'string' || typeof props.children === 'number';
+  };
 
   // Remove ref from spread props
   const cleanItemProps = () => {
-    const { ref: _ref1, ...rest } = itemAria.menuItemProps as Record<string, unknown>;
+    const {
+      ref: _ref1,
+      'aria-describedby': _ariaDescribedby,
+      ...rest
+    } = itemAria.menuItemProps as Record<string, unknown>;
+    if (!hasPrimitiveLabel() && rest['aria-label'] == null) {
+      delete rest['aria-labelledby'];
+    }
     return rest;
   };
   const cleanHoverProps = () => {
@@ -834,7 +876,9 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
       data-dragging={draggableItem()?.isDragging || undefined}
       data-drop-target={droppableItem()?.isDropTarget || undefined}
     >
-      {renderProps.renderChildren()}
+      {hasPrimitiveLabel()
+        ? <span {...itemAria.labelProps}>{renderProps.renderChildren()}</span>
+        : renderProps.renderChildren()}
     </li>
   );
 }

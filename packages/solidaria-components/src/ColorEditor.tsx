@@ -7,6 +7,7 @@
 
 import { type JSX, createSignal, For, Show, splitProps, createMemo } from 'solid-js'
 import {
+  ColorPicker,
   ColorArea,
   ColorAreaGradient,
   ColorAreaThumb,
@@ -31,14 +32,14 @@ export interface ColorEditorRenderProps {
 
 export interface ColorEditorProps {
   /** The current color value (controlled). */
-  value?: Color
+  value?: Color | string
   /** The default color value (uncontrolled). */
-  defaultValue?: Color
+  defaultValue?: Color | string
   /** Handler called when the color changes. */
   onChange?: (color: Color) => void
   /** Whether to hide the alpha channel. */
   hideAlphaChannel?: boolean
-  /** The initial color space. @default 'hsb' */
+  /** The initial color space. @default 'hex' */
   colorSpace?: ColorEditorColorSpace | 'hex'
   /** Handler called when the color space changes. */
   onColorSpaceChange?: (colorSpace: ColorEditorColorSpace | 'hex') => void
@@ -63,7 +64,7 @@ export interface ColorEditorProps {
  * color space selector + channel ColorFields.
  */
 export function ColorEditor(props: ColorEditorProps): JSX.Element {
-  const [local, rest] = splitProps(props, [
+  const [local] = splitProps(props, [
     'value',
     'defaultValue',
     'onChange',
@@ -77,7 +78,7 @@ export function ColorEditor(props: ColorEditorProps): JSX.Element {
   ])
 
   const [activeSpace, setActiveSpace] = createSignal<ColorEditorColorSpace | 'hex'>(
-    local.colorSpace ?? 'hsb'
+    local.colorSpace ?? 'hex'
   )
 
   const handleSpaceChange = (space: ColorEditorColorSpace | 'hex') => {
@@ -102,7 +103,9 @@ export function ColorEditor(props: ColorEditorProps): JSX.Element {
   if (local.children) {
     return (
       <div class={resolvedClass()} style={local.style}>
-        {local.children}
+        <ColorPicker value={local.value} defaultValue={local.defaultValue} onChange={local.onChange}>
+          {() => local.children}
+        </ColorPicker>
       </div>
     )
   }
@@ -126,115 +129,103 @@ export function ColorEditor(props: ColorEditorProps): JSX.Element {
       style={local.style}
       data-color-space={activeSpace()}
     >
-      {/* Top row: ColorArea + vertical sliders */}
-      <div class="solidaria-ColorEditor-top">
-        <ColorArea
-          value={local.value}
-          defaultValue={local.defaultValue}
-          onChange={local.onChange}
-          xChannel={areaChannels().x}
-          yChannel={areaChannels().y}
-          isDisabled={local.isDisabled}
-        >
-          {() => (
-            <>
-              <ColorAreaGradient />
-              <ColorAreaThumb />
-            </>
-          )}
-        </ColorArea>
-
-        <ColorSlider
-          value={local.value}
-          defaultValue={local.defaultValue}
-          onChange={local.onChange}
-          channel="hue"
-          isDisabled={local.isDisabled}
-          aria-label="Hue"
-        >
-          {() => (
-            <ColorSliderTrack>
-              {() => <ColorSliderThumb />}
-            </ColorSliderTrack>
-          )}
-        </ColorSlider>
-
-        <Show when={!local.hideAlphaChannel}>
-          <ColorSlider
-            value={local.value}
-            defaultValue={local.defaultValue}
-            onChange={local.onChange}
-            channel="alpha"
-            isDisabled={local.isDisabled}
-            aria-label="Alpha"
-          >
-            {() => (
-              <ColorSliderTrack>
-                {() => <ColorSliderThumb />}
-              </ColorSliderTrack>
-            )}
-          </ColorSlider>
-        </Show>
-      </div>
-
-      {/* Bottom row: color space selector + channel fields */}
-      <div class="solidaria-ColorEditor-bottom">
-        <select
-          value={activeSpace()}
-          onChange={(e) => handleSpaceChange(e.currentTarget.value as ColorEditorColorSpace | 'hex')}
-          disabled={local.isDisabled}
-          aria-label="Color format"
-          class="solidaria-ColorEditor-format"
-        >
-          <option value="hex">Hex</option>
-          <option value="rgb">RGB</option>
-          <option value="hsl">HSL</option>
-          <option value="hsb">HSB</option>
-        </select>
-
-        <Show
-          when={activeSpace() !== 'hex'}
-          fallback={
-            <ColorField
-              value={local.value}
-              defaultValue={local.defaultValue}
-              onChange={(color) => color && local.onChange?.(color)}
+      <ColorPicker value={local.value} defaultValue={local.defaultValue} onChange={local.onChange}>
+        {() => (
+          <>
+          {/* Top row: ColorArea + vertical sliders */}
+          <div class="solidaria-ColorEditor-top">
+            <ColorArea
+              xChannel={areaChannels().x}
+              yChannel={areaChannels().y}
               isDisabled={local.isDisabled}
-              aria-label="Hex color"
             >
-              {() => <ColorFieldInput />}
-            </ColorField>
-          }
-        >
-          <For each={channels()}>
-            {(channel) => (
-              <ColorField
-                value={local.value}
-                defaultValue={local.defaultValue}
-                onChange={(color) => color && local.onChange?.(color)}
-                channel={channel}
+              {() => (
+                <>
+                  <ColorAreaGradient />
+                  <ColorAreaThumb />
+                </>
+              )}
+            </ColorArea>
+
+            <ColorSlider
+              channel="hue"
+              isDisabled={local.isDisabled}
+              aria-label="Hue"
+            >
+              {() => (
+                <ColorSliderTrack>
+                  {() => <ColorSliderThumb />}
+                </ColorSliderTrack>
+              )}
+            </ColorSlider>
+
+            <Show when={!local.hideAlphaChannel}>
+              <ColorSlider
+                channel="alpha"
                 isDisabled={local.isDisabled}
-                aria-label={channel}
+                aria-label="Alpha"
+              >
+                {() => (
+                  <ColorSliderTrack>
+                    {() => <ColorSliderThumb />}
+                  </ColorSliderTrack>
+                )}
+              </ColorSlider>
+            </Show>
+          </div>
+
+          {/* Bottom row: color space selector + channel fields */}
+          <div class="solidaria-ColorEditor-bottom">
+            <select
+              value={activeSpace()}
+              onChange={(e) => handleSpaceChange(e.currentTarget.value as ColorEditorColorSpace | 'hex')}
+              disabled={local.isDisabled}
+              aria-label="Color format"
+              class="solidaria-ColorEditor-format"
+            >
+              <option value="hex">Hex</option>
+              <option value="rgb">RGB</option>
+              <option value="hsl">HSL</option>
+              <option value="hsb">HSB</option>
+            </select>
+
+            <Show
+              when={activeSpace() !== 'hex'}
+              fallback={
+                <ColorField
+                  isDisabled={local.isDisabled}
+                  aria-label="Hex color"
+                >
+                  {() => <ColorFieldInput />}
+                </ColorField>
+              }
+            >
+              <For each={channels()}>
+                {(channel) => (
+                  <ColorField
+                    channel={channel}
+                    isDisabled={local.isDisabled}
+                    aria-label={channel}
+                  >
+                    {() => <ColorFieldInput />}
+                  </ColorField>
+                )}
+              </For>
+            </Show>
+
+            <Show when={!local.hideAlphaChannel && activeSpace() !== 'hex'}>
+              <ColorField
+                channel="alpha"
+                isDisabled={local.isDisabled}
+                aria-label="Alpha"
               >
                 {() => <ColorFieldInput />}
               </ColorField>
-            )}
-          </For>
-        </Show>
-
-        <Show when={!local.hideAlphaChannel && activeSpace() !== 'hex'}>
-          <ColorField
-            value={local.value}
-            defaultValue={local.defaultValue}
-            onChange={(color) => color && local.onChange?.(color)}
-            channel="alpha"
-            isDisabled={local.isDisabled}
-            aria-label="Alpha"
-          >
-            {() => <ColorFieldInput />}
-          </ColorField>
-        </Show>
-      </div>
+            </Show>
+          </div>
+        </>
+        )}
+      </ColorPicker>
     </div>
   )
 }

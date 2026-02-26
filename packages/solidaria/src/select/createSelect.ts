@@ -148,36 +148,28 @@ export function createSelect<T>(
     },
   });
 
-  // Helper to find next non-disabled key
-  const findNextKey = (fromKey: string | number | null, direction: 'forward' | 'backward'): string | number | null => {
-    const collection = state.collection();
-    let key = fromKey;
-
-    if (key == null) {
-      return direction === 'forward' ? collection.getFirstKey() : collection.getLastKey();
-    }
-
-    const getNext = direction === 'forward'
-      ? (k: string | number) => collection.getKeyAfter(k)
-      : (k: string | number) => collection.getKeyBefore(k);
-
-    let next = getNext(key);
-    while (next != null) {
-      // Check if item is disabled via state.isKeyDisabled or item.isDisabled
-      const isDisabled = state.isKeyDisabled?.(next) || collection.getItem(next)?.isDisabled;
-      if (!isDisabled) {
-        return next;
-      }
-      next = getNext(next);
-    }
-
-    return null;
-  };
-
   // Helper to check if key is disabled
   const isKeyDisabled = (key: string | number): boolean => {
     const collection = state.collection();
     return state.isKeyDisabled?.(key) || collection.getItem(key)?.isDisabled || false;
+  };
+
+  // Helper to find the next non-disabled key.
+  const findNextKey = (fromKey: string | number | null, direction: 'forward' | 'backward'): string | number | null => {
+    const collection = state.collection();
+    const getAdjacent = direction === 'forward'
+      ? (k: string | number) => collection.getKeyAfter(k)
+      : (k: string | number) => collection.getKeyBefore(k);
+    const getBoundary = direction === 'forward'
+      ? () => collection.getFirstKey()
+      : () => collection.getLastKey();
+
+    let key = fromKey == null ? getBoundary() : getAdjacent(fromKey);
+    while (key != null && isKeyDisabled(key)) {
+      key = getAdjacent(key);
+    }
+
+    return key;
   };
 
   // Type-to-select - for Select, typing directly selects items when closed
@@ -195,15 +187,14 @@ export function createSelect<T>(
     },
     isKeyDisabled,
     get isDisabled() {
-      return getProps().disallowTypeAhead ?? false;
+      return Boolean((getProps().disallowTypeAhead ?? false) || getProps().isDisabled || state.isDisabled);
     },
   });
 
   // Keyboard navigation
   const onKeyDown: JSX.EventHandler<HTMLElement, KeyboardEvent> = (e) => {
-    if (getProps().isDisabled) return;
+    if (getProps().isDisabled ?? state.isDisabled) return;
 
-    const collection = state.collection();
     const currentKey = state.focusedKey() ?? state.selectedKey();
 
     switch (e.key) {
@@ -218,7 +209,9 @@ export function createSelect<T>(
         if (!state.isOpen()) {
           // ArrowDown: Open the dropdown and focus first/selected item
           state.open();
-          const focusKey = currentKey ?? collection.getFirstKey();
+          const focusKey = currentKey != null && !isKeyDisabled(currentKey)
+            ? currentKey
+            : findNextKey(currentKey, 'forward');
           if (focusKey) {
             state.setFocusedKey(focusKey);
           }
@@ -231,7 +224,9 @@ export function createSelect<T>(
         if (!state.isOpen()) {
           // ArrowUp: Open the dropdown and focus last/selected item
           state.open();
-          const focusKey = currentKey ?? collection.getLastKey();
+          const focusKey = currentKey != null && !isKeyDisabled(currentKey)
+            ? currentKey
+            : findNextKey(currentKey, 'backward');
           if (focusKey) {
             state.setFocusedKey(focusKey);
           }
@@ -265,18 +260,9 @@ export function createSelect<T>(
         // Home: Select first option
         if (!state.isOpen()) {
           e.preventDefault();
-          const firstKey = collection.getFirstKey();
+          const firstKey = findNextKey(null, 'forward');
           if (firstKey != null) {
-            // Find first non-disabled key
-            const item = collection.getItem(firstKey);
-            if (item && !item.isDisabled) {
-              state.setSelectedKey(firstKey);
-            } else {
-              const nextKey = findNextKey(firstKey, 'forward');
-              if (nextKey != null) {
-                state.setSelectedKey(nextKey);
-              }
-            }
+            state.setSelectedKey(firstKey);
           }
         }
         break;
@@ -285,18 +271,9 @@ export function createSelect<T>(
         // End: Select last option
         if (!state.isOpen()) {
           e.preventDefault();
-          const lastKey = collection.getLastKey();
+          const lastKey = findNextKey(null, 'backward');
           if (lastKey != null) {
-            // Find last non-disabled key
-            const item = collection.getItem(lastKey);
-            if (item && !item.isDisabled) {
-              state.setSelectedKey(lastKey);
-            } else {
-              const prevKey = findNextKey(lastKey, 'backward');
-              if (prevKey != null) {
-                state.setSelectedKey(prevKey);
-              }
-            }
+            state.setSelectedKey(lastKey);
           }
         }
         break;

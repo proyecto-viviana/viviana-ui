@@ -68,6 +68,24 @@ describe('ContextualHelpTrigger (headless)', () => {
       fireEvent.click(screen.getByRole('button'));
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
+
+    it('links trigger aria-controls to dialog id when open', () => {
+      render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      const dialog = screen.getByRole('dialog');
+      expect(trigger).toHaveAttribute('aria-controls', dialog.id);
+    });
+
+    it('labels dialog with trigger via aria-labelledby', () => {
+      render(() => <ContextualHelpTrigger>{defaultChildren}</ContextualHelpTrigger>);
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      const dialog = screen.getByRole('dialog');
+      expect(dialog).toHaveAttribute('aria-labelledby', trigger.id);
+    });
   });
 
   describe('states', () => {

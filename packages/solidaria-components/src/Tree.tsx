@@ -89,6 +89,10 @@ export interface TreeProps<T extends object> extends Omit<AriaTreeProps, 'childr
   items: CollectionEntry<TreeItemData<T>>[];
   /** The selection mode. */
   selectionMode?: 'none' | 'single' | 'multiple';
+  /** The selection behavior (toggle vs replace). */
+  selectionBehavior?: 'toggle' | 'replace';
+  /** Whether disabled items can still receive focus. */
+  disabledBehavior?: 'selection' | 'all';
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
   /** Currently selected keys (controlled). */
@@ -719,7 +723,9 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     [
       'items',
       'disabledKeys',
+      'disabledBehavior',
       'selectionMode',
+      'selectionBehavior',
       'selectedKeys',
       'defaultSelectedKeys',
       'onSelectionChange',
@@ -739,7 +745,9 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     collectionFactory: (expandedKeys) =>
       createTreeCollection(flatItems(), expandedKeys) as TreeCollection<T>,
     disabledKeys: stateProps.disabledKeys,
+    disabledBehavior: stateProps.disabledBehavior,
     selectionMode: stateProps.selectionMode,
+    selectionBehavior: stateProps.selectionBehavior,
     selectedKeys: stateProps.selectedKeys,
     defaultSelectedKeys: stateProps.defaultSelectedKeys,
     onSelectionChange: stateProps.onSelectionChange,
@@ -761,6 +769,9 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     }
   });
 
+  // Resolve writing direction for keyboard expand/collapse parity
+  const treeDirection = createMemo(() => ariaProps.direction ?? resolveTreeDirection(ref()));
+
   // Create tree aria props
   const { treeProps } = createTree<T, TreeCollection<T>>(
     () => ({
@@ -771,6 +782,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
       isVirtualized: ariaProps.isVirtualized,
       onAction: ariaProps.onAction,
       isDisabled: ariaProps.isDisabled,
+      direction: treeDirection(),
     }),
     () => state,
     ref
@@ -1197,6 +1209,8 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
             data-disabled={ariaProps.isDisabled || undefined}
             data-empty={isEmpty() || undefined}
             data-drop-target={isRootDropTarget() || undefined}
+            data-selection-mode={stateProps.selectionMode !== 'none' ? stateProps.selectionMode : undefined}
+            data-allows-dragging={hasDraggableDnd() || undefined}
           >
             {isEmpty() && local.renderEmptyState ? (
               local.renderEmptyState()
@@ -1300,29 +1314,26 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
   });
 
   // Create item aria props
-  const {
-    rowProps,
-    gridCellProps,
-    expandButtonProps: _expandButtonProps,
-    isSelected,
-    isDisabled,
-    isPressed,
-    isExpanded,
-    isExpandable,
-    level,
-  } = createTreeItem<T, TreeCollection<T>>(
+  const treeItemAria = createTreeItem<T, TreeCollection<T>>(
     () => ({
       node: itemNode(),
       onAction: local.onAction,
+      textValue: local.textValue,
     }),
     () => state,
     ref
   );
+  const isSelected = () => treeItemAria.isSelected;
+  const isDisabled = () => treeItemAria.isDisabled;
+  const isPressed = () => treeItemAria.isPressed;
+  const isExpanded = () => treeItemAria.isExpanded;
+  const isExpandable = () => treeItemAria.isExpandable;
+  const level = () => treeItemAria.level;
 
   // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
-      return isDisabled;
+      return isDisabled();
     },
   });
 
@@ -1353,15 +1364,15 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
 
   // Render props values
   const renderValues = createMemo<TreeItemRenderProps>(() => ({
-    isSelected,
+    isSelected: isSelected(),
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible() && isFocused(),
-    isPressed,
+    isPressed: isPressed(),
     isHovered: isHovered(),
-    isDisabled,
-    isExpanded,
-    isExpandable,
-    level,
+    isDisabled: isDisabled(),
+    isExpanded: isExpanded(),
+    isExpandable: isExpandable(),
+    level: level(),
   }));
 
   // Resolve render props
@@ -1377,7 +1388,7 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
 
   // Remove ref from spread props
   const cleanRowProps = () => {
-    const { ref: _ref1, ...rest } = rowProps as Record<string, unknown>;
+    const { ref: _ref1, ...rest } = treeItemAria.rowProps as Record<string, unknown>;
     return rest;
   };
   const cleanHoverProps = () => {
@@ -1392,9 +1403,9 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
   // Item context for nested components
   const itemContextValue = createMemo<TreeItemContextValue<T>>(() => ({
     node: itemNode(),
-    isExpanded,
-    isExpandable,
-    level,
+    isExpanded: isExpanded(),
+    isExpandable: isExpandable(),
+    level: level(),
   }));
 
   return (
@@ -1410,20 +1421,22 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
           (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
         )}
         class={renderProps.class()}
-        style={renderProps.style()}
-        data-selected={isSelected || undefined}
+        style={{ '--tree-item-level': String(level()), ...((typeof renderProps.style() === 'object' ? renderProps.style() : {}) as Record<string, string>) }}
+        data-selected={isSelected() || undefined}
         data-focused={isFocused() || undefined}
         data-focus-visible={(isFocusVisible() && isFocused()) || undefined}
-        data-pressed={isPressed || undefined}
+        data-pressed={isPressed() || undefined}
         data-hovered={isHovered() || undefined}
-        data-disabled={isDisabled || undefined}
-        data-expanded={isExpanded || undefined}
-        data-expandable={isExpandable || undefined}
-        data-level={level}
+        data-disabled={isDisabled() || undefined}
+        data-expanded={isExpanded() || undefined}
+        data-expandable={isExpandable() || undefined}
+        data-has-child-items={isExpandable() || undefined}
+        data-level={level()}
+        data-selection-mode={treeContext?.state.selectionMode !== 'none' ? treeContext?.state.selectionMode : undefined}
         data-dragging={draggableItem()?.isDragging || undefined}
         data-drop-target={droppableItem()?.isDropTarget || undefined}
       >
-        <div {...gridCellProps} class="solidaria-Tree-item-content">
+        <div {...treeItemAria.gridCellProps} class="solidaria-Tree-item-content">
           {renderProps.renderChildren()}
         </div>
       </div>
@@ -1450,7 +1463,7 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
   const state = stateContext as TreeState<object, TreeCollection<object>>;
 
   // Create expand button props
-  const { expandButtonProps } = createTreeItem(
+  const treeItemAria = createTreeItem(
     () => ({ node: itemContext.node }),
     () => state,
     () => null
@@ -1458,7 +1471,7 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
 
   // Remove ref and add custom handling
   const cleanExpandProps = () => {
-    const { ref: _ref, ...rest } = expandButtonProps as Record<string, unknown>;
+    const { ref: _ref, ...rest } = treeItemAria.expandButtonProps as Record<string, unknown>;
     return rest;
   };
 
@@ -1497,12 +1510,12 @@ export function TreeSelectionCheckbox(props: { itemKey: Key }): JSX.Element {
 
   const state = context as TreeState<object, TreeCollection<object>>;
 
-  const { checkboxProps } = createTreeSelectionCheckbox<object, TreeCollection<object>>(
+  const treeSelectionCheckboxAria = createTreeSelectionCheckbox<object, TreeCollection<object>>(
     () => ({ key: props.itemKey }),
     () => state
   );
 
-  return <input {...checkboxProps} class="solidaria-Tree-checkbox" />;
+  return <input {...treeSelectionCheckboxAria.checkboxProps} class="solidaria-Tree-checkbox" />;
 }
 
 export function TreeLoadMoreItem(props: TreeLoadMoreItemProps): JSX.Element {

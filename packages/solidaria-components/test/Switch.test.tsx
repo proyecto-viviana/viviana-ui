@@ -13,7 +13,7 @@ import {
   ToggleSwitch,
   type ToggleSwitchRenderProps,
 } from '../src/Switch';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { setupUser, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
 
@@ -276,6 +276,39 @@ describe('ToggleSwitch', () => {
       await user.click(switchEl);
       // Now selected
       expect(label).toHaveAttribute('data-selected');
+    });
+  });
+
+  describe('a11y validation', () => {
+    it('axe: default', async () => {
+      const { container } = render(() => <ToggleSwitch aria-label="Enable feature">Toggle</ToggleSwitch>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: selected', async () => {
+      const { container } = render(() => <ToggleSwitch aria-label="Enable feature" defaultSelected>Toggle</ToggleSwitch>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: disabled', async () => {
+      const { container } = render(() => <ToggleSwitch aria-label="Enable feature" isDisabled>Toggle</ToggleSwitch>);
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: no dangling refs', () => {
+      render(() => (
+        <>
+          <span id="switch-desc">Toggles the feature</span>
+          <ToggleSwitch aria-label="Enable feature" aria-describedby="switch-desc">Toggle</ToggleSwitch>
+        </>
+      ));
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('DOM: data-testid forwards', () => {
+      render(() => <ToggleSwitch aria-label="Toggle" data-testid="my-switch">Toggle</ToggleSwitch>);
+      const elements = screen.getAllByTestId('my-switch');
+      expect(elements.length).toBeGreaterThanOrEqual(1);
     });
   });
 

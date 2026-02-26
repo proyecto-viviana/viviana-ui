@@ -273,6 +273,22 @@ describe('createCheckboxGroupState', () => {
         const state = createCheckboxGroupState({});
 
         expect(state.isInvalid).toBe(false);
+        expect(state.displayValidation().isInvalid).toBe(false);
+        expect(state.displayValidation().validationDetails.valid).toBe(true);
+        expect(state.displayValidation().validationErrors).toEqual([]);
+
+        dispose();
+      });
+    });
+
+    it('should expose invalid displayValidation details when invalid', () => {
+      createRoot((dispose) => {
+        const state = createCheckboxGroupState({ isInvalid: true });
+
+        expect(state.displayValidation().isInvalid).toBe(true);
+        expect(state.displayValidation().validationDetails.customError).toBe(true);
+        expect(state.displayValidation().validationDetails.valid).toBe(false);
+        expect(state.displayValidation().validationErrors).toEqual([]);
 
         dispose();
       });
@@ -373,6 +389,38 @@ describe('createCheckboxGroupState', () => {
 
         dispose();
       });
+    });
+  });
+
+  describe('form validation lifecycle', () => {
+    it('supports native validation commit/reset flow', async () => {
+      let dispose!: () => void;
+      let state!: ReturnType<typeof createCheckboxGroupState>;
+
+      createRoot((rootDispose) => {
+        dispose = rootDispose;
+        state = createCheckboxGroupState({
+          validationBehavior: 'native',
+          validate: (value) => value.length === 0 ? 'Select at least one option' : null,
+        });
+
+        expect(state.displayValidation().isInvalid).toBe(false);
+      });
+
+      state.commitValidation();
+      await Promise.resolve();
+      expect(state.displayValidation().isInvalid).toBe(true);
+      expect(state.displayValidation().validationErrors).toEqual(['Select at least one option']);
+
+      state.setValue(['dogs']);
+      state.commitValidation();
+      await Promise.resolve();
+      expect(state.displayValidation().isInvalid).toBe(false);
+
+      state.resetValidation();
+      expect(state.displayValidation().isInvalid).toBe(false);
+
+      dispose();
     });
   });
 });

@@ -3,12 +3,18 @@ import { render, screen, cleanup } from '@solidjs/testing-library';
 import { createDatePicker } from '../src/datepicker/createDatePicker';
 import { I18nProvider } from '../src/i18n';
 
-function createMockFieldState() {
+function createMockFieldState(overrides: Partial<{
+  isDisabled: () => boolean;
+  isReadOnly: () => boolean;
+  isRequired: () => boolean;
+  isInvalid: () => boolean;
+}> = {}) {
   return {
     isDisabled: () => false,
     isReadOnly: () => false,
     isRequired: () => false,
     isInvalid: () => false,
+    ...overrides,
   };
 }
 
@@ -23,13 +29,20 @@ function createMockOverlayState() {
 
 function TestDatePickerAria(props: {
   'aria-label'?: string;
+  isRequired?: boolean;
+  isInvalid?: boolean;
   buttonAriaLabel?: string;
   dialogAriaLabel?: string;
   calendarAriaLabel?: string;
+  stateIsRequired?: boolean;
+  stateIsInvalid?: boolean;
 }) {
   const aria = createDatePicker(
     () => props,
-    createMockFieldState() as any,
+    createMockFieldState({
+      isRequired: () => props.stateIsRequired ?? false,
+      isInvalid: () => props.stateIsInvalid ?? false,
+    }) as any,
     createMockOverlayState()
   );
 
@@ -83,5 +96,19 @@ describe('createDatePicker', () => {
     expect(screen.getByTestId('button')).toHaveAttribute('aria-label', 'Abrir calendario');
     expect(screen.getByTestId('dialog')).toHaveAttribute('aria-label', 'Calendario');
     expect(screen.getByTestId('calendar')).toHaveAttribute('aria-label', 'Calendario');
+  });
+
+  it('applies aria-required and aria-invalid on group from props/state', () => {
+    render(() => (
+      <TestDatePickerAria
+        aria-label="Date"
+        isRequired
+        stateIsInvalid
+      />
+    ));
+
+    const group = screen.getByTestId('group');
+    expect(group).toHaveAttribute('aria-required', 'true');
+    expect(group).toHaveAttribute('aria-invalid', 'true');
   });
 });

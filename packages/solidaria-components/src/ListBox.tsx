@@ -15,6 +15,7 @@ import {
   splitProps,
   useContext,
   For,
+  Show,
 } from 'solid-js';
 import {
   createListBox,
@@ -171,6 +172,7 @@ export interface ListBoxSectionProps extends SectionProps {}
 
 interface ListBoxContextValue<T> {
   state: ListState<T>;
+  isDisabled: () => boolean;
   dragAndDropHooks?: DragAndDropHooks<unknown>;
   dragState?: unknown;
   dropState?: unknown;
@@ -241,7 +243,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   };
 
   // Create listbox aria props
-  const { listBoxProps } = createListBox(
+  const listBoxAria = createListBox(
     {
       ...ariaProps,
       get isDisabled() {
@@ -280,11 +282,15 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
 
   // Remove ref from spread props
   const cleanListBoxProps = () => {
-    const { ref: _ref1, ...rest } = listBoxProps as Record<string, unknown>;
+    const { ref: _ref1, ...rest } = listBoxAria.listBoxProps as Record<string, unknown>;
     return rest;
   };
   const cleanFocusProps = () => {
     const { ref: _ref2, ...rest } = focusProps as Record<string, unknown>;
+    return rest;
+  };
+  const cleanLabelProps = () => {
+    const { ref: _ref3, ...rest } = listBoxAria.labelProps as Record<string, unknown>;
     return rest;
   };
   const [listRef, setListRef] = createSignal<HTMLElement | null>(null);
@@ -464,6 +470,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     <ListBoxContext.Provider
       value={{
         state,
+        isDisabled: resolveDisabled,
         dragAndDropHooks: local.dragAndDropHooks as DragAndDropHooks<unknown> | undefined,
         dragState: dragState(),
         dropState: dropState(),
@@ -471,99 +478,104 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     >
       <ListBoxStateContext.Provider value={state}>
         <CollectionRendererContext.Provider value={collectionRenderer()}>
-          <ul
-            {...mergeProps(
-              domProps(),
-              cleanListBoxProps(),
-              cleanFocusProps(),
-              (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
-            )}
-            ref={(el) => {
-              setListRef(el);
-            }}
-            class={renderProps.class()}
-            style={renderProps.style()}
-            data-focused={state.isFocused() || undefined}
-            data-focus-visible={isFocusVisible() || undefined}
-            data-disabled={resolveDisabled() || undefined}
-            data-empty={isEmpty() || undefined}
-            data-drop-target={isRootDropTarget() || undefined}
-          >
-            {isEmpty() && local.renderEmptyState
-              ? local.renderEmptyState()
-              : hasSections()
-                ? (
-                  <For each={sectionedRenderEntries()}>
-                    {(entry) =>
-                      entry.type === 'section'
-                        ? (
-                          <li role="presentation" data-section-wrapper>
-                            <Section class="solidaria-ListBox-section">
-                              {entry.section.title != null && (
-                                <Header class="solidaria-ListBox-sectionHeader">{entry.section.title}</Header>
-                              )}
-                              <Group class="solidaria-ListBox-sectionGroup">
-                                <ul role="group" aria-label={entry.section['aria-label']}>
-                                  <For each={entry.items}>
-                                    {(indexedItem) => (
-                                      <>
-                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'before')}
-                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'on')}
-                                        {props.children(indexedItem.item)}
-                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'after')}
-                                      </>
-                                    )}
-                                  </For>
-                                </ul>
-                              </Group>
-                            </Section>
-                          </li>
-                        )
-                        : (
-                          <>
-                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'before')}
-                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'on')}
-                            {props.children(entry.item.item)}
-                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'after')}
-                          </>
-                        )
-                    }
-                  </For>
-                )
-                : (
-                  <>
-                    {virtualRange()?.offsetTop
-                      ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
-                      : null}
-                    <For each={visibleItems()}>
-                      {(item, index) => {
-                        const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-                        const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
-                        const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
-                        const afterIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'after');
-                        return (
-                          <>
-                            {beforeIndicator()}
-                            {onIndicator()}
-                            {props.children(item as T)}
-                            {afterIndicator()}
-                          </>
-                        );
-                      }}
+          <>
+            <Show when={ariaProps.label}>
+              <span {...cleanLabelProps()}>{ariaProps.label as JSX.Element}</span>
+            </Show>
+            <ul
+              {...mergeProps(
+                domProps(),
+                cleanListBoxProps(),
+                cleanFocusProps(),
+                (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
+              )}
+              ref={(el) => {
+                setListRef(el);
+              }}
+              class={renderProps.class()}
+              style={renderProps.style()}
+              data-focused={state.isFocused() || undefined}
+              data-focus-visible={isFocusVisible() || undefined}
+              data-disabled={resolveDisabled() || undefined}
+              data-empty={isEmpty() || undefined}
+              data-drop-target={isRootDropTarget() || undefined}
+            >
+              {isEmpty() && local.renderEmptyState
+                ? local.renderEmptyState()
+                : hasSections()
+                  ? (
+                    <For each={sectionedRenderEntries()}>
+                      {(entry) =>
+                        entry.type === 'section'
+                          ? (
+                            <li role="presentation" data-section-wrapper>
+                              <Section class="solidaria-ListBox-section">
+                                {entry.section.title != null && (
+                                  <Header class="solidaria-ListBox-sectionHeader">{entry.section.title}</Header>
+                                )}
+                                <Group class="solidaria-ListBox-sectionGroup">
+                                  <ul role="group" aria-label={entry.section['aria-label']}>
+                                    <For each={entry.items}>
+                                      {(indexedItem) => (
+                                        <>
+                                          {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'before')}
+                                          {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'on')}
+                                          {props.children(indexedItem.item)}
+                                          {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'after')}
+                                        </>
+                                      )}
+                                    </For>
+                                  </ul>
+                                </Group>
+                              </Section>
+                            </li>
+                          )
+                          : (
+                            <>
+                              {collectionRenderer().renderDropIndicator?.(entry.item.index, 'before')}
+                              {collectionRenderer().renderDropIndicator?.(entry.item.index, 'on')}
+                              {props.children(entry.item.item)}
+                              {collectionRenderer().renderDropIndicator?.(entry.item.index, 'after')}
+                            </>
+                          )
+                      }
                     </For>
-                    {virtualRange()?.offsetBottom
-                      ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
-                      : null}
-                  </>
-                )
-            }
-            {local.hasMore && local.onLoadMore && (
-              <ListBoxLoadMoreItem
-                onLoadMore={local.onLoadMore}
-                isLoading={local.isLoading}
-              />
-            )}
-          </ul>
+                  )
+                  : (
+                    <>
+                      {virtualRange()?.offsetTop
+                        ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
+                        : null}
+                      <For each={visibleItems()}>
+                        {(item, index) => {
+                          const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                          const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
+                          const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
+                          const afterIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'after');
+                          return (
+                            <>
+                              {beforeIndicator()}
+                              {onIndicator()}
+                              {props.children(item as T)}
+                              {afterIndicator()}
+                            </>
+                          );
+                        }}
+                      </For>
+                      {virtualRange()?.offsetBottom
+                        ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
+                        : null}
+                    </>
+                  )
+              }
+              {local.hasMore && local.onLoadMore && (
+                <ListBoxLoadMoreItem
+                  onLoadMore={local.onLoadMore}
+                  isLoading={local.isLoading}
+                />
+              )}
+            </ul>
+          </>
         </CollectionRendererContext.Provider>
       </ListBoxStateContext.Provider>
     </ListBoxContext.Provider>
@@ -597,10 +609,13 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     {
       key: local.id,
       get isDisabled() {
-        return ariaProps.isDisabled;
+        return Boolean(ariaProps.isDisabled || listContext?.isDisabled());
       },
       get 'aria-label'() {
-        return ariaProps['aria-label'];
+        return ariaProps['aria-label'] ?? local.textValue;
+      },
+      get shouldSelectOnPressUp() {
+        return ariaProps.shouldSelectOnPressUp;
       },
     },
     state
@@ -633,6 +648,9 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     },
     renderValues
   );
+  const hasPrimitiveLabel = () => {
+    return typeof props.children === 'string' || typeof props.children === 'number';
+  };
 
   const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
     isSelected: optionAria.isSelected,
@@ -659,7 +677,14 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
 
   // Remove ref from spread props
   const cleanOptionProps = () => {
-    const { ref: _ref1, ...rest } = optionAria.optionProps as Record<string, unknown>;
+    const {
+      ref: _ref1,
+      'aria-describedby': _ariaDescribedby,
+      ...rest
+    } = optionAria.optionProps as Record<string, unknown>;
+    if (!hasPrimitiveLabel() && rest['aria-label'] == null) {
+      delete rest['aria-labelledby'];
+    }
     return rest;
   };
   const cleanHoverProps = () => {
@@ -688,7 +713,9 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
         data-dragging={draggableItem()?.isDragging || undefined}
         data-drop-target={droppableItem()?.isDropTarget || undefined}
       >
-        {renderProps.renderChildren()}
+        {hasPrimitiveLabel()
+          ? <span {...optionAria.labelProps}>{renderProps.renderChildren()}</span>
+          : renderProps.renderChildren()}
       </li>
     </SelectionIndicatorContext.Provider>
   );

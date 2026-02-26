@@ -99,3 +99,36 @@ export {
   setupTestEnvironment,
   cleanupTestEnvironment,
 } from './setup';
+
+export {
+  // axe-core a11y testing (INFRA-1)
+  checkA11y,
+  assertNoA11yViolations,
+  type CheckA11yOptions,
+  type CheckA11yResult,
+} from './axe';
+
+export {
+  // ARIA ID integrity checker (INFRA-3)
+  checkAriaIdIntegrity,
+  assertAriaIdIntegrity,
+  type DanglingRef,
+  type AriaIdIntegrityResult,
+} from './aria-id-integrity';
+
+export {
+  // Live region monitor (INFRA-4)
+  createLiveRegionMonitor,
+  expectAnnouncement,
+  type Announcement,
+  type LiveRegionMonitor,
+} from './live-region-monitor';
+
+export {
+  // Focus flow recorder (INFRA-5)
+  createFocusFlowRecorder,
+  expectFocusOrder,
+  expectFocusRestore,
+  type FocusRecord,
+  type FocusFlowRecorder,
+} from './focus-flow';

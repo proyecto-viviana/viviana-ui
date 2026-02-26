@@ -123,6 +123,22 @@ export function createGridList<T extends object, C extends GridCollection<T> = G
         }
         break;
       }
+      case ' ':
+      case 'Space':
+      case 'Spacebar': {
+        if (focusedKey != null && s.selectionMode !== 'none' && !s.isDisabled(focusedKey)) {
+          e.preventDefault();
+          s.toggleSelection(focusedKey);
+        }
+        break;
+      }
+      case 'Enter': {
+        if (focusedKey != null && !s.isDisabled(focusedKey)) {
+          e.preventDefault();
+          p.onAction?.(focusedKey);
+        }
+        break;
+      }
       case 'Escape': {
         if (s.selectionMode !== 'none') {
           e.preventDefault();

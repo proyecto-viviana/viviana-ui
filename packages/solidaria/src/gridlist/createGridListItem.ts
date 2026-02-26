@@ -106,7 +106,7 @@ export function createGridListItem<T extends object, C extends GridCollection<T>
           p.onAction();
         }
       }
-    } else if (e.key === ' ') {
+    } else if (e.key === ' ' || e.key === 'Space' || e.key === 'Spacebar') {
       // Space toggles selection
       if (s.selectionMode !== 'none') {
         e.preventDefault();

@@ -56,4 +56,21 @@ describe('FileTrigger', () => {
     expect(input).toHaveAttribute('capture', 'environment');
     expect(input).toHaveAttribute('webkitdirectory');
   });
+
+  it('does not open picker when disabled', async () => {
+    const user = setupUser();
+    const clickSpy = vi.spyOn(HTMLInputElement.prototype, 'click');
+
+    render(() => (
+      <FileTrigger disabled>
+        <button type="button">Upload</button>
+      </FileTrigger>
+    ));
+
+    await user.click(screen.getByRole('button', { name: 'Upload' }));
+    expect(clickSpy).not.toHaveBeenCalled();
+
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(input).toBeDisabled();
+  });
 });

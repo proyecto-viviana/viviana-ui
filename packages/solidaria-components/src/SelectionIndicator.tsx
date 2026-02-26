@@ -17,6 +17,7 @@ import {
   type SlotProps,
   useRenderProps,
 } from './utils';
+import { SharedElement, useHasSharedElementTransitionScope } from './SharedElementTransition';
 
 export interface SelectionIndicatorContextValue {
   isSelected: () => boolean;
@@ -49,7 +50,9 @@ export function SelectionIndicator(props: SelectionIndicatorProps): JSX.Element 
   const [local, domProps] = splitProps(props, ['isSelected', 'shouldForceMount', 'children', 'class', 'style', 'slot']);
 
   const context = useContext(SelectionIndicatorContext);
+  const hasSharedElementScope = useHasSharedElementTransitionScope();
   const isSelected = () => local.isSelected ?? context?.isSelected() ?? false;
+  const isVisible = () => local.shouldForceMount || isSelected();
 
   const renderValues = createMemo<SelectionIndicatorRenderProps>(() => ({
     isSelected: isSelected(),
@@ -65,8 +68,29 @@ export function SelectionIndicator(props: SelectionIndicatorProps): JSX.Element 
     renderValues
   );
 
+  const sharedElementProps = createMemo(() => {
+    const { ref: _ref, ...rest } = domProps as JSX.HTMLAttributes<HTMLSpanElement> & { ref?: unknown };
+    return rest;
+  });
+
+  if (hasSharedElementScope) {
+    return (
+      <SharedElement
+        {...sharedElementProps()}
+        name="SelectionIndicator"
+        isVisible={isVisible()}
+        aria-hidden="true"
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-selected={isSelected() || undefined}
+      >
+        {renderProps.renderChildren()}
+      </SharedElement>
+    );
+  }
+
   return (
-    <Show when={local.shouldForceMount || isSelected()}>
+    <Show when={isVisible()}>
       <span
         {...domProps}
         aria-hidden="true"

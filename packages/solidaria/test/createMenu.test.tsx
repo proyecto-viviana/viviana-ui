@@ -25,7 +25,7 @@ describe('createMenu', () => {
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({}, state);
+      const { menuProps } = createMenu({ 'aria-label': 'Actions' }, state);
 
       expect(menuProps.role).toBe('menu');
       dispose();
@@ -43,7 +43,7 @@ describe('createMenu', () => {
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({ isDisabled: true }, state);
+      const { menuProps } = createMenu({ isDisabled: true, 'aria-label': 'Actions' }, state);
 
       expect(menuProps['aria-disabled']).toBe(true);
       dispose();
@@ -61,7 +61,7 @@ describe('createMenu', () => {
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({}, state);
+      const { menuProps } = createMenu({ 'aria-label': 'Actions' }, state);
 
       expect(menuProps.tabIndex).toBe(0);
       dispose();
@@ -83,7 +83,7 @@ describe('createMenu', () => {
 
       state.setFocusedKey('copy');
 
-      const { menuProps } = createMenu({ onAction }, state);
+      const { menuProps } = createMenu({ onAction, 'aria-label': 'Actions' }, state);
 
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
@@ -108,7 +108,7 @@ describe('createMenu', () => {
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({ onClose }, state);
+      const { menuProps } = createMenu({ onClose, 'aria-label': 'Actions' }, state);
 
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
@@ -117,6 +117,24 @@ describe('createMenu', () => {
       } as unknown as KeyboardEvent);
 
       expect(onClose).toHaveBeenCalled();
+      dispose();
+    });
+  });
+
+  it('wires visible label props via aria-labelledby', () => {
+    createRoot((dispose) => {
+      const items = [
+        { key: 'copy', label: 'Copy' },
+      ];
+
+      const state = createMenuState({
+        items,
+        getKey: (item) => item.key,
+      });
+
+      const { menuProps, labelProps } = createMenu({ label: 'Actions' }, state);
+      expect(labelProps.id).toBeDefined();
+      expect(menuProps['aria-labelledby']).toContain(String(labelProps.id));
       dispose();
     });
   });
@@ -212,6 +230,22 @@ describe('createMenuItem', () => {
 
       const { menuItemProps: copyPropsAfter } = createMenuItem({ key: 'copy' }, state);
       expect(copyPropsAfter.tabIndex).toBe(0);
+      dispose();
+    });
+  });
+
+  it('inherits disabled state from parent menu metadata', () => {
+    createRoot((dispose) => {
+      const state = createMenuState({
+        items: [{ key: 'copy', label: 'Copy' }],
+        getKey: (item) => item.key,
+      });
+
+      createMenu({ isDisabled: true, 'aria-label': 'Actions' }, state);
+      const { menuItemProps, isDisabled } = createMenuItem({ key: 'copy' }, state);
+
+      expect(menuItemProps['aria-disabled']).toBe(true);
+      expect(isDisabled()).toBe(true);
       dispose();
     });
   });

@@ -3,7 +3,7 @@
  * Based on @react-aria/tabs.
  */
 
-import { type Accessor, createMemo, onMount } from 'solid-js';
+import { type Accessor, createEffect, createMemo } from 'solid-js';
 import { createFocusRing } from '../interactions';
 import { createPress } from '../interactions';
 import { createHover } from '../interactions';
@@ -284,11 +284,6 @@ export function createTabList<T>(
     if (nextKey !== null) {
       e.preventDefault();
       state.setFocusedKey(nextKey);
-
-      // In automatic mode, selection follows focus
-      if (keyboardActivation() === 'automatic') {
-        state.setSelectedKey(nextKey);
-      }
     }
   };
 
@@ -350,8 +345,14 @@ export function createTab<T>(
       return isDisabled();
     },
     onPress: () => {
-      state.setSelectedKey(key());
-      state.setFocusedKey(key());
+      const tabKey = key();
+      const wasSelected = state.selectedKey() === tabKey;
+
+      state.setFocusedKey(tabKey);
+
+      if (state.keyboardActivation() === 'manual' || wasSelected) {
+        state.setSelectedKey(tabKey);
+      }
     },
   });
 
@@ -404,14 +405,15 @@ export function createTab<T>(
     callHandler(pressProps.onClick, e);
   };
 
-  // Focus this tab when it becomes selected and focused
-  onMount(() => {
-    const cleanup = createMemo(() => {
-      if (isFocused() && ref?.()) {
-        ref()?.focus();
-      }
-    });
-    return cleanup;
+  // Keep DOM focus aligned with focusedKey updates from keyboard delegate.
+  createEffect(() => {
+    const element = ref?.();
+    if (!isFocused() || !element) return;
+
+    const activeElement = element.ownerDocument?.activeElement;
+    if (activeElement !== element) {
+      element.focus();
+    }
   });
 
   return {

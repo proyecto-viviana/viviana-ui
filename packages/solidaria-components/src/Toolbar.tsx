@@ -100,15 +100,21 @@ export function Toolbar(props: ToolbarProps): JSX.Element {
     return {}
   }
 
-  // Merge slot props with explicit props
-  const mergedAriaProps = createMemo(() => ({
-    orientation: ariaProps.orientation,
-    'aria-label': ariaProps['aria-label'] ?? slotProps()['aria-label'] as string | undefined,
-    'aria-labelledby': ariaProps['aria-labelledby'],
-  }))
-
   // Create toolbar aria props
-  const { toolbarProps, orientation } = createToolbar(mergedAriaProps())
+  const { toolbarProps, orientation } = createToolbar({
+    get orientation() {
+      return ariaProps.orientation
+    },
+    get 'aria-label'() {
+      return (
+        (ariaProps['aria-label'] as string | undefined) ??
+        (slotProps()['aria-label'] as string | undefined)
+      )
+    },
+    get 'aria-labelledby'() {
+      return ariaProps['aria-labelledby'] as string | undefined
+    },
+  })
 
   // Render props values
   const renderValues = createMemo<ToolbarRenderProps>(() => ({

@@ -310,6 +310,21 @@ describe('DatePicker', () => {
   // ============================================
 
   describe('validation', () => {
+    it('should mark picker as invalid when isInvalid prop is true', async () => {
+      render(() => (
+        <TestDatePicker
+          pickerProps={{
+            isInvalid: true,
+            errorMessage: 'Invalid date',
+          }}
+        />
+      ));
+      await waitForDatePickerHydration();
+
+      const picker = document.querySelector('.solidaria-DatePicker');
+      expect(picker).toHaveAttribute('data-invalid');
+    });
+
     it('should support isInvalid state', async () => {
       render(() => (
         <TestDatePicker

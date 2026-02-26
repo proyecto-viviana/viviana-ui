@@ -5,6 +5,7 @@
  */
 
 import { createSignal, type Accessor } from 'solid-js'
+import { access, type MaybeAccessor } from '../utils'
 
 // ============================================
 // TYPES
@@ -55,30 +56,28 @@ export interface AutocompleteStateOptions {
  * ```
  */
 export function createAutocompleteState(
-  props: AutocompleteStateOptions = {}
+  props: MaybeAccessor<AutocompleteStateOptions> = {}
 ): AutocompleteState {
-  const {
-    inputValue: controlledInputValue,
-    defaultInputValue = '',
-    onInputChange,
-  } = props
+  const getProps = () => access(props)
 
   // Track focused node ID for aria-activedescendant
   const [focusedNodeId, setFocusedNodeId] = createSignal<string | null>(null)
 
   // Handle controlled vs uncontrolled input value
-  const isControlled = controlledInputValue !== undefined
-  const [uncontrolledValue, setUncontrolledValue] = createSignal(defaultInputValue)
+  const isControlled = () => getProps().inputValue !== undefined
+  const [uncontrolledValue, setUncontrolledValue] = createSignal(getProps().defaultInputValue ?? '')
 
   const inputValue: Accessor<string> = () => {
-    return isControlled ? controlledInputValue : uncontrolledValue()
+    const p = getProps()
+    return isControlled() ? (p.inputValue ?? '') : uncontrolledValue()
   }
 
   const setInputValue = (value: string) => {
-    if (!isControlled) {
+    const p = getProps()
+    if (!isControlled()) {
       setUncontrolledValue(value)
     }
-    onInputChange?.(value)
+    p.onInputChange?.(value)
   }
 
   return {

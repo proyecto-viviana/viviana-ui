@@ -28,6 +28,7 @@ import {
   useRenderProps,
   filterDOMProps,
 } from './utils';
+import { handleLinkClick, useRouter } from './RouterProvider';
 
 // ============================================
 // TYPES
@@ -98,6 +99,8 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
     'onHoverEnd',
     'onHoverChange',
   ]);
+  const router = useRouter();
+  const resolvedHref = createMemo(() => ariaProps.href ? router.useHref(ariaProps.href) : undefined);
 
   // Determine element type - use 'a' if href is provided and not disabled
   const elementType = () => {
@@ -111,9 +114,13 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
   const linkAria = createLink({
     get elementType() { return elementType(); },
     get isDisabled() { return ariaProps.isDisabled; },
-    get href() { return ariaProps.href; },
+    get href() { return resolvedHref(); },
+    get hrefLang() { return ariaProps.hrefLang; },
     get target() { return ariaProps.target; },
     get rel() { return ariaProps.rel; },
+    get download() { return ariaProps.download; },
+    get ping() { return ariaProps.ping; },
+    get referrerPolicy() { return ariaProps.referrerPolicy; },
     get onPress() { return ariaProps.onPress; },
     get onPressStart() { return ariaProps.onPressStart; },
     get onPressEnd() { return ariaProps.onPressEnd; },
@@ -178,6 +185,11 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
     const { ref: _ref3, ...rest } = focusProps as Record<string, unknown>;
     return rest;
   };
+  const onLinkClick = (event: MouseEvent) => {
+    const onClick = cleanLinkProps().onClick as ((event: MouseEvent) => void) | undefined;
+    onClick?.(event);
+    handleLinkClick(event, router, ariaProps.href, ariaProps.routerOptions);
+  };
 
   return (
     <Dynamic
@@ -186,6 +198,7 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
       {...cleanLinkProps()}
       {...cleanHoverProps()}
       {...cleanFocusProps()}
+      onClick={onLinkClick}
       class={renderProps.class()}
       style={renderProps.style()}
       data-hovered={isHovered() || undefined}

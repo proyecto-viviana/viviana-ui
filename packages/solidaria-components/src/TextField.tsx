@@ -16,6 +16,7 @@ import {
   createTextField,
   createFocusRing,
   createHover,
+  mergeProps,
   type AriaTextFieldProps,
 } from '@proyecto-viviana/solidaria';
 import { createTextFieldState } from '@proyecto-viviana/solid-stately';
@@ -242,15 +243,27 @@ export function TextField(props: TextFieldProps): JSX.Element {
     return rest;
   };
 
-  // Context value for sub-components
-  // Note: We create the value object directly (not in a memo) so it's available
-  // immediately when children access the context
+  // Context value for sub-components.
+  // Use property getters so sub-components always read the latest aria/focus state.
   const contextValue: TextFieldContextValue = {
-    labelProps: textFieldAria.labelProps as JSX.LabelHTMLAttributes<HTMLLabelElement>,
-    inputProps: { ...textFieldAria.inputProps, ...focusProps } as JSX.InputHTMLAttributes<HTMLInputElement>,
-    descriptionProps: textFieldAria.descriptionProps as JSX.HTMLAttributes<HTMLElement>,
-    errorMessageProps: textFieldAria.errorMessageProps as JSX.HTMLAttributes<HTMLElement>,
-    isInvalid: textFieldAria.isInvalid,
+    get labelProps() {
+      return textFieldAria.labelProps as JSX.LabelHTMLAttributes<HTMLLabelElement>;
+    },
+    get inputProps() {
+      return mergeProps(
+        textFieldAria.inputProps as Record<string, unknown>,
+        focusProps as Record<string, unknown>
+      ) as JSX.InputHTMLAttributes<HTMLInputElement>;
+    },
+    get descriptionProps() {
+      return textFieldAria.descriptionProps as JSX.HTMLAttributes<HTMLElement>;
+    },
+    get errorMessageProps() {
+      return textFieldAria.errorMessageProps as JSX.HTMLAttributes<HTMLElement>;
+    },
+    get isInvalid() {
+      return textFieldAria.isInvalid;
+    },
   };
 
   return (

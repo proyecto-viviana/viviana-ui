@@ -1,13 +1,14 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
 import {
   Collection,
   CollectionBuilder,
   CollectionRendererContext,
   DefaultCollectionRenderer,
+  SectionContext,
   GroupContext,
   HeaderContext,
   HeadingContext,
@@ -92,9 +93,29 @@ describe('Collection primitives', () => {
   });
 
   it('exports collection context primitives for parity', () => {
+    expect(SectionContext).toBeTruthy();
     expect(GroupContext).toBeTruthy();
     expect(HeaderContext).toBeTruthy();
     expect(HeadingContext).toBeTruthy();
+  });
+
+  it('supports SectionContext renderer override', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(() => (
+      <SectionContext.Provider
+        value={{
+          name: 'ListBoxSection',
+          render: (props, className) => <article data-testid="section-override" class={className}>{props.children}</article>,
+        }}
+      >
+        <Section>Override content</Section>
+      </SectionContext.Provider>
+    ));
+
+    expect(screen.getByTestId('section-override')).toHaveClass('solidaria-Section');
+    expect(screen.getByText('Override content')).toBeInTheDocument();
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 
   it('exports DefaultCollectionRenderer and renders root collections', () => {

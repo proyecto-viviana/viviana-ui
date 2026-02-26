@@ -7,11 +7,12 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@solidjs/testing-library';
-import { JSX } from 'solid-js';
+import { JSX, createRoot } from 'solid-js';
 import {
   createRadioGroup,
   createRadio,
   createRadioGroupState,
+  I18nProvider,
   type RadioGroupState,
   type AriaRadioGroupProps,
   type AriaRadioProps,
@@ -134,44 +135,56 @@ describe('Radio Group', () => {
   });
 
   it('createRadioGroupState works correctly', () => {
-    // Test the state directly
-    const state = createRadioGroupState({
-      defaultValue: 'cats',
+    createRoot((dispose) => {
+      // Test the state directly
+      const state = createRadioGroupState({
+        defaultValue: 'cats',
+      });
+
+      expect(state.selectedValue()).toBe('cats');
+
+      state.setSelectedValue('dogs');
+      expect(state.selectedValue()).toBe('dogs');
+
+      dispose();
     });
-
-    expect(state.selectedValue()).toBe('cats');
-
-    state.setSelectedValue('dogs');
-    expect(state.selectedValue()).toBe('dogs');
   });
 
   it('createRadioGroupState controlled mode works correctly', () => {
-    // Test controlled mode
-    const state = createRadioGroupState(() => ({
-      value: 'dragons',
-    }));
+    createRoot((dispose) => {
+      // Test controlled mode
+      const state = createRadioGroupState(() => ({
+        value: 'dragons',
+      }));
 
-    expect(state.selectedValue()).toBe('dragons');
+      expect(state.selectedValue()).toBe('dragons');
+
+      dispose();
+    });
   });
 
   it('createRadio isSelected works with controlled state', () => {
-    // Test createRadio directly with controlled state
-    const state = createRadioGroupState(() => ({
-      value: 'dragons',
-    }));
+    createRoot((dispose) => {
+      // Test createRadio directly with controlled state
+      const state = createRadioGroupState(() => ({
+        value: 'dragons',
+      }));
 
-    let inputRef: HTMLInputElement | null = null;
-    const radio = createRadio(
-      () => ({ value: 'dragons' }),
-      state,
-      () => inputRef
-    );
+      let inputRef: HTMLInputElement | null = null;
+      const radio = createRadio(
+        () => ({ value: 'dragons', 'aria-label': 'Dragons' }),
+        state,
+        () => inputRef
+      );
 
-    // isSelected should return true for dragons
-    expect(radio.isSelected()).toBe(true);
+      // isSelected should return true for dragons
+      expect(radio.isSelected()).toBe(true);
 
-    // checked in inputProps should also be true
-    expect(radio.inputProps.checked).toBe(true);
+      // checked in inputProps should also be true
+      expect(radio.inputProps.checked).toBe(true);
+
+      dispose();
+    });
   });
 
   it('controlled value renders checked correctly', () => {
@@ -193,7 +206,7 @@ describe('Radio Group', () => {
     function SimpleRadio(props: { state: RadioGroupState; value: string }) {
       let inputRef: HTMLInputElement | null = null;
       const radio = createRadio(
-        () => ({ value: props.value }),
+        () => ({ value: props.value, 'aria-label': props.value }),
         props.state,
         () => inputRef
       );
@@ -238,7 +251,7 @@ describe('Radio Group', () => {
     function SimpleRadio2(props: { state: RadioGroupState; value: string }) {
       let inputRef: HTMLInputElement | null = null;
       const radio = createRadio(
-        () => ({ value: props.value }),
+        () => ({ value: props.value, 'aria-label': props.value }),
         props.state,
         () => inputRef
       );
@@ -573,6 +586,20 @@ describe('Radio Group', () => {
     expect(radioGroup).toHaveAttribute('aria-invalid', 'true');
   });
 
+  it('exposes validation metadata from state', () => {
+    createRoot((dispose) => {
+      const state = createRadioGroupState({ isInvalid: true });
+      const aria = createRadioGroup(() => ({ 'aria-label': 'favorite pet' }), state);
+
+      expect(aria.isInvalid).toBe(true);
+      expect(aria.validationErrors).toEqual([]);
+      expect(aria.validationDetails.customError).toBe(true);
+      expect(aria.validationDetails.valid).toBe(false);
+
+      dispose();
+    });
+  });
+
   it('sets aria-required when isRequired is true', () => {
     render(() => (
       <RadioGroup label="Favorite Pet" isRequired>
@@ -652,6 +679,90 @@ describe('Radio Group', () => {
     const describedBy = group.getAttribute('aria-describedby');
     const description = document.getElementById(describedBy!);
     expect(description).toHaveTextContent('Error message');
+  });
+
+  describe('keyboard navigation', () => {
+    it('moves selection with arrow keys and wraps in LTR', () => {
+      render(() => (
+        <RadioGroup aria-label="favorite pet" defaultValue="dogs">
+          {(state) => (
+            <>
+              <Radio radioGroupState={state} value="dogs">Dogs</Radio>
+              <Radio radioGroupState={state} value="cats">Cats</Radio>
+              <Radio radioGroupState={state} value="dragons">Dragons</Radio>
+            </>
+          )}
+        </RadioGroup>
+      ));
+
+      const radios = screen.getAllByRole('radio') as HTMLInputElement[];
+
+      radios[0].focus();
+      fireEvent.keyDown(radios[0], { key: 'ArrowRight' });
+      expect(document.activeElement).toBe(radios[1]);
+      expect(radios[1].checked).toBe(true);
+
+      fireEvent.keyDown(radios[1], { key: 'ArrowRight' });
+      expect(document.activeElement).toBe(radios[2]);
+      expect(radios[2].checked).toBe(true);
+
+      // Wrap from last to first.
+      fireEvent.keyDown(radios[2], { key: 'ArrowRight' });
+      expect(document.activeElement).toBe(radios[0]);
+      expect(radios[0].checked).toBe(true);
+    });
+
+    it('uses RTL-aware horizontal arrow direction', () => {
+      render(() => (
+        <I18nProvider locale="ar-SA">
+          <RadioGroup aria-label="favorite pet" orientation="horizontal" defaultValue="cats">
+            {(state) => (
+              <>
+                <Radio radioGroupState={state} value="dogs">Dogs</Radio>
+                <Radio radioGroupState={state} value="cats">Cats</Radio>
+                <Radio radioGroupState={state} value="dragons">Dragons</Radio>
+              </>
+            )}
+          </RadioGroup>
+        </I18nProvider>
+      ));
+
+      const radios = screen.getAllByRole('radio') as HTMLInputElement[];
+
+      // In RTL + horizontal, ArrowRight should move to previous.
+      radios[1].focus();
+      fireEvent.keyDown(radios[1], { key: 'ArrowRight' });
+      expect(document.activeElement).toBe(radios[0]);
+      expect(radios[0].checked).toBe(true);
+
+      // In RTL + horizontal, ArrowLeft should move to next.
+      fireEvent.keyDown(radios[0], { key: 'ArrowLeft' });
+      expect(document.activeElement).toBe(radios[1]);
+      expect(radios[1].checked).toBe(true);
+    });
+
+    it('skips disabled radios during arrow navigation', () => {
+      render(() => (
+        <RadioGroup aria-label="favorite pet" defaultValue="dogs">
+          {(state) => (
+            <>
+              <Radio radioGroupState={state} value="dogs">Dogs</Radio>
+              <Radio radioGroupState={state} value="cats" isDisabled>Cats</Radio>
+              <Radio radioGroupState={state} value="dragons">Dragons</Radio>
+            </>
+          )}
+        </RadioGroup>
+      ));
+
+      const radios = screen.getAllByRole('radio') as HTMLInputElement[];
+
+      radios[0].focus();
+      fireEvent.keyDown(radios[0], { key: 'ArrowRight' });
+
+      expect(document.activeElement).toBe(radios[2]);
+      expect(radios[2].checked).toBe(true);
+      expect(radios[1].checked).toBe(false);
+    });
   });
 
   describe('roving tabIndex', () => {

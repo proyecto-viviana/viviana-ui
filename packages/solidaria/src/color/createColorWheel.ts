@@ -129,7 +129,7 @@ export function createColorWheel(
         // 35% inner radius leaves a nice thick ring
         '-webkit-mask-image': 'radial-gradient(circle, transparent 35%, black 36%)',
         'mask-image': 'radial-gradient(circle, transparent 35%, black 36%)',
-        'forced-color-adjust': 'none',
+        'forced-color-adjust': 'none' as const,
       },
       'data-disabled': s.isDisabled || p.isDisabled || undefined,
     };

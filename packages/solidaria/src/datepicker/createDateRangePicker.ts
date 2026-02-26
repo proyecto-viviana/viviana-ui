@@ -29,6 +29,8 @@ export interface AriaDateRangePickerProps {
   buttonAriaLabel?: string;
   dialogAriaLabel?: string;
   calendarAriaLabel?: string;
+  startFieldAriaLabel?: string;
+  endFieldAriaLabel?: string;
 }
 
 export interface DateRangePickerAria {
@@ -75,23 +77,77 @@ export function createDateRangePicker<T extends RangeCalendarState>(
 
   const groupProps = createMemo(() => {
     const p = getProps();
+    const isInvalid = p.isInvalid;
     return mergeProps(labelFieldProps as Record<string, unknown>, {
       id,
       role: 'group',
       'aria-disabled': p.isDisabled || state.isDisabled() || undefined,
+      'aria-readonly': p.isReadOnly || state.isReadOnly() || undefined,
+      'aria-required': p.isRequired || undefined,
+      'aria-invalid': isInvalid || undefined,
       'aria-describedby': getAriaDescribedBy(),
     });
   });
 
-  // Start/end field props are applied to non-trigger visual containers in UI
-  // wrappers. Keep stable IDs only; popup trigger semantics belong on button.
-  const startFieldProps = createMemo(() => ({
-    id: startFieldId,
-  }));
+  const startFieldProps = createMemo(() => {
+    const p = getProps();
+    const defaults = getDateRangePickerLabelDefaults(locale().locale);
+    const isDisabled = p.isDisabled || state.isDisabled();
+    const isReadOnly = p.isReadOnly || state.isReadOnly();
+    const isInvalid = p.isInvalid;
 
-  const endFieldProps = createMemo(() => ({
-    id: endFieldId,
-  }));
+    return {
+      id: startFieldId,
+      'aria-label': p.startFieldAriaLabel ?? defaults.startField,
+      'aria-describedby': getAriaDescribedBy(),
+      'aria-disabled': isDisabled || undefined,
+      'aria-readonly': isReadOnly || undefined,
+      'aria-invalid': isInvalid || undefined,
+      tabIndex: isDisabled ? -1 : 0,
+      onClick: () => {
+        if (!isDisabled) {
+          overlayState.open();
+        }
+      },
+      onKeyDown: (event: KeyboardEvent) => {
+        if (isDisabled) return;
+        if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {
+          event.preventDefault();
+          overlayState.open();
+        }
+      },
+    };
+  });
+
+  const endFieldProps = createMemo(() => {
+    const p = getProps();
+    const defaults = getDateRangePickerLabelDefaults(locale().locale);
+    const isDisabled = p.isDisabled || state.isDisabled();
+    const isReadOnly = p.isReadOnly || state.isReadOnly();
+    const isInvalid = p.isInvalid;
+
+    return {
+      id: endFieldId,
+      'aria-label': p.endFieldAriaLabel ?? defaults.endField,
+      'aria-describedby': getAriaDescribedBy(),
+      'aria-disabled': isDisabled || undefined,
+      'aria-readonly': isReadOnly || undefined,
+      'aria-invalid': isInvalid || undefined,
+      tabIndex: isDisabled ? -1 : 0,
+      onClick: () => {
+        if (!isDisabled) {
+          overlayState.open();
+        }
+      },
+      onKeyDown: (event: KeyboardEvent) => {
+        if (isDisabled) return;
+        if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {
+          event.preventDefault();
+          overlayState.open();
+        }
+      },
+    };
+  });
 
   const buttonProps = createMemo(() => {
     const p = getProps();
@@ -103,7 +159,7 @@ export function createDateRangePicker<T extends RangeCalendarState>(
       'aria-expanded': overlayState.isOpen,
       'aria-controls': overlayState.isOpen ? dialogId : undefined,
       disabled: isDisabled,
-      tabIndex: -1,
+      tabIndex: 0,
       onClick: () => {
         if (!isDisabled) overlayState.toggle();
       },
@@ -165,6 +221,8 @@ function getDateRangePickerLabelDefaults(locale: string): {
   button: string;
   dialog: string;
   calendar: string;
+  startField: string;
+  endField: string;
 } {
   const language = locale.toLowerCase().split('-')[0] ?? 'en';
 
@@ -173,6 +231,8 @@ function getDateRangePickerLabelDefaults(locale: string): {
       button: 'Abrir calendario de rango',
       dialog: 'Calendario de rango',
       calendar: 'Calendario de rango',
+      startField: 'Fecha de inicio',
+      endField: 'Fecha de fin',
     };
   }
 
@@ -180,5 +240,7 @@ function getDateRangePickerLabelDefaults(locale: string): {
     button: 'Open range calendar',
     dialog: 'Range calendar',
     calendar: 'Range calendar',
+    startField: 'Start date',
+    endField: 'End date',
   };
 }

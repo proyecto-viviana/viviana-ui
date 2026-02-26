@@ -4,6 +4,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
 import { ProgressBar } from '../src/ProgressBar';
+import { assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 describe('ProgressBar', () => {
   it('should render with default class', () => {
@@ -189,5 +190,32 @@ describe('ProgressBar', () => {
 
     const progressbar = screen.getByRole('progressbar');
     expect(progressbar.tagName).toBe('DIV');
+  });
+
+  describe('a11y validation', () => {
+    it('axe: determinate', async () => {
+      const { container } = render(() => <ProgressBar value={50} aria-label="Upload progress" />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: indeterminate', async () => {
+      const { container } = render(() => <ProgressBar isIndeterminate aria-label="Loading" />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: with aria-label', async () => {
+      const { container } = render(() => <ProgressBar value={75} aria-label="Uploading files" />);
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: no dangling refs', () => {
+      render(() => <ProgressBar value={50} aria-label="Loading" />);
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('DOM: data-testid forwards', () => {
+      render(() => <ProgressBar value={50} aria-label="Progress" data-testid="progress" />);
+      expect(screen.getByTestId('progress')).toBeInTheDocument();
+    });
   });
 });

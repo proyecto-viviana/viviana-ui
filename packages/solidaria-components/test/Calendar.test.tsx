@@ -122,6 +122,35 @@ describe('Calendar', () => {
       const calendar = document.querySelector('.my-calendar');
       expect(calendar).toBeInTheDocument();
     });
+
+    it('should mark trailing dates as outside month in an offset grid', async () => {
+      render(() => (
+        <Calendar
+          aria-label="Dual month calendar"
+          visibleMonths={2}
+          defaultFocusedValue={new CalendarDate(2024, 1, 15)}
+        >
+          <CalendarGrid>
+            {(date) => <CalendarCell date={date} />}
+          </CalendarGrid>
+          <CalendarGrid offset={{ months: 1 }}>
+            {(date) => <CalendarCell date={date} />}
+          </CalendarGrid>
+        </Calendar>
+      ));
+      await waitForCalendarHydration();
+
+      const grids = document.querySelectorAll('table[role="grid"]');
+      expect(grids.length).toBe(2);
+
+      const secondGridButtons = grids[1]?.querySelectorAll('div[role="button"]') ?? [];
+      const januaryButton = Array.from(secondGridButtons).find((button) =>
+        button.getAttribute('aria-label')?.includes('January')
+      );
+
+      expect(januaryButton).toBeTruthy();
+      expect(januaryButton).toHaveAttribute('data-outside-month');
+    });
   });
 
   // ============================================
@@ -234,6 +263,35 @@ describe('Calendar', () => {
         expect(day22).toHaveAttribute('data-focused');
       });
     });
+
+    it('should follow RTL arrow direction for day navigation', async () => {
+      const previousDir = document.documentElement.getAttribute('dir');
+      document.documentElement.setAttribute('dir', 'rtl');
+
+      try {
+        render(() => (
+          <TestCalendar
+            calendarProps={{ defaultFocusedValue: new CalendarDate(2024, 6, 15) }}
+          />
+        ));
+        await waitForCalendarHydration();
+
+        const day15 = screen.getByRole('button', { name: /June 15, 2024/i });
+        day15.focus();
+        fireEvent.keyDown(day15, { key: 'ArrowRight' });
+
+        await waitFor(() => {
+          const day14 = screen.getByRole('button', { name: /June 14, 2024/i });
+          expect(day14).toHaveFocus();
+        });
+      } finally {
+        if (previousDir) {
+          document.documentElement.setAttribute('dir', previousDir);
+        } else {
+          document.documentElement.removeAttribute('dir');
+        }
+      }
+    });
   });
 
   // ============================================
@@ -262,7 +320,7 @@ describe('Calendar', () => {
       await user.click(day15);
 
       await waitFor(() => {
-        expect(onChange).toHaveBeenCalled();
+        expect(onChange).toHaveBeenCalledTimes(1);
       });
       // The argument should be a CalendarDate
       expect(onChange.mock.calls[0][0]).toHaveProperty('day', 15);

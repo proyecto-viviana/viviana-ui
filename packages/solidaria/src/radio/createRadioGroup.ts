@@ -12,9 +12,11 @@ import { createField } from '../label/createField';
 import { createFocusWithin } from '../interactions/createFocusWithin';
 import { mergeProps } from '../utils/mergeProps';
 import { filterDOMProps } from '../utils/filterDOMProps';
+import { focusSafely, getEventTarget } from '../utils';
+import { useLocale } from '../i18n';
 import { createId } from '../ssr';
 import { type MaybeAccessor, access } from '../utils/reactivity';
-import { type RadioGroupState } from '@proyecto-viviana/solid-stately';
+import { type RadioGroupState, type ValidityState } from '@proyecto-viviana/solid-stately';
 
 // ============================================
 // TYPES
@@ -75,7 +77,7 @@ export interface RadioGroupAria {
   /** Validation errors, if any. */
   validationErrors: string[];
   /** Validation details, if any. */
-  validationDetails: Record<string, boolean>;
+  validationDetails: ValidityState;
 }
 
 // WeakMap to share data between radio group and radio items
@@ -102,12 +104,21 @@ export function createRadioGroup(
   state: RadioGroupState
 ): RadioGroupAria {
   const getProps = () => access(props);
+  const locale = useLocale();
 
   const orientation = () => getProps().orientation ?? 'vertical';
   const isReadOnly = () => getProps().isReadOnly ?? false;
   const isRequired = () => getProps().isRequired ?? false;
   const isDisabled = () => getProps().isDisabled ?? false;
   const validationBehavior = () => getProps().validationBehavior ?? 'aria';
+  const displayValidation = () => state.displayValidation();
+  const validationErrors = () => displayValidation().validationErrors;
+  const validationDetails = () => displayValidation().validationDetails;
+  const isInvalid = () => displayValidation().isInvalid;
+  const fallbackErrorMessage = () => {
+    const errors = validationErrors();
+    return errors.length > 0 ? errors : undefined;
+  };
 
   // Use field for label, description, error message
   const { labelProps, fieldProps, descriptionProps, errorMessageProps } = createField({
@@ -116,8 +127,8 @@ export function createRadioGroup(
     get 'aria-label'() { return getProps()['aria-label']; },
     get 'aria-labelledby'() { return getProps()['aria-labelledby']; },
     get description() { return getProps().description; },
-    get errorMessage() { return getProps().errorMessage; },
-    get isInvalid() { return state.isInvalid; },
+    get errorMessage() { return getProps().errorMessage ?? fallbackErrorMessage(); },
+    get isInvalid() { return isInvalid(); },
     // Radio group is not an HTML input element so it
     // shouldn't be labeled by a <label> element.
     labelElementType: 'span',
@@ -150,12 +161,72 @@ export function createRadioGroup(
     validationBehavior: validationBehavior(),
   });
 
-  // Keyboard navigation handler for arrow keys
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onKeyDown = (_e: KeyboardEvent) => {
-    // For now, we rely on native radio behavior
-    // The complex tree walker implementation can be added later if needed
-    // Most browsers handle arrow key navigation natively for radio groups
+  const getNavigableRadios = (root: HTMLElement): HTMLInputElement[] => {
+    return Array.from(root.querySelectorAll('input[type="radio"]'))
+      .filter((el): el is HTMLInputElement => {
+        return el instanceof HTMLInputElement && !el.matches(':disabled');
+      });
+  };
+
+  // Keyboard navigation parity with React Aria.
+  const onKeyDown: JSX.EventHandler<HTMLDivElement, KeyboardEvent> = (e) => {
+    let nextDir: 'next' | 'prev' | null = null;
+    const currentOrientation = orientation();
+    const isHorizontal = currentOrientation !== 'vertical';
+    const isRTL = locale().direction === 'rtl' && isHorizontal;
+
+    switch (e.key) {
+      case 'ArrowRight':
+        nextDir = isRTL ? 'prev' : 'next';
+        break;
+      case 'ArrowLeft':
+        nextDir = isRTL ? 'next' : 'prev';
+        break;
+      case 'ArrowDown':
+        nextDir = 'next';
+        break;
+      case 'ArrowUp':
+        nextDir = 'prev';
+        break;
+      default:
+        return;
+    }
+
+    e.preventDefault();
+
+    const root = e.currentTarget;
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+
+    const radios = getNavigableRadios(root);
+    if (radios.length === 0) {
+      return;
+    }
+
+    const eventTarget = getEventTarget<Element>(e);
+    const activeElement = root.ownerDocument.activeElement;
+
+    const currentRadio = eventTarget instanceof HTMLInputElement && eventTarget.type === 'radio'
+      ? eventTarget
+      : (activeElement instanceof HTMLInputElement && activeElement.type === 'radio' ? activeElement : null);
+
+    const currentIndex = currentRadio ? radios.indexOf(currentRadio) : -1;
+
+    let nextIndex: number;
+    if (nextDir === 'next') {
+      nextIndex = currentIndex >= 0 ? (currentIndex + 1) % radios.length : 0;
+    } else {
+      nextIndex = currentIndex >= 0 ? (currentIndex - 1 + radios.length) % radios.length : radios.length - 1;
+    }
+
+    const nextRadio = radios[nextIndex];
+    if (!nextRadio) {
+      return;
+    }
+
+    focusSafely(nextRadio);
+    state.setSelectedValue(nextRadio.value);
   };
 
   return {
@@ -166,7 +237,7 @@ export function createRadioGroup(
         {
           role: 'radiogroup',
           onKeyDown,
-          'aria-invalid': state.isInvalid || undefined,
+          'aria-invalid': isInvalid() || undefined,
           'aria-errormessage': getProps()['aria-errormessage'],
           'aria-readonly': isReadOnly() || undefined,
           'aria-required': isRequired() || undefined,
@@ -180,13 +251,13 @@ export function createRadioGroup(
     descriptionProps,
     errorMessageProps,
     get isInvalid() {
-      return state.isInvalid;
+      return isInvalid();
     },
     get validationErrors() {
-      return []; // Simplified - full validation can be added later
+      return validationErrors();
     },
     get validationDetails() {
-      return {}; // Simplified - full validation can be added later
+      return validationDetails();
     },
   };
 }

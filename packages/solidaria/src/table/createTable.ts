@@ -504,7 +504,9 @@ export function createTable<T extends object>(
       'aria-labelledby': p['aria-labelledby'],
       'aria-describedby': p['aria-describedby'],
       'aria-multiselectable': s.selectionMode === 'multiple' ? 'true' : undefined,
-      tabIndex: s.collection.size === 0 ? 0 : -1,
+      // Keep the grid itself tabbable so keyboard users can enter
+      // row/cell navigation without requiring a prior pointer interaction.
+      tabIndex: 0,
       onKeyDown,
       onFocus,
       onBlur,

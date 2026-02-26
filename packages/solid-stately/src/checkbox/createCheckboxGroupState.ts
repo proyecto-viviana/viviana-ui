@@ -9,6 +9,12 @@
 
 import { createSignal, Accessor } from 'solid-js';
 import { type MaybeAccessor, access } from '../utils';
+import {
+  createFormValidationState,
+  type FormValidationState,
+  type ValidationFunction,
+  type ValidationResult,
+} from '../form';
 
 // ============================================
 // TYPES
@@ -41,9 +47,15 @@ export interface CheckboxGroupProps {
   onBlur?: (e: FocusEvent) => void;
   /** Handler that is called when the checkbox group's focus status changes. */
   onFocusChange?: (isFocused: boolean) => void;
+  /** Backward-compatible controlled validation state. */
+  validationState?: 'valid' | 'invalid';
+  /** Custom validation function. */
+  validate?: ValidationFunction<readonly string[]>;
+  /** Validation behavior for the checkbox group. */
+  validationBehavior?: 'aria' | 'native';
 }
 
-export interface CheckboxGroupState {
+export interface CheckboxGroupState extends Pick<FormValidationState, 'realtimeValidation' | 'displayValidation' | 'updateValidation' | 'resetValidation' | 'commitValidation'> {
   /** Current selected values. */
   readonly value: Accessor<readonly string[]>;
   /** Default selected values. */
@@ -69,6 +81,9 @@ export interface CheckboxGroupState {
   removeValue(value: string): void;
   /** Toggles a value in the set of selected values. */
   toggleValue(value: string): void;
+
+  /** Current display validation result for the group. */
+  readonly displayValidation: Accessor<ValidationResult>;
 }
 
 // ============================================
@@ -106,10 +121,26 @@ export function createCheckboxGroupState(
     return !!p.isRequired && value().length === 0;
   };
 
-  // Check if invalid
-  const isInvalid = () => {
-    return getProps().isInvalid ?? false;
-  };
+  const validation = createFormValidationState<readonly string[]>({
+    get value() {
+      return value();
+    },
+    get isInvalid() {
+      return getProps().isInvalid;
+    },
+    get validationState() {
+      return getProps().validationState;
+    },
+    get validate() {
+      return getProps().validate;
+    },
+    get validationBehavior() {
+      return getProps().validationBehavior ?? 'aria';
+    },
+    get name() {
+      return getProps().name;
+    },
+  });
 
   // Set value
   function setValue(newValue: string[]): void {
@@ -181,7 +212,7 @@ export function createCheckboxGroupState(
       return getProps().isReadOnly ?? false;
     },
     get isInvalid() {
-      return isInvalid();
+      return validation.displayValidation().isInvalid;
     },
     isRequired,
     isSelected,
@@ -189,5 +220,10 @@ export function createCheckboxGroupState(
     addValue,
     removeValue,
     toggleValue,
+    realtimeValidation: validation.realtimeValidation,
+    displayValidation: validation.displayValidation,
+    updateValidation: validation.updateValidation,
+    resetValidation: validation.resetValidation,
+    commitValidation: validation.commitValidation,
   };
 }

@@ -17,6 +17,7 @@ import {
 } from 'solid-js';
 import {
   createTimeField,
+  createTimeSegment,
   type AriaTimeFieldProps,
 } from '@proyecto-viviana/solidaria';
 import {
@@ -109,15 +110,29 @@ export interface TimeSegmentProps extends SlotProps {
 // CONTEXT
 // ============================================
 
-export const TimeFieldContext = createContext<TimeFieldState<TimeValue> | null>(null);
-export const TimeFieldStateContext = TimeFieldContext;
+export interface TimeFieldContextValue {
+  state: TimeFieldState<TimeValue>;
+  aria: {
+    labelProps: Record<string, unknown>;
+    inputProps: Record<string, unknown>;
+    descriptionProps: Record<string, unknown>;
+    errorMessageProps: Record<string, unknown>;
+  };
+}
 
-export function useTimeFieldContext(): TimeFieldState<TimeValue> {
+export const TimeFieldContext = createContext<TimeFieldContextValue | null>(null);
+export const TimeFieldStateContext = createContext<TimeFieldState<TimeValue> | null>(null);
+
+function useTimeFieldContextValue(): TimeFieldContextValue {
   const context = useContext(TimeFieldContext);
   if (!context) {
     throw new Error('TimeField components must be used within a TimeField');
   }
   return context;
+}
+
+export function useTimeFieldContext(): TimeFieldState<TimeValue> {
+  return useTimeFieldContextValue().state;
 }
 
 // ============================================
@@ -206,20 +221,32 @@ function TimeFieldInner<T extends TimeValue = TimeValue>(
   );
 
   return (
-    <TimeFieldContext.Provider value={state as unknown as TimeFieldState<TimeValue>}>
-      <div
-        ref={setFieldRef}
-        {...fieldAria.fieldProps}
-        class={renderProps.class()}
-        style={renderProps.style()}
-        data-disabled={dataAttr(state.isDisabled())}
-        data-readonly={dataAttr(state.isReadOnly())}
-        data-required={dataAttr(state.isRequired())}
-        data-invalid={dataAttr(state.isInvalid())}
+    <TimeFieldStateContext.Provider value={state as unknown as TimeFieldState<TimeValue>}>
+      <TimeFieldContext.Provider
+        value={{
+          state: state as unknown as TimeFieldState<TimeValue>,
+          aria: {
+            labelProps: fieldAria.labelProps,
+            inputProps: fieldAria.inputProps,
+            descriptionProps: fieldAria.descriptionProps,
+            errorMessageProps: fieldAria.errorMessageProps,
+          },
+        }}
       >
-        {props.children as JSX.Element}
-      </div>
-    </TimeFieldContext.Provider>
+        <div
+          ref={setFieldRef}
+          {...fieldAria.fieldProps}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          data-disabled={dataAttr(state.isDisabled())}
+          data-readonly={dataAttr(state.isReadOnly())}
+          data-required={dataAttr(state.isRequired())}
+          data-invalid={dataAttr(state.isInvalid())}
+        >
+          {props.children as JSX.Element}
+        </div>
+      </TimeFieldContext.Provider>
+    </TimeFieldStateContext.Provider>
   );
 }
 
@@ -231,7 +258,7 @@ function TimeFieldInner<T extends TimeValue = TimeValue>(
  * The input area containing time segments.
  */
 export function TimeInput(props: TimeInputProps): JSX.Element {
-  const state = useTimeFieldContext();
+  const { state, aria } = useTimeFieldContextValue();
   const [isFocused, setIsFocused] = createSignal(false);
 
   // Render props values
@@ -252,7 +279,7 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
 
   return (
     <div
-      role="presentation"
+      {...aria.inputProps}
       class={renderProps.class()}
       style={renderProps.style()}
       data-disabled={dataAttr(state.isDisabled())}
@@ -276,126 +303,21 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
  */
 export function TimeSegment(props: TimeSegmentProps): JSX.Element {
   const state = useTimeFieldContext();
-  const [_segmentRef, setSegmentRef] = createSignal<HTMLDivElement | null>(null);
+  const [segmentRef, setSegmentRef] = createSignal<HTMLDivElement | null>(null);
 
-  // Create segment ARIA props
-  // We use a simplified version for time segments
-  const [isFocused, setIsFocused] = createSignal(false);
-  const [enteredKeys, setEnteredKeys] = createSignal('');
-
-  const isEditable = createMemo(() => {
-    const seg = props.segment;
-    return seg.isEditable && !state.isDisabled() && !state.isReadOnly();
-  });
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (!isEditable()) return;
-
-    const seg = props.segment;
-    const type = seg.type;
-
-    if (type === 'literal') return;
-
-    switch (e.key) {
-      case 'ArrowUp':
-        e.preventDefault();
-        state.incrementSegment(type);
-        break;
-      case 'ArrowDown':
-        e.preventDefault();
-        state.decrementSegment(type);
-        break;
-      case 'Backspace':
-      case 'Delete':
-        e.preventDefault();
-        state.clearSegment(type);
-        setEnteredKeys('');
-        break;
-      default:
-        if (/^\d$/.test(e.key)) {
-          e.preventDefault();
-          const newKeys = enteredKeys() + e.key;
-          const numValue = parseInt(newKeys, 10);
-          const maxValue = seg.maxValue ?? 59;
-          const minValue = seg.minValue ?? 0;
-
-          if (numValue <= maxValue) {
-            state.setSegment(type, numValue);
-            if (numValue * 10 > maxValue || newKeys.length >= 2) {
-              setEnteredKeys('');
-            } else {
-              setEnteredKeys(newKeys);
-            }
-          } else {
-            const singleValue = parseInt(e.key, 10);
-            if (singleValue >= minValue && singleValue <= maxValue) {
-              state.setSegment(type, singleValue);
-            }
-            setEnteredKeys(e.key);
-          }
-        }
-        break;
-    }
-  };
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    setEnteredKeys('');
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    setEnteredKeys('');
-  };
-
-  // Segment props
-  const segmentProps = createMemo(() => {
-    const seg = props.segment;
-    const type = seg.type;
-
-    if (type === 'literal') {
-      return {
-        'aria-hidden': true,
-      };
-    }
-
-    return {
-      role: 'spinbutton' as const,
-      tabIndex: isEditable() ? 0 : -1,
-      'aria-label': getTimeSegmentLabel(type),
-      'aria-valuenow': seg.value,
-      'aria-valuemin': seg.minValue,
-      'aria-valuemax': seg.maxValue,
-      'aria-valuetext': seg.isPlaceholder ? seg.placeholder : seg.text,
-      'aria-readonly': state.isReadOnly() || undefined,
-      'aria-disabled': state.isDisabled() || undefined,
-      'aria-invalid': state.isInvalid() || undefined,
-      contentEditable: isEditable(),
-      inputMode: 'numeric' as const,
-      autoCorrect: 'off',
-      enterKeyHint: 'next' as const,
-      spellCheck: false,
-      onKeyDown: handleKeyDown,
-      onFocus: handleFocus,
-      onBlur: handleBlur,
-      onMouseDown: (e: MouseEvent) => {
-        e.preventDefault();
-      },
-    };
-  });
-
-  const text = createMemo(() => {
-    const seg = props.segment;
-    return seg.isPlaceholder ? seg.placeholder : seg.text;
-  });
+  const segmentAria = createTimeSegment(
+    { segment: props.segment },
+    state as unknown as TimeFieldState,
+    segmentRef
+  );
 
   // Render props values
   const renderValues = createMemo<TimeSegmentRenderProps>(() => ({
-    isFocused: isFocused(),
-    isEditable: isEditable(),
-    isPlaceholder: props.segment.isPlaceholder,
+    isFocused: segmentAria.isFocused,
+    isEditable: segmentAria.isEditable,
+    isPlaceholder: segmentAria.isPlaceholder,
     type: props.segment.type,
-    text: text(),
+    text: segmentAria.text,
   }));
 
   // Resolve render props
@@ -414,18 +336,18 @@ export function TimeSegment(props: TimeSegmentProps): JSX.Element {
     if (typeof props.children === 'function') {
       return renderProps.renderChildren();
     }
-    return text();
+    return segmentAria.text;
   };
 
   return (
     <div
       ref={setSegmentRef}
-      {...segmentProps()}
+      {...segmentAria.segmentProps}
       class={renderProps.class()}
       style={renderProps.style()}
-      data-focused={dataAttr(isFocused())}
-      data-editable={dataAttr(isEditable())}
-      data-placeholder={dataAttr(props.segment.isPlaceholder)}
+      data-focused={dataAttr(segmentAria.isFocused)}
+      data-editable={dataAttr(segmentAria.isEditable)}
+      data-placeholder={dataAttr(segmentAria.isPlaceholder)}
       data-type={props.segment.type}
     >
       {getChildren()}
@@ -434,22 +356,49 @@ export function TimeSegment(props: TimeSegmentProps): JSX.Element {
 }
 
 // ============================================
-// HELPER FUNCTIONS
+// LABEL / DESCRIPTION / ERROR
 // ============================================
 
-function getTimeSegmentLabel(type: TimeSegmentType['type']): string {
-  switch (type) {
-    case 'hour':
-      return 'Hour';
-    case 'minute':
-      return 'Minute';
-    case 'second':
-      return 'Second';
-    case 'dayPeriod':
-      return 'AM/PM';
-    default:
-      return '';
-  }
+export interface TimeFieldLabelProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function TimeFieldLabel(props: TimeFieldLabelProps): JSX.Element {
+  const { aria } = useTimeFieldContextValue();
+  return (
+    <span {...aria.labelProps} class={props.class}>
+      {props.children}
+    </span>
+  );
+}
+
+export interface TimeFieldDescriptionProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function TimeFieldDescription(props: TimeFieldDescriptionProps): JSX.Element {
+  const { aria } = useTimeFieldContextValue();
+  return (
+    <p {...aria.descriptionProps} class={props.class}>
+      {props.children}
+    </p>
+  );
+}
+
+export interface TimeFieldErrorMessageProps {
+  children?: JSX.Element;
+  class?: string;
+}
+
+export function TimeFieldErrorMessage(props: TimeFieldErrorMessageProps): JSX.Element {
+  const { aria } = useTimeFieldContextValue();
+  return (
+    <p {...aria.errorMessageProps} class={props.class}>
+      {props.children}
+    </p>
+  );
 }
 
 // Re-export types

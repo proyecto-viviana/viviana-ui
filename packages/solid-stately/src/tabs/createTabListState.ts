@@ -3,7 +3,7 @@
  * Based on @react-stately/tabs.
  */
 
-import { createSignal, type Accessor } from 'solid-js';
+import { createComputed, createSignal, type Accessor } from 'solid-js';
 import { access, type MaybeAccessor } from '../utils';
 import { ListCollection } from '../collections/ListCollection';
 import type {
@@ -179,6 +179,7 @@ export function createTabListState<T = unknown>(
   const setSelectedKey = (key: Key) => {
     // Don't select disabled keys
     if (isKeyDisabled(key)) return;
+    if (selectedKey() === key) return;
 
     const p = getProps();
     // For uncontrolled mode, update internal state
@@ -218,10 +219,33 @@ export function createTabListState<T = unknown>(
     setChildFocusStrategy(childStrategy ?? null);
 
     // In automatic mode, selecting follows focus
-    if (keyboardActivation() === 'automatic' && key !== null && !isKeyDisabled(key)) {
+    if (
+      keyboardActivation() === 'automatic' &&
+      key !== null &&
+      key !== selectedKey() &&
+      !isKeyDisabled(key)
+    ) {
       setSelectedKey(key);
     }
   };
+
+  // Keep uncontrolled selection valid as items/disabled keys change.
+  createComputed(() => {
+    const p = getProps();
+    if (p.selectedKey !== undefined) return;
+
+    const coll = collection();
+    const current = selectedKeyInternal();
+    const currentExists = current !== null && coll.getItem(current) !== null;
+    const currentEnabled = current !== null && !isKeyDisabled(current);
+
+    if (currentExists && currentEnabled) return;
+
+    const nextKey = findFirstNonDisabledKey();
+    if (nextKey !== current) {
+      setSelectedKeyInternal(nextKey);
+    }
+  });
 
   return {
     collection,

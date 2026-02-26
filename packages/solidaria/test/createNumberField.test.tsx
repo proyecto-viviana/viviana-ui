@@ -26,7 +26,16 @@ function TestNumberField(props: {
   description?: string;
   errorMessage?: string;
   name?: string;
+  form?: string;
   autoFocus?: boolean;
+  onFocus?: (e: FocusEvent) => void;
+  onBlur?: (e: FocusEvent) => void;
+  onFocusChange?: (isFocused: boolean) => void;
+  onKeyDown?: (e: KeyboardEvent) => void;
+  onKeyUp?: (e: KeyboardEvent) => void;
+  onPaste?: (e: ClipboardEvent) => void;
+  onCopy?: (e: ClipboardEvent) => void;
+  onCut?: (e: ClipboardEvent) => void;
 }) {
   let inputRef: HTMLInputElement | undefined;
 
@@ -60,7 +69,16 @@ function TestNumberField(props: {
       description: props.description,
       errorMessage: props.errorMessage,
       name: props.name,
+      form: props.form,
       autoFocus: props.autoFocus,
+      onFocus: props.onFocus as any,
+      onBlur: props.onBlur as any,
+      onFocusChange: props.onFocusChange,
+      onKeyDown: props.onKeyDown as any,
+      onKeyUp: props.onKeyUp as any,
+      onPaste: props.onPaste as any,
+      onCopy: props.onCopy as any,
+      onCut: props.onCut as any,
     }),
     state,
     () => inputRef ?? null
@@ -74,7 +92,7 @@ function TestNumberField(props: {
       <button {...decrementButtonProps} data-testid="decrement">
         -
       </button>
-      <input {...inputProps} ref={inputRef} data-testid="input" />
+      <input {...inputProps} ref={(el) => (inputRef = el)} data-testid="input" />
       <button {...incrementButtonProps} data-testid="increment">
         +
       </button>
@@ -198,6 +216,13 @@ describe('createNumberField', () => {
 
       const input = screen.getByRole('spinbutton');
       expect(input).toHaveAttribute('aria-invalid', 'true');
+    });
+
+    it('sets aria-invalid on the group when invalid', () => {
+      render(() => <TestNumberField aria-label="Amount" isInvalid />);
+
+      const group = screen.getByTestId('group');
+      expect(group).toHaveAttribute('aria-invalid', 'true');
     });
 
     it('increment button has aria-label', () => {
@@ -481,6 +506,44 @@ describe('createNumberField', () => {
 
       const input = screen.getByRole('spinbutton');
       expect(input).toHaveAttribute('name', 'quantity');
+    });
+
+    it('supports form attribute', () => {
+      render(() => <TestNumberField aria-label="Amount" name="quantity" form="checkout-form" />);
+
+      const input = screen.getByRole('spinbutton');
+      expect(input).toHaveAttribute('form', 'checkout-form');
+    });
+
+    it('forwards focus and keyboard handlers', () => {
+      const onFocus = vi.fn();
+      const onBlur = vi.fn();
+      const onFocusChange = vi.fn();
+      const onKeyDown = vi.fn();
+      const onKeyUp = vi.fn();
+      render(() => (
+        <TestNumberField
+          aria-label="Amount"
+          onFocus={onFocus}
+          onBlur={onBlur}
+          onFocusChange={onFocusChange}
+          onKeyDown={onKeyDown}
+          onKeyUp={onKeyUp}
+        />
+      ));
+
+      const input = screen.getByRole('spinbutton');
+      fireEvent.focus(input);
+      fireEvent.keyDown(input, { key: 'A' });
+      fireEvent.keyUp(input, { key: 'A' });
+      fireEvent.blur(input);
+
+      expect(onFocus).toHaveBeenCalled();
+      expect(onBlur).toHaveBeenCalled();
+      expect(onFocusChange).toHaveBeenCalledWith(true);
+      expect(onFocusChange).toHaveBeenCalledWith(false);
+      expect(onKeyDown).toHaveBeenCalled();
+      expect(onKeyUp).toHaveBeenCalled();
     });
   });
 

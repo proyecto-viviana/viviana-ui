@@ -4,10 +4,12 @@
  * Tests for ColorSlider, ColorArea, ColorWheel, ColorField, and ColorSwatch.
  */
 
-import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@solidjs/testing-library';
+import { describe, it, expect, afterEach, vi } from 'vitest';
+import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
+import { createSignal, useContext } from 'solid-js';
 import {
   ColorSlider,
+  ColorSliderContext,
   ColorSliderTrack,
   ColorSliderThumb,
   ColorArea,
@@ -19,6 +21,9 @@ import {
   ColorField,
   ColorFieldInput,
   ColorSwatch,
+  ColorPicker,
+  ColorSwatchPicker,
+  ColorSwatchPickerItem,
 } from '../src/Color';
 import { parseColor } from '@proyecto-viviana/solid-stately';
 
@@ -32,6 +37,16 @@ function TestColorSlider(props: Parameters<typeof ColorSlider>[0]) {
         </ColorSliderTrack>
       )}
     </ColorSlider>
+  );
+}
+
+function DragStateTrigger() {
+  const context = useContext(ColorSliderContext);
+  if (!context) return null;
+  return (
+    <button type="button" onClick={() => context.state.setDragging(true)}>
+      Start drag
+    </button>
   );
 }
 
@@ -66,6 +81,58 @@ function TestColorField(props: Parameters<typeof ColorField>[0]) {
       {() => <ColorFieldInput />}
     </ColorField>
   );
+}
+
+function TestColorSwatchPicker(props: Parameters<typeof ColorSwatchPicker>[0]) {
+  return (
+    <ColorSwatchPicker {...props}>
+      <ColorSwatchPickerItem color="#ff0000" />
+      <ColorSwatchPickerItem color="#00ff00" />
+      <ColorSwatchPickerItem color="#0000ff" />
+    </ColorSwatchPicker>
+  );
+}
+
+function TestColorSwatchPickerFourItems(props: Parameters<typeof ColorSwatchPicker>[0]) {
+  return (
+    <ColorSwatchPicker {...props}>
+      <ColorSwatchPickerItem color="#ff0000" />
+      <ColorSwatchPickerItem color="#00ff00" />
+      <ColorSwatchPickerItem color="#0000ff" />
+      <ColorSwatchPickerItem color="#ffff00" />
+    </ColorSwatchPicker>
+  );
+}
+
+function createMockRect(x: number, y: number, size = 16): DOMRect {
+  return {
+    x,
+    y,
+    width: size,
+    height: size,
+    top: y,
+    left: x,
+    right: x + size,
+    bottom: y + size,
+    toJSON() {
+      return {};
+    },
+  } as DOMRect;
+}
+
+function mockGridOptionRects(options: HTMLElement[], columns: number) {
+  const size = 16;
+  const gap = 4;
+  options.forEach((option, index) => {
+    const column = index % columns;
+    const row = Math.floor(index / columns);
+    const x = column * (size + gap);
+    const y = row * (size + gap);
+    Object.defineProperty(option, 'getBoundingClientRect', {
+      configurable: true,
+      value: () => createMockRect(x, y, size),
+    });
+  });
 }
 
 describe('Color Components', () => {
@@ -214,6 +281,48 @@ describe('Color Components', () => {
 
         const slider = document.querySelector('.solidaria-ColorSlider');
         expect(slider?.getAttribute('data-channel')).toBe('alpha');
+      });
+    });
+
+    describe('interaction', () => {
+      it('should place hidden input inside thumb for focus handling', () => {
+        render(() => (
+          <TestColorSlider
+            channel="hue"
+            defaultValue={parseColor('hsl(0, 100%, 50%)')}
+            aria-label="Hue"
+          />
+        ));
+
+        const thumb = document.querySelector('.solidaria-ColorSlider-thumb');
+        expect(thumb?.querySelector('input[type="range"]')).toBeTruthy();
+      });
+
+      it('should call onChangeEnd when dragging ends', () => {
+        const onChangeEnd = vi.fn();
+        render(() => (
+          <ColorSlider
+            channel="hue"
+            defaultValue={parseColor('hsl(0, 100%, 50%)')}
+            aria-label="Hue"
+            onChangeEnd={onChangeEnd}
+          >
+            {() => (
+              <>
+                <ColorSliderTrack>
+                  {() => <ColorSliderThumb />}
+                </ColorSliderTrack>
+                <DragStateTrigger />
+              </>
+            )}
+          </ColorSlider>
+        ));
+
+        fireEvent.click(screen.getByRole('button', { name: 'Start drag' }));
+        const input = document.querySelector('.solidaria-ColorSlider-thumb input[type="range"]') as HTMLInputElement;
+        fireEvent.blur(input);
+
+        expect(onChangeEnd).toHaveBeenCalledTimes(1);
       });
     });
   });
@@ -546,6 +655,178 @@ describe('Color Components', () => {
   });
 
   // ============================================
+  // COLOR PICKER
+  // ============================================
+
+  describe('ColorPicker', () => {
+    it('should provide color context to child swatches', async () => {
+      const [value, setValue] = createSignal(parseColor('#ff0000'));
+      render(() => (
+        <ColorPicker value={value()}>
+          {() => <ColorSwatch aria-label="Current color" />}
+        </ColorPicker>
+      ));
+
+      const swatch = screen.getByRole('img', { name: 'Current color' });
+      expect((swatch as HTMLElement).style.backgroundColor).toBe('rgb(255, 0, 0)');
+
+      setValue(parseColor('#00ff00'));
+
+      await waitFor(() => {
+        const updatedSwatch = screen.getByRole('img', { name: 'Current color' });
+        expect((updatedSwatch as HTMLElement).style.backgroundColor).toBe('rgb(0, 255, 0)');
+      });
+    });
+  });
+
+  // ============================================
+  // COLOR SWATCH PICKER
+  // ============================================
+
+  describe('ColorSwatchPicker', () => {
+    it('should render with listbox semantics', () => {
+      render(() => <TestColorSwatchPicker />);
+
+      const listbox = screen.getByRole('listbox', { name: /color swatch picker/i });
+      expect(listbox).toBeTruthy();
+      expect(screen.getAllByRole('option')).toHaveLength(3);
+    });
+
+    it('should expose layout data attribute', () => {
+      render(() => <TestColorSwatchPicker layout="stack" aria-label="Palette" />);
+
+      const listbox = screen.getByRole('listbox', { name: 'Palette' });
+      expect(listbox.getAttribute('data-layout')).toBe('stack');
+    });
+
+    it('should call onChange with selected color on click', () => {
+      const onChange = vi.fn();
+      render(() => <TestColorSwatchPicker onChange={onChange} aria-label="Palette" />);
+
+      const options = screen.getAllByRole('option');
+      fireEvent.click(options[1]!);
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange.mock.calls[0]?.[0]?.toString('hexa')).toBe('#00ff00ff');
+    });
+
+    it('should support ArrowRight/ArrowLeft navigation in grid layout', () => {
+      const onChange = vi.fn();
+      render(() => <TestColorSwatchPicker onChange={onChange} aria-label="Palette" layout="grid" />);
+
+      const getSelectedIndex = () =>
+        screen.getAllByRole('option').findIndex((option) => option.getAttribute('aria-selected') === 'true');
+
+      const listbox = screen.getByRole('listbox', { name: 'Palette' });
+      listbox.focus();
+
+      expect(getSelectedIndex()).toBe(0);
+      fireEvent.keyDown(listbox, { key: 'ArrowRight' });
+      expect(getSelectedIndex()).toBe(1);
+      expect(onChange.mock.calls[0]?.[0]?.toString('hexa')).toBe('#00ff00ff');
+
+      fireEvent.keyDown(listbox, { key: 'ArrowLeft' });
+      expect(getSelectedIndex()).toBe(0);
+    });
+
+    it('should wrap ArrowLeft navigation in grid layout', () => {
+      render(() => <TestColorSwatchPicker aria-label="Palette" layout="grid" />);
+
+      const getSelectedIndex = () =>
+        screen.getAllByRole('option').findIndex((option) => option.getAttribute('aria-selected') === 'true');
+
+      const listbox = screen.getByRole('listbox', { name: 'Palette' });
+      listbox.focus();
+
+      fireEvent.keyDown(listbox, { key: 'ArrowLeft' });
+      expect(getSelectedIndex()).toBe(2);
+    });
+
+    it('should use geometry-based ArrowDown/ArrowUp navigation in multi-column grid layout', () => {
+      render(() => <TestColorSwatchPickerFourItems aria-label="Palette" layout="grid" />);
+
+      const getSelectedIndex = () =>
+        screen.getAllByRole('option').findIndex((option) => option.getAttribute('aria-selected') === 'true');
+
+      const options = screen.getAllByRole('option') as HTMLElement[];
+      mockGridOptionRects(options, 2);
+
+      const listbox = screen.getByRole('listbox', { name: 'Palette' });
+      listbox.focus();
+
+      expect(getSelectedIndex()).toBe(0);
+      fireEvent.keyDown(listbox, { key: 'ArrowDown' });
+      expect(getSelectedIndex()).toBe(2);
+
+      fireEvent.keyDown(listbox, { key: 'ArrowUp' });
+      expect(getSelectedIndex()).toBe(0);
+    });
+
+    it('should wrap ArrowDown from bottom row to first item in multi-column grid layout', () => {
+      render(() => <TestColorSwatchPickerFourItems aria-label="Palette" layout="grid" />);
+
+      const getSelectedIndex = () =>
+        screen.getAllByRole('option').findIndex((option) => option.getAttribute('aria-selected') === 'true');
+
+      const options = screen.getAllByRole('option') as HTMLElement[];
+      mockGridOptionRects(options, 2);
+
+      fireEvent.click(options[3]!);
+
+      const listbox = screen.getByRole('listbox', { name: 'Palette' });
+      listbox.focus();
+
+      expect(getSelectedIndex()).toBe(3);
+      fireEvent.keyDown(listbox, { key: 'ArrowDown' });
+      expect(getSelectedIndex()).toBe(0);
+    });
+
+    it('should invert horizontal arrows in RTL grid layout', () => {
+      const previousDir = document.dir;
+      document.dir = 'rtl';
+
+      try {
+        render(() => <TestColorSwatchPicker aria-label="Palette" layout="grid" />);
+
+        const getSelectedIndex = () =>
+          screen.getAllByRole('option').findIndex((option) => option.getAttribute('aria-selected') === 'true');
+
+        const listbox = screen.getByRole('listbox', { name: 'Palette' });
+        listbox.focus();
+
+        expect(getSelectedIndex()).toBe(0);
+        fireEvent.keyDown(listbox, { key: 'ArrowRight' });
+        expect(getSelectedIndex()).toBe(2);
+
+        fireEvent.keyDown(listbox, { key: 'ArrowLeft' });
+        expect(getSelectedIndex()).toBe(0);
+      } finally {
+        document.dir = previousDir;
+      }
+    });
+
+    it('should keep ArrowRight/ArrowLeft inert in stack layout', () => {
+      const onChange = vi.fn();
+      render(() => <TestColorSwatchPicker onChange={onChange} aria-label="Palette" layout="stack" />);
+
+      const getSelectedIndex = () =>
+        screen.getAllByRole('option').findIndex((option) => option.getAttribute('aria-selected') === 'true');
+
+      const listbox = screen.getByRole('listbox', { name: 'Palette' });
+      listbox.focus();
+
+      expect(getSelectedIndex()).toBe(0);
+      fireEvent.keyDown(listbox, { key: 'ArrowRight' });
+      expect(getSelectedIndex()).toBe(0);
+      expect(onChange).not.toHaveBeenCalled();
+
+      fireEvent.keyDown(listbox, { key: 'ArrowDown' });
+      expect(getSelectedIndex()).toBe(1);
+      expect(onChange).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // ============================================
   // CONTEXT ERRORS
   // ============================================
 
@@ -590,6 +871,12 @@ describe('Color Components', () => {
       expect(() => {
         render(() => <ColorFieldInput />);
       }).toThrow('ColorFieldInput must be used within a ColorField');
+    });
+
+    it('should throw when ColorSwatchPickerItem is used outside ColorSwatchPicker', () => {
+      expect(() => {
+        render(() => <ColorSwatchPickerItem color="#ff0000" />);
+      }).toThrow('ColorSwatchPickerItem must be used within a ColorSwatchPicker');
     });
   });
 });

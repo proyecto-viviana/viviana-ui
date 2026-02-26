@@ -27,10 +27,29 @@ export interface AriaLinkProps {
   elementType?: string;
   /** The URL to link to. */
   href?: string;
+  /** Additional options forwarded to client-side router navigation handlers. */
+  routerOptions?: Record<string, unknown>;
   /** The target window for the link. */
   target?: string;
   /** The relationship between the linked resource and the current page. */
   rel?: string;
+  /** Hints the language of the linked resource. */
+  hrefLang?: string;
+  /** Instructs the browser to download the URL instead of navigating to it. */
+  download?: string | boolean;
+  /** Space-separated list of URLs to ping when following the link. */
+  ping?: string;
+  /** Referrer policy for fetches initiated by this link. */
+  referrerPolicy?:
+    | ''
+    | 'no-referrer'
+    | 'no-referrer-when-downgrade'
+    | 'origin'
+    | 'origin-when-cross-origin'
+    | 'same-origin'
+    | 'strict-origin'
+    | 'strict-origin-when-cross-origin'
+    | 'unsafe-url';
   /** Handler that is called when the press is released over the target. */
   onPress?: (e: PressEvent) => void;
   /** Handler that is called when a press interaction starts. */
@@ -120,13 +139,6 @@ export function createLink(
       };
     }
 
-    // Add link-specific props
-    if (elType === 'a') {
-      if (p.href) baseProps.href = p.href;
-      if (p.target) baseProps.target = p.target;
-      if (p.rel) baseProps.rel = p.rel;
-    }
-
     // ARIA attributes
     const ariaProps: Record<string, unknown> = {
       'aria-disabled': disabled || undefined,
@@ -164,7 +176,10 @@ export function createLink(
     };
 
     return mergeProps(
-      filterDOMProps(p as Record<string, unknown>, { labelable: true }),
+      filterDOMProps(p as Record<string, unknown>, {
+        labelable: true,
+        isLink: elType === 'a',
+      }),
       baseProps,
       ariaProps,
       focusableProps as Record<string, unknown>,

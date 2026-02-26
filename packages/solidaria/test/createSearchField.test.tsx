@@ -21,6 +21,7 @@ function TestSearchField(props: {
   'aria-label'?: string;
   label?: string;
   placeholder?: string;
+  onKeyDown?: (e: KeyboardEvent) => void;
 }) {
   let inputRef: HTMLInputElement | null = null;
 
@@ -39,6 +40,7 @@ function TestSearchField(props: {
       isReadOnly: props.isReadOnly,
       onSubmit: props.onSubmit,
       onClear: props.onClear,
+      onKeyDown: props.onKeyDown as any,
     }),
     state,
     () => inputRef
@@ -189,6 +191,27 @@ describe('createSearchField', () => {
 
       expect(onSubmit).not.toHaveBeenCalled();
       expect(onClear).not.toHaveBeenCalled();
+    });
+
+    it('should call user onKeyDown handlers in addition to built-in behavior', async () => {
+      const user = setupUser();
+      const onSubmit = vi.fn();
+      const onKeyDown = vi.fn();
+      render(() => (
+        <TestSearchField
+          aria-label="Search"
+          defaultValue="query"
+          onSubmit={onSubmit}
+          onKeyDown={onKeyDown}
+        />
+      ));
+
+      const input = screen.getByTestId('search-input');
+      input.focus();
+      await user.keyboard('{Enter}');
+
+      expect(onSubmit).toHaveBeenCalledWith('query');
+      expect(onKeyDown).toHaveBeenCalled();
     });
   });
 

@@ -140,6 +140,20 @@ describe('createListBox', () => {
         dispose();
       });
     });
+
+    it('sets aria-activedescendant to the focused option id', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const listBoxAria = createListBox({}, state);
+
+        state.setFocusedKey('c');
+        expect(listBoxAria.listBoxProps['aria-activedescendant']).toBe('c');
+
+        state.setFocusedKey(null);
+        expect(listBoxAria.listBoxProps['aria-activedescendant']).toBeUndefined();
+        dispose();
+      });
+    });
   });
 
   describe('keyboard navigation', () => {
@@ -288,6 +302,19 @@ describe('createListBox', () => {
       });
     });
 
+    it('handles Meta+A to select all in multiple selection mode', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ selectionMode: 'multiple' });
+        const { listBoxProps } = createListBox({}, state);
+
+        const event = createMockKeyboardEvent('a', { metaKey: true });
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.selectedKeys()).toBe('all');
+        dispose();
+      });
+    });
+
     it('does not select all with Ctrl+A in single selection mode', () => {
       createRoot((dispose) => {
         const state = createBasicListState({ selectionMode: 'single' });
@@ -360,6 +387,67 @@ describe('createListBox', () => {
         (listBoxProps.onKeyDown as any)?.(event);
 
         expect(state.focusedKey()).toBe('e');
+        dispose();
+      });
+    });
+
+    it('skips disabled items during keyboard navigation', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState({ disabledKeys: ['b'] });
+        const { listBoxProps } = createListBox({}, state);
+
+        state.setFocusedKey('a');
+        const event = createMockKeyboardEvent('ArrowDown');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('c');
+        dispose();
+      });
+    });
+
+    it('wraps focus when shouldFocusWrap is true', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({ shouldFocusWrap: true }, state);
+
+        state.setFocusedKey('e');
+        const event = createMockKeyboardEvent('ArrowDown');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('a');
+        dispose();
+      });
+    });
+
+    it('does not wrap focus when shouldFocusWrap is false', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        const { listBoxProps } = createListBox({ shouldFocusWrap: false }, state);
+
+        state.setFocusedKey('e');
+        const event = createMockKeyboardEvent('ArrowDown');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.focusedKey()).toBe('e');
+        dispose();
+      });
+    });
+
+    it('does not toggle selection or fire action for disabled focused items', () => {
+      createRoot((dispose) => {
+        const onAction = vi.fn();
+        const state = createBasicListState({
+          selectionMode: 'multiple',
+          disabledKeys: ['c'],
+        });
+        const { listBoxProps } = createListBox({ onAction }, state);
+
+        state.setFocusedKey('c');
+        const event = createMockKeyboardEvent('Enter');
+        (listBoxProps.onKeyDown as any)?.(event);
+
+        expect(state.selectedKeys().has('c')).toBe(false);
+        expect(onAction).not.toHaveBeenCalled();
         dispose();
       });
     });
@@ -503,6 +591,18 @@ describe('createOption', () => {
 
         expect(optionProps['aria-disabled']).toBeUndefined();
         expect(isDisabled()).toBe(false);
+        dispose();
+      });
+    });
+
+    it('inherits disabled state from parent listbox metadata', () => {
+      createRoot((dispose) => {
+        const state = createBasicListState();
+        createListBox({ isDisabled: true }, state);
+        const { optionProps, isDisabled } = createOption({ key: 'a' }, state);
+
+        expect(optionProps['aria-disabled']).toBe(true);
+        expect(isDisabled()).toBe(true);
         dispose();
       });
     });

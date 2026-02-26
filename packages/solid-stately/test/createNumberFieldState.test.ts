@@ -40,6 +40,23 @@ describe('createNumberFieldState', () => {
         });
 
         expect(state.numberValue()).toBe(75);
+        expect(state.inputValue()).toBe('75');
+
+        dispose();
+      });
+    });
+
+    it('should constrain defaultValue when custom step and bounds are provided', () => {
+      createRoot((dispose) => {
+        const state = createNumberFieldState({
+          defaultValue: 9.6,
+          minValue: 0,
+          maxValue: 10,
+          step: 2
+        });
+
+        expect(state.numberValue()).toBe(10);
+        expect(state.inputValue()).toBe('10');
 
         dispose();
       });
@@ -497,6 +514,39 @@ describe('createNumberFieldState', () => {
       });
     });
 
+    it('should preserve decimals on commit when no custom step is provided', () => {
+      createRoot((dispose) => {
+        const state = createNumberFieldState({});
+
+        state.setInputValue('42.5');
+        state.commit();
+
+        expect(state.numberValue()).toBe(42.5);
+        expect(state.inputValue()).toBe('42.5');
+
+        dispose();
+      });
+    });
+
+    it('should clear controlled value via onChange but keep rendered value until prop updates', () => {
+      createRoot((dispose) => {
+        const onChange = vi.fn();
+        const state = createNumberFieldState({
+          value: 12,
+          onChange
+        });
+
+        state.setInputValue('');
+        state.commit();
+
+        expect(onChange).toHaveBeenCalledWith(NaN);
+        expect(state.inputValue()).toBe('12');
+        expect(state.numberValue()).toBe(12);
+
+        dispose();
+      });
+    });
+
     it('should revert to current value on invalid input', () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
@@ -678,6 +728,7 @@ describe('createNumberFieldState', () => {
 
         setValue(75);
         expect(state.numberValue()).toBe(75);
+        expect(state.inputValue()).toBe('75');
 
         dispose();
       });

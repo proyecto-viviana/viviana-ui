@@ -14,13 +14,11 @@ import {
   Show,
   createContext,
   createMemo,
-  createSignal,
   createEffect,
-  onCleanup,
   splitProps,
   useContext,
 } from 'solid-js';
-import { announce } from '@proyecto-viviana/solidaria';
+import { announce, createToolbar } from '@proyecto-viviana/solidaria';
 import type { Key } from '@proyecto-viviana/solid-stately';
 import {
   type ClassNameOrFunction,
@@ -56,6 +54,10 @@ export interface ActionBarProps extends SlotProps {
   style?: StyleOrFunction<ActionBarRenderProps>;
   /** Accessible label for the action bar. @default 'Actions' */
   'aria-label'?: string;
+  /** Identifies the element (or elements) that labels the action bar. */
+  'aria-labelledby'?: string;
+  /** Optional keydown handler on the action bar element. */
+  onKeyDown?: JSX.EventHandlerUnion<HTMLDivElement, KeyboardEvent>;
 }
 
 // ============================================
@@ -88,19 +90,40 @@ export function ActionBar(props: ActionBarProps): JSX.Element {
     'style',
     'slot',
     'aria-label',
+    'aria-labelledby',
+    'onKeyDown',
   ]);
 
   const isOpen = () => local.selectedItemCount !== 0;
 
-  // Announce availability when opened
+  const { toolbarProps } = createToolbar({
+    orientation: 'horizontal',
+    get 'aria-label'() {
+      return local['aria-label'] ?? (local['aria-labelledby'] ? undefined : 'Actions');
+    },
+    get 'aria-labelledby'() {
+      return local['aria-labelledby'];
+    },
+  });
+
+  let wasOpen = false;
+  // Announce only when transitioning from closed -> open.
   createEffect(() => {
-    if (isOpen()) {
+    const open = isOpen();
+    if (open && !wasOpen) {
       announce('Actions available.');
     }
+    wasOpen = open;
   });
 
   // Escape key to clear selection
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown: JSX.EventHandlerUnion<HTMLDivElement, KeyboardEvent> = (e) => {
+    const onKeyDown = local.onKeyDown as JSX.EventHandler<HTMLDivElement, KeyboardEvent> | undefined;
+    onKeyDown?.(e);
+    if (e.defaultPrevented) {
+      return;
+    }
+
     if (e.key === 'Escape' && isOpen()) {
       e.preventDefault();
       e.stopPropagation();
@@ -134,8 +157,7 @@ export function ActionBar(props: ActionBarProps): JSX.Element {
       <ActionBarContext.Provider value={contextValue()}>
         <div
           {...filteredDOMProps()}
-          role="toolbar"
-          aria-label={local['aria-label'] ?? 'Actions'}
+          {...toolbarProps}
           class={renderProps.class()}
           style={renderProps.style()}
           slot={local.slot}

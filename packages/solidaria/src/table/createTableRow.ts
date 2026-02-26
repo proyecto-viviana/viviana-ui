@@ -76,7 +76,7 @@ export function createTableRow<T extends object>(
 
     if (isDisabled()) return;
 
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Space' || e.key === 'Spacebar') {
       e.preventDefault();
 
       // Get table metadata for actions

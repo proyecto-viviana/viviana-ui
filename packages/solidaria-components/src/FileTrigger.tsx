@@ -35,6 +35,7 @@ export function FileTrigger(props: FileTriggerProps): JSX.Element {
     'acceptDirectory',
     'onSelect',
     'children',
+    'disabled',
   ]);
 
   const [inputRef, setInputRef] = createSignal<HTMLInputElement | null>(null);
@@ -47,6 +48,9 @@ export function FileTrigger(props: FileTriggerProps): JSX.Element {
   };
 
   const { pressProps } = createPress({
+    get isDisabled() {
+      return !!local.disabled;
+    },
     onPress: (_e: PressEvent) => {
       openFilePicker();
     },
@@ -69,6 +73,7 @@ export function FileTrigger(props: FileTriggerProps): JSX.Element {
         accept={local.acceptedFileTypes?.join(',')}
         multiple={local.allowsMultiple}
         capture={local.defaultCamera}
+        disabled={local.disabled}
         // @ts-expect-error Non-standard attribute supported by WebKit browsers.
         webkitdirectory={local.acceptDirectory ? '' : undefined}
         onChange={onInputChange}

@@ -13,6 +13,7 @@ import {
   splitProps,
   useContext,
   For,
+  Index,
   Show,
 } from 'solid-js';
 import {
@@ -29,6 +30,8 @@ import {
   type CalendarDate,
   type DateValue,
   type RangeValue,
+  endOfMonth,
+  isSameMonth,
 } from '@proyecto-viviana/solid-stately';
 import {
   type RenderChildren,
@@ -79,6 +82,8 @@ export interface RangeCalendarGridProps extends Omit<AriaCalendarGridProps, 'sta
   class?: ClassNameOrFunction<RangeCalendarGridRenderProps>;
   /** The inline style for the element. */
   style?: StyleOrFunction<RangeCalendarGridRenderProps>;
+  /** Number of months to offset from the start. */
+  offset?: { months?: number };
 }
 
 export interface RangeCalendarCellRenderProps {
@@ -121,6 +126,7 @@ export interface RangeCalendarCellProps extends SlotProps {
 
 export const RangeCalendarContext = createContext<RangeCalendarState<DateValue> | null>(null);
 export const RangeCalendarStateContext = createContext<RangeCalendarState<DateValue> | null>(null);
+const RangeCalendarGridMonthContext = createContext<CalendarDate | null>(null);
 
 export function useRangeCalendarContext(): RangeCalendarState<DateValue> {
   const context = useContext(RangeCalendarContext);
@@ -319,10 +325,17 @@ export function RangeCalendarButton(props: RangeCalendarButtonProps): JSX.Elemen
 export function RangeCalendarGrid(props: RangeCalendarGridProps): JSX.Element {
   const state = useRangeCalendarContext();
   const [gridRef, setGridRef] = createSignal<HTMLTableElement | null>(null);
+  const startDate = createMemo(() => {
+    const offsetMonths = props.offset?.months ?? 0;
+    const baseStart = state.visibleRange().start;
+    return offsetMonths ? baseStart.add({ months: offsetMonths }) : baseStart;
+  });
 
   // Create grid ARIA props
   const gridAria = createCalendarGrid(
     {
+      startDate: startDate(),
+      endDate: endOfMonth(startDate()),
       weekdayStyle: props.weekdayStyle,
     },
     state as unknown as Parameters<typeof createCalendarGrid>[1],
@@ -344,48 +357,55 @@ export function RangeCalendarGrid(props: RangeCalendarGridProps): JSX.Element {
     renderValues
   );
 
-  // Get weeks to render
-  const weeks = createMemo(() => {
-    const numWeeks = state.getWeeksInMonth();
-    return Array.from({ length: numWeeks }, (_, i) => i);
+  // Memoize all dates for the grid to avoid reactive loops in render paths.
+  const allDates = createMemo(() => {
+    const monthStart = startDate();
+    const numWeeks = state.getWeeksInMonth(monthStart);
+    const weekDates: (CalendarDate | null)[][] = [];
+
+    for (let weekIndex = 0; weekIndex < numWeeks; weekIndex++) {
+      weekDates.push(state.getDatesInWeek(weekIndex, monthStart));
+    }
+
+    return weekDates;
   });
 
   return (
-    <table
-      ref={setGridRef}
-      {...gridAria.gridProps}
-      class={renderProps.class()}
-      style={renderProps.style()}
-    >
-      <thead {...gridAria.headerProps}>
-        <tr>
-          <For each={gridAria.weekDays}>
-            {(day) => (
-              <th scope="col" class="solidaria-RangeCalendarHeaderCell">
-                {day}
-              </th>
+    <RangeCalendarGridMonthContext.Provider value={startDate()}>
+      <table
+        ref={setGridRef}
+        {...gridAria.gridProps}
+        class={renderProps.class()}
+        style={renderProps.style()}
+      >
+        <thead {...gridAria.headerProps}>
+          <tr>
+            <For each={gridAria.weekDays}>
+              {(day) => (
+                <th scope="col" class="solidaria-RangeCalendarHeaderCell">
+                  {day}
+                </th>
+              )}
+            </For>
+          </tr>
+        </thead>
+        <tbody>
+          <Index each={allDates()}>
+            {(weekDates) => (
+              <tr>
+                <Index each={weekDates()}>
+                  {(date) => (
+                    <Show when={date()} fallback={<td />}>
+                      {props.children?.(date()!)}
+                    </Show>
+                  )}
+                </Index>
+              </tr>
             )}
-          </For>
-        </tr>
-      </thead>
-      <tbody>
-        <For each={weeks()}>
-          {(weekIndex) => (
-            <tr>
-              <For each={state.getDatesInWeek(weekIndex)}>
-                {(date) => (
-                  <Show when={date}>
-                    <td>
-                      {props.children?.(date!)}
-                    </td>
-                  </Show>
-                )}
-              </For>
-            </tr>
-          )}
-        </For>
-      </tbody>
-    </table>
+          </Index>
+        </tbody>
+      </table>
+    </RangeCalendarGridMonthContext.Provider>
   );
 }
 
@@ -398,11 +418,18 @@ export function RangeCalendarGrid(props: RangeCalendarGridProps): JSX.Element {
  */
 export function RangeCalendarCell(props: RangeCalendarCellProps): JSX.Element {
   const state = useRangeCalendarContext();
+  const currentMonthStart = useContext(RangeCalendarGridMonthContext);
   const [cellRef, setCellRef] = createSignal<HTMLDivElement | null>(null);
+  const isOutsideMonth = createMemo(
+    () => currentMonthStart != null && !isSameMonth(currentMonthStart, props.date)
+  );
 
   // Create cell ARIA props
   const cellAria = createRangeCalendarCell(
-    { date: props.date },
+    () => ({
+      date: props.date,
+      isOutsideMonth: isOutsideMonth(),
+    }),
     state,
     cellRef
   );
@@ -441,23 +468,25 @@ export function RangeCalendarCell(props: RangeCalendarCellProps): JSX.Element {
   };
 
   return (
-    <div
-      ref={setCellRef}
-      {...cellAria.buttonProps}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-selected={dataAttr(cellAria.isSelected)}
-      data-selection-start={dataAttr(cellAria.isSelectionStart)}
-      data-selection-end={dataAttr(cellAria.isSelectionEnd)}
-      data-focused={dataAttr(cellAria.isFocused)}
-      data-disabled={dataAttr(cellAria.isDisabled)}
-      data-unavailable={dataAttr(cellAria.isUnavailable)}
-      data-outside-month={dataAttr(cellAria.isOutsideMonth)}
-      data-today={dataAttr(cellAria.isToday)}
-      data-pressed={dataAttr(cellAria.isPressed)}
-    >
-      {getChildren()}
-    </div>
+    <td {...cellAria.cellProps}>
+      <div
+        ref={setCellRef}
+        {...cellAria.buttonProps}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-selected={dataAttr(cellAria.isSelected)}
+        data-selection-start={dataAttr(cellAria.isSelectionStart)}
+        data-selection-end={dataAttr(cellAria.isSelectionEnd)}
+        data-focused={dataAttr(cellAria.isFocused)}
+        data-disabled={dataAttr(cellAria.isDisabled)}
+        data-unavailable={dataAttr(cellAria.isUnavailable)}
+        data-outside-month={dataAttr(cellAria.isOutsideMonth)}
+        data-today={dataAttr(cellAria.isToday)}
+        data-pressed={dataAttr(cellAria.isPressed)}
+      >
+        {getChildren()}
+      </div>
+    </td>
   );
 }
 

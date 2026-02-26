@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { render, screen, waitFor } from '@solidjs/testing-library';
-import { createSignal, createEffect } from 'solid-js';
+import { createSignal, createEffect, createRoot } from 'solid-js';
 import {
   createCheckboxGroup,
   createCheckboxGroupItem,
@@ -30,7 +30,7 @@ function Checkbox(props: AriaCheckboxGroupItemProps & { checkboxGroupState: Chec
       isRequired: props.isRequired,
       onChange: props.onChange,
       children: props.children,
-      validationBehavior: props.validationBehavior ?? 'native',
+      validationBehavior: props.validationBehavior,
     }),
     props.checkboxGroupState,
     () => inputRef
@@ -495,5 +495,42 @@ describe('createCheckboxGroup', () => {
     await user.click(screen.getByLabelText('Cats'));
     expect(checkboxes[0].checked).toBeTruthy();
     expect(checkboxes[1].checked).toBeFalsy();
+  });
+
+  it('propagates group validationBehavior to items', () => {
+    render(() => (
+      <CheckboxGroup
+        groupProps={{
+          'aria-label': 'Favorite Pet',
+          isRequired: true,
+          validationBehavior: 'native',
+        }}
+        checkboxProps={[
+          { value: 'dogs', children: 'Dogs' },
+          { value: 'cats', children: 'Cats' },
+          { value: 'dragons', children: 'Dragons' },
+        ]}
+      />
+    ));
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    checkboxes.forEach((checkbox) => {
+      expect(checkbox).toHaveAttribute('required');
+      expect(checkbox).not.toHaveAttribute('aria-required');
+    });
+  });
+
+  it('exposes validation metadata from state', () => {
+    createRoot((dispose) => {
+      const state = createCheckboxGroupState({ isInvalid: true });
+      const aria = createCheckboxGroup(() => ({ 'aria-label': 'Favorite Pet' }), state);
+
+      expect(aria.isInvalid).toBe(true);
+      expect(aria.validationErrors).toEqual([]);
+      expect(aria.validationDetails.customError).toBe(true);
+      expect(aria.validationDetails.valid).toBe(false);
+
+      dispose();
+    });
   });
 });

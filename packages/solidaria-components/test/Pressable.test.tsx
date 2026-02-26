@@ -36,4 +36,34 @@ describe('Pressable', () => {
     ));
     expect(capturedRef).toBeInstanceOf(HTMLElement);
   });
+
+  it('applies default focusable tabIndex when child does not define one', () => {
+    const { getByTestId } = render(() => (
+      <Pressable onPress={() => {}}>
+        <div data-testid="press-target" role="button">Pressable</div>
+      </Pressable>
+    ));
+
+    expect(getByTestId('press-target')).toHaveAttribute('tabindex', '0');
+  });
+
+  it('adds pressable data attribute used for touch-action CSS', () => {
+    const { getByTestId } = render(() => (
+      <Pressable onPress={() => {}}>
+        <div data-testid="press-target" role="button">Pressable</div>
+      </Pressable>
+    ));
+
+    expect(getByTestId('press-target')).toHaveAttribute('data-solidaria-pressable');
+  });
+
+  it('preserves explicit child tabIndex', () => {
+    const { getByTestId } = render(() => (
+      <Pressable onPress={() => {}}>
+        <div data-testid="press-target" role="button" tabIndex={-1}>Pressable</div>
+      </Pressable>
+    ));
+
+    expect(getByTestId('press-target')).toHaveAttribute('tabindex', '-1');
+  });
 });

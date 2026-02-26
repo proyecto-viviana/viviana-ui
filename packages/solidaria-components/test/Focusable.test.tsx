@@ -36,4 +36,24 @@ describe('Focusable', () => {
     ));
     expect(capturedRef).toBeInstanceOf(HTMLElement);
   });
+
+  it('applies default focusable tabIndex when child does not define one', () => {
+    const { getByTestId } = render(() => (
+      <Focusable>
+        <div data-testid="focus-target">Focusable content</div>
+      </Focusable>
+    ));
+
+    expect(getByTestId('focus-target')).toHaveAttribute('tabindex', '0');
+  });
+
+  it('preserves explicit child tabIndex', () => {
+    const { getByTestId } = render(() => (
+      <Focusable>
+        <div data-testid="focus-target" tabIndex={-1}>Focusable content</div>
+      </Focusable>
+    ));
+
+    expect(getByTestId('focus-target')).toHaveAttribute('tabindex', '-1');
+  });
 });

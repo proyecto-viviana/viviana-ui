@@ -5,7 +5,7 @@
  * Based on @react-aria/calendar useCalendarCell
  */
 
-import { createSignal, createMemo, onMount } from 'solid-js';
+import { createSignal, createMemo, createEffect } from 'solid-js';
 import { access, type MaybeAccessor } from '../utils/reactivity';
 import type { CalendarState, CalendarDate, DateValue } from '@proyecto-viviana/solid-stately';
 import { isToday as isTodayUtil, DateFormatter, getLocalTimeZone } from '@internationalized/date';
@@ -19,6 +19,8 @@ export interface AriaCalendarCellProps {
   date: DateValue;
   /** Whether the cell is disabled. */
   isDisabled?: boolean;
+  /** Whether the date is outside the current month grid. */
+  isOutsideMonth?: boolean;
 }
 
 export interface CalendarCellAria {
@@ -70,7 +72,7 @@ export function createCalendarCell<T extends CalendarState>(
     return getProps().isDisabled || state.isCellDisabled(date());
   });
   const isUnavailable = createMemo(() => state.isCellUnavailable(date()));
-  const isOutsideMonth = createMemo(() => state.isOutsideVisibleRange(date()));
+  const isOutsideMonth = createMemo(() => getProps().isOutsideMonth ?? state.isOutsideVisibleRange(date()));
   const isToday = createMemo(() => isTodayUtil(date(), timeZone));
 
   // Format the date for display
@@ -105,8 +107,8 @@ export function createCalendarCell<T extends CalendarState>(
     setIsPressed(false);
   };
 
-  // Focus the button when it becomes focused in state
-  onMount(() => {
+  // Keep DOM focus synchronized with focused date updates.
+  createEffect(() => {
     const element = ref?.();
     if (element && isFocused()) {
       element.focus();

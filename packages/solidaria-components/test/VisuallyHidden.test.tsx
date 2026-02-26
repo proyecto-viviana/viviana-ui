@@ -10,6 +10,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@solidjs/testing-library';
 import { VisuallyHidden } from '../src/VisuallyHidden';
+import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 describe('VisuallyHidden', () => {
   afterEach(() => {
@@ -209,6 +210,53 @@ describe('VisuallyHidden', () => {
       ));
 
       expect(screen.getByText(/required/)).toBeInTheDocument();
+    });
+
+    it('keeps hidden styles when focused without isFocusable', async () => {
+      const user = setupUser();
+      render(() => (
+        <>
+          <button type="button">Button A</button>
+          <VisuallyHidden>
+            <button type="button">Hidden button</button>
+          </VisuallyHidden>
+          <button type="button">Button C</button>
+        </>
+      ));
+
+      const buttons = screen.getAllByRole('button');
+      const hiddenWrapper = buttons[1].parentElement as HTMLElement;
+      const hiddenStyle = hiddenWrapper.getAttribute('style');
+
+      await user.tab();
+      await user.tab();
+
+      expect(document.activeElement).toBe(buttons[1]);
+      expect(hiddenWrapper.getAttribute('style')).toEqual(hiddenStyle);
+    });
+
+    it('unhides on focus when isFocusable is true', async () => {
+      const user = setupUser();
+      render(() => (
+        <>
+          <button type="button">Button A</button>
+          <VisuallyHidden isFocusable>
+            <button type="button">Focusable hidden button</button>
+          </VisuallyHidden>
+          <button type="button">Button C</button>
+        </>
+      ));
+
+      const buttons = screen.getAllByRole('button');
+      const hiddenWrapper = buttons[1].parentElement as HTMLElement;
+      const hiddenStyle = hiddenWrapper.getAttribute('style');
+
+      await user.tab();
+      await user.tab();
+
+      expect(document.activeElement).toBe(buttons[1]);
+      expect(hiddenWrapper.getAttribute('style')).not.toEqual(hiddenStyle);
+      expect(hiddenWrapper.getAttribute('style') ?? '').toHaveLength(0);
     });
   });
 });

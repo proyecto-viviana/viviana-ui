@@ -28,6 +28,7 @@ import {
 } from './utils';
 
 export interface DragAndDropContextValue {
+  dragAndDropHooks?: DragAndDropHooks<unknown>;
   dragState?: unknown;
   dropState?: {
     target?: DropTarget | null;
@@ -94,7 +95,7 @@ export function DropIndicator(props: DropIndicatorProps): JSX.Element {
 
 export function useRenderDropIndicator(
   hooksOrDropState?:
-    | Pick<DragAndDropHooks<unknown>, 'renderDropIndicator' | 'isVirtualDragging'>
+    | Pick<DragAndDropHooks<unknown>, 'renderDropIndicator' | 'isVirtualDragging' | 'useDropIndicator'>
     | {
       target?: DropTarget | null;
       isDropTarget?: ((target: DropTarget) => boolean) | boolean;
@@ -121,6 +122,9 @@ export function useRenderDropIndicator(
     ? undefined
     : hooksOrDropState;
   const dropState = looksLikeDropState(hooksOrDropState) ? hooksOrDropState : maybeDropState;
+
+  // RAC only renders collection indicators when drop hooks are present.
+  if (dragAndDropHooks && !dragAndDropHooks.useDropIndicator) return undefined;
   if (!dropState && !dragAndDropHooks?.renderDropIndicator) return undefined;
 
   const targetsEqual = (a: DropTarget | null | undefined, b: DropTarget): boolean => {

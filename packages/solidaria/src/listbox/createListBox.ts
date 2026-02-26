@@ -61,10 +61,40 @@ interface ListBoxData {
   onAction?: (key: Key) => void;
   shouldSelectOnPressUp?: boolean;
   shouldFocusOnHover?: boolean;
+  isDisabled?: boolean;
 }
 
 export function getListBoxData(state: ListState): ListBoxData | undefined {
   return listBoxData.get(state);
+}
+
+function findNextEnabledKey<T>(
+  state: ListState<T>,
+  currentKey: Key | null,
+  direction: 'next' | 'prev',
+  wrap: boolean
+): Key | null {
+  const collection = state.collection();
+  const getAdjacentKey = direction === 'next'
+    ? (key: Key) => collection.getKeyAfter(key)
+    : (key: Key) => collection.getKeyBefore(key);
+  const getBoundaryKey = direction === 'next'
+    ? () => collection.getFirstKey()
+    : () => collection.getLastKey();
+
+  let key = currentKey != null ? getAdjacentKey(currentKey) : getBoundaryKey();
+  while (key != null && state.isDisabled(key)) {
+    key = getAdjacentKey(key);
+  }
+
+  if (key == null && wrap) {
+    key = getBoundaryKey();
+    while (key != null && state.isDisabled(key)) {
+      key = getAdjacentKey(key);
+    }
+  }
+
+  return key;
 }
 
 /**
@@ -92,15 +122,23 @@ export function createListBox<T>(
   // Filter DOM props
   const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
-  // Share data with child options
-  createEffect(() => {
+  const updateSharedData = () => {
     const p = getProps();
     listBoxData.set(state, {
       id,
       onAction: p.onAction,
       shouldSelectOnPressUp: p.shouldSelectOnPressUp,
       shouldFocusOnHover: p.shouldFocusOnHover,
+      isDisabled: p.isDisabled,
     });
+  };
+
+  // Ensure options created in the same render pass can read parent metadata.
+  updateSharedData();
+
+  // Share data with child options
+  createEffect(() => {
+    updateSharedData();
 
     onCleanup(() => {
       listBoxData.delete(state);
@@ -147,16 +185,17 @@ export function createListBox<T>(
 
   // Keyboard navigation
   const onKeyDown: JSX.EventHandler<HTMLElement, KeyboardEvent> = (e) => {
-    if (getProps().isDisabled) return;
+    const p = getProps();
+    if (p.isDisabled) return;
 
     const collection = state.collection();
+    const shouldWrap = p.shouldFocusWrap ?? false;
 
     switch (e.key) {
       case 'ArrowDown': {
         e.preventDefault();
-        const currentKey = state.focusedKey();
-        const nextKey = currentKey ? collection.getKeyAfter(currentKey) : collection.getFirstKey();
-        if (nextKey) {
+        const nextKey = findNextEnabledKey(state, state.focusedKey(), 'next', shouldWrap);
+        if (nextKey != null) {
           state.setFocusedKey(nextKey);
           if (!e.shiftKey && state.selectionMode() === 'single') {
             state.replaceSelection(nextKey);
@@ -168,9 +207,8 @@ export function createListBox<T>(
       }
       case 'ArrowUp': {
         e.preventDefault();
-        const currentKey = state.focusedKey();
-        const prevKey = currentKey ? collection.getKeyBefore(currentKey) : collection.getLastKey();
-        if (prevKey) {
+        const prevKey = findNextEnabledKey(state, state.focusedKey(), 'prev', shouldWrap);
+        if (prevKey != null) {
           state.setFocusedKey(prevKey);
           if (!e.shiftKey && state.selectionMode() === 'single') {
             state.replaceSelection(prevKey);
@@ -182,8 +220,8 @@ export function createListBox<T>(
       }
       case 'Home': {
         e.preventDefault();
-        const firstKey = collection.getFirstKey();
-        if (firstKey) {
+        const firstKey = findNextEnabledKey(state, null, 'next', false);
+        if (firstKey != null) {
           state.setFocusedKey(firstKey);
           if (e.ctrlKey && e.shiftKey && state.selectionMode() === 'multiple') {
             // Select from current to first
@@ -196,8 +234,8 @@ export function createListBox<T>(
       }
       case 'End': {
         e.preventDefault();
-        const lastKey = collection.getLastKey();
-        if (lastKey) {
+        const lastKey = findNextEnabledKey(state, null, 'prev', false);
+        if (lastKey != null) {
           state.setFocusedKey(lastKey);
           if (e.ctrlKey && e.shiftKey && state.selectionMode() === 'multiple') {
             // Select from current to last
@@ -212,16 +250,16 @@ export function createListBox<T>(
       case 'Enter': {
         e.preventDefault();
         const focusedKey = state.focusedKey();
-        if (focusedKey != null) {
+        if (focusedKey != null && !state.isDisabled(focusedKey)) {
           if (state.selectionMode() !== 'none') {
             state.toggleSelection(focusedKey);
           }
-          getProps().onAction?.(focusedKey);
+          p.onAction?.(focusedKey);
         }
         break;
       }
       case 'a': {
-        if (e.ctrlKey && state.selectionMode() === 'multiple') {
+        if ((e.ctrlKey || e.metaKey) && state.selectionMode() === 'multiple') {
           e.preventDefault();
           state.selectAll();
         }
@@ -254,6 +292,7 @@ export function createListBox<T>(
           tabIndex: p.isDisabled ? undefined : 0,
           'aria-disabled': p.isDisabled || undefined,
           'aria-multiselectable': selectionMode === 'multiple' ? true : undefined,
+          'aria-activedescendant': state.focusedKey() != null ? String(state.focusedKey()) : undefined,
           onKeyDown,
         }
       );

@@ -5,7 +5,7 @@
  * Based on @react-aria/calendar useCalendarCell (with range support)
  */
 
-import { createSignal, createMemo } from 'solid-js';
+import { createSignal, createMemo, createEffect } from 'solid-js';
 import { access, type MaybeAccessor } from '../utils/reactivity';
 import type { RangeCalendarState, CalendarDate, DateValue } from '@proyecto-viviana/solid-stately';
 import { isToday as isTodayUtil, DateFormatter, getLocalTimeZone } from '@internationalized/date';
@@ -19,6 +19,8 @@ export interface AriaRangeCalendarCellProps {
   date: DateValue;
   /** Whether the cell is disabled. */
   isDisabled?: boolean;
+  /** Whether the date is outside the current month grid. */
+  isOutsideMonth?: boolean;
 }
 
 export interface RangeCalendarCellAria {
@@ -58,7 +60,7 @@ export interface RangeCalendarCellAria {
 export function createRangeCalendarCell<T extends RangeCalendarState>(
   props: MaybeAccessor<AriaRangeCalendarCellProps>,
   state: T,
-  _ref?: () => HTMLElement | null
+  ref?: () => HTMLElement | null
 ): RangeCalendarCellAria {
   const getProps = () => access(props);
   const [isPressed, setIsPressed] = createSignal(false);
@@ -76,7 +78,9 @@ export function createRangeCalendarCell<T extends RangeCalendarState>(
     return getProps().isDisabled || state.isCellDisabled(date());
   });
   const isUnavailable = createMemo(() => state.isCellUnavailable(date()));
-  const isOutsideMonth = createMemo(() => state.isOutsideVisibleRange(date()));
+  const isOutsideMonth = createMemo(() => {
+    return getProps().isOutsideMonth ?? state.isOutsideVisibleRange(date());
+  });
   const isToday = createMemo(() => isTodayUtil(date(), timeZone));
 
   // Format the date for display
@@ -84,17 +88,20 @@ export function createRangeCalendarCell<T extends RangeCalendarState>(
     return date().day.toString();
   });
 
-  // Handle click
-  const handleClick = () => {
+  // Handle pointer down - selection on pointerdown avoids losing selection when
+  // hover/focus updates re-render cells before click fires.
+  const handlePointerDown = (e: PointerEvent) => {
     if (!isDisabled() && !isUnavailable()) {
+      setIsPressed(true);
       state.selectDate(date());
+      e.preventDefault();
     }
   };
 
-  // Handle pointer events for pressed state
-  const handlePointerDown = () => {
+  // Handle click for keyboard activation (Enter/Space).
+  const handleClick = () => {
     if (!isDisabled() && !isUnavailable()) {
-      setIsPressed(true);
+      state.selectDate(date());
     }
   };
 
@@ -108,6 +115,14 @@ export function createRangeCalendarCell<T extends RangeCalendarState>(
       state.setFocusedDate(date());
     }
   };
+
+  // Keep DOM focus synchronized with focused date updates.
+  createEffect(() => {
+    const element = ref?.();
+    if (element && isFocused()) {
+      element.focus();
+    }
+  });
 
   // Cell props (for the td element)
   const cellProps = createMemo(() => ({
@@ -139,7 +154,9 @@ export function createRangeCalendarCell<T extends RangeCalendarState>(
       onPointerLeave: handlePointerUp,
       onPointerEnter: handlePointerEnter,
       onFocus: () => {
-        state.setFocusedDate(d);
+        if (!state.isCellFocused(d)) {
+          state.setFocusedDate(d);
+        }
         state.setFocused(true);
       },
     };

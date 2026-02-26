@@ -12,9 +12,14 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
+import { createSignal } from 'solid-js';
 import { Tabs, TabList, Tab, TabPanel, SelectionIndicator } from '../src/Tabs';
 import type { Key } from '@proyecto-viviana/solid-stately';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import {
+  setupUser,
+  assertAriaIdIntegrity,
+  checkAriaIdIntegrity,
+} from '@proyecto-viviana/solidaria-test-utils';
 
 // Setup userEvent
 const user = setupUser();
@@ -152,6 +157,7 @@ describe('Tabs', () => {
       await user.click(tabs[1]);
 
       expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledTimes(1);
     });
 
     it('should support controlled selectedKey', () => {
@@ -254,6 +260,7 @@ describe('Tabs', () => {
       await user.keyboard('{ArrowRight}');
 
       expect(tabs[1]).toHaveAttribute('data-focused');
+      expect(document.activeElement).toBe(tabs[1]);
     });
 
     it('should move focus with Arrow Left', async () => {
@@ -323,6 +330,19 @@ describe('Tabs', () => {
 
       // With automatic activation (default), tab is selected on focus
       expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('should emit one selection change per arrow key in automatic mode', async () => {
+      const onSelectionChange = vi.fn();
+      render(() => <TestTabs tabsProps={{ onSelectionChange }} />);
+
+      const tabs = screen.getAllByRole('tab');
+      tabs[0].focus();
+
+      await user.keyboard('{ArrowRight}');
+
+      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledTimes(1);
     });
 
     it('should wrap focus at end', async () => {
@@ -561,6 +581,85 @@ describe('Tabs', () => {
       const panelAfter = screen.getByRole('tabpanel');
       expect(panelAfter.id).toBe(controlsAfter);
       expect(panelAfter.getAttribute('aria-labelledby')).toBe(selectedAfter?.id);
+    });
+  });
+
+  describe('dynamic updates', () => {
+    it('reselects first enabled tab when selected tab is removed', () => {
+      const [items, setItems] = createSignal(testTabs);
+
+      render(() => (
+        <Tabs<TestTab>
+          items={items()}
+          getKey={(item) => item.id}
+          defaultSelectedKey="tab2"
+        >
+          <TabList>
+            {(item) => <Tab id={item.id}>{item.label}</Tab>}
+          </TabList>
+          {items().map((tab) => (
+            <TabPanel id={tab.id}>{tab.content}</TabPanel>
+          ))}
+        </Tabs>
+      ));
+
+      let tabs = screen.getAllByRole('tab');
+      expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
+
+      setItems(testTabs.filter((tab) => tab.id !== 'tab2'));
+
+      tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(2);
+      expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByRole('tabpanel')).toHaveTextContent('Content 1');
+    });
+  });
+
+  // ============================================
+  // A11Y RISK AREA: ARIA ID integrity
+  // ============================================
+
+  describe('a11y ARIA ID integrity', () => {
+    it('tab aria-controls resolves to matching tabpanel', () => {
+      render(() => <TestTabs />);
+
+      const selectedTab = screen.getAllByRole('tab').find(
+        (t) => t.getAttribute('aria-selected') === 'true'
+      );
+      expect(selectedTab).toBeTruthy();
+
+      const controlsId = selectedTab!.getAttribute('aria-controls');
+      expect(controlsId).toBeTruthy();
+      expect(document.getElementById(controlsId!)).toBeTruthy();
+
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('tabpanel aria-labelledby resolves to matching tab', () => {
+      render(() => <TestTabs />);
+
+      const panel = screen.getByRole('tabpanel');
+      const labelledBy = panel.getAttribute('aria-labelledby');
+      expect(labelledBy).toBeTruthy();
+      expect(document.getElementById(labelledBy!)).toBeTruthy();
+
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('no dangling IDs after switching tabs', async () => {
+      render(() => <TestTabs />);
+
+      // Start on tab1
+      assertAriaIdIntegrity(document.body);
+
+      // Switch to tab2
+      const tabs = screen.getAllByRole('tab');
+      await user.click(tabs[1]);
+
+      // Verify no dangling references after switch
+      const result = checkAriaIdIntegrity(document.body);
+      expect(result.ok).toBe(true);
+      expect(result.totalRefsChecked).toBeGreaterThan(0);
     });
   });
 });

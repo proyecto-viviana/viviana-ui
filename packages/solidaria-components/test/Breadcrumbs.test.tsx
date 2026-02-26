@@ -121,7 +121,8 @@ describe('Breadcrumbs', () => {
       ));
 
       const links = screen.getAllByRole('link');
-      expect(links).toHaveLength(3);
+      // Last breadcrumb is current by default and therefore non-interactive.
+      expect(links).toHaveLength(2);
     });
 
     it('should have correct href on links', () => {
@@ -144,6 +145,17 @@ describe('Breadcrumbs', () => {
   // ============================================
 
   describe('current item', () => {
+    it('should mark last item as current by default', () => {
+      render(() => (
+        <Breadcrumbs items={breadcrumbItems} getKey={(item) => item.id}>
+          {(item) => <BreadcrumbItem href={item.href}>{item.label}</BreadcrumbItem>}
+        </Breadcrumbs>
+      ));
+
+      const currentItem = screen.getByText('Category');
+      expect(currentItem).toHaveAttribute('aria-current', 'page');
+    });
+
     it('should mark last item as current', () => {
       render(() => (
         <Breadcrumbs items={breadcrumbItems} getKey={(item) => item.id}>
@@ -253,6 +265,93 @@ describe('Breadcrumbs', () => {
 
       expect(onPress).toHaveBeenCalled();
     });
+
+    it('should call onAction with item key when clicking a breadcrumb', async () => {
+      const onAction = vi.fn();
+      render(() => (
+        <Breadcrumbs
+          items={breadcrumbItems}
+          getKey={(item) => item.id}
+          onAction={onAction}
+        >
+          {(item) => <BreadcrumbItem href={item.href}>{item.label}</BreadcrumbItem>}
+        </Breadcrumbs>
+      ));
+
+      await user.click(screen.getByText('Products'));
+      expect(onAction).toHaveBeenCalledWith('products');
+    });
+
+    it('should call onAction using custom getKey', async () => {
+      const onAction = vi.fn();
+      render(() => (
+        <Breadcrumbs
+          items={breadcrumbItems}
+          getKey={(item) => `${item.id}-key`}
+          onAction={onAction}
+        >
+          {(item) => <BreadcrumbItem href={item.href}>{item.label}</BreadcrumbItem>}
+        </Breadcrumbs>
+      ));
+
+      await user.click(screen.getByText('Home'));
+      expect(onAction).toHaveBeenCalledWith('home-key');
+    });
+
+    it('should not call onAction for current breadcrumb item', async () => {
+      const onAction = vi.fn();
+      render(() => (
+        <Breadcrumbs
+          items={breadcrumbItems}
+          getKey={(item) => item.id}
+          onAction={onAction}
+        >
+          {(item) => (
+            <BreadcrumbItem href={item.href} isCurrent={item.id === 'category'}>
+              {item.label}
+            </BreadcrumbItem>
+          )}
+        </Breadcrumbs>
+      ));
+
+      await user.click(screen.getByText('Category'));
+      expect(onAction).not.toHaveBeenCalled();
+    });
+
+    it('should not call onAction for disabled breadcrumb item', async () => {
+      const onAction = vi.fn();
+      render(() => (
+        <Breadcrumbs
+          items={breadcrumbItems}
+          getKey={(item) => item.id}
+          onAction={onAction}
+        >
+          {(item) => (
+            <BreadcrumbItem href={item.href} isDisabled={item.id === 'products'}>
+              {item.label}
+            </BreadcrumbItem>
+          )}
+        </Breadcrumbs>
+      ));
+
+      await user.click(screen.getByText('Products'));
+      expect(onAction).not.toHaveBeenCalled();
+    });
+
+    it('should expose focused and hovered state data attributes', async () => {
+      render(() => (
+        <Breadcrumbs items={breadcrumbItems} getKey={(item) => item.id}>
+          {(item) => <BreadcrumbItem href={item.href}>{item.label}</BreadcrumbItem>}
+        </Breadcrumbs>
+      ));
+
+      const homeLink = screen.getByText('Home');
+      homeLink.focus();
+      expect(homeLink).toHaveAttribute('data-focused');
+
+      await user.hover(homeLink);
+      expect(homeLink).toHaveAttribute('data-hovered');
+    });
   });
 
   // ============================================
@@ -280,6 +379,21 @@ describe('Breadcrumbs', () => {
 
       const nav = screen.getByRole('navigation');
       expect(nav).toHaveAttribute('aria-label', 'Breadcrumb navigation');
+    });
+
+    it('should support aria-labelledby without forcing aria-label', () => {
+      render(() => (
+        <div>
+          <h2 id="crumb-title">Breadcrumb path</h2>
+          <Breadcrumbs items={breadcrumbItems} getKey={(item) => item.id} aria-labelledby="crumb-title">
+            {(item) => <BreadcrumbItem href={item.href}>{item.label}</BreadcrumbItem>}
+          </Breadcrumbs>
+        </div>
+      ));
+
+      const nav = screen.getByRole('navigation');
+      expect(nav).toHaveAttribute('aria-labelledby', 'crumb-title');
+      expect(nav).not.toHaveAttribute('aria-label');
     });
 
     it('should have list role for ol element', () => {

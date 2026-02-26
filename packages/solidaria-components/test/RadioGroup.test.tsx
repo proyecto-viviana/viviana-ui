@@ -13,7 +13,7 @@ import {
   type RadioGroupRenderProps,
 } from '../src/RadioGroup';
 import { SelectionIndicator } from '../src/SelectionIndicator';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { setupUser, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
 
@@ -611,6 +611,68 @@ describe('RadioGroup', () => {
       // Should render nothing (empty container)
       expect(container.querySelector('.solidaria-Radio')).toBeNull();
       expect(screen.queryByRole('radio')).toBeNull();
+    });
+  });
+
+  describe('a11y validation', () => {
+    it('axe: default', async () => {
+      const { container } = render(() => (
+        <RadioGroup aria-label="Options">
+          <Radio value="a">Option A</Radio>
+          <Radio value="b">Option B</Radio>
+        </RadioGroup>
+      ));
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: with selection', async () => {
+      const { container } = render(() => (
+        <RadioGroup aria-label="Options" defaultValue="a">
+          <Radio value="a">Option A</Radio>
+          <Radio value="b">Option B</Radio>
+        </RadioGroup>
+      ));
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: disabled', async () => {
+      const { container } = render(() => (
+        <RadioGroup aria-label="Options" isDisabled>
+          <Radio value="a">Option A</Radio>
+          <Radio value="b">Option B</Radio>
+        </RadioGroup>
+      ));
+      await assertNoA11yViolations(container);
+    });
+
+    it('axe: invalid', async () => {
+      const { container } = render(() => (
+        <RadioGroup aria-label="Options" isInvalid>
+          <Radio value="a">Option A</Radio>
+          <Radio value="b">Option B</Radio>
+        </RadioGroup>
+      ));
+      await assertNoA11yViolations(container);
+    });
+
+    it('ARIA ID: no dangling refs', () => {
+      render(() => (
+        <RadioGroup aria-label="Options" defaultValue="a">
+          <Radio value="a">Option A</Radio>
+          <Radio value="b">Option B</Radio>
+        </RadioGroup>
+      ));
+      assertAriaIdIntegrity(document.body);
+    });
+
+    it('DOM: id forwards on group', () => {
+      render(() => (
+        <RadioGroup aria-label="Options" id="my-radio-group">
+          <Radio value="a">Option A</Radio>
+        </RadioGroup>
+      ));
+      const group = screen.getByRole('radiogroup');
+      expect(group).toHaveAttribute('id', 'my-radio-group');
     });
   });
 });

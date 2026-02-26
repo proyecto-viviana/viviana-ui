@@ -261,6 +261,27 @@ describe('TagGroup', () => {
       const disabledTag = document.querySelector('[data-disabled]');
       expect(disabledTag).toBeInTheDocument();
     });
+
+    it('disables all tag interactions when TagList is disabled', async () => {
+      const onSelectionChange = vi.fn();
+      render(() => (
+        <TestTagGroup
+          tagListProps={{
+            isDisabled: true,
+            selectionMode: 'multiple',
+            onSelectionChange,
+          }}
+        />
+      ));
+
+      const tags = screen.getAllByRole('option');
+      for (const tag of tags) {
+        expect(tag).toHaveAttribute('aria-disabled', 'true');
+      }
+
+      await user.click(tags[0]);
+      expect(onSelectionChange).not.toHaveBeenCalled();
+    });
   });
 
   // ============================================
@@ -374,6 +395,19 @@ describe('TagGroup', () => {
       expect(listbox).toHaveAttribute('aria-label', 'Tag list');
     });
 
+    it('treats label prop as accessible name when no aria-label is provided', () => {
+      render(() => (
+        <TagGroup>
+          <TagList items={sampleItems} label="Topics">
+            {(item) => <Tag id={item.id}>{item.name}</Tag>}
+          </TagList>
+        </TagGroup>
+      ));
+
+      const listbox = screen.getByRole('listbox');
+      expect(listbox).toHaveAttribute('aria-label', 'Topics');
+    });
+
     it('should have listbox role', () => {
       render(() => <TestTagGroup />);
 
@@ -460,6 +494,39 @@ describe('TagGroup', () => {
       // Focus the first tag instead (tags have tabIndex)
       const firstTag = document.querySelector('.solidaria-Tag') as HTMLElement;
       expect(firstTag).toHaveAttribute('tabindex');
+    });
+
+    it('uses a single roving tab stop when no tag is focused', () => {
+      render(() => (
+        <TestTagGroup tagListProps={{ disabledKeys: ['1'] }} />
+      ));
+
+      const newsTag = screen.getByRole('option', { name: 'News' });
+      const travelTag = screen.getByRole('option', { name: 'Travel' });
+      const gamingTag = screen.getByRole('option', { name: 'Gaming' });
+
+      expect(newsTag).toHaveAttribute('tabindex', '-1');
+      expect(travelTag).toHaveAttribute('tabindex', '0');
+      expect(gamingTag).toHaveAttribute('tabindex', '-1');
+    });
+
+    it('supports Arrow/Home/End keyboard navigation between tags', async () => {
+      render(() => (
+        <TestTagGroup tagListProps={{ disabledKeys: ['2'] }} />
+      ));
+
+      const newsTag = screen.getByRole('option', { name: 'News' });
+      const gamingTag = screen.getByRole('option', { name: 'Gaming' });
+
+      newsTag.focus();
+      await user.keyboard('{ArrowRight}');
+      expect(gamingTag).toHaveFocus();
+
+      await user.keyboard('{Home}');
+      expect(newsTag).toHaveFocus();
+
+      await user.keyboard('{End}');
+      expect(screen.getByRole('option', { name: 'Shopping' })).toHaveFocus();
     });
   });
 });

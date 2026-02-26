@@ -30,6 +30,8 @@ import {
   type CalendarStateProps,
   type CalendarDate,
   type DateValue,
+  endOfMonth,
+  isSameMonth,
 } from '@proyecto-viviana/solid-stately';
 import {
   type RenderChildren,
@@ -138,6 +140,7 @@ export interface CalendarGridBodyProps extends SlotProps {
 // ============================================
 
 export const CalendarContext = createContext<CalendarState<DateValue> | null>(null);
+const CalendarGridMonthContext = createContext<CalendarDate | null>(null);
 
 export function useCalendarContext(): CalendarState<DateValue> {
   const context = useContext(CalendarContext);
@@ -401,10 +404,17 @@ export function CalendarButton(props: CalendarButtonProps): JSX.Element {
 export function CalendarGrid(props: CalendarGridProps): JSX.Element {
   const state = useCalendarContext();
   const [gridRef, setGridRef] = createSignal<HTMLTableElement | null>(null);
+  const startDate = createMemo(() => {
+    const offsetMonths = props.offset?.months ?? 0;
+    const baseStart = state.visibleRange().start;
+    return offsetMonths ? baseStart.add({ months: offsetMonths }) : baseStart;
+  });
 
   // Create grid ARIA props
   const gridAria = createCalendarGrid(
     {
+      startDate: startDate(),
+      endDate: endOfMonth(startDate()),
       weekdayStyle: props.weekdayStyle,
     },
     state,
@@ -430,52 +440,53 @@ export function CalendarGrid(props: CalendarGridProps): JSX.Element {
   // This breaks the cycle where accessing visibleRange() inside For loop
   // would cause infinite re-renders.
   const allDates = createMemo(() => {
-    const numWeeks = state.getWeeksInMonth();
+    const monthStart = startDate();
+    const numWeeks = state.getWeeksInMonth(monthStart);
     const weekDates: (CalendarDate | null)[][] = [];
 
     for (let weekIndex = 0; weekIndex < numWeeks; weekIndex++) {
-      weekDates.push(state.getDatesInWeek(weekIndex));
+      weekDates.push(state.getDatesInWeek(weekIndex, monthStart));
     }
 
     return weekDates;
   });
 
   return (
-    <table
-      ref={setGridRef}
-      {...gridAria.gridProps}
-      class={renderProps.class()}
-      style={renderProps.style()}
-    >
-      <thead {...gridAria.headerProps}>
-        <tr>
-          <For each={gridAria.weekDays}>
-            {(day) => (
-              <th scope="col" class="solidaria-CalendarHeaderCell">
-                {day}
-              </th>
-            )}
-          </For>
-        </tr>
-      </thead>
-      <tbody>
-        <Index each={allDates()}>
-          {(weekDates) => (
-            <tr>
-              <Index each={weekDates()}>
-                {(date) => (
-                  <Show when={date()}>
-                    <td role="gridcell">
+    <CalendarGridMonthContext.Provider value={startDate()}>
+      <table
+        ref={setGridRef}
+        {...gridAria.gridProps}
+        class={renderProps.class()}
+        style={renderProps.style()}
+      >
+        <thead {...gridAria.headerProps}>
+          <tr>
+            <For each={gridAria.weekDays}>
+              {(day) => (
+                <th scope="col" class="solidaria-CalendarHeaderCell">
+                  {day}
+                </th>
+              )}
+            </For>
+          </tr>
+        </thead>
+        <tbody>
+          <Index each={allDates()}>
+            {(weekDates) => (
+              <tr>
+                <Index each={weekDates()}>
+                  {(date) => (
+                    <Show when={date()} fallback={<td />}>
                       {props.children?.(date()!)}
-                    </td>
-                  </Show>
-                )}
-              </Index>
-            </tr>
-          )}
-        </Index>
-      </tbody>
-    </table>
+                    </Show>
+                  )}
+                </Index>
+              </tr>
+            )}
+          </Index>
+        </tbody>
+      </table>
+    </CalendarGridMonthContext.Provider>
   );
 }
 
@@ -516,11 +527,16 @@ export function CalendarHeaderCell(props: CalendarHeaderCellProps): JSX.Element 
  */
 export function CalendarCell(props: CalendarCellProps): JSX.Element {
   const state = useCalendarContext();
+  const currentMonthStart = useContext(CalendarGridMonthContext);
   const [cellRef, setCellRef] = createSignal<HTMLDivElement | null>(null);
+  const isOutsideMonth = createMemo(() => currentMonthStart != null && !isSameMonth(currentMonthStart, props.date));
 
   // Create cell ARIA props
   const cellAria = createCalendarCell(
-    { date: props.date },
+    () => ({
+      date: props.date,
+      isOutsideMonth: isOutsideMonth(),
+    }),
     state,
     cellRef
   );
@@ -557,21 +573,23 @@ export function CalendarCell(props: CalendarCellProps): JSX.Element {
   };
 
   return (
-    <div
-      ref={setCellRef}
-      {...cellAria.buttonProps}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-selected={dataAttr(cellAria.isSelected)}
-      data-focused={dataAttr(cellAria.isFocused)}
-      data-disabled={dataAttr(cellAria.isDisabled)}
-      data-unavailable={dataAttr(cellAria.isUnavailable)}
-      data-outside-month={dataAttr(cellAria.isOutsideMonth)}
-      data-today={dataAttr(cellAria.isToday)}
-      data-pressed={dataAttr(cellAria.isPressed)}
-    >
-      {getChildren()}
-    </div>
+    <td {...cellAria.cellProps}>
+      <div
+        ref={setCellRef}
+        {...cellAria.buttonProps}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-selected={dataAttr(cellAria.isSelected)}
+        data-focused={dataAttr(cellAria.isFocused)}
+        data-disabled={dataAttr(cellAria.isDisabled)}
+        data-unavailable={dataAttr(cellAria.isUnavailable)}
+        data-outside-month={dataAttr(cellAria.isOutsideMonth)}
+        data-today={dataAttr(cellAria.isToday)}
+        data-pressed={dataAttr(cellAria.isPressed)}
+      >
+        {getChildren()}
+      </div>
+    </td>
   );
 }
 

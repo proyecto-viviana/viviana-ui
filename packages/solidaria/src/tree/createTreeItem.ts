@@ -5,6 +5,7 @@
 
 import { createMemo, createSignal, type Accessor } from 'solid-js';
 import type { JSX } from 'solid-js';
+import { createId } from '@proyecto-viviana/solid-stately';
 import type { TreeState, TreeCollection } from '@proyecto-viviana/solid-stately';
 import type { AriaTreeItemProps, TreeItemAria } from './types';
 import { getTreeData } from './createTree';
@@ -18,6 +19,8 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
   _ref: Accessor<HTMLDivElement | null>
 ): TreeItemAria {
   const [isPressed, setIsPressed] = createSignal(false);
+  const rowId = createId();
+  const expandButtonId = createId();
 
   const isSelected = createMemo(() => {
     const s = state();
@@ -122,7 +125,7 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
           p.onAction();
         }
       }
-    } else if (e.key === ' ') {
+    } else if (e.key === ' ' || e.key === 'Space' || e.key === 'Spacebar') {
       // Space toggles selection
       if (s.selectionMode !== 'none') {
         e.preventDefault();
@@ -145,17 +148,51 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
     setIsPressed(false);
   };
 
+  // Compute sibling position (aria-posinset/aria-setsize)
+  const siblingInfo = createMemo(() => {
+    const s = state();
+    const p = props();
+    const node = p.node;
+    const parentKey = node.parentKey;
+
+    if (parentKey != null) {
+      const parentNode = s.collection.getItem(parentKey);
+      if (parentNode) {
+        return {
+          posinset: node.index + 1, // 1-based
+          setsize: parentNode.childNodes.length,
+        };
+      }
+    }
+
+    // Root-level: count root nodes
+    const rootNodes = s.collection.rows.filter((n) => n.level === 0);
+    const rootIndex = rootNodes.findIndex((n) => n.key === node.key);
+    return {
+      posinset: rootIndex >= 0 ? rootIndex + 1 : node.index + 1,
+      setsize: rootNodes.length,
+    };
+  });
+
   const rowProps = createMemo(() => {
     const s = state();
     const p = props();
     const node = p.node;
+    const { posinset, setsize } = siblingInfo();
+
+    // Use textValue for aria-label (if available), or explicit textValue prop
+    const textValue = p.textValue ?? node.textValue;
 
     const baseProps: Record<string, unknown> = {
       role: 'row',
+      id: rowId,
+      'aria-label': textValue || undefined,
       'aria-selected': s.selectionMode !== 'none' ? isSelected() : undefined,
       'aria-disabled': isDisabled() || undefined,
       'aria-expanded': isExpandable() ? isExpanded() : undefined,
       'aria-level': node.level + 1, // 1-based for ARIA
+      'aria-posinset': posinset,
+      'aria-setsize': setsize,
       tabIndex: isFocused() ? 0 : -1,
       onClick,
       onKeyDown,
@@ -189,11 +226,23 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
     s.toggleKey(p.node.key);
   };
 
+  const stopPointerPropagation = (e: Event) => {
+    // Prevent row pointer handlers from flipping pressed state and re-rendering
+    // before the button click handler can run.
+    e.stopPropagation();
+  };
+
   const expandButtonProps = createMemo(() => {
     const baseProps: Record<string, unknown> = {
       type: 'button',
+      id: expandButtonId,
       'aria-label': isExpanded() ? 'Collapse' : 'Expand',
+      'aria-labelledby': isExpandable() ? `${expandButtonId} ${rowId}` : undefined,
       onClick: onExpandClick,
+      onPointerDown: stopPointerPropagation,
+      onPointerUp: stopPointerPropagation,
+      onMouseDown: stopPointerPropagation,
+      onMouseUp: stopPointerPropagation,
       tabIndex: -1, // Not in tab order, use arrow keys
       'aria-hidden': !isExpandable() ? true : undefined,
     };

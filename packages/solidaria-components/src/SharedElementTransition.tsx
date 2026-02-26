@@ -32,6 +32,10 @@ interface SharedElementScope {
 
 const SharedElementContext = createContext<SharedElementScope | null>(null);
 
+export function useHasSharedElementTransitionScope(): boolean {
+  return useContext(SharedElementContext) != null;
+}
+
 export interface SharedElementTransitionProps {
   children?: JSX.Element;
 }

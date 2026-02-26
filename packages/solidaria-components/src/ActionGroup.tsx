@@ -87,6 +87,8 @@ export interface ActionGroupProps<T extends ActionGroupItem = ActionGroupItem>
   defaultSelectedKeys?: Iterable<Key>;
   /** Handler called when selection changes. */
   onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  /** Handler called when an item action is triggered. */
+  onAction?: (key: Key) => void;
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
   /** Render function for each item. */
@@ -125,6 +127,7 @@ export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
       'selectedKeys',
       'defaultSelectedKeys',
       'onSelectionChange',
+      'onAction',
       'disabledKeys',
       'children',
       'class',
@@ -173,6 +176,9 @@ export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
     },
     get 'aria-labelledby'() {
       return ariaGroupProps['aria-labelledby'];
+    },
+    get onAction() {
+      return local.onAction;
     },
   };
 

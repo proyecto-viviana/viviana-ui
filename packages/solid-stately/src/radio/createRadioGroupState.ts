@@ -10,6 +10,12 @@
 import { createSignal, Accessor, untrack } from 'solid-js';
 import { type MaybeAccessor, access } from '../utils';
 import { createId } from '../ssr';
+import {
+  createFormValidationState,
+  type FormValidationState,
+  type ValidationFunction,
+  type ValidationResult,
+} from '../form';
 
 // ============================================
 // TYPES
@@ -44,9 +50,15 @@ export interface RadioGroupProps {
   onBlur?: (e: FocusEvent) => void;
   /** Handler that is called when the radio group's focus status changes. */
   onFocusChange?: (isFocused: boolean) => void;
+  /** Backward-compatible controlled validation state. */
+  validationState?: 'valid' | 'invalid';
+  /** Custom validation function. */
+  validate?: ValidationFunction<string | null>;
+  /** Validation behavior for the radio group. */
+  validationBehavior?: 'aria' | 'native';
 }
 
-export interface RadioGroupState {
+export interface RadioGroupState extends Pick<FormValidationState, 'realtimeValidation' | 'displayValidation' | 'updateValidation' | 'resetValidation' | 'commitValidation'> {
   /** The name for the group, used for native form submission. */
   readonly name: string;
 
@@ -76,6 +88,9 @@ export interface RadioGroupState {
 
   /** Sets the last focused value. */
   setLastFocusedValue(value: string | null): void;
+
+  /** Current display validation result for the group. */
+  readonly displayValidation: Accessor<ValidationResult>;
 }
 
 // ============================================
@@ -139,10 +154,26 @@ export function createRadioGroupState(
     return internalValue();
   };
 
-  // Check if invalid
-  const isInvalid = () => {
-    return getProps().isInvalid ?? false;
-  };
+  const validation = createFormValidationState<string | null>({
+    get value() {
+      return selectedValue();
+    },
+    get isInvalid() {
+      return getProps().isInvalid;
+    },
+    get validationState() {
+      return getProps().validationState;
+    },
+    get validate() {
+      return getProps().validate;
+    },
+    get validationBehavior() {
+      return getProps().validationBehavior ?? 'aria';
+    },
+    get name() {
+      return getProps().name;
+    },
+  });
 
   // Set value
   function setSelectedValue(value: string | null): void {
@@ -165,6 +196,8 @@ export function createRadioGroupState(
     if (value != null) {
       p.onChange?.(value);
     }
+
+    validation.commitValidation();
   }
 
   // Set last focused value
@@ -179,6 +212,11 @@ export function createRadioGroupState(
     setSelectedValue,
     lastFocusedValue,
     setLastFocusedValue,
+    realtimeValidation: validation.realtimeValidation,
+    displayValidation: validation.displayValidation,
+    updateValidation: validation.updateValidation,
+    resetValidation: validation.resetValidation,
+    commitValidation: validation.commitValidation,
     get isDisabled() {
       return getProps().isDisabled ?? false;
     },
@@ -189,7 +227,7 @@ export function createRadioGroupState(
       return getProps().isRequired ?? false;
     },
     get isInvalid() {
-      return isInvalid();
+      return validation.displayValidation().isInvalid;
     },
   };
 

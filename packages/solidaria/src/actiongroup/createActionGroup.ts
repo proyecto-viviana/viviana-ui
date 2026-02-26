@@ -16,6 +16,8 @@ export interface AriaActionGroupProps<T = unknown> {
   'aria-label'?: string;
   /** Labelled-by id. */
   'aria-labelledby'?: string;
+  /** Handler called when an item action is triggered. */
+  onAction?: (key: Key) => void;
 }
 
 export interface ActionGroupAria {
@@ -29,6 +31,12 @@ export interface AriaActionGroupItemProps {
 export interface ActionGroupItemAria {
   buttonProps: JSX.HTMLAttributes<HTMLElement>;
 }
+
+interface ActionGroupData {
+  onAction?: (key: Key) => void;
+}
+
+const actionGroupData = new WeakMap<object, ActionGroupData>();
 
 const GROUP_ROLE_BY_MODE = {
   none: 'toolbar',
@@ -86,16 +94,54 @@ export function createActionGroup<T>(
     return out;
   };
 
-  const focusRelative = (root: HTMLElement, direction: 'next' | 'previous'): void => {
+  const focusRelative = (root: HTMLElement, direction: 'next' | 'previous' | 'first' | 'last'): HTMLElement | null => {
     const focusables = getFocusableItems(root);
-    if (focusables.length === 0) return;
-    const active = document.activeElement as HTMLElement | null;
+    if (focusables.length === 0) return null;
+
+    if (direction === 'first') {
+      const first = focusables[0];
+      focusSafely(first);
+      return first;
+    }
+
+    if (direction === 'last') {
+      const last = focusables[focusables.length - 1];
+      focusSafely(last);
+      return last;
+    }
+
+    const active = root.ownerDocument.activeElement as HTMLElement | null;
     const currentIndex = active ? focusables.indexOf(active) : -1;
     const delta = direction === 'next' ? 1 : -1;
     const nextIndex = currentIndex === -1
       ? (direction === 'next' ? 0 : focusables.length - 1)
       : (currentIndex + delta + focusables.length) % focusables.length;
-    focusSafely(focusables[nextIndex]);
+    const next = focusables[nextIndex];
+    focusSafely(next);
+    return next;
+  };
+
+  const resolveKeyFromElement = (element: HTMLElement | null): Key | null => {
+    if (!element) return null;
+    const keyedElement = element.closest('[data-key]');
+    if (!(keyedElement instanceof HTMLElement)) return null;
+    const rawKey = keyedElement.getAttribute('data-key');
+    if (!rawKey) return null;
+    for (const item of state.collection()) {
+      if (String(item.key) === rawKey) {
+        return item.key;
+      }
+    }
+    return null;
+  };
+
+  const handleFocusMove = (movedTo: HTMLElement | null): void => {
+    const key = resolveKeyFromElement(movedTo);
+    if (key == null) return;
+    state.setFocusedKey(key);
+    if (state.selectionMode() === 'single') {
+      state.replaceSelection(key);
+    }
   };
 
   const onKeyDown: JSX.EventHandler<HTMLElement, KeyboardEvent> = (e) => {
@@ -113,13 +159,13 @@ export function createActionGroup<T>(
         if (e.key === 'ArrowRight' && isHorizontal && isRTL) {
           e.preventDefault();
           e.stopPropagation();
-          focusRelative(root, 'previous');
+          handleFocusMove(focusRelative(root, 'previous'));
           return;
         }
         if ((e.key === 'ArrowRight' && isHorizontal) || (e.key === 'ArrowDown' && !isHorizontal)) {
           e.preventDefault();
           e.stopPropagation();
-          focusRelative(root, 'next');
+          handleFocusMove(focusRelative(root, 'next'));
         }
         return;
       }
@@ -128,14 +174,27 @@ export function createActionGroup<T>(
         if (e.key === 'ArrowLeft' && isHorizontal && isRTL) {
           e.preventDefault();
           e.stopPropagation();
-          focusRelative(root, 'next');
+          handleFocusMove(focusRelative(root, 'next'));
           return;
         }
         if ((e.key === 'ArrowLeft' && isHorizontal) || (e.key === 'ArrowUp' && !isHorizontal)) {
           e.preventDefault();
           e.stopPropagation();
-          focusRelative(root, 'previous');
+          handleFocusMove(focusRelative(root, 'previous'));
         }
+        return;
+      }
+      case 'Home': {
+        e.preventDefault();
+        e.stopPropagation();
+        handleFocusMove(focusRelative(root, 'first'));
+        return;
+      }
+      case 'End': {
+        e.preventDefault();
+        e.stopPropagation();
+        handleFocusMove(focusRelative(root, 'last'));
+        return;
       }
     }
   };
@@ -164,6 +223,16 @@ export function createActionGroup<T>(
     }
   );
 
+  actionGroupData.set(state, {
+    get onAction() {
+      return props.onAction;
+    },
+  });
+
+  onCleanup(() => {
+    actionGroupData.delete(state);
+  });
+
   return { actionGroupProps };
 }
 
@@ -174,10 +243,43 @@ export function createActionGroupItem<T>(
   const button = createButton({
     elementType: 'button',
     isDisabled: state.isDisabled(props.key),
-    onPress: () => state.select(props.key),
+    onPress: () => {
+      state.setFocusedKey(props.key);
+      actionGroupData.get(state)?.onAction?.(props.key);
+      if (state.selectionMode() !== 'none') {
+        state.select(props.key);
+      }
+    },
   });
 
   const isFocused = () => props.key === state.focusedKey();
+  const getFirstEnabledKey = (): Key | null => {
+    const collection = state.collection();
+    let key = collection.getFirstKey();
+    while (key != null && state.isDisabled(key)) {
+      key = collection.getKeyAfter(key);
+    }
+    return key;
+  };
+
+  const getDefaultTabStopKey = (): Key | null => {
+    const selectionMode = state.selectionMode();
+    if (selectionMode !== 'none') {
+      const selectedKeys = state.selectedKeys();
+      if (selectedKeys === 'all') {
+        return getFirstEnabledKey();
+      }
+
+      for (const item of state.collection()) {
+        if (!state.isDisabled(item.key) && selectedKeys.has(item.key)) {
+          return item.key;
+        }
+      }
+    }
+
+    return getFirstEnabledKey();
+  };
+
   onCleanup(() => {
     if (isFocused()) {
       state.setFocusedKey(null);
@@ -196,8 +298,22 @@ export function createActionGroupItem<T>(
         return state.isSelected(props.key);
       },
       get tabIndex() {
-        return isFocused() || state.focusedKey() == null ? 0 : -1;
+        if (state.isDisabled(props.key)) {
+          return -1;
+        }
+
+        if (isFocused()) {
+          return 0;
+        }
+
+        if (state.focusedKey() != null) {
+          return -1;
+        }
+
+        const defaultTabStopKey = getDefaultTabStopKey();
+        return defaultTabStopKey === props.key ? 0 : -1;
       },
+      'data-key': String(props.key),
       onFocus: () => {
         state.setFocusedKey(props.key);
       },

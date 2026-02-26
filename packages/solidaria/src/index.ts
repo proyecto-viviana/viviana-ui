@@ -479,6 +479,10 @@ export {
   createTimeField,
   type AriaTimeFieldProps,
   type TimeFieldAria,
+  // Time Segment
+  createTimeSegment,
+  type AriaTimeSegmentProps,
+  type TimeSegmentAria,
   // Date Picker
   createDatePicker,
   createDateRangePicker,

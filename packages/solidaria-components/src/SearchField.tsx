@@ -132,7 +132,6 @@ interface SearchFieldContextValue {
   isInvalid: boolean;
   isRequired: boolean;
   isReadOnly: boolean;
-  inputRef: HTMLInputElement | undefined;
   setInputRef: (el: HTMLInputElement) => void;
 }
 
@@ -150,7 +149,44 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
     props,
     ['children', 'class', 'style', 'slot'],
     ['value', 'defaultValue', 'onChange', 'onSubmit', 'onClear'],
-    ['label', 'aria-label', 'aria-labelledby', 'aria-describedby', 'isDisabled', 'isReadOnly', 'isRequired', 'isInvalid', 'description', 'errorMessage', 'id', 'autoFocus', 'name', 'placeholder', 'autoComplete', 'maxLength', 'minLength', 'pattern']
+    [
+      'label',
+      'aria-label',
+      'aria-labelledby',
+      'aria-describedby',
+      'isDisabled',
+      'isReadOnly',
+      'isRequired',
+      'isInvalid',
+      'description',
+      'errorMessage',
+      'id',
+      'autoFocus',
+      'name',
+      'placeholder',
+      'autoComplete',
+      'inputMode',
+      'autoCorrect',
+      'autoCapitalize',
+      'spellCheck',
+      'maxLength',
+      'minLength',
+      'pattern',
+      'onFocus',
+      'onBlur',
+      'onFocusChange',
+      'onKeyDown',
+      'onKeyUp',
+      'onCopy',
+      'onCut',
+      'onPaste',
+      'onCompositionStart',
+      'onCompositionEnd',
+      'onCompositionUpdate',
+      'onSelect',
+      'onBeforeInput',
+      'onInput',
+    ]
   );
 
   // Create search field state
@@ -173,13 +209,7 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
   };
 
   // Create search field aria props
-  const {
-    labelProps,
-    inputProps,
-    clearButtonProps,
-    descriptionProps,
-    errorMessageProps,
-  } = createSearchField(
+  const searchFieldAria = createSearchField(
     {
       get isDisabled() {
         return ariaProps.isDisabled;
@@ -223,6 +253,18 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
       get autoComplete() {
         return ariaProps.autoComplete;
       },
+      get inputMode() {
+        return ariaProps.inputMode;
+      },
+      get autoCorrect() {
+        return ariaProps.autoCorrect;
+      },
+      get autoCapitalize() {
+        return ariaProps.autoCapitalize;
+      },
+      get spellCheck() {
+        return ariaProps.spellCheck;
+      },
       get maxLength() {
         return ariaProps.maxLength;
       },
@@ -231,6 +273,48 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
       },
       get pattern() {
         return ariaProps.pattern;
+      },
+      get onFocus() {
+        return ariaProps.onFocus;
+      },
+      get onBlur() {
+        return ariaProps.onBlur;
+      },
+      get onFocusChange() {
+        return ariaProps.onFocusChange;
+      },
+      get onKeyDown() {
+        return ariaProps.onKeyDown;
+      },
+      get onKeyUp() {
+        return ariaProps.onKeyUp;
+      },
+      get onCopy() {
+        return ariaProps.onCopy;
+      },
+      get onCut() {
+        return ariaProps.onCut;
+      },
+      get onPaste() {
+        return ariaProps.onPaste;
+      },
+      get onCompositionStart() {
+        return ariaProps.onCompositionStart;
+      },
+      get onCompositionEnd() {
+        return ariaProps.onCompositionEnd;
+      },
+      get onCompositionUpdate() {
+        return ariaProps.onCompositionUpdate;
+      },
+      get onSelect() {
+        return ariaProps.onSelect;
+      },
+      get onBeforeInput() {
+        return ariaProps.onBeforeInput;
+      },
+      get onInput() {
+        return ariaProps.onInput;
       },
       get onSubmit() {
         return stateProps.onSubmit;
@@ -247,7 +331,7 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
   const renderValues = createMemo<SearchFieldRenderProps>(() => ({
     isEmpty: state.value() === '',
     isDisabled: ariaProps.isDisabled ?? false,
-    isInvalid: ariaProps.isInvalid ?? false,
+    isInvalid: searchFieldAria.isInvalid ?? false,
     isRequired: ariaProps.isRequired ?? false,
     isReadOnly: ariaProps.isReadOnly ?? false,
     value: state.value(),
@@ -267,30 +351,47 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
   // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
 
+  const contextValue: SearchFieldContextValue = {
+    state,
+    get inputProps() {
+      return searchFieldAria.inputProps;
+    },
+    get clearButtonProps() {
+      return searchFieldAria.clearButtonProps;
+    },
+    get labelProps() {
+      return searchFieldAria.labelProps as JSX.HTMLAttributes<HTMLElement>;
+    },
+    get descriptionProps() {
+      return searchFieldAria.descriptionProps;
+    },
+    get errorMessageProps() {
+      return searchFieldAria.errorMessageProps;
+    },
+    get isDisabled() {
+      return ariaProps.isDisabled ?? false;
+    },
+    get isInvalid() {
+      return searchFieldAria.isInvalid ?? false;
+    },
+    get isRequired() {
+      return ariaProps.isRequired ?? false;
+    },
+    get isReadOnly() {
+      return ariaProps.isReadOnly ?? false;
+    },
+    setInputRef,
+  };
+
   return (
-    <SearchFieldContext.Provider
-      value={{
-        state,
-        inputProps,
-        clearButtonProps,
-        labelProps: labelProps as JSX.HTMLAttributes<HTMLElement>,
-        descriptionProps,
-        errorMessageProps,
-        isDisabled: ariaProps.isDisabled ?? false,
-        isInvalid: ariaProps.isInvalid ?? false,
-        isRequired: ariaProps.isRequired ?? false,
-        isReadOnly: ariaProps.isReadOnly ?? false,
-        inputRef,
-        setInputRef,
-      }}
-    >
+    <SearchFieldContext.Provider value={contextValue}>
       <div
         {...domProps()}
         class={renderProps.class()}
         style={renderProps.style()}
         data-empty={state.value() === '' || undefined}
         data-disabled={ariaProps.isDisabled || undefined}
-        data-invalid={ariaProps.isInvalid || undefined}
+        data-invalid={searchFieldAria.isInvalid || undefined}
         data-required={ariaProps.isRequired || undefined}
         data-readonly={ariaProps.isReadOnly || undefined}
       >
@@ -309,14 +410,19 @@ export function SearchFieldLabel(props: { children?: JSX.Element; class?: string
     throw new Error('SearchFieldLabel must be used within a SearchField');
   }
 
+  const cleanLabelProps = () => {
+    const { ref: _ref, ...rest } = context.labelProps as Record<string, unknown>;
+    return rest;
+  };
+
   return (
-    <span
-      {...context.labelProps}
+    <label
+      {...cleanLabelProps()}
       class={props.class ?? 'solidaria-SearchField-label'}
       style={props.style}
     >
       {props.children}
-    </span>
+    </label>
   );
 }
 

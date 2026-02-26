@@ -154,6 +154,61 @@ describe('createTree', () => {
       dispose();
     });
   });
+
+  it('toggles selection with Space from focused tree container', () => {
+    createRoot((dispose) => {
+      const state = createState({ selectionMode: 'multiple' });
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      const { treeProps } = createTree(
+        () => ({}),
+        () => state,
+        ref
+      );
+
+      (treeProps.onFocus as ((e: FocusEvent) => void) | undefined)?.({} as FocusEvent);
+
+      expect(state.isSelected('1')).toBe(false);
+
+      const preventDefault = vi.fn();
+      (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
+        key: ' ',
+        preventDefault,
+      } as unknown as KeyboardEvent);
+
+      expect(preventDefault).toHaveBeenCalled();
+      expect(state.isSelected('1')).toBe(true);
+
+      dispose();
+    });
+  });
+
+  it('calls onAction with Enter from focused tree container', () => {
+    createRoot((dispose) => {
+      const onAction = vi.fn();
+      const state = createState();
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      const { treeProps } = createTree(
+        () => ({ onAction }),
+        () => state,
+        ref
+      );
+
+      (treeProps.onFocus as ((e: FocusEvent) => void) | undefined)?.({} as FocusEvent);
+
+      const preventDefault = vi.fn();
+      (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
+        key: 'Enter',
+        preventDefault,
+      } as unknown as KeyboardEvent);
+
+      expect(preventDefault).toHaveBeenCalled();
+      expect(onAction).toHaveBeenCalledWith('1');
+
+      dispose();
+    });
+  });
 });
 
 describe('createTreeItem', () => {
@@ -427,6 +482,239 @@ describe('createTreeSelectionCheckbox', () => {
       );
 
       expect(checkboxProps.disabled).toBe(true);
+
+      dispose();
+    });
+  });
+});
+
+describe('createTree RTL direction parity', () => {
+  it('ArrowLeft expands and ArrowRight collapses in RTL', () => {
+    createRoot((dispose) => {
+      const state = createState();
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      const { treeProps } = createTree(
+        () => ({ direction: 'rtl' }),
+        () => state,
+        ref
+      );
+
+      // Focus the tree → auto-focuses first item (key '1' which is expandable)
+      (treeProps.onFocus as ((e: FocusEvent) => void) | undefined)?.({} as FocusEvent);
+      expect(state.focusedKey).toBe('1');
+      expect(state.isExpanded('1')).toBe(false);
+
+      // ArrowLeft in RTL = expand
+      const preventDefault = vi.fn();
+      (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
+        key: 'ArrowLeft',
+        preventDefault,
+      } as unknown as KeyboardEvent);
+
+      expect(state.isExpanded('1')).toBe(true);
+      expect(preventDefault).toHaveBeenCalled();
+
+      // ArrowRight in RTL = collapse
+      const preventDefault2 = vi.fn();
+      (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
+        key: 'ArrowRight',
+        preventDefault: preventDefault2,
+      } as unknown as KeyboardEvent);
+
+      expect(state.isExpanded('1')).toBe(false);
+
+      dispose();
+    });
+  });
+
+  it('ArrowRight expands and ArrowLeft collapses in LTR (default)', () => {
+    createRoot((dispose) => {
+      const state = createState();
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      const { treeProps } = createTree(
+        () => ({}), // default direction = ltr
+        () => state,
+        ref
+      );
+
+      (treeProps.onFocus as ((e: FocusEvent) => void) | undefined)?.({} as FocusEvent);
+
+      // ArrowRight in LTR = expand
+      const preventDefault = vi.fn();
+      (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
+        key: 'ArrowRight',
+        preventDefault,
+      } as unknown as KeyboardEvent);
+
+      expect(state.isExpanded('1')).toBe(true);
+
+      // ArrowLeft in LTR = collapse
+      (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
+        key: 'ArrowLeft',
+        preventDefault: vi.fn(),
+      } as unknown as KeyboardEvent);
+
+      expect(state.isExpanded('1')).toBe(false);
+
+      dispose();
+    });
+  });
+});
+
+describe('createTreeItem ARIA parity', () => {
+  it('should have aria-posinset and aria-setsize on root items', () => {
+    createRoot((dispose) => {
+      const state = createState();
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      const node1 = state.collection.getItem('1')!;
+      const item1 = createTreeItem(
+        () => ({ node: node1 }),
+        () => state,
+        ref
+      );
+
+      // Item 1 is first of 2 root items
+      expect(item1.rowProps['aria-posinset']).toBe(1);
+      expect(item1.rowProps['aria-setsize']).toBe(2);
+
+      const node2 = state.collection.getItem('2')!;
+      const item2 = createTreeItem(
+        () => ({ node: node2 }),
+        () => state,
+        ref
+      );
+
+      // Item 2 is second of 2 root items
+      expect(item2.rowProps['aria-posinset']).toBe(2);
+      expect(item2.rowProps['aria-setsize']).toBe(2);
+
+      dispose();
+    });
+  });
+
+  it('should have aria-posinset and aria-setsize on child items', () => {
+    createRoot((dispose) => {
+      const state = createState({ defaultExpandedKeys: ['1'] });
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      // Item 1 has 2 children: 1.1 and 1.2
+      const node11 = state.collection.getItem('1.1')!;
+      const item11 = createTreeItem(
+        () => ({ node: node11 }),
+        () => state,
+        ref
+      );
+
+      expect(item11.rowProps['aria-posinset']).toBe(1);
+      expect(item11.rowProps['aria-setsize']).toBe(2);
+
+      const node12 = state.collection.getItem('1.2')!;
+      const item12 = createTreeItem(
+        () => ({ node: node12 }),
+        () => state,
+        ref
+      );
+
+      expect(item12.rowProps['aria-posinset']).toBe(2);
+      expect(item12.rowProps['aria-setsize']).toBe(2);
+
+      dispose();
+    });
+  });
+
+  it('should have aria-label from node textValue', () => {
+    createRoot((dispose) => {
+      const state = createState();
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      const node = state.collection.getItem('1')!;
+      const item = createTreeItem(
+        () => ({ node }),
+        () => state,
+        ref
+      );
+
+      expect(item.rowProps['aria-label']).toBe('Item 1');
+
+      dispose();
+    });
+  });
+
+  it('should prefer explicit textValue prop for aria-label', () => {
+    createRoot((dispose) => {
+      const state = createState();
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      const node = state.collection.getItem('1')!;
+      const item = createTreeItem(
+        () => ({ node, textValue: 'Custom Label' }),
+        () => state,
+        ref
+      );
+
+      expect(item.rowProps['aria-label']).toBe('Custom Label');
+
+      dispose();
+    });
+  });
+
+  it('should have row id', () => {
+    createRoot((dispose) => {
+      const state = createState();
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      const node = state.collection.getItem('1')!;
+      const item = createTreeItem(
+        () => ({ node }),
+        () => state,
+        ref
+      );
+
+      expect(item.rowProps.id).toBeTruthy();
+
+      dispose();
+    });
+  });
+
+  it('expand button should have aria-labelledby linking to row', () => {
+    createRoot((dispose) => {
+      const state = createState();
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      const node = state.collection.getItem('1')!;
+      const item = createTreeItem(
+        () => ({ node }),
+        () => state,
+        ref
+      );
+
+      const rowId = item.rowProps.id;
+      const buttonId = item.expandButtonProps.id;
+
+      expect(rowId).toBeTruthy();
+      expect(buttonId).toBeTruthy();
+      expect(item.expandButtonProps['aria-labelledby']).toBe(`${buttonId} ${rowId}`);
+
+      dispose();
+    });
+  });
+
+  it('expand button should not have aria-labelledby for leaf items', () => {
+    createRoot((dispose) => {
+      const state = createState();
+      const [ref] = createSignal<HTMLDivElement | null>(null);
+
+      const node = state.collection.getItem('2')!; // leaf item
+      const item = createTreeItem(
+        () => ({ node }),
+        () => state,
+        ref
+      );
+
+      expect(item.expandButtonProps['aria-labelledby']).toBeUndefined();
 
       dispose();
     });

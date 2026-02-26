@@ -67,6 +67,33 @@ export function Focusable(props: FocusableProps): JSX.Element {
       addListener('keydown', props.onKeyDown);
       addListener('keyup', props.onKeyUp);
 
+      // Apply non-event focusable props (e.g. tabIndex/aria/data attrs).
+      // Keep explicit child tabIndex to mirror mergeProps(child.props precedence).
+      for (const [key, value] of Object.entries(props)) {
+        if (key === 'ref' || (key.startsWith('on') && typeof value === 'function')) continue;
+
+        if (key === 'tabIndex') {
+          if (child.hasAttribute('tabindex')) continue;
+          if (value == null || value === false) {
+            child.removeAttribute('tabindex');
+          } else {
+            child.tabIndex = Number(value);
+          }
+          continue;
+        }
+
+        if (key.startsWith('aria-') || key.startsWith('data-') || key === 'id' || key === 'role') {
+          if (child.hasAttribute(key)) continue;
+          if (value == null || value === false) {
+            child.removeAttribute(key);
+          } else if (value === true) {
+            child.setAttribute(key, '');
+          } else {
+            child.setAttribute(key, String(value));
+          }
+        }
+      }
+
       onCleanup(() => {
         for (const [eventName, listener] of listeners) {
           child.removeEventListener(eventName, listener);

@@ -74,7 +74,7 @@ export interface TagListRenderProps {
   isFocused: boolean;
 }
 
-export interface TagListProps<T> extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children'> {
+export interface TagListProps<T> extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children' | 'onSelectionChange'> {
   /** The items to display in the tag list. */
   items: T[];
   /** Function to render each item. */
@@ -152,6 +152,7 @@ export interface TagProps extends SlotProps {
 interface TagGroupContextValue {
   state: ListState;
   onRemove?: (keys: Set<Key>) => void;
+  isDisabled?: boolean;
 }
 
 interface TagContextValue {
@@ -261,8 +262,7 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
   // Create tag group accessibility props
   const tagGroupAria = createTagGroup(
     {
-      get label() { return local.label; },
-      get 'aria-label'() { return local['aria-label']; },
+      get 'aria-label'() { return local['aria-label'] ?? (!local['aria-labelledby'] ? local.label : undefined); },
       get 'aria-labelledby'() { return local['aria-labelledby']; },
       get 'aria-describedby'() { return local['aria-describedby']; },
       get isDisabled() { return local.isDisabled; },
@@ -295,6 +295,7 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
   const contextValue: TagGroupContextValue = {
     state,
     get onRemove() { return local.onRemove; },
+    get isDisabled() { return local.isDisabled; },
   };
 
   return (
@@ -306,8 +307,19 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
           {...tagGroupAria.gridProps}
           class={renderProps.class()}
           style={renderProps.style()}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onFocus={() => {
+            setIsFocused(true);
+            state.setFocused(true);
+          }}
+          onBlur={(e) => {
+            const nextTarget = e.relatedTarget as Node | null;
+            if (nextTarget && e.currentTarget.contains(nextTarget)) {
+              return;
+            }
+
+            setIsFocused(false);
+            state.setFocused(false);
+          }}
           data-empty={dataAttr(local.items.length === 0)}
           data-focused={dataAttr(isFocused())}
         >
@@ -352,7 +364,7 @@ export function Tag(props: TagProps): JSX.Element {
   const tagAria = createTag(
     {
       get key() { return local.id; },
-      get isDisabled() { return local.isDisabled; },
+      get isDisabled() { return local.isDisabled || groupContext?.isDisabled; },
       get textValue() { return local.textValue; },
     },
     state!,

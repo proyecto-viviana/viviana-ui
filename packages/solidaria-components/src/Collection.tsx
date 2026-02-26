@@ -118,6 +118,11 @@ export interface GroupProps extends SlotProps {
   style?: StyleOrFunction<CollectionPrimitiveRenderProps>;
 }
 
+interface SectionContextValue {
+  name: string;
+  render: (props: SectionProps, className?: string) => JSX.Element;
+}
+
 export interface CollectionBranchProps<T> {
   collection: Iterable<T>;
   parent?: unknown;
@@ -144,6 +149,7 @@ export interface CollectionRenderer<T = unknown> {
 
 export const CollectionRendererContext = createContext<CollectionRendererContextValue<unknown> | null>(null);
 export const SelectableCollectionContext = CollectionRendererContext;
+export const SectionContext = createContext<SectionContextValue | null>(null);
 export const GroupContext = createContext<Partial<GroupProps> | null>(null);
 export const HeaderContext = createContext<Partial<HeaderProps> | null>(null);
 export const HeadingContext = createContext<Partial<HeaderProps> | null>(null);
@@ -222,6 +228,15 @@ export { createLeafComponent, createBranchComponent };
  * A semantic section wrapper for grouped collection content.
  */
 export function Section(props: SectionProps): JSX.Element {
+  const sectionContext = useContext(SectionContext);
+  if (sectionContext) {
+    const nodeEnv = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV;
+    if (nodeEnv !== 'production') {
+      console.warn(`<Section> is deprecated. Please use <${sectionContext.name}> instead.`);
+    }
+    return sectionContext.render(props, 'solidaria-Section');
+  }
+
   const [local, domProps] = splitProps(props, ['children', 'class', 'style', 'slot']);
 
   const renderValues = createMemo<CollectionPrimitiveRenderProps>(() => ({

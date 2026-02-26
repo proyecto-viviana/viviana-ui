@@ -59,7 +59,7 @@ export function createOption<T>(
 
   // Computed states
   const isDisabled: Accessor<boolean> = () => {
-    return getProps().isDisabled ?? state.isDisabled(getProps().key);
+    return Boolean(getData()?.isDisabled || getProps().isDisabled || state.isDisabled(getProps().key));
   };
 
   const isSelected: Accessor<boolean> = () => {
@@ -70,21 +70,32 @@ export function createOption<T>(
     return state.focusedKey() === getProps().key;
   };
 
+  const shouldSelectOnPressUp = () => {
+    return getProps().shouldSelectOnPressUp ?? getData()?.shouldSelectOnPressUp ?? true;
+  };
+
+  const selectAndAction = () => {
+    const key = getProps().key;
+    if (state.selectionMode() !== 'none') {
+      state.select(key);
+    }
+    getData()?.onAction?.(key);
+  };
+
   // Handle press
   const { pressProps, isPressed } = createPress({
     get isDisabled() {
       return isDisabled();
     },
-    onPress() {
-      const key = getProps().key;
-      const data = getData();
-
-      if (state.selectionMode() !== 'none') {
-        state.select(key);
+    onPressStart(e) {
+      if (!shouldSelectOnPressUp() && e.pointerType !== 'keyboard' && e.pointerType !== 'virtual') {
+        selectAndAction();
       }
-
-      // Call onAction from listbox
-      data?.onAction?.(key);
+    },
+    onPress(e) {
+      if (shouldSelectOnPressUp() || e.pointerType === 'keyboard' || e.pointerType === 'virtual') {
+        selectAndAction();
+      }
     },
   });
 
