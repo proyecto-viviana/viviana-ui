@@ -58,7 +58,7 @@ export interface AutocompleteInputProps {
   autoComplete: 'off'
 }
 
-export interface AriaAutocompleteOptions<T = unknown> {
+export interface AriaAutocompleteOptions<_T = unknown> {
   /** Ref accessor for the input element. */
   inputRef: Accessor<HTMLInputElement | undefined>
   /** Ref accessor for the collection element. */
@@ -85,7 +85,7 @@ export interface AriaAutocompleteOptions<T = unknown> {
   disableVirtualFocus?: boolean
 }
 
-export interface AutocompleteAria<T = unknown> {
+export interface AutocompleteAria<_T = unknown> {
   /** Props for the autocomplete input element. */
   inputProps: AutocompleteInputProps
   /** Props for the collection (ListBox/Menu). */

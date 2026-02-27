@@ -117,7 +117,7 @@ export function createSelectionState(
 
   const disabledKeys: Accessor<Set<Key>> = createMemo(() => {
     const keys = getProps().disabledKeys;
-    return keys ? new Set(keys) : new Set();
+    return keys ? new Set<Key>(keys) : new Set<Key>();
   });
 
   const disabledBehavior: Accessor<DisabledBehavior> = () => {

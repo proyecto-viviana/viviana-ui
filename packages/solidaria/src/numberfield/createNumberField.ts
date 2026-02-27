@@ -153,40 +153,32 @@ export function createNumberField(
       return;
     }
 
-    let handled = false;
     switch (e.key) {
       case 'ArrowUp':
-        handled = true;
         e.preventDefault();
         state.increment();
         break;
       case 'ArrowDown':
-        handled = true;
         e.preventDefault();
         state.decrement();
         break;
       case 'PageUp':
-        handled = true;
         e.preventDefault();
         state.incrementToMax();
         break;
       case 'PageDown':
-        handled = true;
         e.preventDefault();
         state.decrementToMin();
         break;
       case 'Home':
-        handled = true;
         e.preventDefault();
         state.decrementToMin();
         break;
       case 'End':
-        handled = true;
         e.preventDefault();
         state.incrementToMax();
         break;
       case 'Enter':
-        handled = true;
         state.commit();
         break;
     }

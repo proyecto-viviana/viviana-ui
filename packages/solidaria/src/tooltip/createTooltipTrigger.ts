@@ -11,7 +11,6 @@ import { type JSX, createEffect, onCleanup } from 'solid-js';
 import { type TooltipTriggerState } from '@proyecto-viviana/solid-stately';
 import { createHover } from '../interactions/createHover';
 import { createFocusable } from '../interactions/createFocusable';
-import { mergeProps } from '../utils';
 import { createId } from '../ssr';
 
 // ============================================

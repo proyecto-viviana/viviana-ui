@@ -70,7 +70,9 @@ function createSyntheticBlurHandler(
         if (isFocused && (target as HTMLButtonElement).disabled) {
           observer?.disconnect();
           const relatedTarget = target === document.activeElement ? null : document.activeElement;
-          target.dispatchEvent(new FocusEvent('blur', { relatedTarget }));
+          const syntheticEvent = new FocusEvent('blur', { relatedTarget });
+          onBlur?.(syntheticEvent);
+          target.dispatchEvent(syntheticEvent);
           target.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget }));
         }
       });

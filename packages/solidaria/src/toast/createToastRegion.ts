@@ -9,7 +9,6 @@
 
 import { type JSX, createMemo } from 'solid-js';
 import { type ToastState } from '@proyecto-viviana/solid-stately';
-import { mergeProps } from '../utils';
 import { createHover } from '../interactions/createHover';
 
 // ============================================

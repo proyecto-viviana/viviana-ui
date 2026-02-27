@@ -1,6 +1,6 @@
 {
   "name": "@proyecto-viviana/solidaria-components",
-  "version": "0.2.5",
+  "version": "0.2.7",
   "description": "Pre-wired headless components for SolidJS - port of react-aria-components",
   "type": "module",
   "main": "./dist/index.js",
@@ -25,8 +25,8 @@
     "prepublishOnly": "echo 'Use deno task release from root'"
   },
   "dependencies": {
-    "@proyecto-viviana/solidaria": "^0.2.5",
-    "@proyecto-viviana/solid-stately": "^0.2.4"
+    "@proyecto-viviana/solidaria": "^0.2.6",
+    "@proyecto-viviana/solid-stately": "^0.2.5"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"

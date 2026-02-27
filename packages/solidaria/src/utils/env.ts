@@ -6,7 +6,7 @@
 
 // Type-safe access to import.meta.env (Vite) and Deno.env
 declare const Deno: { env?: { get(key: string): string | undefined } } | undefined;
-type ImportMetaWithEnv = ImportMeta & { env?: Record<string, unknown> };
+type ImportMetaWithEnv = ImportMeta & { env?: Record<string, unknown> & { DEV?: boolean; PROD?: boolean } };
 type ProcessLike = { env?: Record<string, string | undefined> };
 
 function getEnvVar(key: string): string | undefined {

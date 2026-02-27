@@ -163,13 +163,13 @@ export function createSelectState<T = unknown>(
     if (selectionMode() === 'multiple') {
       if (isControlledMultiple()) {
         const keys = getProps().selectedKeys;
-        return keys === 'all' ? 'all' : new Set(keys ?? []);
+        return keys === 'all' ? 'all' : new Set<Key>(keys ?? []);
       }
       return internalSelectedKeys();
     }
 
     const key = selectedKey();
-    return key != null ? new Set([key]) : new Set();
+    return key != null ? new Set<Key>([key]) : new Set<Key>();
   });
 
   const setSelectedKeys = (keys: Iterable<Key>) => {
