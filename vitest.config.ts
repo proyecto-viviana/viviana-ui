@@ -7,6 +7,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [solidPlugin()],
+  optimizeDeps: {
+    entries: ['packages/**/test/**/*.test.{ts,tsx}', 'benchmarks/**/*.bench.{ts,tsx}'],
+  },
   test: {
     environment: 'jsdom',
     globals: true,
