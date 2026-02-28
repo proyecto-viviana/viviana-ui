@@ -6,10 +6,10 @@ A comprehensive SolidJS component library inspired by Adobe's React Aria and Rea
 
 | Package | Version | Description |
 |---------|---------|-------------|
-| [@proyecto-viviana/solid-stately](./packages/solid-stately) | 0.2.4 | State management for UI components (port of React Stately) |
-| [@proyecto-viviana/solidaria](./packages/solidaria) | 0.2.5 | Accessibility primitives (port of React Aria) |
-| [@proyecto-viviana/solidaria-components](./packages/solidaria-components) | 0.2.5 | Pre-wired headless components (port of React Aria Components) |
-| [@proyecto-viviana/silapse](./packages/silapse) | 0.3.5 | Styled UI components with Tailwind CSS |
+| [@proyecto-viviana/solid-stately](./packages/solid-stately) | 0.2.5 | State management for UI components (port of React Stately) |
+| [@proyecto-viviana/solidaria](./packages/solidaria) | 0.2.6 | Accessibility primitives (port of React Aria) |
+| [@proyecto-viviana/solidaria-components](./packages/solidaria-components) | 0.2.7 | Pre-wired headless components (port of React Aria Components) |
+| [@proyecto-viviana/silapse](./packages/silapse) | 0.4.0 | Styled UI components with Tailwind CSS |
 
 ## Architecture
 
@@ -341,7 +341,12 @@ deno task dev
 | `deno task typecheck` | TypeScript type checking |
 | `npm run changeset` | Create a changeset for releasable package changes |
 | `npm run changeset:version` | Apply version bumps + changelog updates |
-| `npm run changeset:publish` | Build and publish changed packages to npm |
+| `npm run changeset:publish` | Validate mirrored manifests, build, and publish changed packages to npm |
+| `npm run jsr:dry-run` | Run JSR dry-run publish checks in package dependency order |
+| `npm run jsr:publish` | Publish JSR packages in package dependency order |
+| `npm run release` | Run the npm release flow, then publish JSR packages |
+
+Release and publish policy is documented in [`docs/release-policy.md`](./docs/release-policy.md).
 
 ### Project Structure
 

@@ -20,9 +20,9 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && rm -f tsconfig.build.tsbuildinfo && tsc -p tsconfig.build.json",
     "dev": "tsup --watch",
-    "prepublishOnly": "echo 'Use deno task release from root'"
+    "prepublishOnly": "echo 'Use the root Changesets/JSR release workflow'"
   },
   "dependencies": {
     "@proyecto-viviana/solid-stately": "^0.2.5",

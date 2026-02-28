@@ -124,8 +124,8 @@ function InstallationPage() {
         <code>{`{
   "imports": {
     "solid-js": "npm:solid-js@^1.9.0",
-    "@proyecto-viviana/silapse": "jsr:@proyecto-viviana/silapse@^0.1.8",
-    "@proyecto-viviana/solidaria": "jsr:@proyecto-viviana/solidaria@^0.0.7"
+    "@proyecto-viviana/silapse": "jsr:@proyecto-viviana/silapse@^0.4.0",
+    "@proyecto-viviana/solidaria": "jsr:@proyecto-viviana/solidaria@^0.2.6"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

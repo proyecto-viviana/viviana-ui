@@ -1,18 +1,31 @@
 {
   "name": "@proyecto-viviana/solidaria-components",
-  "version": "0.2.5",
-  "license": "Apache-2.0",
+  "version": "0.2.7",
+  "license": "MIT",
   "exports": "./src/index.ts",
   "tasks": {
     "build": "deno run -A ../../scripts/build.ts solidaria-components",
     "build:types": "deno run -A npm:typescript/tsc -p tsconfig.build.json"
   },
+  "publish": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx",
+      "README.md",
+      "LICENSE"
+    ],
+    "exclude": [
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "test/**/*"
+    ]
+  },
   "imports": {
     "solid-js": "npm:solid-js@^1.9.0",
     "solid-js/web": "npm:solid-js@^1.9.0/web",
     "solid-js/store": "npm:solid-js@^1.9.0/store",
-    "@proyecto-viviana/solid-stately": "jsr:@proyecto-viviana/solid-stately@^0.2.4",
-    "@proyecto-viviana/solidaria": "jsr:@proyecto-viviana/solidaria@^0.2.5"
+    "@proyecto-viviana/solid-stately": "jsr:@proyecto-viviana/solid-stately@^0.2.5",
+    "@proyecto-viviana/solidaria": "jsr:@proyecto-viviana/solidaria@^0.2.6"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

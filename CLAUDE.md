@@ -48,6 +48,9 @@ npm run changeset         # Create release note + bump intent
 npm run changeset:status  # Preview release plan
 npm run changeset:version # Apply version bumps + changelogs
 npm run changeset:publish # Build + publish releasable packages to npm
+npm run jsr:dry-run       # Validate JSR publish order and package contents
+npm run jsr:publish       # Publish releasable packages to JSR
+npm run release           # Run npm release flow, then JSR publish
 ```
 
 ## Key Patterns

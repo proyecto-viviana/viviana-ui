@@ -1,7 +1,7 @@
 {
   "name": "@proyecto-viviana/solidaria-components",
-  "version": "0.2.5",
-  "license": "Apache-2.0",
+  "version": "0.2.7",
+  "license": "MIT",
   "exports": "./src/index.ts",
   "publish": {
     "include": [

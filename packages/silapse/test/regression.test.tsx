@@ -5,10 +5,10 @@
  * One describe block per component, each rendering with realistic props,
  * making multiple assertions, and capturing an innerHTML snapshot.
  */
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, cleanup, waitFor } from '@solidjs/testing-library';
 import { setupUser } from '@proyecto-viviana/silapse-test-utils';
-import type { TreeItemData } from '@proyecto-viviana/solid-stately';
+import { parseDate, type TreeItemData } from '@proyecto-viviana/solid-stately';
 
 // ── Forms & Inputs ──────────────────────────────────────────────
 import { Button } from '../src/button';
@@ -805,20 +805,30 @@ describe('Regression: Accordion (DisclosureGroup)', () => {
 
 describe('Regression: Calendar', () => {
   it('renders grid with day cells, nav buttons, and snapshot', async () => {
-    const { container } = render(() => (
-      <Calendar aria-label="Event date" />
-    ));
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(new Date('2026-02-26T12:00:00.000Z'));
 
-    await waitFor(() => {
-      expect(screen.getByRole('grid')).toBeInTheDocument();
-    });
+    try {
+      const { container } = render(() => (
+        <Calendar
+          aria-label="Event date"
+          defaultFocusedValue={parseDate('2026-02-26')}
+        />
+      ));
 
-    const grid = screen.getByRole('grid');
-    expect(grid).toBeInTheDocument();
-    // Navigation buttons (previous/next month)
-    const buttons = screen.getAllByRole('button');
-    expect(buttons.length).toBeGreaterThanOrEqual(2);
-    expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
+      await waitFor(() => {
+        expect(screen.getByRole('grid')).toBeInTheDocument();
+      });
+
+      const grid = screen.getByRole('grid');
+      expect(grid).toBeInTheDocument();
+      // Navigation buttons (previous/next month)
+      const buttons = screen.getAllByRole('button');
+      expect(buttons.length).toBeGreaterThanOrEqual(2);
+      expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 

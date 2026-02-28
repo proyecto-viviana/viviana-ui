@@ -95,7 +95,9 @@ export function createFocusFlowRecorder(
     },
 
     getRoleSequence() {
-      return records.map((r) => r.role);
+      return records
+        .map((r) => r.role)
+        .filter((role): role is string => role !== null);
     },
   };
 }

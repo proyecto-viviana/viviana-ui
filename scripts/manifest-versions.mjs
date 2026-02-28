@@ -14,6 +14,7 @@ const packageDirs = [
   "packages/solidaria-components",
   "packages/silapse",
 ];
+const mirroredFields = ["name", "version", "license"];
 
 const mode = process.argv.includes("--fix") ? "fix" : "check";
 const mismatches = [];
@@ -36,7 +37,6 @@ async function exists(filePath) {
 for (const pkgDir of packageDirs) {
   const packageJsonPath = path.join(rootDir, pkgDir, "package.json");
   const packageJson = await readJson(packageJsonPath);
-  const packageVersion = packageJson.version;
 
   for (const manifestName of ["deno.json", "jsr.json"]) {
     const manifestPath = path.join(rootDir, pkgDir, manifestName);
@@ -45,20 +45,35 @@ for (const pkgDir of packageDirs) {
     }
 
     const manifest = await readJson(manifestPath);
-    const manifestVersion = manifest.version;
-    if (manifestVersion === packageVersion) {
-      continue;
+    let changed = false;
+
+    for (const field of mirroredFields) {
+      const expected = packageJson[field];
+      const actual = manifest[field];
+
+      if (expected === actual) {
+        continue;
+      }
+
+      mismatches.push({
+        pkgDir,
+        manifestName,
+        field,
+        expected,
+        actual,
+      });
+
+      if (mode === "fix") {
+        if (expected === undefined) {
+          delete manifest[field];
+        } else {
+          manifest[field] = expected;
+        }
+        changed = true;
+      }
     }
 
-    mismatches.push({
-      pkgDir,
-      manifestName,
-      expected: packageVersion,
-      actual: manifestVersion,
-    });
-
-    if (mode === "fix") {
-      manifest.version = packageVersion;
+    if (mode === "fix" && changed) {
       await fs.writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
       changedFiles += 1;
     }
@@ -66,13 +81,13 @@ for (const pkgDir of packageDirs) {
 }
 
 if (mismatches.length === 0) {
-  console.log("Manifest versions are synchronized.");
+  console.log("Manifest release metadata are synchronized.");
   process.exit(0);
 }
 
 for (const mismatch of mismatches) {
   console.log(
-    `${mismatch.pkgDir}/${mismatch.manifestName}: expected ${mismatch.expected}, found ${mismatch.actual}`,
+    `${mismatch.pkgDir}/${mismatch.manifestName}: ${mismatch.field} expected ${mismatch.expected}, found ${mismatch.actual}`,
   );
 }
 
@@ -81,5 +96,5 @@ if (mode === "fix") {
   process.exit(0);
 }
 
-console.error("\nManifest versions are out of sync. Run `npm run sync:manifest-versions`.");
+console.error("\nManifest release metadata are out of sync. Run `npm run sync:manifest-versions`.");
 process.exit(1);

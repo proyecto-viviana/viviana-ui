@@ -36,10 +36,12 @@
   "scripts": {
     "build": "tsup && rm -f tsconfig.build.tsbuildinfo && tsc -p tsconfig.build.json",
     "dev": "tsup --watch",
-    "prepublishOnly": "echo 'Use deno task release from root'"
+    "prepublishOnly": "echo 'Use the root Changesets/JSR release workflow'"
   },
   "dependencies": {
-    "@proyecto-viviana/solidaria-components": "^0.2.6"
+    "@proyecto-viviana/solid-stately": "^0.2.5",
+    "@proyecto-viviana/solidaria": "^0.2.6",
+    "@proyecto-viviana/solidaria-components": "^0.2.7"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"

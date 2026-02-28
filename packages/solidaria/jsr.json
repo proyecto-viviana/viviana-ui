@@ -1,12 +1,13 @@
 {
   "name": "@proyecto-viviana/solidaria",
-  "version": "0.2.5",
-  "license": "Apache-2.0",
+  "version": "0.2.6",
+  "license": "MIT",
   "exports": "./src/index.ts",
   "publish": {
     "include": [
       "src/**/*.ts",
       "src/**/*.tsx",
+      "src/**/*.json",
       "README.md",
       "LICENSE"
     ],

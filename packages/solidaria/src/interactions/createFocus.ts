@@ -40,9 +40,7 @@ export interface FocusResult {
  * Most browsers fire a native focusout event in this case, except for Firefox.
  * We use a MutationObserver to watch for the disabled attribute.
  */
-function createSyntheticBlurHandler(
-  onBlur: ((e: FocusEvent) => void) | undefined
-): (_e: FocusEvent, target: Element) => (() => void) | undefined {
+function createSyntheticBlurHandler(): (_e: FocusEvent, target: Element) => (() => void) | undefined {
   let isFocused = false;
   let observer: MutationObserver | null = null;
 
@@ -68,11 +66,12 @@ function createSyntheticBlurHandler(
 
       observer = new MutationObserver(() => {
         if (isFocused && (target as HTMLButtonElement).disabled) {
+          isFocused = false;
           observer?.disconnect();
-          const relatedTarget = target === document.activeElement ? null : document.activeElement;
-          const syntheticEvent = new FocusEvent('blur', { relatedTarget });
-          onBlur?.(syntheticEvent);
-          target.dispatchEvent(syntheticEvent);
+          observer = null;
+          const ownerDocument = target.ownerDocument;
+          const relatedTarget = target === ownerDocument.activeElement ? null : ownerDocument.activeElement;
+          target.dispatchEvent(new FocusEvent('blur', { relatedTarget }));
           target.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget }));
         }
       });
@@ -102,7 +101,7 @@ export function createFocus(props: CreateFocusProps = {}): FocusResult {
   const { isDisabled, onFocus: onFocusProp, onBlur: onBlurProp, onFocusChange } = props;
 
   let cleanupRef: (() => void) | undefined;
-  const syntheticBlurHandler = createSyntheticBlurHandler(onBlurProp);
+  const syntheticBlurHandler = createSyntheticBlurHandler();
 
   // Cleanup on unmount
   onCleanup(() => {

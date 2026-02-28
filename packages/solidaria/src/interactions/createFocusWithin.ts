@@ -32,9 +32,7 @@ function getActiveElement(doc: Document): Element | null {
   return activeElement;
 }
 
-function createSyntheticBlurHandler(
-  onBlurWithin: ((e: FocusEvent) => void) | undefined
-): (_e: FocusEvent, target: Element) => (() => void) | undefined {
+function createSyntheticBlurHandler(): (_e: FocusEvent, target: Element) => (() => void) | undefined {
   let isFocused = false;
   let observer: MutationObserver | null = null;
 
@@ -60,11 +58,12 @@ function createSyntheticBlurHandler(
 
       observer = new MutationObserver(() => {
         if (isFocused && (target as HTMLButtonElement).disabled) {
+          isFocused = false;
           observer?.disconnect();
-          const relatedTarget = target === document.activeElement ? null : document.activeElement;
-          const syntheticEvent = new FocusEvent('blur', { relatedTarget });
-          onBlurWithin?.(syntheticEvent);
-          target.dispatchEvent(syntheticEvent);
+          observer = null;
+          const ownerDocument = target.ownerDocument;
+          const relatedTarget = target === ownerDocument.activeElement ? null : ownerDocument.activeElement;
+          target.dispatchEvent(new FocusEvent('blur', { relatedTarget }));
           target.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget }));
         }
       });
@@ -96,7 +95,7 @@ export function createFocusWithin(props: FocusWithinProps = {}): FocusWithinResu
 
   // Global listeners manager
   const { addGlobalListener, removeAllGlobalListeners } = createGlobalListeners();
-  const syntheticBlurHandler = createSyntheticBlurHandler(onBlurWithin);
+  const syntheticBlurHandler = createSyntheticBlurHandler();
   let cleanupRef: (() => void) | undefined;
 
   // Cleanup on unmount
