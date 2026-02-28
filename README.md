@@ -97,6 +97,12 @@ If you want the full end-to-end flow in one command:
 npm run release
 ```
 
+GitHub automation on `main`:
+
+- merging a feature PR with changesets triggers the `Release` workflow
+- that workflow creates or updates the Changesets version PR
+- merging the version PR publishes changed packages to npm first, then publishes the matching JSR packages
+
 ## Available Components
 
 ### Form Controls

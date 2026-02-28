@@ -56,6 +56,24 @@ What `npm run release` does:
 1. Runs `npm run release:prepare`.
 2. Runs `npm run release:publish`.
 
+## GitHub Automation
+
+On `push` to `main`, the `Release` workflow handles registry publishing in two stages:
+
+1. If unpublished changesets are present, it creates or updates the Changesets version PR.
+2. When that version PR is merged into `main`, it publishes the changed npm packages first, then publishes the matching JSR packages.
+
+This means:
+
+- a normal feature PR merge to `main` triggers release automation
+- the actual registry publish happens when the generated version PR merges
+- JSR publishing is scoped to the packages that Changesets actually published to npm
+
+One-time GitHub setup:
+
+- add `NPM_TOKEN` with npm publish access
+- add `JSR_TOKEN` with JSR publish access for `@proyecto-viviana`
+
 ## Workspace Scope
 
 - Root npm workspace management covers `packages/*` and `apps/web`.

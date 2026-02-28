@@ -18,9 +18,20 @@ const packageOrder = [
 ] as const;
 
 type PackageName = (typeof packageOrder)[number];
+const npmPackageToWorkspace = Object.fromEntries(
+  packageOrder.map((pkgName) => [`@proyecto-viviana/${pkgName}`, pkgName]),
+) as Record<string, PackageName>;
 
 function isPackageName(value: string): value is PackageName {
   return packageOrder.includes(value as PackageName);
+}
+
+function normalizePackageName(value: string): PackageName | null {
+  if (isPackageName(value)) {
+    return value;
+  }
+
+  return npmPackageToWorkspace[value] ?? null;
 }
 
 async function runCommand(cmd: string[], cwd: string): Promise<void> {
@@ -68,18 +79,27 @@ async function publishPackage(pkgName: PackageName, dryRun: boolean): Promise<vo
 async function main(): Promise<void> {
   const dryRun = Deno.args.includes("--dry-run");
   const positionalArgs = Deno.args.filter((arg) => arg !== "--dry-run");
-  const targetPackage = positionalArgs[0];
+  const normalizedTargets: PackageName[] = [];
 
-  if (targetPackage && !isPackageName(targetPackage)) {
-    console.error(`Unknown package: ${targetPackage}`);
-    console.error(`Available: ${packageOrder.join(", ")}`);
-    Deno.exit(1);
+  for (const arg of positionalArgs) {
+    const normalized = normalizePackageName(arg);
+
+    if (!normalized) {
+      console.error(`Unknown package: ${arg}`);
+      console.error(`Available: ${packageOrder.join(", ")}`);
+      console.error(`Also accepts scoped names: ${Object.keys(npmPackageToWorkspace).join(", ")}`);
+      Deno.exit(1);
+    }
+
+    if (!normalizedTargets.includes(normalized)) {
+      normalizedTargets.push(normalized);
+    }
   }
 
   await assertManifestSync();
 
-  const packagesToPublish: PackageName[] = targetPackage
-    ? [targetPackage as PackageName]
+  const packagesToPublish: PackageName[] = normalizedTargets.length > 0
+    ? packageOrder.filter((pkgName) => normalizedTargets.includes(pkgName))
     : [...packageOrder];
 
   for (const pkgName of packagesToPublish) {

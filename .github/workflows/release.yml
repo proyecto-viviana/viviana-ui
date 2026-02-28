@@ -35,6 +35,11 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
+
       - name: Install workspace dependencies
         run: npm install
 
@@ -52,3 +57,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish JSR packages
+        if: steps.changesets.outputs.published == 'true'
+        env:
+          JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
+          PUBLISHED_PACKAGES_JSON: ${{ steps.changesets.outputs.publishedPackages }}
+        run: node scripts/publish-jsr-from-changesets.mjs
