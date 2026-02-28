@@ -35,29 +35,26 @@ silapse                → Styled components (Tailwind CSS)
 ## Commands
 
 ```bash
-deno task install     # Install dependencies
-deno task dev         # Start dev server (localhost:3000)
-deno task test        # Run all tests (uses Bun as runtime for vitest)
-deno task build       # Build all packages with Deno/esbuild
+bun install           # Install dependencies
+bun run dev           # Start dev server (localhost:3000)
+bun run test:run      # Run all tests
+bun run build         # Typecheck and build all packages
 ```
 
 ### Publishing
 
 ```bash
-npm run changeset         # Create release note + bump intent
-npm run changeset:status  # Preview release plan
-npm run changeset:version # Apply version bumps + changelogs
-npm run release:prepare   # Version, sync manifests, build, test, JSR dry-run
-npm run release:publish   # Publish npm first, then JSR
-npm run changeset:publish # Build + publish releasable packages to npm
-npm run jsr:dry-run       # Validate JSR publish order and package contents
-npm run jsr:publish       # Publish releasable packages to JSR
-npm run release           # Full release flow: prepare, then publish
+bun run changeset         # Create release note + bump intent
+bun run changeset:status  # Preview release plan
+bun run changeset:version # Apply version bumps + changelogs
+bun run release:prepare   # Version, build, test
+bun run release:publish   # Publish npm packages
+bun run changeset:publish # Build + publish releasable packages to npm
+bun run release           # Full release flow: prepare, then publish
 ```
 
 Release metadata rules:
 - `package.json` is the version source of truth for releasable packages.
-- `deno.json` and `jsr.json` mirror release metadata and should be updated via `npm run sync:manifest-versions`, not by hand.
 
 ## Key Patterns
 

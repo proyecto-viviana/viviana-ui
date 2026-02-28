@@ -1,5 +1,3 @@
-#!/usr/bin/env -S deno run -A
-
 /**
  * Guard: virtualizer keyboard delegate parity invariants.
  *
@@ -8,6 +6,8 @@
  * - opposite-direction fallback scan for page navigation
  * - regression coverage for both paths in Virtualizer tests
  */
+
+import { readFile } from "node:fs/promises";
 
 interface CheckResult {
   target: string;
@@ -28,9 +28,9 @@ const treePath = "packages/solidaria-components/src/Tree.tsx";
 const testsPath = "packages/solidaria-components/test/Virtualizer.test.tsx";
 
 const [virtualizerSource, treeSource, testsSource] = await Promise.all([
-  Deno.readTextFile(virtualizerPath),
-  Deno.readTextFile(treePath),
-  Deno.readTextFile(testsPath),
+  readFile(virtualizerPath, "utf8"),
+  readFile(treePath, "utf8"),
+  readFile(testsPath, "utf8"),
 ]);
 
 const results: CheckResult[] = [
@@ -87,6 +87,5 @@ console.log(format(results));
 if (results.some((r) => !r.ok)) {
   console.log("");
   console.log("One or more virtualizer keyboard parity checks failed.");
-  Deno.exit(1);
+  process.exit(1);
 }
-

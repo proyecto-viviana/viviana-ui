@@ -43,9 +43,6 @@ function InstallationPage() {
         Install Proyecto Viviana packages using your preferred package manager or registry.
       </p>
 
-      <SectionHeading color={colors().blue}>From JSR (Recommended for Deno)</SectionHeading>
-      <pre style={codeBlock("")}><code>{`deno add jsr:@proyecto-viviana/silapse jsr:@proyecto-viviana/solidaria`}</code></pre>
-
       <SectionHeading color={colors().blue}>From npm</SectionHeading>
       <pre style={codeBlock("")}><code>{`npm install @proyecto-viviana/silapse @proyecto-viviana/solidaria`}</code></pre>
 
@@ -118,21 +115,6 @@ function InstallationPage() {
 }`}</code>
       </pre>
 
-      <SectionHeading color={colors().blue}>Deno Configuration</SectionHeading>
-      <p style={{ "margin-bottom": "0.75rem" }}>For Deno projects, add to your deno.json:</p>
-      <pre style={codeBlock("")}>
-        <code>{`{
-  "imports": {
-    "solid-js": "npm:solid-js@^1.9.0",
-    "@proyecto-viviana/silapse": "jsr:@proyecto-viviana/silapse@^0.4.0",
-    "@proyecto-viviana/solidaria": "jsr:@proyecto-viviana/solidaria@^0.2.6"
-  },
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "solid-js"
-  }
-}`}</code>
-      </pre>
     </div>
   );
 }

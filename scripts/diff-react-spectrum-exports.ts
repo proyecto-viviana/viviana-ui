@@ -1,9 +1,10 @@
-#!/usr/bin/env -S deno run -A
-
 /**
  * Diff script for React Spectrum exports versus the SolidJS port.
  * Outputs a structured summary so the parity log can be kept up to date.
  */
+
+import { statSync } from "node:fs";
+import { readdir, readFile as readTextFile } from "node:fs/promises";
 
 const RAC_COMPONENTS_INDEX = 'react-spectrum/packages/react-aria-components/src/index.ts';
 const SOLIDARIA_COMPONENTS_INDEX = 'packages/solidaria-components/src/index.ts';
@@ -70,9 +71,9 @@ function formatList(items: string[], limit = 25): string {
   return lines;
 }
 
-async function readFile(path: string): Promise<string | undefined> {
+async function readSourceFile(path: string): Promise<string | undefined> {
   try {
-    return await Deno.readTextFile(path);
+    return await readTextFile(path, "utf8");
   } catch {
     return undefined;
   }
@@ -104,8 +105,8 @@ function resolveRelativeModule(fromFile: string, relativeImport: string): string
 
   for (const candidate of candidates) {
     try {
-      const stat = Deno.statSync(candidate);
-      if (stat.isFile) return candidate;
+      const stat = statSync(candidate);
+      if (stat.isFile()) return candidate;
     } catch {
       continue;
     }
@@ -124,7 +125,7 @@ async function collectModuleExports(
   if (visiting.has(modulePath)) return new Set();
   visiting.add(modulePath);
 
-  const source = await readFile(modulePath);
+  const source = await readSourceFile(modulePath);
   if (!source) {
     visiting.delete(modulePath);
     return new Set();
@@ -156,8 +157,8 @@ function resolveLocalSilapseIndex(name: string): string | undefined {
 
   for (const candidate of candidates) {
     try {
-      const stat = Deno.statSync(candidate);
-      if (stat.isFile) return candidate;
+      const stat = statSync(candidate);
+      if (stat.isFile()) return candidate;
     } catch {
       continue;
     }
@@ -167,25 +168,22 @@ function resolveLocalSilapseIndex(name: string): string | undefined {
 }
 
 async function listReactSpectrumPackages(): Promise<string[]> {
-  const names: string[] = [];
-  for await (const entry of Deno.readDir(REACT_SPECTRUM_DIR)) {
-    if (entry.isDirectory) {
-      names.push(entry.name);
-    }
-  }
-  names.sort();
-  return names;
+  const entries = await readdir(REACT_SPECTRUM_DIR, { withFileTypes: true });
+  return entries
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
 }
 
 async function run(): Promise<void> {
   const [racSource, solidariaSource] = await Promise.all([
-    readFile(RAC_COMPONENTS_INDEX),
-    readFile(SOLIDARIA_COMPONENTS_INDEX),
+    readSourceFile(RAC_COMPONENTS_INDEX),
+    readSourceFile(SOLIDARIA_COMPONENTS_INDEX),
   ]);
 
   if (!racSource || !solidariaSource) {
     console.error('unable to read one of the base indexes');
-    Deno.exit(1);
+    process.exit(1);
   }
 
   const racExports = parseNamedExports(racSource).names;
@@ -208,7 +206,7 @@ async function run(): Promise<void> {
   const moduleCache = new Map<string, ExportSet>();
   for (const pkg of packages) {
     const upstreamPath = ensurePath(REACT_SPECTRUM_DIR, pkg, 'src', 'index.ts');
-    const upstreamSource = await readFile(upstreamPath);
+    const upstreamSource = await readSourceFile(upstreamPath);
     if (!upstreamSource) continue;
     const upstreamExports = parseNamedExports(upstreamSource).names;
 

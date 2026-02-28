@@ -20,41 +20,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v2.x
-
       - name: Install workspace dependencies
-        run: npm install
-
-      - name: Ensure manifest versions are synchronized
-        run: npm run check:manifest-versions
+        run: bun install --frozen-lockfile
 
       - name: Build releasable packages
-        run: npm run build
+        run: bun run build
 
       - name: Run Vitest suite
-        run: bun run vitest run
-
-      - name: Validate JSR publish dry-run
-        run: npm run jsr:dry-run
+        run: bun run test:run
 
       - name: Publish summary
         if: always()
         run: |
           echo "## Release Readiness Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "This workflow mirrors the non-publishing checks from \`npm run release:prepare\`." >> "$GITHUB_STEP_SUMMARY"
-          echo "It validates manifest sync, build health, Vitest coverage, and JSR dry-run packaging without publishing anything." >> "$GITHUB_STEP_SUMMARY"
+          echo "This workflow mirrors the non-publishing checks from \`bun run release:prepare\`." >> "$GITHUB_STEP_SUMMARY"
+          echo "It validates build health and the Vitest suite without publishing anything." >> "$GITHUB_STEP_SUMMARY"

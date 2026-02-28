@@ -21,25 +21,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 22
-          cache: npm
+          bun-version: latest
 
       - name: Install workspace dependencies
-        run: npm install
+        run: bun install --frozen-lockfile
 
       - name: Fetch base branch
         run: git fetch origin main --depth=1
 
-      - name: Ensure manifest versions are synchronized
-        run: npm run check:manifest-versions
-
       - name: Ensure releasable package changes include changesets
         run: |
           CHANGED_FILES="$(git diff --name-only origin/main...HEAD)"
-          CHANGED_FILES="$CHANGED_FILES" node scripts/check-changeset-required.mjs
+          CHANGED_FILES="$CHANGED_FILES" bun scripts/check-changeset-required.mjs
 
       - name: Validate changesets status
-        run: npm run changeset:status
+        run: bun run changeset:status

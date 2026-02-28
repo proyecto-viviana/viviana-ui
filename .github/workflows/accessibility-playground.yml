@@ -26,7 +26,7 @@ jobs:
           bun-version: latest
 
       - name: Install workspace dependencies
-        run: npm install
+        run: bun install --frozen-lockfile
 
       - name: Install Playwright Chromium
         run: bun run --cwd apps/web bunx playwright install --with-deps chromium

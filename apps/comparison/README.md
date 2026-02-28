@@ -9,34 +9,32 @@ Proyecto Viviana.
 - The Proyecto Viviana packages are installed into this app as local `file:`
   dependencies so the app resolves them through package metadata, like
   `apps/web`, instead of bespoke Vite aliases.
-- The app is intentionally separate from the root Deno workspace so it can
+- The app is intentionally separate from the root Bun workspace so it can
   evolve without affecting `apps/web`.
 - Astro stays app-local. Cloudflare runtime tooling stays at the monorepo root
   with the rest of the repo.
-- `deno task` remains the command entrypoint from the repo root, but
-  installation is delegated to local `npm` so the Astro package set stays
-  inside this app.
-- The app ships an app-local `.npmrc` with `workspaces=false` to stop npm from
-  traversing the root monorepo workspace during install.
+- Root commands forward into this app's local `package.json` scripts, while
+  dependency installation stays local so the Astro package set remains
+  isolated from the publishable package workspace.
 
 ## Commands
 
 From the monorepo root:
 
 ```bash
-deno task comparison:install
-deno task comparison:dev
+bun run comparison:install
+bun run comparison:dev
 ```
 
 Root-level commands also exist for:
 
 ```bash
-deno task comparison:build
-deno task comparison:preview
-deno task comparison:typecheck
-deno task comparison:dev:worker
-deno task comparison:deploy:dry-run
-deno task comparison:deploy
+bun run comparison:build
+bun run comparison:preview
+bun run comparison:typecheck
+bun run comparison:dev:worker
+bun run comparison:deploy:dry-run
+bun run comparison:deploy
 ```
 
 The root wrappers invoke Astro or Wrangler directly; they do not rebuild the
@@ -44,19 +42,19 @@ Proyecto Viviana packages first.
 
 ```bash
 cd apps/comparison
-deno task install
-deno task dev
+bun install
+bun run dev
 ```
 
 Additional tasks:
 
 ```bash
-deno task typecheck
-deno task build
-deno task preview
-deno task dev:worker
-deno task deploy:dry-run
-deno task deploy
+bun run typecheck
+bun run build
+bun run preview
+bun run dev:worker
+bun run deploy:dry-run
+bun run deploy
 ```
 
 ## Current Coverage
@@ -115,27 +113,27 @@ surface is static and the Worker is only acting as an asset host.
 Typical flow:
 
 ```bash
-deno task comparison:install
-deno task comparison:deploy
+bun run comparison:install
+bun run comparison:deploy
 ```
 
 Or from inside `apps/comparison`:
 
 ```bash
-deno task install
-deno task deploy
+bun install
+bun run deploy
 ```
 
 For local Worker-style runtime validation, use:
 
 ```bash
-deno task comparison:dev:worker
+bun run comparison:dev:worker
 ```
 
 Optional:
 
 ```bash
-deno task comparison:types
+bun run comparison:types
 ```
 
 `wrangler types` is useful for generated binding types, but it is not required
@@ -146,10 +144,8 @@ for deployment.
 The root runner is:
 
 ```bash
-deno task comparison:dev
+bun run comparison:dev
 ```
 
-The earlier root failure came from Deno trying to resolve a new npm dependency
-from the root workspace lock when `@astrojs/cloudflare` was added only inside
-this app. Keeping Astro local and Cloudflare deployment separate avoids that
-coupling.
+Keeping Astro local and Cloudflare deployment separate avoids root workspace
+coupling with this app's dependency graph.

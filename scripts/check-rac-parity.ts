@@ -1,11 +1,11 @@
-#!/usr/bin/env -S deno run -A
-
 /**
  * Checks parity of selected react-aria-components exports against
  * solidaria-components exports.
  *
  * Scope is intentionally narrow to the explicitly tracked backlog symbols.
  */
+
+import { readFile } from "node:fs/promises";
 
 const RAC_INDEX = 'react-spectrum/packages/react-aria-components/src/index.ts';
 const SOLIDARIA_INDEX = 'packages/solidaria-components/src/index.ts';
@@ -69,8 +69,8 @@ function formatList(values: string[]): string {
 }
 
 const [racSource, solidariaSource] = await Promise.all([
-  Deno.readTextFile(RAC_INDEX),
-  Deno.readTextFile(SOLIDARIA_INDEX),
+  readFile(RAC_INDEX, "utf8"),
+  readFile(SOLIDARIA_INDEX, "utf8"),
 ]);
 
 const racExports = parseNamedValueExports(racSource);
@@ -101,5 +101,5 @@ if (missingInRac.length > 0) {
 }
 
 if (missingRequiredInSolidaria.length > 0) {
-  Deno.exit(1);
+  process.exit(1);
 }
