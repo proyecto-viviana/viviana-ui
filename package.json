@@ -52,6 +52,7 @@
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vite-plugin-solid": "^2.11.10",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "wrangler": "^4.67.0"
   }
 }

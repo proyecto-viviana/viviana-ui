@@ -4,6 +4,11 @@
     "dev": "npm exec --workspaces=false -- astro dev",
     "build": "npm exec --workspaces=false -- astro build",
     "preview": "npm exec --workspaces=false -- astro preview",
-    "check": "npm exec --workspaces=false -- astro check"
+    "check": "npm exec --workspaces=false -- astro check",
+    "dev:worker": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler dev --config wrangler.jsonc",
+    "check:worker": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --dry-run --config wrangler.jsonc",
+    "types": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler types src/worker-configuration.d.ts --config wrangler.jsonc",
+    "deploy": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --config wrangler.jsonc",
+    "deploy:dry-run": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --dry-run --config wrangler.jsonc"
   }
 }
