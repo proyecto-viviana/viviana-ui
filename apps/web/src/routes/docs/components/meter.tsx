@@ -18,11 +18,11 @@ function MeterPage() {
     setStorageUsed((prev) => Math.max(prev - Math.floor(Math.random() * 15 + 5), 0));
   }
 
-  function storageVariant(): "positive" | "notice" | "negative" {
+  function storageVariant(): "success" | "warning" | "danger" {
     const used = storageUsed();
-    if (used >= 90) return "negative";
-    if (used >= 70) return "notice";
-    return "positive";
+    if (used >= 90) return "danger";
+    if (used >= 70) return "warning";
+    return "success";
   }
 
   return (
@@ -39,7 +39,7 @@ function MeterPage() {
 <Meter
   label="Storage"
   value={storageUsed()}
-  variant={storageUsed() >= 90 ? 'negative' : storageUsed() >= 70 ? 'notice' : 'positive'}
+  variant={storageUsed() >= 90 ? 'danger' : storageUsed() >= 70 ? 'warning' : 'success'}
   valueLabel={\`\${storageUsed()}% used\`}
 />`}
       >
@@ -71,18 +71,18 @@ function MeterPage() {
       <Example
         title="Variants"
         description="Meters use color to communicate semantic meaning. Use different variants to indicate the health or status of the measured quantity."
-        code={`<Meter label="CPU Usage" value={25} variant="positive" />
+        code={`<Meter label="CPU Usage" value={25} variant="success" />
 <Meter label="Memory" value={65} variant="info" />
 <Meter label="Disk I/O" value={50} variant="accent" />
-<Meter label="Bandwidth" value={78} variant="notice" />
-<Meter label="Error Rate" value={92} variant="negative" />`}
+<Meter label="Bandwidth" value={78} variant="warning" />
+<Meter label="Error Rate" value={92} variant="danger" />`}
       >
         <div class="space-y-4 max-w-md">
-          <Meter label="CPU Usage" value={25} variant="positive" valueLabel="25%" />
+          <Meter label="CPU Usage" value={25} variant="success" valueLabel="25%" />
           <Meter label="Memory" value={65} variant="info" valueLabel="65%" />
           <Meter label="Disk I/O" value={50} variant="accent" valueLabel="50%" />
-          <Meter label="Bandwidth" value={78} variant="notice" valueLabel="78%" />
-          <Meter label="Error Rate" value={92} variant="negative" valueLabel="92%" />
+          <Meter label="Bandwidth" value={78} variant="warning" valueLabel="78%" />
+          <Meter label="Error Rate" value={92} variant="danger" valueLabel="92%" />
         </div>
       </Example>
 
@@ -105,21 +105,21 @@ function MeterPage() {
       <Example
         title="Without Visible Label"
         description="When the context makes the purpose clear, use aria-label instead of a visible label."
-        code={`<Meter aria-label="Password strength" value={60} variant="notice" />
-<Meter aria-label="Battery level" value={85} variant="positive" />`}
+        code={`<Meter aria-label="Password strength" value={60} variant="warning" />
+<Meter aria-label="Battery level" value={85} variant="success" />`}
       >
         <div class="space-y-4 max-w-md">
           <div>
             <p class="text-sm text-bg-600 mb-1">Password strength:</p>
-            <Meter aria-label="Password strength" value={60} variant="notice" showValueLabel={false} />
+            <Meter aria-label="Password strength" value={60} variant="warning" showValueLabel={false} />
           </div>
           <div>
             <p class="text-sm text-bg-600 mb-1">Battery level:</p>
-            <Meter aria-label="Battery level" value={85} variant="positive" showValueLabel={false} />
+            <Meter aria-label="Battery level" value={85} variant="success" showValueLabel={false} />
           </div>
           <div>
             <p class="text-sm text-bg-600 mb-1">Signal strength:</p>
-            <Meter aria-label="Signal strength" value={30} variant="negative" showValueLabel={false} />
+            <Meter aria-label="Signal strength" value={30} variant="danger" showValueLabel={false} />
           </div>
         </div>
       </Example>
@@ -137,7 +137,7 @@ function MeterPage() {
             minValue={32}
             maxValue={100}
             valueLabel="72 F"
-            variant="notice"
+            variant="warning"
           />
           <Meter
             label="Customer Satisfaction"
@@ -145,7 +145,7 @@ function MeterPage() {
             minValue={1}
             maxValue={5}
             valueLabel="4.2 / 5.0"
-            variant="positive"
+            variant="success"
           />
           <Meter
             label="Relevance Score"
@@ -172,8 +172,8 @@ function MeterPage() {
           },
           {
             name: "variant",
-            type: "'positive' | 'notice' | 'negative' | 'info' | 'accent'",
-            default: "'positive'",
+            type: "'primary' | 'accent' | 'success' | 'warning' | 'danger' | 'info'",
+            default: "'primary'",
             description: "Color variant to communicate semantic meaning",
           },
           {

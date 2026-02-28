@@ -38,7 +38,7 @@
     "a11y:full": "bun run a11y:axe:playground && bun run a11y:smoke",
     "a11y:ci": "bun run a11y:full",
     "typecheck": "bunx tsc --noEmit -p tsconfig.typecheck.json",
-    "typecheck:web": "bunx tsc -p apps/web/tsconfig.json --noEmit",
+    "typecheck:web": "bun run build && bunx tsc -p apps/web/tsconfig.json --noEmit",
     "typecheck:all": "bun run typecheck && bun run typecheck:web",
     "guard:docs-routes": "bun scripts/check-doc-routes.ts",
     "guard:rac-parity": "bun scripts/check-rac-parity.ts",
