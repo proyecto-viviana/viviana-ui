@@ -28,6 +28,7 @@ import {
   type ComboBoxOptionRenderProps,
 } from '@proyecto-viviana/solidaria-components'
 import type { Key, FilterFn, MenuTriggerAction } from '@proyecto-viviana/solid-stately'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // SIZE CONTEXT
@@ -117,7 +118,8 @@ const sizeStyles = {
  * Built on solidaria-components ComboBox for full accessibility support.
  */
 export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'class',
     'label',
@@ -192,7 +194,8 @@ export function ComboBoxInputGroup(props: { children: JSX.Element; class?: strin
  * The text input for a combobox.
  */
 export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, ['class'])
   const size = useContext(ComboBoxSizeContext)
   const styles = () => sizeStyles[size]
   const customClass = local.class ?? ''
@@ -236,7 +239,8 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
  * SSR-compatible - renders children or chevron icon directly without render props.
  */
 export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, ['class'])
   const size = useContext(ComboBoxSizeContext)
   const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''

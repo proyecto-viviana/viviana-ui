@@ -18,6 +18,7 @@ import {
   type DisclosureRenderProps,
   type DisclosureGroupRenderProps,
 } from '@proyecto-viviana/solidaria-components';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // SIZE AND VARIANT CONTEXT
@@ -157,7 +158,8 @@ const variantStyles = {
  * ```
  */
 export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'class',
@@ -200,7 +202,8 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
  * ```
  */
 export function Disclosure(props: DisclosureProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'class',

@@ -19,6 +19,7 @@ import {
   type NumberFieldInputRenderProps,
   type NumberFieldButtonRenderProps,
 } from '@proyecto-viviana/solidaria-components'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // TYPES
@@ -142,7 +143,8 @@ function NumberFieldError(props: { class?: string; children?: JSX.Element }): JS
  * A number field allows users to enter a numeric value with increment/decrement controls.
  */
 export function NumberField(props: NumberFieldProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'class',

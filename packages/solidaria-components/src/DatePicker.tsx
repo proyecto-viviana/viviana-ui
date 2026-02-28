@@ -21,6 +21,7 @@ import {
   createDateRangePicker,
   createPopover,
   FocusScope,
+  useUNSAFE_PortalContext,
   type AriaDatePickerProps,
   type AriaDateRangePickerProps,
   type DatePickerState as AriaDatePickerState,
@@ -693,7 +694,9 @@ export function DateRangePickerErrorMessage(props: DateRangePickerErrorMessagePr
  */
 export function DatePickerContent(props: DatePickerContentProps): JSX.Element {
   const context = useDatePickerContext();
+  const portalContext = useUNSAFE_PortalContext();
   let contentRef: HTMLDivElement | undefined;
+  const portalContainer = () => portalContext.getContainer?.() ?? undefined;
 
   const popoverAria = createPopover(
     {
@@ -734,7 +737,7 @@ export function DatePickerContent(props: DatePickerContentProps): JSX.Element {
 
   return (
     <Show when={context.overlayState.isOpen}>
-      <Portal>
+      <Portal mount={portalContainer()}>
         <FocusScope contain restoreFocus autoFocus>
           <div
             ref={contentRef}
@@ -762,7 +765,9 @@ export function DatePickerContent(props: DatePickerContentProps): JSX.Element {
 
 export function DateRangePickerContent(props: DateRangePickerContentProps): JSX.Element {
   const context = useDateRangePickerContext();
+  const portalContext = useUNSAFE_PortalContext();
   let contentRef: HTMLDivElement | undefined;
+  const portalContainer = () => portalContext.getContainer?.() ?? undefined;
 
   const popoverAria = createPopover(
     {
@@ -803,7 +808,7 @@ export function DateRangePickerContent(props: DateRangePickerContentProps): JSX.
 
   return (
     <Show when={context.overlayState.isOpen}>
-      <Portal>
+      <Portal mount={portalContainer()}>
         <FocusScope contain restoreFocus autoFocus>
           <div
             ref={contentRef}

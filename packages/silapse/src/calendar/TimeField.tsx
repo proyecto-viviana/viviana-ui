@@ -15,6 +15,7 @@ import {
   type TimeFieldProps as HeadlessTimeFieldProps,
   type TimeValue,
 } from '@proyecto-viviana/solidaria-components';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -89,7 +90,8 @@ const sizeStyles = {
 export function TimeField<T extends TimeValue = TimeValue>(
   props: TimeFieldProps<T>
 ): JSX.Element {
-  const [local, rest] = splitProps(props, [
+  const mergedProps = useProviderProps(props);
+  const [local, rest] = splitProps(mergedProps, [
     'size',
     'class',
     'label',

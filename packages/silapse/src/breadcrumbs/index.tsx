@@ -14,6 +14,7 @@ import {
   type BreadcrumbsRenderProps,
   type BreadcrumbItemRenderProps,
 } from '@proyecto-viviana/solidaria-components'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // SIZE CONTEXT
@@ -99,7 +100,8 @@ const variantStyles = {
  * Built on solidaria-components Breadcrumbs for full accessibility support.
  */
 export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'showSeparator',

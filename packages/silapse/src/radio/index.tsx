@@ -13,6 +13,7 @@ import {
   type RadioGroupRenderProps,
   type RadioRenderProps,
 } from '@proyecto-viviana/solidaria-components'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // SIZE CONTEXT
@@ -77,8 +78,9 @@ const sizeStyles = {
  * Built on solidaria-components RadioGroup for full accessibility support.
  */
 export function RadioGroup(props: RadioGroupProps): JSX.Element {
+  const mergedProps = useProviderProps(props)
   // Split out our custom styling props from the rest
-  const [local, headlessProps] = splitProps(props, [
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'class',
     'label',
@@ -147,7 +149,8 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
  * Built on solidaria-components Radio for full accessibility support.
  */
 export function Radio(props: RadioProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, ['class'])
   const sizeFromContext = useContext(RadioSizeContext)
   const sizeStyle = sizeStyles[sizeFromContext]
   const customClass = local.class ?? ''

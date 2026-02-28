@@ -27,6 +27,7 @@ import {
   type TableCellRenderProps,
 } from '@proyecto-viviana/solidaria-components'
 import type { Key, SortDescriptor, ColumnDefinition } from '@proyecto-viviana/solid-stately'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // SIZE CONTEXT
@@ -200,7 +201,8 @@ const alignStyles = {
  * ```
  */
 export function Table<T extends object>(props: TableProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'class',

@@ -21,6 +21,7 @@ import {
   type TabPanelRenderProps,
 } from '@proyecto-viviana/solidaria-components'
 import type { Key, TabOrientation } from '@proyecto-viviana/solid-stately'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // SIZE CONTEXT
@@ -126,7 +127,8 @@ const variantStyles = {
  * Built on solidaria-components Tabs for full accessibility support.
  */
 export function Tabs<T>(props: TabsProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'class',
@@ -196,7 +198,8 @@ export function TabList<T>(props: TabListProps<T>): JSX.Element {
  * A Tab represents an individual tab in a TabList.
  */
 export function Tab(props: TabProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, ['class'])
   const ctx = useContext(TabsSizeContext)
   const customClass = local.class ?? ''
 

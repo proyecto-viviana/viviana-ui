@@ -15,6 +15,7 @@ import {
   type CheckboxRenderProps,
   type CheckboxGroupRenderProps,
 } from '@proyecto-viviana/solidaria-components'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // TYPES
@@ -117,11 +118,12 @@ function IndeterminateIcon(props: { class?: string }) {
  * Built on solidaria-components Checkbox for full accessibility support.
  */
 export function Checkbox(props: CheckboxProps): JSX.Element {
+  const providerProps = useProviderProps(props)
   const defaultProps: Partial<CheckboxProps> = {
     size: 'md',
   }
 
-  const merged = solidMergeProps(defaultProps, props)
+  const merged = solidMergeProps(defaultProps, providerProps)
 
   const [local, headlessProps] = splitProps(merged, [
     'size',
@@ -214,7 +216,8 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
  * Built on solidaria-components CheckboxGroup for full accessibility support.
  */
 export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'class',
     'label',
     'description',

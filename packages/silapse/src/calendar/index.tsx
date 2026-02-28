@@ -16,6 +16,7 @@ import {
   type DateValue,
 } from '@proyecto-viviana/solidaria-components';
 import type { CalendarStateProps } from '@proyecto-viviana/solid-stately';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -94,7 +95,8 @@ const sizeStyles = {
 export function Calendar<T extends DateValue = CalendarDate>(
   props: CalendarProps<T>
 ): JSX.Element {
-  const [local, rest] = splitProps(props, [
+  const mergedProps = useProviderProps(props);
+  const [local, rest] = splitProps(mergedProps, [
     'size',
     'class',
     'showWeekNumbers',

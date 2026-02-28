@@ -10,6 +10,7 @@ import {
   type ButtonProps as HeadlessButtonProps,
   type ButtonRenderProps,
 } from '@proyecto-viviana/solidaria-components';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -42,7 +43,8 @@ const sizeStyles: Record<ClearButtonSize, { button: string; icon: string }> = {
  * An icon-only clear/dismiss button, typically used in search fields and tags.
  */
 export function ClearButton(props: ClearButtonProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['size', 'class']);
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, ['size', 'class']);
   const size = () => sizeStyles[local.size ?? 'md'];
 
   const getClassName = (renderProps: ButtonRenderProps): string => {

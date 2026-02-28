@@ -24,6 +24,7 @@ import {
   type SelectOptionRenderProps,
 } from '@proyecto-viviana/solidaria-components'
 import type { Key } from '@proyecto-viviana/solid-stately'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // SIZE CONTEXT
@@ -107,10 +108,11 @@ const sizeStyles = {
  * Built on solidaria-components Select for full accessibility support.
  */
 export function Select<T>(props: SelectProps<T>): JSX.Element {
+  const mergedProps = useProviderProps(props)
   const descriptionId = createUniqueId()
   const errorId = createUniqueId()
 
-  const [local, headlessProps] = splitProps(props, [
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'class',
     'label',
@@ -171,7 +173,8 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
  * SSR-compatible - renders children and chevron icon directly without render props.
  */
 export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, ['class'])
   const size = useContext(SelectSizeContext)
   const sizeStyle = sizeStyles[size]
   const customClass = local.class ?? ''

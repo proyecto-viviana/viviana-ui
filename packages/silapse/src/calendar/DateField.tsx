@@ -16,6 +16,7 @@ import {
   type CalendarDate,
   type DateValue,
 } from '@proyecto-viviana/solidaria-components';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -93,7 +94,8 @@ const sizeStyles = {
 export function DateField<T extends DateValue = CalendarDate>(
   props: DateFieldProps<T>
 ): JSX.Element {
-  const [local, rest] = splitProps(props, [
+  const mergedProps = useProviderProps(props);
+  const [local, rest] = splitProps(mergedProps, [
     'size',
     'class',
     'label',

@@ -15,6 +15,7 @@ import {
   type ListBoxOptionRenderProps,
 } from '@proyecto-viviana/solidaria-components'
 import type { Key } from '@proyecto-viviana/solid-stately'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // SIZE CONTEXT
@@ -89,9 +90,10 @@ const sizeStyles = {
  * Built on solidaria-components ListBox for full accessibility support.
  */
 export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
+  const mergedProps = useProviderProps(props)
   const labelId = createUniqueId()
   const descriptionId = createUniqueId()
-  const [local, headlessProps] = splitProps(props, [
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'class',
     'label',

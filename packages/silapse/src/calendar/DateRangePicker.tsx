@@ -19,6 +19,7 @@ import {
   type DateValue,
 } from '@proyecto-viviana/solidaria-components'
 import { RangeCalendar } from './RangeCalendar'
+import { useProviderProps } from '../provider'
 
 function CalendarIcon(): JSX.Element {
   return (
@@ -217,7 +218,8 @@ function DateRangeDisplay(props: {
 export function DateRangePicker<T extends DateValue = CalendarDate>(
   props: DateRangePickerProps<T>
 ): JSX.Element {
-  const [local, rest] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, rest] = splitProps(mergedProps, [
     'size',
     'class',
     'label',

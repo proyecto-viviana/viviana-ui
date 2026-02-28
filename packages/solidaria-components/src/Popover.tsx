@@ -22,6 +22,7 @@ import {
   createOverlayTrigger,
   createPopover,
   FocusScope,
+  useUNSAFE_PortalContext,
   type Placement,
   type PlacementAxis,
 } from '@proyecto-viviana/solidaria'
@@ -381,6 +382,8 @@ export function Popover(props: PopoverProps): JSX.Element {
 
   // Check if we should render with dialog role
   const shouldBeDialog = () => !local.isNonModal
+  const portalContext = useUNSAFE_PortalContext()
+  const portalContainer = () => portalContext.getContainer?.() ?? undefined
 
   // Ensure Escape handling works even when popover content has no focusable children.
   createEffect(() => {
@@ -408,7 +411,7 @@ export function Popover(props: PopoverProps): JSX.Element {
 
   return (
     <Show when={isOpen() || local.isExiting}>
-      <Portal>
+      <Portal mount={portalContainer()}>
         <PopoverContext.Provider value={{ placement: popoverAria.placement, arrowProps: () => popoverAria.arrowProps }}>
           <FocusScope contain={shouldBeDialog()} restoreFocus autoFocus>
             <div

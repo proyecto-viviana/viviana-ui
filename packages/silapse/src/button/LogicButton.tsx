@@ -10,6 +10,7 @@ import {
   type ToggleButtonProps as HeadlessToggleButtonProps,
   type ToggleButtonRenderProps,
 } from '@proyecto-viviana/solidaria-components';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -28,7 +29,8 @@ export interface LogicButtonProps extends Omit<HeadlessToggleButtonProps, 'class
  * An AND/OR logic toggle button. Displays "AND" when selected (default), "OR" when not.
  */
 export function LogicButton(props: LogicButtonProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class']);
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, ['class']);
 
   const getClassName = (renderProps: ToggleButtonRenderProps): string => {
     const base = 'inline-flex items-center justify-center px-2 py-0.5 text-xs font-mono font-bold rounded transition-colors outline-none min-w-[3rem]';

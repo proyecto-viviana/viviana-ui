@@ -15,6 +15,7 @@ import {
   type ActionGroupItem,
 } from '@proyecto-viviana/solidaria-components';
 import type { Key, SelectionMode } from '@proyecto-viviana/solid-stately';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -87,7 +88,8 @@ function getItemClassName(renderProps: ActionGroupItemRenderProps): string {
 export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
   props: ActionGroupProps<T>
 ): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'renderItem', 'children']);
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, ['class', 'renderItem', 'children']);
 
   return (
     <HeadlessActionGroup<T>

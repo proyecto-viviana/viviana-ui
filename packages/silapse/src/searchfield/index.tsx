@@ -17,6 +17,7 @@ import {
   type SearchFieldInputRenderProps,
   type SearchFieldClearButtonRenderProps,
 } from '@proyecto-viviana/solidaria-components'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // TYPES
@@ -131,7 +132,8 @@ function SearchFieldError(props: { class?: string; children?: JSX.Element }): JS
 // ============================================
 
 export function SearchField(props: SearchFieldProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'class',

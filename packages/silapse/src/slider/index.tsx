@@ -17,6 +17,7 @@ import {
   type SliderThumbRenderProps,
 } from '@proyecto-viviana/solidaria-components'
 import { type SliderOrientation } from '@proyecto-viviana/solid-stately'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // TYPES
@@ -76,7 +77,8 @@ const sizeStyles = {
  * A slider allows users to select a value from a range.
  */
 export function Slider(props: SliderProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'class',

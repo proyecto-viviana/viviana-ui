@@ -10,6 +10,7 @@ import {
   type ButtonProps as HeadlessButtonProps,
   type ButtonRenderProps,
 } from '@proyecto-viviana/solidaria-components';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -44,7 +45,8 @@ const sizeStyles: Record<ActionButtonSize, string> = {
  * A quiet/subtle button for toolbar and secondary actions.
  */
 export function ActionButton(props: ActionButtonProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['size', 'isQuiet', 'class']);
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, ['size', 'isQuiet', 'class']);
   const isQuiet = () => local.isQuiet ?? true;
 
   const getClassName = (renderProps: ButtonRenderProps): string => {

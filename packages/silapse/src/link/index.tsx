@@ -10,6 +10,7 @@ import {
   type LinkProps as HeadlessLinkProps,
   type LinkRenderProps,
 } from '@proyecto-viviana/solidaria-components';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -62,7 +63,8 @@ const variantStyles = {
  * ```
  */
 export function Link(props: LinkProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, [
     'variant',
     'isStandalone',
     'isQuiet',

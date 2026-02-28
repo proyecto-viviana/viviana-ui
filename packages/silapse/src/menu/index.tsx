@@ -20,6 +20,7 @@ import {
   type MenuTriggerRenderProps,
 } from '@proyecto-viviana/solidaria-components'
 import type { Key } from '@proyecto-viviana/solid-stately'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // SIZE CONTEXT
@@ -105,7 +106,8 @@ const buttonVariants = {
  * A menu trigger wraps a button and menu, handling the open/close state.
  */
 export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['size', 'class'])
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, ['size', 'class'])
   const size = local.size ?? 'md'
 
   return (
@@ -128,7 +130,8 @@ export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
  * SSR-compatible - renders children and chevron icon directly without render props.
  */
 export function MenuButton(props: MenuButtonProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'variant'])
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, ['class', 'variant'])
   const size = useContext(MenuSizeContext)
   const sizeStyle = sizeStyles[size]
   const variant = local.variant ?? 'secondary'
@@ -175,7 +178,8 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
  * A menu displays a list of actions or options for the user to choose from.
  */
 export function Menu<T>(props: MenuProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, ['class'])
   const size = useContext(MenuSizeContext)
   const styles = () => sizeStyles[size]
   const customClass = local.class ?? ''

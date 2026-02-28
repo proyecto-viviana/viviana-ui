@@ -6,6 +6,7 @@
 
 import { type JSX, splitProps, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
+import { useUNSAFE_PortalContext } from '@proyecto-viviana/solidaria';
 
 // ============================================
 // TYPES
@@ -31,10 +32,12 @@ export interface OverlayProps {
  */
 export function Overlay(props: OverlayProps): JSX.Element {
   const [local] = splitProps(props, ['isOpen', 'children', 'class', 'container']);
+  const portalContext = useUNSAFE_PortalContext();
+  const portalContainer = () => local.container ?? (portalContext.getContainer?.() as HTMLElement | null | undefined) ?? undefined;
 
   return (
     <Show when={local.isOpen}>
-      <Portal mount={local.container}>
+      <Portal mount={portalContainer()}>
         <div class={`fixed z-50 ${local.class ?? ''}`}>
           {local.children}
         </div>

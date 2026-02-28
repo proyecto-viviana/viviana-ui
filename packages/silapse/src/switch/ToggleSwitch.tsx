@@ -10,6 +10,7 @@
 
 import { type JSX, splitProps, mergeProps as solidMergeProps } from 'solid-js';
 import { ToggleSwitch as HeadlessToggleSwitch, type ToggleSwitchProps as HeadlessToggleSwitchProps, type ToggleSwitchRenderProps } from '@proyecto-viviana/solidaria-components';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -59,11 +60,12 @@ const sizeStyles = {
  * Named "ToggleSwitch" to avoid conflict with SolidJS's built-in Switch component.
  */
 export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
+  const providerProps = useProviderProps(props);
   const defaultProps: Partial<ToggleSwitchProps> = {
     size: 'md',
   };
 
-  const merged = solidMergeProps(defaultProps, props);
+  const merged = solidMergeProps(defaultProps, providerProps);
 
   const [local, headlessProps] = splitProps(merged, [
     'size',

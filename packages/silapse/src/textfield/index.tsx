@@ -13,6 +13,7 @@ import {
   type TextFieldProps as HeadlessTextFieldProps,
   type TextFieldRenderProps,
 } from '@proyecto-viviana/solidaria-components'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // TYPES
@@ -94,7 +95,8 @@ export { TextArea } from './TextArea';
 export type { TextAreaProps, TextAreaSize, TextAreaVariant } from './TextArea';
 
 export function TextField(props: TextFieldProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'class',

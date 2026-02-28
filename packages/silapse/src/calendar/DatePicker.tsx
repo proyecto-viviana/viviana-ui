@@ -19,6 +19,7 @@ import {
   type DateValue,
 } from '@proyecto-viviana/solidaria-components'
 import { Calendar } from './index'
+import { useProviderProps } from '../provider'
 
 // Calendar icon component - use function to ensure consistent hydration
 function CalendarIcon(): JSX.Element {
@@ -101,7 +102,8 @@ const sizeStyles = {
 export function DatePicker<T extends DateValue = CalendarDate>(
   props: DatePickerProps<T>
 ): JSX.Element {
-  const [local, rest] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, rest] = splitProps(mergedProps, [
     'size',
     'class',
     'label',

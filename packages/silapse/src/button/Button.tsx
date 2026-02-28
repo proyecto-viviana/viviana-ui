@@ -9,6 +9,7 @@
 import { type JSX, splitProps, mergeProps as solidMergeProps } from 'solid-js';
 import { Button as HeadlessButton, type ButtonRenderProps } from '@proyecto-viviana/solidaria-components';
 import type { ButtonProps } from './types';
+import { useProviderProps } from '../provider';
 
 /**
  * Buttons allow users to perform an action or to navigate to another page.
@@ -19,13 +20,14 @@ import type { ButtonProps } from './types';
  * Styles are defined in components.css using the vui-button class system.
  */
 export function Button(props: ButtonProps): JSX.Element {
+  const providerProps = useProviderProps(props);
   const defaultProps: Partial<ButtonProps> = {
     variant: 'primary',
     buttonStyle: 'fill',
     size: 'md',
   };
 
-  const merged = solidMergeProps(defaultProps, props);
+  const merged = solidMergeProps(defaultProps, providerProps);
 
   const [local, headlessProps] = splitProps(merged, [
     'variant',

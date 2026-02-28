@@ -10,6 +10,7 @@ import {
   type ToolbarProps as HeadlessToolbarProps,
   type ToolbarRenderProps,
 } from '@proyecto-viviana/solidaria-components'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // TYPES
@@ -78,7 +79,8 @@ const orientationStyles = {
  * ```
  */
 export function Toolbar(props: ToolbarProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'variant',
     'size',
     'class',

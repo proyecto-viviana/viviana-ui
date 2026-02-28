@@ -21,6 +21,7 @@ import {
   createInteractOutside,
   ariaHideOutside,
   FocusScope,
+  useUNSAFE_PortalContext,
 } from '@proyecto-viviana/solidaria'
 import {
   type RenderChildren,
@@ -201,6 +202,8 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
     isDismissable: local.isDismissable,
     isKeyboardDismissDisabled: local.isKeyboardDismissDisabled,
   }
+  const portalContext = useUNSAFE_PortalContext()
+  const portalContainer = () => portalContext.getContainer?.() ?? undefined
 
   // Resolve children - handle both static JSX and render functions
   // IMPORTANT: We access props.children directly (not local.children) to preserve
@@ -215,7 +218,7 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
 
   return (
     <Show when={isOpen() || local.isExiting}>
-      <Portal>
+      <Portal mount={portalContainer()}>
         <OverlayTriggerStateContext.Provider value={state}>
           <InternalModalContext.Provider value={internalModalContext}>
             <div

@@ -20,6 +20,16 @@ export interface ModalProviderProps {
   children: JSX.Element;
 }
 
+export interface PortalProviderProps {
+  /** Returns the element where overlays should portal. Pass null to clear inherited context. */
+  getContainer?: (() => Element | null) | null;
+  children: JSX.Element;
+}
+
+export interface PortalProviderContextValue {
+  getContainer?: () => Element | null;
+}
+
 interface ModalContext {
   parent: ModalContext | null;
   modalCount: Accessor<number>;
@@ -28,6 +38,7 @@ interface ModalContext {
 }
 
 const ModalContext = createContext<ModalContext | null>(null);
+const PortalContext = createContext<PortalProviderContextValue>({});
 
 /**
  * Each ModalProvider tracks how many modals are open in its subtree. On mount, the modals
@@ -64,6 +75,30 @@ export const ModalProvider: ParentComponent<ModalProviderProps> = (props) => {
     </ModalContext.Provider>
   );
 };
+
+/**
+ * Sets the portal container for overlays rendered by descendants.
+ */
+export const UNSAFE_PortalProvider: ParentComponent<PortalProviderProps> = (props) => {
+  const parent = useUNSAFE_PortalContext();
+
+  return (
+    <PortalContext.Provider
+      value={{
+        getContainer: props.getContainer === null ? undefined : props.getContainer ?? parent.getContainer,
+      }}
+    >
+      {props.children}
+    </PortalContext.Provider>
+  );
+};
+
+/**
+ * Returns the portal container configuration inherited from the nearest provider.
+ */
+export function useUNSAFE_PortalContext(): PortalProviderContextValue {
+  return useContext(PortalContext) ?? {};
+}
 
 export interface ModalProviderAria {
   /** Props to be spread on the container element. */
@@ -136,7 +171,8 @@ export const OverlayContainer: ParentComponent<OverlayContainerProps> = (props) 
     return null;
   }
 
-  const portalContainer = () => props.portalContainer ?? document.body;
+  const portalContext = useUNSAFE_PortalContext();
+  const portalContainer = () => props.portalContainer ?? portalContext.getContainer?.() ?? document.body;
 
   createEffect(() => {
     const container = portalContainer();

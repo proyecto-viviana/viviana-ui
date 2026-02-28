@@ -22,6 +22,7 @@ import {
   type TreeRenderItemState,
 } from '@proyecto-viviana/solidaria-components'
 import type { Key, TreeItemData } from '@proyecto-viviana/solid-stately'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // SIZE CONTEXT
@@ -171,7 +172,8 @@ const variantStyles = {
  * ```
  */
 export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'class',

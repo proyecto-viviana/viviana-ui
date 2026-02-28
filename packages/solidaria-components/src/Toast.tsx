@@ -26,6 +26,7 @@ import {
 import {
   createToast,
   createToastRegion,
+  useUNSAFE_PortalContext,
 } from '@proyecto-viviana/solidaria';
 import {
   type RenderChildren,
@@ -211,6 +212,8 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
     'portal',
     'placement',
   ]);
+  const portalContext = useUNSAFE_PortalContext();
+  const portalContainer = () => portalContext.getContainer?.() ?? undefined;
 
   // Get state from context if not provided
   const contextState = useContext(ToastContext);
@@ -310,7 +313,7 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
   return (
     <Show when={hasToasts()}>
       <Show when={local.portal !== false} fallback={regionContent()}>
-        <Portal>{regionContent()}</Portal>
+        <Portal mount={portalContainer()}>{regionContent()}</Portal>
       </Show>
     </Show>
   );

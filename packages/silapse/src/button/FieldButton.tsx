@@ -10,6 +10,7 @@ import {
   type ButtonProps as HeadlessButtonProps,
   type ButtonRenderProps,
 } from '@proyecto-viviana/solidaria-components';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -28,7 +29,8 @@ export interface FieldButtonProps extends Omit<HeadlessButtonProps, 'class' | 's
  * A button designed to sit inside an input field.
  */
 export function FieldButton(props: FieldButtonProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class']);
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, ['class']);
 
   const getClassName = (renderProps: ButtonRenderProps): string => {
     const base = 'inline-flex items-center justify-center px-2 rounded-r-md transition-colors outline-none border-l border-primary-600';

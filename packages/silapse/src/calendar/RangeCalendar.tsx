@@ -17,6 +17,7 @@ import {
   type RangeValue,
 } from '@proyecto-viviana/solidaria-components';
 import type { RangeCalendarStateProps } from '@proyecto-viviana/solid-stately';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -87,7 +88,8 @@ const sizeStyles = {
 export function RangeCalendar<T extends DateValue = CalendarDate>(
   props: RangeCalendarProps<T>
 ): JSX.Element {
-  const [local, rest] = splitProps(props, [
+  const mergedProps = useProviderProps(props);
+  const [local, rest] = splitProps(mergedProps, [
     'size',
     'class',
     'aria-label',

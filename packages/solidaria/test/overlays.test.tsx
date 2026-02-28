@@ -14,6 +14,8 @@ import {
   ariaHideOutside,
   createModal,
   ModalProvider,
+  OverlayContainer,
+  UNSAFE_PortalProvider,
   useModalProvider,
 } from '../src/overlays';
 
@@ -458,5 +460,44 @@ describe('createModal', () => {
 
     expect(modalAria).toBeDefined();
     expect(modalAria.modalProps).toBeDefined();
+  });
+
+  it('OverlayContainer uses the portal provider container by default', () => {
+    const portalRoot = document.createElement('div');
+    document.body.appendChild(portalRoot);
+
+    render(() => (
+      <UNSAFE_PortalProvider getContainer={() => portalRoot}>
+        <OverlayContainer>
+          <div data-testid="overlay-content">Overlay content</div>
+        </OverlayContainer>
+      </UNSAFE_PortalProvider>
+    ));
+
+    expect(portalRoot.querySelector('[data-overlay-container]')).toBeTruthy();
+    expect(portalRoot.querySelector('[data-testid=\"overlay-content\"]')).toBeTruthy();
+
+    document.body.removeChild(portalRoot);
+  });
+
+  it('OverlayContainer portalContainer prop overrides inherited portal context', () => {
+    const inheritedRoot = document.createElement('div');
+    const explicitRoot = document.createElement('div');
+    document.body.appendChild(inheritedRoot);
+    document.body.appendChild(explicitRoot);
+
+    render(() => (
+      <UNSAFE_PortalProvider getContainer={() => inheritedRoot}>
+        <OverlayContainer portalContainer={explicitRoot}>
+          <div data-testid="overlay-content">Overlay content</div>
+        </OverlayContainer>
+      </UNSAFE_PortalProvider>
+    ));
+
+    expect(inheritedRoot.querySelector('[data-overlay-container]')).toBeNull();
+    expect(explicitRoot.querySelector('[data-overlay-container]')).toBeTruthy();
+
+    document.body.removeChild(inheritedRoot);
+    document.body.removeChild(explicitRoot);
   });
 });

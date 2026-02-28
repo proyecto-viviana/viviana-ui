@@ -595,8 +595,16 @@ export type { PropValues, PowersetItem } from './story-utils/generatePowerset';
 export { s1 } from './style-macro-s1';
 
 // Provider
-export { Provider, useTheme, ThemeContext } from './provider';
-export type { ProviderProps, ThemeContextValue, ColorScheme, Scale } from './provider';
+export { Provider, useProvider, useProviderProps, useTheme, ThemeContext } from './provider';
+export type {
+  ProviderProps,
+  ProviderContextValue,
+  ProviderInheritedProps,
+  ThemeContextValue,
+  ColorScheme,
+  Scale,
+  ValidationState,
+} from './provider';
 
 // Theme compatibility
 export { themeExpressClass } from './theme-express';

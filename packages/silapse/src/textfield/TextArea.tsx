@@ -5,7 +5,7 @@
  * Built on top of solidaria-components TextField + TextArea.
  */
 
-import { type JSX, splitProps, Show, useContext, createEffect, onMount } from 'solid-js'
+import { type JSX, splitProps, Show, useContext } from 'solid-js'
 import {
   TextField as HeadlessTextField,
   Label as HeadlessLabel,
@@ -14,6 +14,7 @@ import {
   type TextFieldProps as HeadlessTextFieldProps,
   type TextFieldRenderProps,
 } from '@proyecto-viviana/solidaria-components'
+import { useProviderProps } from '../provider'
 
 // ============================================
 // TYPES
@@ -96,7 +97,8 @@ function TextAreaError(props: { class?: string; children?: JSX.Element }): JSX.E
  * a sizable amount of text to enter.
  */
 export function TextArea(props: TextAreaProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
+  const mergedProps = useProviderProps(props)
+  const [local, headlessProps] = splitProps(mergedProps, [
     'size',
     'variant',
     'class',

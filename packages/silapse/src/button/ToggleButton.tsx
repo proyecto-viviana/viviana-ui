@@ -10,6 +10,7 @@ import {
   type ToggleButtonProps as HeadlessToggleButtonProps,
   type ToggleButtonRenderProps,
 } from '@proyecto-viviana/solidaria-components';
+import { useProviderProps } from '../provider';
 
 // ============================================
 // TYPES
@@ -42,7 +43,8 @@ const sizeStyles: Record<ToggleButtonSize, string> = {
  * A styled toggle button that can be selected or deselected.
  */
 export function ToggleButton(props: ToggleButtonProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['size', 'class']);
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, ['size', 'class']);
 
   const getClassName = (renderProps: ToggleButtonRenderProps): string => {
     const base = 'inline-flex items-center justify-center font-medium transition-colors outline-none border';

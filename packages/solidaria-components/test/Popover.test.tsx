@@ -3,6 +3,7 @@
  */
 import { describe, it, expect, afterEach } from 'vitest'
 import { render, screen, cleanup, waitFor } from '@solidjs/testing-library'
+import { UNSAFE_PortalProvider } from '@proyecto-viviana/solidaria'
 import { Popover, PopoverTrigger, usePopoverTrigger } from '../src/Popover'
 import { Button } from '../src/Button'
 import { createSignal } from 'solid-js'
@@ -192,6 +193,29 @@ describe('Popover', () => {
         const dialog = screen.getByRole('dialog')
         expect(dialog.getAttribute('data-trigger')).toBe('CustomTrigger')
       })
+    })
+
+    it('should render into the scoped portal container when provided', async () => {
+      const user = setupUser()
+      const portalRoot = document.createElement('div')
+      document.body.appendChild(portalRoot)
+
+      render(() => (
+        <UNSAFE_PortalProvider getContainer={() => portalRoot}>
+          <PopoverTrigger>
+            <Button>Open</Button>
+            <Popover>Scoped Content</Popover>
+          </PopoverTrigger>
+        </UNSAFE_PortalProvider>
+      ))
+
+      await user.click(screen.getByRole('button', { name: 'Open' }))
+
+      await waitFor(() => {
+        expect(portalRoot.querySelector('[role=\"dialog\"]')).toBeTruthy()
+      })
+
+      document.body.removeChild(portalRoot)
     })
   })
 
