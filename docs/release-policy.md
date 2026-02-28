@@ -95,6 +95,11 @@ Important npm limitation:
 
 - npm trusted publishing cannot configure a package that does not exist yet, so it does not solve the very first `silapse` publish by itself.
 
+After bootstrap:
+
+- npm does not rename packages in place. Keep `@proyecto-viviana/ui` as the old package name, publish `@proyecto-viviana/silapse` as the new package, and deprecate `@proyecto-viviana/ui` with a migration message.
+- JSR also treats `silapse` as a separate package. Create and publish `@proyecto-viviana/silapse`, then archive `@proyecto-viviana/ui` if you want to stop new releases there.
+
 ## Workspace Scope
 
 - Root npm workspace management covers `packages/*` and `apps/web`.
