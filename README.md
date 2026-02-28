@@ -102,8 +102,9 @@ GitHub automation on `main`:
 - merging a feature PR with changesets triggers the `Release` workflow
 - that workflow creates or updates the Changesets version PR
 - merging the version PR publishes changed packages to npm first, then publishes the matching JSR packages
-- JSR publishing uses GitHub OIDC and does not need a stored `JSR_TOKEN`
-- npm still uses `NPM_TOKEN` for now because the first `@proyecto-viviana/silapse` publish must exist before npm trusted publishing can replace it
+- npm publishing uses trusted publishing via GitHub OIDC and does not need `NPM_TOKEN`
+- JSR publishing uses `JSR_TOKEN` because this private repo cannot use JSR's repo-link OIDC flow
+- the first `@proyecto-viviana/silapse` npm publish should still be done manually from a local machine with OTP before relying on CI for that package name
 
 ## Available Components
 

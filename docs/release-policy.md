@@ -71,9 +71,9 @@ This means:
 
 One-time GitHub setup:
 
-- add `NPM_TOKEN` with npm publish access
-- no `JSR_TOKEN` is required when publishing from GitHub Actions via JSR's OIDC flow
-- the workflow must keep `id-token: write`
+- configure npm trusted publishing for `.github/workflows/release.yml`
+- add `JSR_TOKEN` with JSR publish access
+- keep `id-token: write` in the workflow for npm trusted publishing
 
 ## Silapse Bootstrap
 
@@ -82,18 +82,17 @@ One-time GitHub setup:
 JSR bootstrap:
 
 1. Create `@proyecto-viviana/silapse` in JSR.
-2. Link the package to this GitHub repository in JSR package settings.
-3. After that, the `Release` workflow can publish `silapse` from GitHub Actions without a JSR token by using OIDC.
+2. Because this repo is private and cannot be linked for JSR OIDC publishing, keep `JSR_TOKEN` in GitHub Actions for JSR publication.
 
 npm bootstrap:
 
-1. Publish the first `@proyecto-viviana/silapse` release so the package exists on npm.
-2. Until that first publish exists, keep `NPM_TOKEN` in GitHub Actions for npm publication.
-3. After the package exists, configure npm trusted publishing for `.github/workflows/release.yml` if you want to remove `NPM_TOKEN` later.
+1. Publish the first `@proyecto-viviana/silapse` release from a local machine so the package exists on npm.
+2. Use `npm publish --access public` and complete OTP locally for that first release.
+3. After that, GitHub Actions can publish future npm releases through trusted publishing without `NPM_TOKEN`.
 
 Important npm limitation:
 
-- npm trusted publishing cannot configure a package that does not exist yet, so it does not solve the very first `silapse` publish by itself.
+- even with trusted publishing configured, the safest rollout for a new package name is still a one-time local first publish before relying on CI.
 
 After bootstrap:
 
