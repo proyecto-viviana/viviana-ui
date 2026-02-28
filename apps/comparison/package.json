@@ -5,6 +5,10 @@
   "type": "module",
   "description": "Astro comparison app for React Spectrum and Proyecto Viviana parity review",
   "dependencies": {
+    "@proyecto-viviana/silapse": "file:../../packages/silapse",
+    "@proyecto-viviana/solid-stately": "file:../../packages/solid-stately",
+    "@proyecto-viviana/solidaria": "file:../../packages/solidaria",
+    "@proyecto-viviana/solidaria-components": "file:../../packages/solidaria-components",
     "@astrojs/react": "^4.2.2",
     "@astrojs/solid-js": "^5.1.1",
     "@react-spectrum/button": "3.17.6",

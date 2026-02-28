@@ -42,43 +42,8 @@ export default defineConfig(({ command }) => ({
     resolve: {
       alias: [
         {
-          find: /^@proyecto-viviana\/silapse\/components\.css$/,
-          replacement: path.resolve(
-            repoRoot,
-            "packages/silapse/dist/components.css",
-          ),
-        },
-        {
           find: "@comparison",
           replacement: path.resolve(appRoot, "src"),
-        },
-        {
-          find: /^@proyecto-viviana\/solid-stately$/,
-          replacement: path.resolve(
-            repoRoot,
-            "packages/solid-stately/dist/index.js",
-          ),
-        },
-        {
-          find: /^@proyecto-viviana\/solidaria$/,
-          replacement: path.resolve(
-            repoRoot,
-            "packages/solidaria/dist/index.js",
-          ),
-        },
-        {
-          find: /^@proyecto-viviana\/solidaria-components$/,
-          replacement: path.resolve(
-            repoRoot,
-            "packages/solidaria-components/dist/index.js",
-          ),
-        },
-        {
-          find: /^@proyecto-viviana\/silapse$/,
-          replacement: path.resolve(
-            repoRoot,
-            "packages/silapse/dist/index.js",
-          ),
         },
       ],
     },

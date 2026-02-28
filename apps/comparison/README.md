@@ -6,7 +6,9 @@ Proyecto Viviana.
 ## Scope
 
 - External dependencies are intended to stay local to `apps/comparison`.
-- The Solid layers are resolved from the repo source via Vite aliases.
+- The Proyecto Viviana packages are installed into this app as local `file:`
+  dependencies so the app resolves them through package metadata, like
+  `apps/web`, instead of bespoke Vite aliases.
 - The app is intentionally separate from the root Deno workspace so it can
   evolve without affecting `apps/web`.
 - Astro stays app-local. Cloudflare runtime tooling stays at the monorepo root
@@ -36,8 +38,8 @@ deno task comparison:dev:worker
 deno task comparison:deploy
 ```
 
-The root wrappers build the local Proyecto Viviana package outputs first so the
-comparison app always consumes current local package builds.
+The root wrappers invoke Astro or Wrangler directly; they do not rebuild the
+Proyecto Viviana packages first.
 
 ```bash
 cd apps/comparison
@@ -75,6 +77,9 @@ code:
 - Styled layer imports `@proyecto-viviana/silapse`
 - Headless component layer imports `@proyecto-viviana/solidaria-components`
 - ARIA/headless primitive layer imports `@proyecto-viviana/solidaria`
+
+Those package names resolve through app-local `file:` dependencies, matching the
+package-oriented setup already used by `apps/web`.
 
 The only app-local code is the comparison shell, fixture data, route manifest,
 and minimal mount wrappers that place React and Solid examples side by side.
