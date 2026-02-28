@@ -33,8 +33,9 @@ Root-level commands also exist for:
 ```bash
 deno task comparison:build
 deno task comparison:preview
-deno task comparison:check
+deno task comparison:typecheck
 deno task comparison:dev:worker
+deno task comparison:deploy:dry-run
 deno task comparison:deploy
 ```
 
@@ -50,10 +51,11 @@ deno task dev
 Additional tasks:
 
 ```bash
-deno task check
+deno task typecheck
 deno task build
 deno task preview
 deno task dev:worker
+deno task deploy:dry-run
 deno task deploy
 ```
 
