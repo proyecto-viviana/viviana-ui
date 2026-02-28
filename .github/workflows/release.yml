@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 concurrency:
   group: changesets-release-${{ github.ref }}
@@ -61,6 +62,5 @@ jobs:
       - name: Publish JSR packages
         if: steps.changesets.outputs.published == 'true'
         env:
-          JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
           PUBLISHED_PACKAGES_JSON: ${{ steps.changesets.outputs.publishedPackages }}
         run: node scripts/publish-jsr-from-changesets.mjs

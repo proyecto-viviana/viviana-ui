@@ -72,7 +72,28 @@ This means:
 One-time GitHub setup:
 
 - add `NPM_TOKEN` with npm publish access
-- add `JSR_TOKEN` with JSR publish access for `@proyecto-viviana`
+- no `JSR_TOKEN` is required when publishing from GitHub Actions via JSR's OIDC flow
+- the workflow must keep `id-token: write`
+
+## Silapse Bootstrap
+
+`@proyecto-viviana/silapse` is a new package name. The currently published upstream package is still `@proyecto-viviana/ui`, so `silapse` needs one-time bootstrap setup on both registries.
+
+JSR bootstrap:
+
+1. Create `@proyecto-viviana/silapse` in JSR.
+2. Link the package to this GitHub repository in JSR package settings.
+3. After that, the `Release` workflow can publish `silapse` from GitHub Actions without a JSR token by using OIDC.
+
+npm bootstrap:
+
+1. Publish the first `@proyecto-viviana/silapse` release so the package exists on npm.
+2. Until that first publish exists, keep `NPM_TOKEN` in GitHub Actions for npm publication.
+3. After the package exists, configure npm trusted publishing for `.github/workflows/release.yml` if you want to remove `NPM_TOKEN` later.
+
+Important npm limitation:
+
+- npm trusted publishing cannot configure a package that does not exist yet, so it does not solve the very first `silapse` publish by itself.
 
 ## Workspace Scope
 
