@@ -70,6 +70,33 @@ function App() {
 }
 ```
 
+## Release Management
+
+- `package.json` is the only version source of truth for releasable packages.
+- `deno.json` and `jsr.json` mirror release metadata and should not be version-bumped by hand.
+- Changesets defines release intent and updates npm package versions.
+
+Recommended local flow:
+
+```bash
+npm run changeset
+npm run release:prepare
+```
+
+`npm run release:prepare` applies Changesets version bumps, syncs mirrored manifests, builds packages, runs the Vitest suite, and runs the JSR dry-run checks.
+
+When the generated changes look correct:
+
+```bash
+npm run release:publish
+```
+
+If you want the full end-to-end flow in one command:
+
+```bash
+npm run release
+```
+
 ## Available Components
 
 ### Form Controls
@@ -341,10 +368,14 @@ deno task dev
 | `deno task typecheck` | TypeScript type checking |
 | `npm run changeset` | Create a changeset for releasable package changes |
 | `npm run changeset:version` | Apply version bumps + changelog updates |
+| `npm run sync:manifest-versions` | Synchronize mirrored `deno.json`/`jsr.json` release metadata from `package.json` |
+| `npm run check:manifest-versions` | Fail if mirrored Deno/JSR release metadata drifted from `package.json` |
 | `npm run changeset:publish` | Validate mirrored manifests, build, and publish changed packages to npm |
+| `npm run release:prepare` | Apply version bumps, sync/check manifests, build, test, and run JSR dry-run checks |
 | `npm run jsr:dry-run` | Run JSR dry-run publish checks in package dependency order |
 | `npm run jsr:publish` | Publish JSR packages in package dependency order |
-| `npm run release` | Run the npm release flow, then publish JSR packages |
+| `npm run release:publish` | Publish npm packages, then publish JSR packages |
+| `npm run release` | Run the full release flow: prepare, then publish |
 
 Release and publish policy is documented in [`docs/release-policy.md`](./docs/release-policy.md).
 

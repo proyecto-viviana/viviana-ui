@@ -50,6 +50,8 @@
     "version:set": "deno run -A scripts/version.ts",
     "jsr:dry-run": "deno run -A scripts/publish.ts --dry-run",
     "jsr:publish": "deno run -A scripts/publish.ts",
+    "release:prepare": "npm run release:prepare",
+    "release:publish": "npm run release:publish",
     "publish": "deno task jsr:publish",
     "release": "npm run release",
     "bench:bundle": "deno run -A benchmarks/bundle-size/analyze.ts",
