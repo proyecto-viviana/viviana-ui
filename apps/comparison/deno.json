@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "install": "npm install --workspaces=false",
+    "dev": "npm exec --workspaces=false -- astro dev",
+    "build": "npm exec --workspaces=false -- astro build",
+    "preview": "npm exec --workspaces=false -- astro preview",
+    "check": "npm exec --workspaces=false -- astro check"
+  }
+}

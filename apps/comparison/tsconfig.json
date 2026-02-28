@@ -1,0 +1,18 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@comparison/*": ["src/*"],
+      "@proyecto-viviana/solid-stately": [
+        "../../packages/solid-stately/src/index.ts"
+      ],
+      "@proyecto-viviana/solidaria": ["../../packages/solidaria/src/index.ts"],
+      "@proyecto-viviana/solidaria-components": [
+        "../../packages/solidaria-components/src/index.ts"
+      ],
+      "@proyecto-viviana/silapse": ["../../packages/silapse/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*", "astro.config.mjs"]
+}

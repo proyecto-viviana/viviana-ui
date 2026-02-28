@@ -1,0 +1,12 @@
+---
+const { componentSlug, layer } = Astro.props;
+---
+
+<div
+  class="comparison-island js-solid-mount"
+  data-component-slug={componentSlug}
+  data-layer={layer}
+></div>
+<script>
+  import "../scripts/solid-mount.tsx";
+</script>

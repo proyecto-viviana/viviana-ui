@@ -1,0 +1,112 @@
+---
+import ReactMount from "../../components/ReactMount.astro";
+import SolidMount from "../../components/SolidMount.astro";
+import {
+  comparisonEntries,
+  layerOrder,
+  type ComparisonEntry,
+  type ComparisonLayerId,
+} from "@comparison/data/comparison-manifest";
+import "@comparison/styles/global.css";
+
+export function getStaticPaths() {
+  return comparisonEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: ComparisonEntry };
+
+const layerTitles: Record<ComparisonLayerId, string> = {
+  styled: "Styled Layer",
+  components: "Component Layer",
+  headless: "Headless Layer",
+  state: "State Layer",
+};
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{entry.title} Comparison</title>
+  </head>
+  <body class="comparison-app">
+    <main class="page-shell">
+      <header class="detail-hero">
+        <a href="/" class="back-link">Back to manifest</a>
+        <div class="detail-hero-top">
+          <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
+          <span class="category-pill">{entry.category}</span>
+        </div>
+        <h1>{entry.title}</h1>
+        <p class="hero-copy">{entry.summary}</p>
+        <ul class="entry-notes">
+          {entry.gapSummary.map((note) => (
+            <li>{note}</li>
+          ))}
+        </ul>
+      </header>
+
+      {layerOrder.map((layer) => {
+        const track = entry.layers[layer];
+
+        return (
+          <section class="section-block layer-block">
+            <div class="section-heading">
+              <h2>{layerTitles[layer]}</h2>
+              <p>{track.summary}</p>
+              <p class="layer-note">{track.note}</p>
+            </div>
+
+            <div class="comparison-grid">
+              <article class="framework-card">
+                <div class="framework-card-head">
+                  <div>
+                    <span class="framework-label">React</span>
+                    <h3>React Spectrum stack</h3>
+                  </div>
+                  <span class={`status-pill status-pill--${track.react}`}>
+                    {track.react}
+                  </span>
+                </div>
+                {track.react === "live" ? (
+                  <ReactMount componentSlug={entry.slug} layer={layer} />
+                ) : (
+                  <div class="comparison-empty-state">
+                    {track.react === "na"
+                      ? "No direct React layer exists here."
+                      : "This React comparison is tracked but not wired yet."}
+                  </div>
+                )}
+              </article>
+
+              <article class="framework-card">
+                <div class="framework-card-head">
+                  <div>
+                    <span class="framework-label">Solid</span>
+                    <h3>Proyecto Viviana stack</h3>
+                  </div>
+                  <span class={`status-pill status-pill--${track.solid}`}>
+                    {track.solid}
+                  </span>
+                </div>
+                {track.solid === "live" ? (
+                  <SolidMount componentSlug={entry.slug} layer={layer} />
+                ) : (
+                  <div class="comparison-empty-state">
+                    {track.solid === "na"
+                      ? "No direct Solid layer exists here."
+                      : "This Solid comparison is tracked but not wired yet."}
+                  </div>
+                )}
+              </article>
+            </div>
+          </section>
+        );
+      })}
+    </main>
+  </body>
+</html>

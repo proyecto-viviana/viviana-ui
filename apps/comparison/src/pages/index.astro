@@ -1,0 +1,80 @@
+---
+import { comparisonEntries } from "@comparison/data/comparison-manifest";
+import "@comparison/styles/global.css";
+
+const matchedCount = comparisonEntries.filter((entry) => entry.parity === "matched").length;
+const partialCount = comparisonEntries.filter((entry) => entry.parity === "partial").length;
+const gapCount = comparisonEntries.filter((entry) => entry.parity === "gap").length;
+const liveCount = comparisonEntries.filter((entry) => entry.priority === "live").length;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Comparison App</title>
+  </head>
+  <body class="comparison-app">
+    <main class="page-shell">
+      <header class="hero-card">
+        <p class="eyebrow">Astro Comparison Harness</p>
+        <h1>React Spectrum and Proyecto Viviana, side by side.</h1>
+        <p class="hero-copy">
+          This app is the parity bench for styled, component, headless, and state
+          layers. The first slice is deliberately narrow: prove the scoped-root
+          architecture, surface the live gaps, and make missing parity impossible to
+          hand-wave.
+        </p>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <span class="stat-label">Live routes</span>
+            <strong>{liveCount}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Matched</span>
+            <strong>{matchedCount}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Partial</span>
+            <strong>{partialCount}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Gap</span>
+            <strong>{gapCount}</strong>
+          </div>
+        </div>
+      </header>
+
+      <section class="section-block">
+        <div class="section-heading">
+          <h2>Tracked Components</h2>
+          <p>
+            The manifest mixes live parity pages with explicit backlog entries so
+            the app doubles as an implementation plan.
+          </p>
+        </div>
+        <div class="entry-grid">
+          {comparisonEntries.map((entry) => (
+            <a href={`/components/${entry.slug}`} class="entry-card">
+              <div class="entry-card-top">
+                <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
+                <span class="category-pill">{entry.category}</span>
+              </div>
+              <h3>{entry.title}</h3>
+              <p>{entry.summary}</p>
+              <ul class="entry-notes">
+                {entry.gapSummary.slice(0, 2).map((note) => (
+                  <li>{note}</li>
+                ))}
+              </ul>
+              <span class="entry-link">
+                Open comparison
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
