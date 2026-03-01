@@ -143,7 +143,7 @@ function normalizeIds(html: string): string {
       return idMap.get(id);
     }).join(' ');
     return `${attr}="${normalized}"`;
-  });
+  }).replace(/name="solidaria-cl-\d+"/g, 'name="solidaria-cl-0"');
 }
 
 afterEach(() => cleanup());

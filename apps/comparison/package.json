@@ -18,7 +18,8 @@
     "@proyecto-viviana/solid-stately": "file:../../packages/solid-stately",
     "@proyecto-viviana/solidaria": "file:../../packages/solidaria",
     "@proyecto-viviana/solidaria-components": "file:../../packages/solidaria-components",
-    "@proyecto-viviana/silapse": "file:../../packages/silapse"
+    "@proyecto-viviana/silapse": "file:../../packages/silapse",
+    "lodash": "^4.17.23"
   },
   "dependencies": {
     "@proyecto-viviana/silapse": "file:../../packages/silapse",

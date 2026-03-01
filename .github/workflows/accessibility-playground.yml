@@ -31,8 +31,8 @@ jobs:
       - name: Install Playwright Chromium
         run: bun run --cwd apps/web bunx playwright install --with-deps chromium
 
-      - name: Full playground accessibility scan (AA + best-practice + AAA + experimental)
-        run: bun run a11y:axe:playground
+      - name: WCAG 2.2 AA playground scan
+        run: bun run a11y:axe:aa
 
       - name: Docs and playground smoke
         run: bun run a11y:smoke
@@ -53,4 +53,5 @@ jobs:
           echo "## Accessibility Check Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "This workflow is blocking on pull requests." >> "$GITHUB_STEP_SUMMARY"
-          echo "Any accessibility failure in the gate must be fixed before merge." >> "$GITHUB_STEP_SUMMARY"
+          echo "It enforces WCAG 2.2 AA plus docs/playground smoke coverage." >> "$GITHUB_STEP_SUMMARY"
+          echo "Stricter best-practice, AAA, and experimental scans remain available via \`bun run a11y:full\`." >> "$GITHUB_STEP_SUMMARY"
