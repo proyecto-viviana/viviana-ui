@@ -1,6 +1,6 @@
 {
   "name": "@proyecto-viviana/solidaria-components",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "Pre-wired headless components for SolidJS - port of react-aria-components",
   "type": "module",
   "main": "./dist/index.js",
@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@internationalized/date": "^3.8.0",
-    "@proyecto-viviana/solidaria": "^0.2.7",
-    "@proyecto-viviana/solid-stately": "^0.2.6"
+    "@proyecto-viviana/solidaria": "^0.2.8",
+    "@proyecto-viviana/solid-stately": "^0.2.7"
   },
   "peerDependencies": {
     "solid-js": "^1.9.0"
