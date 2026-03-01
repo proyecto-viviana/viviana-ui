@@ -32,10 +32,5 @@ jobs:
       - name: Fetch base branch
         run: git fetch origin main --depth=1
 
-      - name: Ensure releasable package changes include changesets
-        run: |
-          CHANGED_FILES="$(git diff --name-only origin/main...HEAD)"
-          CHANGED_FILES="$CHANGED_FILES" bun scripts/check-changeset-required.mjs
-
-      - name: Validate changesets status
-        run: bun run changeset:status
+      - name: Run changesets CI check
+        run: bun run ci:changesets

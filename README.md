@@ -75,6 +75,29 @@ function App() {
 - `package.json` is the only version source of truth for releasable packages.
 - Changesets defines release intent and updates npm package versions.
 
+Recommended PR flow before pushing:
+
+```bash
+bun run pr:check:fast
+```
+
+That mirrors the blocking non-Playwright CI checks:
+
+- `bun run ci:changesets`
+- `bun run ci:release-readiness`
+
+When a PR changes the web app, accessibility surface, or CI wiring, run the full local PR gate too:
+
+```bash
+bun run pr:check
+```
+
+That adds `bun run ci:a11y`, which mirrors the blocking accessibility workflow. For stricter manual audits beyond the merge bar, run:
+
+```bash
+bun run a11y:full
+```
+
 Recommended local flow:
 
 ```bash
@@ -82,7 +105,7 @@ bun run changeset
 bun run release:prepare
 ```
 
-`bun run release:prepare` applies Changesets version bumps, builds packages, and runs the Vitest suite.
+`bun run release:prepare` applies Changesets version bumps and then runs `bun run ci:release-readiness`.
 
 When the generated changes look correct:
 

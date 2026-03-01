@@ -39,6 +39,8 @@ bun install           # Install dependencies
 bun run dev           # Start dev server (localhost:3000)
 bun run test:run      # Run all tests
 bun run build         # Typecheck and build all packages
+bun run pr:check:fast # Mirror blocking non-Playwright PR checks
+bun run pr:check      # Mirror full blocking PR checks, including a11y
 ```
 
 ### Publishing
@@ -47,6 +49,9 @@ bun run build         # Typecheck and build all packages
 bun run changeset         # Create release note + bump intent
 bun run changeset:status  # Preview release plan
 bun run changeset:version # Apply version bumps + changelogs
+bun run ci:changesets     # Mirror Changesets Check workflow
+bun run ci:release-readiness # Mirror Release Readiness workflow
+bun run ci:a11y           # Mirror blocking Accessibility Gate workflow
 bun run release:prepare   # Version, build, test
 bun run release:publish   # Publish npm packages
 bun run changeset:publish # Build + publish releasable packages to npm
@@ -55,6 +60,8 @@ bun run release           # Full release flow: prepare, then publish
 
 Release metadata rules:
 - `package.json` is the version source of truth for releasable packages.
+- Before pushing, prefer `bun run pr:check:fast`.
+- When touching web app accessibility or CI wiring, prefer `bun run pr:check`.
 
 ## Key Patterns
 

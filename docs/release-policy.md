@@ -25,22 +25,37 @@
 Recommended local flow:
 
 1. Add or merge Changesets for releasable npm packages.
-2. Run `bun run release:prepare`.
-3. Review the generated version and changelog updates.
-4. Run `bun run release:publish` when the tree is ready to publish.
+2. Run `bun run pr:check:fast` before pushing.
+3. If the PR touches the web app, accessibility surface, or CI workflow logic, run `bun run pr:check`.
+4. Run `bun run release:prepare`.
+5. Review the generated version and changelog updates.
+6. Run `bun run release:publish` when the tree is ready to publish.
 
 If you want the full end-to-end flow in one command, run `bun run release`.
 
 What `bun run release:prepare` does:
 
 1. Runs `bun run changeset:version` to apply package version bumps and changelog updates.
-2. Runs `bun run build`.
-3. Runs `bun run test:run`.
+2. Runs `bun run ci:release-readiness`.
+
+What `bun run pr:check:fast` does:
+
+1. Runs `bun run ci:changesets`.
+2. Runs `bun run ci:release-readiness`.
+
+What `bun run pr:check` does:
+
+1. Runs `bun run pr:check:fast`.
+2. Runs `bun run ci:a11y`.
 
 PR enforcement:
 
-- The `Release Readiness` workflow mirrors the non-publishing checks from `bun run release:prepare`.
-- It validates build health and the Vitest suite on pull requests without mutating versions or publishing packages.
+- The `Changesets Check` workflow mirrors `bun run ci:changesets`.
+- The `Release Readiness` workflow mirrors `bun run ci:release-readiness`.
+- The `Accessibility Gate` workflow mirrors `bun run ci:a11y`.
+- Together, those checks match `bun run pr:check`.
+- `bun run ci:a11y` is intentionally the blocking accessibility bar: WCAG 2.2 AA plus smoke coverage.
+- `bun run a11y:full` remains available for stricter best-practice, AAA, and experimental audits without blocking PRs.
 
 What `bun run release:publish` does:
 
