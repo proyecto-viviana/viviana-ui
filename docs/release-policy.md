@@ -85,5 +85,5 @@ One-time GitHub setup:
 
 ## Workspace Scope
 
-- Root npm workspace management covers `packages/*` and `apps/web`.
-- `apps/comparison` is intentionally managed as a standalone app and keeps its local `file:` package links outside the release workspace scope.
+- Root workspace management covers `packages/*`, `apps/web`, and `apps/comparison`.
+- `apps/web` and `apps/comparison` are private apps, ignored by Changesets for publishing, but kept in the workspace graph so internal package dependency ranges stay in sync.

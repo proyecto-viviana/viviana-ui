@@ -6,7 +6,8 @@
   "type": "module",
   "workspaces": [
     "packages/*",
-    "apps/web"
+    "apps/web",
+    "apps/comparison"
   ],
   "scripts": {
     "build": "bun run typecheck && bun run build:stately && bun run build:solidaria && bun run build:components && bun run build:silapse",
