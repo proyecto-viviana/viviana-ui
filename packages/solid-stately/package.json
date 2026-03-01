@@ -44,7 +44,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/proyecto-viviana/proyecto-viviana"
+    "url": "git+https://github.com/proyecto-viviana/proyecto-viviana.git",
+    "directory": "packages/solid-stately"
   },
   "publishConfig": {
     "access": "public"
