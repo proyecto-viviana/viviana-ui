@@ -54,8 +54,8 @@ PR enforcement:
 - The `Release Readiness` workflow mirrors `bun run ci:release-readiness`.
 - The `Accessibility Gate` workflow mirrors `bun run ci:a11y`.
 - Together, those checks match `bun run pr:check`.
-- `bun run ci:a11y` is intentionally the blocking accessibility bar: WCAG 2.2 AA plus smoke coverage.
-- `bun run a11y:full` remains available for stricter best-practice, AAA, and experimental audits without blocking PRs.
+- `bun run ci:a11y` is intentionally the blocking accessibility bar: WCAG 2.2 AA plus smoke coverage, with axe `color-contrast` temporarily excluded.
+- `bun run a11y:full` remains available for stricter contrast, best-practice, AAA, and experimental audits without blocking PRs.
 
 What `bun run release:publish` does:
 

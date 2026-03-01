@@ -92,7 +92,7 @@ When a PR changes the web app, accessibility surface, or CI wiring, run the full
 bun run pr:check
 ```
 
-That adds `bun run ci:a11y`, which mirrors the blocking accessibility workflow. For stricter manual audits beyond the merge bar, run:
+That adds `bun run ci:a11y`, which mirrors the blocking accessibility workflow. It currently excludes axe `color-contrast` from the blocking AA gate. For stricter manual audits, including contrast, run:
 
 ```bash
 bun run a11y:full

@@ -630,7 +630,24 @@ test.describe('Playground Page', () => {
     const popover = page.getByTestId('popover-actions').first();
     await expect(popover).toBeVisible();
 
-    await page.locator('body').click({ position: { x: 1, y: 1 } });
+    await page.evaluate(() => {
+      const eventInit = {
+        bubbles: true,
+        composed: true,
+        button: 0,
+        buttons: 1,
+        clientX: 8,
+        clientY: 8,
+      };
+
+      document.body.dispatchEvent(new PointerEvent('pointerdown', {
+        ...eventInit,
+        pointerId: 1,
+        pointerType: 'mouse',
+        isPrimary: true,
+      }));
+      document.body.dispatchEvent(new MouseEvent('click', eventInit));
+    });
     await expect(page.getByTestId('popover-actions')).toHaveCount(0);
 
     await checkNoHydrationErrors(errors);

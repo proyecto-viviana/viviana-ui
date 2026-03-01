@@ -51,7 +51,7 @@ bun run changeset:status  # Preview release plan
 bun run changeset:version # Apply version bumps + changelogs
 bun run ci:changesets     # Mirror Changesets Check workflow
 bun run ci:release-readiness # Mirror Release Readiness workflow
-bun run ci:a11y           # Mirror blocking Accessibility Gate workflow
+bun run ci:a11y           # Mirror blocking Accessibility Gate workflow (contrast excluded)
 bun run release:prepare   # Version, build, test
 bun run release:publish   # Publish npm packages
 bun run changeset:publish # Build + publish releasable packages to npm
@@ -62,6 +62,7 @@ Release metadata rules:
 - `package.json` is the version source of truth for releasable packages.
 - Before pushing, prefer `bun run pr:check:fast`.
 - When touching web app accessibility or CI wiring, prefer `bun run pr:check`.
+- `bun run ci:a11y` temporarily excludes axe `color-contrast`; use `bun run a11y:full` for the stricter contrast-inclusive audit.
 
 ## Key Patterns
 

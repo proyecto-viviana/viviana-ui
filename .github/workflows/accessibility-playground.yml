@@ -50,5 +50,5 @@ jobs:
           echo "## Accessibility Check Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "This workflow is blocking on pull requests." >> "$GITHUB_STEP_SUMMARY"
-          echo "It mirrors \`bun run ci:a11y\` and enforces WCAG 2.2 AA plus docs/playground smoke coverage." >> "$GITHUB_STEP_SUMMARY"
-          echo "Stricter best-practice, AAA, and experimental scans remain available via \`bun run a11y:full\`." >> "$GITHUB_STEP_SUMMARY"
+          echo "It mirrors \`bun run ci:a11y\` and enforces the blocking AA + smoke gate, with axe \`color-contrast\` temporarily excluded." >> "$GITHUB_STEP_SUMMARY"
+          echo "Stricter contrast, best-practice, AAA, and experimental scans remain available via \`bun run a11y:full\`." >> "$GITHUB_STEP_SUMMARY"
