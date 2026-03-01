@@ -15,17 +15,13 @@
     "deploy:dry-run": "bun run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --dry-run --config wrangler.jsonc"
   },
   "overrides": {
-    "@proyecto-viviana/solid-stately": "file:../../packages/solid-stately",
-    "@proyecto-viviana/solidaria": "file:../../packages/solidaria",
-    "@proyecto-viviana/solidaria-components": "file:../../packages/solidaria-components",
-    "@proyecto-viviana/silapse": "file:../../packages/silapse",
     "lodash": "^4.17.23"
   },
   "dependencies": {
-    "@proyecto-viviana/silapse": "file:../../packages/silapse",
-    "@proyecto-viviana/solid-stately": "file:../../packages/solid-stately",
-    "@proyecto-viviana/solidaria": "file:../../packages/solidaria",
-    "@proyecto-viviana/solidaria-components": "file:../../packages/solidaria-components",
+    "@proyecto-viviana/silapse": "^0.4.1",
+    "@proyecto-viviana/solid-stately": "^0.2.6",
+    "@proyecto-viviana/solidaria": "^0.2.7",
+    "@proyecto-viviana/solidaria-components": "^0.2.8",
     "@astrojs/react": "^4.2.2",
     "@astrojs/solid-js": "^5.1.1",
     "@react-spectrum/button": "3.17.6",
