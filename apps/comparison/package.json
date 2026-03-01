@@ -18,10 +18,10 @@
     "lodash": "^4.17.23"
   },
   "dependencies": {
-    "@proyecto-viviana/silapse": "^0.4.0",
-    "@proyecto-viviana/solid-stately": "^0.2.5",
-    "@proyecto-viviana/solidaria": "^0.2.6",
-    "@proyecto-viviana/solidaria-components": "^0.2.7",
+    "@proyecto-viviana/silapse": "^0.4.1",
+    "@proyecto-viviana/solid-stately": "^0.2.6",
+    "@proyecto-viviana/solidaria": "^0.2.7",
+    "@proyecto-viviana/solidaria-components": "^0.2.8",
     "@astrojs/react": "^4.2.2",
     "@astrojs/solid-js": "^5.1.1",
     "@react-spectrum/button": "3.17.6",
