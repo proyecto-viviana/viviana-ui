@@ -14,6 +14,7 @@ import { Overlay } from '../src/overlays/Overlay';
 import { Content, ViewHeader, ViewFooter } from '../src/view/Content';
 import { Illustration } from '../src/icon/Illustration';
 import { UIIcon } from '../src/icon/UIIcon';
+import * as indexExports from '../src/index';
 
 describe('Wave 4 UI Components', () => {
   // 4A: Text Variants
@@ -229,29 +230,28 @@ describe('Wave 4 UI Components', () => {
 
 // Export test to verify index exports
 describe('Wave 4 UI index exports', () => {
-  it('exports all Wave 4 components', async () => {
-    const mod = await import('../src/index');
-    expect(mod.Heading).toBeDefined();
-    expect(mod.ToggleButton).toBeDefined();
-    expect(mod.ActionButton).toBeDefined();
-    expect(mod.ClearButton).toBeDefined();
-    expect(mod.FieldButton).toBeDefined();
-    expect(mod.LogicButton).toBeDefined();
-    expect(mod.ProgressCircle).toBeDefined();
-    expect(mod.Field).toBeDefined();
-    expect(mod.HelpText).toBeDefined();
-    expect(mod.Overlay).toBeDefined();
-    expect(mod.Content).toBeDefined();
-    expect(mod.ViewHeader).toBeDefined();
-    expect(mod.ViewFooter).toBeDefined();
-    expect(mod.Illustration).toBeDefined();
-    expect(mod.UIIcon).toBeDefined();
-    expect(mod.Switch).toBeDefined();
-    expect(mod.AlertDialog).toBeDefined();
-    expect(mod.ActionMenu).toBeDefined();
-    expect(mod.SubmenuTrigger).toBeDefined();
-    expect(mod.RangeSlider).toBeDefined();
-    expect(mod.StyledModal).toBeDefined();
-    expect(mod.Tray).toBeDefined();
+  it('exports all Wave 4 components', () => {
+    expect(indexExports.Heading).toBeDefined();
+    expect(indexExports.ToggleButton).toBeDefined();
+    expect(indexExports.ActionButton).toBeDefined();
+    expect(indexExports.ClearButton).toBeDefined();
+    expect(indexExports.FieldButton).toBeDefined();
+    expect(indexExports.LogicButton).toBeDefined();
+    expect(indexExports.ProgressCircle).toBeDefined();
+    expect(indexExports.Field).toBeDefined();
+    expect(indexExports.HelpText).toBeDefined();
+    expect(indexExports.Overlay).toBeDefined();
+    expect(indexExports.Content).toBeDefined();
+    expect(indexExports.ViewHeader).toBeDefined();
+    expect(indexExports.ViewFooter).toBeDefined();
+    expect(indexExports.Illustration).toBeDefined();
+    expect(indexExports.UIIcon).toBeDefined();
+    expect(indexExports.Switch).toBeDefined();
+    expect(indexExports.AlertDialog).toBeDefined();
+    expect(indexExports.ActionMenu).toBeDefined();
+    expect(indexExports.SubmenuTrigger).toBeDefined();
+    expect(indexExports.RangeSlider).toBeDefined();
+    expect(indexExports.StyledModal).toBeDefined();
+    expect(indexExports.Tray).toBeDefined();
   });
 });

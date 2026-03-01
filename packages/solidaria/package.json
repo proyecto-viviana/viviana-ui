@@ -22,10 +22,11 @@
   "scripts": {
     "build": "tsup && rm -f tsconfig.build.tsbuildinfo && tsc -p tsconfig.build.json",
     "dev": "tsup --watch",
-    "prepublishOnly": "echo 'Use the root Changesets/JSR release workflow'"
+    "prepublishOnly": "echo 'Use the root Changesets npm release workflow'"
   },
   "dependencies": {
     "@proyecto-viviana/solid-stately": "^0.2.5",
+    "@internationalized/date": "^3.8.0",
     "@internationalized/string": "^3.2.5"
   },
   "peerDependencies": {

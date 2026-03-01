@@ -1,5 +1,3 @@
-#!/usr/bin/env -S deno run -A
-
 /**
  * Layer module parity guard.
  *
@@ -8,12 +6,13 @@
  * UI parity is reported but not gating.
  */
 
+import { readdirSync } from "node:fs";
+
 function listDirs(path: string): string[] {
-  const out: string[] = [];
-  for (const entry of Deno.readDirSync(path)) {
-    if (entry.isDirectory) out.push(entry.name);
-  }
-  return out.sort();
+  return readdirSync(path, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
 }
 
 function diff(expected: string[], actual: string[]) {
@@ -65,5 +64,5 @@ console.log(`- extra: ${silapseDiff.extra.length}`);
 console.log(formatList(silapseDiff.extra));
 
 if (reactAriaDiff.missing.length > 0 || reactStatelyDiff.missing.length > 0) {
-  Deno.exit(1);
+  process.exit(1);
 }

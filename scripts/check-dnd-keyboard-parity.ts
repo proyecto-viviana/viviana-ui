@@ -1,5 +1,3 @@
-#!/usr/bin/env -S deno run -A
-
 /**
  * Guard: non-virtualized DnD keyboard parity wiring.
  *
@@ -7,6 +5,8 @@
  * - solidaria createDroppableCollection core
  * - collection component call-sites that pass useDroppableCollection options
  */
+
+import { readFile } from "node:fs/promises";
 
 interface CheckResult {
   target: string;
@@ -34,8 +34,8 @@ const componentPaths = [
 ] as const;
 
 const [coreSource, ...componentSources] = await Promise.all([
-  Deno.readTextFile(corePath),
-  ...componentPaths.map((path) => Deno.readTextFile(path)),
+  readFile(corePath, "utf8"),
+  ...componentPaths.map((path) => readFile(path, "utf8")),
 ]);
 
 const results: CheckResult[] = [];
@@ -81,5 +81,5 @@ const failed = results.filter((result) => !result.ok);
 if (failed.length > 0) {
   console.log("");
   console.log(`Failed checks: ${failed.length}`);
-  Deno.exit(1);
+  process.exit(1);
 }

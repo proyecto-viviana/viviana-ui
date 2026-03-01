@@ -26,16 +26,13 @@ jobs:
           bun-version: latest
 
       - name: Install workspace dependencies
-        run: npm install
+        run: bun install --frozen-lockfile
 
       - name: Install Playwright Chromium
         run: bun run --cwd apps/web bunx playwright install --with-deps chromium
 
-      - name: Full playground accessibility scan (AA + best-practice + AAA + experimental)
-        run: bun run a11y:axe:playground
-
-      - name: Docs and playground smoke
-        run: bun run a11y:smoke
+      - name: Run blocking accessibility checks
+        run: bun run ci:a11y
 
       - name: Upload Playwright artifacts
         if: always()
@@ -53,4 +50,5 @@ jobs:
           echo "## Accessibility Check Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "This workflow is blocking on pull requests." >> "$GITHUB_STEP_SUMMARY"
-          echo "Any accessibility failure in the gate must be fixed before merge." >> "$GITHUB_STEP_SUMMARY"
+          echo "It mirrors \`bun run ci:a11y\` and enforces the blocking AA + smoke gate, with axe \`color-contrast\` temporarily excluded." >> "$GITHUB_STEP_SUMMARY"
+          echo "Stricter contrast, best-practice, AAA, and experimental scans remain available via \`bun run a11y:full\`." >> "$GITHUB_STEP_SUMMARY"

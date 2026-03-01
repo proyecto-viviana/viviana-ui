@@ -1,11 +1,11 @@
-#!/usr/bin/env -S deno run -A
-
 /**
  * Full react-aria-components export-gap report.
  *
  * This is report-only and intentionally broader than guard:rac-parity.
  * It compares named value exports re-exported from local module files.
  */
+
+import { readFile } from "node:fs/promises";
 
 const RAC_INDEX = 'react-spectrum/packages/react-aria-components/src/index.ts';
 const SOLIDARIA_INDEX = 'packages/solidaria-components/src/index.ts';
@@ -51,8 +51,8 @@ function formatList(values: string[], limit = 50): string {
 }
 
 const [racSource, solidariaSource] = await Promise.all([
-  Deno.readTextFile(RAC_INDEX),
-  Deno.readTextFile(SOLIDARIA_INDEX),
+  readFile(RAC_INDEX, "utf8"),
+  readFile(SOLIDARIA_INDEX, "utf8"),
 ]);
 
 const racExports = parseNamedValueExports(racSource);

@@ -73,7 +73,7 @@ const p95 = timings[9];
 ## How to Run
 
 ```bash
-deno task bench:runtime
+bun run bench:runtime
 ```
 
 Results are logged to console (not saved to JSON - too much variance).

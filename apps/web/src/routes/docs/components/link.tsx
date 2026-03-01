@@ -39,7 +39,7 @@ function LinkPage() {
           const t = (e.target as HTMLElement).textContent;
           if (t) setLastAction(t.trim() + " pressed");
         }}>
-          <Link variant="default" onPress={() => setLastAction("Default pressed")}>Default</Link>
+          <Link variant="primary" onPress={() => setLastAction("Default pressed")}>Default</Link>
           <Link variant="secondary" onPress={() => setLastAction("Secondary pressed")}>Secondary</Link>
           <Link variant="subtle" onPress={() => setLastAction("Subtle pressed")}>Subtle</Link>
           {lastAction() && <span class="text-sm text-primary-400">{lastAction()}</span>}
@@ -85,7 +85,7 @@ function LinkPage() {
         props={[
           { name: "href", type: "string", description: "URL to navigate to (renders as <a>)" },
           { name: "target", type: "string", description: "Link target (_blank, _self, etc.)" },
-          { name: "variant", type: "'default' | 'secondary' | 'subtle'", default: "'default'", description: "Visual style" },
+          { name: "variant", type: "'primary' | 'secondary' | 'subtle'", default: "'primary'", description: "Visual style" },
           { name: "isDisabled", type: "boolean", default: "false", description: "Prevents activation" },
           { name: "onPress", type: "(e: PressEvent) => void", description: "Press handler (normalizes mouse/touch/keyboard)" },
           { name: "aria-current", type: "string", description: "Marks current page/step/location" },

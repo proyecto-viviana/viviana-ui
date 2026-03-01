@@ -66,16 +66,16 @@ function ProgressBarPage() {
         description="Progress bars come in different visual variants to communicate meaning."
         code={`<ProgressBar label="Default" value={60} />
 <ProgressBar label="Accent" value={45} variant="accent" />
-<ProgressBar label="Positive" value={80} variant="positive" />
-<ProgressBar label="Notice" value={35} variant="notice" />
-<ProgressBar label="Negative" value={20} variant="negative" />`}
+<ProgressBar label="Success" value={80} variant="success" />
+<ProgressBar label="Warning" value={35} variant="warning" />
+<ProgressBar label="Danger" value={20} variant="danger" />`}
       >
         <div class="space-y-4 max-w-md">
           <ProgressBar label="Default" value={60} />
           <ProgressBar label="Accent" value={45} variant="accent" />
-          <ProgressBar label="Positive" value={80} variant="positive" />
-          <ProgressBar label="Notice" value={35} variant="notice" />
-          <ProgressBar label="Negative" value={20} variant="negative" />
+          <ProgressBar label="Success" value={80} variant="success" />
+          <ProgressBar label="Warning" value={35} variant="warning" />
+          <ProgressBar label="Danger" value={20} variant="danger" />
         </div>
       </Example>
 
@@ -124,7 +124,7 @@ function ProgressBarPage() {
             label="Disk usage"
             value={90}
             valueLabel="9 / 10 TB"
-            variant="negative"
+            variant="danger"
           />
           <ProgressBar
             label="Clean progress (no value label)"
@@ -172,8 +172,8 @@ function ProgressBarPage() {
           },
           {
             name: "variant",
-            type: "'default' | 'accent' | 'positive' | 'notice' | 'negative'",
-            default: "'default'",
+            type: "'primary' | 'accent' | 'success' | 'warning' | 'danger'",
+            default: "'primary'",
             description: "Visual style variant to convey semantic meaning",
           },
           {

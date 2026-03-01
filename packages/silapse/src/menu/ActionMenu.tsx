@@ -19,7 +19,7 @@ import {
 // TYPES
 // ============================================
 
-export interface ActionMenuProps<T> extends Omit<HeadlessMenuProps<T>, 'class'> {
+export interface ActionMenuProps<T> extends Omit<HeadlessMenuProps<T>, 'class' | 'children'> {
   /** Additional CSS class name for the menu. */
   class?: string;
   /** Label for the trigger button. @default 'Actions' */

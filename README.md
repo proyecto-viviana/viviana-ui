@@ -73,38 +73,58 @@ function App() {
 ## Release Management
 
 - `package.json` is the only version source of truth for releasable packages.
-- `deno.json` and `jsr.json` mirror release metadata and should not be version-bumped by hand.
 - Changesets defines release intent and updates npm package versions.
+
+Recommended PR flow before pushing:
+
+```bash
+bun run pr:check:fast
+```
+
+That mirrors the blocking non-Playwright CI checks:
+
+- `bun run ci:changesets`
+- `bun run ci:release-readiness`
+
+When a PR changes the web app, accessibility surface, or CI wiring, run the full local PR gate too:
+
+```bash
+bun run pr:check
+```
+
+That adds `bun run ci:a11y`, which mirrors the blocking accessibility workflow. It currently excludes axe `color-contrast` from the blocking AA gate. For stricter manual audits, including contrast, run:
+
+```bash
+bun run a11y:full
+```
 
 Recommended local flow:
 
 ```bash
-npm run changeset
-npm run release:prepare
+bun run changeset
+bun run release:prepare
 ```
 
-`npm run release:prepare` applies Changesets version bumps, syncs mirrored manifests, builds packages, runs the Vitest suite, and runs the JSR dry-run checks.
+`bun run release:prepare` applies Changesets version bumps and then runs `bun run ci:release-readiness`.
 
 When the generated changes look correct:
 
 ```bash
-npm run release:publish
+bun run release:publish
 ```
 
 If you want the full end-to-end flow in one command:
 
 ```bash
-npm run release
+bun run release
 ```
 
 GitHub automation on `main`:
 
 - merging a feature PR with changesets triggers the `Release` workflow
 - that workflow creates or updates the Changesets version PR
-- merging the version PR publishes changed packages to npm first, then publishes the matching JSR packages
+- merging the version PR publishes changed packages to npm
 - npm publishing uses trusted publishing via GitHub OIDC and does not need `NPM_TOKEN`
-- JSR publishing uses `JSR_TOKEN` because this private repo cannot use JSR's repo-link OIDC flow
-- the first `@proyecto-viviana/silapse` npm publish should still be done manually from a local machine with OTP before relying on CI for that package name
 
 ## Available Components
 
@@ -341,12 +361,11 @@ function CustomCheckbox(props) {
 
 ## Development
 
-> Primary runtime: Deno >= 2.0. Bun is only invoked for the Vitest-based suites (`deno task test`, `deno task test:watch`, and `deno task test:e2e`). Every other task—build, dev server, guards, and benchmarks—runs under Deno.
+> Primary runtime: Bun >= 1.0. Use `bun run ...` for build, dev, tests, guards, and release preparation.
 
 ### Prerequisites
 
-- [Deno](https://deno.com/) >= 2.0 (primary runtime)
-- [Bun](https://bun.sh/) >= 1.0 (used only as runtime for tests)
+- [Bun](https://bun.sh/) >= 1.0
 
 ### Setup
 
@@ -356,35 +375,31 @@ git clone https://github.com/proyecto-viviana/proyecto-viviana.git
 cd proyecto-viviana
 
 # Install dependencies
-deno task install
+bun install
 
 # Build all packages
-deno task build
+bun run build
 
 # Start development server
-deno task dev
+bun run dev
 ```
 
 ### Scripts
 
 | Command | Description |
 |---------|-------------|
-| `deno task install` | Install npm dependencies |
-| `deno task build` | Build all packages |
-| `deno task dev` | Start development server (playground) |
-| `deno task test` | Run tests once (uses Bun runtime) |
-| `deno task test:watch` | Run tests in watch mode (uses Bun runtime) |
-| `deno task typecheck` | TypeScript type checking |
-| `npm run changeset` | Create a changeset for releasable package changes |
-| `npm run changeset:version` | Apply version bumps + changelog updates |
-| `npm run sync:manifest-versions` | Synchronize mirrored `deno.json`/`jsr.json` release metadata from `package.json` |
-| `npm run check:manifest-versions` | Fail if mirrored Deno/JSR release metadata drifted from `package.json` |
-| `npm run changeset:publish` | Validate mirrored manifests, build, and publish changed packages to npm |
-| `npm run release:prepare` | Apply version bumps, sync/check manifests, build, test, and run JSR dry-run checks |
-| `npm run jsr:dry-run` | Run JSR dry-run publish checks in package dependency order |
-| `npm run jsr:publish` | Publish JSR packages in package dependency order |
-| `npm run release:publish` | Publish npm packages, then publish JSR packages |
-| `npm run release` | Run the full release flow: prepare, then publish |
+| `bun install` | Install workspace dependencies |
+| `bun run build` | Typecheck and build all packages |
+| `bun run dev` | Start development server (playground) |
+| `bun run test:run` | Run tests once |
+| `bun run test:watch` | Run tests in watch mode |
+| `bun run typecheck` | TypeScript type checking |
+| `bun run changeset` | Create a changeset for releasable package changes |
+| `bun run changeset:version` | Apply version bumps + changelog updates |
+| `bun run changeset:publish` | Build and publish changed packages to npm |
+| `bun run release:prepare` | Apply version bumps, build, and run the Vitest suite |
+| `bun run release:publish` | Publish npm packages |
+| `bun run release` | Run the full release flow: prepare, then publish |
 
 Release and publish policy is documented in [`docs/release-policy.md`](./docs/release-policy.md).
 
@@ -527,7 +542,7 @@ These improvements come from SolidJS's compiled reactivity model, which eliminat
 All benchmark code, methodology, and results are publicly available:
 - Benchmarks: [`benchmarks/`](./benchmarks/)
 - Documentation: [`.claude/docs/performance.md`](./.claude/docs/performance.md)
-- Reproduce: `deno task bench:bundle`
+- Reproduce: `bun run bench:bundle`
 
 ## Browser Support
 

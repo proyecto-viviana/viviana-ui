@@ -143,7 +143,7 @@ function normalizeIds(html: string): string {
       return idMap.get(id);
     }).join(' ');
     return `${attr}="${normalized}"`;
-  });
+  }).replace(/name="solidaria-cl-\d+"/g, 'name="solidaria-cl-0"');
 }
 
 afterEach(() => cleanup());
@@ -834,35 +834,49 @@ describe('Regression: Calendar', () => {
 
 describe('Regression: DatePicker', () => {
   it('renders date segments and open button, and snapshot', async () => {
-    const { container } = render(() => (
-      <DatePicker aria-label="Date" buttonAriaLabel="Choose date" />
-    ));
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(new Date('2026-02-26T12:00:00.000Z'));
 
-    await waitFor(() => {
-      expect(screen.getAllByRole('spinbutton').length).toBeGreaterThan(0);
-    });
+    try {
+      const { container } = render(() => (
+        <DatePicker aria-label="Date" buttonAriaLabel="Choose date" />
+      ));
 
-    const segments = screen.getAllByRole('spinbutton');
-    expect(segments.length).toBeGreaterThanOrEqual(3); // month/day/year
-    expect(screen.getByRole('button', { name: 'Choose date' })).toBeInTheDocument();
-    expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
+      await waitFor(() => {
+        expect(screen.getAllByRole('spinbutton').length).toBeGreaterThan(0);
+      });
+
+      const segments = screen.getAllByRole('spinbutton');
+      expect(segments.length).toBeGreaterThanOrEqual(3); // month/day/year
+      expect(screen.getByRole('button', { name: 'Choose date' })).toBeInTheDocument();
+      expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 
 describe('Regression: DateField', () => {
   it('renders label and date segments, and snapshot', async () => {
-    const { container } = render(() => (
-      <DateField label="Birth date" />
-    ));
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(new Date('2026-02-26T12:00:00.000Z'));
 
-    await waitFor(() => {
-      expect(screen.getAllByRole('spinbutton').length).toBeGreaterThan(0);
-    });
+    try {
+      const { container } = render(() => (
+        <DateField label="Birth date" />
+      ));
 
-    expect(screen.getByText('Birth date')).toBeInTheDocument();
-    const segments = screen.getAllByRole('spinbutton');
-    expect(segments.length).toBeGreaterThanOrEqual(3); // month/day/year
-    expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
+      await waitFor(() => {
+        expect(screen.getAllByRole('spinbutton').length).toBeGreaterThan(0);
+      });
+
+      expect(screen.getByText('Birth date')).toBeInTheDocument();
+      const segments = screen.getAllByRole('spinbutton');
+      expect(segments.length).toBeGreaterThanOrEqual(3); // month/day/year
+      expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 

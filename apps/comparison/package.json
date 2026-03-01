@@ -4,6 +4,23 @@
   "version": "0.0.1",
   "type": "module",
   "description": "Astro comparison app for React Spectrum and Proyecto Viviana parity review",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "dev:worker": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler dev --config wrangler.jsonc",
+    "types": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler types src/worker-configuration.d.ts --config wrangler.jsonc",
+    "deploy": "bun run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --config wrangler.jsonc",
+    "deploy:dry-run": "bun run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --dry-run --config wrangler.jsonc"
+  },
+  "overrides": {
+    "@proyecto-viviana/solid-stately": "file:../../packages/solid-stately",
+    "@proyecto-viviana/solidaria": "file:../../packages/solidaria",
+    "@proyecto-viviana/solidaria-components": "file:../../packages/solidaria-components",
+    "@proyecto-viviana/silapse": "file:../../packages/silapse",
+    "lodash": "^4.17.23"
+  },
   "dependencies": {
     "@proyecto-viviana/silapse": "file:../../packages/silapse",
     "@proyecto-viviana/solid-stately": "file:../../packages/solid-stately",

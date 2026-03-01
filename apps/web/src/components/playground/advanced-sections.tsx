@@ -606,7 +606,6 @@ export function PlaygroundAdvancedSections(props: PlaygroundAdvancedSectionsProp
               />
               <ActionMenu
                 label="More Options"
-                variant="secondary"
                 onAction={(key) => props.onLastAction(`ActionMenu: ${key}`)}
                 items={[
                   { id: 'settings', label: 'Settings' },
@@ -670,7 +669,7 @@ export function PlaygroundAdvancedSections(props: PlaygroundAdvancedSectionsProp
               </div>
               <div>
                 <h4 class="text-sm font-medium text-primary-300 mb-2">Space between</h4>
-                <Flex justifyContent="space-between" alignItems="center" class="bg-bg-300 p-4 rounded-lg">
+                <Flex justifyContent="between" alignItems="center" class="bg-bg-300 p-4 rounded-lg">
                   <span class="text-primary-200">Left</span>
                   <span class="text-primary-200">Center</span>
                   <span class="text-primary-200">Right</span>
@@ -2357,6 +2356,7 @@ function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
 interface DemoActionItem {
   id: string
   label: string
+  [key: string]: unknown
 }
 
 function ActionGroupDemo(props: { onLastAction: (value: string) => void }) {

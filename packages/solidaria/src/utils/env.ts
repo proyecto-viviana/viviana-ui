@@ -1,11 +1,10 @@
 /**
  * Environment detection utilities.
  * These avoid direct references to process.env which can cause TypeScript issues in browser environments.
- * Compatible with Node.js, Deno, and Vite environments.
+ * Compatible with Node.js and Vite environments.
  */
 
-// Type-safe access to import.meta.env (Vite) and Deno.env
-declare const Deno: { env?: { get(key: string): string | undefined } } | undefined;
+// Type-safe access to import.meta.env (Vite) and process.env
 type ImportMetaWithEnv = ImportMeta & { env?: Record<string, unknown> & { DEV?: boolean; PROD?: boolean } };
 type ProcessLike = { env?: Record<string, string | undefined> };
 
@@ -14,10 +13,6 @@ function getEnvVar(key: string): string | undefined {
   const importMetaEnv = (import.meta as ImportMetaWithEnv).env;
   if (importMetaEnv && typeof importMetaEnv[key] === 'string') {
     return importMetaEnv[key] as string;
-  }
-  // Check Deno
-  if (typeof Deno !== 'undefined' && Deno.env) {
-    return Deno.env.get(key);
   }
   // Check Node.js process.env via globalThis
   const processEnv = (globalThis as typeof globalThis & { process?: ProcessLike }).process?.env;

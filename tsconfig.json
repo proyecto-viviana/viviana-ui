@@ -24,7 +24,9 @@
       "@proyecto-viviana/solid-stately": ["./packages/solid-stately/src/index.ts"],
       "@proyecto-viviana/solidaria": ["./packages/solidaria/src/index.ts"],
       "@proyecto-viviana/solidaria-components": ["./packages/solidaria-components/src/index.ts"],
-      "@proyecto-viviana/silapse": ["./packages/silapse/src/index.ts"]
+      "@proyecto-viviana/silapse": ["./packages/silapse/src/index.ts"],
+      "@proyecto-viviana/solidaria-test-utils": ["./packages/solidaria-test-utils/src/index.ts"],
+      "@proyecto-viviana/silapse-test-utils": ["./packages/silapse-test-utils/src/index.ts"]
     }
   },
   "include": ["packages/*/src/**/*", "packages/*/build.ts", "scripts/**/*"],

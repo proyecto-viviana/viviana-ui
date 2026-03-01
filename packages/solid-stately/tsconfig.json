@@ -9,7 +9,6 @@
     "jsxImportSource": "solid-js",
     "strict": true,
     "noEmit": true,
-    "types": ["vite/client"],
     "declaration": true,
     "declarationDir": "./dist",
     "outDir": "./dist",

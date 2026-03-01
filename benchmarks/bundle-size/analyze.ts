@@ -1,4 +1,3 @@
-#!/usr/bin/env -S deno run -A
 /**
  * Bundle Size Analysis - Compares Proyecto Viviana vs React Spectrum
  *
@@ -11,7 +10,7 @@ import { solidPlugin } from 'esbuild-plugin-solid';
 import { gzipSize } from 'gzip-size';
 import brotliSizeModule from 'brotli-size';
 import { existsSync } from 'node:fs';
-import { writeFile, mkdir } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -101,23 +100,29 @@ async function analyzeBundle(entryPoint: string): Promise<BundleMetrics> {
   return { raw, minified, gzip, brotli };
 }
 
-async function getPackageVersion(packageName: string): Promise<string> {
+async function readPackageJson(path: string): Promise<Record<string, any> | undefined> {
   try {
-    const lockPath = resolve(__dirname, '../../deno.lock');
-    if (existsSync(lockPath)) {
-      const lock = JSON.parse(await Deno.readTextFile(lockPath));
-      const npmPackages = lock.packages?.specifiers || {};
-
-      for (const [key, value] of Object.entries(npmPackages)) {
-        if (key.includes(packageName)) {
-          return (value as string).split('@').pop() || 'unknown';
-        }
-      }
+    if (existsSync(path)) {
+      return JSON.parse(await readFile(path, 'utf8'));
     }
   } catch (error) {
-    console.warn(`Could not read version for ${packageName}:`, error);
+    console.warn(`Could not read package metadata from ${path}:`, error);
   }
-  return 'unknown';
+  return undefined;
+}
+
+async function getPackageVersions(): Promise<{ pv: string; rs: string }> {
+  const [pvPackage, comparisonPackage] = await Promise.all([
+    readPackageJson(resolve(__dirname, '../../packages/silapse/package.json')),
+    readPackageJson(resolve(__dirname, '../../apps/comparison/package.json')),
+  ]);
+
+  return {
+    pv: typeof pvPackage?.version === 'string' ? pvPackage.version : 'unknown',
+    rs: typeof comparisonPackage?.dependencies?.['@adobe/react-spectrum'] === 'string'
+      ? comparisonPackage.dependencies['@adobe/react-spectrum']
+      : 'unknown',
+  };
 }
 
 function formatBytes(bytes: number): string {
@@ -161,6 +166,7 @@ function printResults(results: BenchmarkResults) {
 
 async function main() {
   console.log('🔍 Analyzing bundle sizes...\n');
+  const versions = await getPackageVersions();
 
   const fixtures = {
     single_button: {
@@ -182,8 +188,8 @@ async function main() {
     environment: {
       node: process.version,
       esbuild: esbuild.version,
-      pv_version: await getPackageVersion('@proyecto-viviana/silapse'),
-      rs_version: await getPackageVersion('@adobe/react-spectrum'),
+      pv_version: versions.pv,
+      rs_version: versions.rs,
     },
     scenarios: {} as any,
   };

@@ -84,7 +84,7 @@ function DocsLayout() {
   const [expandedSections, setExpandedSections] = createSignal<Set<string>>(new Set(["Components", "Hooks"]));
 
   const isActive = (href: string) => {
-    const path = location.pathname;
+    const path = location().pathname;
     return href === "/docs" ? path === "/docs" || path === "/docs/" : path === href;
   };
 
