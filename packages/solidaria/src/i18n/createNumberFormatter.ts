@@ -8,7 +8,7 @@
 
 import { createMemo } from 'solid-js';
 import { useLocale } from './locale';
-import { NumberFormatter, type NumberFormatOptions } from './NumberFormatter';
+import { NumberFormatter, type NumberFormatOptions } from '@internationalized/number';
 
 /**
  * Provides localized number formatting for the current locale.

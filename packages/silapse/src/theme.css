@@ -77,14 +77,16 @@
      Used by vui-* component classes.
      ══════════════════════════════════════════ */
 
-  /* Background — blue-grey tinted */
-  --color-bg-100: #3B5260;
-  --color-bg-200: #293E4B;
-  --color-bg-300: #24313a;
-  --color-bg-400: #1D272E;
+  /* Background — pure void */
+  --color-bg-100: #404040;
+  --color-bg-200: #252525;
+  --color-bg-300: #1a1a1a;
+  --color-bg-400: #111111;
   --color-bg-light: #515151;
 
   /* Primary — Silapse blue scale */
+  --color-primary: #75ABC7;
+  --color-primary-50: #081018;
   --color-primary-100: #ddf4ff;
   --color-primary-200: #b6e3ff;
   --color-primary-300: #80ccff;
@@ -93,26 +95,50 @@
   --color-primary-600: #3080f4;
   --color-primary-700: #1158c7;
   --color-primary-800: #0d419d;
+  --color-primary-900: #050a12;
 
   /* Accent — Silapse pink */
   --color-accent: #DF5C9A;
+  --color-accent-50: #100810;
   --color-accent-100: #0f0508;
-  --color-accent-200: #FFB2D7;
-  --color-accent-300: #FF88C0;
+  --color-accent-200: #150a12;
+  --color-accent-300: #ffa0d5;
   --color-accent-400: #f778ba;
   --color-accent-500: #d84a8f;
+  --color-accent-600: #f778ba;
+  --color-accent-700: #ffa0d5;
+  --color-accent-800: #ffc9e9;
+  --color-accent-900: #0f0508;
   --color-accent-highlight: #e2a2be;
 
   /* Semantic colors */
   --color-success-100: #E5FFF3;
+  --color-success-200: #102a18;
+  --color-success-300: #1a3a25;
   --color-success-400: #C2FFC8;
+  --color-success-500: #5BC96E;
   --color-success-600: #238636;
+  --color-success-700: #9FEFAA;
+  --color-success-800: #C2FFC8;
+  --color-success-900: #E5FFF3;
   --color-warning-100: #FFFBE5;
+  --color-warning-200: #2a2010;
+  --color-warning-300: #3a2c18;
   --color-warning-400: #FFDD87;
+  --color-warning-500: #E5C462;
   --color-warning-600: #966a13;
+  --color-warning-700: #FFEA9F;
+  --color-warning-800: #FFF3C2;
+  --color-warning-900: #FFFBE5;
   --color-danger-100: #FFE5E5;
+  --color-danger-200: #2a1010;
+  --color-danger-300: #401818;
   --color-danger-400: #FF8787;
+  --color-danger-500: #E56767;
   --color-danger-600: #da3633;
+  --color-danger-700: #FFA8A8;
+  --color-danger-800: #FFC7C7;
+  --color-danger-900: #FFE5E5;
 
   /* Cards */
   --color-cards-bg: #373737;
@@ -126,9 +152,12 @@
      Used by silapse-* component classes.
      ══════════════════════════════════════════ */
 
+  /* Canvas */
+  --color-canvas-bg: #000000;
+
   /* Surfaces */
-  --color-background: #141414;
-  --color-surface: #16191B;
+  --color-background: #000000;
+  --color-surface: #0a0a0a;
   --color-surface-elevated: #111111;
 
   /* Blue depth backgrounds */
@@ -138,14 +167,14 @@
   --color-bg-blue-light: #102040;
 
   /* Text */
-  --color-text: #C0C6CA;
+  --color-text: #ffffff;
   --color-text-secondary: #a0a0a0;
-  --color-text-muted: #A2AEB4;
+  --color-text-muted: #606060;
   --color-text-dim: #4F6D85;
   --color-text-disabled: #404040;
 
   /* Borders */
-  --color-border: #1D303A;
+  --color-border: #1a1a1a;
   --color-border-muted: #141414;
   --color-divider: #141414;
 
@@ -268,6 +297,8 @@
   --color-bg-400: #dbe8ef;
   --color-bg-light: #ffffff;
 
+  --color-primary: #75ABC7;
+  --color-primary-50: #f0f7ff;
   --color-primary-100: #06131d;
   --color-primary-200: #0c2436;
   --color-primary-300: #133a54;
@@ -276,8 +307,9 @@
   --color-primary-600: #2470a5;
   --color-primary-700: #5ea8d0;
   --color-primary-800: #9dcce4;
+  --color-primary-900: #0d2a3d;
 
-  --color-accent: #a02558;
+  --color-accent: #DF5C9A;
   --color-accent-100: #fef2f7;
   --color-accent-200: #7d1c48;
   --color-accent-300: #f78fb9;
@@ -286,19 +318,39 @@
   --color-accent-highlight: #d4508a;
 
   --color-success-100: #E5FFF3;
+  --color-success-200: #C2FFC8;
+  --color-success-300: #9FEFAA;
   --color-success-400: #1a7f37;
+  --color-success-500: #5BC96E;
   --color-success-600: #116329;
+  --color-success-700: #3D7A5F;
+  --color-success-800: #2A5741;
+  --color-success-900: #1A3529;
   --color-warning-100: #FFFBE5;
+  --color-warning-200: #FFF3C2;
+  --color-warning-300: #FFEA9F;
   --color-warning-400: #7d5200;
+  --color-warning-500: #E5C462;
   --color-warning-600: #654200;
+  --color-warning-700: #7A6D42;
+  --color-warning-800: #574D2F;
+  --color-warning-900: #352F1C;
   --color-danger-100: #FFE5E5;
+  --color-danger-200: #FFC7C7;
+  --color-danger-300: #FFA8A8;
   --color-danger-400: #cf222e;
+  --color-danger-500: #E56767;
   --color-danger-600: #a40e26;
+  --color-danger-700: #7A4242;
+  --color-danger-800: #572F2F;
+  --color-danger-900: #351C1C;
 
   --color-cards-bg: #ecf2f5;
   --color-cards-bg-load: #dfeaef;
   --color-correct: #1a7f37;
   --color-incorrect: #cf222e;
+
+  --color-canvas-bg: #404040;
 
   /* Semantic mappings */
   --color-background: #f2f7fa;

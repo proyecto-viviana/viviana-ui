@@ -119,6 +119,11 @@ export function hexToOklch(hex: string): OKLCH {
   return { l, c, h }
 }
 
+// Format OKLCH object as CSS oklch() string
+export function oklchToCss(oklch: OKLCH): string {
+  return `oklch(${+oklch.l.toFixed(4)} ${+oklch.c.toFixed(4)} ${+oklch.h.toFixed(2)})`
+}
+
 // Theme mode type
 export type ThemeMode = 'light' | 'dim' | 'dark'
 
@@ -141,7 +146,7 @@ export function generatePalette(baseHex: string, mode: ThemeMode): Record<string
 
   const shades = [100, 200, 300, 400, 500, 600, 700, 800]
   shades.forEach((shade, i) => {
-    palette[shade.toString()] = oklchToHex({
+    palette[shade.toString()] = oklchToCss({
       l: scale[i],
       c: base.c * chromaScale[i],
       h: base.h,
@@ -163,10 +168,10 @@ export function generateBgPalette(baseHex: string, mode: ThemeMode): Record<stri
 
   const scale = lightnessScale[mode]
   return {
-    '100': oklchToHex({ l: scale[0], c: base.c * 0.3, h: base.h }),
-    '200': oklchToHex({ l: scale[1], c: base.c * 0.25, h: base.h }),
-    '300': oklchToHex({ l: scale[2], c: base.c * 0.2, h: base.h }),
-    '400': oklchToHex({ l: scale[3], c: base.c * 0.15, h: base.h }),
+    '100': oklchToCss({ l: scale[0], c: base.c * 0.3, h: base.h }),
+    '200': oklchToCss({ l: scale[1], c: base.c * 0.25, h: base.h }),
+    '300': oklchToCss({ l: scale[2], c: base.c * 0.2, h: base.h }),
+    '400': oklchToCss({ l: scale[3], c: base.c * 0.15, h: base.h }),
   }
 }
 
@@ -175,16 +180,16 @@ export function generateAccentPalette(baseHex: string): Record<string, string> {
   const base = hexToOklch(baseHex)
 
   return {
-    '200': oklchToHex({ l: 0.85, c: base.c * 0.7, h: base.h }),
-    '300': oklchToHex({ l: 0.75, c: base.c * 0.85, h: base.h }),
-    '500': oklchToHex({ l: 0.65, c: base.c, h: base.h }),
-    'highlight': oklchToHex({ l: 0.78, c: base.c * 0.5, h: base.h }),
+    '200': oklchToCss({ l: 0.85, c: base.c * 0.7, h: base.h }),
+    '300': oklchToCss({ l: 0.75, c: base.c * 0.85, h: base.h }),
+    '500': oklchToCss({ l: 0.65, c: base.c, h: base.h }),
+    'highlight': oklchToCss({ l: 0.78, c: base.c * 0.5, h: base.h }),
   }
 }
 
 // Default theme colors (Silapse design system)
 export const defaultColors = {
-  primary: '#4da0ff',
+  primary: '#75ABC7',
   bg: '#0a0a0a',
-  accent: '#ffa0d5',
+  accent: '#DF5C9A',
 }

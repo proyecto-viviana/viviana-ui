@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/solid-router";
-import { GitHubIcon } from "@proyecto-viviana/silapse";
+import { GitHubIcon, Logo } from "@proyecto-viviana/silapse";
 import { createSignal, onMount, onCleanup, Show } from "solid-js";
 import { useSilapseTheme, useSilapseColors } from "@/utils/theme";
 
@@ -27,52 +27,6 @@ function useScrollDirection() {
   });
 
   return isVisible;
-}
-
-// ========================================
-// WIRE BORDER SVG
-// ========================================
-
-function HeaderWireBorder(props: { colors: ReturnType<ReturnType<typeof useSilapseColors>> }) {
-  const blueWirePath = `
-    M -120 18 C -80 6, -40 6, 0 18 S 80 30, 120 18 S 200 6, 240 18
-    S 320 30, 360 18 S 440 6, 480 18 S 560 30, 600 18
-    S 680 6, 720 18 S 800 30, 840 18 S 920 6, 960 18
-    S 1040 30, 1080 18 S 1160 6, 1200 18
-  `;
-
-  const pinkWirePath = `
-    M -120 24 C -80 36, -40 36, 0 24 S 80 12, 120 24 S 200 36, 240 24
-    S 320 12, 360 24 S 440 36, 480 24 S 560 12, 600 24
-    S 680 36, 720 24 S 800 12, 840 24 S 920 36, 960 24
-    S 1040 12, 1080 24 S 1160 36, 1200 24
-  `;
-
-  return (
-    <svg
-      style={{
-        position: "absolute",
-        bottom: "-16px",
-        left: "-5%",
-        width: "110%",
-        height: "36px",
-        "pointer-events": "none",
-        overflow: "visible",
-      }}
-      viewBox="-150 0 1400 42"
-      preserveAspectRatio="none"
-    >
-      {/* Blue wire — base, glow, pulse */}
-      <path d={blueWirePath} fill="none" stroke={props.colors.blueDim} stroke-width="3" stroke-linecap="round" />
-      <path d={blueWirePath} fill="none" stroke={props.colors.blue} stroke-width="2" stroke-linecap="round" style={{ filter: `drop-shadow(0 0 4px ${props.colors.blueGlow})` }} />
-      <path d={blueWirePath} fill="none" stroke={props.colors.text} stroke-width="2" stroke-linecap="round" stroke-dasharray="8 50" style={{ animation: "silapse-pulse 2.5s linear infinite", opacity: "0.8" }} />
-
-      {/* Pink wire — base, glow, pulse */}
-      <path d={pinkWirePath} fill="none" stroke={props.colors.pinkDim} stroke-width="3" stroke-linecap="round" />
-      <path d={pinkWirePath} fill="none" stroke={props.colors.pink} stroke-width="2" stroke-linecap="round" style={{ filter: `drop-shadow(0 0 4px ${props.colors.pinkGlow})` }} />
-      <path d={pinkWirePath} fill="none" stroke={props.colors.text} stroke-width="2" stroke-linecap="round" stroke-dasharray="8 50" style={{ animation: "silapse-pulse 2s linear infinite", opacity: "0.8" }} />
-    </svg>
-  );
 }
 
 // ========================================
@@ -159,45 +113,13 @@ export function Header() {
           "pointer-events": headerVisible() ? "auto" : "none",
         }}
       >
-        {/* Wire border at bottom */}
-        <HeaderWireBorder colors={colors()} />
-
         {/* Left: Logo + Title */}
         <Link
           to="/"
           style={{ display: "flex", "align-items": "center", gap: "12px", "text-decoration": "none" }}
           class={`transition-all duration-500 ${mounted() ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"}`}
         >
-          {/* Angular logo mark */}
-          <div
-            class="silapse-clip-box"
-            style={{
-              width: "32px",
-              height: "32px",
-              background: colors().surface,
-              border: `2px solid ${colors().pink}`,
-              display: "flex",
-              "align-items": "center",
-              "justify-content": "center",
-              "font-weight": "700",
-              "font-size": "14px",
-              color: colors().pink,
-              "font-family": "'Jost', sans-serif",
-              filter: `drop-shadow(0 0 6px ${colors().pinkGlow})`,
-            }}
-          >
-            V
-          </div>
-          <span
-            style={{
-              "font-family": "'Jost', sans-serif",
-              "font-weight": "600",
-              "font-size": "16px",
-              color: colors().text,
-            }}
-          >
-            Proyecto Viviana
-          </span>
+          <Logo firstWord="PROYECTO" secondWord="VIVIANA" size="lg" />
         </Link>
 
         {/* Right: Nav + GitHub + Theme Toggle */}

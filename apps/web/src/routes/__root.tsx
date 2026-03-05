@@ -65,8 +65,8 @@ function RootDocument(props: { children: JSX.Element }) {
       <head>
         <HydrationScript />
         <HeadContent />
-        {/* Restore saved theme before paint to avoid flash */}
-        <script>{`(function(){try{var t=localStorage.getItem('pv-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}})()`}</script>
+        {/* Resolve theme before paint: localStorage → system preference → dark */}
+        <script>{`(function(){try{var t=localStorage.getItem('pv-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t)}else{var s=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',s)}}catch(e){}})()`}</script>
       </head>
       <body class="font-jost antialiased">
         <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>

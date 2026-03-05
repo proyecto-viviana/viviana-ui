@@ -16,7 +16,7 @@ export { isRTL, createCacheKey } from './utils';
 export {
   NumberFormatter,
   type NumberFormatOptions,
-} from './NumberFormatter';
+} from '@internationalized/number';
 
 export { createNumberFormatter } from './createNumberFormatter';
 

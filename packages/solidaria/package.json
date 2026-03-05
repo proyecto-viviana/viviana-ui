@@ -27,6 +27,7 @@
   "dependencies": {
     "@proyecto-viviana/solid-stately": "^0.2.7",
     "@internationalized/date": "^3.8.0",
+    "@internationalized/number": "^3.6.0",
     "@internationalized/string": "^3.2.5"
   },
   "peerDependencies": {
