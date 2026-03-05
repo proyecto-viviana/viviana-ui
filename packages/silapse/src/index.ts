@@ -606,12 +606,39 @@ export type {
   ValidationState,
 } from './provider';
 
-// Theme compatibility
+// Theme compatibility (legacy)
 export { themeExpressClass } from './theme-express';
 export { themeLightClass, lightTheme } from './theme-light';
 export { themeDarkClass, darkTheme } from './theme-dark';
 export { themeDefaultClass, defaultTheme } from './theme-default';
 export type { Theme } from './theme/types';
+
+// Theme system
+export {
+  // OKLCH utilities
+  hexToOklch,
+  oklchToHex,
+  oklchToCss,
+  hexToRgba,
+  // Generator
+  generateTheme,
+  applyThemeVars,
+  themeToCssString,
+  // Viviana preset
+  viviana,
+  VIVIANA_PRIMARY,
+  VIVIANA_ACCENT,
+  // Reactive hook
+  createSilapseTheme,
+} from './theme';
+export type {
+  OKLCH,
+  ThemeInput,
+  CSSVarMap,
+  GeneratedTheme,
+  SilapseThemeResult,
+  ColorScheme as ThemeColorScheme,
+} from './theme';
 
 // ============================================
 // CUSTOM COMPONENTS
