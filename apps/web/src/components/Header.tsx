@@ -1,7 +1,29 @@
 import { Link, useLocation } from "@tanstack/solid-router";
 import { GitHubIcon, Logo } from "@proyecto-viviana/silapse";
-import { Show } from "solid-js";
+import { createSignal, onMount, onCleanup, Show } from "solid-js";
 import { useSilapseTheme, useSilapseColors } from "@/utils/theme";
+
+function useScrollDirection() {
+  const [isVisible, setIsVisible] = createSignal(true);
+  const [lastScrollY, setLastScrollY] = createSignal(0);
+
+  onMount(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY < lastScrollY() || currentY < 50) {
+        setIsVisible(true);
+      } else if (currentY > lastScrollY() && currentY > 100) {
+        setIsVisible(false);
+      }
+      setLastScrollY(currentY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    onCleanup(() => window.removeEventListener("scroll", handleScroll));
+  });
+
+  return isVisible;
+}
 
 // ========================================
 // THEME TOGGLE
@@ -47,6 +69,7 @@ function ThemeToggle() {
 export function Header() {
   const location = useLocation();
   const getColors = useSilapseColors();
+  const headerVisible = useScrollDirection();
 
   const isActive = (path: string) => {
     const current = location().pathname;
@@ -77,6 +100,10 @@ export function Header() {
           padding: "16px 24px",
           "padding-bottom": "24px",
           background: `linear-gradient(to bottom, ${colors().headerBg} 0%, ${colors().headerBg} 40%, transparent 100%)`,
+          transition: "opacity 0.3s ease, transform 0.3s ease",
+          opacity: headerVisible() ? "1" : "0",
+          transform: headerVisible() ? "translateY(0)" : "translateY(-10px)",
+          "pointer-events": headerVisible() ? "auto" : "none",
         }}
       >
         {/* Left: Logo + Title */}
