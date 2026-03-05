@@ -1,33 +1,7 @@
 import { Link, useLocation } from "@tanstack/solid-router";
 import { GitHubIcon, Logo } from "@proyecto-viviana/silapse";
-import { createSignal, onMount, onCleanup, Show } from "solid-js";
+import { Show } from "solid-js";
 import { useSilapseTheme, useSilapseColors } from "@/utils/theme";
-
-// ========================================
-// SCROLL-AWARE VISIBILITY
-// ========================================
-
-function useScrollDirection() {
-  const [isVisible, setIsVisible] = createSignal(true);
-  const [lastScrollY, setLastScrollY] = createSignal(0);
-
-  onMount(() => {
-    const handleScroll = () => {
-      const currentY = window.scrollY;
-      if (currentY < lastScrollY() || currentY < 50) {
-        setIsVisible(true);
-      } else if (currentY > lastScrollY() && currentY > 100) {
-        setIsVisible(false);
-      }
-      setLastScrollY(currentY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    onCleanup(() => window.removeEventListener("scroll", handleScroll));
-  });
-
-  return isVisible;
-}
 
 // ========================================
 // THEME TOGGLE
@@ -73,10 +47,6 @@ function ThemeToggle() {
 export function Header() {
   const location = useLocation();
   const getColors = useSilapseColors();
-  const headerVisible = useScrollDirection();
-  const [mounted, setMounted] = createSignal(false);
-
-  onMount(() => setMounted(true));
 
   const isActive = (path: string) => {
     const current = location().pathname;
@@ -107,27 +77,18 @@ export function Header() {
           padding: "16px 24px",
           "padding-bottom": "24px",
           background: `linear-gradient(to bottom, ${colors().headerBg} 0%, ${colors().headerBg} 40%, transparent 100%)`,
-          transition: "opacity 0.3s ease, transform 0.3s ease",
-          opacity: headerVisible() ? "1" : "0",
-          transform: headerVisible() ? "translateY(0)" : "translateY(-10px)",
-          "pointer-events": headerVisible() ? "auto" : "none",
         }}
       >
         {/* Left: Logo + Title */}
         <Link
           to="/"
           style={{ display: "flex", "align-items": "center", gap: "12px", "text-decoration": "none" }}
-          class={`transition-all duration-500 ${mounted() ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"}`}
         >
           <Logo firstWord="PROYECTO" secondWord="VIVIANA" size="lg" />
         </Link>
 
         {/* Right: Nav + GitHub + Theme Toggle */}
-        <nav
-          class={`flex items-center gap-3 transition-all duration-500 delay-100 ${
-            mounted() ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
-          }`}
-        >
+        <nav class="flex items-center gap-3">
           <SilapseNavLink href="/docs" color="blue" isActive={isActive("/docs")} colors={colors()}>
             DOCS
           </SilapseNavLink>

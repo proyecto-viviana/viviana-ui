@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/solid-router";
-import { createSignal, onMount } from "solid-js";
 import { GitHubIcon, PageLayout } from "@proyecto-viviana/silapse";
 import { Header } from "@/components";
 import { useSilapseColors, useSilapseTheme } from "@/utils/theme";
@@ -12,11 +11,6 @@ function Landing() {
   const getColors = useSilapseColors();
   const { isDark } = useSilapseTheme();
   const colors = () => getColors();
-  const [mounted, setMounted] = createSignal(false);
-
-  onMount(() => {
-    setTimeout(() => setMounted(true), 50);
-  });
 
   return (
     <div
@@ -60,9 +54,6 @@ function Landing() {
             "font-family": "'Jost', system-ui, sans-serif",
             "clip-path":
               "polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)",
-            opacity: mounted() ? "1" : "0",
-            transform: mounted() ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 0.6s ease, transform 0.6s ease",
           }}
         >
           ACCESSIBLE UI LIBRARY FOR SOLIDJS
@@ -77,9 +68,6 @@ function Landing() {
             "line-height": "1",
             margin: "0 0 1.5rem 0",
             "letter-spacing": "-0.02em",
-            opacity: mounted() ? "1" : "0",
-            transform: mounted() ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s",
           }}
         >
           <span style={{ color: colors().blue }}>A11y</span> at
@@ -98,9 +86,6 @@ function Landing() {
             "border-left": `3px solid ${colors().pink}`,
             "padding-left": "12px",
             "text-align": "left",
-            opacity: mounted() ? "1" : "0",
-            transform: mounted() ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s",
           }}
         >
           A meticulously crafted port of Adobe's React Spectrum.
@@ -114,9 +99,6 @@ function Landing() {
             gap: "12px",
             "flex-wrap": "wrap",
             "justify-content": "center",
-            opacity: mounted() ? "1" : "0",
-            transform: mounted() ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s",
           }}
         >
           <Link
@@ -199,9 +181,6 @@ function Landing() {
             "margin-top": "3rem",
             "max-width": "600px",
             width: "100%",
-            opacity: mounted() ? "1" : "0",
-            transform: mounted() ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s",
           }}
         >
           <FeatureBlock
