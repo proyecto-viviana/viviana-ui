@@ -100,7 +100,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
           >
             <span
               class={[
-                'absolute top-0.5 left-0.5 rounded-full bg-white shadow transition-transform duration-200',
+                'absolute top-0.5 left-0.5 rounded-full bg-on-color shadow transition-transform duration-200',
                 size().thumb,
                 renderProps.isSelected ? size().translate : 'translate-x-0',
               ].join(' ')}

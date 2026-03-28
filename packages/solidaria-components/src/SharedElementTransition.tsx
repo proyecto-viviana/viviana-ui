@@ -75,7 +75,7 @@ export interface SharedElementRenderProps {
 }
 
 export interface SharedElementPropsBase
-  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'style'> {
+  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'style' | 'ref'> {
   children?: RenderChildren<SharedElementRenderProps>;
   class?: ClassNameOrFunction<SharedElementRenderProps>;
   style?: StyleOrFunction<SharedElementRenderProps>;
@@ -84,7 +84,7 @@ export interface SharedElementPropsBase
 export interface SharedElementProps extends SharedElementPropsBase {
   name: string;
   isVisible?: boolean;
-  ref?: HTMLDivElement | ((el: HTMLDivElement) => void);
+  ref?: ((el: HTMLDivElement) => void) | { current?: HTMLDivElement };
 }
 
 /**
@@ -115,8 +115,7 @@ export function SharedElement(props: SharedElementProps): JSX.Element | null {
     if (typeof userRef === 'function') {
       userRef(el);
     } else if (userRef !== undefined) {
-      // Direct assignment for ref={myVar} pattern
-      (local as any).ref = el;
+      userRef.current = el;
     }
   };
 
@@ -142,15 +141,15 @@ export function SharedElement(props: SharedElementProps): JSX.Element | null {
 
           // Set properties to animate from.
           const values = prevSnapshot.style.map(([property, prevValue]) => {
-            const value = (element.style as any)[property];
+            const value = element.style.getPropertyValue(property);
             if (property === 'translate') {
               const prevRect = prevSnapshot.rect;
               const currentRect = element.getBoundingClientRect();
               const deltaX = prevRect.left - currentRect.left;
               const deltaY = prevRect.top - currentRect.top;
-              element.style.translate = `${deltaX}px ${deltaY}px`;
+              element.style.setProperty('translate', `${deltaX}px ${deltaY}px`);
             } else {
-              (element.style as any)[property] = prevValue;
+              element.style.setProperty(property, prevValue);
             }
             return [property, value] as [string, string];
           });
@@ -166,7 +165,7 @@ export function SharedElement(props: SharedElementProps): JSX.Element | null {
           frame = requestAnimationFrame(() => {
             frame = undefined;
             for (const [property, value] of values) {
-              (element.style as any)[property] = value;
+              element.style.setProperty(property, value);
             }
           });
 
@@ -220,7 +219,7 @@ export function SharedElement(props: SharedElementProps): JSX.Element | null {
         const transitionProperty = style.transitionProperty.split(/\s*,\s*/);
         scope.snapshots[local.name] = {
           rect: element.getBoundingClientRect(),
-          style: transitionProperty.map(p => [p, (style as any)[p]]),
+          style: transitionProperty.map((property) => [property, style.getPropertyValue(property)]),
         };
       }
     }

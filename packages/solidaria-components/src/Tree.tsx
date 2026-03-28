@@ -185,6 +185,8 @@ export interface TreeExpandButtonProps {
 export interface TreeLoadMoreItemProps extends SlotProps {
   onLoadMore: () => void | Promise<void>;
   isLoading?: boolean;
+  /** Scroll offset multiplier for early loading trigger (default: 1 = 100% of viewport height). */
+  scrollOffset?: number;
   children?: JSX.Element;
   class?: ClassNameOrFunction<{ isLoading: boolean }>;
   style?: StyleOrFunction<{ isLoading: boolean }>;
@@ -708,6 +710,7 @@ interface TreeItemContextValue<T extends object> {
 export const TreeContext = createContext<TreeContextValue<object> | null>(null);
 export const TreeStateContext = createContext<TreeState<object, TreeCollection<object>> | null>(null);
 export const TreeItemContext = createContext<TreeItemContextValue<object> | null>(null);
+const TreeItemContentContext = createContext<TreeItemRenderProps | null>(null);
 
 // ============================================
 // COMPONENTS
@@ -1215,7 +1218,11 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
           >
             <SharedElementTransition>
             {isEmpty() && local.renderEmptyState ? (
-              local.renderEmptyState()
+              <div role="row" aria-level={1} style={{ display: 'contents' }}>
+                <div role="gridcell" style={{ display: 'contents' }}>
+                  {local.renderEmptyState()}
+                </div>
+              </div>
             ) : (
               <>
                 {virtualRange()?.offsetTop
@@ -1439,9 +1446,11 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
         data-dragging={draggableItem()?.isDragging || undefined}
         data-drop-target={droppableItem()?.isDropTarget || undefined}
       >
-        <div {...treeItemAria.gridCellProps} class="solidaria-Tree-item-content">
-          {renderProps.renderChildren()}
-        </div>
+        <TreeItemContentContext.Provider value={renderValues()}>
+          <div {...treeItemAria.gridCellProps} class="solidaria-Tree-item-content">
+            {renderProps.renderChildren()}
+          </div>
+        </TreeItemContentContext.Provider>
       </div>
     </TreeItemContext.Provider>
   );
@@ -1522,7 +1531,7 @@ export function TreeSelectionCheckbox(props: { itemKey: Key }): JSX.Element {
 }
 
 export function TreeLoadMoreItem(props: TreeLoadMoreItemProps): JSX.Element {
-  let ref: HTMLDivElement | undefined;
+  let sentinelRef: HTMLDivElement | undefined;
   const [isPending, setIsPending] = createSignal(false);
   const isLoading = () => !!props.isLoading || isPending();
 
@@ -1537,13 +1546,18 @@ export function TreeLoadMoreItem(props: TreeLoadMoreItemProps): JSX.Element {
   };
 
   createEffect(() => {
-    if (!ref || typeof IntersectionObserver !== 'function') return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) {
-        void triggerLoadMore();
-      }
-    });
-    observer.observe(ref);
+    if (!sentinelRef || typeof IntersectionObserver !== 'function') return;
+    const offset = props.scrollOffset ?? 1;
+    const margin = `0px 0px ${100 * offset}% 0px`;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          void triggerLoadMore();
+        }
+      },
+      { rootMargin: margin }
+    );
+    observer.observe(sentinelRef);
     return () => observer.disconnect();
   });
 
@@ -1558,28 +1572,46 @@ export function TreeLoadMoreItem(props: TreeLoadMoreItemProps): JSX.Element {
   );
 
   return (
-    <div
-      ref={ref}
-      role="treeitem"
-      tabIndex={0}
-      aria-disabled={true}
-      onFocus={() => {
-        void triggerLoadMore();
-      }}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-loading={isLoading() || undefined}
-    >
-      {renderProps.renderChildren()}
-    </div>
+    <>
+      <div style={{ position: 'relative', width: 0, height: 0, overflow: 'hidden' }} inert>
+        <div ref={sentinelRef} style={{ position: 'absolute', height: '1px', width: '1px' }} />
+      </div>
+      <div
+        role="treeitem"
+        tabIndex={0}
+        aria-disabled={true}
+        onFocus={() => {
+          void triggerLoadMore();
+        }}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-loading={isLoading() || undefined}
+      >
+        {renderProps.renderChildren()}
+      </div>
+    </>
   );
 }
 
-export interface TreeItemContentProps<T extends object> extends TreeItemProps<T> {}
+export interface TreeItemContentProps {
+  children?: RenderChildren<TreeItemContentRenderProps>;
+}
 export type TreeItemContentRenderProps = TreeItemRenderProps;
 
-export function TreeItemContent<T extends object>(props: TreeItemContentProps<T>): JSX.Element {
-  return <TreeItem {...props} />;
+export function TreeItemContent(props: TreeItemContentProps): JSX.Element {
+  const context = useContext(TreeItemContentContext);
+  if (!context) {
+    throw new Error('TreeItemContent must be used within a TreeItem');
+  }
+
+  const renderProps = useRenderProps(
+    {
+      children: props.children,
+    },
+    () => context
+  );
+
+  return <>{renderProps.renderChildren()}</>;
 }
 
 export function TreeSection(props: TreeSectionProps): JSX.Element {

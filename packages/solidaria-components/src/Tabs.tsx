@@ -149,6 +149,14 @@ export interface TabPanelRenderProps {
   isFocused: boolean;
   /** Whether the panel has visible focus ring. */
   isFocusVisible: boolean;
+  /** Whether the panel is non-interactive while force mounted. */
+  isInert: boolean;
+  /** Whether the panel is currently entering. */
+  isEntering: boolean;
+  /** Whether the panel is currently exiting. */
+  isExiting: boolean;
+  /** State of the tab list. */
+  state: TabListState<unknown> | null;
 }
 
 export interface TabPanelProps extends AriaTabPanelProps, SlotProps {
@@ -160,6 +168,15 @@ export interface TabPanelProps extends AriaTabPanelProps, SlotProps {
   style?: StyleOrFunction<TabPanelRenderProps>;
   /** Whether to keep the panel mounted when not selected. */
   shouldForceMount?: boolean;
+}
+
+export interface TabPanelsProps extends SlotProps {
+  /** The grouped tab panels. */
+  children?: JSX.Element;
+  /** The CSS className for the element. */
+  class?: string;
+  /** The inline style for the element. */
+  style?: JSX.CSSProperties;
 }
 
 // ============================================
@@ -504,6 +521,24 @@ function TabInner(props: {
 }
 
 /**
+ * Groups multiple TabPanel elements.
+ */
+export function TabPanels(props: TabPanelsProps): JSX.Element {
+  const [local, rest] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+
+  return (
+    <div
+      {...domProps()}
+      class={local.class ?? 'solidaria-TabPanels'}
+      style={local.style}
+    >
+      {local.children}
+    </div>
+  );
+}
+
+/**
  * A TabPanel displays the content for a selected Tab.
  */
 export function TabPanel(props: TabPanelProps): JSX.Element {
@@ -522,12 +557,19 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
 
   // Create focus ring for the panel
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
+  const isInert = () => Boolean(local.shouldForceMount && ariaProps.id !== undefined && !isSelected());
+  const isEntering = () => false;
+  const isExiting = () => false;
 
   // Render props values
   const renderValues = createMemo<TabPanelRenderProps>(() => ({
     isSelected: isSelected(),
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible(),
+    isInert: isInert(),
+    isEntering: isEntering(),
+    isExiting: isExiting(),
+    state,
   }));
 
   // Resolve render props
@@ -569,7 +611,10 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
         data-selected={isSelected() || undefined}
         data-focused={isFocused() || undefined}
         data-focus-visible={isFocusVisible() || undefined}
-        inert={ariaProps.id !== undefined && !isSelected() ? true : undefined}
+        inert={isInert() ? true : undefined}
+        data-inert={isInert() || undefined}
+        data-entering={isEntering() || undefined}
+        data-exiting={isExiting() || undefined}
         hidden={ariaProps.id !== undefined && !isSelected() && !local.shouldForceMount ? true : undefined}
       >
         {renderProps.renderChildren()}
@@ -581,5 +626,6 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
 // Attach sub-components
 Tabs.List = TabList;
 Tabs.Tab = Tab;
+Tabs.Panels = TabPanels;
 Tabs.Panel = TabPanel;
 Tabs.SelectionIndicator = SelectionIndicator;

@@ -1,8 +1,9 @@
 /**
  * Theme Light module for proyecto-viviana-silapse
  *
- * Light theme CSS custom properties. Apply the class to the root element
- * or use the Provider component with colorScheme="light".
+ * Light theme CSS custom properties using the unified --color-* naming
+ * that matches the Tailwind @theme tokens in theme.css.
+ * Apply via Provider with colorScheme="light".
  */
 
 import type { Theme } from '../theme/types';
@@ -13,51 +14,55 @@ export const lightTheme: Theme = {
   className: themeLightClass,
   properties: {
     // Backgrounds
-    '--vui-bg-100': '#ffffff',
-    '--vui-bg-200': '#fafafa',
-    '--vui-bg-300': '#f5f5f5',
-    '--vui-bg-400': '#eeeeee',
-    '--vui-bg-500': '#e0e0e0',
+    '--color-bg-100': '#7096a8',
+    '--color-bg-200': '#a8c5d4',
+    '--color-bg-300': '#c8dce6',
+    '--color-bg-400': '#dbe8ef',
+    '--color-bg-light': '#ffffff',
 
-    // Text / Primary
-    '--vui-text-primary': '#1a1a1a',
-    '--vui-text-secondary': '#666666',
-    '--vui-text-tertiary': '#999999',
-    '--vui-text-disabled': '#bdbdbd',
+    // Surfaces
+    '--color-background': '#f2f7fa',
+    '--color-surface': '#ffffff',
+    '--color-surface-elevated': '#e6f0f5',
+
+    // Text
+    '--color-text': '#1a3040',
+    '--color-text-secondary': '#405d70',
+    '--color-text-muted': '#7096a8',
+    '--color-text-disabled': '#a8c5d4',
+    '--color-on-color': '#ffffff',
 
     // Accent
-    '--vui-accent': '#6366f1',
-    '--vui-accent-hover': '#5558e6',
-    '--vui-accent-active': '#4f46e5',
-    '--vui-accent-subtle': 'rgba(99, 102, 241, 0.1)',
+    '--color-accent': '#DF5C9A',
+    '--color-accent-highlight': '#d4508a',
+
+    // Primary
+    '--color-primary': '#75ABC7',
 
     // Border
-    '--vui-border': '#e5e7eb',
-    '--vui-border-hover': '#d1d5db',
-    '--vui-border-focus': '#6366f1',
+    '--color-border': '#c8dce6',
+    '--color-border-muted': '#dbe8ef',
+    '--color-divider': '#dbe8ef',
 
-    // Focus
-    '--vui-focus-ring': 'rgba(99, 102, 241, 0.5)',
+    // Status
+    '--color-success': '#5BC96E',
+    '--color-success-dim': '#559D87',
+    '--color-warning': '#E5C462',
+    '--color-warning-dim': '#9D8D55',
+    '--color-danger': '#E56767',
+    '--color-danger-dim': '#9D5555',
 
-    // Status: Error/Danger
-    '--vui-danger': '#ef4444',
-    '--vui-danger-subtle': 'rgba(239, 68, 68, 0.1)',
+    // Dim
+    '--color-primary-dim': '#b6d9eb',
+    '--color-accent-dim': '#fcc7e0',
 
-    // Status: Success
-    '--vui-success': '#22c55e',
-    '--vui-success-subtle': 'rgba(34, 197, 94, 0.1)',
+    // Header
+    '--color-header-bg': '#d0e4ed',
 
-    // Status: Warning
-    '--vui-warning': '#f59e0b',
-    '--vui-warning-subtle': 'rgba(245, 158, 11, 0.1)',
-
-    // Status: Info
-    '--vui-info': '#3b82f6',
-    '--vui-info-subtle': 'rgba(59, 130, 246, 0.1)',
-
-    // Overlay
-    '--vui-overlay-bg': 'rgba(0, 0, 0, 0.4)',
-    '--vui-shadow': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
-    '--vui-shadow-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+    // Cards
+    '--color-cards-bg': '#ecf2f5',
+    '--color-cards-bg-load': '#dfeaef',
   },
 };
+
+export const theme = lightTheme;

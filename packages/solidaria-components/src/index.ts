@@ -323,7 +323,7 @@ export {
   Tabs,
   TabList,
   Tab,
-  TabPanel as TabPanels,
+  TabPanels,
   TabPanel,
   TabsContext,
   TabsStateContext,
@@ -334,6 +334,7 @@ export {
   type TabListRenderProps,
   type TabProps,
   type TabRenderProps,
+  type TabPanelsProps,
   type TabPanelProps,
   type TabPanelRenderProps,
 } from './Tabs';
@@ -483,6 +484,8 @@ export {
   ComboBoxButton,
   ComboBoxListBox,
   ComboBoxOption,
+  ComboBoxTagGroup,
+  ComboBoxTag,
   ComboBoxContext,
   ComboBoxStateContext,
   ComboBoxValueContext,
@@ -502,6 +505,8 @@ export {
   type ComboBoxListBoxRenderProps,
   type ComboBoxOptionProps,
   type ComboBoxOptionRenderProps,
+  type ComboBoxTagGroupProps,
+  type ComboBoxTagProps,
 } from './ComboBox';
 
 // Dialog
@@ -795,6 +800,7 @@ export {
   type TableColumnProps,
   type TableColumnRenderProps,
   type ColumnResizerProps,
+  type ColumnResizerRenderProps,
   type TableBodyProps,
   type TableBodyRenderProps,
   type ResizableTableContainerProps,
@@ -931,6 +937,19 @@ export {
   type ColorEditorRenderProps,
   type ColorEditorColorSpace,
 } from './ColorEditor';
+
+// StepList
+export {
+  StepList,
+  Step,
+  StepListStateContext,
+  StepListContext,
+  useStepListState,
+  type StepListProps,
+  type StepListRenderProps,
+  type StepListItemRenderProps,
+  type StepProps,
+} from './StepList';
 
 // Landmark
 export {

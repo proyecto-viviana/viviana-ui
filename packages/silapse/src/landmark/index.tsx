@@ -208,7 +208,7 @@ export function LandmarkNavigator(props: LandmarkNavigatorProps): JSX.Element {
           <button
             type="button"
             onClick={() => controller.focusMain()}
-            class="px-3 py-1 text-sm bg-accent hover:bg-accent-200 text-white rounded transition-colors"
+            class="px-3 py-1 text-sm bg-accent hover:bg-accent-200 text-on-color rounded transition-colors"
             title="Go to main content"
           >
             Main

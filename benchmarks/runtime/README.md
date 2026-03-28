@@ -73,7 +73,7 @@ const p95 = timings[9];
 ## How to Run
 
 ```bash
-bun run bench:runtime
+pnpm run bench:runtime
 ```
 
 Results are logged to console (not saved to JSON - too much variance).

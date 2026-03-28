@@ -75,10 +75,15 @@ interface ListState<T> {
  * convenience methods to update the data over time.
  */
 export function createListData<T>(options: ListOptions<T>): ListData<T> {
+  const defaultGetKey = (item: T): Key => {
+    const candidate = item as { id?: Key; key?: Key };
+    return candidate.id ?? candidate.key ?? String(item);
+  };
+
   const {
     initialItems = [],
     initialSelectedKeys,
-    getKey = (item: any) => item.id ?? item.key,
+    getKey = defaultGetKey,
     filter,
     initialFilterText = '',
   } = options;
@@ -151,9 +156,11 @@ export function createListData<T>(options: ListOptions<T>): ListData<T> {
       setState(s => {
         let index = s.items.findIndex(item => getKey(item) === key);
         if (index === -1) {
-          index = s.items.length === 0 ? -1 : -1;
-          if (index === -1 && s.items.length > 0) return s;
-          if (s.items.length === 0) return insertItems(s, 0, ...values);
+          if (s.items.length === 0) {
+            index = 0;
+          } else {
+            return s;
+          }
         }
         return insertItems(s, index + 1, ...values);
       });

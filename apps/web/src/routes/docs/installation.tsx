@@ -43,14 +43,11 @@ function InstallationPage() {
         Install Proyecto Viviana packages using your preferred package manager or registry.
       </p>
 
-      <SectionHeading color={colors().blue}>From npm</SectionHeading>
-      <pre style={codeBlock("")}><code>{`npm install @proyecto-viviana/silapse @proyecto-viviana/solidaria`}</code></pre>
-
-      <SectionHeading color={colors().blue}>Using bun</SectionHeading>
-      <pre style={codeBlock("")}><code>{`bun add @proyecto-viviana/silapse @proyecto-viviana/solidaria`}</code></pre>
-
       <SectionHeading color={colors().blue}>Using pnpm</SectionHeading>
       <pre style={codeBlock("")}><code>{`pnpm add @proyecto-viviana/silapse @proyecto-viviana/solidaria`}</code></pre>
+
+      <SectionHeading color={colors().blue}>From npm</SectionHeading>
+      <pre style={codeBlock("")}><code>{`npm install @proyecto-viviana/silapse @proyecto-viviana/solidaria`}</code></pre>
 
       <SectionHeading color={colors().blue}>Peer Dependencies</SectionHeading>
       <p style={{ "margin-bottom": "0.75rem" }}>Make sure you have SolidJS installed:</p>

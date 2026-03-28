@@ -13,12 +13,12 @@ export interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  primary: 'bg-primary-500 text-white',
+  primary: 'bg-primary-500 text-on-color',
   secondary: 'bg-bg-300 text-primary-300',
   accent: 'bg-accent-300 text-black',
-  success: 'bg-success-400 text-white',
+  success: 'bg-success-400 text-on-color',
   warning: 'bg-warning-400 text-black',
-  danger: 'bg-danger-400 text-white',
+  danger: 'bg-danger-400 text-on-color',
 }
 
 const sizeStyles: Record<BadgeSize, string> = {
@@ -33,7 +33,7 @@ export function Badge(props: BadgeProps) {
 
   return (
     <div
-      class={`flex items-center justify-center rounded-full border-b border-white font-semibold ${variantStyles[variant()]} ${sizeStyles[size()]} ${props.class ?? ''}`}
+      class={`flex items-center justify-center rounded-full border-b border-on-color font-semibold ${variantStyles[variant()]} ${sizeStyles[size()]} ${props.class ?? ''}`}
     >
       <Show when={props.count !== undefined} fallback={props.children}>
         <span>{props.count}</span>

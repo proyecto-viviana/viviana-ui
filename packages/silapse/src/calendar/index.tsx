@@ -221,5 +221,8 @@ export function Calendar<T extends DateValue = CalendarDate>(
   );
 }
 
+export { RangeCalendar } from './RangeCalendar';
+export type { RangeCalendarProps, RangeCalendarSize, RangeValue } from './RangeCalendar';
+
 // Re-export types
 export type { CalendarDate, DateValue };

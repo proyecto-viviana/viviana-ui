@@ -15,7 +15,13 @@ import {
 } from '@proyecto-viviana/solidaria-components'
 
 // Re-export ToggleSwitch (the solidaria-components based switch)
-export { ToggleSwitch, type ToggleSwitchProps, type SwitchSize } from './ToggleSwitch'
+export {
+  ToggleSwitch,
+  ToggleSwitch as Switch,
+  type ToggleSwitchProps,
+  type ToggleSwitchProps as SwitchProps,
+  type SwitchSize,
+} from './ToggleSwitch'
 
 // ============================================
 // TAB SWITCH (Two-option selector)

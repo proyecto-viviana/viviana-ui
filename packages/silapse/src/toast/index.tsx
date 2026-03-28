@@ -24,7 +24,7 @@ import {
   type ToastRenderProps,
   type ToastRegionRenderProps,
 } from '@proyecto-viviana/solidaria-components';
-import { type QueuedToast, type ToastOptions } from '@proyecto-viviana/solid-stately';
+import { ToastQueue, type QueuedToast, type ToastOptions } from '@proyecto-viviana/solid-stately';
 
 // ============================================
 // TYPES
@@ -184,6 +184,8 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
   );
 }
 
+export const ToastContainer = ToastRegion;
+
 /**
  * Toast displays an individual notification with icon, content, and close button.
  *
@@ -319,6 +321,7 @@ export function toastInfo(message: string, options?: Omit<ToastOptions, 'priorit
 export {
   ToastContext,
   globalToastQueue,
+  ToastQueue,
   useToastContext,
   type ToastContent,
   type ToastRenderProps,

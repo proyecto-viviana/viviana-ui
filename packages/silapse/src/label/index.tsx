@@ -34,3 +34,7 @@ export function Label(props: LabelProps): JSX.Element {
   );
 }
 
+export { Field } from '../form/Field';
+export type { FieldProps, FieldSize } from '../form/Field';
+export { HelpText } from '../form/HelpText';
+export type { HelpTextProps } from '../form/HelpText';

@@ -14,6 +14,7 @@ import {
   PopoverTrigger as HeadlessPopoverTrigger,
   Tab as HeadlessTab,
   TabList as HeadlessTabList,
+  TabPanels as HeadlessTabPanels,
   TabPanel as HeadlessTabPanel,
   Tabs as HeadlessTabs,
 } from "@proyecto-viviana/solidaria-components";
@@ -178,7 +179,10 @@ function renderComponents(componentSlug: ComparisonSlug) {
           h(HeadlessButton, { class: "comparison-rac-button" }, "Open Popover"),
           h(
             HeadlessPopover,
-            { class: "comparison-popover" },
+            {
+              class: "comparison-popover",
+              "aria-label": "Quick audit note",
+            },
             h(
               "div",
               { class: "comparison-popover-dialog" },
@@ -216,11 +220,15 @@ function renderComponents(componentSlug: ComparisonSlug) {
               item.label,
             ),
         ),
-        tabItems.map((item) =>
-          h(
-            HeadlessTabPanel,
-            { id: item.id, class: "comparison-tabs-panel" },
-            item.content,
+        h(
+          HeadlessTabPanels,
+          { class: "comparison-tab-panels" },
+          tabItems.map((item) =>
+            h(
+              HeadlessTabPanel,
+              { id: item.id, class: "comparison-tabs-panel" },
+              item.content,
+            ),
           ),
         ),
       );

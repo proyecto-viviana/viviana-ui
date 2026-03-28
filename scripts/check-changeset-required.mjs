@@ -64,5 +64,5 @@ if (hasChangesetFile) {
 }
 
 console.error("Releasable package changes detected without a changeset file.");
-console.error("Add one via `bun run changeset`.");
+console.error("Add one via `pnpm run changeset`.");
 process.exit(1);

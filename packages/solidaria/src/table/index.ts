@@ -11,6 +11,7 @@ export { createTableCell } from './createTableCell';
 export { createTableRowGroup } from './createTableRowGroup';
 export { createTableSelectionCheckbox } from './createTableSelectionCheckbox';
 export { createTableSelectAllCheckbox } from './createTableSelectAllCheckbox';
+export { createTableColumnResize } from './createTableColumnResize';
 export type {
   AriaTableProps,
   TableAria,
@@ -28,3 +29,7 @@ export type {
   TableSelectionCheckboxAria,
   TableSelectAllCheckboxAria,
 } from './types';
+export type {
+  CreateTableColumnResizeProps,
+  TableColumnResizeResult,
+} from './createTableColumnResize';

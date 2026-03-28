@@ -37,7 +37,7 @@ export function CalendarCard(props: CalendarCardProps) {
         </Show>
         <div class="flex h-full flex-col items-end justify-center pb-3 pr-5 pt-2">
           <div class="flex flex-1">
-            <span class="text-lg font-semibold text-white drop-shadow-sm">
+            <span class="text-lg font-semibold text-on-color drop-shadow-sm">
               {props.title}
             </span>
           </div>

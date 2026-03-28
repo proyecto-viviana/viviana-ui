@@ -269,6 +269,7 @@ export {
 // Table
 export {
   createTableState,
+  createTableColumnResizeState,
   TableCollection,
   createTableCollection,
   type TableState,
@@ -280,6 +281,10 @@ export {
   type ColumnDefinition,
   type RowDefinition,
   type TableCollectionOptions,
+  type ColumnSize,
+  type ColumnResizeDefinition,
+  type TableColumnResizeStateProps,
+  type TableColumnResizeState,
 } from './table';
 
 // Tree
@@ -427,6 +432,13 @@ export {
 
 // getColorChannels
 export { getColorChannels } from './color/getColorChannels';
+
+// StepList
+export {
+  createStepListState,
+  type StepListStateProps,
+  type StepListState,
+} from './steplist';
 
 // Utils
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './utils';

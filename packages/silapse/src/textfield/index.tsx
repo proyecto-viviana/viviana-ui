@@ -189,3 +189,5 @@ export function TextField(props: TextFieldProps): JSX.Element {
     />
   )
 }
+
+export { TextField as TextFieldBase }

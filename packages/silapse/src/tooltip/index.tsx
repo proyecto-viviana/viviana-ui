@@ -55,9 +55,9 @@ const baseStyles = [
 ].join(' ')
 
 const variantStyles: Record<TooltipVariant, string> = {
-  default: 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900',
+  default: 'bg-neutral-900 text-on-color dark:bg-neutral-100 dark:text-neutral-900',
   neutral: 'bg-neutral-800 text-neutral-100 dark:bg-neutral-200 dark:text-neutral-900',
-  info: 'bg-blue-600 text-white dark:bg-blue-500',
+  info: 'bg-blue-600 text-on-color dark:bg-blue-500',
 }
 
 const arrowStyles: Record<TooltipPlacement, string> = {

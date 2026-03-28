@@ -57,6 +57,10 @@ export interface TreeData<T> {
   removeSelectedItems(): void;
   /** Moves an item to a new parent. */
   move(key: Key, toParentKey: Key | null, index: number): void;
+  /** Moves items before a given key. */
+  moveBefore(key: Key, keys: Iterable<Key>): void;
+  /** Moves items after a given key. */
+  moveAfter(key: Key, keys: Iterable<Key>): void;
   /** Updates an item in the tree. */
   update(key: Key, newValue: T): void;
 }
@@ -71,11 +75,20 @@ interface TreeDataState<T> {
  * convenience methods to update the data over time.
  */
 export function createTreeData<T>(options: TreeOptions<T>): TreeData<T> {
+  const defaultGetKey = (item: T): Key => {
+    const candidate = item as { id?: Key; key?: Key };
+    return candidate.id ?? candidate.key ?? String(item);
+  };
+  const defaultGetChildren = (item: T): T[] => {
+    const candidate = item as { children?: T[] };
+    return candidate.children ?? [];
+  };
+
   const {
     initialItems = [],
     initialSelectedKeys,
-    getKey = (item: any) => item.id ?? item.key,
-    getChildren = (item: any) => item.children ?? [],
+    getKey = defaultGetKey,
+    getChildren = defaultGetChildren,
   } = options;
 
   // Build initial tree
@@ -334,6 +347,15 @@ export function createTreeData<T>(options: TreeOptions<T>): TreeData<T> {
         const node = nodeMap.get(key);
         if (!node) return state;
 
+        // Cyclical move validation: prevent moving a node into its own subtree
+        if (toParentKey != null) {
+          let parent: TreeNode<T> | undefined = nodeMap.get(toParentKey);
+          while (parent) {
+            if (parent.key === key) return state;
+            parent = parent.parentKey != null ? nodeMap.get(parent.parentKey) : undefined;
+          }
+        }
+
         // Remove the node
         let newMap = new Map(nodeMap);
         const removeResult = updateTree(items, key, () => null, newMap);
@@ -359,6 +381,39 @@ export function createTreeData<T>(options: TreeOptions<T>): TreeData<T> {
             ...(parent.children || []).slice(index),
           ],
         }), newMap);
+      });
+    },
+
+    moveBefore(key: Key, keys: Iterable<Key>) {
+      setTreeState(state => {
+        const { items, nodeMap } = state;
+        const node = nodeMap.get(key);
+        if (!node) return state;
+
+        const toParentKey = node.parentKey ?? null;
+        let parent: TreeNode<T> | null = null;
+        if (toParentKey != null) {
+          parent = nodeMap.get(toParentKey) ?? null;
+        }
+        const toIndex = parent?.children ? parent.children.indexOf(node) : items.indexOf(node);
+        return moveItems(state, keys, parent, toIndex, updateTree, addNode);
+      });
+    },
+
+    moveAfter(key: Key, keys: Iterable<Key>) {
+      setTreeState(state => {
+        const { items, nodeMap } = state;
+        const node = nodeMap.get(key);
+        if (!node) return state;
+
+        const toParentKey = node.parentKey ?? null;
+        let parent: TreeNode<T> | null = null;
+        if (toParentKey != null) {
+          parent = nodeMap.get(toParentKey) ?? null;
+        }
+        let toIndex = parent?.children ? parent.children.indexOf(node) : items.indexOf(node);
+        toIndex++;
+        return moveItems(state, keys, parent, toIndex, updateTree, addNode);
       });
     },
 
@@ -430,4 +485,107 @@ function deleteNode<T>(node: TreeNode<T>, map: Map<Key, TreeNode<T>>): void {
       deleteNode(child, map);
     }
   }
+}
+
+function moveItems<T>(
+  state: TreeDataState<T>,
+  keys: Iterable<Key>,
+  toParent: TreeNode<T> | null,
+  toIndex: number,
+  updateTreeFn: (
+    items: TreeNode<T>[],
+    key: Key | null,
+    update: (node: TreeNode<T>) => TreeNode<T> | null,
+    originalMap: Map<Key, TreeNode<T>>
+  ) => TreeDataState<T>,
+  addNodeFn: (node: TreeNode<T>, map: Map<Key, TreeNode<T>>) => void
+): TreeDataState<T> {
+  const { items, nodeMap } = state;
+
+  // Cyclical move validation: prevent moving a node into its own subtree
+  const removeKeys = new Set(keys);
+  let ancestor: TreeNode<T> | null = toParent;
+  while (ancestor != null) {
+    if (removeKeys.has(ancestor.key)) {
+      throw new Error('Cannot move an item to be a child of itself.');
+    }
+    ancestor = ancestor.parentKey != null ? (nodeMap.get(ancestor.parentKey) ?? null) : null;
+  }
+
+  const originalToIndex = toIndex;
+  const keyArray = [...removeKeys];
+
+  // Depth-first traversal to determine in-order positions and remove items
+  const inOrderKeys = new Map<Key, number>();
+  const removedItems: TreeNode<T>[] = [];
+  let newItems = items;
+  let newMap = nodeMap;
+  let i = 0;
+
+  function traversal(
+    node: { children?: TreeNode<T>[] | null },
+    callbacks: {
+      inorder?: (child: TreeNode<T>) => void;
+      postorder?: (child: TreeNode<T>) => void;
+    }
+  ) {
+    callbacks.inorder?.(node as TreeNode<T>);
+    if (node.children) {
+      for (const child of node.children) {
+        traversal(child, callbacks);
+        callbacks.postorder?.(child);
+      }
+    }
+  }
+
+  traversal({ children: items }, {
+    inorder(child) {
+      if (keyArray.includes(child.key)) {
+        inOrderKeys.set(child.key, i++);
+      }
+    },
+    postorder(child) {
+      if (keyArray.includes(child.key)) {
+        removedItems.push({ ...newMap.get(child.key)!, parentKey: toParent?.key ?? null });
+        const result = updateTreeFn(newItems, child.key, () => null, newMap);
+        newItems = result.items;
+        newMap = result.nodeMap;
+      }
+      // Decrement index if the removed child is in the target parent and before the target index
+      if (
+        (child.parentKey === toParent || child.parentKey === toParent?.key) &&
+        keyArray.includes(child.key) &&
+        (toParent?.children ? toParent.children.indexOf(child) : items.indexOf(child)) < originalToIndex
+      ) {
+        toIndex--;
+      }
+    },
+  });
+
+  const inOrderItems = removedItems.sort(
+    (a, b) => (inOrderKeys.get(a.key)! > inOrderKeys.get(b.key)! ? 1 : -1)
+  );
+
+  // If parentKey is null, insert into the root.
+  if (!toParent || toParent.key == null) {
+    inOrderItems.forEach(movedNode => {
+      addNodeFn(movedNode, newMap);
+    });
+    return {
+      items: [...newItems.slice(0, toIndex), ...inOrderItems, ...newItems.slice(toIndex)],
+      nodeMap: newMap,
+    };
+  }
+
+  // Otherwise, update the parent node and its ancestors.
+  return updateTreeFn(newItems, toParent.key, parentNode => ({
+    key: parentNode.key,
+    parentKey: parentNode.parentKey,
+    value: parentNode.value,
+    children: [
+      ...parentNode.children!.slice(0, toIndex),
+      ...inOrderItems,
+      ...parentNode.children!.slice(toIndex),
+    ],
+  }), newMap);
 }

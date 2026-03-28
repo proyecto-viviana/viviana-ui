@@ -15,12 +15,17 @@ import {
   TableCell as HeadlessTableCell,
   TableSelectionCheckbox as HeadlessTableSelectionCheckbox,
   TableSelectAllCheckbox as HeadlessTableSelectAllCheckbox,
+  ColumnResizer as HeadlessColumnResizer,
+  ResizableTableContainer as HeadlessResizableTableContainer,
   type TableProps as HeadlessTableProps,
   type TableHeaderProps as HeadlessTableHeaderProps,
   type TableColumnProps as HeadlessTableColumnProps,
   type TableBodyProps as HeadlessTableBodyProps,
   type TableRowProps as HeadlessTableRowProps,
   type TableCellProps as HeadlessTableCellProps,
+  type ColumnResizerProps as HeadlessColumnResizerProps,
+  type ResizableTableContainerProps as HeadlessResizableTableContainerProps,
+  type ColumnResizerRenderProps,
   type TableRenderProps,
   type TableColumnRenderProps,
   type TableRowRenderProps,
@@ -482,6 +487,72 @@ export function TableSelectAllCheckbox(): JSX.Element {
 }
 
 // ============================================
+// COLUMN RESIZER COMPONENT
+// ============================================
+
+export interface ColumnResizerProps extends Omit<HeadlessColumnResizerProps, 'class' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
+}
+
+/**
+ * A styled column resize handle. Place inside a TableColumn that has allowsResizing.
+ */
+export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
+  const [local, headlessProps] = splitProps(props, ['class'])
+  const customClass = local.class ?? ''
+
+  const getClassName = (renderProps: ColumnResizerRenderProps): string => {
+    const base = 'absolute right-0 top-0 bottom-0 w-[3px] cursor-col-resize select-none'
+    const idle = 'bg-transparent'
+    const hovered = 'bg-accent/50'
+    const resizing = 'bg-accent'
+
+    let stateClass = idle
+    if (renderProps.isResizing) {
+      stateClass = resizing
+    } else if (renderProps.isHovered) {
+      stateClass = hovered
+    }
+
+    return [base, stateClass, customClass].filter(Boolean).join(' ')
+  }
+
+  return (
+    <HeadlessColumnResizer
+      {...headlessProps}
+      class={getClassName}
+    />
+  )
+}
+
+// ============================================
+// RESIZABLE TABLE CONTAINER COMPONENT
+// ============================================
+
+export interface ResizableTableContainerProps extends Omit<HeadlessResizableTableContainerProps, 'class' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
+}
+
+/**
+ * A styled wrapper that enables column resizing for its child Table.
+ */
+export function ResizableTableContainer(props: ResizableTableContainerProps): JSX.Element {
+  const [local, headlessProps] = splitProps(props, ['class'])
+  const customClass = local.class ?? ''
+
+  const className = ['relative overflow-auto', customClass].filter(Boolean).join(' ')
+
+  return (
+    <HeadlessResizableTableContainer
+      {...headlessProps}
+      class={className}
+    />
+  )
+}
+
+// ============================================
 // ICONS
 // ============================================
 
@@ -529,6 +600,12 @@ Table.Row = TableRow
 Table.Cell = TableCell
 Table.SelectionCheckbox = TableSelectionCheckbox
 Table.SelectAllCheckbox = TableSelectAllCheckbox
+Table.ColumnResizer = ColumnResizer
+
+export const TableView = Table
+export const Column = TableColumn
+export const Row = TableRow
+export const Cell = TableCell
 
 // Re-export types for convenience
 export type { Key, SortDescriptor, ColumnDefinition }

@@ -35,34 +35,34 @@ silapse                → Styled components (Tailwind CSS)
 ## Commands
 
 ```bash
-bun install           # Install dependencies
-bun run dev           # Start dev server (localhost:3000)
-bun run test:run      # Run all tests
-bun run build         # Typecheck and build all packages
-bun run pr:check:fast # Mirror blocking non-Playwright PR checks
-bun run pr:check      # Mirror full blocking PR checks, including a11y
+pnpm install          # Install dependencies
+pnpm run dev          # Start dev server (localhost:3000)
+vp test run packages  # Run all tests
+pnpm run build        # Typecheck and build all packages
+pnpm run pr:check:fast # Mirror blocking non-Playwright PR checks
+pnpm run pr:check     # Mirror full blocking PR checks, including a11y
 ```
 
 ### Publishing
 
 ```bash
-bun run changeset         # Create release note + bump intent
-bun run changeset:status  # Preview release plan
-bun run changeset:version # Apply version bumps + changelogs
-bun run ci:changesets     # Mirror Changesets Check workflow
-bun run ci:release-readiness # Mirror Release Readiness workflow
-bun run ci:a11y           # Mirror blocking Accessibility Gate workflow (contrast excluded)
-bun run release:prepare   # Version, build, test
-bun run release:publish   # Publish npm packages
-bun run changeset:publish # Build + publish releasable packages to npm
-bun run release           # Full release flow: prepare, then publish
+pnpm run changeset         # Create release note + bump intent
+pnpm run changeset:status  # Preview release plan
+pnpm run changeset:version # Apply version bumps + changelogs
+pnpm run ci:changesets     # Mirror Changesets Check workflow
+pnpm run ci:release-readiness # Mirror Release Readiness workflow
+pnpm run ci:a11y           # Mirror blocking Accessibility Gate workflow (contrast excluded)
+pnpm run release:prepare   # Version, build, test
+pnpm run release:publish   # Publish npm packages
+pnpm run changeset:publish # Build + publish releasable packages to npm
+pnpm run release           # Full release flow: prepare, then publish
 ```
 
 Release metadata rules:
 - `package.json` is the version source of truth for releasable packages.
-- Before pushing, prefer `bun run pr:check:fast`.
-- When touching web app accessibility or CI wiring, prefer `bun run pr:check`.
-- `bun run ci:a11y` temporarily excludes axe `color-contrast`; use `bun run a11y:full` for the stricter contrast-inclusive audit.
+- Before pushing, prefer `pnpm run pr:check:fast`.
+- When touching web app accessibility or CI wiring, prefer `pnpm run pr:check`.
+- `pnpm run ci:a11y` temporarily excludes axe `color-contrast`; use `pnpm run a11y:full` for the stricter contrast-inclusive audit.
 
 ## Key Patterns
 
@@ -140,6 +140,11 @@ See [.claude/README.md](.claude/README.md) for full documentation:
 
 ## Next Steps
 
-Future phases (not started):
-- A11y Wave 2-8 (Selection, Overlays, Dates, Collections, Color, Utilities, Styled)
-- Playground axe-core automation
+**Start here:** [Phase 32+ Implementation Plan](.claude/docs/implementation-plan-phase-32.md)
+
+Full audit conducted 2026-03-27 ([raw findings](.claude/docs/audit-2026-03-27.md)). Priority order:
+
+1. **Tier 1 — Bugs:** Fix hardcoded colors in silapse, createListData dead ternary, TreeData missing methods, Tree role verification, DateRangePicker test expansion
+2. **Tier 2 — Feature Parity:** Table column resize, load sentinels, Menu link items, StepList component, Skeleton components, ComboBox multi-select
+3. **Tier 3 — Theming/DX:** CSS variable unification, forced colors mode, RTL tests, subpath exports evaluation
+4. **Tier 4 — Polish:** Component feature gaps, test gaps, comparison app wiring, remaining styled components

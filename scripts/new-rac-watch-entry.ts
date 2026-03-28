@@ -2,9 +2,9 @@
  * Appends a new RAC watch-log entry scaffold for today's date.
  *
  * Usage:
- *   bun scripts/new-rac-watch-entry.ts
- *   bun scripts/new-rac-watch-entry.ts --dry-run
- *   bun scripts/new-rac-watch-entry.ts --force
+ *   npx tsx scripts/new-rac-watch-entry.ts
+ *   npx tsx scripts/new-rac-watch-entry.ts --dry-run
+ *   npx tsx scripts/new-rac-watch-entry.ts --force
  */
 
 import { spawnSync } from "node:child_process";
@@ -47,10 +47,10 @@ function buildEntry(date: string, sha: string, commitDate: string): string {
 
 ### Guard Summary
 
-1. \`bun run guard:rac-parity\`: pass|fail - <short note>
-2. \`bun run guard:rac-export-gap\`: pass|fail - <short note>
-3. \`bun run guard:layer-parity\`: pass|fail - <short note>
-4. \`bun run guard:dnd-keyboard-parity\`: pass|fail - <short note>
+1. \`pnpm run guard:rac-parity\`: pass|fail - <short note>
+2. \`pnpm run guard:rac-export-gap\`: pass|fail - <short note>
+3. \`pnpm run guard:layer-parity\`: pass|fail - <short note>
+4. \`pnpm run guard:dnd-keyboard-parity\`: pass|fail - <short note>
 
 ### Behavioral Delta Review
 

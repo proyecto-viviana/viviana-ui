@@ -109,6 +109,23 @@ describe('Popover', () => {
       })
     })
 
+    it('should expose an accessible name when labelled', async () => {
+      const user = setupUser()
+
+      render(() => (
+        <PopoverTrigger>
+          <Button>Open</Button>
+          <Popover aria-label="Quick audit note">Content</Popover>
+        </PopoverTrigger>
+      ))
+
+      await user.click(screen.getByRole('button', { name: 'Open' }))
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog', { name: 'Quick audit note' })).toBeInTheDocument()
+      })
+    })
+
     it('should support isNonModal (no dialog role)', async () => {
       const user = setupUser()
 

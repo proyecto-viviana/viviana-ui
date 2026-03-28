@@ -53,7 +53,7 @@ Compares bundle sizes between Proyecto Viviana and React Spectrum across three s
 ## How to Run
 
 ```bash
-bun run bench:bundle
+pnpm run bench:bundle
 ```
 
 Results are saved to `results/bundle-sizes.json` and printed to console.

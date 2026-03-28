@@ -5,7 +5,7 @@ Styled UI components for SolidJS - beautiful, accessible, and ready to use.
 ## Installation
 
 ```bash
-bun add @proyecto-viviana/silapse solid-js
+pnpm add @proyecto-viviana/silapse solid-js
 ```
 
 ## Setup

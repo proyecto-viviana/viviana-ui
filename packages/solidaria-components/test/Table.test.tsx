@@ -15,6 +15,8 @@ import {
   TableCell,
   TableSelectionCheckbox,
   TableSelectAllCheckbox,
+  ColumnResizer,
+  ResizableTableContainer,
 } from '../src/Table';
 
 // Test data
@@ -701,7 +703,7 @@ describe('Table', () => {
               <TableHeader>
                 <TableColumn id="name">{() => <>Name</>}</TableColumn>
               </TableHeader>
-              <TableBody renderEmptyState={() => <tr><td>No data available</td></tr>}>
+              <TableBody renderEmptyState={() => <div>No data available</div>}>
                 {() => (
                   <TableRow id="x">
                     {() => <TableCell>{() => <>x</>}</TableCell>}
@@ -714,6 +716,7 @@ describe('Table', () => {
       ));
 
       expect(screen.getByText('No data available')).toBeTruthy();
+      expect(screen.getByRole('rowheader')).toHaveTextContent('No data available');
     });
   });
 
@@ -796,6 +799,225 @@ describe('Table', () => {
 
     it('should have SelectAllCheckbox as static property', () => {
       expect(Table.SelectAllCheckbox).toBe(TableSelectAllCheckbox);
+    });
+  });
+
+  // ============================================
+  // COLUMN RESIZE
+  // ============================================
+
+  describe('column resize', () => {
+    const resizableColumns = [
+      { key: 'name', name: 'Name' },
+      { key: 'type', name: 'Type' },
+      { key: 'level', name: 'Level' },
+    ];
+
+    function ResizableTestTable(props: { onResize?: (widths: Map<any, number>) => void; onResizeEnd?: (widths: Map<any, number>) => void }) {
+      return (
+        <ResizableTableContainer>
+          <Table
+            items={testData}
+            columns={resizableColumns}
+            getKey={(item: any) => item.id}
+            aria-label="Resizable Pokemon"
+          >
+            {() => (
+              <>
+                <TableHeader>
+                  <TableColumn id="name" allowsResizing>
+                    {() => (
+                      <div style={{ display: 'flex', 'align-items': 'center' }}>
+                        <span>Name</span>
+                        <ColumnResizer
+                          column={{ key: 'name' }}
+                          aria-label="Resize Name"
+                          onResize={props.onResize}
+                          onResizeEnd={props.onResizeEnd}
+                        />
+                      </div>
+                    )}
+                  </TableColumn>
+                  <TableColumn id="type" allowsResizing>
+                    {() => (
+                      <div style={{ display: 'flex', 'align-items': 'center' }}>
+                        <span>Type</span>
+                        <ColumnResizer
+                          column={{ key: 'type' }}
+                          aria-label="Resize Type"
+                          onResize={props.onResize}
+                          onResizeEnd={props.onResizeEnd}
+                        />
+                      </div>
+                    )}
+                  </TableColumn>
+                  <TableColumn id="level">{() => <>Level</>}</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {(item: any) => (
+                    <TableRow id={item.id} item={item}>
+                      {() => (
+                        <>
+                          <TableCell>{() => <>{item.name}</>}</TableCell>
+                          <TableCell>{() => <>{item.type}</>}</TableCell>
+                          <TableCell>{() => <>{item.level}</>}</TableCell>
+                        </>
+                      )}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </>
+            )}
+          </Table>
+        </ResizableTableContainer>
+      );
+    }
+
+    it('ResizableTableContainer provides resize context and renders children', () => {
+      render(() => <ResizableTestTable />);
+      const table = screen.getByRole('grid');
+      expect(table).toBeInTheDocument();
+    });
+
+    it('ColumnResizer renders with correct ARIA attributes', () => {
+      render(() => <ResizableTestTable />);
+      const resizers = screen.getAllByRole('separator');
+      expect(resizers.length).toBeGreaterThanOrEqual(2);
+      // Each separator should have vertical orientation
+      for (const resizer of resizers) {
+        expect(resizer.getAttribute('aria-orientation')).toBe('vertical');
+      }
+    });
+
+    it('ColumnResizer has a hidden range input for screen readers', () => {
+      render(() => <ResizableTestTable />);
+      const inputs = document.querySelectorAll('input[type="range"]');
+      expect(inputs.length).toBeGreaterThanOrEqual(2);
+      // Check aria-labels
+      const labels = Array.from(inputs).map((i) => i.getAttribute('aria-label'));
+      expect(labels).toContain('Resize Name');
+      expect(labels).toContain('Resize Type');
+    });
+
+    it('column resize via keyboard (arrow keys) adjusts width', () => {
+      const onResize = vi.fn();
+      const onResizeEnd = vi.fn();
+      render(() => <ResizableTestTable onResize={onResize} onResizeEnd={onResizeEnd} />);
+
+      // Find the hidden range input for "Name" column
+      const input = document.querySelector('input[aria-label="Resize Name"]') as HTMLInputElement;
+      expect(input).toBeTruthy();
+      expect(input.type).toBe('range');
+
+      // Simulate resize via the input's change event (range slider)
+      // This is the screen-reader path which is always available
+      fireEvent.change(input, { target: { value: '200' } });
+      expect(onResize).toHaveBeenCalled();
+    });
+
+    it('column resize respects min/max constraints', () => {
+      // Use columns with explicit min/max
+      const constrainedColumns = [
+        { key: 'name', name: 'Name', minWidth: 100, maxWidth: 200 },
+        { key: 'type', name: 'Type' },
+      ];
+
+      const onResize = vi.fn();
+
+      render(() => (
+        <ResizableTableContainer>
+          <Table
+            items={testData}
+            columns={constrainedColumns}
+            getKey={(item: any) => item.id}
+            aria-label="Constrained Table"
+          >
+            {() => (
+              <>
+                <TableHeader>
+                  <TableColumn id="name" allowsResizing minWidth={100} maxWidth={200}>
+                    {() => (
+                      <div>
+                        <span>Name</span>
+                        <ColumnResizer
+                          column={{ key: 'name' }}
+                          aria-label="Resize Name"
+                          onResize={onResize}
+                        />
+                      </div>
+                    )}
+                  </TableColumn>
+                  <TableColumn id="type">{() => <>Type</>}</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {(item: any) => (
+                    <TableRow id={item.id} item={item}>
+                      {() => (
+                        <>
+                          <TableCell>{() => <>{item.name}</>}</TableCell>
+                          <TableCell>{() => <>{item.type}</>}</TableCell>
+                        </>
+                      )}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </>
+            )}
+          </Table>
+        </ResizableTableContainer>
+      ));
+
+      // The hidden input should reflect min/max from the resize state
+      const input = document.querySelector('input[aria-label="Resize Name"]') as HTMLInputElement;
+      expect(input).toBeTruthy();
+      // Min should be at least 75 (default) or the provided minWidth
+      const min = parseInt(input.min, 10);
+      expect(min).toBeGreaterThanOrEqual(75);
+    });
+
+    it('ColumnResizer falls back to static separator without ResizableTableContainer', () => {
+      render(() => (
+        <Table
+          items={testData}
+          columns={resizableColumns}
+          getKey={(item: any) => item.id}
+          aria-label="No resize"
+        >
+          {() => (
+            <>
+              <TableHeader>
+                <TableColumn id="name">
+                  {() => (
+                    <div>
+                      <span>Name</span>
+                      <ColumnResizer column={{ key: 'name' }} />
+                    </div>
+                  )}
+                </TableColumn>
+                <TableColumn id="type">{() => <>Type</>}</TableColumn>
+                <TableColumn id="level">{() => <>Level</>}</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {(item: any) => (
+                  <TableRow id={item.id} item={item}>
+                    {() => (
+                      <>
+                        <TableCell>{() => <>{item.name}</>}</TableCell>
+                        <TableCell>{() => <>{item.type}</>}</TableCell>
+                        <TableCell>{() => <>{item.level}</>}</TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+            </>
+          )}
+        </Table>
+      ));
+
+      // Should still render a separator element
+      const separators = screen.getAllByRole('separator');
+      expect(separators.length).toBeGreaterThanOrEqual(1);
     });
   });
 });

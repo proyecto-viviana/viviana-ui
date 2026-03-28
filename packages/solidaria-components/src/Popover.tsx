@@ -154,6 +154,7 @@ interface PopoverContextValue {
 
 // Internal context for placement + arrow
 export const PopoverContext = createContext<PopoverContextValue | null>(null)
+const PopoverGroupContext = createContext<(() => HTMLElement | null) | null>(null)
 
 // ============================================
 // POPOVER TRIGGER COMPONENT
@@ -248,9 +249,13 @@ export function Popover(props: PopoverProps): JSX.Element {
   ])
 
   let popoverRef!: HTMLDivElement
+  const [groupRef, setGroupRef] = createSignal<HTMLDivElement | null>(null)
 
   // Get trigger context if available
   const triggerContext = useContext(PopoverTriggerContext)
+  const popoverGroupContext = useContext(PopoverGroupContext)
+  const resolvedTrigger = () => local.trigger ?? triggerContext?.trigger
+  const isSubPopover = () => resolvedTrigger() === 'SubmenuTrigger' && popoverGroupContext != null
 
   // Internal state for uncontrolled mode
   const [internalOpen, setInternalOpen] = createSignal(local.defaultOpen ?? false)
@@ -287,6 +292,7 @@ export function Popover(props: PopoverProps): JSX.Element {
     {
       triggerRef: getTriggerRef,
       popoverRef: () => popoverRef ?? null,
+      groupRef: () => (isSubPopover() ? popoverGroupContext?.() ?? null : groupRef()),
       get placement() {
         return local.placement
       },
@@ -312,7 +318,7 @@ export function Popover(props: PopoverProps): JSX.Element {
         return local.shouldCloseOnInteractOutside
       },
       get trigger() {
-        return local.trigger ?? triggerContext?.trigger
+        return resolvedTrigger()
       },
     },
     {
@@ -345,7 +351,7 @@ export function Popover(props: PopoverProps): JSX.Element {
 
   // Render props values
   const renderValues = createMemo<PopoverRenderProps>(() => ({
-    trigger: local.trigger ?? triggerContext?.trigger ?? null,
+    trigger: resolvedTrigger() ?? null,
     placement: popoverAria.placement(),
     isEntering: local.isEntering ?? false,
     isExiting: local.isExiting ?? false,
@@ -381,14 +387,20 @@ export function Popover(props: PopoverProps): JSX.Element {
   }
 
   // Check if we should render with dialog role
-  const shouldBeDialog = () => !local.isNonModal
+  const shouldBeDialog = () => !local.isNonModal || resolvedTrigger() === 'SubmenuTrigger'
   const portalContext = useUNSAFE_PortalContext()
-  const portalContainer = () => portalContext.getContainer?.() ?? undefined
+  const portalContainer = () => {
+    if (isSubPopover()) {
+      return popoverGroupContext?.() ?? portalContext.getContainer?.() ?? undefined
+    }
+    return portalContext.getContainer?.() ?? undefined
+  }
 
   // Ensure Escape handling works even when popover content has no focusable children.
   createEffect(() => {
     if (!isOpen() || !shouldBeDialog()) return
     if (!popoverRef) return
+    if (resolvedTrigger() === 'SubmenuTrigger') return
     if (document.activeElement !== popoverRef) {
       popoverRef.focus()
     }
@@ -409,28 +421,43 @@ export function Popover(props: PopoverProps): JSX.Element {
     onCleanup(() => document.removeEventListener('keydown', onKeyDown))
   })
 
+  const overlay = () => (
+    <PopoverContext.Provider value={{ placement: popoverAria.placement, arrowProps: () => popoverAria.arrowProps }}>
+      <FocusScope contain={shouldBeDialog()} restoreFocus autoFocus>
+        <div
+          {...domProps()}
+          {...cleanPopoverProps()}
+          ref={popoverRef}
+          role={shouldBeDialog() ? 'dialog' : undefined}
+          tabIndex={shouldBeDialog() ? -1 : undefined}
+          class={renderProps.class()}
+          style={mergedStyle()}
+          data-trigger={resolvedTrigger()}
+          data-placement={popoverAria.placement()}
+          data-entering={dataAttr(local.isEntering)}
+          data-exiting={dataAttr(local.isExiting)}
+        >
+          {renderProps.renderChildren()}
+        </div>
+      </FocusScope>
+    </PopoverContext.Provider>
+  )
+
   return (
     <Show when={isOpen() || local.isExiting}>
       <Portal mount={portalContainer()}>
-        <PopoverContext.Provider value={{ placement: popoverAria.placement, arrowProps: () => popoverAria.arrowProps }}>
-          <FocusScope contain={shouldBeDialog()} restoreFocus autoFocus>
-            <div
-              {...domProps()}
-              {...cleanPopoverProps()}
-              ref={popoverRef}
-              role={shouldBeDialog() ? 'dialog' : undefined}
-              tabIndex={shouldBeDialog() ? -1 : undefined}
-              class={renderProps.class()}
-              style={mergedStyle()}
-              data-trigger={local.trigger ?? triggerContext?.trigger}
-              data-placement={popoverAria.placement()}
-              data-entering={dataAttr(local.isEntering)}
-              data-exiting={dataAttr(local.isExiting)}
-            >
-              {renderProps.renderChildren()}
+        <Show
+          when={isSubPopover()}
+          fallback={(
+            <div ref={setGroupRef} style={{ display: 'contents' }}>
+              <PopoverGroupContext.Provider value={() => groupRef()}>
+                {overlay()}
+              </PopoverGroupContext.Provider>
             </div>
-          </FocusScope>
-        </PopoverContext.Provider>
+          )}
+        >
+          {overlay()}
+        </Show>
       </Portal>
     </Show>
   )

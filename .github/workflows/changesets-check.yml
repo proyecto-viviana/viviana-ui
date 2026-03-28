@@ -21,16 +21,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          bun-version: latest
+          version: 10
 
-      - name: Install workspace dependencies
-        run: bun install --frozen-lockfile
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Fetch base branch
         run: git fetch origin main --depth=1
 
       - name: Run changesets CI check
-        run: bun run ci:changesets
+        run: pnpm run ci:changesets

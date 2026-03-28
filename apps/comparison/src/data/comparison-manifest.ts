@@ -157,9 +157,9 @@ export const comparisonEntries: ComparisonEntry[] = [
         summary:
           "react-aria-components Popover vs solidaria-components Popover.",
         react: "live",
-        solid: "tracked",
+        solid: "live",
         note:
-          "React is the current parity proof here. The Solid comparison stays tracked until complex overlay wiring is validated in-browser in the comparison app itself.",
+          "React and Solid both render the scoped popover comparison directly in the app runtime.",
       },
       headless: {
         label: "Headless Overlay",
@@ -195,17 +195,17 @@ export const comparisonEntries: ComparisonEntry[] = [
         label: "Styled Tabs",
         summary: "React Spectrum Tabs vs Silapse Tabs.",
         react: "live",
-        solid: "tracked",
+        solid: "live",
         note:
-          "React is live. Solid stays tracked until the comparison app proves collection wiring end-to-end.",
+          "React and Solid styled tab demos are both mounted directly in the comparison app.",
       },
       components: {
         label: "Component Tabs",
         summary: "react-aria-components Tabs vs solidaria-components Tabs.",
         react: "live",
-        solid: "tracked",
+        solid: "live",
         note:
-          "React is live. Solid stays tracked until the comparison app validates tab selection behavior directly.",
+          "React and Solid component tab demos are both mounted and comparable in the app runtime.",
       },
       headless: {
         label: "Headless Tabs",

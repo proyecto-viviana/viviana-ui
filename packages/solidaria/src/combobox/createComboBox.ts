@@ -478,6 +478,17 @@ export function createComboBox<T>(
         }
         break;
 
+      case 'Backspace':
+        // In multiple mode, remove last selected key when input is empty
+        if (state.selectionMode() === 'multiple' && state.inputValue() === '') {
+          const keys = state.selectedKeys();
+          if (keys.size > 0) {
+            const lastKey = Array.from(keys).pop()!;
+            state.removeSelectedKey(lastKey);
+          }
+        }
+        break;
+
       case 'Tab':
         // Commit on Tab if menu is open
         if (state.isOpen() && focusedKey != null) {
@@ -635,10 +646,12 @@ export function createComboBox<T>(
       ) as JSX.HTMLAttributes<HTMLElement>;
     },
     get listBoxProps() {
+      const isMulti = state.selectionMode() === 'multiple';
       return {
         id: listBoxId,
         role: 'listbox',
         'aria-labelledby': inputId,
+        'aria-multiselectable': isMulti || undefined,
         tabIndex: -1,
         // Track pointerdown inside listbox to prevent blur from closing
         // Use capture phase because createPress calls stopPropagation on pointerdown

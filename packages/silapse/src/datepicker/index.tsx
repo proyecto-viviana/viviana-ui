@@ -21,3 +21,8 @@ export type {
   TimeValue,
 } from '../calendar/TimeField';
 
+export { DateRangePicker } from '../calendar/DateRangePicker';
+export type {
+  DateRangePickerProps,
+  DateRangePickerSize,
+} from '../calendar/DateRangePicker';

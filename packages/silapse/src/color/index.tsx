@@ -221,7 +221,7 @@ export function ColorSliderThumb(props: { class?: string }): JSX.Element {
   const customClass = props.class ?? ''
 
   const getClassName = (renderProps: ColorSliderThumbRenderProps): string => {
-    const base = `${styles.slider.thumb} rounded-full border-2 border-white shadow-md cursor-grab`
+    const base = `${styles.slider.thumb} rounded-full border-2 border-on-color shadow-md cursor-grab`
     const dragClass = renderProps.isDragging ? 'cursor-grabbing scale-110' : ''
     const focusClass = renderProps.isFocusVisible ? 'ring-2 ring-accent-300 ring-offset-2' : ''
     const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed' : ''
@@ -308,7 +308,7 @@ export function ColorAreaThumb(props: { class?: string }): JSX.Element {
   const customClass = props.class ?? ''
 
   const getClassName = (renderProps: ColorAreaThumbRenderProps): string => {
-    const base = `${styles.area.thumb} rounded-full border-2 border-white shadow-md cursor-grab`
+    const base = `${styles.area.thumb} rounded-full border-2 border-on-color shadow-md cursor-grab`
     const dragClass = renderProps.isDragging ? 'cursor-grabbing scale-110' : ''
     const focusClass = renderProps.isFocusVisible ? 'ring-2 ring-accent-300 ring-offset-2' : ''
     const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed' : ''
@@ -396,7 +396,7 @@ export function ColorWheelThumb(props: { class?: string }): JSX.Element {
   const customClass = props.class ?? ''
 
   const getClassName = (renderProps: ColorWheelThumbRenderProps): string => {
-    const base = `${styles.wheel.thumb} rounded-full border-2 border-white shadow-md cursor-grab`
+    const base = `${styles.wheel.thumb} rounded-full border-2 border-on-color shadow-md cursor-grab`
     const dragClass = renderProps.isDragging ? 'cursor-grabbing scale-110' : ''
     const focusClass = renderProps.isFocusVisible ? 'ring-2 ring-accent-300 ring-offset-2' : ''
     const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed' : ''

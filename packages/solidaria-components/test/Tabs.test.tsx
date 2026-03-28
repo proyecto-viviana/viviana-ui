@@ -13,8 +13,9 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
 import { createSignal } from 'solid-js';
-import { Tabs, TabList, Tab, TabPanel, SelectionIndicator } from '../src/Tabs';
+import { Tabs, TabList, Tab, TabPanels, TabPanel, SelectionIndicator } from '../src/Tabs';
 import type { Key } from '@proyecto-viviana/solid-stately';
+import { I18nProvider } from '@proyecto-viviana/solidaria';
 import {
   setupUser,
   assertAriaIdIntegrity,
@@ -120,6 +121,27 @@ describe('Tabs', () => {
 
       const panel = screen.getByRole('tabpanel');
       expect(panel).toHaveClass('solidaria-TabPanel');
+    });
+
+    it('should render TabPanels wrapper with default class', () => {
+      render(() => (
+        <Tabs<TestTab>
+          items={testTabs}
+          getKey={(item) => item.id}
+          defaultSelectedKey="tab1"
+        >
+          <TabList>
+            {(item) => <Tab id={item.id}>{item.label}</Tab>}
+          </TabList>
+          <TabPanels>
+            {testTabs.map((tab) => (
+              <TabPanel id={tab.id}>{tab.content}</TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
+      ));
+
+      expect(document.querySelector('.solidaria-TabPanels')).toBeInTheDocument();
     });
   });
 
@@ -660,6 +682,91 @@ describe('Tabs', () => {
       const result = checkAriaIdIntegrity(document.body);
       expect(result.ok).toBe(true);
       expect(result.totalRefsChecked).toBeGreaterThan(0);
+    });
+  });
+
+  // ============================================
+  // RTL (Right-to-Left) KEYBOARD NAVIGATION
+  // ============================================
+
+  describe('RTL keyboard navigation', () => {
+    it('ArrowLeft should move to NEXT tab in RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestTabs tabsProps={{ defaultSelectedKey: 'tab1' }} />
+        </I18nProvider>
+      ));
+
+      const tabs = screen.getAllByRole('tab');
+      tabs[0].focus();
+
+      await user.keyboard('{ArrowLeft}');
+
+      // In RTL, ArrowLeft moves forward (to next tab)
+      expect(tabs[1]).toHaveAttribute('data-focused');
+    });
+
+    it('ArrowRight should move to PREVIOUS tab in RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestTabs tabsProps={{ defaultSelectedKey: 'tab2' }} />
+        </I18nProvider>
+      ));
+
+      const tabs = screen.getAllByRole('tab');
+      tabs[1].focus();
+
+      await user.keyboard('{ArrowRight}');
+
+      // In RTL, ArrowRight moves backward (to previous tab)
+      expect(tabs[0]).toHaveAttribute('data-focused');
+    });
+
+    it('ArrowLeft should wrap from last to first in RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestTabs tabsProps={{ defaultSelectedKey: 'tab3' }} />
+        </I18nProvider>
+      ));
+
+      const tabs = screen.getAllByRole('tab');
+      tabs[2].focus();
+
+      await user.keyboard('{ArrowLeft}');
+
+      // In RTL, ArrowLeft wraps from last to first
+      expect(tabs[0]).toHaveAttribute('data-focused');
+    });
+
+    it('ArrowRight should wrap from first to last in RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestTabs tabsProps={{ defaultSelectedKey: 'tab1' }} />
+        </I18nProvider>
+      ));
+
+      const tabs = screen.getAllByRole('tab');
+      tabs[0].focus();
+
+      await user.keyboard('{ArrowRight}');
+
+      // In RTL, ArrowRight wraps from first to last
+      expect(tabs[2]).toHaveAttribute('data-focused');
+    });
+
+    it('vertical orientation should NOT be affected by RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestTabs tabsProps={{ orientation: 'vertical', defaultSelectedKey: 'tab1' }} />
+        </I18nProvider>
+      ));
+
+      const tabs = screen.getAllByRole('tab');
+      tabs[0].focus();
+
+      // ArrowDown should still move to next in vertical, regardless of RTL
+      await user.keyboard('{ArrowDown}');
+      expect(tabs[1]).toHaveAttribute('data-focused');
     });
   });
 });

@@ -210,3 +210,5 @@ function ChevronIcon(props: { class?: string }): JSX.Element {
 
 // Attach sub-components for convenience
 Breadcrumbs.Item = BreadcrumbItem
+
+export const Item = BreadcrumbItem

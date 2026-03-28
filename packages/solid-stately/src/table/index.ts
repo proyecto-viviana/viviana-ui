@@ -4,6 +4,7 @@
  */
 
 export { createTableState } from './createTableState';
+export { createTableColumnResizeState } from './createTableColumnResizeState';
 export { TableCollection, createTableCollection } from './TableCollection';
 export type {
   TableState,
@@ -16,3 +17,9 @@ export type {
   RowDefinition,
   TableCollectionOptions,
 } from './types';
+export type {
+  ColumnSize,
+  ColumnResizeDefinition,
+  TableColumnResizeStateProps,
+  TableColumnResizeState,
+} from './createTableColumnResizeState';

@@ -94,6 +94,10 @@ export interface ListBoxProps<T>
   getDisabled?: (item: T) => boolean;
   /** The selection mode. */
   selectionMode?: 'none' | 'single' | 'multiple';
+  /** The selection behavior (toggle vs replace). */
+  selectionBehavior?: 'toggle' | 'replace';
+  /** Whether disabled items can still receive focus. */
+  disabledBehavior?: 'selection' | 'all';
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
   /** Currently selected keys (controlled). */
@@ -118,6 +122,10 @@ export interface ListBoxProps<T>
   onLoadMore?: () => void | Promise<void>;
   /** Drag and drop hooks from `useDragAndDrop`. */
   dragAndDropHooks?: DragAndDropHooks<T>;
+  /** Layout hint for styling parity. */
+  layout?: 'stack' | 'grid';
+  /** Orientation hint for styling parity. */
+  orientation?: 'vertical' | 'horizontal';
 }
 
 export interface ListBoxOptionRenderProps {
@@ -157,6 +165,8 @@ export interface ListBoxLoadMoreItemProps extends SlotProps {
   onLoadMore: () => void | Promise<void>;
   /** Whether additional items are currently loading. */
   isLoading?: boolean;
+  /** Scroll offset multiplier for early loading trigger (default: 1 = 100% of viewport height). */
+  scrollOffset?: number;
   /** Content for the load more row. */
   children?: JSX.Element;
   /** The CSS className for the element. */
@@ -194,7 +204,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
     ['children', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore', 'dragAndDropHooks'],
-    ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'selectionMode', 'selectedKeys', 'defaultSelectedKeys', 'onSelectionChange']
+    ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'disabledBehavior', 'selectionMode', 'selectionBehavior', 'selectedKeys', 'defaultSelectedKeys', 'onSelectionChange', 'layout', 'orientation']
   );
 
   const flatItems = createMemo<T[]>(() => {
@@ -222,6 +232,12 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     },
     get selectionMode() {
       return stateProps.selectionMode;
+    },
+    get selectionBehavior() {
+      return stateProps.selectionBehavior;
+    },
+    get disabledBehavior() {
+      return stateProps.disabledBehavior;
     },
     get selectedKeys() {
       return stateProps.selectedKeys;
@@ -499,11 +515,17 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
               data-focus-visible={isFocusVisible() || undefined}
               data-disabled={resolveDisabled() || undefined}
               data-empty={isEmpty() || undefined}
+              data-layout={stateProps.layout}
+              data-orientation={stateProps.orientation}
               data-drop-target={isRootDropTarget() || undefined}
             >
               <SharedElementTransition>
               {isEmpty() && local.renderEmptyState
-                ? local.renderEmptyState()
+                ? (
+                  <li role="option" style={{ display: 'contents' }} data-empty-state>
+                    {local.renderEmptyState()}
+                  </li>
+                )
                 : hasSections()
                   ? (
                     <For each={sectionedRenderEntries()}>
@@ -728,7 +750,7 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
  * Load more sentinel item for listbox collections.
  */
 export function ListBoxLoadMoreItem(props: ListBoxLoadMoreItemProps): JSX.Element {
-  let ref: HTMLLIElement | undefined;
+  let sentinelRef: HTMLDivElement | undefined;
   const [isPending, setIsPending] = createSignal(false);
 
   const isLoading = () => !!props.isLoading || isPending();
@@ -744,16 +766,20 @@ export function ListBoxLoadMoreItem(props: ListBoxLoadMoreItemProps): JSX.Elemen
   };
 
   createEffect(() => {
-    if (!ref || typeof IntersectionObserver !== 'function') return;
+    if (!sentinelRef || typeof IntersectionObserver !== 'function') return;
 
-    const observer = new IntersectionObserver((entries) => {
-      const entry = entries[0];
-      if (entry?.isIntersecting) {
-        void triggerLoadMore();
-      }
-    });
+    const offset = props.scrollOffset ?? 1;
+    const margin = `0px 0px ${100 * offset}% 0px`;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          void triggerLoadMore();
+        }
+      },
+      { rootMargin: margin }
+    );
 
-    observer.observe(ref);
+    observer.observe(sentinelRef);
     return () => observer.disconnect();
   });
 
@@ -768,20 +794,24 @@ export function ListBoxLoadMoreItem(props: ListBoxLoadMoreItemProps): JSX.Elemen
   );
 
   return (
-    <li
-      ref={ref}
-      role="option"
-      aria-disabled={true}
-      tabIndex={0}
-      onFocus={() => {
-        void triggerLoadMore();
-      }}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-loading={isLoading() || undefined}
-    >
-      {renderProps.renderChildren()}
-    </li>
+    <>
+      <li style={{ position: 'relative', width: 0, height: 0, overflow: 'hidden' }} inert>
+        <div ref={sentinelRef} style={{ position: 'absolute', height: '1px', width: '1px' }} />
+      </li>
+      <li
+        role="option"
+        aria-disabled={true}
+        tabIndex={0}
+        onFocus={() => {
+          void triggerLoadMore();
+        }}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-loading={isLoading() || undefined}
+      >
+        {renderProps.renderChildren()}
+      </li>
+    </>
   );
 }
 

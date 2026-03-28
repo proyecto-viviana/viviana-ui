@@ -193,6 +193,7 @@ describe('Tree', () => {
       ));
 
       expect(screen.getByTestId('empty')).toHaveTextContent('No items');
+      expect(screen.getByRole('gridcell')).toContainElement(screen.getByTestId('empty'));
     });
 
     it('should trigger onLoadMore from load more sentinel', () => {

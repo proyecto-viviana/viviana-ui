@@ -524,6 +524,7 @@ export {
   createTableSelectionCheckbox,
   createTableSelectAllCheckbox,
   getTableData,
+  createTableColumnResize,
   type AriaTableProps,
   type TableAria,
   type AriaTableHeaderRowProps,
@@ -539,6 +540,8 @@ export {
   type AriaTableSelectionCheckboxProps,
   type TableSelectionCheckboxAria,
   type TableSelectAllCheckboxAria,
+  type CreateTableColumnResizeProps,
+  type TableColumnResizeResult,
 } from './table';
 
 // GridList
@@ -707,6 +710,16 @@ export {
   createFilter,
   type Filter,
 } from './i18n';
+
+// StepList
+export {
+  createStepList,
+  createStep,
+  type AriaStepListProps,
+  type StepListAria,
+  type AriaStepProps,
+  type StepAria,
+} from './steplist';
 
 // Selection
 export {

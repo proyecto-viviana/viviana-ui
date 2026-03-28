@@ -29,10 +29,10 @@ export interface AriaDialogProps extends DOMProps, AriaLabelingProps {
 
 export interface DialogAria {
   /** Props for the dialog container element. */
-  dialogProps: Accessor<Record<string, any>>
+  dialogProps: Accessor<Record<string, unknown>>
 
   /** Props for the dialog title element. */
-  titleProps: Accessor<Record<string, any>>
+  titleProps: Accessor<Record<string, unknown>>
 }
 
 /**

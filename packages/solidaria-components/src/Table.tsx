@@ -29,15 +29,19 @@ import {
   createHover,
   mergeProps,
   type AriaTableProps,
+  createTableColumnResize,
 } from '@proyecto-viviana/solidaria';
 import {
   createTableState,
   createTableCollection,
+  createTableColumnResizeState,
   type TableState,
   type TableCollection,
+  type TableColumnResizeState,
   type Key,
   type SortDescriptor,
   type ColumnDefinition,
+  type ColumnSize,
   type GridNode,
   type DropTarget,
 } from '@proyecto-viviana/solid-stately';
@@ -86,6 +90,10 @@ export interface TableProps<T extends object> extends Omit<AriaTableProps, 'chil
   getTextValue?: (item: T, column: ColumnDefinition<T>) => string;
   /** The selection mode. */
   selectionMode?: 'none' | 'single' | 'multiple';
+  /** The selection behavior (toggle vs replace). */
+  selectionBehavior?: 'toggle' | 'replace';
+  /** Whether disabled rows remain focusable. */
+  disabledBehavior?: 'selection' | 'all';
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
   /** Currently selected keys (controlled). */
@@ -137,6 +145,10 @@ export interface TableColumnRenderProps {
   sortDirection: 'ascending' | 'descending' | undefined;
   /** Whether the column is being hovered. */
   isHovered: boolean;
+  /** Whether the column allows resizing. */
+  allowsResizing: boolean;
+  /** Whether the column is currently being resized. */
+  isResizing: boolean;
 }
 
 export interface TableColumnProps extends SlotProps {
@@ -144,6 +156,16 @@ export interface TableColumnProps extends SlotProps {
   id: Key;
   /** Whether the column allows sorting. */
   allowsSorting?: boolean;
+  /** Whether the column allows resizing. */
+  allowsResizing?: boolean;
+  /** Column width (number for px, string for 'Xfr', 'X%', 'Xpx'). */
+  width?: ColumnSize;
+  /** Default width for uncontrolled mode. */
+  defaultWidth?: ColumnSize;
+  /** Minimum column width in px. */
+  minWidth?: number;
+  /** Maximum column width in px. */
+  maxWidth?: number;
   /** The children of the column. */
   children?: RenderChildren<TableColumnRenderProps>;
   /** The CSS className for the element. */
@@ -231,6 +253,8 @@ export interface TableCellProps extends SlotProps {
 export interface TableLoadMoreItemProps extends SlotProps {
   onLoadMore: () => void | Promise<void>;
   isLoading?: boolean;
+  /** Scroll offset multiplier for early loading trigger (default: 1 = 100% of viewport height). */
+  scrollOffset?: number;
   colSpan?: number;
   children?: JSX.Element;
   class?: ClassNameOrFunction<{ isLoading: boolean }>;
@@ -255,7 +279,8 @@ interface TableContextValue<T extends object> {
 
 export const TableContext = createContext<TableContextValue<object> | null>(null);
 export const TableStateContext = createContext<TableState<object, TableCollection<object>> | null>(null);
-export const TableColumnResizeStateContext = createContext<null>(null);
+/** The resize context carries a getter for the resize state. The getter may return null before columns register. */
+export const TableColumnResizeStateContext = createContext<{ getState: () => TableColumnResizeState | null } | null>(null);
 
 // Row-level context for cells
 interface TableRowContextValue {
@@ -283,7 +308,9 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
       'getKey',
       'getTextValue',
       'disabledKeys',
+      'disabledBehavior',
       'selectionMode',
+      'selectionBehavior',
       'selectedKeys',
       'defaultSelectedKeys',
       'onSelectionChange',
@@ -312,6 +339,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     collection: collection(),
     disabledKeys: stateProps.disabledKeys,
     selectionMode: stateProps.selectionMode,
+    selectionBehavior: stateProps.selectionBehavior,
     selectedKeys: stateProps.selectedKeys,
     defaultSelectedKeys: stateProps.defaultSelectedKeys,
     onSelectionChange: stateProps.onSelectionChange,
@@ -558,7 +586,7 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
  * A column header in a table.
  */
 export function TableColumn(props: TableColumnProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'id', 'allowsSorting', 'children']);
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'id', 'allowsSorting', 'allowsResizing', 'width', 'defaultWidth', 'minWidth', 'maxWidth', 'children']);
 
   // Get context
   const context = useContext(TableContext);
@@ -616,6 +644,24 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     return undefined;
   });
 
+  // Get resize state from context (if inside ResizableTableContainer)
+  const resizeCtx = useContext(TableColumnResizeStateContext);
+
+  // Check if this column is currently being resized
+  const isResizing = createMemo(() => {
+    const rs = resizeCtx?.getState();
+    if (!rs) return false;
+    return rs.resizingColumn() === local.id;
+  });
+
+  // Get computed width from resize state
+  const resizeWidth = createMemo(() => {
+    const rs = resizeCtx?.getState();
+    if (!rs) return undefined;
+    const w = rs.getColumnWidth(local.id);
+    return w > 0 ? w : undefined;
+  });
+
   // Render props values
   const renderValues = createMemo<TableColumnRenderProps>(() => ({
     isFocused: state.focusedKey === local.id,
@@ -623,6 +669,8 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     isSortable: local.allowsSorting ?? false,
     sortDirection: sortDirection(),
     isHovered: isHovered(),
+    allowsResizing: local.allowsResizing ?? false,
+    isResizing: isResizing(),
   }));
 
   // Resolve render props (children rendered directly in JSX to avoid eager evaluation)
@@ -649,6 +697,17 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     return rest;
   };
 
+  // Merge resize width into style
+  const columnStyle = createMemo(() => {
+    const base = renderProps.style();
+    const rw = resizeWidth();
+    if (rw == null) return base;
+    const widthStyle = { width: `${rw}px`, 'min-width': `${rw}px`, 'max-width': `${rw}px` };
+    if (!base) return widthStyle;
+    if (typeof base === 'string') return widthStyle; // fallback
+    return { ...base, ...widthStyle };
+  });
+
   return (
     <th
       ref={setRef}
@@ -657,9 +716,11 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
       {...cleanHoverProps()}
       {...cleanFocusProps()}
       class={renderProps.class()}
-      style={renderProps.style()}
+      style={columnStyle()}
       data-sortable={local.allowsSorting || undefined}
       data-sort-direction={sortDirection() || undefined}
+      data-resizable={local.allowsResizing || undefined}
+      data-resizing={isResizing() || undefined}
       data-hovered={isHovered() || undefined}
       data-focused={state.focusedKey === local.id || undefined}
       data-focus-visible={(isFocusVisible() && state.focusedKey === local.id) || undefined}
@@ -804,7 +865,11 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
             : null}
         </>
       }>
-        {local.renderEmptyState?.()}
+        <tr data-empty-state>
+          <th role="rowheader" colSpan={spacerColSpan()}>
+            {local.renderEmptyState?.()}
+          </th>
+        </tr>
       </Show>
       </SharedElementTransition>
       <Show when={local.hasMore && local.onLoadMore}>
@@ -819,7 +884,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
 }
 
 export function TableLoadMoreItem(props: TableLoadMoreItemProps): JSX.Element {
-  let ref: HTMLTableRowElement | undefined;
+  let sentinelRef: HTMLDivElement | undefined;
   const [isPending, setIsPending] = createSignal(false);
   const isLoading = () => !!props.isLoading || isPending();
 
@@ -834,13 +899,18 @@ export function TableLoadMoreItem(props: TableLoadMoreItemProps): JSX.Element {
   };
 
   createEffect(() => {
-    if (!ref || typeof IntersectionObserver !== 'function') return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) {
-        void triggerLoadMore();
-      }
-    });
-    observer.observe(ref);
+    if (!sentinelRef || typeof IntersectionObserver !== 'function') return;
+    const offset = props.scrollOffset ?? 1;
+    const margin = `0px 0px ${100 * offset}% 0px`;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          void triggerLoadMore();
+        }
+      },
+      { rootMargin: margin }
+    );
+    observer.observe(sentinelRef);
     return () => observer.disconnect();
   });
 
@@ -855,19 +925,23 @@ export function TableLoadMoreItem(props: TableLoadMoreItemProps): JSX.Element {
   );
 
   return (
-    <tr
-      ref={ref}
-      role="row"
-      tabIndex={0}
-      onFocus={() => {
-        void triggerLoadMore();
-      }}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-loading={isLoading() || undefined}
-    >
-      <td colSpan={props.colSpan ?? 1}>{renderProps.renderChildren()}</td>
-    </tr>
+    <>
+      <tr style={{ position: 'relative', width: 0, height: 0, overflow: 'hidden' }} inert>
+        <td><div ref={sentinelRef} style={{ position: 'absolute', height: '1px', width: '1px' }} /></td>
+      </tr>
+      <tr
+        role="row"
+        tabIndex={0}
+        onFocus={() => {
+          void triggerLoadMore();
+        }}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-loading={isLoading() || undefined}
+      >
+        <td colSpan={props.colSpan ?? 1}>{renderProps.renderChildren()}</td>
+      </tr>
+    </>
   );
 }
 
@@ -1189,28 +1263,234 @@ Table.Cell = TableCell;
 Table.SelectionCheckbox = TableSelectionCheckbox;
 Table.SelectAllCheckbox = TableSelectAllCheckbox;
 
+// ============================================
+// COLUMN RESIZER TYPES & COMPONENT
+// ============================================
+
+export interface ColumnResizerRenderProps {
+  /** Whether the resizer handle is hovered. */
+  isHovered: boolean;
+  /** Whether the resizer's hidden input is focused. */
+  isFocused: boolean;
+  /** Whether the column is currently being resized. */
+  isResizing: boolean;
+  /** The direction(s) the column can be resized: 'both', 'left', 'right'. */
+  resizableDirection: 'both' | 'left' | 'right';
+}
+
 export interface ColumnResizerProps extends SlotProps {
-  class?: string;
-  style?: JSX.CSSProperties;
+  /** The column key this resizer belongs to. */
+  column: { key: Key };
+  /** Accessible label for the resizer. */
+  'aria-label'?: string;
+  /** Whether resizing is disabled. */
+  isDisabled?: boolean;
+  /** Called when resize starts. */
+  onResizeStart?: (widths: Map<Key, number>) => void;
+  /** Called during resize. */
+  onResize?: (widths: Map<Key, number>) => void;
+  /** Called when resize ends. */
+  onResizeEnd?: (widths: Map<Key, number>) => void;
+  /** CSS class — can be a string or function of render props. */
+  class?: ClassNameOrFunction<ColumnResizerRenderProps>;
+  /** Inline style — can be object or function of render props. */
+  style?: StyleOrFunction<ColumnResizerRenderProps>;
+  /** Children — can be JSX or render function. */
+  children?: JSX.Element | RenderChildren<ColumnResizerRenderProps>;
 }
 
 export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
-  return <div role="separator" class={props.class ?? 'solidaria-Table-columnResizer'} style={props.style} />;
-}
+  const [local, domProps] = splitProps(props, [
+    'column', 'aria-label', 'isDisabled',
+    'onResizeStart', 'onResize', 'onResizeEnd',
+    'class', 'style', 'slot', 'children',
+  ]);
 
-export interface ResizableTableContainerProps extends SlotProps {
-  children?: JSX.Element;
-  class?: string;
-  style?: JSX.CSSProperties;
-}
+  // Register this column with the ResizableTableContainer (auto-collect columns)
+  const registerColumn = useContext(ResizableTableRegisterContext);
+  if (registerColumn) {
+    registerColumn(local.column.key, { key: local.column.key });
+  }
 
-export function ResizableTableContainer(props: ResizableTableContainerProps): JSX.Element {
+  const resizeCtx = useContext(TableColumnResizeStateContext);
+  const hasResizeContext = !!resizeCtx;
+
+  // Create a fallback "no-op" resize state for when there's no ResizableTableContainer
+  const noopResizeState: TableColumnResizeState = {
+    resizingColumn: () => null,
+    columnWidths: () => new Map(),
+    startResize() {},
+    endResize() {},
+    updateResizedColumns(_key: Key, _width: number) { return new Map(); },
+    getColumnWidth() { return 0; },
+    getColumnMinWidth() { return 75; },
+    getColumnMaxWidth() { return Infinity; },
+  };
+
+  const { isHovered, hoverProps } = createHover({ isDisabled: local.isDisabled ?? false });
+  const [isFocused, setIsFocused] = createSignal(false);
+
+  // Create the ARIA resize hook — always create it but use reactive state getter
+  const columnResize = createTableColumnResize(
+    () => ({
+      column: local.column,
+      'aria-label': local['aria-label'] ?? `Resize column ${String(local.column.key)}`,
+      isDisabled: local.isDisabled,
+      onResizeStart: local.onResizeStart,
+      onResize: local.onResize,
+      onResizeEnd: local.onResizeEnd,
+    }),
+    () => resizeCtx?.getState() ?? noopResizeState,
+  );
+
+  const renderValues = createMemo<ColumnResizerRenderProps>(() => ({
+    isHovered: isHovered(),
+    isFocused: isFocused(),
+    isResizing: columnResize.isResizing(),
+    resizableDirection: 'both',
+  }));
+
+  const renderProps = useRenderProps(
+    {
+      class: local.class,
+      style: local.style,
+      defaultClassName: 'solidaria-Table-columnResizer',
+    },
+    renderValues,
+  );
+
+  const cleanHoverProps = () => {
+    const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
+    return rest;
+  };
+
   return (
-    <div class={props.class ?? 'solidaria-ResizableTableContainer'} style={props.style}>
-      {props.children}
+    <div
+      {...domProps}
+      {...columnResize.resizerProps}
+      {...cleanHoverProps()}
+      class={renderProps.class()}
+      style={renderProps.style()}
+      data-hovered={isHovered() || undefined}
+      data-resizing={columnResize.isResizing() || undefined}
+    >
+      <Show when={hasResizeContext}>
+        <input
+          {...columnResize.inputProps}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+        />
+      </Show>
+      {typeof local.children === 'function'
+        ? (local.children as (props: ColumnResizerRenderProps) => JSX.Element)(renderValues())
+        : local.children}
     </div>
   );
 }
+
+// ============================================
+// RESIZABLE TABLE CONTAINER TYPES & COMPONENT
+// ============================================
+
+export interface ResizableTableContainerProps extends SlotProps {
+  /** Children (should contain a Table). */
+  children?: JSX.Element;
+  /** Column resize definitions. If not provided, columns from child ColumnResizers are auto-detected. */
+  columns?: Array<{ key: Key; width?: ColumnSize; minWidth?: number; maxWidth?: number }>;
+  /** CSS class name. */
+  class?: string;
+  /** Inline style. */
+  style?: JSX.CSSProperties;
+  /** Called when column resize starts. */
+  onResizeStart?: (widths: Map<Key, number>) => void;
+  /** Called during column resize. */
+  onResize?: (widths: Map<Key, number>) => void;
+  /** Called when column resize ends. */
+  onResizeEnd?: (widths: Map<Key, number>) => void;
+}
+
+export function ResizableTableContainer(props: ResizableTableContainerProps): JSX.Element {
+  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children', 'columns', 'onResizeStart', 'onResize', 'onResizeEnd']);
+
+  const [containerRef, setContainerRef] = createSignal<HTMLDivElement | null>(null);
+  const [tableWidth, setTableWidth] = createSignal(0);
+
+  // Track container width via ResizeObserver
+  createEffect(() => {
+    const el = containerRef();
+    if (!el) return;
+
+    // Initial measurement
+    setTableWidth(el.clientWidth);
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          setTableWidth(entry.contentRect.width);
+        }
+      });
+      observer.observe(el);
+      onCleanup(() => observer.disconnect());
+    }
+  });
+
+  // Auto-collected columns from ColumnResizer children
+  const [autoColumns, setAutoColumns] = createSignal<Map<Key, { key: Key; width?: ColumnSize; minWidth?: number; maxWidth?: number }>>(new Map());
+
+  const registerColumn = (key: Key, def: { key: Key; width?: ColumnSize; minWidth?: number; maxWidth?: number }) => {
+    setAutoColumns((prev) => {
+      const next = new Map(prev);
+      next.set(key, def);
+      return next;
+    });
+  };
+
+  // Columns: prefer explicit prop, fall back to auto-collected
+  const effectiveColumns = createMemo(() => {
+    if (local.columns && local.columns.length > 0) return local.columns;
+    return Array.from(autoColumns().values());
+  });
+
+  // Use measured width, with a reasonable fallback for environments without layout (e.g. jsdom)
+  const effectiveWidth = createMemo(() => {
+    const w = tableWidth();
+    return w > 0 ? w : 800; // fallback to 800px
+  });
+
+  // Create resize state
+  const resizeState = createMemo(() => {
+    const cols = effectiveColumns();
+    if (cols.length === 0) return null;
+
+    return createTableColumnResizeState(() => ({
+      tableWidth: effectiveWidth(),
+      columns: cols,
+    }));
+  });
+
+  // Provide a stable context object with a reactive getter
+  const contextValue = { getState: () => resizeState() };
+
+  return (
+    <ResizableTableRegisterContext.Provider value={registerColumn}>
+      <TableColumnResizeStateContext.Provider value={contextValue}>
+        <div
+          ref={setContainerRef}
+          {...domProps}
+          class={local.class ?? 'solidaria-ResizableTableContainer'}
+          style={{ position: 'relative', overflow: 'auto', ...local.style }}
+        >
+          {local.children}
+        </div>
+      </TableColumnResizeStateContext.Provider>
+    </ResizableTableRegisterContext.Provider>
+  );
+}
+
+/** Internal context for ColumnResizer to register itself with ResizableTableContainer */
+const ResizableTableRegisterContext = createContext<
+  ((key: Key, def: { key: Key; width?: ColumnSize; minWidth?: number; maxWidth?: number }) => void) | null
+>(null);
 
 export function useTableOptions() {
   return useContext(TableContext);

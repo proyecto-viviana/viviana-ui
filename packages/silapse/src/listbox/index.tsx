@@ -9,8 +9,10 @@ import { type JSX, splitProps, createContext, useContext, Show, createUniqueId }
 import {
   ListBox as HeadlessListBox,
   ListBoxOption as HeadlessListBoxOption,
+  ListBoxSection as HeadlessListBoxSection,
   type ListBoxProps as HeadlessListBoxProps,
   type ListBoxOptionProps as HeadlessListBoxOptionProps,
+  type ListBoxSectionProps as HeadlessListBoxSectionProps,
   type ListBoxRenderProps,
   type ListBoxOptionRenderProps,
 } from '@proyecto-viviana/solidaria-components'
@@ -50,6 +52,11 @@ export interface ListBoxOptionProps<T> extends Omit<HeadlessListBoxOptionProps<T
    * Use a function returning JSX for SSR compatibility: `icon={() => <MyIcon />}`
    */
   icon?: () => JSX.Element
+}
+
+export interface ListBoxSectionProps extends Omit<HeadlessListBoxSectionProps, 'class' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
 }
 
 // ============================================
@@ -226,6 +233,19 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   )
 }
 
+export function ListBoxSection(props: ListBoxSectionProps): JSX.Element {
+  const [local, headlessProps] = splitProps(props, ['class'])
+
+  return (
+    <HeadlessListBoxSection
+      {...headlessProps}
+      class={['px-1 py-1', local.class ?? ''].filter(Boolean).join(' ')}
+    >
+      {props.children}
+    </HeadlessListBoxSection>
+  )
+}
+
 // ============================================
 // ICONS
 // ============================================
@@ -246,6 +266,11 @@ function CheckIcon(props: { class?: string }): JSX.Element {
 
 // Attach sub-components for convenience
 ListBox.Option = ListBoxOption
+ListBox.Section = ListBoxSection
+
+export const Item = ListBoxOption
+export const Section = ListBoxSection
+export const ListBoxBase = ListBox
 
 // Re-export Key type for convenience
 export type { Key }

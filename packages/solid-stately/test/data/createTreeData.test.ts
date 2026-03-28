@@ -234,4 +234,103 @@ describe('createTreeData', () => {
       dispose();
     });
   });
+
+  it('move rejects cyclical move (node into own subtree)', () => {
+    createRoot(dispose => {
+      const tree = createTestTree();
+      // Try to move A (id: 1) into its own child A1 (id: 11)
+      tree.move(1, 11, 0);
+      // Should be a no-op
+      expect(tree.items).toHaveLength(3);
+      expect(tree.items[0].value.name).toBe('A');
+      const a1 = tree.getItem(11);
+      expect(a1!.parentKey).toBe(1);
+      dispose();
+    });
+  });
+
+  it('moveBefore moves item before a root key', () => {
+    createRoot(dispose => {
+      const tree = createTestTree();
+      // Move C (id: 3) before A (id: 1)
+      tree.moveBefore(1, [3]);
+      expect(tree.items).toHaveLength(3);
+      expect(tree.items[0].value.name).toBe('C');
+      expect(tree.items[1].value.name).toBe('A');
+      expect(tree.items[2].value.name).toBe('B');
+      dispose();
+    });
+  });
+
+  it('moveAfter moves item after a root key', () => {
+    createRoot(dispose => {
+      const tree = createTestTree();
+      // Move C (id: 3) after A (id: 1)
+      tree.moveAfter(1, [3]);
+      expect(tree.items).toHaveLength(3);
+      expect(tree.items[0].value.name).toBe('A');
+      expect(tree.items[1].value.name).toBe('C');
+      expect(tree.items[2].value.name).toBe('B');
+      dispose();
+    });
+  });
+
+  it('moveBefore moves item to a different parent', () => {
+    createRoot(dispose => {
+      const tree = createTestTree();
+      // Move C (id: 3) before B1 (id: 21, child of B)
+      tree.moveBefore(21, [3]);
+      expect(tree.items).toHaveLength(2);
+      const parentB = tree.getItem(2);
+      expect(parentB!.children).toHaveLength(2);
+      expect(parentB!.children![0].value.name).toBe('C');
+      expect(parentB!.children![1].value.name).toBe('B1');
+      dispose();
+    });
+  });
+
+  it('moveAfter moves item within the same parent', () => {
+    createRoot(dispose => {
+      const tree = createTestTree();
+      // Move A1 (id: 11) after A2 (id: 12) — both children of A
+      tree.moveAfter(12, [11]);
+      const parentA = tree.getItem(1);
+      expect(parentA!.children).toHaveLength(2);
+      expect(parentA!.children![0].value.name).toBe('A2');
+      expect(parentA!.children![1].value.name).toBe('A1');
+      dispose();
+    });
+  });
+
+  it('moveBefore/moveAfter moves multiple items', () => {
+    createRoot(dispose => {
+      const tree = createTestTree();
+      // Move A (id: 1) and C (id: 3) after B (id: 2)
+      tree.moveAfter(2, [1, 3]);
+      expect(tree.items).toHaveLength(3);
+      expect(tree.items[0].value.name).toBe('B');
+      expect(tree.items[1].value.name).toBe('A');
+      expect(tree.items[2].value.name).toBe('C');
+      dispose();
+    });
+  });
+
+  it('moveBefore/moveAfter rejects cyclical move', () => {
+    createRoot(dispose => {
+      const tree = createTestTree();
+      // Try to move A (id: 1) before A1 (id: 11, its own child)
+      expect(() => tree.moveBefore(11, [1])).toThrow('Cannot move an item to be a child of itself.');
+      dispose();
+    });
+  });
+
+  it('moveBefore with nonexistent target key is a no-op', () => {
+    createRoot(dispose => {
+      const tree = createTestTree();
+      tree.moveBefore(999, [1]);
+      expect(tree.items).toHaveLength(3);
+      expect(tree.items[0].value.name).toBe('A');
+      dispose();
+    });
+  });
 });

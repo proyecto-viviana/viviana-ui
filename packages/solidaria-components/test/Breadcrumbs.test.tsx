@@ -13,6 +13,7 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup } from '@solidjs/testing-library';
 import { Breadcrumbs, BreadcrumbItem } from '../src/Breadcrumbs';
+import { I18nProvider } from '@proyecto-viviana/solidaria';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
@@ -425,6 +426,78 @@ describe('Breadcrumbs', () => {
 
       const items = document.querySelectorAll('.solidaria-BreadcrumbItem');
       expect(items).toHaveLength(0);
+    });
+  });
+
+  // ============================================
+  // RTL (Right-to-Left) SUPPORT
+  // ============================================
+
+  describe('RTL support', () => {
+    it('should render breadcrumbs correctly within RTL context', () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <Breadcrumbs items={breadcrumbItems} getKey={(item) => item.id}>
+            {(item) => <BreadcrumbItem href={item.href}>{item.label}</BreadcrumbItem>}
+          </Breadcrumbs>
+        </I18nProvider>
+      ));
+
+      const nav = screen.getByRole('navigation');
+      expect(nav).toBeInTheDocument();
+
+      // All items should render
+      expect(screen.getByText('Home')).toBeInTheDocument();
+      expect(screen.getByText('Products')).toBeInTheDocument();
+      expect(screen.getByText('Category')).toBeInTheDocument();
+    });
+
+    it('should maintain correct aria-current in RTL', () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <Breadcrumbs items={breadcrumbItems} getKey={(item) => item.id}>
+            {(item) => <BreadcrumbItem href={item.href}>{item.label}</BreadcrumbItem>}
+          </Breadcrumbs>
+        </I18nProvider>
+      ));
+
+      // Last item should still be current in RTL
+      const currentItem = screen.getByText('Category');
+      expect(currentItem).toHaveAttribute('aria-current', 'page');
+    });
+
+    it('should maintain link functionality in RTL', async () => {
+      const onAction = vi.fn();
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <Breadcrumbs
+            items={breadcrumbItems}
+            getKey={(item) => item.id}
+            onAction={onAction}
+          >
+            {(item) => <BreadcrumbItem href={item.href}>{item.label}</BreadcrumbItem>}
+          </Breadcrumbs>
+        </I18nProvider>
+      ));
+
+      await user.click(screen.getByText('Home'));
+      expect(onAction).toHaveBeenCalledWith('home');
+    });
+
+    it('links should preserve correct href in RTL', () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <Breadcrumbs items={breadcrumbItems} getKey={(item) => item.id}>
+            {(item) => <BreadcrumbItem href={item.href}>{item.label}</BreadcrumbItem>}
+          </Breadcrumbs>
+        </I18nProvider>
+      ));
+
+      const homeLink = screen.getByText('Home');
+      expect(homeLink).toHaveAttribute('href', '/');
+
+      const productsLink = screen.getByText('Products');
+      expect(productsLink).toHaveAttribute('href', '/products');
     });
   });
 });

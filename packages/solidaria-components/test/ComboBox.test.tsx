@@ -17,10 +17,14 @@ import {
   ComboBox,
   ComboBoxInput,
   ComboBoxButton,
+  ComboBoxValue,
   ComboBoxListBox,
   ComboBoxOption,
+  ComboBoxTagGroup,
+  ComboBoxTag,
 } from '../src/ComboBox';
 import { SelectionIndicator } from '../src/SelectionIndicator';
+import { I18nProvider } from '@proyecto-viviana/solidaria';
 import {
   setupUser,
   assertAriaIdIntegrity,
@@ -110,6 +114,29 @@ describe('ComboBox', () => {
 
       const combobox = document.querySelector('.my-combobox');
       expect(combobox).toBeInTheDocument();
+    });
+
+    it('should render selected text from ComboBoxValue when input text differs', () => {
+      render(() => (
+        <ComboBox
+          aria-label="ComboBox value"
+          items={items}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.name}
+          selectedKey="2"
+          inputValue="typed text"
+        >
+          <ComboBoxValue />
+          <ComboBoxInput />
+          <ComboBoxButton>Open</ComboBoxButton>
+          <ComboBoxListBox>
+            {(item) => <ComboBoxOption id={item.id}>{item.name}</ComboBoxOption>}
+          </ComboBoxListBox>
+        </ComboBox>
+      ));
+
+      expect(screen.getByText('Banana')).toBeInTheDocument();
+      expect(screen.queryByText('typed text')).not.toBeInTheDocument();
     });
   });
 
@@ -801,6 +828,237 @@ describe('ComboBox', () => {
       // to portaled elements. Verify the check runs without errors.
       const result = checkAriaIdIntegrity(document.body);
       expect(result.totalRefsChecked).toBeGreaterThan(0);
+    });
+  });
+
+  // ============================================
+  // MULTI-SELECT MODE
+  // ============================================
+
+  describe('multi-select mode', () => {
+    function MultiSelectComboBox(props: {
+      comboBoxProps?: Partial<Parameters<typeof ComboBox>[0]>;
+    }) {
+      return (
+        <ComboBox
+          aria-label="Multi ComboBox"
+          items={items}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.name}
+          selectionMode="multiple"
+          {...props.comboBoxProps}
+        >
+          <ComboBoxTagGroup>
+            {(item) => <ComboBoxTag item={item} />}
+          </ComboBoxTagGroup>
+          <ComboBoxInput />
+          <ComboBoxButton>&#9660;</ComboBoxButton>
+          <ComboBoxListBox>
+            {(item) => <ComboBoxOption id={item.id}>{item.name}</ComboBoxOption>}
+          </ComboBoxListBox>
+        </ComboBox>
+      );
+    }
+
+    it('allows selecting multiple items', async () => {
+      const onSelectionChangeMultiple = vi.fn();
+      render(() => (
+        <MultiSelectComboBox comboBoxProps={{ onSelectionChangeMultiple }} />
+      ));
+
+      const button = screen.getByRole('button');
+      await user.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      // Select first item
+      const appleOption = screen.getByRole('option', { name: 'Apple' });
+      await user.click(appleOption);
+
+      await waitFor(() => {
+        expect(onSelectionChangeMultiple).toHaveBeenCalledWith(new Set(['1']));
+      });
+
+      // Select second item
+      const bananaOption = screen.getByRole('option', { name: 'Banana' });
+      await user.click(bananaOption);
+
+      await waitFor(() => {
+        expect(onSelectionChangeMultiple).toHaveBeenCalledWith(new Set(['1', '2']));
+      });
+    });
+
+    it('keeps menu open after selection', async () => {
+      render(() => <MultiSelectComboBox />);
+
+      const button = screen.getByRole('button');
+      await user.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      // Select an item
+      const option = screen.getByRole('option', { name: 'Apple' });
+      await user.click(option);
+
+      // Menu should still be open
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+    });
+
+    it('shows selected items as tags', async () => {
+      render(() => (
+        <MultiSelectComboBox comboBoxProps={{ defaultSelectedKeys: ['1', '3'] }} />
+      ));
+
+      // Tags should be rendered for the selected items
+      await waitFor(() => {
+        expect(screen.getByText('Apple')).toBeInTheDocument();
+        expect(screen.getByText('Cherry')).toBeInTheDocument();
+      });
+
+      // Should have remove buttons
+      const removeButtons = screen.getAllByRole('button', { name: /Remove/ });
+      expect(removeButtons.length).toBe(2);
+    });
+
+    it('removes last selected item on Backspace when input empty', async () => {
+      const onSelectionChangeMultiple = vi.fn();
+      render(() => (
+        <MultiSelectComboBox
+          comboBoxProps={{
+            defaultSelectedKeys: ['1', '2'],
+            onSelectionChangeMultiple,
+          }}
+        />
+      ));
+
+      const input = screen.getByRole('combobox');
+      input.focus();
+
+      // Press Backspace with empty input
+      await user.keyboard('{Backspace}');
+
+      await waitFor(() => {
+        // Should remove the last key ('2')
+        expect(onSelectionChangeMultiple).toHaveBeenCalledWith(new Set(['1']));
+      });
+    });
+
+    it('sets aria-multiselectable on listbox', async () => {
+      render(() => <MultiSelectComboBox comboBoxProps={{ defaultOpen: true }} />);
+
+      await waitFor(() => {
+        const listbox = screen.getByRole('listbox');
+        expect(listbox).toHaveAttribute('aria-multiselectable', 'true');
+      });
+    });
+
+    it('single mode still works as before (regression)', async () => {
+      const onSelectionChange = vi.fn();
+      render(() => (
+        <TestComboBox comboBoxProps={{ defaultOpen: true, onSelectionChange }} />
+      ));
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      // Select an item
+      const option = screen.getByRole('option', { name: 'Banana' });
+      await user.click(option);
+
+      // Should call single-mode handler
+      await waitFor(() => {
+        expect(onSelectionChange).toHaveBeenCalledWith('2');
+      });
+
+      // Menu should close in single mode
+      await waitFor(() => {
+        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      });
+
+      // Listbox should NOT have aria-multiselectable
+      // (it's closed now, so we can't check - but we verified single mode behavior)
+    });
+  });
+
+  // ============================================
+  // RTL (Right-to-Left) KEYBOARD NAVIGATION
+  // ============================================
+
+  describe('RTL keyboard navigation', () => {
+    it('should open listbox with ArrowDown in RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestComboBox />
+        </I18nProvider>
+      ));
+
+      const input = screen.getByRole('combobox');
+      input.focus();
+      await user.keyboard('{ArrowDown}');
+
+      await waitFor(() => {
+        const listbox = screen.getByRole('listbox');
+        expect(listbox).toBeInTheDocument();
+      });
+    });
+
+    it('should open listbox with ArrowUp in RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestComboBox />
+        </I18nProvider>
+      ));
+
+      const input = screen.getByRole('combobox');
+      input.focus();
+      await user.keyboard('{ArrowUp}');
+
+      await waitFor(() => {
+        const listbox = screen.getByRole('listbox');
+        expect(listbox).toBeInTheDocument();
+      });
+    });
+
+    it('should navigate listbox options with ArrowDown/ArrowUp in RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestComboBox comboBoxProps={{ defaultOpen: true }} />
+        </I18nProvider>
+      ));
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      const input = screen.getByRole('combobox');
+      input.focus();
+
+      // ArrowDown should navigate options normally (vertical list unaffected by RTL)
+      await user.keyboard('{ArrowDown}');
+
+      const options = screen.getAllByRole('option');
+      expect(options[0]).toHaveAttribute('data-focused');
+    });
+
+    it('should render combobox correctly within RTL context', () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestComboBox />
+        </I18nProvider>
+      ));
+
+      const input = screen.getByRole('combobox');
+      expect(input).toBeInTheDocument();
+
+      const button = screen.getByRole('button');
+      expect(button).toBeInTheDocument();
     });
   });
 });

@@ -43,13 +43,13 @@ The library follows a 4-layer architecture pattern:
 
 ```bash
 # For styled components (recommended)
-bun add @proyecto-viviana/silapse solid-js
+pnpm add @proyecto-viviana/silapse solid-js
 
 # For headless components
-bun add @proyecto-viviana/solidaria-components solid-js
+pnpm add @proyecto-viviana/solidaria-components solid-js
 
 # For maximum control (hooks only)
-bun add @proyecto-viviana/solidaria @proyecto-viviana/solid-stately solid-js
+pnpm add @proyecto-viviana/solidaria @proyecto-viviana/solid-stately solid-js
 ```
 
 ### Basic Usage
@@ -78,45 +78,45 @@ function App() {
 Recommended PR flow before pushing:
 
 ```bash
-bun run pr:check:fast
+pnpm run pr:check:fast
 ```
 
 That mirrors the blocking non-Playwright CI checks:
 
-- `bun run ci:changesets`
-- `bun run ci:release-readiness`
+- `pnpm run ci:changesets`
+- `pnpm run ci:release-readiness`
 
 When a PR changes the web app, accessibility surface, or CI wiring, run the full local PR gate too:
 
 ```bash
-bun run pr:check
+pnpm run pr:check
 ```
 
-That adds `bun run ci:a11y`, which mirrors the blocking accessibility workflow. It currently excludes axe `color-contrast` from the blocking AA gate. For stricter manual audits, including contrast, run:
+That adds `pnpm run ci:a11y`, which mirrors the blocking accessibility workflow. It currently excludes axe `color-contrast` from the blocking AA gate. For stricter manual audits, including contrast, run:
 
 ```bash
-bun run a11y:full
+pnpm run a11y:full
 ```
 
 Recommended local flow:
 
 ```bash
-bun run changeset
-bun run release:prepare
+pnpm run changeset
+pnpm run release:prepare
 ```
 
-`bun run release:prepare` applies Changesets version bumps and then runs `bun run ci:release-readiness`.
+`pnpm run release:prepare` applies Changesets version bumps and then runs `pnpm run ci:release-readiness`.
 
 When the generated changes look correct:
 
 ```bash
-bun run release:publish
+pnpm run release:publish
 ```
 
 If you want the full end-to-end flow in one command:
 
 ```bash
-bun run release
+pnpm run release
 ```
 
 GitHub automation on `main`:
@@ -361,11 +361,11 @@ function CustomCheckbox(props) {
 
 ## Development
 
-> Primary runtime: Bun >= 1.0. Use `bun run ...` for build, dev, tests, guards, and release preparation.
+> Primary runtime: pnpm + vite-plus (vp). Use `pnpm run ...` for build, dev, tests, guards, and release preparation.
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) >= 1.0
+- [pnpm](https://pnpm.io/) >= 9.0
 
 ### Setup
 
@@ -375,31 +375,31 @@ git clone https://github.com/proyecto-viviana/proyecto-viviana.git
 cd proyecto-viviana
 
 # Install dependencies
-bun install
+pnpm install
 
 # Build all packages
-bun run build
+pnpm run build
 
 # Start development server
-bun run dev
+pnpm run dev
 ```
 
 ### Scripts
 
 | Command | Description |
 |---------|-------------|
-| `bun install` | Install workspace dependencies |
-| `bun run build` | Typecheck and build all packages |
-| `bun run dev` | Start development server (playground) |
-| `bun run test:run` | Run tests once |
-| `bun run test:watch` | Run tests in watch mode |
-| `bun run typecheck` | TypeScript type checking |
-| `bun run changeset` | Create a changeset for releasable package changes |
-| `bun run changeset:version` | Apply version bumps + changelog updates |
-| `bun run changeset:publish` | Build and publish changed packages to npm |
-| `bun run release:prepare` | Apply version bumps, build, and run the Vitest suite |
-| `bun run release:publish` | Publish npm packages |
-| `bun run release` | Run the full release flow: prepare, then publish |
+| `pnpm install` | Install workspace dependencies |
+| `pnpm run build` | Typecheck and build all packages |
+| `pnpm run dev` | Start development server (playground) |
+| `pnpm run test:run` | Run tests once |
+| `pnpm run test:watch` | Run tests in watch mode |
+| `pnpm run typecheck` | TypeScript type checking |
+| `pnpm run changeset` | Create a changeset for releasable package changes |
+| `pnpm run changeset:version` | Apply version bumps + changelog updates |
+| `pnpm run changeset:publish` | Build and publish changed packages to npm |
+| `pnpm run release:prepare` | Apply version bumps, build, and run the Vitest suite |
+| `pnpm run release:publish` | Publish npm packages |
+| `pnpm run release` | Run the full release flow: prepare, then publish |
 
 Release and publish policy is documented in [`docs/release-policy.md`](./docs/release-policy.md).
 
@@ -542,7 +542,7 @@ These improvements come from SolidJS's compiled reactivity model, which eliminat
 All benchmark code, methodology, and results are publicly available:
 - Benchmarks: [`benchmarks/`](./benchmarks/)
 - Documentation: [`.claude/docs/performance.md`](./.claude/docs/performance.md)
-- Reproduce: `bun run bench:bundle`
+- Reproduce: `pnpm run bench:bundle`
 
 ## Browser Support
 

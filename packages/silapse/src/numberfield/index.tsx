@@ -199,11 +199,11 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
     if (renderProps.isDisabled) {
       stateClass = 'bg-bg-300 text-primary-600 cursor-not-allowed'
     } else if (renderProps.isPressed) {
-      stateClass = 'bg-accent-600 text-white scale-95'
+      stateClass = 'bg-accent-600 text-on-color scale-95'
     } else if (renderProps.isHovered) {
-      stateClass = 'bg-accent-500 text-white'
+      stateClass = 'bg-accent-500 text-on-color'
     } else {
-      stateClass = 'bg-bg-300 text-primary-200 hover:bg-accent-500 hover:text-white'
+      stateClass = 'bg-bg-300 text-primary-200 hover:bg-accent-500 hover:text-on-color'
     }
 
     return [base, sizeClass, stateClass].filter(Boolean).join(' ')

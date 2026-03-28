@@ -36,12 +36,20 @@ export interface ComboBoxStateProps<T = unknown> {
   getDisabled?: (item: T) => boolean;
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
-  /** The currently selected key (controlled). */
+  /** The selection mode for the combobox. */
+  selectionMode?: 'single' | 'multiple';
+  /** The currently selected key (controlled, single mode). */
   selectedKey?: Key | null;
-  /** The default selected key (uncontrolled). */
+  /** The default selected key (uncontrolled, single mode). */
   defaultSelectedKey?: Key | null;
-  /** Handler called when the selection changes. */
+  /** The currently selected keys (controlled, multiple mode). */
+  selectedKeys?: Iterable<Key>;
+  /** The default selected keys (uncontrolled, multiple mode). */
+  defaultSelectedKeys?: Iterable<Key>;
+  /** Handler called when the selection changes (single mode). */
   onSelectionChange?: (key: Key | null) => void;
+  /** Handler called when the selection changes (multiple mode). */
+  onSelectionChangeMultiple?: (keys: Set<Key>) => void;
   /** The current input value (controlled). */
   inputValue?: string;
   /** The default input value (uncontrolled). */
@@ -83,14 +91,20 @@ export interface ComboBoxState<T = unknown> {
   close(): void;
   /** Toggle the combobox dropdown. */
   toggle(focusStrategy?: FocusStrategy | null, trigger?: MenuTriggerAction): void;
-  /** The currently selected key. */
+  /** The currently selected key (single mode). */
   readonly selectedKey: Accessor<Key | null>;
   /** The default selected key. */
   readonly defaultSelectedKey: Key | null;
-  /** The currently selected item. */
+  /** The currently selected item (single mode). */
   readonly selectedItem: Accessor<CollectionNode<T> | null>;
   /** Set the selected key. */
   setSelectedKey(key: Key | null): void;
+  /** The currently selected keys (multiple mode). */
+  readonly selectedKeys: Accessor<Set<Key>>;
+  /** The currently selected items (multiple mode). */
+  readonly selectedItems: Accessor<CollectionNode<T>[]>;
+  /** Remove a selected key (multiple mode). */
+  removeSelectedKey(key: Key): void;
   /** The current input value. */
   readonly inputValue: Accessor<string>;
   /** The default input value. */
@@ -115,8 +129,8 @@ export interface ComboBoxState<T = unknown> {
   isKeyDisabled(key: Key): boolean;
   /** Select a key and close the menu (for ListState compatibility). */
   select(key: Key): void;
-  /** The selection mode (always 'single' for combobox). */
-  readonly selectionMode: Accessor<'single'>;
+  /** The selection mode. */
+  readonly selectionMode: Accessor<'single' | 'multiple'>;
   /** Check if a key is selected. */
   isSelected(key: Key): boolean;
   /** Whether the combobox is disabled. */
@@ -156,6 +170,7 @@ export function createComboBoxState<T = unknown>(
   const allowsEmptyCollection = () => getProps().allowsEmptyCollection ?? false;
   const allowsCustomValue = () => getProps().allowsCustomValue ?? false;
   const shouldCloseOnBlur = () => getProps().shouldCloseOnBlur ?? true;
+  const isMultiple = () => getProps().selectionMode === 'multiple';
 
   // Track focus strategy for list navigation
   const [focusStrategy, setFocusStrategy] = createSignal<FocusStrategy | null>(null);
@@ -166,7 +181,26 @@ export function createComboBoxState<T = unknown>(
   // Track the menu open trigger
   let menuOpenTrigger: MenuTriggerAction = 'focus';
 
-  // ---- Selection State ----
+  // ---- Multi-select State ----
+  const isMultiSelectionControlled = () => getProps().selectedKeys !== undefined;
+  const [internalSelectedKeys, setInternalSelectedKeys] = createSignal<Set<Key>>(
+    new Set(getProps().defaultSelectedKeys ?? [])
+  );
+
+  const selectedKeys: Accessor<Set<Key>> = () => {
+    return isMultiSelectionControlled()
+      ? new Set(getProps().selectedKeys ?? [])
+      : internalSelectedKeys();
+  };
+
+  const setSelectedKeys = (keys: Set<Key>) => {
+    if (!isMultiSelectionControlled()) {
+      setInternalSelectedKeys(new Set(keys));
+    }
+    getProps().onSelectionChangeMultiple?.(keys);
+  };
+
+  // ---- Selection State (single mode) ----
   // Note: Selection state is initialized first because input value may depend on it
   const isSelectionControlled = () => getProps().selectedKey !== undefined;
   const [internalSelectedKey, setInternalSelectedKey] = createSignal<Key | null>(
@@ -240,14 +274,27 @@ export function createComboBoxState<T = unknown>(
     get disabledKeys() {
       return getProps().disabledKeys;
     },
-    selectionMode: 'single',
+    get selectionMode() {
+      return isMultiple() ? 'multiple' as const : 'single' as const;
+    },
     disallowEmptySelection: false,
     get selectedKeys() {
+      if (isMultiple()) {
+        return Array.from(selectedKeys());
+      }
       const key = selectedKey();
       return key != null ? [key] : [];
     },
     onSelectionChange(keys) {
       if (keys === 'all') return;
+
+      if (isMultiple()) {
+        // In multiple mode, toggle selections
+        const newKeys = new Set(keys);
+        setSelectedKeys(newKeys);
+        return;
+      }
+
       const key = keys.size > 0 ? Array.from(keys)[0] : null;
 
       // If same key selected, just reset input and close
@@ -284,12 +331,23 @@ export function createComboBoxState<T = unknown>(
     return showAllItems() ? originalCollection() : filteredCollection();
   });
 
-  // ---- Selected Item ----
+  // ---- Selected Item(s) ----
   const selectedItem: Accessor<CollectionNode<T> | null> = () => {
     const key = selectedKey();
     if (key == null) return null;
     return originalCollection().getItem(key);
   };
+
+  const selectedItems = createMemo<CollectionNode<T>[]>(() => {
+    const keys = selectedKeys();
+    const collection = originalCollection();
+    const items: CollectionNode<T>[] = [];
+    for (const key of keys) {
+      const item = collection.getItem(key);
+      if (item) items.push(item);
+    }
+    return items;
+  });
 
   // Initialize input value from selected item if not already set
   // This runs once on creation
@@ -403,6 +461,14 @@ export function createComboBoxState<T = unknown>(
   const commit = () => {
     const focusedKey = listState.focusedKey();
 
+    if (isMultiple()) {
+      // In multiple mode, toggle the focused item without closing
+      if (overlayState.isOpen() && focusedKey != null) {
+        select(focusedKey);
+      }
+      return;
+    }
+
     if (overlayState.isOpen() && focusedKey != null) {
       // If focused key is already selected, just commit
       if (selectedKey() === focusedKey) {
@@ -485,8 +551,9 @@ export function createComboBoxState<T = unknown>(
     }
   });
 
-  // Update input when selection changes
+  // Update input when selection changes (only in single mode)
   createEffect(() => {
+    if (isMultiple()) return;
     const key = selectedKey();
     const item = key != null ? originalCollection().getItem(key) : null;
     const textValue = item?.textValue ?? '';
@@ -500,8 +567,9 @@ export function createComboBoxState<T = unknown>(
     }
   });
 
-  // Close when selection changes
+  // Close when selection changes (only in single mode)
   createEffect((prevKey: Key | null | undefined) => {
+    if (isMultiple()) return undefined;
     const key = selectedKey();
     if (key != null && key !== prevKey) {
       closeMenu();
@@ -512,12 +580,39 @@ export function createComboBoxState<T = unknown>(
   // ---- Selection Methods for ListState compatibility ----
   // These methods allow createOption to work with ComboBoxState
   const select = (key: Key) => {
-    setSelectedKey(key);
-    closeMenu();
+    if (isMultiple()) {
+      // Toggle selection in multiple mode
+      const current = new Set(selectedKeys());
+      if (current.has(key)) {
+        current.delete(key);
+      } else {
+        current.add(key);
+      }
+      setSelectedKeys(current);
+      // Don't close menu and don't reset input in multi-select mode
+    } else {
+      setSelectedKey(key);
+      closeMenu();
+    }
   };
 
-  const selectionMode: Accessor<'single'> = () => 'single';
-  const isSelected = (key: Key) => selectedKey() === key;
+  const removeSelectedKey = (key: Key) => {
+    if (isMultiple()) {
+      const current = new Set(selectedKeys());
+      current.delete(key);
+      setSelectedKeys(current);
+    }
+  };
+
+  const selectionMode: Accessor<'single' | 'multiple'> = () =>
+    getProps().selectionMode ?? 'single';
+
+  const isSelected = (key: Key) => {
+    if (isMultiple()) {
+      return selectedKeys().has(key);
+    }
+    return selectedKey() === key;
+  };
 
   // ---- Return State ----
   return {
@@ -530,6 +625,9 @@ export function createComboBoxState<T = unknown>(
     defaultSelectedKey: getProps().defaultSelectedKey ?? null,
     selectedItem,
     setSelectedKey,
+    selectedKeys,
+    selectedItems,
+    removeSelectedKey,
     inputValue,
     defaultInputValue: getProps().defaultInputValue ?? '',
     setInputValue,

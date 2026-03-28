@@ -11,6 +11,8 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  createUniqueId,
+  onCleanup,
   splitProps,
   useContext,
   For,
@@ -66,6 +68,7 @@ import {
   useDndPersistedKeys,
   useRenderDropIndicator,
 } from './DragAndDrop';
+import { PopoverTriggerContext } from './contexts';
 
 // ============================================
 // TYPES
@@ -76,6 +79,8 @@ export interface MenuRenderProps {
   isFocused: boolean;
   /** Whether the menu is open. */
   isOpen: boolean;
+  /** Whether the menu has no items. */
+  isEmpty: boolean;
 }
 
 export interface MenuProps<T>
@@ -101,6 +106,10 @@ export interface MenuProps<T>
   class?: ClassNameOrFunction<MenuRenderProps>;
   /** The inline style for the element. */
   style?: StyleOrFunction<MenuRenderProps>;
+  /** Content to display when the menu has no items. */
+  renderEmptyState?: () => JSX.Element;
+  /** Whether the menu should close when an item is selected. */
+  shouldCloseOnSelect?: boolean;
   /** Drag and drop hooks from `useDragAndDrop`. */
   dragAndDropHooks?: DragAndDropHooks<T>;
 }
@@ -118,6 +127,10 @@ export interface MenuItemRenderProps {
   isHovered: boolean;
   /** Whether the item is disabled. */
   isDisabled: boolean;
+  /** Whether the item opens a submenu. */
+  hasSubmenu: boolean;
+  /** Whether the submenu is currently open. */
+  isOpen: boolean;
 }
 
 export interface MenuItemProps<T>
@@ -137,6 +150,14 @@ export interface MenuItemProps<T>
   textValue?: string;
   /** Handler called when the item is activated. */
   onAction?: () => void;
+  /** A URL to link to. Turns the menu item into a link. */
+  href?: string;
+  /** The target window for the link. */
+  target?: string;
+  /** The relationship between the linked resource and the current page. */
+  rel?: string;
+  /** Causes the browser to download the linked URL. */
+  download?: boolean | string;
 }
 
 export interface MenuTriggerRenderProps {
@@ -167,7 +188,18 @@ export interface MenuTriggerProps extends Omit<AriaMenuTriggerProps, 'children'>
   onOpenChange?: (isOpen: boolean) => void;
 }
 
-export interface SubmenuTriggerProps extends MenuTriggerProps {}
+export interface SubmenuTriggerProps extends SlotProps {
+  /** The trigger item followed by submenu content. */
+  children: JSX.Element;
+  /** Delay before opening the submenu on hover. */
+  delay?: number;
+  /** Whether the submenu is open (controlled). */
+  isOpen?: boolean;
+  /** Whether the submenu is open by default. */
+  defaultOpen?: boolean;
+  /** Handler called when the submenu open state changes. */
+  onOpenChange?: (isOpen: boolean) => void;
+}
 
 // ============================================
 // CONTEXT
@@ -187,10 +219,18 @@ interface MenuTriggerContextValue {
   menuProps: JSX.HTMLAttributes<HTMLElement>;
 }
 
+interface MenuItemContextValue {
+  props?: () => JSX.HTMLAttributes<HTMLElement>;
+  closeOnSelect?: boolean;
+  onAction?: () => void;
+  setItemRef?: (el: HTMLLIElement | null) => void;
+}
+
 export const MenuContext = createContext<MenuContextValue<unknown> | null>(null);
 export const MenuStateContext = createContext<MenuState<unknown> | null>(null);
 export const MenuTriggerContext = createContext<MenuTriggerContextValue | null>(null);
 export const RootMenuTriggerStateContext = createContext<OverlayTriggerState | null>(null);
+const MenuItemContext = createContext<MenuItemContextValue | null>(null);
 
 // ============================================
 // COMPONENTS
@@ -241,7 +281,108 @@ export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
 }
 
 export function SubmenuTrigger(props: SubmenuTriggerProps): JSX.Element {
-  return <MenuTrigger {...props} />;
+  const children = () => (Array.isArray(props.children) ? props.children : [props.children]) as JSX.Element[];
+  const trigger = () => children()[0];
+  const content = () => children()[1];
+  const parentMenuItemContext = useContext(MenuItemContext);
+  const state = createMenuTriggerState({
+    get isOpen() {
+      return props.isOpen;
+    },
+    get defaultOpen() {
+      return props.defaultOpen;
+    },
+    get onOpenChange() {
+      return props.onOpenChange;
+    },
+  });
+
+  let triggerRef: HTMLLIElement | null = null;
+  const triggerId = createUniqueId();
+  const menuId = createUniqueId();
+  let hoverTimeout: number | undefined;
+  const delay = () => props.delay ?? 200;
+
+  const clearHoverTimeout = () => {
+    if (hoverTimeout != null) {
+      window.clearTimeout(hoverTimeout);
+      hoverTimeout = undefined;
+    }
+  };
+
+  const openSubmenu = () => {
+    clearHoverTimeout();
+    state.open();
+  };
+
+  const scheduleOpen = () => {
+    clearHoverTimeout();
+    hoverTimeout = window.setTimeout(() => {
+      hoverTimeout = undefined;
+      state.open();
+    }, delay());
+  };
+
+  onCleanup(clearHoverTimeout);
+
+  const menuTriggerContext = createMemo<MenuTriggerContextValue>(() => ({
+    state,
+    triggerProps: {},
+    menuProps: {
+      id: menuId,
+      'aria-labelledby': triggerId,
+    },
+  }));
+
+  const popoverTriggerContext = createMemo(() => ({
+    state: {
+      isOpen: () => state.isOpen(),
+      open: () => state.open(),
+      close: () => state.close(),
+      toggle: () => state.toggle(),
+    },
+    triggerRef: () => triggerRef,
+    setTriggerRef: (el: HTMLElement | null) => {
+      triggerRef = el as HTMLLIElement | null;
+    },
+    triggerId,
+    trigger: 'SubmenuTrigger',
+  }));
+
+  const itemContext = createMemo<MenuItemContextValue>(() => ({
+    closeOnSelect: false,
+    onAction: () => openSubmenu(),
+    setItemRef: (el) => {
+      triggerRef = el;
+    },
+    props: () => ({
+      id: triggerId,
+      'aria-haspopup': 'menu',
+      'aria-expanded': state.isOpen() || undefined,
+      'aria-controls': state.isOpen() ? menuId : undefined,
+      onMouseEnter: () => scheduleOpen(),
+      onKeyDown: (event: KeyboardEvent) => {
+        if (event.key === 'ArrowRight' || event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openSubmenu();
+        } else if (event.key === 'ArrowLeft' && state.isOpen()) {
+          event.preventDefault();
+          state.close();
+        }
+      },
+    }),
+  }));
+
+  return (
+    <PopoverTriggerContext.Provider value={popoverTriggerContext()}>
+      <MenuTriggerContext.Provider value={menuTriggerContext()}>
+        <MenuItemContext.Provider value={{ ...parentMenuItemContext, ...itemContext() }}>
+          {trigger()}
+        </MenuItemContext.Provider>
+        {content()}
+      </MenuTriggerContext.Provider>
+    </PopoverTriggerContext.Provider>
+  );
 }
 
 /**
@@ -357,7 +498,7 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
 export function Menu<T>(props: MenuProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
+    ['children', 'class', 'style', 'slot', 'renderEmptyState', 'shouldCloseOnSelect'],
     ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'onAction', 'onClose', 'dragAndDropHooks']
   );
 
@@ -454,6 +595,7 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
   const renderValues = createMemo<MenuRenderProps>(() => ({
     isFocused: state.isFocused() || isFocused(),
     isOpen: triggerContext?.state.isOpen() ?? true,
+    isEmpty: state.collection().size === 0,
   }));
 
   // Resolve render props
@@ -649,95 +791,106 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
       } as MenuContextValue<unknown>}
     >
       <MenuStateContext.Provider value={state}>
-        <CollectionRendererContext.Provider value={collectionRenderer()}>
-          <>
-            <Show when={ariaProps.label}>
-              <span {...cleanLabelProps()}>{ariaProps.label as JSX.Element}</span>
-            </Show>
-            <ul
-              ref={setMenuRef}
-              {...mergeProps(
-                cleanMenuProps(),
-                cleanTriggerMenuProps(),
-                cleanFocusProps(),
-                (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
-              )}
-              class={renderProps.class()}
-              style={renderProps.style()}
-              data-focused={state.isFocused() || undefined}
-              data-disabled={resolveDisabled() || undefined}
-              data-drop-target={isRootDropTarget() || undefined}
-            >
-              <SharedElementTransition>
-              {hasSections()
-                ? (
-                  <For each={sectionedRenderEntries()}>
-                    {(entry) =>
-                      entry.type === 'section'
-                        ? (
-                          <li role="presentation" data-section-wrapper>
-                            <Section class="solidaria-Menu-section">
-                              {entry.section.title != null && (
-                                <Header class="solidaria-Menu-sectionHeader">{entry.section.title}</Header>
-                              )}
-                              <Group class="solidaria-Menu-sectionGroup">
-                                <ul role="group" aria-label={entry.section['aria-label']}>
-                                  <For each={entry.items}>
-                                    {(indexedItem) => (
-                                      <>
-                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'before')}
-                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'on')}
-                                        {props.children?.(indexedItem.item)}
-                                        {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'after')}
-                                      </>
-                                    )}
-                                  </For>
-                                </ul>
-                              </Group>
-                            </Section>
-                          </li>
-                        )
-                        : (
-                          <>
-                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'before')}
-                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'on')}
-                            {props.children?.(entry.item.item)}
-                            {collectionRenderer().renderDropIndicator?.(entry.item.index, 'after')}
-                          </>
-                        )
-                    }
-                  </For>
-                )
-                : (
-                  <>
-                    {virtualRange()?.offsetTop
-                      ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
-                      : null}
-                    <For each={visibleItems()}>
-                      {(item, index) => {
-                        const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-                        const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
-                        const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
-                        const afterIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'after');
-                        return (
-                          <>
-                            {beforeIndicator()}
-                            {onIndicator()}
-                            {props.children?.(item as T)}
-                            {afterIndicator()}
-                          </>
-                        );
-                      }}
-                    </For>
-                    {virtualRange()?.offsetBottom
-                      ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
-                      : null}
-                  </>
+        <MenuItemContext.Provider value={{ closeOnSelect: local.shouldCloseOnSelect }}>
+          <CollectionRendererContext.Provider value={collectionRenderer()}>
+            <>
+              <Show when={ariaProps.label}>
+                <span {...cleanLabelProps()}>{ariaProps.label as JSX.Element}</span>
+              </Show>
+              <ul
+                ref={setMenuRef}
+                {...mergeProps(
+                  cleanMenuProps(),
+                  cleanTriggerMenuProps(),
+                  cleanFocusProps(),
+                  (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
                 )}
-              </SharedElementTransition>
-            </ul>
-          </>
-        </CollectionRendererContext.Provider>
+                class={renderProps.class()}
+                style={renderProps.style()}
+                data-focused={state.isFocused() || undefined}
+                data-disabled={resolveDisabled() || undefined}
+                data-empty={state.collection().size === 0 || undefined}
+                data-drop-target={isRootDropTarget() || undefined}
+              >
+                <SharedElementTransition>
+                {state.collection().size === 0 && local.renderEmptyState
+                  ? (
+                    <li role="presentation" data-empty-state>
+                      <div role="menuitem" style={{ display: 'contents' }}>
+                        {local.renderEmptyState()}
+                      </div>
+                    </li>
+                  )
+                  : hasSections()
+                    ? (
+                      <For each={sectionedRenderEntries()}>
+                        {(entry) =>
+                          entry.type === 'section'
+                            ? (
+                              <li role="presentation" data-section-wrapper>
+                                <Section class="solidaria-Menu-section">
+                                  {entry.section.title != null && (
+                                    <Header class="solidaria-Menu-sectionHeader">{entry.section.title}</Header>
+                                  )}
+                                  <Group class="solidaria-Menu-sectionGroup">
+                                    <ul role="group" aria-label={entry.section['aria-label']}>
+                                      <For each={entry.items}>
+                                        {(indexedItem) => (
+                                          <>
+                                            {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'before')}
+                                            {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'on')}
+                                            {props.children?.(indexedItem.item)}
+                                            {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'after')}
+                                          </>
+                                        )}
+                                      </For>
+                                    </ul>
+                                  </Group>
+                                </Section>
+                              </li>
+                            )
+                            : (
+                              <>
+                                {collectionRenderer().renderDropIndicator?.(entry.item.index, 'before')}
+                                {collectionRenderer().renderDropIndicator?.(entry.item.index, 'on')}
+                                {props.children?.(entry.item.item)}
+                                {collectionRenderer().renderDropIndicator?.(entry.item.index, 'after')}
+                              </>
+                            )
+                        }
+                      </For>
+                    )
+                    : (
+                      <>
+                        {virtualRange()?.offsetTop
+                          ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
+                          : null}
+                        <For each={visibleItems()}>
+                          {(item, index) => {
+                            const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                            const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
+                            const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
+                            const afterIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'after');
+                            return (
+                              <>
+                                {beforeIndicator()}
+                                {onIndicator()}
+                                {props.children?.(item as T)}
+                                {afterIndicator()}
+                              </>
+                            );
+                          }}
+                        </For>
+                        {virtualRange()?.offsetBottom
+                          ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
+                          : null}
+                      </>
+                    )}
+                </SharedElementTransition>
+              </ul>
+            </>
+          </CollectionRendererContext.Provider>
+        </MenuItemContext.Provider>
       </MenuStateContext.Provider>
     </MenuContext.Provider>
   );
@@ -765,6 +918,10 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     'item',
     'textValue',
     'onAction',
+    'href',
+    'target',
+    'rel',
+    'download',
   ]);
 
   // Get state from context
@@ -774,7 +931,13 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
   }
   const state = context as MenuState<T>;
   const menuContext = useContext(MenuContext) as MenuContextValue<T> | null;
+  const itemContext = useContext(MenuItemContext);
   const [ref, setRef] = createSignal<HTMLLIElement | null>(null);
+  const contextProps = () => itemContext?.props?.() ?? {};
+  const combinedOnAction = () => {
+    local.onAction?.();
+    itemContext?.onAction?.();
+  };
 
   // Create menu item aria props
   const itemAria = createMenuItem<T>(
@@ -787,7 +950,22 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
         return ariaProps['aria-label'] ?? local.textValue;
       },
       get onAction() {
-        return local.onAction;
+        return combinedOnAction;
+      },
+      get closeOnSelect() {
+        return ariaProps.closeOnSelect ?? itemContext?.closeOnSelect;
+      },
+      get href() {
+        return local.href;
+      },
+      get target() {
+        return local.target;
+      },
+      get rel() {
+        return local.rel;
+      },
+      get download() {
+        return local.download;
       },
     },
     state
@@ -808,6 +986,8 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     isPressed: itemAria.isPressed(),
     isHovered: isHovered(),
     isDisabled: itemAria.isDisabled(),
+    hasSubmenu: Boolean(contextProps()['aria-haspopup']),
+    isOpen: contextProps()['aria-expanded'] === true,
   }));
 
   // Resolve render props
@@ -860,29 +1040,90 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     );
   });
 
+  const isLink = () => !!local.href;
+
+  // Extract link-specific props from menuItemProps (href, target, rel, download)
+  const cleanItemPropsForLink = () => {
+    const all = cleanItemProps();
+    const { href: _href, target: _target, rel: _rel, download: _download, ...rest } = all;
+    return rest;
+  };
+
+  const linkDomProps = () => {
+    const all = cleanItemProps();
+    const result: Record<string, unknown> = {};
+    if (all.href !== undefined) result.href = all.href;
+    if (all.target !== undefined) result.target = all.target;
+    if (all.rel !== undefined) result.rel = all.rel;
+    if (all.download !== undefined) result.download = all.download;
+    return result;
+  };
+
+  const dataAttrs = () => ({
+    'data-focused': itemAria.isFocused() || undefined,
+    'data-focus-visible': itemAria.isFocusVisible() || undefined,
+    'data-pressed': itemAria.isPressed() || undefined,
+    'data-hovered': isHovered() || undefined,
+    'data-disabled': itemAria.isDisabled() || undefined,
+    'data-has-submenu': Boolean(contextProps()['aria-haspopup']) || undefined,
+    'data-open': contextProps()['aria-expanded'] === true || undefined,
+    'data-dragging': draggableItem()?.isDragging || undefined,
+    'data-drop-target': droppableItem()?.isDropTarget || undefined,
+  });
+
+  const childContent = () =>
+    hasPrimitiveLabel()
+      ? <span {...itemAria.labelProps}>{renderProps.renderChildren()}</span>
+      : renderProps.renderChildren();
+
   return (
-    <li
-      ref={setRef}
-      {...mergeProps(
-        cleanItemProps(),
-        cleanHoverProps(),
-        (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
-        (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
-      )}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-focused={itemAria.isFocused() || undefined}
-      data-focus-visible={itemAria.isFocusVisible() || undefined}
-      data-pressed={itemAria.isPressed() || undefined}
-      data-hovered={isHovered() || undefined}
-      data-disabled={itemAria.isDisabled() || undefined}
-      data-dragging={draggableItem()?.isDragging || undefined}
-      data-drop-target={droppableItem()?.isDropTarget || undefined}
+    <Show
+      when={isLink()}
+      fallback={
+        <li
+          ref={(el) => {
+            setRef(el);
+            itemContext?.setItemRef?.(el);
+          }}
+          {...mergeProps(
+            cleanItemProps(),
+            contextProps() as Record<string, unknown>,
+            cleanHoverProps(),
+            (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
+            (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
+          )}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          {...dataAttrs()}
+        >
+          {childContent()}
+        </li>
+      }
     >
-      {hasPrimitiveLabel()
-        ? <span {...itemAria.labelProps}>{renderProps.renderChildren()}</span>
-        : renderProps.renderChildren()}
-    </li>
+      <li
+        ref={(el) => {
+          setRef(el);
+          itemContext?.setItemRef?.(el);
+        }}
+        role="presentation"
+      >
+        <a
+          {...mergeProps(
+            cleanItemPropsForLink(),
+            contextProps() as Record<string, unknown>,
+            cleanHoverProps(),
+            linkDomProps(),
+            (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
+            (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
+          )}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          {...dataAttrs()}
+        >
+          {childContent()}
+        </a>
+      </li>
+    </Show>
   );
 }
 

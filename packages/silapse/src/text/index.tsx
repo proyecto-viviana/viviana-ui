@@ -48,5 +48,5 @@ export function Text(props: TextProps): JSX.Element {
 export { Heading } from './Heading';
 export type { HeadingProps, HeadingLevel } from './Heading';
 export { StyledKeyboard } from './Keyboard';
+export { StyledKeyboard as Keyboard } from './Keyboard';
 export type { KeyboardProps as StyledKeyboardProps } from './Keyboard';
-

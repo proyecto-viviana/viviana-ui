@@ -19,6 +19,7 @@ import {
   splitProps,
   useContext,
   For,
+  Show,
 } from 'solid-js';
 import {
   createGridList,
@@ -149,6 +150,8 @@ export interface GridListItemProps<T extends object> extends SlotProps, Omit<JSX
 export interface GridListLoadMoreItemProps extends SlotProps {
   onLoadMore: () => void | Promise<void>;
   isLoading?: boolean;
+  /** Scroll offset multiplier for early loading trigger (default: 1 = 100% of viewport height). */
+  scrollOffset?: number;
   children?: JSX.Element;
   class?: ClassNameOrFunction<{ isLoading: boolean }>;
   style?: StyleOrFunction<{ isLoading: boolean }>;
@@ -776,7 +779,7 @@ export function GridListSelectionCheckbox(props: { itemKey: Key }): JSX.Element 
 }
 
 export function GridListLoadMoreItem(props: GridListLoadMoreItemProps): JSX.Element {
-  let ref: HTMLDivElement | undefined;
+  let sentinelRef: HTMLDivElement | undefined;
   const [isPending, setIsPending] = createSignal(false);
   const isLoading = () => !!props.isLoading || isPending();
 
@@ -791,13 +794,18 @@ export function GridListLoadMoreItem(props: GridListLoadMoreItemProps): JSX.Elem
   };
 
   createEffect(() => {
-    if (!ref || typeof IntersectionObserver !== 'function') return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) {
-        void triggerLoadMore();
-      }
-    });
-    observer.observe(ref);
+    if (!sentinelRef || typeof IntersectionObserver !== 'function') return;
+    const offset = props.scrollOffset ?? 1;
+    const margin = `0px 0px ${100 * offset}% 0px`;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          void triggerLoadMore();
+        }
+      },
+      { rootMargin: margin }
+    );
+    observer.observe(sentinelRef);
     return () => observer.disconnect();
   });
 
@@ -812,19 +820,23 @@ export function GridListLoadMoreItem(props: GridListLoadMoreItemProps): JSX.Elem
   );
 
   return (
-    <div
-      ref={ref}
-      role="row"
-      tabIndex={0}
-      onFocus={() => {
-        void triggerLoadMore();
-      }}
-      class={renderProps.class()}
-      style={renderProps.style()}
-      data-loading={isLoading() || undefined}
-    >
-      {renderProps.renderChildren()}
-    </div>
+    <>
+      <div style={{ position: 'relative', width: 0, height: 0, overflow: 'hidden' }} inert>
+        <div ref={sentinelRef} style={{ position: 'absolute', height: '1px', width: '1px' }} />
+      </div>
+      <div
+        role="row"
+        tabIndex={0}
+        onFocus={() => {
+          void triggerLoadMore();
+        }}
+        class={renderProps.class()}
+        style={renderProps.style()}
+        data-loading={isLoading() || undefined}
+      >
+        {renderProps.renderChildren()}
+      </div>
+    </>
   );
 }
 

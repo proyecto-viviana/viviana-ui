@@ -122,7 +122,6 @@ export function createDisclosure(
     get panelProps(): JSX.HTMLAttributes<HTMLElement> {
       return {
         id: panelId,
-        role: 'region',
         'aria-labelledby': triggerId,
         hidden: !state.isExpanded() || undefined,
       };

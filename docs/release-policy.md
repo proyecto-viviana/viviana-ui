@@ -25,46 +25,46 @@
 Recommended local flow:
 
 1. Add or merge Changesets for releasable npm packages.
-2. Run `bun run pr:check:fast` before pushing.
-3. If the PR touches the web app, accessibility surface, or CI workflow logic, run `bun run pr:check`.
-4. Run `bun run release:prepare`.
+2. Run `pnpm run pr:check:fast` before pushing.
+3. If the PR touches the web app, accessibility surface, or CI workflow logic, run `pnpm run pr:check`.
+4. Run `pnpm run release:prepare`.
 5. Review the generated version and changelog updates.
-6. Run `bun run release:publish` when the tree is ready to publish.
+6. Run `pnpm run release:publish` when the tree is ready to publish.
 
-If you want the full end-to-end flow in one command, run `bun run release`.
+If you want the full end-to-end flow in one command, run `pnpm run release`.
 
-What `bun run release:prepare` does:
+What `pnpm run release:prepare` does:
 
-1. Runs `bun run changeset:version` to apply package version bumps and changelog updates.
-2. Runs `bun run ci:release-readiness`.
+1. Runs `pnpm run changeset:version` to apply package version bumps and changelog updates.
+2. Runs `pnpm run ci:release-readiness`.
 
-What `bun run pr:check:fast` does:
+What `pnpm run pr:check:fast` does:
 
-1. Runs `bun run ci:changesets`.
-2. Runs `bun run ci:release-readiness`.
+1. Runs `pnpm run ci:changesets`.
+2. Runs `pnpm run ci:release-readiness`.
 
-What `bun run pr:check` does:
+What `pnpm run pr:check` does:
 
-1. Runs `bun run pr:check:fast`.
-2. Runs `bun run ci:a11y`.
+1. Runs `pnpm run pr:check:fast`.
+2. Runs `pnpm run ci:a11y`.
 
 PR enforcement:
 
-- The `Changesets Check` workflow mirrors `bun run ci:changesets`.
-- The `Release Readiness` workflow mirrors `bun run ci:release-readiness`.
-- The `Accessibility Gate` workflow mirrors `bun run ci:a11y`.
-- Together, those checks match `bun run pr:check`.
-- `bun run ci:a11y` is intentionally the blocking accessibility bar: WCAG 2.2 AA plus smoke coverage, with axe `color-contrast` temporarily excluded.
-- `bun run a11y:full` remains available for stricter contrast, best-practice, AAA, and experimental audits without blocking PRs.
+- The `Changesets Check` workflow mirrors `pnpm run ci:changesets`.
+- The `Release Readiness` workflow mirrors `pnpm run ci:release-readiness`.
+- The `Accessibility Gate` workflow mirrors `pnpm run ci:a11y`.
+- Together, those checks match `pnpm run pr:check`.
+- `pnpm run ci:a11y` is intentionally the blocking accessibility bar: WCAG 2.2 AA plus smoke coverage, with axe `color-contrast` temporarily excluded.
+- `pnpm run a11y:full` remains available for stricter contrast, best-practice, AAA, and experimental audits without blocking PRs.
 
-What `bun run release:publish` does:
+What `pnpm run release:publish` does:
 
 1. Publishes npm packages through Changesets.
 
-What `bun run release` does:
+What `pnpm run release` does:
 
-1. Runs `bun run release:prepare`.
-2. Runs `bun run release:publish`.
+1. Runs `pnpm run release:prepare`.
+2. Runs `pnpm run release:publish`.
 
 ## GitHub Automation
 

@@ -9,10 +9,12 @@ import { type JSX, splitProps, createContext, useContext } from 'solid-js'
 import {
   Menu as HeadlessMenu,
   MenuItem as HeadlessMenuItem,
+  MenuSection as HeadlessMenuSection,
   MenuTrigger as HeadlessMenuTrigger,
   MenuButton as HeadlessMenuButton,
   type MenuProps as HeadlessMenuProps,
   type MenuItemProps as HeadlessMenuItemProps,
+  type MenuSectionProps as HeadlessMenuSectionProps,
   type MenuTriggerProps as HeadlessMenuTriggerProps,
   type MenuButtonProps as HeadlessMenuButtonProps,
   type MenuRenderProps,
@@ -65,6 +67,11 @@ export interface MenuItemProps<T> extends Omit<HeadlessMenuItemProps<T>, 'class'
   shortcut?: string
   /** Whether this is a destructive action. */
   isDestructive?: boolean
+}
+
+export interface MenuSectionProps extends Omit<HeadlessMenuSectionProps, 'class' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
 }
 
 // ============================================
@@ -253,6 +260,19 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
   )
 }
 
+export function MenuSection(props: MenuSectionProps): JSX.Element {
+  const [local, headlessProps] = splitProps(props, ['class'])
+
+  return (
+    <HeadlessMenuSection
+      {...headlessProps}
+      class={['px-1 py-1', local.class ?? ''].filter(Boolean).join(' ')}
+    >
+      {props.children}
+    </HeadlessMenuSection>
+  )
+}
+
 // ============================================
 // MENU SEPARATOR COMPONENT
 // ============================================
@@ -294,8 +314,12 @@ function ChevronIcon(props: { class?: string }): JSX.Element {
 
 // Attach sub-components for convenience
 Menu.Item = MenuItem
+Menu.Section = MenuSection
 Menu.Separator = MenuSeparator
 MenuTrigger.Button = MenuButton
+
+export const Item = MenuItem
+export const Section = MenuSection
 
 // Re-export Key type for convenience
 export type { Key }

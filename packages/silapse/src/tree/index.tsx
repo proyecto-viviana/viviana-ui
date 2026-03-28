@@ -12,10 +12,13 @@ import { type JSX, splitProps, createContext, createMemo, useContext, Show } fro
 import {
   Tree as HeadlessTree,
   TreeItem as HeadlessTreeItem,
+  TreeItemContent as HeadlessTreeItemContent,
   TreeExpandButton as HeadlessTreeExpandButton,
   TreeSelectionCheckbox as HeadlessTreeSelectionCheckbox,
   type TreeProps as HeadlessTreeProps,
   type TreeItemProps as HeadlessTreeItemProps,
+  type TreeItemContentProps as HeadlessTreeItemContentProps,
+  type TreeItemContentRenderProps as HeadlessTreeItemContentRenderProps,
   type TreeExpandButtonProps as HeadlessTreeExpandButtonProps,
   type TreeRenderProps,
   type TreeItemRenderProps,
@@ -70,6 +73,12 @@ export interface TreeItemProps<T extends object>
 }
 
 export interface TreeExpandButtonProps extends Omit<HeadlessTreeExpandButtonProps, 'class' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
+}
+
+export interface TreeItemContentProps
+  extends Omit<HeadlessTreeItemContentProps, 'class' | 'style'> {
   /** Additional CSS class name. */
   class?: string
 }
@@ -374,6 +383,24 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
   )
 }
 
+/**
+ * A content slot for TreeItem rows.
+ */
+export function TreeItemContent(props: TreeItemContentProps): JSX.Element {
+  const [local, headlessProps] = splitProps(props, ['class'])
+  const customClass = local.class ?? ''
+
+  return (
+    <HeadlessTreeItemContent {...headlessProps}>
+      {(renderProps: HeadlessTreeItemContentRenderProps) => (
+        <span class={['flex-1 min-w-0', customClass].filter(Boolean).join(' ')}>
+          {typeof props.children === 'function' ? props.children(renderProps) : props.children}
+        </span>
+      )}
+    </HeadlessTreeItemContent>
+  )
+}
+
 // ============================================
 // TREE SELECTION CHECKBOX COMPONENT
 // ============================================
@@ -489,8 +516,14 @@ function EmptyTreeIcon(props: { class?: string }): JSX.Element {
 
 // Attach sub-components for convenience
 Tree.Item = TreeItem
+Tree.Content = TreeItemContent
 Tree.ExpandButton = TreeExpandButton
 Tree.SelectionCheckbox = TreeSelectionCheckbox
+
+export const TreeView = Tree
+export const TreeViewItem = TreeItem
+export const TreeViewItemContent = TreeItemContent
+export { Collection } from '@proyecto-viviana/solidaria-components'
 
 // Re-export types for convenience
 export type { Key, TreeItemData, TreeRenderItemState }

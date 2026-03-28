@@ -166,6 +166,9 @@
   --color-bg-blue-mid: #0a1830;
   --color-bg-blue-light: #102040;
 
+  /* On-color — text/border on colored backgrounds (overridable per theme) */
+  --color-on-color: #ffffff;
+
   /* Text */
   --color-text: #ffffff;
   --color-text-secondary: #a0a0a0;
@@ -361,6 +364,8 @@
   --color-bg-blue-dark: #b6d9eb;
   --color-bg-blue-mid: #8bc4db;
   --color-bg-blue-light: #75ABC7;
+
+  --color-on-color: #ffffff;
 
   --color-text: #1a3040;
   --color-text-secondary: #405d70;

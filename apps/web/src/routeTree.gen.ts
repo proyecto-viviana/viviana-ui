@@ -19,6 +19,8 @@ import { Route as DocsHooksCreatePressRouteImport } from './routes/docs/hooks/cr
 import { Route as DocsHooksCreateButtonRouteImport } from './routes/docs/hooks/create-button'
 import { Route as DocsComponentsVirtualizerRouteImport } from './routes/docs/components/virtualizer'
 import { Route as DocsComponentsTreeRouteImport } from './routes/docs/components/tree'
+import { Route as DocsComponentsTooltipRouteImport } from './routes/docs/components/tooltip'
+import { Route as DocsComponentsToolbarRouteImport } from './routes/docs/components/toolbar'
 import { Route as DocsComponentsToastRouteImport } from './routes/docs/components/toast'
 import { Route as DocsComponentsTimefieldRouteImport } from './routes/docs/components/timefield'
 import { Route as DocsComponentsTextfieldRouteImport } from './routes/docs/components/textfield'
@@ -34,16 +36,21 @@ import { Route as DocsComponentsSearchfieldRouteImport } from './routes/docs/com
 import { Route as DocsComponentsRangecalendarRouteImport } from './routes/docs/components/rangecalendar'
 import { Route as DocsComponentsProviderRouteImport } from './routes/docs/components/provider'
 import { Route as DocsComponentsProgressbarRouteImport } from './routes/docs/components/progressbar'
+import { Route as DocsComponentsPopoverRouteImport } from './routes/docs/components/popover'
+import { Route as DocsComponentsPickerRouteImport } from './routes/docs/components/picker'
 import { Route as DocsComponentsNumberfieldRouteImport } from './routes/docs/components/numberfield'
 import { Route as DocsComponentsMeterRouteImport } from './routes/docs/components/meter'
 import { Route as DocsComponentsMenuRouteImport } from './routes/docs/components/menu'
 import { Route as DocsComponentsLinkRouteImport } from './routes/docs/components/link'
 import { Route as DocsComponentsGridlistRouteImport } from './routes/docs/components/gridlist'
+import { Route as DocsComponentsFiletriggerRouteImport } from './routes/docs/components/filetrigger'
+import { Route as DocsComponentsDropzoneRouteImport } from './routes/docs/components/dropzone'
 import { Route as DocsComponentsDisclosureRouteImport } from './routes/docs/components/disclosure'
 import { Route as DocsComponentsDialogRouteImport } from './routes/docs/components/dialog'
 import { Route as DocsComponentsDaterangepickerRouteImport } from './routes/docs/components/daterangepicker'
 import { Route as DocsComponentsDatepickerRouteImport } from './routes/docs/components/datepicker'
 import { Route as DocsComponentsDatefieldRouteImport } from './routes/docs/components/datefield'
+import { Route as DocsComponentsContextualhelpRouteImport } from './routes/docs/components/contextualhelp'
 import { Route as DocsComponentsComboboxRouteImport } from './routes/docs/components/combobox'
 import { Route as DocsComponentsColorRouteImport } from './routes/docs/components/color'
 import { Route as DocsComponentsCheckboxRouteImport } from './routes/docs/components/checkbox'
@@ -52,6 +59,9 @@ import { Route as DocsComponentsButtonRouteImport } from './routes/docs/componen
 import { Route as DocsComponentsBreadcrumbsRouteImport } from './routes/docs/components/breadcrumbs'
 import { Route as DocsComponentsBadgeRouteImport } from './routes/docs/components/badge'
 import { Route as DocsComponentsAlertdialogRouteImport } from './routes/docs/components/alertdialog'
+import { Route as DocsComponentsActiongroupRouteImport } from './routes/docs/components/actiongroup'
+import { Route as DocsComponentsActionbarRouteImport } from './routes/docs/components/actionbar'
+import { Route as DocsComponentsAccordionRouteImport } from './routes/docs/components/accordion'
 
 const PlaygroundRoute = PlaygroundRouteImport.update({
   id: '/playground',
@@ -102,6 +112,16 @@ const DocsComponentsVirtualizerRoute =
 const DocsComponentsTreeRoute = DocsComponentsTreeRouteImport.update({
   id: '/components/tree',
   path: '/components/tree',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsTooltipRoute = DocsComponentsTooltipRouteImport.update({
+  id: '/components/tooltip',
+  path: '/components/tooltip',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsToolbarRoute = DocsComponentsToolbarRouteImport.update({
+  id: '/components/toolbar',
+  path: '/components/toolbar',
   getParentRoute: () => DocsRouteRoute,
 } as any)
 const DocsComponentsToastRoute = DocsComponentsToastRouteImport.update({
@@ -182,6 +202,16 @@ const DocsComponentsProgressbarRoute =
     path: '/components/progressbar',
     getParentRoute: () => DocsRouteRoute,
   } as any)
+const DocsComponentsPopoverRoute = DocsComponentsPopoverRouteImport.update({
+  id: '/components/popover',
+  path: '/components/popover',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsPickerRoute = DocsComponentsPickerRouteImport.update({
+  id: '/components/picker',
+  path: '/components/picker',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
 const DocsComponentsNumberfieldRoute =
   DocsComponentsNumberfieldRouteImport.update({
     id: '/components/numberfield',
@@ -206,6 +236,17 @@ const DocsComponentsLinkRoute = DocsComponentsLinkRouteImport.update({
 const DocsComponentsGridlistRoute = DocsComponentsGridlistRouteImport.update({
   id: '/components/gridlist',
   path: '/components/gridlist',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsFiletriggerRoute =
+  DocsComponentsFiletriggerRouteImport.update({
+    id: '/components/filetrigger',
+    path: '/components/filetrigger',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
+const DocsComponentsDropzoneRoute = DocsComponentsDropzoneRouteImport.update({
+  id: '/components/dropzone',
+  path: '/components/dropzone',
   getParentRoute: () => DocsRouteRoute,
 } as any)
 const DocsComponentsDisclosureRoute =
@@ -236,6 +277,12 @@ const DocsComponentsDatefieldRoute = DocsComponentsDatefieldRouteImport.update({
   path: '/components/datefield',
   getParentRoute: () => DocsRouteRoute,
 } as any)
+const DocsComponentsContextualhelpRoute =
+  DocsComponentsContextualhelpRouteImport.update({
+    id: '/components/contextualhelp',
+    path: '/components/contextualhelp',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
 const DocsComponentsComboboxRoute = DocsComponentsComboboxRouteImport.update({
   id: '/components/combobox',
   path: '/components/combobox',
@@ -278,6 +325,22 @@ const DocsComponentsAlertdialogRoute =
     path: '/components/alertdialog',
     getParentRoute: () => DocsRouteRoute,
   } as any)
+const DocsComponentsActiongroupRoute =
+  DocsComponentsActiongroupRouteImport.update({
+    id: '/components/actiongroup',
+    path: '/components/actiongroup',
+    getParentRoute: () => DocsRouteRoute,
+  } as any)
+const DocsComponentsActionbarRoute = DocsComponentsActionbarRouteImport.update({
+  id: '/components/actionbar',
+  path: '/components/actionbar',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsComponentsAccordionRoute = DocsComponentsAccordionRouteImport.update({
+  id: '/components/accordion',
+  path: '/components/accordion',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -286,6 +349,9 @@ export interface FileRoutesByFullPath {
   '/playground': typeof PlaygroundRoute
   '/docs/installation': typeof DocsInstallationRoute
   '/docs/': typeof DocsIndexRoute
+  '/docs/components/accordion': typeof DocsComponentsAccordionRoute
+  '/docs/components/actionbar': typeof DocsComponentsActionbarRoute
+  '/docs/components/actiongroup': typeof DocsComponentsActiongroupRoute
   '/docs/components/alertdialog': typeof DocsComponentsAlertdialogRoute
   '/docs/components/badge': typeof DocsComponentsBadgeRoute
   '/docs/components/breadcrumbs': typeof DocsComponentsBreadcrumbsRoute
@@ -294,16 +360,21 @@ export interface FileRoutesByFullPath {
   '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
   '/docs/components/color': typeof DocsComponentsColorRoute
   '/docs/components/combobox': typeof DocsComponentsComboboxRoute
+  '/docs/components/contextualhelp': typeof DocsComponentsContextualhelpRoute
   '/docs/components/datefield': typeof DocsComponentsDatefieldRoute
   '/docs/components/datepicker': typeof DocsComponentsDatepickerRoute
   '/docs/components/daterangepicker': typeof DocsComponentsDaterangepickerRoute
   '/docs/components/dialog': typeof DocsComponentsDialogRoute
   '/docs/components/disclosure': typeof DocsComponentsDisclosureRoute
+  '/docs/components/dropzone': typeof DocsComponentsDropzoneRoute
+  '/docs/components/filetrigger': typeof DocsComponentsFiletriggerRoute
   '/docs/components/gridlist': typeof DocsComponentsGridlistRoute
   '/docs/components/link': typeof DocsComponentsLinkRoute
   '/docs/components/menu': typeof DocsComponentsMenuRoute
   '/docs/components/meter': typeof DocsComponentsMeterRoute
   '/docs/components/numberfield': typeof DocsComponentsNumberfieldRoute
+  '/docs/components/picker': typeof DocsComponentsPickerRoute
+  '/docs/components/popover': typeof DocsComponentsPopoverRoute
   '/docs/components/progressbar': typeof DocsComponentsProgressbarRoute
   '/docs/components/provider': typeof DocsComponentsProviderRoute
   '/docs/components/rangecalendar': typeof DocsComponentsRangecalendarRoute
@@ -319,6 +390,8 @@ export interface FileRoutesByFullPath {
   '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
   '/docs/components/timefield': typeof DocsComponentsTimefieldRoute
   '/docs/components/toast': typeof DocsComponentsToastRoute
+  '/docs/components/toolbar': typeof DocsComponentsToolbarRoute
+  '/docs/components/tooltip': typeof DocsComponentsTooltipRoute
   '/docs/components/tree': typeof DocsComponentsTreeRoute
   '/docs/components/virtualizer': typeof DocsComponentsVirtualizerRoute
   '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
@@ -330,6 +403,9 @@ export interface FileRoutesByTo {
   '/playground': typeof PlaygroundRoute
   '/docs/installation': typeof DocsInstallationRoute
   '/docs': typeof DocsIndexRoute
+  '/docs/components/accordion': typeof DocsComponentsAccordionRoute
+  '/docs/components/actionbar': typeof DocsComponentsActionbarRoute
+  '/docs/components/actiongroup': typeof DocsComponentsActiongroupRoute
   '/docs/components/alertdialog': typeof DocsComponentsAlertdialogRoute
   '/docs/components/badge': typeof DocsComponentsBadgeRoute
   '/docs/components/breadcrumbs': typeof DocsComponentsBreadcrumbsRoute
@@ -338,16 +414,21 @@ export interface FileRoutesByTo {
   '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
   '/docs/components/color': typeof DocsComponentsColorRoute
   '/docs/components/combobox': typeof DocsComponentsComboboxRoute
+  '/docs/components/contextualhelp': typeof DocsComponentsContextualhelpRoute
   '/docs/components/datefield': typeof DocsComponentsDatefieldRoute
   '/docs/components/datepicker': typeof DocsComponentsDatepickerRoute
   '/docs/components/daterangepicker': typeof DocsComponentsDaterangepickerRoute
   '/docs/components/dialog': typeof DocsComponentsDialogRoute
   '/docs/components/disclosure': typeof DocsComponentsDisclosureRoute
+  '/docs/components/dropzone': typeof DocsComponentsDropzoneRoute
+  '/docs/components/filetrigger': typeof DocsComponentsFiletriggerRoute
   '/docs/components/gridlist': typeof DocsComponentsGridlistRoute
   '/docs/components/link': typeof DocsComponentsLinkRoute
   '/docs/components/menu': typeof DocsComponentsMenuRoute
   '/docs/components/meter': typeof DocsComponentsMeterRoute
   '/docs/components/numberfield': typeof DocsComponentsNumberfieldRoute
+  '/docs/components/picker': typeof DocsComponentsPickerRoute
+  '/docs/components/popover': typeof DocsComponentsPopoverRoute
   '/docs/components/progressbar': typeof DocsComponentsProgressbarRoute
   '/docs/components/provider': typeof DocsComponentsProviderRoute
   '/docs/components/rangecalendar': typeof DocsComponentsRangecalendarRoute
@@ -363,6 +444,8 @@ export interface FileRoutesByTo {
   '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
   '/docs/components/timefield': typeof DocsComponentsTimefieldRoute
   '/docs/components/toast': typeof DocsComponentsToastRoute
+  '/docs/components/toolbar': typeof DocsComponentsToolbarRoute
+  '/docs/components/tooltip': typeof DocsComponentsTooltipRoute
   '/docs/components/tree': typeof DocsComponentsTreeRoute
   '/docs/components/virtualizer': typeof DocsComponentsVirtualizerRoute
   '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
@@ -376,6 +459,9 @@ export interface FileRoutesById {
   '/playground': typeof PlaygroundRoute
   '/docs/installation': typeof DocsInstallationRoute
   '/docs/': typeof DocsIndexRoute
+  '/docs/components/accordion': typeof DocsComponentsAccordionRoute
+  '/docs/components/actionbar': typeof DocsComponentsActionbarRoute
+  '/docs/components/actiongroup': typeof DocsComponentsActiongroupRoute
   '/docs/components/alertdialog': typeof DocsComponentsAlertdialogRoute
   '/docs/components/badge': typeof DocsComponentsBadgeRoute
   '/docs/components/breadcrumbs': typeof DocsComponentsBreadcrumbsRoute
@@ -384,16 +470,21 @@ export interface FileRoutesById {
   '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
   '/docs/components/color': typeof DocsComponentsColorRoute
   '/docs/components/combobox': typeof DocsComponentsComboboxRoute
+  '/docs/components/contextualhelp': typeof DocsComponentsContextualhelpRoute
   '/docs/components/datefield': typeof DocsComponentsDatefieldRoute
   '/docs/components/datepicker': typeof DocsComponentsDatepickerRoute
   '/docs/components/daterangepicker': typeof DocsComponentsDaterangepickerRoute
   '/docs/components/dialog': typeof DocsComponentsDialogRoute
   '/docs/components/disclosure': typeof DocsComponentsDisclosureRoute
+  '/docs/components/dropzone': typeof DocsComponentsDropzoneRoute
+  '/docs/components/filetrigger': typeof DocsComponentsFiletriggerRoute
   '/docs/components/gridlist': typeof DocsComponentsGridlistRoute
   '/docs/components/link': typeof DocsComponentsLinkRoute
   '/docs/components/menu': typeof DocsComponentsMenuRoute
   '/docs/components/meter': typeof DocsComponentsMeterRoute
   '/docs/components/numberfield': typeof DocsComponentsNumberfieldRoute
+  '/docs/components/picker': typeof DocsComponentsPickerRoute
+  '/docs/components/popover': typeof DocsComponentsPopoverRoute
   '/docs/components/progressbar': typeof DocsComponentsProgressbarRoute
   '/docs/components/provider': typeof DocsComponentsProviderRoute
   '/docs/components/rangecalendar': typeof DocsComponentsRangecalendarRoute
@@ -409,6 +500,8 @@ export interface FileRoutesById {
   '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
   '/docs/components/timefield': typeof DocsComponentsTimefieldRoute
   '/docs/components/toast': typeof DocsComponentsToastRoute
+  '/docs/components/toolbar': typeof DocsComponentsToolbarRoute
+  '/docs/components/tooltip': typeof DocsComponentsTooltipRoute
   '/docs/components/tree': typeof DocsComponentsTreeRoute
   '/docs/components/virtualizer': typeof DocsComponentsVirtualizerRoute
   '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
@@ -423,6 +516,9 @@ export interface FileRouteTypes {
     | '/playground'
     | '/docs/installation'
     | '/docs/'
+    | '/docs/components/accordion'
+    | '/docs/components/actionbar'
+    | '/docs/components/actiongroup'
     | '/docs/components/alertdialog'
     | '/docs/components/badge'
     | '/docs/components/breadcrumbs'
@@ -431,16 +527,21 @@ export interface FileRouteTypes {
     | '/docs/components/checkbox'
     | '/docs/components/color'
     | '/docs/components/combobox'
+    | '/docs/components/contextualhelp'
     | '/docs/components/datefield'
     | '/docs/components/datepicker'
     | '/docs/components/daterangepicker'
     | '/docs/components/dialog'
     | '/docs/components/disclosure'
+    | '/docs/components/dropzone'
+    | '/docs/components/filetrigger'
     | '/docs/components/gridlist'
     | '/docs/components/link'
     | '/docs/components/menu'
     | '/docs/components/meter'
     | '/docs/components/numberfield'
+    | '/docs/components/picker'
+    | '/docs/components/popover'
     | '/docs/components/progressbar'
     | '/docs/components/provider'
     | '/docs/components/rangecalendar'
@@ -456,6 +557,8 @@ export interface FileRouteTypes {
     | '/docs/components/textfield'
     | '/docs/components/timefield'
     | '/docs/components/toast'
+    | '/docs/components/toolbar'
+    | '/docs/components/tooltip'
     | '/docs/components/tree'
     | '/docs/components/virtualizer'
     | '/docs/hooks/create-button'
@@ -467,6 +570,9 @@ export interface FileRouteTypes {
     | '/playground'
     | '/docs/installation'
     | '/docs'
+    | '/docs/components/accordion'
+    | '/docs/components/actionbar'
+    | '/docs/components/actiongroup'
     | '/docs/components/alertdialog'
     | '/docs/components/badge'
     | '/docs/components/breadcrumbs'
@@ -475,16 +581,21 @@ export interface FileRouteTypes {
     | '/docs/components/checkbox'
     | '/docs/components/color'
     | '/docs/components/combobox'
+    | '/docs/components/contextualhelp'
     | '/docs/components/datefield'
     | '/docs/components/datepicker'
     | '/docs/components/daterangepicker'
     | '/docs/components/dialog'
     | '/docs/components/disclosure'
+    | '/docs/components/dropzone'
+    | '/docs/components/filetrigger'
     | '/docs/components/gridlist'
     | '/docs/components/link'
     | '/docs/components/menu'
     | '/docs/components/meter'
     | '/docs/components/numberfield'
+    | '/docs/components/picker'
+    | '/docs/components/popover'
     | '/docs/components/progressbar'
     | '/docs/components/provider'
     | '/docs/components/rangecalendar'
@@ -500,6 +611,8 @@ export interface FileRouteTypes {
     | '/docs/components/textfield'
     | '/docs/components/timefield'
     | '/docs/components/toast'
+    | '/docs/components/toolbar'
+    | '/docs/components/tooltip'
     | '/docs/components/tree'
     | '/docs/components/virtualizer'
     | '/docs/hooks/create-button'
@@ -512,6 +625,9 @@ export interface FileRouteTypes {
     | '/playground'
     | '/docs/installation'
     | '/docs/'
+    | '/docs/components/accordion'
+    | '/docs/components/actionbar'
+    | '/docs/components/actiongroup'
     | '/docs/components/alertdialog'
     | '/docs/components/badge'
     | '/docs/components/breadcrumbs'
@@ -520,16 +636,21 @@ export interface FileRouteTypes {
     | '/docs/components/checkbox'
     | '/docs/components/color'
     | '/docs/components/combobox'
+    | '/docs/components/contextualhelp'
     | '/docs/components/datefield'
     | '/docs/components/datepicker'
     | '/docs/components/daterangepicker'
     | '/docs/components/dialog'
     | '/docs/components/disclosure'
+    | '/docs/components/dropzone'
+    | '/docs/components/filetrigger'
     | '/docs/components/gridlist'
     | '/docs/components/link'
     | '/docs/components/menu'
     | '/docs/components/meter'
     | '/docs/components/numberfield'
+    | '/docs/components/picker'
+    | '/docs/components/popover'
     | '/docs/components/progressbar'
     | '/docs/components/provider'
     | '/docs/components/rangecalendar'
@@ -545,6 +666,8 @@ export interface FileRouteTypes {
     | '/docs/components/textfield'
     | '/docs/components/timefield'
     | '/docs/components/toast'
+    | '/docs/components/toolbar'
+    | '/docs/components/tooltip'
     | '/docs/components/tree'
     | '/docs/components/virtualizer'
     | '/docs/hooks/create-button'
@@ -628,6 +751,20 @@ declare module '@tanstack/solid-router' {
       path: '/components/tree'
       fullPath: '/docs/components/tree'
       preLoaderRoute: typeof DocsComponentsTreeRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/tooltip': {
+      id: '/docs/components/tooltip'
+      path: '/components/tooltip'
+      fullPath: '/docs/components/tooltip'
+      preLoaderRoute: typeof DocsComponentsTooltipRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/toolbar': {
+      id: '/docs/components/toolbar'
+      path: '/components/toolbar'
+      fullPath: '/docs/components/toolbar'
+      preLoaderRoute: typeof DocsComponentsToolbarRouteImport
       parentRoute: typeof DocsRouteRoute
     }
     '/docs/components/toast': {
@@ -735,6 +872,20 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof DocsComponentsProgressbarRouteImport
       parentRoute: typeof DocsRouteRoute
     }
+    '/docs/components/popover': {
+      id: '/docs/components/popover'
+      path: '/components/popover'
+      fullPath: '/docs/components/popover'
+      preLoaderRoute: typeof DocsComponentsPopoverRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/picker': {
+      id: '/docs/components/picker'
+      path: '/components/picker'
+      fullPath: '/docs/components/picker'
+      preLoaderRoute: typeof DocsComponentsPickerRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
     '/docs/components/numberfield': {
       id: '/docs/components/numberfield'
       path: '/components/numberfield'
@@ -770,6 +921,20 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof DocsComponentsGridlistRouteImport
       parentRoute: typeof DocsRouteRoute
     }
+    '/docs/components/filetrigger': {
+      id: '/docs/components/filetrigger'
+      path: '/components/filetrigger'
+      fullPath: '/docs/components/filetrigger'
+      preLoaderRoute: typeof DocsComponentsFiletriggerRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/dropzone': {
+      id: '/docs/components/dropzone'
+      path: '/components/dropzone'
+      fullPath: '/docs/components/dropzone'
+      preLoaderRoute: typeof DocsComponentsDropzoneRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
     '/docs/components/disclosure': {
       id: '/docs/components/disclosure'
       path: '/components/disclosure'
@@ -803,6 +968,13 @@ declare module '@tanstack/solid-router' {
       path: '/components/datefield'
       fullPath: '/docs/components/datefield'
       preLoaderRoute: typeof DocsComponentsDatefieldRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/contextualhelp': {
+      id: '/docs/components/contextualhelp'
+      path: '/components/contextualhelp'
+      fullPath: '/docs/components/contextualhelp'
+      preLoaderRoute: typeof DocsComponentsContextualhelpRouteImport
       parentRoute: typeof DocsRouteRoute
     }
     '/docs/components/combobox': {
@@ -861,12 +1033,36 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof DocsComponentsAlertdialogRouteImport
       parentRoute: typeof DocsRouteRoute
     }
+    '/docs/components/actiongroup': {
+      id: '/docs/components/actiongroup'
+      path: '/components/actiongroup'
+      fullPath: '/docs/components/actiongroup'
+      preLoaderRoute: typeof DocsComponentsActiongroupRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/actionbar': {
+      id: '/docs/components/actionbar'
+      path: '/components/actionbar'
+      fullPath: '/docs/components/actionbar'
+      preLoaderRoute: typeof DocsComponentsActionbarRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/components/accordion': {
+      id: '/docs/components/accordion'
+      path: '/components/accordion'
+      fullPath: '/docs/components/accordion'
+      preLoaderRoute: typeof DocsComponentsAccordionRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
   }
 }
 
 interface DocsRouteRouteChildren {
   DocsInstallationRoute: typeof DocsInstallationRoute
   DocsIndexRoute: typeof DocsIndexRoute
+  DocsComponentsAccordionRoute: typeof DocsComponentsAccordionRoute
+  DocsComponentsActionbarRoute: typeof DocsComponentsActionbarRoute
+  DocsComponentsActiongroupRoute: typeof DocsComponentsActiongroupRoute
   DocsComponentsAlertdialogRoute: typeof DocsComponentsAlertdialogRoute
   DocsComponentsBadgeRoute: typeof DocsComponentsBadgeRoute
   DocsComponentsBreadcrumbsRoute: typeof DocsComponentsBreadcrumbsRoute
@@ -875,16 +1071,21 @@ interface DocsRouteRouteChildren {
   DocsComponentsCheckboxRoute: typeof DocsComponentsCheckboxRoute
   DocsComponentsColorRoute: typeof DocsComponentsColorRoute
   DocsComponentsComboboxRoute: typeof DocsComponentsComboboxRoute
+  DocsComponentsContextualhelpRoute: typeof DocsComponentsContextualhelpRoute
   DocsComponentsDatefieldRoute: typeof DocsComponentsDatefieldRoute
   DocsComponentsDatepickerRoute: typeof DocsComponentsDatepickerRoute
   DocsComponentsDaterangepickerRoute: typeof DocsComponentsDaterangepickerRoute
   DocsComponentsDialogRoute: typeof DocsComponentsDialogRoute
   DocsComponentsDisclosureRoute: typeof DocsComponentsDisclosureRoute
+  DocsComponentsDropzoneRoute: typeof DocsComponentsDropzoneRoute
+  DocsComponentsFiletriggerRoute: typeof DocsComponentsFiletriggerRoute
   DocsComponentsGridlistRoute: typeof DocsComponentsGridlistRoute
   DocsComponentsLinkRoute: typeof DocsComponentsLinkRoute
   DocsComponentsMenuRoute: typeof DocsComponentsMenuRoute
   DocsComponentsMeterRoute: typeof DocsComponentsMeterRoute
   DocsComponentsNumberfieldRoute: typeof DocsComponentsNumberfieldRoute
+  DocsComponentsPickerRoute: typeof DocsComponentsPickerRoute
+  DocsComponentsPopoverRoute: typeof DocsComponentsPopoverRoute
   DocsComponentsProgressbarRoute: typeof DocsComponentsProgressbarRoute
   DocsComponentsProviderRoute: typeof DocsComponentsProviderRoute
   DocsComponentsRangecalendarRoute: typeof DocsComponentsRangecalendarRoute
@@ -900,6 +1101,8 @@ interface DocsRouteRouteChildren {
   DocsComponentsTextfieldRoute: typeof DocsComponentsTextfieldRoute
   DocsComponentsTimefieldRoute: typeof DocsComponentsTimefieldRoute
   DocsComponentsToastRoute: typeof DocsComponentsToastRoute
+  DocsComponentsToolbarRoute: typeof DocsComponentsToolbarRoute
+  DocsComponentsTooltipRoute: typeof DocsComponentsTooltipRoute
   DocsComponentsTreeRoute: typeof DocsComponentsTreeRoute
   DocsComponentsVirtualizerRoute: typeof DocsComponentsVirtualizerRoute
   DocsHooksCreateButtonRoute: typeof DocsHooksCreateButtonRoute
@@ -909,6 +1112,9 @@ interface DocsRouteRouteChildren {
 const DocsRouteRouteChildren: DocsRouteRouteChildren = {
   DocsInstallationRoute: DocsInstallationRoute,
   DocsIndexRoute: DocsIndexRoute,
+  DocsComponentsAccordionRoute: DocsComponentsAccordionRoute,
+  DocsComponentsActionbarRoute: DocsComponentsActionbarRoute,
+  DocsComponentsActiongroupRoute: DocsComponentsActiongroupRoute,
   DocsComponentsAlertdialogRoute: DocsComponentsAlertdialogRoute,
   DocsComponentsBadgeRoute: DocsComponentsBadgeRoute,
   DocsComponentsBreadcrumbsRoute: DocsComponentsBreadcrumbsRoute,
@@ -917,16 +1123,21 @@ const DocsRouteRouteChildren: DocsRouteRouteChildren = {
   DocsComponentsCheckboxRoute: DocsComponentsCheckboxRoute,
   DocsComponentsColorRoute: DocsComponentsColorRoute,
   DocsComponentsComboboxRoute: DocsComponentsComboboxRoute,
+  DocsComponentsContextualhelpRoute: DocsComponentsContextualhelpRoute,
   DocsComponentsDatefieldRoute: DocsComponentsDatefieldRoute,
   DocsComponentsDatepickerRoute: DocsComponentsDatepickerRoute,
   DocsComponentsDaterangepickerRoute: DocsComponentsDaterangepickerRoute,
   DocsComponentsDialogRoute: DocsComponentsDialogRoute,
   DocsComponentsDisclosureRoute: DocsComponentsDisclosureRoute,
+  DocsComponentsDropzoneRoute: DocsComponentsDropzoneRoute,
+  DocsComponentsFiletriggerRoute: DocsComponentsFiletriggerRoute,
   DocsComponentsGridlistRoute: DocsComponentsGridlistRoute,
   DocsComponentsLinkRoute: DocsComponentsLinkRoute,
   DocsComponentsMenuRoute: DocsComponentsMenuRoute,
   DocsComponentsMeterRoute: DocsComponentsMeterRoute,
   DocsComponentsNumberfieldRoute: DocsComponentsNumberfieldRoute,
+  DocsComponentsPickerRoute: DocsComponentsPickerRoute,
+  DocsComponentsPopoverRoute: DocsComponentsPopoverRoute,
   DocsComponentsProgressbarRoute: DocsComponentsProgressbarRoute,
   DocsComponentsProviderRoute: DocsComponentsProviderRoute,
   DocsComponentsRangecalendarRoute: DocsComponentsRangecalendarRoute,
@@ -942,6 +1153,8 @@ const DocsRouteRouteChildren: DocsRouteRouteChildren = {
   DocsComponentsTextfieldRoute: DocsComponentsTextfieldRoute,
   DocsComponentsTimefieldRoute: DocsComponentsTimefieldRoute,
   DocsComponentsToastRoute: DocsComponentsToastRoute,
+  DocsComponentsToolbarRoute: DocsComponentsToolbarRoute,
+  DocsComponentsTooltipRoute: DocsComponentsTooltipRoute,
   DocsComponentsTreeRoute: DocsComponentsTreeRoute,
   DocsComponentsVirtualizerRoute: DocsComponentsVirtualizerRoute,
   DocsHooksCreateButtonRoute: DocsHooksCreateButtonRoute,

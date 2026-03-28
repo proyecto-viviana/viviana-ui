@@ -47,7 +47,7 @@ export function ConversationPreview(props: ConversationPreviewProps) {
         </Show>
       </div>
       <Show when={props.unreadCount && props.unreadCount > 0}>
-        <span class="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs font-bold text-white">
+        <span class="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs font-bold text-on-color">
           {props.unreadCount}
         </span>
       </Show>

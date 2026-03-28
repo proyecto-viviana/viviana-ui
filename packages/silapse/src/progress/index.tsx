@@ -3,6 +3,7 @@
  */
 
 export { ProgressBar } from '../progress-bar';
+export { ProgressBar as ProgressBarBase } from '../progress-bar';
 export type {
   ProgressBarProps,
   ProgressBarSize,
@@ -11,4 +12,3 @@ export type {
 
 export { ProgressCircle } from './ProgressCircle';
 export type { ProgressCircleProps, ProgressCircleSize, ProgressCircleVariant } from './ProgressCircle';
-

@@ -35,7 +35,7 @@ export function StoryErrorBoundary(props: StoryErrorBoundaryProps): JSX.Element 
               <h3 class="text-red-400 font-semibold mb-2">Error</h3>
               <pre class="text-sm text-red-300 whitespace-pre-wrap mb-3">{err.message}</pre>
               <button
-                class="px-3 py-1 text-sm rounded bg-red-400 text-white hover:bg-red-500 transition-colors"
+                class="px-3 py-1 text-sm rounded bg-red-400 text-on-color hover:bg-red-500 transition-colors"
                 onClick={reset}
               >
                 Retry

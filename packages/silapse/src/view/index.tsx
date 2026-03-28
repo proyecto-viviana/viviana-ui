@@ -23,6 +23,11 @@ export function View(props: ViewProps): JSX.Element {
 }
 
 // Sub-component re-exports
-export { Content, ViewHeader, ViewFooter } from './Content';
+export {
+  Content,
+  ViewHeader,
+  ViewHeader as Header,
+  ViewFooter,
+  ViewFooter as Footer,
+} from './Content';
 export type { ContentProps, ViewHeaderProps, ViewFooterProps } from './Content';
-

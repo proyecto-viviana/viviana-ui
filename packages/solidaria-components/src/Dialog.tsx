@@ -173,7 +173,7 @@ export function Dialog(props: DialogProps): JSX.Element {
   )
 
   // Get titleId from titleProps - this links Dialog's aria-labelledby to Heading's id
-  const titleId = () => titleProps()?.id
+  const titleId = () => titleProps()?.id as string | undefined
 
   // Get close function from OverlayTriggerState context or onClose prop
   const overlayState = useOverlayTriggerState()

@@ -23,6 +23,14 @@ export interface AriaMenuItemProps {
   onAction?: () => void;
   /** Whether to close the menu when this item is selected. */
   closeOnSelect?: boolean;
+  /** A URL to link to. Turns the menu item into a link. */
+  href?: string;
+  /** The target window for the link. */
+  target?: string;
+  /** The relationship between the linked resource and the current page. */
+  rel?: string;
+  /** Causes the browser to download the linked URL. A string may be provided to suggest a file name. */
+  download?: boolean | string;
 }
 
 export interface MenuItemAria {
@@ -66,6 +74,9 @@ export function createMenuItem<T>(
     return state.focusedKey() === getProps().key;
   };
 
+  // Whether this is a link item
+  const isLink = () => !!getProps().href;
+
   // Handle press
   const { pressProps, isPressed } = createPress({
     get isDisabled() {
@@ -83,6 +94,7 @@ export function createMenuItem<T>(
       data?.onAction?.(key);
 
       // Close menu if closeOnSelect is not explicitly false
+      // For link items, default to closing the menu
       if (p.closeOnSelect !== false) {
         data?.onClose?.();
       }
@@ -109,26 +121,39 @@ export function createMenuItem<T>(
 
   return {
     get menuItemProps() {
-      const key = getProps().key;
-      const ariaLabel = getProps()['aria-label'];
+      const p = getProps();
+      const key = p.key;
+      const ariaLabel = p['aria-label'];
+
+      const baseProps: Record<string, unknown> = {
+        role: 'menuitem',
+        id: String(key),
+        'aria-disabled': isDisabled() || undefined,
+        'aria-label': ariaLabel,
+        'aria-labelledby': !ariaLabel ? labelId : undefined,
+        'aria-describedby': descriptionId,
+        tabIndex: isFocused() ? 0 : -1,
+        'data-focused': isFocused() || undefined,
+        'data-focus-visible': isFocusVisible() || undefined,
+        'data-pressed': isPressed() || undefined,
+        'data-disabled': isDisabled() || undefined,
+      };
+
+      // Add link props when href is present
+      if (isLink()) {
+        baseProps.href = isDisabled() ? undefined : p.href;
+        if (p.target) baseProps.target = p.target;
+        if (p.rel) baseProps.rel = p.rel;
+        if (p.download != null && p.download !== false) {
+          baseProps.download = p.download === true ? '' : p.download;
+        }
+      }
 
       return mergeProps(
         pressProps as Record<string, unknown>,
         hoverProps as Record<string, unknown>,
         focusProps as Record<string, unknown>,
-        {
-          role: 'menuitem',
-          id: String(key),
-          'aria-disabled': isDisabled() || undefined,
-          'aria-label': ariaLabel,
-          'aria-labelledby': !ariaLabel ? labelId : undefined,
-          'aria-describedby': descriptionId,
-          tabIndex: isFocused() ? 0 : -1,
-          'data-focused': isFocused() || undefined,
-          'data-focus-visible': isFocusVisible() || undefined,
-          'data-pressed': isPressed() || undefined,
-          'data-disabled': isDisabled() || undefined,
-        } as Record<string, unknown>
+        baseProps
       ) as JSX.HTMLAttributes<HTMLElement>;
     },
     labelProps: {

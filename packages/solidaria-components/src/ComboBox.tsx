@@ -84,12 +84,20 @@ export interface ComboBoxProps<T>
   getDisabled?: (item: T) => boolean;
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
-  /** The currently selected key (controlled). */
+  /** The selection mode for the combobox. */
+  selectionMode?: 'single' | 'multiple';
+  /** The currently selected key (controlled, single mode). */
   selectedKey?: Key | null;
-  /** The default selected key (uncontrolled). */
+  /** The default selected key (uncontrolled, single mode). */
   defaultSelectedKey?: Key | null;
-  /** Handler called when selection changes. */
+  /** The currently selected keys (controlled, multiple mode). */
+  selectedKeys?: Iterable<Key>;
+  /** The default selected keys (uncontrolled, multiple mode). */
+  defaultSelectedKeys?: Iterable<Key>;
+  /** Handler called when selection changes (single mode). */
   onSelectionChange?: (key: Key | null) => void;
+  /** Handler called when selection changes (multiple mode). */
+  onSelectionChangeMultiple?: (keys: Set<Key>) => void;
   /** The current input value (controlled). */
   inputValue?: string;
   /** The default input value (uncontrolled). */
@@ -195,12 +203,16 @@ export interface ComboBoxButtonRenderProps {
 export interface ComboBoxValueRenderProps {
   textValue: string;
   isPlaceholder: boolean;
+  selectedItems: unknown[];
+  selectedText: string;
+  state: ComboBoxState<unknown>;
 }
 
 export interface ComboBoxValueProps extends SlotProps {
   children?: RenderChildren<ComboBoxValueRenderProps>;
   class?: ClassNameOrFunction<ComboBoxValueRenderProps>;
   style?: StyleOrFunction<ComboBoxValueRenderProps>;
+  placeholder?: JSX.Element;
 }
 
 export interface ComboBoxButtonProps extends SlotProps {
@@ -303,9 +315,13 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
       'getTextValue',
       'getDisabled',
       'disabledKeys',
+      'selectionMode',
       'selectedKey',
       'defaultSelectedKey',
+      'selectedKeys',
+      'defaultSelectedKeys',
       'onSelectionChange',
+      'onSelectionChangeMultiple',
       'inputValue',
       'defaultInputValue',
       'onInputChange',
@@ -343,14 +359,26 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
     get disabledKeys() {
       return stateProps.disabledKeys;
     },
+    get selectionMode() {
+      return stateProps.selectionMode;
+    },
     get selectedKey() {
       return stateProps.selectedKey;
     },
     get defaultSelectedKey() {
       return stateProps.defaultSelectedKey;
     },
+    get selectedKeys() {
+      return stateProps.selectedKeys;
+    },
+    get defaultSelectedKeys() {
+      return stateProps.defaultSelectedKeys;
+    },
     get onSelectionChange() {
       return stateProps.onSelectionChange;
+    },
+    get onSelectionChangeMultiple() {
+      return stateProps.onSelectionChangeMultiple;
     },
     get inputValue() {
       return stateProps.inputValue;
@@ -666,7 +694,23 @@ export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
   }
 
   const state = context.state;
-  const textValue = createMemo(() => state.inputValue() ?? '');
+  const isMulti = createMemo(() => state.selectionMode() === 'multiple');
+  const selectedItem = createMemo(() => state.selectedItem());
+  const selectedItems = createMemo(() => {
+    if (isMulti()) {
+      return state.selectedItems().map((node) => node.value ?? null);
+    }
+    const item = selectedItem();
+    return item ? [item.value ?? null] : [];
+  });
+  const selectedText = createMemo(() => {
+    if (isMulti()) {
+      const items = state.selectedItems();
+      return items.map((n) => n.textValue).join(', ');
+    }
+    return selectedItem()?.textValue ?? '';
+  });
+  const textValue = createMemo(() => selectedText() || state.inputValue() || '');
   const isPlaceholder = createMemo(() => textValue().length === 0);
 
   const renderProps = useRenderProps(
@@ -679,6 +723,9 @@ export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
     () => ({
       textValue: textValue(),
       isPlaceholder: isPlaceholder(),
+      selectedItems: selectedItems(),
+      selectedText: selectedText(),
+      state: state as ComboBoxState<unknown>,
     })
   );
 
@@ -688,7 +735,7 @@ export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
       style={renderProps.style()}
       data-placeholder={isPlaceholder() || undefined}
     >
-      {props.children ? renderProps.renderChildren() : textValue()}
+      {props.children ? renderProps.renderChildren() : (isPlaceholder() ? props.placeholder : textValue())}
     </span>
   );
 }
@@ -999,6 +1046,108 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
   );
 }
 
+// ============================================
+// COMBOBOX TAG GROUP
+// ============================================
+
+export interface ComboBoxTagGroupProps {
+  /** Render function for each selected item. */
+  children: (item: { key: Key; label: string }) => JSX.Element;
+  /** The CSS className for the container. */
+  class?: string;
+  /** The inline style for the container. */
+  style?: JSX.CSSProperties;
+}
+
+/**
+ * Renders selected items as tags in multi-select mode.
+ */
+export function ComboBoxTagGroup(props: ComboBoxTagGroupProps): JSX.Element {
+  const context = useContext(ComboBoxContext);
+  if (!context) {
+    throw new Error('ComboBoxTagGroup must be used within a ComboBox');
+  }
+
+  const state = context.state;
+  const items = createMemo(() =>
+    state.selectedItems().map((node) => ({
+      key: node.key,
+      label: node.textValue,
+    }))
+  );
+
+  return (
+    <Show when={items().length > 0}>
+      <div
+        class={props.class ?? 'solidaria-ComboBox-tagGroup'}
+        style={props.style}
+        role="group"
+        aria-label="Selected items"
+      >
+        <For each={items()}>
+          {(item) => props.children(item)}
+        </For>
+      </div>
+    </Show>
+  );
+}
+
+// ============================================
+// COMBOBOX TAG
+// ============================================
+
+export interface ComboBoxTagProps {
+  /** The item data. */
+  item: { key: Key; label: string };
+  /** Handler called when the tag remove button is clicked. */
+  onRemove?: () => void;
+  /** The children to render inside the tag. */
+  children?: JSX.Element;
+  /** The CSS className for the tag. */
+  class?: string;
+  /** The inline style for the tag. */
+  style?: JSX.CSSProperties;
+}
+
+/**
+ * A tag representing a selected item in a multi-select combobox.
+ */
+export function ComboBoxTag(props: ComboBoxTagProps): JSX.Element {
+  const context = useContext(ComboBoxContext);
+  if (!context) {
+    throw new Error('ComboBoxTag must be used within a ComboBox');
+  }
+
+  const state = context.state;
+
+  const handleRemove = () => {
+    if (props.onRemove) {
+      props.onRemove();
+    } else {
+      state.removeSelectedKey(props.item.key);
+    }
+  };
+
+  return (
+    <span
+      class={props.class ?? 'solidaria-ComboBox-tag'}
+      style={props.style}
+      data-key={String(props.item.key)}
+    >
+      {props.children ?? props.item.label}
+      <button
+        type="button"
+        aria-label={`Remove ${props.item.label}`}
+        onClick={handleRemove}
+        class="solidaria-ComboBox-tag-remove"
+        tabIndex={-1}
+      >
+        &#215;
+      </button>
+    </span>
+  );
+}
+
 // Attach sub-components
 ComboBox.Input = ComboBoxInput;
 ComboBox.Button = ComboBoxButton;
@@ -1007,12 +1156,17 @@ ComboBox.Option = ComboBoxOption;
 ComboBox.Label = ComboBoxLabel;
 ComboBox.Description = ComboBoxDescription;
 ComboBox.ErrorMessage = ComboBoxErrorMessage;
+ComboBox.TagGroup = ComboBoxTagGroup;
+ComboBox.Tag = ComboBoxTag;
 
 // Re-export filter function for convenience
 export { defaultContainsFilter };
 
 function createComboBoxListStateAdapter<T>(state: ComboBoxState<T>): ListState<T> {
   const selectedKeys = createMemo(() => {
+    if (state.selectionMode() === 'multiple') {
+      return state.selectedKeys();
+    }
     const key = state.selectedKey();
     return key != null ? new Set<Key>([key]) : new Set<Key>();
   });

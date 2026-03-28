@@ -20,6 +20,7 @@ import {
   SliderThumb,
   SliderOutput,
 } from '../src/Slider';
+import { I18nProvider } from '@proyecto-viviana/solidaria';
 import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
@@ -446,6 +447,84 @@ describe('Slider', () => {
 
       const sliderWrapper = document.querySelector('.solidaria-Slider');
       expect(sliderWrapper).not.toHaveAttribute('data-disabled');
+    });
+  });
+
+  // ============================================
+  // RTL (Right-to-Left) KEYBOARD NAVIGATION
+  // ============================================
+
+  describe('RTL keyboard navigation', () => {
+    it('ArrowRight should DECREASE value in RTL', async () => {
+      const onChange = vi.fn();
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, onChange }} />
+        </I18nProvider>
+      ));
+
+      const slider = screen.getByRole('slider');
+      slider.focus();
+      await user.keyboard('{ArrowRight}');
+
+      await waitFor(() => {
+        // In RTL, ArrowRight decreases value (reversed from LTR)
+        expect(onChange).toHaveBeenCalledWith(49);
+      });
+    });
+
+    it('ArrowLeft should INCREASE value in RTL', async () => {
+      const onChange = vi.fn();
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, onChange }} />
+        </I18nProvider>
+      ));
+
+      const slider = screen.getByRole('slider');
+      slider.focus();
+      await user.keyboard('{ArrowLeft}');
+
+      await waitFor(() => {
+        // In RTL, ArrowLeft increases value (reversed from LTR)
+        expect(onChange).toHaveBeenCalledWith(51);
+      });
+    });
+
+    it('ArrowUp should still increase value in RTL', async () => {
+      const onChange = vi.fn();
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, onChange }} />
+        </I18nProvider>
+      ));
+
+      const slider = screen.getByRole('slider');
+      slider.focus();
+      await user.keyboard('{ArrowUp}');
+
+      await waitFor(() => {
+        // ArrowUp should still call onChange (increases value)
+        expect(onChange).toHaveBeenCalled();
+      });
+    });
+
+    it('step increment should respect RTL direction', async () => {
+      const onChange = vi.fn();
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, step: 10, onChange }} />
+        </I18nProvider>
+      ));
+
+      const slider = screen.getByRole('slider');
+      slider.focus();
+      await user.keyboard('{ArrowLeft}');
+
+      await waitFor(() => {
+        // In RTL, ArrowLeft increases by step
+        expect(onChange).toHaveBeenCalledWith(60);
+      });
     });
   });
 });

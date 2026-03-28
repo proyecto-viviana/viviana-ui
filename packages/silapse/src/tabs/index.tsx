@@ -10,10 +10,12 @@ import {
   Tabs as HeadlessTabs,
   TabList as HeadlessTabList,
   Tab as HeadlessTab,
+  TabPanels as HeadlessTabPanels,
   TabPanel as HeadlessTabPanel,
   type TabsProps as HeadlessTabsProps,
   type TabListProps as HeadlessTabListProps,
   type TabProps as HeadlessTabProps,
+  type TabPanelsProps as HeadlessTabPanelsProps,
   type TabPanelProps as HeadlessTabPanelProps,
   type TabsRenderProps,
   type TabListRenderProps,
@@ -61,6 +63,11 @@ export interface TabProps extends Omit<HeadlessTabProps, 'class' | 'style'> {
 }
 
 export interface TabPanelProps extends Omit<HeadlessTabPanelProps, 'class' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
+}
+
+export interface TabPanelsProps extends Omit<HeadlessTabPanelsProps, 'class' | 'style'> {
   /** Additional CSS class name. */
   class?: string
 }
@@ -236,6 +243,27 @@ export function Tab(props: TabProps): JSX.Element {
 }
 
 // ============================================
+// TAB PANELS COMPONENT
+// ============================================
+
+/**
+ * A TabPanels groups TabPanel elements for composition parity.
+ */
+export function TabPanels(props: TabPanelsProps): JSX.Element {
+  const [local, headlessProps] = splitProps(props, ['class'])
+  const customClass = local.class ?? ''
+
+  return (
+    <HeadlessTabPanels
+      {...headlessProps}
+      class={['flex-1', customClass].filter(Boolean).join(' ')}
+    >
+      {props.children}
+    </HeadlessTabPanels>
+  )
+}
+
+// ============================================
 // TAB PANEL COMPONENT
 // ============================================
 
@@ -270,6 +298,7 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
 // Attach sub-components for convenience
 Tabs.List = TabList
 Tabs.Tab = Tab
+Tabs.Panels = TabPanels
 Tabs.Panel = TabPanel
 
 // Re-export types for convenience

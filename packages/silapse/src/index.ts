@@ -95,7 +95,7 @@ export { Link } from './link';
 export type { LinkProps, LinkVariant } from './link';
 
 // ProgressBar
-export { ProgressBar } from './progress-bar';
+export { ProgressBar, ProgressBar as ProgressBarBase } from './progress-bar';
 export type { ProgressBarProps, ProgressBarSize, ProgressBarVariant } from './progress-bar';
 
 // Progress
@@ -176,8 +176,8 @@ export type {
 } from './list';
 
 // Tabs
-export { Tabs, TabList, Tab, TabPanel } from './tabs';
-export type { TabsProps, TabListProps, TabProps, TabPanelProps, TabsSize, TabsVariant, TabOrientation } from './tabs';
+export { Tabs, TabList, Tab, TabPanels, TabPanel } from './tabs';
+export type { TabsProps, TabListProps, TabProps, TabPanelsProps, TabPanelProps, TabsSize, TabsVariant, TabOrientation } from './tabs';
 
 // Breadcrumbs
 export { Breadcrumbs, BreadcrumbItem } from './breadcrumbs';
@@ -214,9 +214,11 @@ export type { ComboBoxProps, ComboBoxInputProps, ComboBoxButtonProps, ComboBoxLi
 // Toast
 export {
   Toast,
+  ToastContainer,
   ToastRegion,
   ToastProvider,
   ToastContext,
+  ToastQueue,
   addToast,
   toastSuccess,
   toastError,
@@ -313,6 +315,7 @@ export type { DateRangePickerProps, DateRangePickerSize } from './calendar/DateR
 // Table
 export {
   Table,
+  TableView,
   TableHeader,
   TableColumn,
   TableBody,
@@ -348,14 +351,20 @@ export type {
 
 // Tree
 export {
+  Collection,
   Tree,
+  TreeView,
   TreeItem,
+  TreeItemContent,
+  TreeViewItem,
+  TreeViewItemContent,
   TreeExpandButton,
   TreeSelectionCheckbox,
 } from './tree';
 export type {
   TreeProps,
   TreeItemProps,
+  TreeItemContentProps,
   TreeExpandButtonProps,
   TreeSize,
   TreeVariant,
@@ -434,9 +443,13 @@ export type { LayoutProps } from './layout';
 export { IllustratedMessage } from './illustratedmessage';
 export type { IllustratedMessageProps } from './illustratedmessage';
 
+// Skeleton
+export { Skeleton, SkeletonCollection } from './skeleton';
+export type { SkeletonProps, SkeletonCollectionProps, SkeletonShape, SkeletonSize, SkeletonGap } from './skeleton';
+
 // StepList
 export { StepList, Step } from './steplist';
-export type { StepListProps, StepProps } from './steplist';
+export type { StepListProps, StepProps, StepListSize } from './steplist';
 
 // Drag and Drop
 export {
@@ -466,6 +479,7 @@ export type { HeadingProps, HeadingLevel } from './text/Heading';
 
 // Keyboard
 export { StyledKeyboard } from './text/Keyboard';
+export { StyledKeyboard as Keyboard } from './text/Keyboard';
 export type { KeyboardProps as StyledKeyboardProps } from './text/Keyboard';
 
 // ToggleButton
@@ -607,7 +621,6 @@ export type {
 } from './provider';
 
 // Theme compatibility (legacy)
-export { themeExpressClass } from './theme-express';
 export { themeLightClass, lightTheme } from './theme-light';
 export { themeDarkClass, darkTheme } from './theme-dark';
 export { themeDefaultClass, defaultTheme } from './theme-default';

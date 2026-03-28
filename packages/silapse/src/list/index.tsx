@@ -5,6 +5,7 @@
 export {
   GridList as ListView,
   GridListItem as ListViewItem,
+  GridListItem as Item,
   GridListSelectionCheckbox as ListViewSelectionCheckbox,
 } from '../gridlist';
 export type {
@@ -14,4 +15,3 @@ export type {
   GridListVariant as ListViewVariant,
   GridListLayout as ListViewLayout,
 } from '../gridlist';
-

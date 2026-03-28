@@ -20,19 +20,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          bun-version: latest
+          version: 10
 
-      - name: Install workspace dependencies
-        run: bun install --frozen-lockfile
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright Chromium
-        run: bun run --cwd apps/web bunx playwright install --with-deps chromium
+        run: cd apps/web && pnpm exec playwright install --with-deps chromium
 
       - name: Run blocking accessibility checks
-        run: bun run ci:a11y
+        run: pnpm run ci:a11y
 
       - name: Upload Playwright artifacts
         if: always()
@@ -50,5 +56,5 @@ jobs:
           echo "## Accessibility Check Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "This workflow is blocking on pull requests." >> "$GITHUB_STEP_SUMMARY"
-          echo "It mirrors \`bun run ci:a11y\` and enforces the blocking AA + smoke gate, with axe \`color-contrast\` temporarily excluded." >> "$GITHUB_STEP_SUMMARY"
-          echo "Stricter contrast, best-practice, AAA, and experimental scans remain available via \`bun run a11y:full\`." >> "$GITHUB_STEP_SUMMARY"
+          echo "It mirrors \`pnpm run ci:a11y\` and enforces the blocking AA + smoke gate, with axe \`color-contrast\` temporarily excluded." >> "$GITHUB_STEP_SUMMARY"
+          echo "Stricter contrast, best-practice, AAA, and experimental scans remain available via \`pnpm run a11y:full\`." >> "$GITHUB_STEP_SUMMARY"

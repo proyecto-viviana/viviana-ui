@@ -169,7 +169,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
         }
 
         const iconClasses = () => {
-          const base = 'text-white transition-opacity duration-200'
+          const base = 'text-on-color transition-opacity duration-200'
           const sizeClass = size().icon
           const visibilityClass = (renderProps.isSelected || renderProps.isIndeterminate)
             ? 'opacity-100'

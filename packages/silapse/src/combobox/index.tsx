@@ -15,12 +15,16 @@ import {
   ComboBoxButton as HeadlessComboBoxButton,
   ComboBoxListBox as HeadlessComboBoxListBox,
   ComboBoxOption as HeadlessComboBoxOption,
+  ComboBoxTagGroup as HeadlessComboBoxTagGroup,
+  ComboBoxTag as HeadlessComboBoxTag,
   defaultContainsFilter,
   type ComboBoxProps as HeadlessComboBoxProps,
   type ComboBoxInputProps as HeadlessComboBoxInputProps,
   type ComboBoxButtonProps as HeadlessComboBoxButtonProps,
   type ComboBoxListBoxProps as HeadlessComboBoxListBoxProps,
   type ComboBoxOptionProps as HeadlessComboBoxOptionProps,
+  type ComboBoxTagGroupProps as HeadlessComboBoxTagGroupProps,
+  type ComboBoxTagProps as HeadlessComboBoxTagProps,
   type ComboBoxRenderProps,
   type ComboBoxInputRenderProps,
   type ComboBoxButtonRenderProps,
@@ -355,6 +359,59 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
 }
 
 // ============================================
+// COMBOBOX TAG GROUP COMPONENT
+// ============================================
+
+export interface ComboBoxTagGroupProps extends Omit<HeadlessComboBoxTagGroupProps, 'class' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
+}
+
+/**
+ * Renders selected items as removable tags/pills in multi-select mode.
+ */
+export function ComboBoxTagGroup(props: ComboBoxTagGroupProps): JSX.Element {
+  const customClass = props.class ?? ''
+
+  return (
+    <HeadlessComboBoxTagGroup
+      {...props}
+      class={`flex flex-wrap gap-1 py-1 ${customClass}`.trim()}
+    />
+  )
+}
+
+// ============================================
+// COMBOBOX TAG COMPONENT
+// ============================================
+
+export interface ComboBoxTagProps extends Omit<HeadlessComboBoxTagProps, 'class' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
+}
+
+/**
+ * A styled tag/pill representing a selected item in a multi-select combobox.
+ */
+export function ComboBoxTag(props: ComboBoxTagProps): JSX.Element {
+  const size = useContext(ComboBoxSizeContext)
+  const customClass = props.class ?? ''
+
+  const sizeTagStyles: Record<ComboBoxSize, string> = {
+    sm: 'text-xs px-1.5 py-0.5 gap-0.5',
+    md: 'text-sm px-2 py-0.5 gap-1',
+    lg: 'text-base px-2.5 py-1 gap-1',
+  }
+
+  return (
+    <HeadlessComboBoxTag
+      {...props}
+      class={`inline-flex items-center rounded-full bg-accent/20 text-accent font-medium ${sizeTagStyles[size]} ${customClass}`.trim()}
+    />
+  )
+}
+
+// ============================================
 // ICONS
 // ============================================
 
@@ -392,6 +449,10 @@ ComboBox.Input = ComboBoxInput
 ComboBox.Button = ComboBoxButton
 ComboBox.ListBox = ComboBoxListBox
 ComboBox.Option = ComboBoxOption
+ComboBox.TagGroup = ComboBoxTagGroup
+ComboBox.Tag = ComboBoxTag
+
+export const Item = ComboBoxOption
 
 // Re-export types and utilities for convenience
 export type { Key, FilterFn, MenuTriggerAction }

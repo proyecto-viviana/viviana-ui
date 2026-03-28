@@ -1150,3 +1150,337 @@
 [data-theme="light"] .vui-code-block {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
+
+/* ===== FORCED COLORS MODE (Windows High Contrast) =====
+ *
+ * When forced-colors mode is active (e.g. Windows High Contrast), the browser
+ * overrides most colors. These rules ensure interactive components remain
+ * visible and usable by explicitly setting system colors for borders, focus
+ * indicators, disabled states, and selection highlights.
+ *
+ * System colors used:
+ *   Highlight     — focus rings, selection backgrounds, active indicators
+ *   HighlightText — text on Highlight backgrounds
+ *   ButtonText    — button borders and foreground text
+ *   ButtonFace    — button backgrounds
+ *   GrayText      — disabled elements
+ *   Canvas        — page/component backgrounds
+ *   CanvasText    — regular text on Canvas backgrounds
+ */
+
+@media (forced-colors: active) {
+
+  /* ---------- BUTTON ---------- */
+
+  .vui-button {
+    border: 2px solid ButtonText;
+    color: ButtonText;
+    background: ButtonFace;
+  }
+
+  .vui-button:hover:not(:disabled) {
+    border-color: Highlight;
+    color: Highlight;
+  }
+
+  .vui-button:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  .vui-button:disabled {
+    border-color: GrayText;
+    color: GrayText;
+    opacity: 1;
+  }
+
+  /* Remove shimmer pseudo-element — it is invisible in forced colors */
+  .vui-button::before {
+    display: none;
+  }
+
+  /* Fill variants — ensure visible background on primary actions */
+  .vui-button--fill.vui-button--primary,
+  .vui-button--fill.vui-button--accent,
+  .vui-button--fill.vui-button--positive,
+  .vui-button--fill.vui-button--negative {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+
+  .vui-button--fill.vui-button--primary:hover:not(:disabled),
+  .vui-button--fill.vui-button--accent:hover:not(:disabled),
+  .vui-button--fill.vui-button--positive:hover:not(:disabled),
+  .vui-button--fill.vui-button--negative:hover:not(:disabled) {
+    background: HighlightText;
+    color: Highlight;
+    border-color: Highlight;
+  }
+
+  /* Outline and ghost variants */
+  .vui-button--outline.vui-button--primary,
+  .vui-button--outline.vui-button--secondary,
+  .vui-button--outline.vui-button--accent,
+  .vui-button--outline.vui-button--positive,
+  .vui-button--outline.vui-button--negative,
+  .vui-button--fill.vui-button--ghost,
+  .vui-button--outline.vui-button--ghost {
+    background: Canvas;
+    color: ButtonText;
+    border-color: ButtonText;
+  }
+
+  .vui-button--fill.vui-button--accent:hover:not(:disabled) {
+    box-shadow: none;
+  }
+
+  /* ---------- CHECKBOX ---------- */
+
+  /* The checkbox box (the visual indicator span inside the label) */
+  .solidaria-Checkbox span:first-child {
+    border: 2px solid ButtonText !important;
+    background: Canvas !important;
+  }
+
+  .solidaria-Checkbox[data-selected] span:first-child {
+    background: Highlight !important;
+    border-color: Highlight !important;
+    color: HighlightText;
+  }
+
+  .solidaria-Checkbox[data-disabled] span:first-child {
+    border-color: GrayText !important;
+    background: Canvas !important;
+  }
+
+  .solidaria-Checkbox[data-disabled] {
+    color: GrayText;
+    opacity: 1;
+  }
+
+  /* Check/indeterminate icon */
+  .solidaria-Checkbox[data-selected] span:first-child svg {
+    color: HighlightText;
+  }
+
+  /* Focus ring */
+  .solidaria-Checkbox[data-focus-visible] span:first-child {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* ---------- SWITCH (ToggleSwitch) ---------- */
+
+  /* Track */
+  .solidaria-ToggleSwitch span:first-child {
+    border: 2px solid ButtonText !important;
+    background: Canvas !important;
+  }
+
+  .solidaria-ToggleSwitch[data-selected] span:first-child {
+    background: Highlight !important;
+    border-color: Highlight !important;
+  }
+
+  /* Thumb */
+  .solidaria-ToggleSwitch span:first-child > span {
+    background: ButtonText !important;
+  }
+
+  .solidaria-ToggleSwitch[data-selected] span:first-child > span {
+    background: HighlightText !important;
+  }
+
+  .solidaria-ToggleSwitch[data-disabled] span:first-child {
+    border-color: GrayText !important;
+    background: Canvas !important;
+  }
+
+  .solidaria-ToggleSwitch[data-disabled] span:first-child > span {
+    background: GrayText !important;
+  }
+
+  .solidaria-ToggleSwitch[data-disabled] {
+    color: GrayText;
+    opacity: 1;
+  }
+
+  /* Focus ring */
+  .solidaria-ToggleSwitch[data-focus-visible] span:first-child {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* ---------- TEXT FIELD ---------- */
+
+  .solidaria-TextField input {
+    border: 2px solid ButtonText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+  }
+
+  .solidaria-TextField input:focus {
+    border-color: Highlight !important;
+    outline: 1px solid Highlight;
+    box-shadow: none;
+  }
+
+  .solidaria-TextField input:disabled {
+    border-color: GrayText !important;
+    color: GrayText !important;
+  }
+
+  .solidaria-TextField input::placeholder {
+    color: GrayText;
+  }
+
+  /* Also target textarea for TextArea component */
+  .solidaria-TextField textarea {
+    border: 2px solid ButtonText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+  }
+
+  .solidaria-TextField textarea:focus {
+    border-color: Highlight !important;
+    outline: 1px solid Highlight;
+    box-shadow: none;
+  }
+
+  .solidaria-TextField textarea:disabled {
+    border-color: GrayText !important;
+    color: GrayText !important;
+  }
+
+  /* ---------- MENU ---------- */
+
+  .solidaria-Menu {
+    border: 2px solid CanvasText;
+    background: Canvas;
+  }
+
+  /* Menu items */
+  .solidaria-Menu [role="menuitem"] {
+    color: CanvasText;
+    background: Canvas;
+  }
+
+  .solidaria-Menu [role="menuitem"][data-focused],
+  .solidaria-Menu [role="menuitem"][data-hovered] {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .solidaria-Menu [role="menuitem"][data-disabled] {
+    color: GrayText;
+  }
+
+  /* Menu separator */
+  .solidaria-Menu [role="separator"] {
+    border-color: CanvasText;
+  }
+
+  /* Menu button focus */
+  .solidaria-MenuButton:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* ---------- LISTBOX ---------- */
+
+  .solidaria-ListBox {
+    border: 2px solid CanvasText;
+    background: Canvas;
+  }
+
+  /* ListBox options */
+  .solidaria-ListBox [role="option"] {
+    color: CanvasText;
+    background: Canvas;
+  }
+
+  .solidaria-ListBox [role="option"][data-focused],
+  .solidaria-ListBox [role="option"][data-hovered] {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .solidaria-ListBox [role="option"][data-selected] {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .solidaria-ListBox [role="option"][data-selected][data-focused] {
+    outline: 2px solid HighlightText;
+    outline-offset: -2px;
+  }
+
+  .solidaria-ListBox [role="option"][data-disabled] {
+    color: GrayText;
+  }
+
+  /* ListBox focus */
+  .solidaria-ListBox:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* ---------- TABS ---------- */
+
+  .solidaria-Tabs {
+    color: CanvasText;
+  }
+
+  /* Tab list border */
+  .solidaria-TabList {
+    border-color: CanvasText;
+  }
+
+  /* Individual tabs */
+  .solidaria-Tab {
+    color: CanvasText;
+    border-color: transparent;
+  }
+
+  .solidaria-Tab[data-selected] {
+    border-color: Highlight;
+    color: Highlight;
+  }
+
+  /* For the underline variant, ensure the bottom border is visible */
+  .solidaria-Tab[data-selected] {
+    border-bottom: 3px solid Highlight !important;
+  }
+
+  .solidaria-Tab[data-focused] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+
+  .solidaria-Tab[data-disabled] {
+    color: GrayText;
+    border-color: transparent;
+  }
+
+  .solidaria-Tab:hover:not([data-disabled]) {
+    color: Highlight;
+  }
+
+  /* Tab panel focus */
+  .solidaria-TabPanel:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* ---------- SHARED: Gradient text fallback ---------- */
+  /* Gradient text is invisible in forced colors — revert to plain text */
+  .gradient-text,
+  .vui-gradient-text {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: CanvasText !important;
+    background-clip: unset !important;
+  }
+}

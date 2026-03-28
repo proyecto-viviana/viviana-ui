@@ -135,12 +135,17 @@ interface InternalState<T, C> {
  * states, pagination, and sorting.
  */
 export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>): AsyncListData<T> {
+  const defaultGetKey = (item: T): Key => {
+    const candidate = item as { id?: Key; key?: Key };
+    return candidate.id ?? candidate.key ?? String(item);
+  };
+
   const {
     load,
     sort: sortFn,
     initialSelectedKeys,
     initialSortDescriptor,
-    getKey = (item: any) => item.id || item.key,
+    getKey = defaultGetKey,
     initialFilterText = '',
   } = options;
 

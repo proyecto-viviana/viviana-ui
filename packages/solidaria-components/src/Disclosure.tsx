@@ -26,6 +26,8 @@ import {
 import {
   createDisclosure,
   createDisclosureGroup,
+  createFocusRing,
+  mergeProps,
 } from '@proyecto-viviana/solidaria';
 import {
   type RenderChildren,
@@ -43,8 +45,12 @@ import {
 export interface DisclosureRenderProps {
   /** Whether the disclosure is expanded. */
   isExpanded: boolean;
+  /** Whether the disclosure has keyboard focus within. */
+  isFocusVisibleWithin: boolean;
   /** Whether the disclosure is disabled. */
   isDisabled: boolean;
+  /** The disclosure state. */
+  state: DisclosureState;
 }
 
 export interface DisclosureGroupRenderProps {
@@ -90,6 +96,8 @@ export interface DisclosurePanelProps {
   class?: ClassNameOrFunction<DisclosureRenderProps>;
   /** The inline style for the element. */
   style?: StyleOrFunction<DisclosureRenderProps>;
+  /** The accessibility role for the disclosure panel. */
+  role?: 'group' | 'region';
 }
 
 // ============================================
@@ -286,11 +294,17 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
     state,
     panelRef  // Pass the accessor directly
   );
+  const {
+    isFocusVisible: isFocusVisibleWithin,
+    focusProps: focusWithinProps,
+  } = createFocusRing({ within: true });
 
   // Render props values
   const renderValues = createMemo<DisclosureRenderProps>(() => ({
     isExpanded: state.isExpanded(),
+    isFocusVisibleWithin: isFocusVisibleWithin(),
     isDisabled: isDisabled(),
+    state,
   }));
 
   // Resolve render props - don't pass children, we'll render props.children directly
@@ -323,11 +337,15 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
       <DisclosureContext.Provider value={contextValue}>
         <DisclosurePanelRefContext.Provider value={setPanelRef}>
           <div
-            {...domProps()}
+            {...mergeProps(
+              domProps() as Record<string, unknown>,
+              focusWithinProps as Record<string, unknown>
+            )}
             class={renderProps.class()}
             style={renderProps.style()}
             data-expanded={dataAttr(state.isExpanded())}
             data-disabled={dataAttr(isDisabled())}
+            data-focus-visible-within={dataAttr(isFocusVisibleWithin())}
           >
             {props.children}
           </div>
@@ -391,18 +409,27 @@ export function DisclosureTrigger(props: DisclosureTriggerProps): JSX.Element {
 export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
   // Get context - now safe because parent uses lazy children evaluation
   const context = useContext(DisclosureContext);
+  if (!context) {
+    throw new Error('DisclosurePanel must be used within a Disclosure');
+  }
   const panelRefSetter = useContext(DisclosurePanelRefContext);
 
-  const [local, rest] = splitProps(props, ['class', 'style']);
+  const [local, rest] = splitProps(props, ['class', 'style', 'role']);
+  const {
+    isFocusVisible: isFocusVisibleWithin,
+    focusProps: focusWithinProps,
+  } = createFocusRing({ within: true });
 
   // Reactive accessors
-  const isExpanded = () => context?.state.isExpanded() ?? false;
-  const isDisabled = () => context?.isDisabled() ?? false;
+  const isExpanded = () => context.state.isExpanded();
+  const isDisabled = () => context.isDisabled();
 
   // Render props values
   const renderValues = createMemo<DisclosureRenderProps>(() => ({
     isExpanded: isExpanded(),
+    isFocusVisibleWithin: isFocusVisibleWithin(),
     isDisabled: isDisabled(),
+    state: context.state,
   }));
 
   // Resolve render props
@@ -422,19 +449,23 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
   // Get panelProps from the getter each time - this ensures reactivity
   // IMPORTANT: Call the getter fresh each render to get updated hidden attribute, etc.
   const getPanelProps = () => {
-    if (!context) return { id: undefined, role: 'region', 'aria-labelledby': undefined, hidden: true };
     const { ref: _ref, ...rest } = context.disclosureAria.panelProps as Record<string, unknown>;
     return rest;
   };
 
   return (
     <div
-      {...domProps()}
+      {...mergeProps(
+        domProps() as Record<string, unknown>,
+        focusWithinProps as Record<string, unknown>
+      )}
       {...getPanelProps()}
       ref={(el) => panelRefSetter?.(el)}
+      role={local.role ?? 'group'}
       class={renderProps.class()}
       style={renderProps.style()}
       data-expanded={dataAttr(isExpanded())}
+      data-focus-visible-within={dataAttr(isFocusVisibleWithin())}
     >
       {renderProps.renderChildren()}
     </div>

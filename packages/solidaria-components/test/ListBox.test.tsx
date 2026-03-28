@@ -15,6 +15,7 @@ import { ListBox, ListBoxOption, ListBoxSection, ListBoxLoadMoreItem } from '../
 import { SelectionIndicator } from '../src/SelectionIndicator';
 import { useDragAndDrop } from '../src/useDragAndDrop';
 import type { Key } from '@proyecto-viviana/solid-stately';
+import { I18nProvider } from '@proyecto-viviana/solidaria';
 import { setupUser, firePointerDown, firePointerUp, firePointerClick } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser and pointer helpers are consolidated in solidaria-test-utils.
@@ -274,7 +275,7 @@ describe('ListBox', () => {
           }}
         />
       ));
-      expect(screen.getByText('No items available')).toBeInTheDocument();
+      expect(screen.getByRole('option')).toHaveTextContent('No items available');
     });
 
     it('should set data-empty when list is empty', () => {
@@ -1015,6 +1016,84 @@ describe('ListBox', () => {
 
       const listbox = screen.getByRole('listbox');
       expect(listbox).not.toHaveAttribute('aria-multiselectable');
+    });
+  });
+
+  // ============================================
+  // RTL (Right-to-Left) KEYBOARD NAVIGATION
+  // ============================================
+
+  describe('RTL keyboard navigation', () => {
+    it('ArrowDown/ArrowUp should navigate normally in RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestListBox listBoxProps={{ selectionMode: 'single' }} />
+        </I18nProvider>
+      ));
+
+      const listbox = screen.getByRole('listbox');
+      listbox.focus();
+
+      // ArrowDown should move to first option in RTL (same as LTR for vertical)
+      await user.keyboard('{ArrowDown}');
+
+      const options = screen.getAllByRole('option');
+      expect(options[0]).toHaveAttribute('data-focused');
+
+      // ArrowDown again should move to second option
+      await user.keyboard('{ArrowDown}');
+      expect(options[1]).toHaveAttribute('data-focused');
+
+      // ArrowUp should move back
+      await user.keyboard('{ArrowUp}');
+      expect(options[0]).toHaveAttribute('data-focused');
+    });
+
+    it('Home/End should work correctly in RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestListBox listBoxProps={{ selectionMode: 'single' }} />
+        </I18nProvider>
+      ));
+
+      const listbox = screen.getByRole('listbox');
+      listbox.focus();
+
+      await user.keyboard('{End}');
+
+      const options = screen.getAllByRole('option');
+      expect(options[options.length - 1]).toHaveAttribute('data-focused');
+
+      await user.keyboard('{Home}');
+      expect(options[0]).toHaveAttribute('data-focused');
+    });
+
+    it('should render ListBox correctly within RTL context', () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestListBox listBoxProps={{ selectionMode: 'single' }} />
+        </I18nProvider>
+      ));
+
+      const listbox = screen.getByRole('listbox');
+      expect(listbox).toBeInTheDocument();
+
+      const options = screen.getAllByRole('option');
+      expect(options).toHaveLength(3);
+    });
+
+    it('selection should work in RTL context', async () => {
+      const onSelectionChange = vi.fn();
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestListBox listBoxProps={{ selectionMode: 'single', onSelectionChange }} />
+        </I18nProvider>
+      ));
+
+      const options = screen.getAllByRole('option');
+      await user.click(options[1]);
+
+      expect(onSelectionChange).toHaveBeenCalled();
     });
   });
 });

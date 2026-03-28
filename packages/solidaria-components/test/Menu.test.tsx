@@ -15,6 +15,7 @@ import { render, screen, cleanup, fireEvent, within } from '@solidjs/testing-lib
 import { Menu, MenuItem, MenuSection, MenuTrigger, MenuButton } from '../src/Menu';
 import { useDragAndDrop } from '../src/useDragAndDrop';
 import type { Key } from '@proyecto-viviana/solid-stately';
+import { I18nProvider } from '@proyecto-viviana/solidaria';
 import {
   setupUser,
   assertAriaIdIntegrity,
@@ -149,6 +150,21 @@ describe('Menu', () => {
       const menu = screen.getByRole('menu', { name: 'Actions' });
       const label = screen.getByText('Actions');
       expect(menu.getAttribute('aria-labelledby')).toContain(label.id);
+    });
+
+    it('renders a semantic empty state when no items are available', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={[]}
+          getKey={(item) => item.id}
+          renderEmptyState={() => <div>No actions available</div>}
+        >
+          {(item) => <MenuItem id={item.id}>{item.name}</MenuItem>}
+        </Menu>
+      ));
+
+      expect(screen.getByRole('menuitem')).toHaveTextContent('No actions available');
     });
 
     it('does not emit dangling aria-describedby on simple menu items', () => {
@@ -778,6 +794,204 @@ describe('MenuTrigger', () => {
       render(() => <TestMenuTrigger triggerProps={{ defaultOpen: true }} />);
 
       assertAriaIdIntegrity(document.body);
+    });
+  });
+
+  // ============================================
+  // LINK MENU ITEMS
+  // ============================================
+
+  describe('link menu items', () => {
+    it('MenuItem with href renders an anchor element', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+        >
+          {(item) => (
+            <MenuItem id={item.id} href={`https://example.com/${item.id}`}>
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      const items = screen.getAllByRole('menuitem');
+      expect(items).toHaveLength(3);
+
+      // Each menuitem should be an <a> element
+      for (const item of items) {
+        expect(item.tagName).toBe('A');
+      }
+
+      // Check href values
+      expect(items[0]).toHaveAttribute('href', 'https://example.com/cat');
+      expect(items[1]).toHaveAttribute('href', 'https://example.com/dog');
+      expect(items[2]).toHaveAttribute('href', 'https://example.com/kangaroo');
+
+      // The <a> should be wrapped in a <li> with role="presentation"
+      const listItems = items[0].closest('li');
+      expect(listItems).toBeTruthy();
+      expect(listItems!.getAttribute('role')).toBe('presentation');
+    });
+
+    it('MenuItem with href supports target and rel', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={[testItems[0]]}
+          getKey={(item) => item.id}
+        >
+          {(item) => (
+            <MenuItem
+              id={item.id}
+              href="https://example.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      const item = screen.getByRole('menuitem');
+      expect(item.tagName).toBe('A');
+      expect(item).toHaveAttribute('target', '_blank');
+      expect(item).toHaveAttribute('rel', 'noopener noreferrer');
+    });
+
+    it('MenuItem with href closes menu on click', async () => {
+      const onOpenChange = vi.fn();
+
+      render(() => (
+        <MenuTrigger defaultOpen onOpenChange={onOpenChange}>
+          <MenuButton>Open</MenuButton>
+          <Menu<TestItem>
+            aria-label="Test"
+            items={[testItems[0]]}
+            getKey={(item) => item.id}
+          >
+            {(item) => (
+              <MenuItem id={item.id} href="https://example.com">
+                {item.name}
+              </MenuItem>
+            )}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const item = screen.getByRole('menuitem');
+      await user.click(item);
+
+      // Menu should close after clicking a link item
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+    });
+
+    it('MenuItem with href supports keyboard activation', async () => {
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Open</MenuButton>
+          <Menu<TestItem>
+            aria-label="Test"
+            items={[testItems[0]]}
+            getKey={(item) => item.id}
+          >
+            {(item) => (
+              <MenuItem id={item.id} href="https://example.com">
+                {item.name}
+              </MenuItem>
+            )}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const item = screen.getByRole('menuitem');
+      expect(item.tagName).toBe('A');
+
+      // Focus the item and press Enter
+      item.focus();
+      await user.keyboard('{Enter}');
+
+      // The item should still be an anchor with the correct href
+      expect(item).toHaveAttribute('href', 'https://example.com');
+    });
+
+    it('MenuItem without href renders without anchor', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+        >
+          {(item) => <MenuItem id={item.id}>{item.name}</MenuItem>}
+        </Menu>
+      ));
+
+      const items = screen.getAllByRole('menuitem');
+      expect(items).toHaveLength(3);
+
+      // Each menuitem should be an <li> element (not <a>)
+      for (const item of items) {
+        expect(item.tagName).toBe('LI');
+        expect(item).not.toHaveAttribute('href');
+      }
+    });
+  });
+
+  // ============================================
+  // RTL (Right-to-Left) KEYBOARD NAVIGATION
+  // ============================================
+
+  describe('RTL keyboard navigation', () => {
+    it('ArrowDown/ArrowUp should navigate normally in RTL (vertical menu)', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestMenu />
+        </I18nProvider>
+      ));
+
+      const menu = screen.getByRole('menu');
+      menu.focus();
+      await user.keyboard('{ArrowDown}');
+
+      const items = screen.getAllByRole('menuitem');
+      expect(items[0]).toHaveAttribute('data-focused');
+
+      await user.keyboard('{ArrowDown}');
+      expect(items[1]).toHaveAttribute('data-focused');
+    });
+
+    it('should render menu correctly within RTL context', () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestMenu />
+        </I18nProvider>
+      ));
+
+      const menu = screen.getByRole('menu');
+      expect(menu).toBeInTheDocument();
+
+      const items = screen.getAllByRole('menuitem');
+      expect(items).toHaveLength(3);
+    });
+
+    it('Home/End should work correctly in RTL', async () => {
+      render(() => (
+        <I18nProvider locale="ar-AE">
+          <TestMenu />
+        </I18nProvider>
+      ));
+
+      await user.tab();
+      await user.keyboard('{End}');
+
+      const items = screen.getAllByRole('menuitem');
+      expect(items[items.length - 1]).toHaveAttribute('data-focused');
+
+      await user.keyboard('{Home}');
+      expect(items[0]).toHaveAttribute('data-focused');
     });
   });
 });

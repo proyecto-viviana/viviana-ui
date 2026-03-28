@@ -19,13 +19,13 @@ const hookPages = import.meta.glob("./hooks/*.tsx");
 
 const componentOrder = [
   "button", "checkbox", "textfield", "textarea", "numberfield", "searchfield", "slider", "switch", "combobox",
-  "select", "menu", "listbox",
-  "tabs", "breadcrumbs", "link",
+  "select", "picker", "menu", "listbox", "popover", "tooltip", "contextualhelp",
+  "tabs", "breadcrumbs", "link", "toolbar", "actiongroup", "actionbar",
   "dialog", "alertdialog", "toast",
-  "table", "gridlist", "tree", "progressbar", "meter", "badge",
+  "table", "gridlist", "tree", "progressbar", "meter", "badge", "dropzone", "filetrigger",
   "calendar", "rangecalendar", "datepicker", "daterangepicker", "datefield", "timefield",
   "color",
-  "disclosure", "taggroup", "separator", "provider",
+  "disclosure", "accordion", "taggroup", "separator", "provider",
   "virtualizer",
 ];
 const hookOrder = ["create-button", "create-press"];
@@ -36,6 +36,8 @@ const labelOverrides: Record<string, string> = {
   daterangepicker: "DateRangePicker", datefield: "DateField", timefield: "TimeField",
   rangecalendar: "RangeCalendar", gridlist: "GridList", progressbar: "ProgressBar",
   taggroup: "TagGroup", alertdialog: "AlertDialog", virtualizer: "Virtualizer",
+  actionbar: "ActionBar", actiongroup: "ActionGroup", contextualhelp: "ContextualHelp",
+  filetrigger: "FileTrigger", dropzone: "DropZone",
 };
 
 function filePathToSlug(p: string) { return p.split("/").at(-1)?.replace(".tsx", "") ?? ""; }

@@ -20,9 +20,9 @@ export interface AlertProps {
 
 const variantStyles: Record<AlertVariant, string> = {
   info: 'bg-primary-700 text-primary-200 border border-primary-500',
-  success: 'bg-success-600 text-white border border-success-400',
+  success: 'bg-success-600 text-on-color border border-success-400',
   warning: 'bg-warning-600 text-warning-100 border border-warning-400',
-  error: 'bg-danger-600 text-white border border-danger-400',
+  error: 'bg-danger-600 text-on-color border border-danger-400',
 }
 
 export function Alert(props: AlertProps) {

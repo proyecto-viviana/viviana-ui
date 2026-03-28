@@ -8,6 +8,7 @@ export {
   SelectValue as PickerValue,
   SelectListBox as PickerListBox,
   SelectOption as PickerItem,
+  SelectOption as Item,
 } from '../select';
 export type {
   SelectProps as PickerProps,
@@ -17,4 +18,3 @@ export type {
   SelectOptionProps as PickerItemProps,
   SelectSize as PickerSize,
 } from '../select';
-

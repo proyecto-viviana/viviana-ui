@@ -9,7 +9,7 @@ Proyecto Viviana.
 - The Proyecto Viviana packages are installed into this app as local `file:`
   dependencies so the app resolves them through package metadata, like
   `apps/web`, instead of bespoke Vite aliases.
-- The app is intentionally separate from the root Bun workspace so it can
+- The app is intentionally separate from the root pnpm workspace so it can
   evolve without affecting `apps/web`.
 - Astro stays app-local. Cloudflare runtime tooling stays at the monorepo root
   with the rest of the repo.
@@ -22,19 +22,19 @@ Proyecto Viviana.
 From the monorepo root:
 
 ```bash
-bun run comparison:install
-bun run comparison:dev
+pnpm run comparison:install
+pnpm run comparison:dev
 ```
 
 Root-level commands also exist for:
 
 ```bash
-bun run comparison:build
-bun run comparison:preview
-bun run comparison:typecheck
-bun run comparison:dev:worker
-bun run comparison:deploy:dry-run
-bun run comparison:deploy
+pnpm run comparison:build
+pnpm run comparison:preview
+pnpm run comparison:typecheck
+pnpm run comparison:dev:worker
+pnpm run comparison:deploy:dry-run
+pnpm run comparison:deploy
 ```
 
 The root wrappers invoke Astro or Wrangler directly; they do not rebuild the
@@ -42,19 +42,19 @@ Proyecto Viviana packages first.
 
 ```bash
 cd apps/comparison
-bun install
-bun run dev
+pnpm install
+pnpm run dev
 ```
 
 Additional tasks:
 
 ```bash
-bun run typecheck
-bun run build
-bun run preview
-bun run dev:worker
-bun run deploy:dry-run
-bun run deploy
+pnpm run typecheck
+pnpm run build
+pnpm run preview
+pnpm run dev:worker
+pnpm run deploy:dry-run
+pnpm run deploy
 ```
 
 ## Current Coverage
@@ -113,27 +113,27 @@ surface is static and the Worker is only acting as an asset host.
 Typical flow:
 
 ```bash
-bun run comparison:install
-bun run comparison:deploy
+pnpm run comparison:install
+pnpm run comparison:deploy
 ```
 
 Or from inside `apps/comparison`:
 
 ```bash
-bun install
-bun run deploy
+pnpm install
+pnpm run deploy
 ```
 
 For local Worker-style runtime validation, use:
 
 ```bash
-bun run comparison:dev:worker
+pnpm run comparison:dev:worker
 ```
 
 Optional:
 
 ```bash
-bun run comparison:types
+pnpm run comparison:types
 ```
 
 `wrangler types` is useful for generated binding types, but it is not required
@@ -144,7 +144,7 @@ for deployment.
 The root runner is:
 
 ```bash
-bun run comparison:dev
+pnpm run comparison:dev
 ```
 
 Keeping Astro local and Cloudflare deployment separate avoids root workspace
