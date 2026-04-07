@@ -74,7 +74,7 @@ export function Header() {
   const isActive = (path: string) => {
     const current = location().pathname;
     if (path === "/") return current === "/";
-    return current.startsWith(path);
+    return current === path || current.startsWith(`${path}/`);
   };
 
   const colors = () => getColors();
@@ -108,7 +108,7 @@ export function Header() {
       >
         {/* Left: Logo + Title */}
         <Link
-          to="/"
+          to="/silapse"
           style={{ display: "flex", "align-items": "center", gap: "12px", "text-decoration": "none" }}
         >
           <Logo firstWord="PROYECTO" secondWord="VIVIANA" size="lg" />
@@ -116,13 +116,13 @@ export function Header() {
 
         {/* Right: Nav + GitHub + Theme Toggle */}
         <nav class="flex items-center gap-3">
-          <SilapseNavLink href="/docs" color="blue" isActive={isActive("/docs")} colors={colors()}>
+          <SilapseNavLink href="/silapse/docs" color="blue" isActive={isActive("/silapse/docs")} colors={colors()}>
             DOCS
           </SilapseNavLink>
-          <SilapseNavLink href="/playground" color="pink" isActive={isActive("/playground")} colors={colors()}>
+          <SilapseNavLink href="/silapse/playground" color="pink" isActive={isActive("/silapse/playground")} colors={colors()}>
             PLAYGROUND
           </SilapseNavLink>
-          <SilapseNavLink href="/ecosystem" color="blue" isActive={isActive("/ecosystem")} colors={colors()}>
+          <SilapseNavLink href="/silapse/ecosystem" color="blue" isActive={isActive("/silapse/ecosystem")} colors={colors()}>
             ECOSYSTEM
           </SilapseNavLink>
 

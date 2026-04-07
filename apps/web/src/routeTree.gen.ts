@@ -9,701 +9,727 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PlaygroundRouteImport } from './routes/playground'
-import { Route as EcosystemRouteImport } from './routes/ecosystem'
-import { Route as DocsRouteRouteImport } from './routes/docs/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DocsIndexRouteImport } from './routes/docs/index'
-import { Route as DocsInstallationRouteImport } from './routes/docs/installation'
-import { Route as DocsHooksCreatePressRouteImport } from './routes/docs/hooks/create-press'
-import { Route as DocsHooksCreateButtonRouteImport } from './routes/docs/hooks/create-button'
-import { Route as DocsComponentsVirtualizerRouteImport } from './routes/docs/components/virtualizer'
-import { Route as DocsComponentsTreeRouteImport } from './routes/docs/components/tree'
-import { Route as DocsComponentsTooltipRouteImport } from './routes/docs/components/tooltip'
-import { Route as DocsComponentsToolbarRouteImport } from './routes/docs/components/toolbar'
-import { Route as DocsComponentsToastRouteImport } from './routes/docs/components/toast'
-import { Route as DocsComponentsTimefieldRouteImport } from './routes/docs/components/timefield'
-import { Route as DocsComponentsTextfieldRouteImport } from './routes/docs/components/textfield'
-import { Route as DocsComponentsTextareaRouteImport } from './routes/docs/components/textarea'
-import { Route as DocsComponentsTaggroupRouteImport } from './routes/docs/components/taggroup'
-import { Route as DocsComponentsTabsRouteImport } from './routes/docs/components/tabs'
-import { Route as DocsComponentsTableRouteImport } from './routes/docs/components/table'
-import { Route as DocsComponentsSwitchRouteImport } from './routes/docs/components/switch'
-import { Route as DocsComponentsSliderRouteImport } from './routes/docs/components/slider'
-import { Route as DocsComponentsSeparatorRouteImport } from './routes/docs/components/separator'
-import { Route as DocsComponentsSelectRouteImport } from './routes/docs/components/select'
-import { Route as DocsComponentsSearchfieldRouteImport } from './routes/docs/components/searchfield'
-import { Route as DocsComponentsRangecalendarRouteImport } from './routes/docs/components/rangecalendar'
-import { Route as DocsComponentsProviderRouteImport } from './routes/docs/components/provider'
-import { Route as DocsComponentsProgressbarRouteImport } from './routes/docs/components/progressbar'
-import { Route as DocsComponentsPopoverRouteImport } from './routes/docs/components/popover'
-import { Route as DocsComponentsPickerRouteImport } from './routes/docs/components/picker'
-import { Route as DocsComponentsNumberfieldRouteImport } from './routes/docs/components/numberfield'
-import { Route as DocsComponentsMeterRouteImport } from './routes/docs/components/meter'
-import { Route as DocsComponentsMenuRouteImport } from './routes/docs/components/menu'
-import { Route as DocsComponentsLinkRouteImport } from './routes/docs/components/link'
-import { Route as DocsComponentsGridlistRouteImport } from './routes/docs/components/gridlist'
-import { Route as DocsComponentsFiletriggerRouteImport } from './routes/docs/components/filetrigger'
-import { Route as DocsComponentsDropzoneRouteImport } from './routes/docs/components/dropzone'
-import { Route as DocsComponentsDisclosureRouteImport } from './routes/docs/components/disclosure'
-import { Route as DocsComponentsDialogRouteImport } from './routes/docs/components/dialog'
-import { Route as DocsComponentsDaterangepickerRouteImport } from './routes/docs/components/daterangepicker'
-import { Route as DocsComponentsDatepickerRouteImport } from './routes/docs/components/datepicker'
-import { Route as DocsComponentsDatefieldRouteImport } from './routes/docs/components/datefield'
-import { Route as DocsComponentsContextualhelpRouteImport } from './routes/docs/components/contextualhelp'
-import { Route as DocsComponentsComboboxRouteImport } from './routes/docs/components/combobox'
-import { Route as DocsComponentsColorRouteImport } from './routes/docs/components/color'
-import { Route as DocsComponentsCheckboxRouteImport } from './routes/docs/components/checkbox'
-import { Route as DocsComponentsCalendarRouteImport } from './routes/docs/components/calendar'
-import { Route as DocsComponentsButtonRouteImport } from './routes/docs/components/button'
-import { Route as DocsComponentsBreadcrumbsRouteImport } from './routes/docs/components/breadcrumbs'
-import { Route as DocsComponentsBadgeRouteImport } from './routes/docs/components/badge'
-import { Route as DocsComponentsAlertdialogRouteImport } from './routes/docs/components/alertdialog'
-import { Route as DocsComponentsActiongroupRouteImport } from './routes/docs/components/actiongroup'
-import { Route as DocsComponentsActionbarRouteImport } from './routes/docs/components/actionbar'
-import { Route as DocsComponentsAccordionRouteImport } from './routes/docs/components/accordion'
+import { Route as SilapseIndexRouteImport } from './routes/silapse/index'
+import { Route as SilapsePlaygroundRouteImport } from './routes/silapse/playground'
+import { Route as SilapseEcosystemRouteImport } from './routes/silapse/ecosystem'
+import { Route as SilapseDocsRouteRouteImport } from './routes/silapse/docs/route'
+import { Route as SilapseDocsIndexRouteImport } from './routes/silapse/docs/index'
+import { Route as SilapseDocsInstallationRouteImport } from './routes/silapse/docs/installation'
+import { Route as SilapseDocsHooksCreatePressRouteImport } from './routes/silapse/docs/hooks/create-press'
+import { Route as SilapseDocsHooksCreateButtonRouteImport } from './routes/silapse/docs/hooks/create-button'
+import { Route as SilapseDocsComponentsVirtualizerRouteImport } from './routes/silapse/docs/components/virtualizer'
+import { Route as SilapseDocsComponentsTreeRouteImport } from './routes/silapse/docs/components/tree'
+import { Route as SilapseDocsComponentsTooltipRouteImport } from './routes/silapse/docs/components/tooltip'
+import { Route as SilapseDocsComponentsToolbarRouteImport } from './routes/silapse/docs/components/toolbar'
+import { Route as SilapseDocsComponentsToastRouteImport } from './routes/silapse/docs/components/toast'
+import { Route as SilapseDocsComponentsTimefieldRouteImport } from './routes/silapse/docs/components/timefield'
+import { Route as SilapseDocsComponentsTextfieldRouteImport } from './routes/silapse/docs/components/textfield'
+import { Route as SilapseDocsComponentsTextareaRouteImport } from './routes/silapse/docs/components/textarea'
+import { Route as SilapseDocsComponentsTaggroupRouteImport } from './routes/silapse/docs/components/taggroup'
+import { Route as SilapseDocsComponentsTabsRouteImport } from './routes/silapse/docs/components/tabs'
+import { Route as SilapseDocsComponentsTableRouteImport } from './routes/silapse/docs/components/table'
+import { Route as SilapseDocsComponentsSwitchRouteImport } from './routes/silapse/docs/components/switch'
+import { Route as SilapseDocsComponentsSliderRouteImport } from './routes/silapse/docs/components/slider'
+import { Route as SilapseDocsComponentsSeparatorRouteImport } from './routes/silapse/docs/components/separator'
+import { Route as SilapseDocsComponentsSelectRouteImport } from './routes/silapse/docs/components/select'
+import { Route as SilapseDocsComponentsSearchfieldRouteImport } from './routes/silapse/docs/components/searchfield'
+import { Route as SilapseDocsComponentsRangecalendarRouteImport } from './routes/silapse/docs/components/rangecalendar'
+import { Route as SilapseDocsComponentsProviderRouteImport } from './routes/silapse/docs/components/provider'
+import { Route as SilapseDocsComponentsProgressbarRouteImport } from './routes/silapse/docs/components/progressbar'
+import { Route as SilapseDocsComponentsPopoverRouteImport } from './routes/silapse/docs/components/popover'
+import { Route as SilapseDocsComponentsPickerRouteImport } from './routes/silapse/docs/components/picker'
+import { Route as SilapseDocsComponentsNumberfieldRouteImport } from './routes/silapse/docs/components/numberfield'
+import { Route as SilapseDocsComponentsMeterRouteImport } from './routes/silapse/docs/components/meter'
+import { Route as SilapseDocsComponentsMenuRouteImport } from './routes/silapse/docs/components/menu'
+import { Route as SilapseDocsComponentsLinkRouteImport } from './routes/silapse/docs/components/link'
+import { Route as SilapseDocsComponentsGridlistRouteImport } from './routes/silapse/docs/components/gridlist'
+import { Route as SilapseDocsComponentsFiletriggerRouteImport } from './routes/silapse/docs/components/filetrigger'
+import { Route as SilapseDocsComponentsDropzoneRouteImport } from './routes/silapse/docs/components/dropzone'
+import { Route as SilapseDocsComponentsDisclosureRouteImport } from './routes/silapse/docs/components/disclosure'
+import { Route as SilapseDocsComponentsDialogRouteImport } from './routes/silapse/docs/components/dialog'
+import { Route as SilapseDocsComponentsDaterangepickerRouteImport } from './routes/silapse/docs/components/daterangepicker'
+import { Route as SilapseDocsComponentsDatepickerRouteImport } from './routes/silapse/docs/components/datepicker'
+import { Route as SilapseDocsComponentsDatefieldRouteImport } from './routes/silapse/docs/components/datefield'
+import { Route as SilapseDocsComponentsContextualhelpRouteImport } from './routes/silapse/docs/components/contextualhelp'
+import { Route as SilapseDocsComponentsComboboxRouteImport } from './routes/silapse/docs/components/combobox'
+import { Route as SilapseDocsComponentsColorRouteImport } from './routes/silapse/docs/components/color'
+import { Route as SilapseDocsComponentsCheckboxRouteImport } from './routes/silapse/docs/components/checkbox'
+import { Route as SilapseDocsComponentsCalendarRouteImport } from './routes/silapse/docs/components/calendar'
+import { Route as SilapseDocsComponentsButtonRouteImport } from './routes/silapse/docs/components/button'
+import { Route as SilapseDocsComponentsBreadcrumbsRouteImport } from './routes/silapse/docs/components/breadcrumbs'
+import { Route as SilapseDocsComponentsBadgeRouteImport } from './routes/silapse/docs/components/badge'
+import { Route as SilapseDocsComponentsAlertdialogRouteImport } from './routes/silapse/docs/components/alertdialog'
+import { Route as SilapseDocsComponentsActiongroupRouteImport } from './routes/silapse/docs/components/actiongroup'
+import { Route as SilapseDocsComponentsActionbarRouteImport } from './routes/silapse/docs/components/actionbar'
+import { Route as SilapseDocsComponentsAccordionRouteImport } from './routes/silapse/docs/components/accordion'
 
-const PlaygroundRoute = PlaygroundRouteImport.update({
-  id: '/playground',
-  path: '/playground',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EcosystemRoute = EcosystemRouteImport.update({
-  id: '/ecosystem',
-  path: '/ecosystem',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocsRouteRoute = DocsRouteRouteImport.update({
-  id: '/docs',
-  path: '/docs',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DocsIndexRoute = DocsIndexRouteImport.update({
+const SilapseIndexRoute = SilapseIndexRouteImport.update({
+  id: '/silapse/',
+  path: '/silapse/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SilapsePlaygroundRoute = SilapsePlaygroundRouteImport.update({
+  id: '/silapse/playground',
+  path: '/silapse/playground',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SilapseEcosystemRoute = SilapseEcosystemRouteImport.update({
+  id: '/silapse/ecosystem',
+  path: '/silapse/ecosystem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SilapseDocsRouteRoute = SilapseDocsRouteRouteImport.update({
+  id: '/silapse/docs',
+  path: '/silapse/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SilapseDocsIndexRoute = SilapseDocsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => DocsRouteRoute,
+  getParentRoute: () => SilapseDocsRouteRoute,
 } as any)
-const DocsInstallationRoute = DocsInstallationRouteImport.update({
+const SilapseDocsInstallationRoute = SilapseDocsInstallationRouteImport.update({
   id: '/installation',
   path: '/installation',
-  getParentRoute: () => DocsRouteRoute,
+  getParentRoute: () => SilapseDocsRouteRoute,
 } as any)
-const DocsHooksCreatePressRoute = DocsHooksCreatePressRouteImport.update({
-  id: '/hooks/create-press',
-  path: '/hooks/create-press',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsHooksCreateButtonRoute = DocsHooksCreateButtonRouteImport.update({
-  id: '/hooks/create-button',
-  path: '/hooks/create-button',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsVirtualizerRoute =
-  DocsComponentsVirtualizerRouteImport.update({
+const SilapseDocsHooksCreatePressRoute =
+  SilapseDocsHooksCreatePressRouteImport.update({
+    id: '/hooks/create-press',
+    path: '/hooks/create-press',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsHooksCreateButtonRoute =
+  SilapseDocsHooksCreateButtonRouteImport.update({
+    id: '/hooks/create-button',
+    path: '/hooks/create-button',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsVirtualizerRoute =
+  SilapseDocsComponentsVirtualizerRouteImport.update({
     id: '/components/virtualizer',
     path: '/components/virtualizer',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsTreeRoute = DocsComponentsTreeRouteImport.update({
-  id: '/components/tree',
-  path: '/components/tree',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsTooltipRoute = DocsComponentsTooltipRouteImport.update({
-  id: '/components/tooltip',
-  path: '/components/tooltip',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsToolbarRoute = DocsComponentsToolbarRouteImport.update({
-  id: '/components/toolbar',
-  path: '/components/toolbar',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsToastRoute = DocsComponentsToastRouteImport.update({
-  id: '/components/toast',
-  path: '/components/toast',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsTimefieldRoute = DocsComponentsTimefieldRouteImport.update({
-  id: '/components/timefield',
-  path: '/components/timefield',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsTextfieldRoute = DocsComponentsTextfieldRouteImport.update({
-  id: '/components/textfield',
-  path: '/components/textfield',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsTextareaRoute = DocsComponentsTextareaRouteImport.update({
-  id: '/components/textarea',
-  path: '/components/textarea',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsTaggroupRoute = DocsComponentsTaggroupRouteImport.update({
-  id: '/components/taggroup',
-  path: '/components/taggroup',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsTabsRoute = DocsComponentsTabsRouteImport.update({
-  id: '/components/tabs',
-  path: '/components/tabs',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsTableRoute = DocsComponentsTableRouteImport.update({
-  id: '/components/table',
-  path: '/components/table',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsSwitchRoute = DocsComponentsSwitchRouteImport.update({
-  id: '/components/switch',
-  path: '/components/switch',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsSliderRoute = DocsComponentsSliderRouteImport.update({
-  id: '/components/slider',
-  path: '/components/slider',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsSeparatorRoute = DocsComponentsSeparatorRouteImport.update({
-  id: '/components/separator',
-  path: '/components/separator',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsSelectRoute = DocsComponentsSelectRouteImport.update({
-  id: '/components/select',
-  path: '/components/select',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsSearchfieldRoute =
-  DocsComponentsSearchfieldRouteImport.update({
+const SilapseDocsComponentsTreeRoute =
+  SilapseDocsComponentsTreeRouteImport.update({
+    id: '/components/tree',
+    path: '/components/tree',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsTooltipRoute =
+  SilapseDocsComponentsTooltipRouteImport.update({
+    id: '/components/tooltip',
+    path: '/components/tooltip',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsToolbarRoute =
+  SilapseDocsComponentsToolbarRouteImport.update({
+    id: '/components/toolbar',
+    path: '/components/toolbar',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsToastRoute =
+  SilapseDocsComponentsToastRouteImport.update({
+    id: '/components/toast',
+    path: '/components/toast',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsTimefieldRoute =
+  SilapseDocsComponentsTimefieldRouteImport.update({
+    id: '/components/timefield',
+    path: '/components/timefield',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsTextfieldRoute =
+  SilapseDocsComponentsTextfieldRouteImport.update({
+    id: '/components/textfield',
+    path: '/components/textfield',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsTextareaRoute =
+  SilapseDocsComponentsTextareaRouteImport.update({
+    id: '/components/textarea',
+    path: '/components/textarea',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsTaggroupRoute =
+  SilapseDocsComponentsTaggroupRouteImport.update({
+    id: '/components/taggroup',
+    path: '/components/taggroup',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsTabsRoute =
+  SilapseDocsComponentsTabsRouteImport.update({
+    id: '/components/tabs',
+    path: '/components/tabs',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsTableRoute =
+  SilapseDocsComponentsTableRouteImport.update({
+    id: '/components/table',
+    path: '/components/table',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsSwitchRoute =
+  SilapseDocsComponentsSwitchRouteImport.update({
+    id: '/components/switch',
+    path: '/components/switch',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsSliderRoute =
+  SilapseDocsComponentsSliderRouteImport.update({
+    id: '/components/slider',
+    path: '/components/slider',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsSeparatorRoute =
+  SilapseDocsComponentsSeparatorRouteImport.update({
+    id: '/components/separator',
+    path: '/components/separator',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsSelectRoute =
+  SilapseDocsComponentsSelectRouteImport.update({
+    id: '/components/select',
+    path: '/components/select',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsSearchfieldRoute =
+  SilapseDocsComponentsSearchfieldRouteImport.update({
     id: '/components/searchfield',
     path: '/components/searchfield',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsRangecalendarRoute =
-  DocsComponentsRangecalendarRouteImport.update({
+const SilapseDocsComponentsRangecalendarRoute =
+  SilapseDocsComponentsRangecalendarRouteImport.update({
     id: '/components/rangecalendar',
     path: '/components/rangecalendar',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsProviderRoute = DocsComponentsProviderRouteImport.update({
-  id: '/components/provider',
-  path: '/components/provider',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsProgressbarRoute =
-  DocsComponentsProgressbarRouteImport.update({
+const SilapseDocsComponentsProviderRoute =
+  SilapseDocsComponentsProviderRouteImport.update({
+    id: '/components/provider',
+    path: '/components/provider',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsProgressbarRoute =
+  SilapseDocsComponentsProgressbarRouteImport.update({
     id: '/components/progressbar',
     path: '/components/progressbar',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsPopoverRoute = DocsComponentsPopoverRouteImport.update({
-  id: '/components/popover',
-  path: '/components/popover',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsPickerRoute = DocsComponentsPickerRouteImport.update({
-  id: '/components/picker',
-  path: '/components/picker',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsNumberfieldRoute =
-  DocsComponentsNumberfieldRouteImport.update({
+const SilapseDocsComponentsPopoverRoute =
+  SilapseDocsComponentsPopoverRouteImport.update({
+    id: '/components/popover',
+    path: '/components/popover',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsPickerRoute =
+  SilapseDocsComponentsPickerRouteImport.update({
+    id: '/components/picker',
+    path: '/components/picker',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsNumberfieldRoute =
+  SilapseDocsComponentsNumberfieldRouteImport.update({
     id: '/components/numberfield',
     path: '/components/numberfield',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsMeterRoute = DocsComponentsMeterRouteImport.update({
-  id: '/components/meter',
-  path: '/components/meter',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsMenuRoute = DocsComponentsMenuRouteImport.update({
-  id: '/components/menu',
-  path: '/components/menu',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsLinkRoute = DocsComponentsLinkRouteImport.update({
-  id: '/components/link',
-  path: '/components/link',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsGridlistRoute = DocsComponentsGridlistRouteImport.update({
-  id: '/components/gridlist',
-  path: '/components/gridlist',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsFiletriggerRoute =
-  DocsComponentsFiletriggerRouteImport.update({
+const SilapseDocsComponentsMeterRoute =
+  SilapseDocsComponentsMeterRouteImport.update({
+    id: '/components/meter',
+    path: '/components/meter',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsMenuRoute =
+  SilapseDocsComponentsMenuRouteImport.update({
+    id: '/components/menu',
+    path: '/components/menu',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsLinkRoute =
+  SilapseDocsComponentsLinkRouteImport.update({
+    id: '/components/link',
+    path: '/components/link',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsGridlistRoute =
+  SilapseDocsComponentsGridlistRouteImport.update({
+    id: '/components/gridlist',
+    path: '/components/gridlist',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsFiletriggerRoute =
+  SilapseDocsComponentsFiletriggerRouteImport.update({
     id: '/components/filetrigger',
     path: '/components/filetrigger',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsDropzoneRoute = DocsComponentsDropzoneRouteImport.update({
-  id: '/components/dropzone',
-  path: '/components/dropzone',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsDisclosureRoute =
-  DocsComponentsDisclosureRouteImport.update({
+const SilapseDocsComponentsDropzoneRoute =
+  SilapseDocsComponentsDropzoneRouteImport.update({
+    id: '/components/dropzone',
+    path: '/components/dropzone',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsDisclosureRoute =
+  SilapseDocsComponentsDisclosureRouteImport.update({
     id: '/components/disclosure',
     path: '/components/disclosure',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsDialogRoute = DocsComponentsDialogRouteImport.update({
-  id: '/components/dialog',
-  path: '/components/dialog',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsDaterangepickerRoute =
-  DocsComponentsDaterangepickerRouteImport.update({
+const SilapseDocsComponentsDialogRoute =
+  SilapseDocsComponentsDialogRouteImport.update({
+    id: '/components/dialog',
+    path: '/components/dialog',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsDaterangepickerRoute =
+  SilapseDocsComponentsDaterangepickerRouteImport.update({
     id: '/components/daterangepicker',
     path: '/components/daterangepicker',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsDatepickerRoute =
-  DocsComponentsDatepickerRouteImport.update({
+const SilapseDocsComponentsDatepickerRoute =
+  SilapseDocsComponentsDatepickerRouteImport.update({
     id: '/components/datepicker',
     path: '/components/datepicker',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsDatefieldRoute = DocsComponentsDatefieldRouteImport.update({
-  id: '/components/datefield',
-  path: '/components/datefield',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsContextualhelpRoute =
-  DocsComponentsContextualhelpRouteImport.update({
+const SilapseDocsComponentsDatefieldRoute =
+  SilapseDocsComponentsDatefieldRouteImport.update({
+    id: '/components/datefield',
+    path: '/components/datefield',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsContextualhelpRoute =
+  SilapseDocsComponentsContextualhelpRouteImport.update({
     id: '/components/contextualhelp',
     path: '/components/contextualhelp',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsComboboxRoute = DocsComponentsComboboxRouteImport.update({
-  id: '/components/combobox',
-  path: '/components/combobox',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsColorRoute = DocsComponentsColorRouteImport.update({
-  id: '/components/color',
-  path: '/components/color',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsCheckboxRoute = DocsComponentsCheckboxRouteImport.update({
-  id: '/components/checkbox',
-  path: '/components/checkbox',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsCalendarRoute = DocsComponentsCalendarRouteImport.update({
-  id: '/components/calendar',
-  path: '/components/calendar',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsButtonRoute = DocsComponentsButtonRouteImport.update({
-  id: '/components/button',
-  path: '/components/button',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsBreadcrumbsRoute =
-  DocsComponentsBreadcrumbsRouteImport.update({
+const SilapseDocsComponentsComboboxRoute =
+  SilapseDocsComponentsComboboxRouteImport.update({
+    id: '/components/combobox',
+    path: '/components/combobox',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsColorRoute =
+  SilapseDocsComponentsColorRouteImport.update({
+    id: '/components/color',
+    path: '/components/color',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsCheckboxRoute =
+  SilapseDocsComponentsCheckboxRouteImport.update({
+    id: '/components/checkbox',
+    path: '/components/checkbox',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsCalendarRoute =
+  SilapseDocsComponentsCalendarRouteImport.update({
+    id: '/components/calendar',
+    path: '/components/calendar',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsButtonRoute =
+  SilapseDocsComponentsButtonRouteImport.update({
+    id: '/components/button',
+    path: '/components/button',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsBreadcrumbsRoute =
+  SilapseDocsComponentsBreadcrumbsRouteImport.update({
     id: '/components/breadcrumbs',
     path: '/components/breadcrumbs',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsBadgeRoute = DocsComponentsBadgeRouteImport.update({
-  id: '/components/badge',
-  path: '/components/badge',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsAlertdialogRoute =
-  DocsComponentsAlertdialogRouteImport.update({
+const SilapseDocsComponentsBadgeRoute =
+  SilapseDocsComponentsBadgeRouteImport.update({
+    id: '/components/badge',
+    path: '/components/badge',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsAlertdialogRoute =
+  SilapseDocsComponentsAlertdialogRouteImport.update({
     id: '/components/alertdialog',
     path: '/components/alertdialog',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsActiongroupRoute =
-  DocsComponentsActiongroupRouteImport.update({
+const SilapseDocsComponentsActiongroupRoute =
+  SilapseDocsComponentsActiongroupRouteImport.update({
     id: '/components/actiongroup',
     path: '/components/actiongroup',
-    getParentRoute: () => DocsRouteRoute,
+    getParentRoute: () => SilapseDocsRouteRoute,
   } as any)
-const DocsComponentsActionbarRoute = DocsComponentsActionbarRouteImport.update({
-  id: '/components/actionbar',
-  path: '/components/actionbar',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
-const DocsComponentsAccordionRoute = DocsComponentsAccordionRouteImport.update({
-  id: '/components/accordion',
-  path: '/components/accordion',
-  getParentRoute: () => DocsRouteRoute,
-} as any)
+const SilapseDocsComponentsActionbarRoute =
+  SilapseDocsComponentsActionbarRouteImport.update({
+    id: '/components/actionbar',
+    path: '/components/actionbar',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
+const SilapseDocsComponentsAccordionRoute =
+  SilapseDocsComponentsAccordionRouteImport.update({
+    id: '/components/accordion',
+    path: '/components/accordion',
+    getParentRoute: () => SilapseDocsRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/docs': typeof DocsRouteRouteWithChildren
-  '/ecosystem': typeof EcosystemRoute
-  '/playground': typeof PlaygroundRoute
-  '/docs/installation': typeof DocsInstallationRoute
-  '/docs/': typeof DocsIndexRoute
-  '/docs/components/accordion': typeof DocsComponentsAccordionRoute
-  '/docs/components/actionbar': typeof DocsComponentsActionbarRoute
-  '/docs/components/actiongroup': typeof DocsComponentsActiongroupRoute
-  '/docs/components/alertdialog': typeof DocsComponentsAlertdialogRoute
-  '/docs/components/badge': typeof DocsComponentsBadgeRoute
-  '/docs/components/breadcrumbs': typeof DocsComponentsBreadcrumbsRoute
-  '/docs/components/button': typeof DocsComponentsButtonRoute
-  '/docs/components/calendar': typeof DocsComponentsCalendarRoute
-  '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
-  '/docs/components/color': typeof DocsComponentsColorRoute
-  '/docs/components/combobox': typeof DocsComponentsComboboxRoute
-  '/docs/components/contextualhelp': typeof DocsComponentsContextualhelpRoute
-  '/docs/components/datefield': typeof DocsComponentsDatefieldRoute
-  '/docs/components/datepicker': typeof DocsComponentsDatepickerRoute
-  '/docs/components/daterangepicker': typeof DocsComponentsDaterangepickerRoute
-  '/docs/components/dialog': typeof DocsComponentsDialogRoute
-  '/docs/components/disclosure': typeof DocsComponentsDisclosureRoute
-  '/docs/components/dropzone': typeof DocsComponentsDropzoneRoute
-  '/docs/components/filetrigger': typeof DocsComponentsFiletriggerRoute
-  '/docs/components/gridlist': typeof DocsComponentsGridlistRoute
-  '/docs/components/link': typeof DocsComponentsLinkRoute
-  '/docs/components/menu': typeof DocsComponentsMenuRoute
-  '/docs/components/meter': typeof DocsComponentsMeterRoute
-  '/docs/components/numberfield': typeof DocsComponentsNumberfieldRoute
-  '/docs/components/picker': typeof DocsComponentsPickerRoute
-  '/docs/components/popover': typeof DocsComponentsPopoverRoute
-  '/docs/components/progressbar': typeof DocsComponentsProgressbarRoute
-  '/docs/components/provider': typeof DocsComponentsProviderRoute
-  '/docs/components/rangecalendar': typeof DocsComponentsRangecalendarRoute
-  '/docs/components/searchfield': typeof DocsComponentsSearchfieldRoute
-  '/docs/components/select': typeof DocsComponentsSelectRoute
-  '/docs/components/separator': typeof DocsComponentsSeparatorRoute
-  '/docs/components/slider': typeof DocsComponentsSliderRoute
-  '/docs/components/switch': typeof DocsComponentsSwitchRoute
-  '/docs/components/table': typeof DocsComponentsTableRoute
-  '/docs/components/tabs': typeof DocsComponentsTabsRoute
-  '/docs/components/taggroup': typeof DocsComponentsTaggroupRoute
-  '/docs/components/textarea': typeof DocsComponentsTextareaRoute
-  '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
-  '/docs/components/timefield': typeof DocsComponentsTimefieldRoute
-  '/docs/components/toast': typeof DocsComponentsToastRoute
-  '/docs/components/toolbar': typeof DocsComponentsToolbarRoute
-  '/docs/components/tooltip': typeof DocsComponentsTooltipRoute
-  '/docs/components/tree': typeof DocsComponentsTreeRoute
-  '/docs/components/virtualizer': typeof DocsComponentsVirtualizerRoute
-  '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
-  '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
+  '/silapse/docs': typeof SilapseDocsRouteRouteWithChildren
+  '/silapse/ecosystem': typeof SilapseEcosystemRoute
+  '/silapse/playground': typeof SilapsePlaygroundRoute
+  '/silapse/': typeof SilapseIndexRoute
+  '/silapse/docs/installation': typeof SilapseDocsInstallationRoute
+  '/silapse/docs/': typeof SilapseDocsIndexRoute
+  '/silapse/docs/components/accordion': typeof SilapseDocsComponentsAccordionRoute
+  '/silapse/docs/components/actionbar': typeof SilapseDocsComponentsActionbarRoute
+  '/silapse/docs/components/actiongroup': typeof SilapseDocsComponentsActiongroupRoute
+  '/silapse/docs/components/alertdialog': typeof SilapseDocsComponentsAlertdialogRoute
+  '/silapse/docs/components/badge': typeof SilapseDocsComponentsBadgeRoute
+  '/silapse/docs/components/breadcrumbs': typeof SilapseDocsComponentsBreadcrumbsRoute
+  '/silapse/docs/components/button': typeof SilapseDocsComponentsButtonRoute
+  '/silapse/docs/components/calendar': typeof SilapseDocsComponentsCalendarRoute
+  '/silapse/docs/components/checkbox': typeof SilapseDocsComponentsCheckboxRoute
+  '/silapse/docs/components/color': typeof SilapseDocsComponentsColorRoute
+  '/silapse/docs/components/combobox': typeof SilapseDocsComponentsComboboxRoute
+  '/silapse/docs/components/contextualhelp': typeof SilapseDocsComponentsContextualhelpRoute
+  '/silapse/docs/components/datefield': typeof SilapseDocsComponentsDatefieldRoute
+  '/silapse/docs/components/datepicker': typeof SilapseDocsComponentsDatepickerRoute
+  '/silapse/docs/components/daterangepicker': typeof SilapseDocsComponentsDaterangepickerRoute
+  '/silapse/docs/components/dialog': typeof SilapseDocsComponentsDialogRoute
+  '/silapse/docs/components/disclosure': typeof SilapseDocsComponentsDisclosureRoute
+  '/silapse/docs/components/dropzone': typeof SilapseDocsComponentsDropzoneRoute
+  '/silapse/docs/components/filetrigger': typeof SilapseDocsComponentsFiletriggerRoute
+  '/silapse/docs/components/gridlist': typeof SilapseDocsComponentsGridlistRoute
+  '/silapse/docs/components/link': typeof SilapseDocsComponentsLinkRoute
+  '/silapse/docs/components/menu': typeof SilapseDocsComponentsMenuRoute
+  '/silapse/docs/components/meter': typeof SilapseDocsComponentsMeterRoute
+  '/silapse/docs/components/numberfield': typeof SilapseDocsComponentsNumberfieldRoute
+  '/silapse/docs/components/picker': typeof SilapseDocsComponentsPickerRoute
+  '/silapse/docs/components/popover': typeof SilapseDocsComponentsPopoverRoute
+  '/silapse/docs/components/progressbar': typeof SilapseDocsComponentsProgressbarRoute
+  '/silapse/docs/components/provider': typeof SilapseDocsComponentsProviderRoute
+  '/silapse/docs/components/rangecalendar': typeof SilapseDocsComponentsRangecalendarRoute
+  '/silapse/docs/components/searchfield': typeof SilapseDocsComponentsSearchfieldRoute
+  '/silapse/docs/components/select': typeof SilapseDocsComponentsSelectRoute
+  '/silapse/docs/components/separator': typeof SilapseDocsComponentsSeparatorRoute
+  '/silapse/docs/components/slider': typeof SilapseDocsComponentsSliderRoute
+  '/silapse/docs/components/switch': typeof SilapseDocsComponentsSwitchRoute
+  '/silapse/docs/components/table': typeof SilapseDocsComponentsTableRoute
+  '/silapse/docs/components/tabs': typeof SilapseDocsComponentsTabsRoute
+  '/silapse/docs/components/taggroup': typeof SilapseDocsComponentsTaggroupRoute
+  '/silapse/docs/components/textarea': typeof SilapseDocsComponentsTextareaRoute
+  '/silapse/docs/components/textfield': typeof SilapseDocsComponentsTextfieldRoute
+  '/silapse/docs/components/timefield': typeof SilapseDocsComponentsTimefieldRoute
+  '/silapse/docs/components/toast': typeof SilapseDocsComponentsToastRoute
+  '/silapse/docs/components/toolbar': typeof SilapseDocsComponentsToolbarRoute
+  '/silapse/docs/components/tooltip': typeof SilapseDocsComponentsTooltipRoute
+  '/silapse/docs/components/tree': typeof SilapseDocsComponentsTreeRoute
+  '/silapse/docs/components/virtualizer': typeof SilapseDocsComponentsVirtualizerRoute
+  '/silapse/docs/hooks/create-button': typeof SilapseDocsHooksCreateButtonRoute
+  '/silapse/docs/hooks/create-press': typeof SilapseDocsHooksCreatePressRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/ecosystem': typeof EcosystemRoute
-  '/playground': typeof PlaygroundRoute
-  '/docs/installation': typeof DocsInstallationRoute
-  '/docs': typeof DocsIndexRoute
-  '/docs/components/accordion': typeof DocsComponentsAccordionRoute
-  '/docs/components/actionbar': typeof DocsComponentsActionbarRoute
-  '/docs/components/actiongroup': typeof DocsComponentsActiongroupRoute
-  '/docs/components/alertdialog': typeof DocsComponentsAlertdialogRoute
-  '/docs/components/badge': typeof DocsComponentsBadgeRoute
-  '/docs/components/breadcrumbs': typeof DocsComponentsBreadcrumbsRoute
-  '/docs/components/button': typeof DocsComponentsButtonRoute
-  '/docs/components/calendar': typeof DocsComponentsCalendarRoute
-  '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
-  '/docs/components/color': typeof DocsComponentsColorRoute
-  '/docs/components/combobox': typeof DocsComponentsComboboxRoute
-  '/docs/components/contextualhelp': typeof DocsComponentsContextualhelpRoute
-  '/docs/components/datefield': typeof DocsComponentsDatefieldRoute
-  '/docs/components/datepicker': typeof DocsComponentsDatepickerRoute
-  '/docs/components/daterangepicker': typeof DocsComponentsDaterangepickerRoute
-  '/docs/components/dialog': typeof DocsComponentsDialogRoute
-  '/docs/components/disclosure': typeof DocsComponentsDisclosureRoute
-  '/docs/components/dropzone': typeof DocsComponentsDropzoneRoute
-  '/docs/components/filetrigger': typeof DocsComponentsFiletriggerRoute
-  '/docs/components/gridlist': typeof DocsComponentsGridlistRoute
-  '/docs/components/link': typeof DocsComponentsLinkRoute
-  '/docs/components/menu': typeof DocsComponentsMenuRoute
-  '/docs/components/meter': typeof DocsComponentsMeterRoute
-  '/docs/components/numberfield': typeof DocsComponentsNumberfieldRoute
-  '/docs/components/picker': typeof DocsComponentsPickerRoute
-  '/docs/components/popover': typeof DocsComponentsPopoverRoute
-  '/docs/components/progressbar': typeof DocsComponentsProgressbarRoute
-  '/docs/components/provider': typeof DocsComponentsProviderRoute
-  '/docs/components/rangecalendar': typeof DocsComponentsRangecalendarRoute
-  '/docs/components/searchfield': typeof DocsComponentsSearchfieldRoute
-  '/docs/components/select': typeof DocsComponentsSelectRoute
-  '/docs/components/separator': typeof DocsComponentsSeparatorRoute
-  '/docs/components/slider': typeof DocsComponentsSliderRoute
-  '/docs/components/switch': typeof DocsComponentsSwitchRoute
-  '/docs/components/table': typeof DocsComponentsTableRoute
-  '/docs/components/tabs': typeof DocsComponentsTabsRoute
-  '/docs/components/taggroup': typeof DocsComponentsTaggroupRoute
-  '/docs/components/textarea': typeof DocsComponentsTextareaRoute
-  '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
-  '/docs/components/timefield': typeof DocsComponentsTimefieldRoute
-  '/docs/components/toast': typeof DocsComponentsToastRoute
-  '/docs/components/toolbar': typeof DocsComponentsToolbarRoute
-  '/docs/components/tooltip': typeof DocsComponentsTooltipRoute
-  '/docs/components/tree': typeof DocsComponentsTreeRoute
-  '/docs/components/virtualizer': typeof DocsComponentsVirtualizerRoute
-  '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
-  '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
+  '/silapse/ecosystem': typeof SilapseEcosystemRoute
+  '/silapse/playground': typeof SilapsePlaygroundRoute
+  '/silapse': typeof SilapseIndexRoute
+  '/silapse/docs/installation': typeof SilapseDocsInstallationRoute
+  '/silapse/docs': typeof SilapseDocsIndexRoute
+  '/silapse/docs/components/accordion': typeof SilapseDocsComponentsAccordionRoute
+  '/silapse/docs/components/actionbar': typeof SilapseDocsComponentsActionbarRoute
+  '/silapse/docs/components/actiongroup': typeof SilapseDocsComponentsActiongroupRoute
+  '/silapse/docs/components/alertdialog': typeof SilapseDocsComponentsAlertdialogRoute
+  '/silapse/docs/components/badge': typeof SilapseDocsComponentsBadgeRoute
+  '/silapse/docs/components/breadcrumbs': typeof SilapseDocsComponentsBreadcrumbsRoute
+  '/silapse/docs/components/button': typeof SilapseDocsComponentsButtonRoute
+  '/silapse/docs/components/calendar': typeof SilapseDocsComponentsCalendarRoute
+  '/silapse/docs/components/checkbox': typeof SilapseDocsComponentsCheckboxRoute
+  '/silapse/docs/components/color': typeof SilapseDocsComponentsColorRoute
+  '/silapse/docs/components/combobox': typeof SilapseDocsComponentsComboboxRoute
+  '/silapse/docs/components/contextualhelp': typeof SilapseDocsComponentsContextualhelpRoute
+  '/silapse/docs/components/datefield': typeof SilapseDocsComponentsDatefieldRoute
+  '/silapse/docs/components/datepicker': typeof SilapseDocsComponentsDatepickerRoute
+  '/silapse/docs/components/daterangepicker': typeof SilapseDocsComponentsDaterangepickerRoute
+  '/silapse/docs/components/dialog': typeof SilapseDocsComponentsDialogRoute
+  '/silapse/docs/components/disclosure': typeof SilapseDocsComponentsDisclosureRoute
+  '/silapse/docs/components/dropzone': typeof SilapseDocsComponentsDropzoneRoute
+  '/silapse/docs/components/filetrigger': typeof SilapseDocsComponentsFiletriggerRoute
+  '/silapse/docs/components/gridlist': typeof SilapseDocsComponentsGridlistRoute
+  '/silapse/docs/components/link': typeof SilapseDocsComponentsLinkRoute
+  '/silapse/docs/components/menu': typeof SilapseDocsComponentsMenuRoute
+  '/silapse/docs/components/meter': typeof SilapseDocsComponentsMeterRoute
+  '/silapse/docs/components/numberfield': typeof SilapseDocsComponentsNumberfieldRoute
+  '/silapse/docs/components/picker': typeof SilapseDocsComponentsPickerRoute
+  '/silapse/docs/components/popover': typeof SilapseDocsComponentsPopoverRoute
+  '/silapse/docs/components/progressbar': typeof SilapseDocsComponentsProgressbarRoute
+  '/silapse/docs/components/provider': typeof SilapseDocsComponentsProviderRoute
+  '/silapse/docs/components/rangecalendar': typeof SilapseDocsComponentsRangecalendarRoute
+  '/silapse/docs/components/searchfield': typeof SilapseDocsComponentsSearchfieldRoute
+  '/silapse/docs/components/select': typeof SilapseDocsComponentsSelectRoute
+  '/silapse/docs/components/separator': typeof SilapseDocsComponentsSeparatorRoute
+  '/silapse/docs/components/slider': typeof SilapseDocsComponentsSliderRoute
+  '/silapse/docs/components/switch': typeof SilapseDocsComponentsSwitchRoute
+  '/silapse/docs/components/table': typeof SilapseDocsComponentsTableRoute
+  '/silapse/docs/components/tabs': typeof SilapseDocsComponentsTabsRoute
+  '/silapse/docs/components/taggroup': typeof SilapseDocsComponentsTaggroupRoute
+  '/silapse/docs/components/textarea': typeof SilapseDocsComponentsTextareaRoute
+  '/silapse/docs/components/textfield': typeof SilapseDocsComponentsTextfieldRoute
+  '/silapse/docs/components/timefield': typeof SilapseDocsComponentsTimefieldRoute
+  '/silapse/docs/components/toast': typeof SilapseDocsComponentsToastRoute
+  '/silapse/docs/components/toolbar': typeof SilapseDocsComponentsToolbarRoute
+  '/silapse/docs/components/tooltip': typeof SilapseDocsComponentsTooltipRoute
+  '/silapse/docs/components/tree': typeof SilapseDocsComponentsTreeRoute
+  '/silapse/docs/components/virtualizer': typeof SilapseDocsComponentsVirtualizerRoute
+  '/silapse/docs/hooks/create-button': typeof SilapseDocsHooksCreateButtonRoute
+  '/silapse/docs/hooks/create-press': typeof SilapseDocsHooksCreatePressRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/docs': typeof DocsRouteRouteWithChildren
-  '/ecosystem': typeof EcosystemRoute
-  '/playground': typeof PlaygroundRoute
-  '/docs/installation': typeof DocsInstallationRoute
-  '/docs/': typeof DocsIndexRoute
-  '/docs/components/accordion': typeof DocsComponentsAccordionRoute
-  '/docs/components/actionbar': typeof DocsComponentsActionbarRoute
-  '/docs/components/actiongroup': typeof DocsComponentsActiongroupRoute
-  '/docs/components/alertdialog': typeof DocsComponentsAlertdialogRoute
-  '/docs/components/badge': typeof DocsComponentsBadgeRoute
-  '/docs/components/breadcrumbs': typeof DocsComponentsBreadcrumbsRoute
-  '/docs/components/button': typeof DocsComponentsButtonRoute
-  '/docs/components/calendar': typeof DocsComponentsCalendarRoute
-  '/docs/components/checkbox': typeof DocsComponentsCheckboxRoute
-  '/docs/components/color': typeof DocsComponentsColorRoute
-  '/docs/components/combobox': typeof DocsComponentsComboboxRoute
-  '/docs/components/contextualhelp': typeof DocsComponentsContextualhelpRoute
-  '/docs/components/datefield': typeof DocsComponentsDatefieldRoute
-  '/docs/components/datepicker': typeof DocsComponentsDatepickerRoute
-  '/docs/components/daterangepicker': typeof DocsComponentsDaterangepickerRoute
-  '/docs/components/dialog': typeof DocsComponentsDialogRoute
-  '/docs/components/disclosure': typeof DocsComponentsDisclosureRoute
-  '/docs/components/dropzone': typeof DocsComponentsDropzoneRoute
-  '/docs/components/filetrigger': typeof DocsComponentsFiletriggerRoute
-  '/docs/components/gridlist': typeof DocsComponentsGridlistRoute
-  '/docs/components/link': typeof DocsComponentsLinkRoute
-  '/docs/components/menu': typeof DocsComponentsMenuRoute
-  '/docs/components/meter': typeof DocsComponentsMeterRoute
-  '/docs/components/numberfield': typeof DocsComponentsNumberfieldRoute
-  '/docs/components/picker': typeof DocsComponentsPickerRoute
-  '/docs/components/popover': typeof DocsComponentsPopoverRoute
-  '/docs/components/progressbar': typeof DocsComponentsProgressbarRoute
-  '/docs/components/provider': typeof DocsComponentsProviderRoute
-  '/docs/components/rangecalendar': typeof DocsComponentsRangecalendarRoute
-  '/docs/components/searchfield': typeof DocsComponentsSearchfieldRoute
-  '/docs/components/select': typeof DocsComponentsSelectRoute
-  '/docs/components/separator': typeof DocsComponentsSeparatorRoute
-  '/docs/components/slider': typeof DocsComponentsSliderRoute
-  '/docs/components/switch': typeof DocsComponentsSwitchRoute
-  '/docs/components/table': typeof DocsComponentsTableRoute
-  '/docs/components/tabs': typeof DocsComponentsTabsRoute
-  '/docs/components/taggroup': typeof DocsComponentsTaggroupRoute
-  '/docs/components/textarea': typeof DocsComponentsTextareaRoute
-  '/docs/components/textfield': typeof DocsComponentsTextfieldRoute
-  '/docs/components/timefield': typeof DocsComponentsTimefieldRoute
-  '/docs/components/toast': typeof DocsComponentsToastRoute
-  '/docs/components/toolbar': typeof DocsComponentsToolbarRoute
-  '/docs/components/tooltip': typeof DocsComponentsTooltipRoute
-  '/docs/components/tree': typeof DocsComponentsTreeRoute
-  '/docs/components/virtualizer': typeof DocsComponentsVirtualizerRoute
-  '/docs/hooks/create-button': typeof DocsHooksCreateButtonRoute
-  '/docs/hooks/create-press': typeof DocsHooksCreatePressRoute
+  '/silapse/docs': typeof SilapseDocsRouteRouteWithChildren
+  '/silapse/ecosystem': typeof SilapseEcosystemRoute
+  '/silapse/playground': typeof SilapsePlaygroundRoute
+  '/silapse/': typeof SilapseIndexRoute
+  '/silapse/docs/installation': typeof SilapseDocsInstallationRoute
+  '/silapse/docs/': typeof SilapseDocsIndexRoute
+  '/silapse/docs/components/accordion': typeof SilapseDocsComponentsAccordionRoute
+  '/silapse/docs/components/actionbar': typeof SilapseDocsComponentsActionbarRoute
+  '/silapse/docs/components/actiongroup': typeof SilapseDocsComponentsActiongroupRoute
+  '/silapse/docs/components/alertdialog': typeof SilapseDocsComponentsAlertdialogRoute
+  '/silapse/docs/components/badge': typeof SilapseDocsComponentsBadgeRoute
+  '/silapse/docs/components/breadcrumbs': typeof SilapseDocsComponentsBreadcrumbsRoute
+  '/silapse/docs/components/button': typeof SilapseDocsComponentsButtonRoute
+  '/silapse/docs/components/calendar': typeof SilapseDocsComponentsCalendarRoute
+  '/silapse/docs/components/checkbox': typeof SilapseDocsComponentsCheckboxRoute
+  '/silapse/docs/components/color': typeof SilapseDocsComponentsColorRoute
+  '/silapse/docs/components/combobox': typeof SilapseDocsComponentsComboboxRoute
+  '/silapse/docs/components/contextualhelp': typeof SilapseDocsComponentsContextualhelpRoute
+  '/silapse/docs/components/datefield': typeof SilapseDocsComponentsDatefieldRoute
+  '/silapse/docs/components/datepicker': typeof SilapseDocsComponentsDatepickerRoute
+  '/silapse/docs/components/daterangepicker': typeof SilapseDocsComponentsDaterangepickerRoute
+  '/silapse/docs/components/dialog': typeof SilapseDocsComponentsDialogRoute
+  '/silapse/docs/components/disclosure': typeof SilapseDocsComponentsDisclosureRoute
+  '/silapse/docs/components/dropzone': typeof SilapseDocsComponentsDropzoneRoute
+  '/silapse/docs/components/filetrigger': typeof SilapseDocsComponentsFiletriggerRoute
+  '/silapse/docs/components/gridlist': typeof SilapseDocsComponentsGridlistRoute
+  '/silapse/docs/components/link': typeof SilapseDocsComponentsLinkRoute
+  '/silapse/docs/components/menu': typeof SilapseDocsComponentsMenuRoute
+  '/silapse/docs/components/meter': typeof SilapseDocsComponentsMeterRoute
+  '/silapse/docs/components/numberfield': typeof SilapseDocsComponentsNumberfieldRoute
+  '/silapse/docs/components/picker': typeof SilapseDocsComponentsPickerRoute
+  '/silapse/docs/components/popover': typeof SilapseDocsComponentsPopoverRoute
+  '/silapse/docs/components/progressbar': typeof SilapseDocsComponentsProgressbarRoute
+  '/silapse/docs/components/provider': typeof SilapseDocsComponentsProviderRoute
+  '/silapse/docs/components/rangecalendar': typeof SilapseDocsComponentsRangecalendarRoute
+  '/silapse/docs/components/searchfield': typeof SilapseDocsComponentsSearchfieldRoute
+  '/silapse/docs/components/select': typeof SilapseDocsComponentsSelectRoute
+  '/silapse/docs/components/separator': typeof SilapseDocsComponentsSeparatorRoute
+  '/silapse/docs/components/slider': typeof SilapseDocsComponentsSliderRoute
+  '/silapse/docs/components/switch': typeof SilapseDocsComponentsSwitchRoute
+  '/silapse/docs/components/table': typeof SilapseDocsComponentsTableRoute
+  '/silapse/docs/components/tabs': typeof SilapseDocsComponentsTabsRoute
+  '/silapse/docs/components/taggroup': typeof SilapseDocsComponentsTaggroupRoute
+  '/silapse/docs/components/textarea': typeof SilapseDocsComponentsTextareaRoute
+  '/silapse/docs/components/textfield': typeof SilapseDocsComponentsTextfieldRoute
+  '/silapse/docs/components/timefield': typeof SilapseDocsComponentsTimefieldRoute
+  '/silapse/docs/components/toast': typeof SilapseDocsComponentsToastRoute
+  '/silapse/docs/components/toolbar': typeof SilapseDocsComponentsToolbarRoute
+  '/silapse/docs/components/tooltip': typeof SilapseDocsComponentsTooltipRoute
+  '/silapse/docs/components/tree': typeof SilapseDocsComponentsTreeRoute
+  '/silapse/docs/components/virtualizer': typeof SilapseDocsComponentsVirtualizerRoute
+  '/silapse/docs/hooks/create-button': typeof SilapseDocsHooksCreateButtonRoute
+  '/silapse/docs/hooks/create-press': typeof SilapseDocsHooksCreatePressRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/docs'
-    | '/ecosystem'
-    | '/playground'
-    | '/docs/installation'
-    | '/docs/'
-    | '/docs/components/accordion'
-    | '/docs/components/actionbar'
-    | '/docs/components/actiongroup'
-    | '/docs/components/alertdialog'
-    | '/docs/components/badge'
-    | '/docs/components/breadcrumbs'
-    | '/docs/components/button'
-    | '/docs/components/calendar'
-    | '/docs/components/checkbox'
-    | '/docs/components/color'
-    | '/docs/components/combobox'
-    | '/docs/components/contextualhelp'
-    | '/docs/components/datefield'
-    | '/docs/components/datepicker'
-    | '/docs/components/daterangepicker'
-    | '/docs/components/dialog'
-    | '/docs/components/disclosure'
-    | '/docs/components/dropzone'
-    | '/docs/components/filetrigger'
-    | '/docs/components/gridlist'
-    | '/docs/components/link'
-    | '/docs/components/menu'
-    | '/docs/components/meter'
-    | '/docs/components/numberfield'
-    | '/docs/components/picker'
-    | '/docs/components/popover'
-    | '/docs/components/progressbar'
-    | '/docs/components/provider'
-    | '/docs/components/rangecalendar'
-    | '/docs/components/searchfield'
-    | '/docs/components/select'
-    | '/docs/components/separator'
-    | '/docs/components/slider'
-    | '/docs/components/switch'
-    | '/docs/components/table'
-    | '/docs/components/tabs'
-    | '/docs/components/taggroup'
-    | '/docs/components/textarea'
-    | '/docs/components/textfield'
-    | '/docs/components/timefield'
-    | '/docs/components/toast'
-    | '/docs/components/toolbar'
-    | '/docs/components/tooltip'
-    | '/docs/components/tree'
-    | '/docs/components/virtualizer'
-    | '/docs/hooks/create-button'
-    | '/docs/hooks/create-press'
+    | '/silapse/docs'
+    | '/silapse/ecosystem'
+    | '/silapse/playground'
+    | '/silapse/'
+    | '/silapse/docs/installation'
+    | '/silapse/docs/'
+    | '/silapse/docs/components/accordion'
+    | '/silapse/docs/components/actionbar'
+    | '/silapse/docs/components/actiongroup'
+    | '/silapse/docs/components/alertdialog'
+    | '/silapse/docs/components/badge'
+    | '/silapse/docs/components/breadcrumbs'
+    | '/silapse/docs/components/button'
+    | '/silapse/docs/components/calendar'
+    | '/silapse/docs/components/checkbox'
+    | '/silapse/docs/components/color'
+    | '/silapse/docs/components/combobox'
+    | '/silapse/docs/components/contextualhelp'
+    | '/silapse/docs/components/datefield'
+    | '/silapse/docs/components/datepicker'
+    | '/silapse/docs/components/daterangepicker'
+    | '/silapse/docs/components/dialog'
+    | '/silapse/docs/components/disclosure'
+    | '/silapse/docs/components/dropzone'
+    | '/silapse/docs/components/filetrigger'
+    | '/silapse/docs/components/gridlist'
+    | '/silapse/docs/components/link'
+    | '/silapse/docs/components/menu'
+    | '/silapse/docs/components/meter'
+    | '/silapse/docs/components/numberfield'
+    | '/silapse/docs/components/picker'
+    | '/silapse/docs/components/popover'
+    | '/silapse/docs/components/progressbar'
+    | '/silapse/docs/components/provider'
+    | '/silapse/docs/components/rangecalendar'
+    | '/silapse/docs/components/searchfield'
+    | '/silapse/docs/components/select'
+    | '/silapse/docs/components/separator'
+    | '/silapse/docs/components/slider'
+    | '/silapse/docs/components/switch'
+    | '/silapse/docs/components/table'
+    | '/silapse/docs/components/tabs'
+    | '/silapse/docs/components/taggroup'
+    | '/silapse/docs/components/textarea'
+    | '/silapse/docs/components/textfield'
+    | '/silapse/docs/components/timefield'
+    | '/silapse/docs/components/toast'
+    | '/silapse/docs/components/toolbar'
+    | '/silapse/docs/components/tooltip'
+    | '/silapse/docs/components/tree'
+    | '/silapse/docs/components/virtualizer'
+    | '/silapse/docs/hooks/create-button'
+    | '/silapse/docs/hooks/create-press'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/ecosystem'
-    | '/playground'
-    | '/docs/installation'
-    | '/docs'
-    | '/docs/components/accordion'
-    | '/docs/components/actionbar'
-    | '/docs/components/actiongroup'
-    | '/docs/components/alertdialog'
-    | '/docs/components/badge'
-    | '/docs/components/breadcrumbs'
-    | '/docs/components/button'
-    | '/docs/components/calendar'
-    | '/docs/components/checkbox'
-    | '/docs/components/color'
-    | '/docs/components/combobox'
-    | '/docs/components/contextualhelp'
-    | '/docs/components/datefield'
-    | '/docs/components/datepicker'
-    | '/docs/components/daterangepicker'
-    | '/docs/components/dialog'
-    | '/docs/components/disclosure'
-    | '/docs/components/dropzone'
-    | '/docs/components/filetrigger'
-    | '/docs/components/gridlist'
-    | '/docs/components/link'
-    | '/docs/components/menu'
-    | '/docs/components/meter'
-    | '/docs/components/numberfield'
-    | '/docs/components/picker'
-    | '/docs/components/popover'
-    | '/docs/components/progressbar'
-    | '/docs/components/provider'
-    | '/docs/components/rangecalendar'
-    | '/docs/components/searchfield'
-    | '/docs/components/select'
-    | '/docs/components/separator'
-    | '/docs/components/slider'
-    | '/docs/components/switch'
-    | '/docs/components/table'
-    | '/docs/components/tabs'
-    | '/docs/components/taggroup'
-    | '/docs/components/textarea'
-    | '/docs/components/textfield'
-    | '/docs/components/timefield'
-    | '/docs/components/toast'
-    | '/docs/components/toolbar'
-    | '/docs/components/tooltip'
-    | '/docs/components/tree'
-    | '/docs/components/virtualizer'
-    | '/docs/hooks/create-button'
-    | '/docs/hooks/create-press'
+    | '/silapse/ecosystem'
+    | '/silapse/playground'
+    | '/silapse'
+    | '/silapse/docs/installation'
+    | '/silapse/docs'
+    | '/silapse/docs/components/accordion'
+    | '/silapse/docs/components/actionbar'
+    | '/silapse/docs/components/actiongroup'
+    | '/silapse/docs/components/alertdialog'
+    | '/silapse/docs/components/badge'
+    | '/silapse/docs/components/breadcrumbs'
+    | '/silapse/docs/components/button'
+    | '/silapse/docs/components/calendar'
+    | '/silapse/docs/components/checkbox'
+    | '/silapse/docs/components/color'
+    | '/silapse/docs/components/combobox'
+    | '/silapse/docs/components/contextualhelp'
+    | '/silapse/docs/components/datefield'
+    | '/silapse/docs/components/datepicker'
+    | '/silapse/docs/components/daterangepicker'
+    | '/silapse/docs/components/dialog'
+    | '/silapse/docs/components/disclosure'
+    | '/silapse/docs/components/dropzone'
+    | '/silapse/docs/components/filetrigger'
+    | '/silapse/docs/components/gridlist'
+    | '/silapse/docs/components/link'
+    | '/silapse/docs/components/menu'
+    | '/silapse/docs/components/meter'
+    | '/silapse/docs/components/numberfield'
+    | '/silapse/docs/components/picker'
+    | '/silapse/docs/components/popover'
+    | '/silapse/docs/components/progressbar'
+    | '/silapse/docs/components/provider'
+    | '/silapse/docs/components/rangecalendar'
+    | '/silapse/docs/components/searchfield'
+    | '/silapse/docs/components/select'
+    | '/silapse/docs/components/separator'
+    | '/silapse/docs/components/slider'
+    | '/silapse/docs/components/switch'
+    | '/silapse/docs/components/table'
+    | '/silapse/docs/components/tabs'
+    | '/silapse/docs/components/taggroup'
+    | '/silapse/docs/components/textarea'
+    | '/silapse/docs/components/textfield'
+    | '/silapse/docs/components/timefield'
+    | '/silapse/docs/components/toast'
+    | '/silapse/docs/components/toolbar'
+    | '/silapse/docs/components/tooltip'
+    | '/silapse/docs/components/tree'
+    | '/silapse/docs/components/virtualizer'
+    | '/silapse/docs/hooks/create-button'
+    | '/silapse/docs/hooks/create-press'
   id:
     | '__root__'
     | '/'
-    | '/docs'
-    | '/ecosystem'
-    | '/playground'
-    | '/docs/installation'
-    | '/docs/'
-    | '/docs/components/accordion'
-    | '/docs/components/actionbar'
-    | '/docs/components/actiongroup'
-    | '/docs/components/alertdialog'
-    | '/docs/components/badge'
-    | '/docs/components/breadcrumbs'
-    | '/docs/components/button'
-    | '/docs/components/calendar'
-    | '/docs/components/checkbox'
-    | '/docs/components/color'
-    | '/docs/components/combobox'
-    | '/docs/components/contextualhelp'
-    | '/docs/components/datefield'
-    | '/docs/components/datepicker'
-    | '/docs/components/daterangepicker'
-    | '/docs/components/dialog'
-    | '/docs/components/disclosure'
-    | '/docs/components/dropzone'
-    | '/docs/components/filetrigger'
-    | '/docs/components/gridlist'
-    | '/docs/components/link'
-    | '/docs/components/menu'
-    | '/docs/components/meter'
-    | '/docs/components/numberfield'
-    | '/docs/components/picker'
-    | '/docs/components/popover'
-    | '/docs/components/progressbar'
-    | '/docs/components/provider'
-    | '/docs/components/rangecalendar'
-    | '/docs/components/searchfield'
-    | '/docs/components/select'
-    | '/docs/components/separator'
-    | '/docs/components/slider'
-    | '/docs/components/switch'
-    | '/docs/components/table'
-    | '/docs/components/tabs'
-    | '/docs/components/taggroup'
-    | '/docs/components/textarea'
-    | '/docs/components/textfield'
-    | '/docs/components/timefield'
-    | '/docs/components/toast'
-    | '/docs/components/toolbar'
-    | '/docs/components/tooltip'
-    | '/docs/components/tree'
-    | '/docs/components/virtualizer'
-    | '/docs/hooks/create-button'
-    | '/docs/hooks/create-press'
+    | '/silapse/docs'
+    | '/silapse/ecosystem'
+    | '/silapse/playground'
+    | '/silapse/'
+    | '/silapse/docs/installation'
+    | '/silapse/docs/'
+    | '/silapse/docs/components/accordion'
+    | '/silapse/docs/components/actionbar'
+    | '/silapse/docs/components/actiongroup'
+    | '/silapse/docs/components/alertdialog'
+    | '/silapse/docs/components/badge'
+    | '/silapse/docs/components/breadcrumbs'
+    | '/silapse/docs/components/button'
+    | '/silapse/docs/components/calendar'
+    | '/silapse/docs/components/checkbox'
+    | '/silapse/docs/components/color'
+    | '/silapse/docs/components/combobox'
+    | '/silapse/docs/components/contextualhelp'
+    | '/silapse/docs/components/datefield'
+    | '/silapse/docs/components/datepicker'
+    | '/silapse/docs/components/daterangepicker'
+    | '/silapse/docs/components/dialog'
+    | '/silapse/docs/components/disclosure'
+    | '/silapse/docs/components/dropzone'
+    | '/silapse/docs/components/filetrigger'
+    | '/silapse/docs/components/gridlist'
+    | '/silapse/docs/components/link'
+    | '/silapse/docs/components/menu'
+    | '/silapse/docs/components/meter'
+    | '/silapse/docs/components/numberfield'
+    | '/silapse/docs/components/picker'
+    | '/silapse/docs/components/popover'
+    | '/silapse/docs/components/progressbar'
+    | '/silapse/docs/components/provider'
+    | '/silapse/docs/components/rangecalendar'
+    | '/silapse/docs/components/searchfield'
+    | '/silapse/docs/components/select'
+    | '/silapse/docs/components/separator'
+    | '/silapse/docs/components/slider'
+    | '/silapse/docs/components/switch'
+    | '/silapse/docs/components/table'
+    | '/silapse/docs/components/tabs'
+    | '/silapse/docs/components/taggroup'
+    | '/silapse/docs/components/textarea'
+    | '/silapse/docs/components/textfield'
+    | '/silapse/docs/components/timefield'
+    | '/silapse/docs/components/toast'
+    | '/silapse/docs/components/toolbar'
+    | '/silapse/docs/components/tooltip'
+    | '/silapse/docs/components/tree'
+    | '/silapse/docs/components/virtualizer'
+    | '/silapse/docs/hooks/create-button'
+    | '/silapse/docs/hooks/create-press'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DocsRouteRoute: typeof DocsRouteRouteWithChildren
-  EcosystemRoute: typeof EcosystemRoute
-  PlaygroundRoute: typeof PlaygroundRoute
+  SilapseDocsRouteRoute: typeof SilapseDocsRouteRouteWithChildren
+  SilapseEcosystemRoute: typeof SilapseEcosystemRoute
+  SilapsePlaygroundRoute: typeof SilapsePlaygroundRoute
+  SilapseIndexRoute: typeof SilapseIndexRoute
 }
 
 declare module '@tanstack/solid-router' {
   interface FileRoutesByPath {
-    '/playground': {
-      id: '/playground'
-      path: '/playground'
-      fullPath: '/playground'
-      preLoaderRoute: typeof PlaygroundRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ecosystem': {
-      id: '/ecosystem'
-      path: '/ecosystem'
-      fullPath: '/ecosystem'
-      preLoaderRoute: typeof EcosystemRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/docs': {
-      id: '/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof DocsRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -711,465 +737,496 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/docs/': {
-      id: '/docs/'
+    '/silapse/': {
+      id: '/silapse/'
+      path: '/silapse'
+      fullPath: '/silapse/'
+      preLoaderRoute: typeof SilapseIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/silapse/playground': {
+      id: '/silapse/playground'
+      path: '/silapse/playground'
+      fullPath: '/silapse/playground'
+      preLoaderRoute: typeof SilapsePlaygroundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/silapse/ecosystem': {
+      id: '/silapse/ecosystem'
+      path: '/silapse/ecosystem'
+      fullPath: '/silapse/ecosystem'
+      preLoaderRoute: typeof SilapseEcosystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/silapse/docs': {
+      id: '/silapse/docs'
+      path: '/silapse/docs'
+      fullPath: '/silapse/docs'
+      preLoaderRoute: typeof SilapseDocsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/silapse/docs/': {
+      id: '/silapse/docs/'
       path: '/'
-      fullPath: '/docs/'
-      preLoaderRoute: typeof DocsIndexRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/'
+      preLoaderRoute: typeof SilapseDocsIndexRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/installation': {
-      id: '/docs/installation'
+    '/silapse/docs/installation': {
+      id: '/silapse/docs/installation'
       path: '/installation'
-      fullPath: '/docs/installation'
-      preLoaderRoute: typeof DocsInstallationRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/installation'
+      preLoaderRoute: typeof SilapseDocsInstallationRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/hooks/create-press': {
-      id: '/docs/hooks/create-press'
+    '/silapse/docs/hooks/create-press': {
+      id: '/silapse/docs/hooks/create-press'
       path: '/hooks/create-press'
-      fullPath: '/docs/hooks/create-press'
-      preLoaderRoute: typeof DocsHooksCreatePressRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/hooks/create-press'
+      preLoaderRoute: typeof SilapseDocsHooksCreatePressRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/hooks/create-button': {
-      id: '/docs/hooks/create-button'
+    '/silapse/docs/hooks/create-button': {
+      id: '/silapse/docs/hooks/create-button'
       path: '/hooks/create-button'
-      fullPath: '/docs/hooks/create-button'
-      preLoaderRoute: typeof DocsHooksCreateButtonRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/hooks/create-button'
+      preLoaderRoute: typeof SilapseDocsHooksCreateButtonRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/virtualizer': {
-      id: '/docs/components/virtualizer'
+    '/silapse/docs/components/virtualizer': {
+      id: '/silapse/docs/components/virtualizer'
       path: '/components/virtualizer'
-      fullPath: '/docs/components/virtualizer'
-      preLoaderRoute: typeof DocsComponentsVirtualizerRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/virtualizer'
+      preLoaderRoute: typeof SilapseDocsComponentsVirtualizerRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/tree': {
-      id: '/docs/components/tree'
+    '/silapse/docs/components/tree': {
+      id: '/silapse/docs/components/tree'
       path: '/components/tree'
-      fullPath: '/docs/components/tree'
-      preLoaderRoute: typeof DocsComponentsTreeRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/tree'
+      preLoaderRoute: typeof SilapseDocsComponentsTreeRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/tooltip': {
-      id: '/docs/components/tooltip'
+    '/silapse/docs/components/tooltip': {
+      id: '/silapse/docs/components/tooltip'
       path: '/components/tooltip'
-      fullPath: '/docs/components/tooltip'
-      preLoaderRoute: typeof DocsComponentsTooltipRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/tooltip'
+      preLoaderRoute: typeof SilapseDocsComponentsTooltipRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/toolbar': {
-      id: '/docs/components/toolbar'
+    '/silapse/docs/components/toolbar': {
+      id: '/silapse/docs/components/toolbar'
       path: '/components/toolbar'
-      fullPath: '/docs/components/toolbar'
-      preLoaderRoute: typeof DocsComponentsToolbarRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/toolbar'
+      preLoaderRoute: typeof SilapseDocsComponentsToolbarRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/toast': {
-      id: '/docs/components/toast'
+    '/silapse/docs/components/toast': {
+      id: '/silapse/docs/components/toast'
       path: '/components/toast'
-      fullPath: '/docs/components/toast'
-      preLoaderRoute: typeof DocsComponentsToastRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/toast'
+      preLoaderRoute: typeof SilapseDocsComponentsToastRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/timefield': {
-      id: '/docs/components/timefield'
+    '/silapse/docs/components/timefield': {
+      id: '/silapse/docs/components/timefield'
       path: '/components/timefield'
-      fullPath: '/docs/components/timefield'
-      preLoaderRoute: typeof DocsComponentsTimefieldRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/timefield'
+      preLoaderRoute: typeof SilapseDocsComponentsTimefieldRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/textfield': {
-      id: '/docs/components/textfield'
+    '/silapse/docs/components/textfield': {
+      id: '/silapse/docs/components/textfield'
       path: '/components/textfield'
-      fullPath: '/docs/components/textfield'
-      preLoaderRoute: typeof DocsComponentsTextfieldRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/textfield'
+      preLoaderRoute: typeof SilapseDocsComponentsTextfieldRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/textarea': {
-      id: '/docs/components/textarea'
+    '/silapse/docs/components/textarea': {
+      id: '/silapse/docs/components/textarea'
       path: '/components/textarea'
-      fullPath: '/docs/components/textarea'
-      preLoaderRoute: typeof DocsComponentsTextareaRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/textarea'
+      preLoaderRoute: typeof SilapseDocsComponentsTextareaRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/taggroup': {
-      id: '/docs/components/taggroup'
+    '/silapse/docs/components/taggroup': {
+      id: '/silapse/docs/components/taggroup'
       path: '/components/taggroup'
-      fullPath: '/docs/components/taggroup'
-      preLoaderRoute: typeof DocsComponentsTaggroupRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/taggroup'
+      preLoaderRoute: typeof SilapseDocsComponentsTaggroupRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/tabs': {
-      id: '/docs/components/tabs'
+    '/silapse/docs/components/tabs': {
+      id: '/silapse/docs/components/tabs'
       path: '/components/tabs'
-      fullPath: '/docs/components/tabs'
-      preLoaderRoute: typeof DocsComponentsTabsRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/tabs'
+      preLoaderRoute: typeof SilapseDocsComponentsTabsRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/table': {
-      id: '/docs/components/table'
+    '/silapse/docs/components/table': {
+      id: '/silapse/docs/components/table'
       path: '/components/table'
-      fullPath: '/docs/components/table'
-      preLoaderRoute: typeof DocsComponentsTableRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/table'
+      preLoaderRoute: typeof SilapseDocsComponentsTableRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/switch': {
-      id: '/docs/components/switch'
+    '/silapse/docs/components/switch': {
+      id: '/silapse/docs/components/switch'
       path: '/components/switch'
-      fullPath: '/docs/components/switch'
-      preLoaderRoute: typeof DocsComponentsSwitchRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/switch'
+      preLoaderRoute: typeof SilapseDocsComponentsSwitchRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/slider': {
-      id: '/docs/components/slider'
+    '/silapse/docs/components/slider': {
+      id: '/silapse/docs/components/slider'
       path: '/components/slider'
-      fullPath: '/docs/components/slider'
-      preLoaderRoute: typeof DocsComponentsSliderRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/slider'
+      preLoaderRoute: typeof SilapseDocsComponentsSliderRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/separator': {
-      id: '/docs/components/separator'
+    '/silapse/docs/components/separator': {
+      id: '/silapse/docs/components/separator'
       path: '/components/separator'
-      fullPath: '/docs/components/separator'
-      preLoaderRoute: typeof DocsComponentsSeparatorRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/separator'
+      preLoaderRoute: typeof SilapseDocsComponentsSeparatorRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/select': {
-      id: '/docs/components/select'
+    '/silapse/docs/components/select': {
+      id: '/silapse/docs/components/select'
       path: '/components/select'
-      fullPath: '/docs/components/select'
-      preLoaderRoute: typeof DocsComponentsSelectRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/select'
+      preLoaderRoute: typeof SilapseDocsComponentsSelectRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/searchfield': {
-      id: '/docs/components/searchfield'
+    '/silapse/docs/components/searchfield': {
+      id: '/silapse/docs/components/searchfield'
       path: '/components/searchfield'
-      fullPath: '/docs/components/searchfield'
-      preLoaderRoute: typeof DocsComponentsSearchfieldRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/searchfield'
+      preLoaderRoute: typeof SilapseDocsComponentsSearchfieldRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/rangecalendar': {
-      id: '/docs/components/rangecalendar'
+    '/silapse/docs/components/rangecalendar': {
+      id: '/silapse/docs/components/rangecalendar'
       path: '/components/rangecalendar'
-      fullPath: '/docs/components/rangecalendar'
-      preLoaderRoute: typeof DocsComponentsRangecalendarRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/rangecalendar'
+      preLoaderRoute: typeof SilapseDocsComponentsRangecalendarRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/provider': {
-      id: '/docs/components/provider'
+    '/silapse/docs/components/provider': {
+      id: '/silapse/docs/components/provider'
       path: '/components/provider'
-      fullPath: '/docs/components/provider'
-      preLoaderRoute: typeof DocsComponentsProviderRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/provider'
+      preLoaderRoute: typeof SilapseDocsComponentsProviderRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/progressbar': {
-      id: '/docs/components/progressbar'
+    '/silapse/docs/components/progressbar': {
+      id: '/silapse/docs/components/progressbar'
       path: '/components/progressbar'
-      fullPath: '/docs/components/progressbar'
-      preLoaderRoute: typeof DocsComponentsProgressbarRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/progressbar'
+      preLoaderRoute: typeof SilapseDocsComponentsProgressbarRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/popover': {
-      id: '/docs/components/popover'
+    '/silapse/docs/components/popover': {
+      id: '/silapse/docs/components/popover'
       path: '/components/popover'
-      fullPath: '/docs/components/popover'
-      preLoaderRoute: typeof DocsComponentsPopoverRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/popover'
+      preLoaderRoute: typeof SilapseDocsComponentsPopoverRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/picker': {
-      id: '/docs/components/picker'
+    '/silapse/docs/components/picker': {
+      id: '/silapse/docs/components/picker'
       path: '/components/picker'
-      fullPath: '/docs/components/picker'
-      preLoaderRoute: typeof DocsComponentsPickerRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/picker'
+      preLoaderRoute: typeof SilapseDocsComponentsPickerRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/numberfield': {
-      id: '/docs/components/numberfield'
+    '/silapse/docs/components/numberfield': {
+      id: '/silapse/docs/components/numberfield'
       path: '/components/numberfield'
-      fullPath: '/docs/components/numberfield'
-      preLoaderRoute: typeof DocsComponentsNumberfieldRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/numberfield'
+      preLoaderRoute: typeof SilapseDocsComponentsNumberfieldRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/meter': {
-      id: '/docs/components/meter'
+    '/silapse/docs/components/meter': {
+      id: '/silapse/docs/components/meter'
       path: '/components/meter'
-      fullPath: '/docs/components/meter'
-      preLoaderRoute: typeof DocsComponentsMeterRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/meter'
+      preLoaderRoute: typeof SilapseDocsComponentsMeterRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/menu': {
-      id: '/docs/components/menu'
+    '/silapse/docs/components/menu': {
+      id: '/silapse/docs/components/menu'
       path: '/components/menu'
-      fullPath: '/docs/components/menu'
-      preLoaderRoute: typeof DocsComponentsMenuRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/menu'
+      preLoaderRoute: typeof SilapseDocsComponentsMenuRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/link': {
-      id: '/docs/components/link'
+    '/silapse/docs/components/link': {
+      id: '/silapse/docs/components/link'
       path: '/components/link'
-      fullPath: '/docs/components/link'
-      preLoaderRoute: typeof DocsComponentsLinkRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/link'
+      preLoaderRoute: typeof SilapseDocsComponentsLinkRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/gridlist': {
-      id: '/docs/components/gridlist'
+    '/silapse/docs/components/gridlist': {
+      id: '/silapse/docs/components/gridlist'
       path: '/components/gridlist'
-      fullPath: '/docs/components/gridlist'
-      preLoaderRoute: typeof DocsComponentsGridlistRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/gridlist'
+      preLoaderRoute: typeof SilapseDocsComponentsGridlistRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/filetrigger': {
-      id: '/docs/components/filetrigger'
+    '/silapse/docs/components/filetrigger': {
+      id: '/silapse/docs/components/filetrigger'
       path: '/components/filetrigger'
-      fullPath: '/docs/components/filetrigger'
-      preLoaderRoute: typeof DocsComponentsFiletriggerRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/filetrigger'
+      preLoaderRoute: typeof SilapseDocsComponentsFiletriggerRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/dropzone': {
-      id: '/docs/components/dropzone'
+    '/silapse/docs/components/dropzone': {
+      id: '/silapse/docs/components/dropzone'
       path: '/components/dropzone'
-      fullPath: '/docs/components/dropzone'
-      preLoaderRoute: typeof DocsComponentsDropzoneRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/dropzone'
+      preLoaderRoute: typeof SilapseDocsComponentsDropzoneRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/disclosure': {
-      id: '/docs/components/disclosure'
+    '/silapse/docs/components/disclosure': {
+      id: '/silapse/docs/components/disclosure'
       path: '/components/disclosure'
-      fullPath: '/docs/components/disclosure'
-      preLoaderRoute: typeof DocsComponentsDisclosureRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/disclosure'
+      preLoaderRoute: typeof SilapseDocsComponentsDisclosureRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/dialog': {
-      id: '/docs/components/dialog'
+    '/silapse/docs/components/dialog': {
+      id: '/silapse/docs/components/dialog'
       path: '/components/dialog'
-      fullPath: '/docs/components/dialog'
-      preLoaderRoute: typeof DocsComponentsDialogRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/dialog'
+      preLoaderRoute: typeof SilapseDocsComponentsDialogRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/daterangepicker': {
-      id: '/docs/components/daterangepicker'
+    '/silapse/docs/components/daterangepicker': {
+      id: '/silapse/docs/components/daterangepicker'
       path: '/components/daterangepicker'
-      fullPath: '/docs/components/daterangepicker'
-      preLoaderRoute: typeof DocsComponentsDaterangepickerRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/daterangepicker'
+      preLoaderRoute: typeof SilapseDocsComponentsDaterangepickerRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/datepicker': {
-      id: '/docs/components/datepicker'
+    '/silapse/docs/components/datepicker': {
+      id: '/silapse/docs/components/datepicker'
       path: '/components/datepicker'
-      fullPath: '/docs/components/datepicker'
-      preLoaderRoute: typeof DocsComponentsDatepickerRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/datepicker'
+      preLoaderRoute: typeof SilapseDocsComponentsDatepickerRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/datefield': {
-      id: '/docs/components/datefield'
+    '/silapse/docs/components/datefield': {
+      id: '/silapse/docs/components/datefield'
       path: '/components/datefield'
-      fullPath: '/docs/components/datefield'
-      preLoaderRoute: typeof DocsComponentsDatefieldRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/datefield'
+      preLoaderRoute: typeof SilapseDocsComponentsDatefieldRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/contextualhelp': {
-      id: '/docs/components/contextualhelp'
+    '/silapse/docs/components/contextualhelp': {
+      id: '/silapse/docs/components/contextualhelp'
       path: '/components/contextualhelp'
-      fullPath: '/docs/components/contextualhelp'
-      preLoaderRoute: typeof DocsComponentsContextualhelpRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/contextualhelp'
+      preLoaderRoute: typeof SilapseDocsComponentsContextualhelpRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/combobox': {
-      id: '/docs/components/combobox'
+    '/silapse/docs/components/combobox': {
+      id: '/silapse/docs/components/combobox'
       path: '/components/combobox'
-      fullPath: '/docs/components/combobox'
-      preLoaderRoute: typeof DocsComponentsComboboxRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/combobox'
+      preLoaderRoute: typeof SilapseDocsComponentsComboboxRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/color': {
-      id: '/docs/components/color'
+    '/silapse/docs/components/color': {
+      id: '/silapse/docs/components/color'
       path: '/components/color'
-      fullPath: '/docs/components/color'
-      preLoaderRoute: typeof DocsComponentsColorRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/color'
+      preLoaderRoute: typeof SilapseDocsComponentsColorRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/checkbox': {
-      id: '/docs/components/checkbox'
+    '/silapse/docs/components/checkbox': {
+      id: '/silapse/docs/components/checkbox'
       path: '/components/checkbox'
-      fullPath: '/docs/components/checkbox'
-      preLoaderRoute: typeof DocsComponentsCheckboxRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/checkbox'
+      preLoaderRoute: typeof SilapseDocsComponentsCheckboxRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/calendar': {
-      id: '/docs/components/calendar'
+    '/silapse/docs/components/calendar': {
+      id: '/silapse/docs/components/calendar'
       path: '/components/calendar'
-      fullPath: '/docs/components/calendar'
-      preLoaderRoute: typeof DocsComponentsCalendarRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/calendar'
+      preLoaderRoute: typeof SilapseDocsComponentsCalendarRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/button': {
-      id: '/docs/components/button'
+    '/silapse/docs/components/button': {
+      id: '/silapse/docs/components/button'
       path: '/components/button'
-      fullPath: '/docs/components/button'
-      preLoaderRoute: typeof DocsComponentsButtonRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/button'
+      preLoaderRoute: typeof SilapseDocsComponentsButtonRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/breadcrumbs': {
-      id: '/docs/components/breadcrumbs'
+    '/silapse/docs/components/breadcrumbs': {
+      id: '/silapse/docs/components/breadcrumbs'
       path: '/components/breadcrumbs'
-      fullPath: '/docs/components/breadcrumbs'
-      preLoaderRoute: typeof DocsComponentsBreadcrumbsRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/breadcrumbs'
+      preLoaderRoute: typeof SilapseDocsComponentsBreadcrumbsRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/badge': {
-      id: '/docs/components/badge'
+    '/silapse/docs/components/badge': {
+      id: '/silapse/docs/components/badge'
       path: '/components/badge'
-      fullPath: '/docs/components/badge'
-      preLoaderRoute: typeof DocsComponentsBadgeRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/badge'
+      preLoaderRoute: typeof SilapseDocsComponentsBadgeRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/alertdialog': {
-      id: '/docs/components/alertdialog'
+    '/silapse/docs/components/alertdialog': {
+      id: '/silapse/docs/components/alertdialog'
       path: '/components/alertdialog'
-      fullPath: '/docs/components/alertdialog'
-      preLoaderRoute: typeof DocsComponentsAlertdialogRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/alertdialog'
+      preLoaderRoute: typeof SilapseDocsComponentsAlertdialogRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/actiongroup': {
-      id: '/docs/components/actiongroup'
+    '/silapse/docs/components/actiongroup': {
+      id: '/silapse/docs/components/actiongroup'
       path: '/components/actiongroup'
-      fullPath: '/docs/components/actiongroup'
-      preLoaderRoute: typeof DocsComponentsActiongroupRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/actiongroup'
+      preLoaderRoute: typeof SilapseDocsComponentsActiongroupRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/actionbar': {
-      id: '/docs/components/actionbar'
+    '/silapse/docs/components/actionbar': {
+      id: '/silapse/docs/components/actionbar'
       path: '/components/actionbar'
-      fullPath: '/docs/components/actionbar'
-      preLoaderRoute: typeof DocsComponentsActionbarRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/actionbar'
+      preLoaderRoute: typeof SilapseDocsComponentsActionbarRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
-    '/docs/components/accordion': {
-      id: '/docs/components/accordion'
+    '/silapse/docs/components/accordion': {
+      id: '/silapse/docs/components/accordion'
       path: '/components/accordion'
-      fullPath: '/docs/components/accordion'
-      preLoaderRoute: typeof DocsComponentsAccordionRouteImport
-      parentRoute: typeof DocsRouteRoute
+      fullPath: '/silapse/docs/components/accordion'
+      preLoaderRoute: typeof SilapseDocsComponentsAccordionRouteImport
+      parentRoute: typeof SilapseDocsRouteRoute
     }
   }
 }
 
-interface DocsRouteRouteChildren {
-  DocsInstallationRoute: typeof DocsInstallationRoute
-  DocsIndexRoute: typeof DocsIndexRoute
-  DocsComponentsAccordionRoute: typeof DocsComponentsAccordionRoute
-  DocsComponentsActionbarRoute: typeof DocsComponentsActionbarRoute
-  DocsComponentsActiongroupRoute: typeof DocsComponentsActiongroupRoute
-  DocsComponentsAlertdialogRoute: typeof DocsComponentsAlertdialogRoute
-  DocsComponentsBadgeRoute: typeof DocsComponentsBadgeRoute
-  DocsComponentsBreadcrumbsRoute: typeof DocsComponentsBreadcrumbsRoute
-  DocsComponentsButtonRoute: typeof DocsComponentsButtonRoute
-  DocsComponentsCalendarRoute: typeof DocsComponentsCalendarRoute
-  DocsComponentsCheckboxRoute: typeof DocsComponentsCheckboxRoute
-  DocsComponentsColorRoute: typeof DocsComponentsColorRoute
-  DocsComponentsComboboxRoute: typeof DocsComponentsComboboxRoute
-  DocsComponentsContextualhelpRoute: typeof DocsComponentsContextualhelpRoute
-  DocsComponentsDatefieldRoute: typeof DocsComponentsDatefieldRoute
-  DocsComponentsDatepickerRoute: typeof DocsComponentsDatepickerRoute
-  DocsComponentsDaterangepickerRoute: typeof DocsComponentsDaterangepickerRoute
-  DocsComponentsDialogRoute: typeof DocsComponentsDialogRoute
-  DocsComponentsDisclosureRoute: typeof DocsComponentsDisclosureRoute
-  DocsComponentsDropzoneRoute: typeof DocsComponentsDropzoneRoute
-  DocsComponentsFiletriggerRoute: typeof DocsComponentsFiletriggerRoute
-  DocsComponentsGridlistRoute: typeof DocsComponentsGridlistRoute
-  DocsComponentsLinkRoute: typeof DocsComponentsLinkRoute
-  DocsComponentsMenuRoute: typeof DocsComponentsMenuRoute
-  DocsComponentsMeterRoute: typeof DocsComponentsMeterRoute
-  DocsComponentsNumberfieldRoute: typeof DocsComponentsNumberfieldRoute
-  DocsComponentsPickerRoute: typeof DocsComponentsPickerRoute
-  DocsComponentsPopoverRoute: typeof DocsComponentsPopoverRoute
-  DocsComponentsProgressbarRoute: typeof DocsComponentsProgressbarRoute
-  DocsComponentsProviderRoute: typeof DocsComponentsProviderRoute
-  DocsComponentsRangecalendarRoute: typeof DocsComponentsRangecalendarRoute
-  DocsComponentsSearchfieldRoute: typeof DocsComponentsSearchfieldRoute
-  DocsComponentsSelectRoute: typeof DocsComponentsSelectRoute
-  DocsComponentsSeparatorRoute: typeof DocsComponentsSeparatorRoute
-  DocsComponentsSliderRoute: typeof DocsComponentsSliderRoute
-  DocsComponentsSwitchRoute: typeof DocsComponentsSwitchRoute
-  DocsComponentsTableRoute: typeof DocsComponentsTableRoute
-  DocsComponentsTabsRoute: typeof DocsComponentsTabsRoute
-  DocsComponentsTaggroupRoute: typeof DocsComponentsTaggroupRoute
-  DocsComponentsTextareaRoute: typeof DocsComponentsTextareaRoute
-  DocsComponentsTextfieldRoute: typeof DocsComponentsTextfieldRoute
-  DocsComponentsTimefieldRoute: typeof DocsComponentsTimefieldRoute
-  DocsComponentsToastRoute: typeof DocsComponentsToastRoute
-  DocsComponentsToolbarRoute: typeof DocsComponentsToolbarRoute
-  DocsComponentsTooltipRoute: typeof DocsComponentsTooltipRoute
-  DocsComponentsTreeRoute: typeof DocsComponentsTreeRoute
-  DocsComponentsVirtualizerRoute: typeof DocsComponentsVirtualizerRoute
-  DocsHooksCreateButtonRoute: typeof DocsHooksCreateButtonRoute
-  DocsHooksCreatePressRoute: typeof DocsHooksCreatePressRoute
+interface SilapseDocsRouteRouteChildren {
+  SilapseDocsInstallationRoute: typeof SilapseDocsInstallationRoute
+  SilapseDocsIndexRoute: typeof SilapseDocsIndexRoute
+  SilapseDocsComponentsAccordionRoute: typeof SilapseDocsComponentsAccordionRoute
+  SilapseDocsComponentsActionbarRoute: typeof SilapseDocsComponentsActionbarRoute
+  SilapseDocsComponentsActiongroupRoute: typeof SilapseDocsComponentsActiongroupRoute
+  SilapseDocsComponentsAlertdialogRoute: typeof SilapseDocsComponentsAlertdialogRoute
+  SilapseDocsComponentsBadgeRoute: typeof SilapseDocsComponentsBadgeRoute
+  SilapseDocsComponentsBreadcrumbsRoute: typeof SilapseDocsComponentsBreadcrumbsRoute
+  SilapseDocsComponentsButtonRoute: typeof SilapseDocsComponentsButtonRoute
+  SilapseDocsComponentsCalendarRoute: typeof SilapseDocsComponentsCalendarRoute
+  SilapseDocsComponentsCheckboxRoute: typeof SilapseDocsComponentsCheckboxRoute
+  SilapseDocsComponentsColorRoute: typeof SilapseDocsComponentsColorRoute
+  SilapseDocsComponentsComboboxRoute: typeof SilapseDocsComponentsComboboxRoute
+  SilapseDocsComponentsContextualhelpRoute: typeof SilapseDocsComponentsContextualhelpRoute
+  SilapseDocsComponentsDatefieldRoute: typeof SilapseDocsComponentsDatefieldRoute
+  SilapseDocsComponentsDatepickerRoute: typeof SilapseDocsComponentsDatepickerRoute
+  SilapseDocsComponentsDaterangepickerRoute: typeof SilapseDocsComponentsDaterangepickerRoute
+  SilapseDocsComponentsDialogRoute: typeof SilapseDocsComponentsDialogRoute
+  SilapseDocsComponentsDisclosureRoute: typeof SilapseDocsComponentsDisclosureRoute
+  SilapseDocsComponentsDropzoneRoute: typeof SilapseDocsComponentsDropzoneRoute
+  SilapseDocsComponentsFiletriggerRoute: typeof SilapseDocsComponentsFiletriggerRoute
+  SilapseDocsComponentsGridlistRoute: typeof SilapseDocsComponentsGridlistRoute
+  SilapseDocsComponentsLinkRoute: typeof SilapseDocsComponentsLinkRoute
+  SilapseDocsComponentsMenuRoute: typeof SilapseDocsComponentsMenuRoute
+  SilapseDocsComponentsMeterRoute: typeof SilapseDocsComponentsMeterRoute
+  SilapseDocsComponentsNumberfieldRoute: typeof SilapseDocsComponentsNumberfieldRoute
+  SilapseDocsComponentsPickerRoute: typeof SilapseDocsComponentsPickerRoute
+  SilapseDocsComponentsPopoverRoute: typeof SilapseDocsComponentsPopoverRoute
+  SilapseDocsComponentsProgressbarRoute: typeof SilapseDocsComponentsProgressbarRoute
+  SilapseDocsComponentsProviderRoute: typeof SilapseDocsComponentsProviderRoute
+  SilapseDocsComponentsRangecalendarRoute: typeof SilapseDocsComponentsRangecalendarRoute
+  SilapseDocsComponentsSearchfieldRoute: typeof SilapseDocsComponentsSearchfieldRoute
+  SilapseDocsComponentsSelectRoute: typeof SilapseDocsComponentsSelectRoute
+  SilapseDocsComponentsSeparatorRoute: typeof SilapseDocsComponentsSeparatorRoute
+  SilapseDocsComponentsSliderRoute: typeof SilapseDocsComponentsSliderRoute
+  SilapseDocsComponentsSwitchRoute: typeof SilapseDocsComponentsSwitchRoute
+  SilapseDocsComponentsTableRoute: typeof SilapseDocsComponentsTableRoute
+  SilapseDocsComponentsTabsRoute: typeof SilapseDocsComponentsTabsRoute
+  SilapseDocsComponentsTaggroupRoute: typeof SilapseDocsComponentsTaggroupRoute
+  SilapseDocsComponentsTextareaRoute: typeof SilapseDocsComponentsTextareaRoute
+  SilapseDocsComponentsTextfieldRoute: typeof SilapseDocsComponentsTextfieldRoute
+  SilapseDocsComponentsTimefieldRoute: typeof SilapseDocsComponentsTimefieldRoute
+  SilapseDocsComponentsToastRoute: typeof SilapseDocsComponentsToastRoute
+  SilapseDocsComponentsToolbarRoute: typeof SilapseDocsComponentsToolbarRoute
+  SilapseDocsComponentsTooltipRoute: typeof SilapseDocsComponentsTooltipRoute
+  SilapseDocsComponentsTreeRoute: typeof SilapseDocsComponentsTreeRoute
+  SilapseDocsComponentsVirtualizerRoute: typeof SilapseDocsComponentsVirtualizerRoute
+  SilapseDocsHooksCreateButtonRoute: typeof SilapseDocsHooksCreateButtonRoute
+  SilapseDocsHooksCreatePressRoute: typeof SilapseDocsHooksCreatePressRoute
 }
 
-const DocsRouteRouteChildren: DocsRouteRouteChildren = {
-  DocsInstallationRoute: DocsInstallationRoute,
-  DocsIndexRoute: DocsIndexRoute,
-  DocsComponentsAccordionRoute: DocsComponentsAccordionRoute,
-  DocsComponentsActionbarRoute: DocsComponentsActionbarRoute,
-  DocsComponentsActiongroupRoute: DocsComponentsActiongroupRoute,
-  DocsComponentsAlertdialogRoute: DocsComponentsAlertdialogRoute,
-  DocsComponentsBadgeRoute: DocsComponentsBadgeRoute,
-  DocsComponentsBreadcrumbsRoute: DocsComponentsBreadcrumbsRoute,
-  DocsComponentsButtonRoute: DocsComponentsButtonRoute,
-  DocsComponentsCalendarRoute: DocsComponentsCalendarRoute,
-  DocsComponentsCheckboxRoute: DocsComponentsCheckboxRoute,
-  DocsComponentsColorRoute: DocsComponentsColorRoute,
-  DocsComponentsComboboxRoute: DocsComponentsComboboxRoute,
-  DocsComponentsContextualhelpRoute: DocsComponentsContextualhelpRoute,
-  DocsComponentsDatefieldRoute: DocsComponentsDatefieldRoute,
-  DocsComponentsDatepickerRoute: DocsComponentsDatepickerRoute,
-  DocsComponentsDaterangepickerRoute: DocsComponentsDaterangepickerRoute,
-  DocsComponentsDialogRoute: DocsComponentsDialogRoute,
-  DocsComponentsDisclosureRoute: DocsComponentsDisclosureRoute,
-  DocsComponentsDropzoneRoute: DocsComponentsDropzoneRoute,
-  DocsComponentsFiletriggerRoute: DocsComponentsFiletriggerRoute,
-  DocsComponentsGridlistRoute: DocsComponentsGridlistRoute,
-  DocsComponentsLinkRoute: DocsComponentsLinkRoute,
-  DocsComponentsMenuRoute: DocsComponentsMenuRoute,
-  DocsComponentsMeterRoute: DocsComponentsMeterRoute,
-  DocsComponentsNumberfieldRoute: DocsComponentsNumberfieldRoute,
-  DocsComponentsPickerRoute: DocsComponentsPickerRoute,
-  DocsComponentsPopoverRoute: DocsComponentsPopoverRoute,
-  DocsComponentsProgressbarRoute: DocsComponentsProgressbarRoute,
-  DocsComponentsProviderRoute: DocsComponentsProviderRoute,
-  DocsComponentsRangecalendarRoute: DocsComponentsRangecalendarRoute,
-  DocsComponentsSearchfieldRoute: DocsComponentsSearchfieldRoute,
-  DocsComponentsSelectRoute: DocsComponentsSelectRoute,
-  DocsComponentsSeparatorRoute: DocsComponentsSeparatorRoute,
-  DocsComponentsSliderRoute: DocsComponentsSliderRoute,
-  DocsComponentsSwitchRoute: DocsComponentsSwitchRoute,
-  DocsComponentsTableRoute: DocsComponentsTableRoute,
-  DocsComponentsTabsRoute: DocsComponentsTabsRoute,
-  DocsComponentsTaggroupRoute: DocsComponentsTaggroupRoute,
-  DocsComponentsTextareaRoute: DocsComponentsTextareaRoute,
-  DocsComponentsTextfieldRoute: DocsComponentsTextfieldRoute,
-  DocsComponentsTimefieldRoute: DocsComponentsTimefieldRoute,
-  DocsComponentsToastRoute: DocsComponentsToastRoute,
-  DocsComponentsToolbarRoute: DocsComponentsToolbarRoute,
-  DocsComponentsTooltipRoute: DocsComponentsTooltipRoute,
-  DocsComponentsTreeRoute: DocsComponentsTreeRoute,
-  DocsComponentsVirtualizerRoute: DocsComponentsVirtualizerRoute,
-  DocsHooksCreateButtonRoute: DocsHooksCreateButtonRoute,
-  DocsHooksCreatePressRoute: DocsHooksCreatePressRoute,
+const SilapseDocsRouteRouteChildren: SilapseDocsRouteRouteChildren = {
+  SilapseDocsInstallationRoute: SilapseDocsInstallationRoute,
+  SilapseDocsIndexRoute: SilapseDocsIndexRoute,
+  SilapseDocsComponentsAccordionRoute: SilapseDocsComponentsAccordionRoute,
+  SilapseDocsComponentsActionbarRoute: SilapseDocsComponentsActionbarRoute,
+  SilapseDocsComponentsActiongroupRoute: SilapseDocsComponentsActiongroupRoute,
+  SilapseDocsComponentsAlertdialogRoute: SilapseDocsComponentsAlertdialogRoute,
+  SilapseDocsComponentsBadgeRoute: SilapseDocsComponentsBadgeRoute,
+  SilapseDocsComponentsBreadcrumbsRoute: SilapseDocsComponentsBreadcrumbsRoute,
+  SilapseDocsComponentsButtonRoute: SilapseDocsComponentsButtonRoute,
+  SilapseDocsComponentsCalendarRoute: SilapseDocsComponentsCalendarRoute,
+  SilapseDocsComponentsCheckboxRoute: SilapseDocsComponentsCheckboxRoute,
+  SilapseDocsComponentsColorRoute: SilapseDocsComponentsColorRoute,
+  SilapseDocsComponentsComboboxRoute: SilapseDocsComponentsComboboxRoute,
+  SilapseDocsComponentsContextualhelpRoute:
+    SilapseDocsComponentsContextualhelpRoute,
+  SilapseDocsComponentsDatefieldRoute: SilapseDocsComponentsDatefieldRoute,
+  SilapseDocsComponentsDatepickerRoute: SilapseDocsComponentsDatepickerRoute,
+  SilapseDocsComponentsDaterangepickerRoute:
+    SilapseDocsComponentsDaterangepickerRoute,
+  SilapseDocsComponentsDialogRoute: SilapseDocsComponentsDialogRoute,
+  SilapseDocsComponentsDisclosureRoute: SilapseDocsComponentsDisclosureRoute,
+  SilapseDocsComponentsDropzoneRoute: SilapseDocsComponentsDropzoneRoute,
+  SilapseDocsComponentsFiletriggerRoute: SilapseDocsComponentsFiletriggerRoute,
+  SilapseDocsComponentsGridlistRoute: SilapseDocsComponentsGridlistRoute,
+  SilapseDocsComponentsLinkRoute: SilapseDocsComponentsLinkRoute,
+  SilapseDocsComponentsMenuRoute: SilapseDocsComponentsMenuRoute,
+  SilapseDocsComponentsMeterRoute: SilapseDocsComponentsMeterRoute,
+  SilapseDocsComponentsNumberfieldRoute: SilapseDocsComponentsNumberfieldRoute,
+  SilapseDocsComponentsPickerRoute: SilapseDocsComponentsPickerRoute,
+  SilapseDocsComponentsPopoverRoute: SilapseDocsComponentsPopoverRoute,
+  SilapseDocsComponentsProgressbarRoute: SilapseDocsComponentsProgressbarRoute,
+  SilapseDocsComponentsProviderRoute: SilapseDocsComponentsProviderRoute,
+  SilapseDocsComponentsRangecalendarRoute:
+    SilapseDocsComponentsRangecalendarRoute,
+  SilapseDocsComponentsSearchfieldRoute: SilapseDocsComponentsSearchfieldRoute,
+  SilapseDocsComponentsSelectRoute: SilapseDocsComponentsSelectRoute,
+  SilapseDocsComponentsSeparatorRoute: SilapseDocsComponentsSeparatorRoute,
+  SilapseDocsComponentsSliderRoute: SilapseDocsComponentsSliderRoute,
+  SilapseDocsComponentsSwitchRoute: SilapseDocsComponentsSwitchRoute,
+  SilapseDocsComponentsTableRoute: SilapseDocsComponentsTableRoute,
+  SilapseDocsComponentsTabsRoute: SilapseDocsComponentsTabsRoute,
+  SilapseDocsComponentsTaggroupRoute: SilapseDocsComponentsTaggroupRoute,
+  SilapseDocsComponentsTextareaRoute: SilapseDocsComponentsTextareaRoute,
+  SilapseDocsComponentsTextfieldRoute: SilapseDocsComponentsTextfieldRoute,
+  SilapseDocsComponentsTimefieldRoute: SilapseDocsComponentsTimefieldRoute,
+  SilapseDocsComponentsToastRoute: SilapseDocsComponentsToastRoute,
+  SilapseDocsComponentsToolbarRoute: SilapseDocsComponentsToolbarRoute,
+  SilapseDocsComponentsTooltipRoute: SilapseDocsComponentsTooltipRoute,
+  SilapseDocsComponentsTreeRoute: SilapseDocsComponentsTreeRoute,
+  SilapseDocsComponentsVirtualizerRoute: SilapseDocsComponentsVirtualizerRoute,
+  SilapseDocsHooksCreateButtonRoute: SilapseDocsHooksCreateButtonRoute,
+  SilapseDocsHooksCreatePressRoute: SilapseDocsHooksCreatePressRoute,
 }
 
-const DocsRouteRouteWithChildren = DocsRouteRoute._addFileChildren(
-  DocsRouteRouteChildren,
-)
+const SilapseDocsRouteRouteWithChildren =
+  SilapseDocsRouteRoute._addFileChildren(SilapseDocsRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DocsRouteRoute: DocsRouteRouteWithChildren,
-  EcosystemRoute: EcosystemRoute,
-  PlaygroundRoute: PlaygroundRoute,
+  SilapseDocsRouteRoute: SilapseDocsRouteRouteWithChildren,
+  SilapseEcosystemRoute: SilapseEcosystemRoute,
+  SilapsePlaygroundRoute: SilapsePlaygroundRoute,
+  SilapseIndexRoute: SilapseIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
