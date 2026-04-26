@@ -7,21 +7,22 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "test:dialog": "playwright test e2e/dialog-visual.spec.ts --reporter=line",
     "preview": "astro preview",
     "typecheck": "astro check",
     "dev:worker": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler dev --config wrangler.jsonc",
     "types": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler types src/worker-configuration.d.ts --config wrangler.jsonc",
-    "deploy": "pnpm run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --config wrangler.jsonc",
-    "deploy:dry-run": "pnpm run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --dry-run --config wrangler.jsonc"
+    "deploy": "vp run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --config wrangler.jsonc",
+    "deploy:dry-run": "vp run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --dry-run --config wrangler.jsonc"
   },
   "overrides": {
     "lodash": "^4.17.23"
   },
   "dependencies": {
-    "@proyecto-viviana/silapse": "^0.4.2",
-    "@proyecto-viviana/solid-stately": "^0.2.7",
-    "@proyecto-viviana/solidaria": "^0.2.8",
-    "@proyecto-viviana/solidaria-components": "^0.2.9",
+    "@proyecto-viviana/silapse": "workspace:*",
+    "@proyecto-viviana/solid-stately": "workspace:*",
+    "@proyecto-viviana/solidaria": "workspace:*",
+    "@proyecto-viviana/solidaria-components": "workspace:*",
     "@astrojs/react": "^4.2.2",
     "@astrojs/solid-js": "^5.1.1",
     "@react-spectrum/button": "3.17.6",
@@ -38,6 +39,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@playwright/test": "^1.58.2",
+    "playwright": "^1.58.2",
     "typescript": "^5.8.2"
   }
 }

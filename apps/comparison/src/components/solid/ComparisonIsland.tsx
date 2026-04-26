@@ -1,24 +1,53 @@
 import h from "solid-js/h";
-import { createSignal } from "solid-js";
+import { createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { hc, renderProp } from "./solid-h";
 import { Provider as SilapseProvider } from "@proyecto-viviana/silapse";
 import {
   Button as SilapseButton,
+  Checkbox,
+  DatePicker,
+  Dialog,
+  Radio,
+  RadioGroup,
+  SearchField,
   Tab,
   TabList,
   TabPanel,
   Tabs,
+  ToastProvider,
+  ToastRegion,
+  Toolbar,
+  Tooltip,
+  TooltipTrigger,
+  ToggleButton,
+  addToast,
+  globalToastQueue,
 } from "@proyecto-viviana/silapse";
 import {
   Button as HeadlessButton,
+  DialogTrigger as HeadlessDialogTrigger,
   Popover as HeadlessPopover,
   PopoverTrigger as HeadlessPopoverTrigger,
+  Input as HeadlessInput,
+  Label as HeadlessLabel,
+  Modal as HeadlessModal,
+  ModalOverlay as HeadlessModalOverlay,
+  Select as HeadlessSelect,
+  SelectListBox as HeadlessSelectListBox,
+  SelectOption as HeadlessSelectOption,
+  SelectTrigger as HeadlessSelectTrigger,
+  SelectValue as HeadlessSelectValue,
   Tab as HeadlessTab,
   TabList as HeadlessTabList,
   TabPanels as HeadlessTabPanels,
   TabPanel as HeadlessTabPanel,
   Tabs as HeadlessTabs,
+  TextField as HeadlessTextField,
 } from "@proyecto-viviana/solidaria-components";
-import { createButton, UNSAFE_PortalProvider } from "@proyecto-viviana/solidaria";
+import {
+  createButton,
+  UNSAFE_PortalProvider,
+} from "@proyecto-viviana/solidaria";
 import type {
   ComparisonLayerId,
   ComparisonSlug,
@@ -52,6 +81,12 @@ const tabItems: TabItem[] = [
     label: "Testing",
     content: "This page is intended to become a Playwright and axe target.",
   },
+];
+
+const selectItems = [
+  { id: "alpha", label: "Alpha" },
+  { id: "bravo", label: "Bravo" },
+  { id: "charlie", label: "Charlie" },
 ];
 
 export default function ComparisonIsland(props: ComparisonIslandProps) {
@@ -118,17 +153,7 @@ function renderStyled(componentSlug: ComparisonSlug) {
         ),
       );
     case "button":
-      return h(
-        SilapseProvider,
-        { colorScheme: "dark", style: providerShellStyle },
-        h(
-          "div",
-          { class: "comparison-button-row" },
-          h(SilapseButton, { variant: "primary" }, "Primary"),
-          h(SilapseButton, { variant: "accent" }, "Accent"),
-          h(SilapseButton, { variant: "secondary" }, "Secondary"),
-        ),
-      );
+      return h(SolidariaSpectrumButtonDemo, {});
     case "tabs":
       return h(
         SilapseProvider,
@@ -148,9 +173,559 @@ function renderStyled(componentSlug: ComparisonSlug) {
           tabItems.map((item) => h(TabPanel, { id: item.id }, item.content)),
         ),
       );
+    case "textfield":
+      return h(SolidariaSpectrumTextFieldDemo, {});
+    case "select":
+      return h(SolidariaSpectrumSelectDemo, {});
+    case "checkbox":
+      return h(SolidCheckboxDemo, {});
+    case "dialog":
+      return h(SolidDialogDemo, {});
+    case "radio":
+      return h(SolidRadioDemo, {});
+    case "datepicker":
+      return h(SolidDatePickerDemo, {});
+    case "searchfield":
+      return h(SolidSearchFieldDemo, {});
+    case "tooltip":
+      return h(SolidTooltipDemo, {});
+    case "toolbar":
+      return h(SolidToolbarDemo, {});
+    case "toast":
+      return h(SolidToastDemo, {});
     default:
       return emptyState("No styled Solid demo is wired for this component yet.");
   }
+}
+
+function SolidDialogDemo() {
+  const [isOpen, setIsOpen] = createSignal(false);
+  const [focusReturned, setFocusReturned] = createSignal(false);
+  const updateOpen = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      setFocusReturned(false);
+    }
+  };
+
+  return hc(
+    "div",
+    {
+      class: `${comparisonSpectrumSkin.rootClass} comparison-stack`,
+      get "data-comparison-open"() {
+        return String(isOpen());
+      },
+      get "data-comparison-focus-returned"() {
+        return String(focusReturned());
+      },
+    },
+    [
+      hc(
+        HeadlessDialogTrigger,
+        {
+          onOpenChange: updateOpen,
+        },
+        [
+          hc(
+            SilapseButton,
+            {
+              variant: "primary",
+              buttonStyle: "outline",
+              class: `${comparisonSpectrumSkin.buttonClass} comparison-spectrum-Button--trigger`,
+              "data-variant": "primary",
+              "data-style": "outline",
+              onFocus: () => {
+                if (!isOpen()) {
+                  setFocusReturned(true);
+                }
+              },
+            },
+            [h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, "Open Dialog")],
+          ),
+          hc(
+            HeadlessModalOverlay,
+            {
+              isDismissable: true,
+              class: "comparison-dialog-underlay",
+            },
+            [
+              hc(
+                "div",
+                { class: "comparison-dialog-positioner" },
+                [
+                  hc(
+                    HeadlessModal,
+                    { class: "comparison-dialog-modal" },
+                    [
+                      hc(
+                        Dialog,
+                        {
+                          title: "Review Changes",
+                          isDismissable: true,
+                          class: `comparison-dialog-surface ${comparisonSpectrumSkin.dialogClass}`,
+                        },
+                        ["Dialog focus and dismissal are compared from this island."],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+function SolidDatePickerDemo() {
+  let root: HTMLDivElement | undefined;
+  const [value, setValue] = createSignal("");
+  const [open, setOpen] = createSignal(false);
+
+  onMount(() => {
+    const updateOpen = () => {
+      setOpen(root?.querySelector("[data-open]") != null);
+    };
+
+    updateOpen();
+    const observer = new MutationObserver(updateOpen);
+    if (root) {
+      observer.observe(root, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
+    }
+    onCleanup(() => observer.disconnect());
+  });
+
+  return hc(
+    "div",
+    {
+      class: "comparison-stack",
+      ref: (element: HTMLDivElement) => {
+        root = element;
+      },
+      get "data-comparison-value"() {
+        return value();
+      },
+      get "data-comparison-open"() {
+        return String(open());
+      },
+    },
+    [
+      hc(DatePicker, {
+        label: "Due date",
+        onChange: (nextValue: unknown) => {
+          setValue(nextValue == null ? "" : String(nextValue));
+        },
+      }),
+    ],
+  );
+}
+
+function SolidSearchFieldDemo() {
+  const [value, setValue] = createSignal("status");
+  const [clearCount, setClearCount] = createSignal(0);
+
+  return hc(
+    "div",
+    {
+      class: "comparison-stack",
+      get "data-comparison-input-value"() {
+        return value();
+      },
+      get "data-comparison-clear-count"() {
+        return String(clearCount());
+      },
+    },
+    [
+      hc(SearchField, {
+        label: "Search",
+        defaultValue: "status",
+        onChange: setValue,
+        onInput: (event: InputEvent) => {
+          setValue((event.currentTarget as HTMLInputElement).value);
+        },
+        onClear: () => {
+          setValue("");
+          setClearCount((count) => count + 1);
+        },
+      }),
+    ],
+  );
+}
+
+function SolidTooltipDemo() {
+  const [isOpen, setIsOpen] = createSignal(false);
+  const [focusReturned, setFocusReturned] = createSignal(false);
+
+  return hc(
+    "div",
+    {
+      class: "comparison-stack",
+      get "data-comparison-open"() {
+        return String(isOpen());
+      },
+      get "data-comparison-focus-returned"() {
+        return String(focusReturned());
+      },
+    },
+    [
+      hc(
+        TooltipTrigger,
+        {
+          delay: 0,
+          onOpenChange: (open: boolean) => setIsOpen(open),
+        },
+        [
+          hc(
+            SilapseButton,
+            {
+              variant: "secondary",
+              onFocus: () => setFocusReturned(false),
+              onBlur: () => setFocusReturned(true),
+            },
+            ["Inspect"],
+          ),
+          hc(Tooltip, {}, ["Tooltip content"]),
+        ],
+      ),
+    ],
+  );
+}
+
+function SolidToolbarDemo() {
+  const [boldPressed, setBoldPressed] = createSignal(false);
+  const [actionCount, setActionCount] = createSignal(0);
+
+  return hc(
+    "div",
+    {
+      class: "comparison-stack",
+      get "data-comparison-pressed"() {
+        return String(boldPressed());
+      },
+      get "data-comparison-action-count"() {
+        return String(actionCount());
+      },
+    },
+    [
+      hc(
+        Toolbar,
+        { "aria-label": "Formatting tools" },
+        renderProp(() => [
+          hc(
+            ToggleButton,
+            {
+              "aria-label": "Bold",
+              get isSelected() {
+                return boldPressed();
+              },
+              onChange: (pressed: boolean) => {
+                setBoldPressed(pressed);
+                setActionCount((count) => count + 1);
+              },
+            },
+            ["Bold"],
+          ),
+          hc(
+            SilapseButton,
+            {
+              variant: "secondary",
+              buttonStyle: "outline",
+              onPress: (_event: unknown) => setActionCount((count) => count + 1),
+            },
+            ["Italic"],
+          ),
+        ]),
+      ),
+    ],
+  );
+}
+
+function SolidToastDemo() {
+  const [visibleCount, setVisibleCount] = createSignal(0);
+  const [shownCount, setShownCount] = createSignal(0);
+  const toastKeys: string[] = [];
+
+  const clearToasts = () => {
+    for (const key of toastKeys.splice(0)) {
+      globalToastQueue.close(key);
+      globalToastQueue.remove(key);
+    }
+  };
+
+  onMount(() => {
+    const unsubscribe = globalToastQueue.subscribe((toasts) => {
+      setVisibleCount(toasts.length);
+    });
+    onCleanup(unsubscribe);
+  });
+  onCleanup(clearToasts);
+
+  const showToast = () => {
+    const count = shownCount() + 1;
+    setShownCount(count);
+    const key = addToast({
+      title: `Saved successfully ${count}`,
+      description: "Toast region renders inside the comparison island.",
+      type: "success",
+    }, { timeout: 0 });
+    toastKeys.push(key);
+  };
+
+  const toastRegion = createMemo(() => (
+    visibleCount() > 0
+      ? hc(
+        ToastProvider,
+        { useGlobalQueue: true },
+        [hc(ToastRegion, { portal: false, placement: "bottom-start" })],
+      )
+      : null
+  ));
+
+  return hc(
+    "div",
+    {
+      class: "comparison-stack",
+      get "data-comparison-queued-count"() {
+        return String(shownCount());
+      },
+      get "data-comparison-visible-count"() {
+        return String(visibleCount());
+      },
+    },
+    [
+      hc("button", { type: "button", class: "comparison-rac-button", onClick: showToast }, ["Show toast"]),
+      toastRegion,
+    ],
+  );
+}
+
+function SolidariaSpectrumButtonDemo() {
+  const [actionCount, setActionCount] = createSignal(0);
+
+  return hc(
+    "div",
+    {
+      class: comparisonSpectrumSkin.rootClass,
+      get "data-comparison-action-count"() {
+        return String(actionCount());
+      },
+    },
+    [hc(
+      "div",
+      { class: "comparison-button-row" },
+      [
+        hSpectrumButton({
+          variant: "primary",
+          style: "outline",
+          onClick: (_event: MouseEvent) => setActionCount((count) => count + 1),
+        }, "Primary"),
+        hSpectrumButton({ variant: "accent", style: "fill" }, "Accent"),
+        hSpectrumButton({ variant: "secondary", style: "outline" }, "Secondary"),
+      ],
+    )],
+  );
+}
+
+/**
+ * Button skin adapter prototype.
+ *
+ * The comparison app intentionally skins `solidaria-components/Button` through
+ * stable public signals instead of pushing React Spectrum generated CSS-module
+ * classes: root class, data-state attributes, variant attributes, slots, and CSS
+ * variables. Behavior remains owned by `solidaria-components/Button`.
+ */
+const comparisonSpectrumSkin = {
+  rootClass: "comparison-spectrum-skin",
+  buttonClass: "solidaria-Button comparison-spectrum-Button",
+  labelClass: "comparison-spectrum-Button-label",
+  dialogClass: "solidaria-Dialog comparison-spectrum-Dialog",
+  dialogTitleClass: "solidaria-Heading comparison-spectrum-Dialog-title",
+  dialogBodyClass: "comparison-spectrum-Dialog-body",
+  fieldRootClass: "solidaria-TextField comparison-spectrum-Field",
+  fieldLabelClass: "solidaria-Label comparison-spectrum-Field-label",
+  fieldInputClass: "solidaria-Input comparison-spectrum-Field-input",
+  selectRootClass: "solidaria-Select comparison-spectrum-Select",
+  selectTriggerClass: "solidaria-Select-trigger comparison-spectrum-Field-input comparison-spectrum-Select-trigger",
+  selectValueClass: "solidaria-Select-value comparison-spectrum-Select-value",
+  selectListBoxClass: "solidaria-Select-listbox comparison-spectrum-Select-listbox",
+  selectOptionClass: "solidaria-Select-option comparison-spectrum-Select-option",
+} as const;
+
+function hSpectrumButton(
+  props: {
+    isDisabled?: boolean;
+    variant: "primary" | "accent" | "secondary";
+    style: "fill" | "outline";
+    onClick?: (event: MouseEvent) => void;
+    onFocus?: () => void;
+  },
+  label: string,
+) {
+  return hc(
+    HeadlessButton,
+    {
+      isDisabled: props.isDisabled,
+      class: comparisonSpectrumSkin.buttonClass,
+      "data-variant": props.variant,
+      "data-style": props.style,
+      onClick: props.onClick,
+      onFocus: props.onFocus,
+    },
+    [h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, label)],
+  );
+}
+
+function SolidariaSpectrumTextFieldDemo() {
+  const [value, setValue] = createSignal("Quarterly report");
+
+  return hc(
+    "div",
+    {
+      class: comparisonSpectrumSkin.rootClass,
+      get "data-comparison-value"() {
+        return value();
+      },
+    },
+    [hc(
+      HeadlessTextField,
+      {
+        class: comparisonSpectrumSkin.fieldRootClass,
+        defaultValue: "Quarterly report",
+        "aria-label": "Name",
+        "data-size": "medium",
+        "data-variant": "default",
+      },
+      [
+        h(
+          HeadlessLabel,
+          {
+            for: "solidaria-spectrum-textfield-name",
+            class: comparisonSpectrumSkin.fieldLabelClass,
+            "data-slot": "label",
+          },
+          "Name",
+        ),
+        h(HeadlessInput, {
+          id: "solidaria-spectrum-textfield-name",
+          class: comparisonSpectrumSkin.fieldInputClass,
+          "data-slot": "input",
+          onInput: (event: InputEvent) => {
+            setValue((event.currentTarget as HTMLInputElement).value);
+          },
+        }),
+      ],
+    )],
+  );
+}
+
+function SolidariaSpectrumSelectDemo() {
+  const [selectedKey, setSelectedKey] = createSignal<string | null>("bravo");
+
+  return hc(
+    "div",
+    {
+      class: comparisonSpectrumSkin.rootClass,
+      get "data-comparison-selected-key"() {
+        return selectedKey() ?? "";
+      },
+    },
+    [hc(
+      HeadlessSelect,
+      {
+        class: comparisonSpectrumSkin.selectRootClass,
+        items: selectItems,
+        defaultSelectedKey: "bravo",
+        onSelectionChange: (key: string | number | null) => {
+          setSelectedKey(key == null ? null : String(key));
+        },
+        getKey: (item: (typeof selectItems)[number]) => item.id,
+        getTextValue: (item: (typeof selectItems)[number]) => item.label,
+        "aria-label": "Channel",
+        "data-size": "medium",
+        "data-variant": "default",
+      },
+      [
+        hc(
+          HeadlessSelectTrigger,
+          { class: comparisonSpectrumSkin.selectTriggerClass },
+          [h(HeadlessSelectValue, {
+            class: comparisonSpectrumSkin.selectValueClass,
+            "data-slot": "value",
+          })],
+        ),
+        hc(
+          HeadlessSelectListBox,
+          { class: comparisonSpectrumSkin.selectListBoxClass },
+          renderProp((item: (typeof selectItems)[number]) =>
+            h(
+              HeadlessSelectOption,
+              {
+                id: item.id,
+                class: comparisonSpectrumSkin.selectOptionClass,
+              },
+              item.label,
+            )),
+        ),
+      ],
+    )],
+  );
+}
+
+function SolidCheckboxDemo() {
+  const [checked, setChecked] = createSignal(true);
+
+  return hc(
+    "div",
+    {
+      class: "comparison-stack",
+      get "data-comparison-checked"() {
+        return String(checked());
+      },
+    },
+    [
+      hc(
+        Checkbox,
+        {
+          defaultSelected: true,
+          onChange: setChecked,
+        },
+        ["Enable alerts"],
+      ),
+    ],
+  );
+}
+
+function SolidRadioDemo() {
+  const [selectedKey, setSelectedKey] = createSignal("compact");
+
+  return hc(
+    "div",
+    {
+      class: "comparison-stack",
+      get "data-comparison-selected-key"() {
+        return selectedKey();
+      },
+    },
+    [
+      hc(
+        RadioGroup,
+        {
+          label: "Density",
+          defaultValue: "compact",
+          onChange: setSelectedKey,
+        },
+        renderProp(() => [
+          hc(Radio, { value: "compact" }, ["Compact"]),
+          hc(Radio, { value: "comfortable" }, ["Comfortable"]),
+        ]),
+      ),
+    ],
+  );
 }
 
 function renderComponents(componentSlug: ComparisonSlug) {
