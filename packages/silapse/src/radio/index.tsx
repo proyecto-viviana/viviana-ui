@@ -164,8 +164,8 @@ export function Radio(props: RadioProps): JSX.Element {
   }
 
   // Use data-selected attribute from headless Radio for conditional dot visibility via CSS
-  const circleClass = `relative flex items-center justify-center rounded-full border-2 transition-all duration-200 ${sizeStyle.circle} border-primary-600 bg-transparent hover:border-accent-300 [[data-selected]_&]:border-accent`
-  const dotClass = `rounded-full bg-accent transition-all duration-200 ${sizeStyle.dot} scale-0 [[data-selected]_&]:scale-100`
+  const circleClass = `relative flex items-center justify-center rounded-full border-2 transition-all duration-200 pointer-events-none ${sizeStyle.circle} border-primary-600 bg-transparent hover:border-accent-300 [[data-selected]_&]:border-accent`
+  const dotClass = `rounded-full bg-accent transition-all duration-200 pointer-events-none ${sizeStyle.dot} scale-0 [[data-selected]_&]:scale-100`
   const labelClass = `text-primary-200 ${sizeStyle.label}`
 
   return (
@@ -175,8 +175,8 @@ export function Radio(props: RadioProps): JSX.Element {
     >
       {(renderProps) => (
         <>
-          <span class={circleClass}>
-            <span class={dotClass} />
+          <span class={circleClass} style={{ 'pointer-events': 'none' }}>
+            <span class={dotClass} style={{ 'pointer-events': 'none' }} />
           </span>
           <Show when={props.children}>
             <span class={labelClass}>

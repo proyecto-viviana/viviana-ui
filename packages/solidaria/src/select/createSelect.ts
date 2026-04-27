@@ -42,8 +42,12 @@ export interface AriaSelectProps {
   onFocusChange?: (isFocused: boolean) => void;
   /** The name of the select, used when submitting an HTML form. */
   name?: string;
+  /** Associates the hidden native select with a form element by id. */
+  form?: string;
   /** Whether type-to-select is disabled. @default false */
   disallowTypeAhead?: boolean;
+  /** Whether the select can open when its collection is empty. @default false */
+  allowsEmptyCollection?: boolean;
 }
 
 export interface SelectAria<T> {
@@ -139,14 +143,7 @@ export function createSelect<T>(
   const isFocused = state.isFocused;
 
   // Handle press on trigger
-  const { pressProps } = createPress({
-    get isDisabled() {
-      return getProps().isDisabled ?? state.isDisabled;
-    },
-    onPress() {
-      state.toggle();
-    },
-  });
+  const canOpen = () => getProps().allowsEmptyCollection || state.collection().getFirstKey() != null;
 
   // Helper to check if key is disabled
   const isKeyDisabled = (key: string | number): boolean => {
@@ -171,6 +168,38 @@ export function createSelect<T>(
 
     return key;
   };
+
+  const focusKeyForOpen = (): string | number | null => {
+    const selectedKey = state.selectedKey();
+    if (selectedKey != null && !isKeyDisabled(selectedKey)) {
+      return selectedKey;
+    }
+    return findNextKey(null, 'forward');
+  };
+
+  const openWithFocus = () => {
+    if (state.isOpen() || !canOpen()) {
+      return;
+    }
+    state.open();
+    const focusKey = focusKeyForOpen();
+    if (focusKey != null) {
+      state.setFocusedKey(focusKey);
+    }
+  };
+
+  const { pressProps } = createPress({
+    get isDisabled() {
+      return getProps().isDisabled ?? state.isDisabled;
+    },
+    onPress() {
+      if (state.isOpen()) {
+        state.close();
+      } else {
+        openWithFocus();
+      }
+    },
+  });
 
   // Type-to-select - for Select, typing directly selects items when closed
   const { typeSelectProps } = createTypeSelect({
@@ -201,12 +230,19 @@ export function createSelect<T>(
       case 'Enter':
       case ' ':
         e.preventDefault();
-        state.toggle();
+        if (state.isOpen()) {
+          state.close();
+        } else {
+          openWithFocus();
+        }
         break;
 
       case 'ArrowDown':
         e.preventDefault();
         if (!state.isOpen()) {
+          if (!canOpen()) {
+            return;
+          }
           // ArrowDown: Open the dropdown and focus first/selected item
           state.open();
           const focusKey = currentKey != null && !isKeyDisabled(currentKey)
@@ -222,6 +258,9 @@ export function createSelect<T>(
       case 'ArrowUp':
         e.preventDefault();
         if (!state.isOpen()) {
+          if (!canOpen()) {
+            return;
+          }
           // ArrowUp: Open the dropdown and focus last/selected item
           state.open();
           const focusKey = currentKey != null && !isKeyDisabled(currentKey)

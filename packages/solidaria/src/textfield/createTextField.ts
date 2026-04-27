@@ -35,6 +35,8 @@ export interface AriaTextFieldProps extends AriaFieldProps, FocusableProps {
   inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
   /** The name of the input element, used when submitting an HTML form. */
   name?: string;
+  /** Associates the input with a form element by id. */
+  form?: string;
   /** Regex pattern to validate the input value. */
   pattern?: string;
   /** The maximum number of characters supported by the input. */
@@ -143,6 +145,7 @@ export function createTextField<T extends HTMLInputElement | HTMLTextAreaElement
         type: isTextarea ? undefined : (p.type ?? 'text'),
         inputMode: p.inputMode,
         name: p.name,
+        form: p.form,
         pattern: isTextarea ? undefined : p.pattern,
         maxLength: p.maxLength,
         minLength: p.minLength,

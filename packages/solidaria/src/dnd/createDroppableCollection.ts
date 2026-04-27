@@ -13,6 +13,7 @@ import type {
   DropOperation,
   DropItem,
   DragTypes,
+  Key,
 } from '@proyecto-viviana/solid-stately';
 import { DIRECTORY_DRAG_TYPE } from '@proyecto-viviana/solid-stately';
 import { createDrop } from './createDrop';
@@ -72,6 +73,19 @@ export interface KeyboardDelegateLike {
   getKeyPageAbove?: (key: string | number) => string | number | null;
 }
 
+interface CollectionNodeLike {
+  type?: string;
+  key: Key;
+  parentKey?: Key | null;
+  childNodes?: CollectionNodeLike[];
+  isExpanded?: boolean;
+}
+
+interface CollectionLike {
+  getItem(key: Key): CollectionNodeLike | null;
+  [Symbol.iterator](): Iterator<CollectionNodeLike>;
+}
+
 export interface DroppableCollectionOptions {
   /** Reference to the collection element. */
   ref: Accessor<HTMLElement | null>;
@@ -118,6 +132,14 @@ export interface DroppableCollectionOptions {
   keyboardDelegate?: KeyboardDelegateLike;
   /** Optional keyboard handler composed with internal drop target navigation keys. */
   onKeyDown?: (e: KeyboardEvent) => void;
+  /** Collection snapshot used to restore focus and selection after a drop mutates items. */
+  collection?: CollectionLike;
+  /** Current collection selection used to avoid replacing user-updated selection after a drop. */
+  selectedKeys?: 'all' | Iterable<Key>;
+  /** Sets collection selection after a drop when new rows were inserted and selection was unchanged. */
+  setSelectedKeys?: (keys: Set<Key>) => void;
+  /** Sets collection focus after a drop when new rows were inserted. */
+  setFocusedKey?: (key: Key | null) => void;
   /** Whether the collection is disabled for dropping. */
   isDisabled?: boolean;
   /** Accepted drag types. 'all' accepts any type. */
@@ -253,14 +275,21 @@ export function createDroppableCollection(
       setGlobalDropCollectionRef(opts.ref());
 
       if (state.target) {
+        const target = state.target;
+        const previousCollection = opts.collection;
+        const previousSelectedKeys = normalizeSelection(opts.selectedKeys);
         opts.onDrop?.({
           items: e.items,
-          target: state.target,
+          target,
           dropOperation: e.dropOperation,
           x: e.x,
           y: e.y,
         });
-        handleDrop(e.items, state.target, e.dropOperation);
+        void Promise.resolve(handleDrop(e.items, target, e.dropOperation)).then(() => {
+          queueMicrotask(() => {
+            updateFocusAfterDrop(getOptions(), previousCollection, previousSelectedKeys, target);
+          });
+        });
       }
     },
   }));
@@ -679,4 +708,82 @@ export function createDroppableCollection(
       return collectionProps() as DroppableCollectionAria['collectionProps'];
     },
   };
+}
+
+function normalizeSelection(selection: 'all' | Iterable<Key> | undefined): 'all' | Set<Key> | null {
+  if (selection == null) return null;
+  if (selection === 'all') return 'all';
+  return new Set(selection);
+}
+
+function selectionEquals(a: 'all' | Set<Key> | null, b: 'all' | Set<Key> | null): boolean {
+  if (a === b) return true;
+  if (!a || !b || a === 'all' || b === 'all') return false;
+  if (a.size !== b.size) return false;
+  for (const key of a) {
+    if (!b.has(key)) return false;
+  }
+  return true;
+}
+
+function getNewItemKeys(collection: CollectionLike, previousCollection: CollectionLike): Set<Key> {
+  const keys = new Set<Key>();
+  const visit = (node: CollectionNodeLike) => {
+    if (node.type === 'item' && !previousCollection.getItem(node.key)) {
+      keys.add(node.key);
+    }
+    for (const child of node.childNodes ?? []) {
+      visit(child);
+    }
+  };
+
+  for (const node of collection) {
+    visit(node);
+  }
+  return keys;
+}
+
+function updateFocusAfterDrop(
+  opts: DroppableCollectionOptions,
+  previousCollection: CollectionLike | undefined,
+  previousSelectedKeys: 'all' | Set<Key> | null,
+  target: DropTarget
+): void {
+  const collection = opts.collection;
+  if (!collection || !previousCollection) return;
+
+  const newKeys = getNewItemKeys(collection, previousCollection);
+  if (newKeys.size === 0) return;
+
+  const currentSelectedKeys = normalizeSelection(opts.selectedKeys);
+  if (
+    opts.setSelectedKeys &&
+    previousSelectedKeys &&
+    selectionEquals(previousSelectedKeys, currentSelectedKeys)
+  ) {
+    opts.setSelectedKeys(newKeys);
+  }
+
+  const first = newKeys.values().next().value;
+  if (first == null) return;
+
+  let focusKey: Key | null = first;
+  const item = collection.getItem(first);
+  const parent = item?.parentKey != null ? collection.getItem(item.parentKey) : null;
+  const isDroppedOnCollapsedParent =
+    target.type === 'item' &&
+    target.dropPosition === 'on' &&
+    item?.parentKey != null &&
+    parent?.isExpanded !== true;
+
+  if (item && (item.type === 'cell' || item.type === 'rowheader' || isDroppedOnCollapsedParent)) {
+    focusKey = item.parentKey ?? first;
+  }
+
+  opts.setFocusedKey?.(focusKey);
+
+  queueMicrotask(() => {
+    const row = opts.ref().querySelector<HTMLElement>('[role="row"][tabindex="0"]');
+    row?.focus();
+  });
 }

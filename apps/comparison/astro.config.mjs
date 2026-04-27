@@ -1,10 +1,11 @@
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
 
-const repoRoot = path.resolve("./../..");
-const appRoot = path.resolve("./");
+const appRoot = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(appRoot, "../..");
 const localSolidPackages = [
   "@proyecto-viviana/solid-stately",
   "@proyecto-viviana/solidaria",
@@ -27,10 +28,6 @@ export default defineConfig(({ command }) => ({
     solid({
       include: [
         "src/components/solid/**/*",
-        "../../packages/solid-stately/src/**/*",
-        "../../packages/solidaria/src/**/*",
-        "../../packages/solidaria-components/src/**/*",
-        "../../packages/silapse/src/**/*",
       ],
       exclude: ["src/components/react/**/*"],
     }),
@@ -44,6 +41,22 @@ export default defineConfig(({ command }) => ({
         {
           find: "@comparison",
           replacement: path.resolve(appRoot, "src"),
+        },
+        {
+          find: /^@proyecto-viviana\/solid-stately$/,
+          replacement: path.resolve(repoRoot, "packages/solid-stately/dist/index.js"),
+        },
+        {
+          find: /^@proyecto-viviana\/solidaria$/,
+          replacement: path.resolve(repoRoot, "packages/solidaria/dist/index.js"),
+        },
+        {
+          find: /^@proyecto-viviana\/solidaria-components$/,
+          replacement: path.resolve(repoRoot, "packages/solidaria-components/dist/index.js"),
+        },
+        {
+          find: /^@proyecto-viviana\/silapse$/,
+          replacement: path.resolve(repoRoot, "packages/silapse/dist/index.js"),
         },
       ],
     },

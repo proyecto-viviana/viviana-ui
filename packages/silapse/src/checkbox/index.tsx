@@ -75,6 +75,7 @@ function CheckIcon(props: { class?: string }) {
   return (
     <svg
       class={props.class}
+      style={{ 'pointer-events': 'none' }}
       viewBox="0 0 12 10"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -94,6 +95,7 @@ function IndeterminateIcon(props: { class?: string }) {
   return (
     <svg
       class={props.class}
+      style={{ 'pointer-events': 'none' }}
       viewBox="0 0 12 2"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -148,7 +150,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     >
       {(renderProps: CheckboxRenderProps) => {
         const boxClasses = () => {
-          const base = 'relative flex items-center justify-center rounded border-2 transition-all duration-200'
+          const base = 'relative flex items-center justify-center rounded border-2 transition-all duration-200 pointer-events-none'
           const sizeClass = size().box
 
           let colorClass: string
@@ -169,7 +171,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
         }
 
         const iconClasses = () => {
-          const base = 'text-on-color transition-opacity duration-200'
+          const base = 'text-on-color transition-opacity duration-200 pointer-events-none'
           const sizeClass = size().icon
           const visibilityClass = (renderProps.isSelected || renderProps.isIndeterminate)
             ? 'opacity-100'
@@ -188,7 +190,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
 
         return (
           <>
-            <span class={boxClasses()}>
+            <span class={boxClasses()} style={{ 'pointer-events': 'none' }}>
               <Show
                 when={!renderProps.isIndeterminate}
                 fallback={<IndeterminateIcon class={iconClasses()} />}

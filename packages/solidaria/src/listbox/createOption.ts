@@ -23,6 +23,8 @@ export interface AriaOptionProps {
   shouldSelectOnPressUp?: boolean;
   /** Whether to focus the option on hover. */
   shouldFocusOnHover?: boolean;
+  /** Handler called when the option is activated. */
+  onAction?: () => void;
 }
 
 export interface OptionAria {
@@ -79,6 +81,7 @@ export function createOption<T>(
     if (state.selectionMode() !== 'none') {
       state.select(key);
     }
+    getProps().onAction?.();
     getData()?.onAction?.(key);
   };
 

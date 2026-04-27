@@ -315,6 +315,19 @@ describe('NumberField', () => {
       const field = document.querySelector('.solidaria-NumberField');
       expect(field).toHaveAttribute('data-readonly');
     });
+
+    it('should expose isReadOnly in render props', () => {
+      render(() => (
+        <TestNumberField
+          fieldProps={{
+            isReadOnly: true,
+            class: (renderProps) => renderProps.isReadOnly ? 'readonly-numberfield' : 'editable-numberfield',
+          }}
+        />
+      ));
+
+      expect(document.querySelector('.readonly-numberfield')).toBeInTheDocument();
+    });
   });
 
   // ============================================

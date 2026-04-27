@@ -33,6 +33,8 @@ export interface SwitchAria {
   isDisabled: boolean;
   /** Whether the switch is read only. */
   isReadOnly: boolean;
+  /** Whether the switch is invalid. */
+  isInvalid: boolean;
 }
 
 // ============================================
@@ -66,5 +68,6 @@ export function createSwitch(
     isPressed: toggle.isPressed,
     isDisabled: toggle.isDisabled,
     isReadOnly: toggle.isReadOnly,
+    isInvalid: toggle.isInvalid,
   };
 }

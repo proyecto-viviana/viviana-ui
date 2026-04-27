@@ -143,6 +143,24 @@ async function dialogGeometry(dialog: Locator): Promise<DialogGeometry> {
   });
 }
 
+async function clickOutsideDialog(page: Page, dialog: Locator) {
+  const geometry = await dialogGeometry(dialog);
+  const x = Math.max(8, Math.min(24, geometry.x - 24));
+  const y = Math.max(8, Math.min(24, geometry.y - 24));
+  await page.mouse.click(x, y);
+}
+
+async function expectTabFocusContained(page: Page, dialog: Locator, expectedButtonName: string) {
+  await page.keyboard.press('Tab');
+  const activeAfterFirstTab = dialog.page().locator(':focus');
+  await expect(activeAfterFirstTab).toHaveAccessibleName(expectedButtonName);
+  await expect(dialog).toContainText(dialogText);
+  expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
+
+  await page.keyboard.press('Tab');
+  expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
+}
+
 function assertVisibleDialogGeometry(geometry: DialogGeometry) {
   expect(geometry.visibleInViewport).toBe(true);
   expect(geometry.width).toBeGreaterThan(240);
@@ -190,7 +208,13 @@ test.describe('comparison Dialog visual parity', () => {
     assertVisibleDialogGeometry(reactGeometry);
     await expect(reactDialog).toHaveScreenshot('dialog-surface-react.png', { animations: 'disabled' });
     const reactDialogPng = await reactDialog.screenshot({ animations: 'disabled' });
+    await expectTabFocusContained(page, reactDialog, 'Close dialog');
 
+    await clickOutsideDialog(page, reactDialog);
+    await expect(reactDialog).toHaveCount(0);
+
+    await openDialog(reactCard);
+    await expect(reactDialog).toBeVisible();
     await reactCloseButton.click();
     await expect(reactDialog).toHaveCount(0);
 
@@ -210,13 +234,23 @@ test.describe('comparison Dialog visual parity', () => {
     await expect(solidDialog).toHaveScreenshot('dialog-surface-solid.png', { animations: 'disabled' });
     const solidDialogPng = await solidDialog.screenshot({ animations: 'disabled' });
     await compareScreenshots(page, reactDialogPng, solidDialogPng, 'Dialog surface');
+    await expectTabFocusContained(page, solidDialog, 'Close dialog');
 
     expect(Math.abs(solidGeometry.x - reactGeometry.x)).toBeLessThanOrEqual(40);
     expect(Math.abs(solidGeometry.y - reactGeometry.y)).toBeLessThanOrEqual(80);
     expect(Math.abs(solidGeometry.width - reactGeometry.width)).toBeLessThanOrEqual(60);
 
-    await page.keyboard.press('Escape');
+    await clickOutsideDialog(page, solidDialog);
     await expect(solidDialog).toHaveCount(0);
+    await expect(solidRoot).toHaveAttribute('data-comparison-open', 'false');
+
+    await openDialog(solidCard);
+    await expect(solidRoot).toHaveAttribute('data-comparison-open', 'true');
+    const solidDialogAfterOutsideDismiss = page.getByRole('dialog', { name: 'Review Changes' });
+    await expect(solidDialogAfterOutsideDismiss).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(solidDialogAfterOutsideDismiss).toHaveCount(0);
     await expect(solidRoot).toHaveAttribute('data-comparison-open', 'false');
     await expect(solidRoot).toHaveAttribute('data-comparison-focus-returned', 'true');
   });

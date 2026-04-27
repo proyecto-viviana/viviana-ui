@@ -350,7 +350,12 @@ export function createFormValidationState<T>(
     commitValidation() {
       // Commit validation state so the user sees it on blur/change/submit.
       if (validationBehavior === 'native') {
-        setCommitQueued(true);
+        const error = clientError() || builtinValidation() || nextValidation;
+        if (!isEqualValidation(error, lastError)) {
+          lastError = error;
+          setCurrentValidity(error);
+        }
+        setCommitQueued(false);
       }
       setServerErrorCleared(true);
     },

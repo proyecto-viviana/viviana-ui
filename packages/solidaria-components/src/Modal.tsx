@@ -55,6 +55,15 @@ const InternalModalContext = createContext<InternalModalContextValue | null>(nul
 // Stack of visible modals, used to ensure only the top-most modal dismisses on Escape/outside interaction.
 const visibleModals: Array<() => Element | null> = []
 
+function pruneDisconnectedModals() {
+  for (let index = visibleModals.length - 1; index >= 0; index -= 1) {
+    const element = visibleModals[index]?.()
+    if (!element?.isConnected) {
+      visibleModals.splice(index, 1)
+    }
+  }
+}
+
 // ============================================
 // TYPES
 // ============================================
@@ -204,6 +213,30 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
   }
   const portalContext = useUNSAFE_PortalContext()
   const portalContainer = () => portalContext.getContainer?.() ?? undefined
+  let overlayRef!: HTMLDivElement
+
+  const isTopMostModalInOverlay = () => {
+    pruneDisconnectedModals()
+    const topMostModal = visibleModals[visibleModals.length - 1]?.()
+    return !topMostModal || overlayRef?.contains(topMostModal)
+  }
+
+  createEffect(() => {
+    if (!isOpen() || local.isKeyboardDismissDisabled) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !event.isComposing && isTopMostModalInOverlay()) {
+        event.preventDefault()
+        event.stopPropagation()
+        close()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown, true)
+    onCleanup(() => {
+      document.removeEventListener('keydown', handleKeyDown, true)
+    })
+  })
 
   // Resolve children - handle both static JSX and render functions
   // IMPORTANT: We access props.children directly (not local.children) to preserve
@@ -223,6 +256,7 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
           <InternalModalContext.Provider value={internalModalContext}>
             <div
               {...domProps()}
+              ref={overlayRef}
               class={renderProps.class()}
               style={renderProps.style()}
               data-entering={dataAttr(local.isEntering)}
@@ -345,6 +379,7 @@ function ModalContent(props: ModalProps & { internalContext: InternalModalContex
   createEffect(() => {
     if (!isOpen()) return
 
+    pruneDisconnectedModals()
     if (!visibleModals.includes(modalRefAccessor)) {
       visibleModals.push(modalRefAccessor)
     }
@@ -357,7 +392,10 @@ function ModalContent(props: ModalProps & { internalContext: InternalModalContex
     })
   })
 
-  const isTopMostModal = () => visibleModals[visibleModals.length - 1] === modalRefAccessor
+  const isTopMostModal = () => {
+    pruneDisconnectedModals()
+    return visibleModals[visibleModals.length - 1] === modalRefAccessor
+  }
 
   const close = () => {
     if (local.isOpen !== undefined) {
@@ -452,6 +490,25 @@ function ModalContent(props: ModalProps & { internalContext: InternalModalContex
         data-entering={dataAttr(local.isEntering)}
         data-exiting={dataAttr(local.isExiting)}
       >
+        <Show when={isDismissable()}>
+          <button
+            type="button"
+            aria-label="Dismiss"
+            tabIndex={-1}
+            onClick={close}
+            style={{
+              position: 'absolute',
+              width: '1px',
+              height: '1px',
+              padding: 0,
+              margin: '-1px',
+              overflow: 'hidden',
+              clip: 'rect(0, 0, 0, 0)',
+              'white-space': 'nowrap',
+              border: 0,
+            }}
+          />
+        </Show>
         {renderProps.renderChildren()}
       </div>
     </FocusScope>

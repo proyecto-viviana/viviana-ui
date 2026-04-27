@@ -26,6 +26,8 @@ export interface AriaTableProps {
   onCellAction?: (key: Key) => void;
   /** Whether selection should occur on press up. */
   shouldSelectOnPressUp?: boolean;
+  /** Whether Escape clears selection. */
+  escapeKeyBehavior?: 'clearSelection' | 'none';
   /** Focus mode: 'row' or 'cell'. */
   focusMode?: 'row' | 'cell';
 }
@@ -84,8 +86,14 @@ export interface AriaTableRowProps {
   node: GridNode<unknown>;
   /** Whether the table is virtualized. */
   isVirtualized?: boolean;
+  /** Whether the row is disabled. */
+  isDisabled?: boolean;
   /** Handler for row action. */
   onAction?: () => void;
+  /** Link href for row activation. */
+  href?: string;
+  /** Handler for link row activation. */
+  onLinkAction?: (event: MouseEvent | KeyboardEvent) => void;
 }
 
 /**

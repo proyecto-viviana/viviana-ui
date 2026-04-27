@@ -1,4 +1,9 @@
 export type ComparisonLayerId = "styled" | "components" | "headless" | "state";
+export type ComponentStatus =
+  | "parity"
+  | "composition"
+  | "silapse-native"
+  | "tracked-gap";
 export type ComparisonSlug =
   | "provider"
   | "button"
@@ -9,7 +14,17 @@ export type ComparisonSlug =
   | "tree"
   | "accordion"
   | "menu"
-  | "combobox";
+  | "combobox"
+  | "textfield"
+  | "select"
+  | "checkbox"
+  | "dialog"
+  | "radio"
+  | "datepicker"
+  | "searchfield"
+  | "tooltip"
+  | "toolbar"
+  | "toast";
 export type ParityStatus = "matched" | "partial" | "gap";
 export type DemoStatus = "live" | "tracked" | "missing" | "na";
 
@@ -25,6 +40,7 @@ export interface ComparisonEntry {
   slug: ComparisonSlug;
   title: string;
   category: string;
+  componentStatus: ComponentStatus;
   summary: string;
   parity: ParityStatus;
   priority: "live" | "tracked";
@@ -44,6 +60,7 @@ export const comparisonEntries: ComparisonEntry[] = [
     slug: "provider",
     title: "Provider",
     category: "Foundations",
+    componentStatus: "parity",
     summary:
       "Root-scoped theming, inherited props, locale, direction, and overlay containment.",
     parity: "matched",
@@ -89,6 +106,7 @@ export const comparisonEntries: ComparisonEntry[] = [
     slug: "button",
     title: "Button",
     category: "Actions",
+    componentStatus: "parity",
     summary:
       "Good parity probe because it exists across styled, component, and headless layers with inherited provider props.",
     parity: "matched",
@@ -100,10 +118,12 @@ export const comparisonEntries: ComparisonEntry[] = [
     layers: {
       styled: {
         label: "Styled Button",
-        summary: "React Spectrum Button vs Silapse Button.",
+        summary:
+          "React Spectrum Button vs solidaria-components Button using the comparison Spectrum skin adapter.",
         react: "live",
         solid: "live",
-        note: "Uses each design system's real styled surface.",
+        note:
+          "Solid keeps behavior in solidaria-components and maps stable classes, data states, slots, variant attributes, and CSS variables to the comparison skin.",
       },
       components: {
         label: "Component Button",
@@ -133,6 +153,7 @@ export const comparisonEntries: ComparisonEntry[] = [
     slug: "popover",
     title: "Popover",
     category: "Overlays",
+    componentStatus: "tracked-gap",
     summary:
       "Critical parity area because dismissal, focus containment, and portal scoping must match React Spectrum behavior.",
     parity: "partial",
@@ -181,6 +202,7 @@ export const comparisonEntries: ComparisonEntry[] = [
     slug: "tabs",
     title: "Tabs",
     category: "Navigation",
+    componentStatus: "parity",
     summary:
       "Strong parity slice because it spans styled and component layers and relies on collection semantics.",
     parity: "partial",
@@ -227,6 +249,7 @@ export const comparisonEntries: ComparisonEntry[] = [
     slug: "table",
     title: "Table",
     category: "Collections",
+    componentStatus: "tracked-gap",
     summary:
       "High-value parity target with the largest remaining styled-surface differences.",
     parity: "gap",
@@ -272,6 +295,7 @@ export const comparisonEntries: ComparisonEntry[] = [
     slug: "listbox",
     title: "ListBox",
     category: "Collections",
+    componentStatus: "tracked-gap",
     summary:
       "Another top priority because it underpins picker, menu, and combobox parity.",
     parity: "gap",
@@ -316,6 +340,7 @@ export const comparisonEntries: ComparisonEntry[] = [
     slug: "tree",
     title: "Tree",
     category: "Collections",
+    componentStatus: "tracked-gap",
     summary:
       "Parity gap with nested collections, keyboard interaction, and virtualization pressure.",
     parity: "gap",
@@ -359,6 +384,7 @@ export const comparisonEntries: ComparisonEntry[] = [
     slug: "accordion",
     title: "Accordion",
     category: "Disclosure",
+    componentStatus: "tracked-gap",
     summary:
       "Maps to React Spectrum accordion patterns while Silapse currently leans on Disclosure primitives.",
     parity: "gap",
@@ -404,6 +430,7 @@ export const comparisonEntries: ComparisonEntry[] = [
     slug: "menu",
     title: "Menu",
     category: "Overlays",
+    componentStatus: "tracked-gap",
     summary:
       "Important because it combines listbox-like collections, overlays, and dismissal behavior.",
     parity: "partial",
@@ -447,6 +474,7 @@ export const comparisonEntries: ComparisonEntry[] = [
     slug: "combobox",
     title: "ComboBox",
     category: "Inputs",
+    componentStatus: "tracked-gap",
     summary:
       "Key parity target because it combines text input, collections, filtering, and overlays.",
     parity: "partial",
@@ -488,6 +516,62 @@ export const comparisonEntries: ComparisonEntry[] = [
       },
     },
   },
+  ...([
+    ["textfield", "TextField", "Inputs"],
+    ["select", "Select", "Inputs"],
+    ["checkbox", "Checkbox", "Inputs"],
+    ["dialog", "Dialog", "Overlays"],
+    ["radio", "Radio", "Inputs"],
+    ["datepicker", "DatePicker", "Inputs"],
+    ["searchfield", "SearchField", "Inputs"],
+    ["tooltip", "Tooltip", "Overlays"],
+    ["toolbar", "Toolbar", "Actions"],
+    ["toast", "Toast", "Feedback"],
+  ] as const satisfies readonly [ComparisonSlug, string, string][]).map(([slug, title, category]) => ({
+    slug,
+    title,
+    category,
+    componentStatus: "parity" as const,
+    summary: `${title} now has a first live comparison island for the top-missing Silapse coverage pass.`,
+    parity: "partial" as const,
+    priority: "live" as const,
+    gapSummary: [
+      "Initial live island added for comparison coverage.",
+      "Detailed state matrices and visual assertions remain workstream-1 follow-up.",
+    ],
+    layers: {
+      styled: {
+        label: `Styled ${title}`,
+        summary: `Silapse ${title} rendered against the nearest React Aria Components surface where available.`,
+        react: (slug === "toast" ? "tracked" : "live") as DemoStatus,
+        solid: "live" as DemoStatus,
+        note: slug === "toast"
+          ? "React Aria Components 1.15.1 does not expose Toast; Solid styled toast is live and React remains tracked."
+          : "Both runtime islands are mounted for manual parity review.",
+      },
+      components: {
+        label: `Component ${title}`,
+        summary: "Component-layer parity target.",
+        react: (slug === "toast" ? "tracked" : "live") as DemoStatus,
+        solid: "tracked" as DemoStatus,
+        note: "Headless Solid component comparison is still tracked separately from the styled Silapse island.",
+      },
+      headless: {
+        label: `Headless ${title}`,
+        summary: "ARIA behavior hooks below the component layer.",
+        react: "tracked" as DemoStatus,
+        solid: "tracked" as DemoStatus,
+        note: "Tracked for later keyboard and screen reader parity work.",
+      },
+      state: {
+        label: `${title} State`,
+        summary: "State-layer parity where a dedicated state primitive exists.",
+        react: "tracked" as DemoStatus,
+        solid: "tracked" as DemoStatus,
+        note: "Tracked in source/test parity rather than this initial visual island.",
+      },
+    },
+  })),
 ];
 
 export function getComparisonEntry(

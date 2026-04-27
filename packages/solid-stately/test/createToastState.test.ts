@@ -333,6 +333,23 @@ describe('ToastQueue', () => {
     const finalToasts = callback.mock.calls[callback.mock.calls.length - 1][0];
     expect(finalToasts).toHaveLength(0);
   });
+
+  it('should replace toast objects when marking exit animations', () => {
+    const queue = new ToastQueue<string>({ hasExitAnimation: true });
+    const callback = vi.fn();
+
+    queue.subscribe(callback);
+    const key = queue.add('Test Toast');
+    const initialToast = callback.mock.calls[callback.mock.calls.length - 1][0][0];
+
+    queue.close(key);
+
+    const exitingToast = callback.mock.calls[callback.mock.calls.length - 1][0][0];
+    expect(exitingToast).not.toBe(initialToast);
+    expect(exitingToast.animation).toBe('exiting');
+
+    queue.remove(key);
+  });
 });
 
 describe('Timer', () => {

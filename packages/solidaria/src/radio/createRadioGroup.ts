@@ -110,7 +110,7 @@ export function createRadioGroup(
   const isReadOnly = () => getProps().isReadOnly ?? false;
   const isRequired = () => getProps().isRequired ?? false;
   const isDisabled = () => getProps().isDisabled ?? false;
-  const validationBehavior = () => getProps().validationBehavior ?? 'aria';
+  const validationBehavior = () => getProps().validationBehavior ?? 'native';
   const displayValidation = () => state.displayValidation();
   const validationErrors = () => displayValidation().validationErrors;
   const validationDetails = () => displayValidation().validationDetails;

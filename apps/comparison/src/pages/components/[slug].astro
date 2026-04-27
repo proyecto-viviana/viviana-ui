@@ -45,6 +45,9 @@ const layerTitles: Record<ComparisonLayerId, string> = {
         <a href="/" class="back-link">Back to manifest</a>
         <div class="detail-hero-top">
           <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
+          <span class={`status-pill status-pill--${entry.componentStatus}`}>
+            {entry.componentStatus}
+          </span>
           <span class="category-pill">{entry.category}</span>
         </div>
         <h1>{entry.title}</h1>
@@ -93,7 +96,7 @@ const layerTitles: Record<ComparisonLayerId, string> = {
                 <div class="framework-card-head">
                   <div>
                     <span class="framework-label">Solid</span>
-                    <h3>Proyecto Viviana stack</h3>
+                    <h3>Solidaria stack</h3>
                   </div>
                   <span class={`status-pill status-pill--${track.solid}`}>
                     {track.solid}

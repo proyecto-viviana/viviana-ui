@@ -192,6 +192,66 @@ describe('Popover', () => {
       })
     })
 
+    it('should expose trigger width as a CSS variable', async () => {
+      const trigger = document.createElement('button')
+      trigger.getBoundingClientRect = () => ({
+        x: 0,
+        y: 0,
+        top: 0,
+        left: 0,
+        right: 144,
+        bottom: 32,
+        width: 144,
+        height: 32,
+        toJSON: () => {},
+      })
+      document.body.appendChild(trigger)
+
+      render(() => (
+        <Popover defaultOpen triggerRef={() => trigger}>
+          Content
+        </Popover>
+      ))
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog').style.getPropertyValue('--trigger-width')).toBe('144px')
+      })
+
+      document.body.removeChild(trigger)
+    })
+
+    it('should preserve an explicit trigger width CSS variable', async () => {
+      const trigger = document.createElement('button')
+      trigger.getBoundingClientRect = () => ({
+        x: 0,
+        y: 0,
+        top: 0,
+        left: 0,
+        right: 144,
+        bottom: 32,
+        width: 144,
+        height: 32,
+        toJSON: () => {},
+      })
+      document.body.appendChild(trigger)
+
+      render(() => (
+        <Popover
+          defaultOpen
+          triggerRef={() => trigger}
+          style={{ '--trigger-width': '88px' } as any}
+        >
+          Content
+        </Popover>
+      ))
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog').style.getPropertyValue('--trigger-width')).toBe('88px')
+      })
+
+      document.body.removeChild(trigger)
+    })
+
     it('should render with custom trigger name', async () => {
       const user = setupUser()
 

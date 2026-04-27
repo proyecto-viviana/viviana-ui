@@ -40,6 +40,14 @@ export interface CollectionPrimitiveRenderProps {
   hasChildren: boolean;
 }
 
+type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
+
+function assignRef<T>(ref: RefLike<T>, el: T): void {
+  if (!ref) return;
+  if (typeof ref === 'function') ref(el);
+  else ref.current = el;
+}
+
 export interface CollectionDropTargetDelegate {
   getDropTargetFromPoint(
     x: number,
@@ -92,6 +100,8 @@ export interface CollectionSection<T> {
 export interface SectionProps extends SlotProps {
   /** Section contents, usually Header + Group/items. */
   children?: JSX.Element;
+  /** Ref for the section element. */
+  ref?: RefLike<HTMLDivElement>;
   /** The CSS className for the element. */
   class?: ClassNameOrFunction<CollectionPrimitiveRenderProps>;
   /** The inline style for the element. */
@@ -237,7 +247,7 @@ export function Section(props: SectionProps): JSX.Element {
     return sectionContext.render(props, 'solidaria-Section');
   }
 
-  const [local, domProps] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ['children', 'class', 'style', 'slot', 'ref']);
 
   const renderValues = createMemo<CollectionPrimitiveRenderProps>(() => ({
     hasChildren: local.children != null,
@@ -257,6 +267,7 @@ export function Section(props: SectionProps): JSX.Element {
 
   return (
     <div
+      ref={(el) => assignRef(local.ref, el)}
       {...filteredDomProps()}
       class={renderProps.class()}
       style={renderProps.style()}

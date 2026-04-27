@@ -53,6 +53,21 @@ describe('ToggleSwitch', () => {
       const switchEl = screen.getByRole('switch');
       expect(switchEl).toBeInTheDocument();
     });
+
+    it('should support description and error message', () => {
+      render(() => (
+        <ToggleSwitch aria-label="Toggle" isInvalid description="Turns the feature on" errorMessage="Required">
+          Toggle
+        </ToggleSwitch>
+      ));
+
+      const switchEl = screen.getByRole('switch');
+      const describedText = switchEl.getAttribute('aria-describedby')!
+        .split(' ')
+        .map((id) => document.getElementById(id)?.textContent)
+        .join(' ');
+      expect(describedText).toBe('Turns the feature on Required');
+    });
   });
 
   describe('render props', () => {

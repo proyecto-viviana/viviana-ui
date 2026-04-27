@@ -11,7 +11,8 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { ListBox, ListBoxOption, ListBoxSection, ListBoxLoadMoreItem } from '../src/ListBox';
+import { createSignal } from 'solid-js';
+import { ListBox, ListBoxContext, ListBoxOption, ListBoxSection, ListBoxLoadMoreItem } from '../src/ListBox';
 import { SelectionIndicator } from '../src/SelectionIndicator';
 import { useDragAndDrop } from '../src/useDragAndDrop';
 import type { Key } from '@proyecto-viviana/solid-stately';
@@ -35,6 +36,7 @@ const testItems: TestItem[] = [
 // Helper component for testing
 function TestListBox(props: {
   listBoxProps?: Partial<Parameters<typeof ListBox<TestItem>>[0]>;
+  itemProps?: Partial<Parameters<typeof ListBoxOption<TestItem>>[0]>;
   items?: TestItem[];
 }) {
   const items = props.items || testItems;
@@ -46,7 +48,7 @@ function TestListBox(props: {
       {...props.listBoxProps}
     >
       {(item) => (
-        <ListBoxOption id={item.id}>{item.name}</ListBoxOption>
+        <ListBoxOption id={item.id} {...props.itemProps}>{item.name}</ListBoxOption>
       )}
     </ListBox>
   );
@@ -119,6 +121,159 @@ describe('ListBox', () => {
       render(() => <TestListBox listBoxProps={{ 'aria-label': 'Animals' }} />);
       const listbox = screen.getByRole('listbox');
       expect(listbox).toHaveAttribute('aria-label', 'Animals');
+    });
+
+    it('should have the base set of aria and data attributes', () => {
+      render(() => (
+        <ListBox<TestItem>
+          aria-label="Animals"
+          items={[
+            {
+              title: <span>Mammals</span>,
+              'aria-label': 'Mammals group',
+              items: testItems,
+            },
+          ]}
+          getKey={(item) => item.id}
+        >
+          {(item) => <ListBoxOption id={item.id}>{item.name}</ListBoxOption>}
+        </ListBox>
+      ));
+
+      expect(screen.getByRole('listbox')).toHaveAttribute('aria-label', 'Animals');
+      expect(screen.getByRole('group', { name: 'Mammals group' })).toBeInTheDocument();
+      for (const option of screen.getAllByRole('option')) {
+        expect(option).toHaveAttribute('id');
+        expect(option).toHaveAttribute('aria-labelledby');
+      }
+    });
+
+    it('should render with default classes', () => {
+      render(() => <TestListBox />);
+
+      expect(screen.getByRole('listbox')).toHaveClass('solidaria-ListBox');
+      for (const option of screen.getAllByRole('option')) {
+        expect(option).toHaveClass('solidaria-ListBox-option');
+      }
+    });
+
+    it('should render with custom classes', () => {
+      render(() => (
+        <TestListBox
+          listBoxProps={{ class: 'listbox' }}
+          itemProps={{ class: 'item' }}
+        />
+      ));
+
+      expect(screen.getByRole('listbox')).toHaveClass('listbox');
+      for (const option of screen.getAllByRole('option')) {
+        expect(option).toHaveClass('item');
+      }
+    });
+
+    it('should support aria-label on the listbox items', () => {
+      render(() => <TestListBox itemProps={{ 'aria-label': 'test' }} />);
+
+      for (const option of screen.getAllByRole('option')) {
+        expect(option).toHaveAttribute('aria-label', 'test');
+      }
+    });
+
+    it('should support the slot prop', () => {
+      render(() => <TestListBox listBoxProps={{ slot: 'test' }} />);
+
+      expect(screen.getByRole('listbox')).toHaveAttribute('slot', 'test');
+    });
+
+    it('should support slots', () => {
+      render(() => (
+        <ListBoxContext.Provider value={{ slots: { test: { 'aria-label': 'Slot listbox' } } } as never}>
+          <ListBox<TestItem>
+            slot="test"
+            aria-label={undefined as never}
+            items={testItems}
+            getKey={(item) => item.id}
+          >
+            {(item) => <ListBoxOption id={item.id}>{item.name}</ListBoxOption>}
+          </ListBox>
+        </ListBoxContext.Provider>
+      ));
+
+      expect(screen.getByRole('listbox')).toHaveAttribute('aria-label', 'Slot listbox');
+      expect(screen.getByRole('listbox')).toHaveAttribute('slot', 'test');
+    });
+
+    it('should support refs', () => {
+      let listBoxRef: HTMLUListElement | null = null;
+      let sectionRef: HTMLDivElement | null = null;
+      let itemRef: HTMLLIElement | null = null;
+
+      render(() => (
+        <ListBox<TestItem>
+          aria-label="Test"
+          items={[
+            {
+              title: (
+                <ListBoxSection
+                  ref={(el) => {
+                    sectionRef = el;
+                  }}
+                  aria-label="Felines"
+                >
+                  Felines
+                </ListBoxSection>
+              ),
+              'aria-label': 'Felines',
+              items: [testItems[0]],
+            },
+          ]}
+          getKey={(item) => item.id}
+          ref={(el) => {
+            listBoxRef = el;
+          }}
+        >
+          {(item) => (
+            <ListBoxOption
+              id={item.id}
+              ref={(el) => {
+                itemRef = el;
+              }}
+            >
+              {item.name}
+            </ListBoxOption>
+          )}
+        </ListBox>
+      ));
+
+      expect(listBoxRef).toBeInstanceOf(HTMLElement);
+      expect(sectionRef).toBeInstanceOf(HTMLElement);
+      expect(itemRef).toBeInstanceOf(HTMLElement);
+      expect(sectionRef?.getAttribute('aria-label')).toBe('Felines');
+    });
+
+    it('should support sections', () => {
+      render(() => (
+        <ListBox<TestItem>
+          aria-label="Test"
+          items={[
+            {
+              title: <span>Veggies</span>,
+              'aria-label': 'Veggies',
+              items: testItems.slice(0, 2),
+            },
+            {
+              'aria-label': 'Protein',
+              items: testItems.slice(2),
+            },
+          ]}
+          getKey={(item) => item.id}
+        >
+          {(item) => <ListBoxOption id={item.id}>{item.name}</ListBoxOption>}
+        </ListBox>
+      ));
+
+      expect(screen.getByRole('group', { name: 'Veggies' })).toBeInTheDocument();
+      expect(screen.getByRole('group', { name: 'Protein' })).toBeInTheDocument();
     });
 
     it('renders a visible label element when label prop is provided', () => {
@@ -276,6 +431,55 @@ describe('ListBox', () => {
         />
       ));
       expect(screen.getByRole('option')).toHaveTextContent('No items available');
+    });
+
+    it('should support empty state', () => {
+      render(() => (
+        <TestListBox
+          items={[]}
+          listBoxProps={{
+            renderEmptyState: () => 'No results',
+          }}
+        />
+      ));
+
+      expect(screen.getByRole('listbox')).toHaveAttribute('data-empty');
+      expect(screen.getByRole('option')).toHaveTextContent('No results');
+    });
+
+    it('should support onScroll', () => {
+      const onScroll = vi.fn();
+      render(() => <TestListBox listBoxProps={{ onScroll }} />);
+
+      fireEvent.scroll(screen.getByRole('listbox'));
+      expect(onScroll).toHaveBeenCalledTimes(1);
+    });
+
+    it('should support dynamic collections', () => {
+      function DynamicListBox() {
+        const [dynamicItems, setDynamicItems] = createSignal(testItems.slice(0, 2));
+        return (
+          <>
+            <button type="button" onClick={() => setDynamicItems([testItems[2]])}>
+              Update
+            </button>
+            <ListBox<TestItem>
+              aria-label="Test"
+              items={dynamicItems()}
+              getKey={(item) => item.id}
+            >
+              {(item) => <ListBoxOption id={item.id}>{item.name}</ListBoxOption>}
+            </ListBox>
+          </>
+        );
+      }
+
+      render(() => <DynamicListBox />);
+      expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['Cat', 'Dog']);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+
+      expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['Kangaroo']);
     });
 
     it('should set data-empty when list is empty', () => {
@@ -873,6 +1077,35 @@ describe('ListBox', () => {
   // ============================================
 
   describe('hover state', () => {
+    it('should support hover', async () => {
+      const onHoverStart = vi.fn();
+      const onHoverEnd = vi.fn();
+      const onHoverChange = vi.fn();
+      render(() => (
+        <TestListBox
+          listBoxProps={{ selectionMode: 'single' }}
+          itemProps={{
+            class: ({ isHovered }) => isHovered ? 'hover' : '',
+            onHoverStart,
+            onHoverEnd,
+            onHoverChange,
+          } as never}
+        />
+      ));
+
+      const option = screen.getAllByRole('option')[0];
+      await user.hover(option);
+      expect(option).toHaveAttribute('data-hovered');
+      expect(option).toHaveClass('hover');
+      expect(onHoverStart).toHaveBeenCalledTimes(1);
+      expect(onHoverChange).toHaveBeenCalledWith(true);
+
+      await user.unhover(option);
+      expect(option).not.toHaveAttribute('data-hovered');
+      expect(onHoverEnd).toHaveBeenCalledTimes(1);
+      expect(onHoverChange).toHaveBeenCalledWith(false);
+    });
+
     it('should set data-hovered on hover', async () => {
       render(() => (
         <TestListBox listBoxProps={{ selectionMode: 'single' }} />
@@ -903,6 +1136,24 @@ describe('ListBox', () => {
   // ============================================
 
   describe('press state', () => {
+    it('should support press state', () => {
+      render(() => (
+        <TestListBox
+          listBoxProps={{ selectionMode: 'single' }}
+          itemProps={{ class: ({ isPressed }) => isPressed ? 'pressed' : '' }}
+        />
+      ));
+
+      const option = screen.getAllByRole('option')[0];
+      firePointerDown(option);
+      expect(option).toHaveAttribute('data-pressed');
+      expect(option).toHaveClass('pressed');
+
+      firePointerUp(option);
+      fireEvent.click(option, { detail: 1 });
+      expect(option).not.toHaveAttribute('data-pressed');
+    });
+
     it('should set data-pressed during press', async () => {
       render(() => (
         <TestListBox listBoxProps={{ selectionMode: 'single' }} />

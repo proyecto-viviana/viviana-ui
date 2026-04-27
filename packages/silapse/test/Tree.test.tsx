@@ -78,6 +78,18 @@ describe('Tree (silapse)', () => {
   afterEach(() => cleanup());
 
   describe('variant styles', () => {
+    it('renders treegrid rows with gridcells', () => {
+      render(() => <TestTree defaultExpandedKeys={['folder-1']} />);
+      const tree = screen.getByRole('treegrid');
+      const rows = screen.getAllByRole('row');
+
+      expect(tree).toBeInTheDocument();
+      expect(rows.length).toBeGreaterThan(0);
+      for (const row of rows) {
+        expect(row.querySelector('[role="gridcell"]')).toBeInTheDocument();
+      }
+    });
+
     it('applies default variant classes', () => {
       render(() => <TestTree />);
       const tree = screen.getByRole('treegrid');

@@ -228,13 +228,13 @@ describe('Checkbox', () => {
     it('allows custom data attributes to be passed through', () => {
       render(() => <Checkbox aria-label="Test checkbox" data-testid="custom-checkbox" />);
       const checkbox = screen.getByRole('checkbox');
-      expect(checkbox).toHaveAttribute('data-testid', 'custom-checkbox');
+      expect(checkbox.closest('label')).toHaveAttribute('data-testid', 'custom-checkbox');
     });
 
     it('allows custom data-foo attribute', () => {
       render(() => <Checkbox aria-label="Test checkbox" data-foo="bar" />);
       const checkbox = screen.getByRole('checkbox');
-      expect(checkbox).toHaveAttribute('data-foo', 'bar');
+      expect(checkbox.closest('label')).toHaveAttribute('data-foo', 'bar');
     });
   });
 });

@@ -228,7 +228,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
 
   return (
     <TreeSizeContext.Provider value={contextValue()}>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2 h-full min-h-0">
         <Show when={local.label}>
           <label class={`text-primary-200 font-medium ${styles().label}`}>
             {local.label}

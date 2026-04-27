@@ -11,9 +11,9 @@
  */
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
+import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
 import { createSignal } from 'solid-js';
-import { Tabs, TabList, Tab, TabPanels, TabPanel, SelectionIndicator } from '../src/Tabs';
+import { Tabs, TabList, Tab, TabPanels, TabPanel, SelectionIndicator, TabsStateContext } from '../src/Tabs';
 import type { Key } from '@proyecto-viviana/solid-stately';
 import { I18nProvider } from '@proyecto-viviana/solidaria';
 import {
@@ -72,14 +72,36 @@ describe('Tabs', () => {
 
   describe('rendering', () => {
     it('should render with default class', () => {
-      render(() => <TestTabs />);
+      render(() => (
+        <Tabs<TestTab> items={testTabs} getKey={(item) => item.id} defaultSelectedKey="tab1">
+          <TabList>
+            {(item) => <Tab id={item.id}>{item.label}</Tab>}
+          </TabList>
+          <TabPanels>
+            {testTabs.map((tab) => (
+              <TabPanel id={tab.id}>{tab.content}</TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
+      ));
 
       const tabs = document.querySelector('.solidaria-Tabs');
       expect(tabs).toBeInTheDocument();
     });
 
     it('should render tab list', () => {
-      render(() => <TestTabs />);
+      render(() => (
+        <Tabs<TestTab> items={testTabs} getKey={(item) => item.id} defaultSelectedKey="tab1">
+          <TabList>
+            {(item) => <Tab id={item.id}>{item.label}</Tab>}
+          </TabList>
+          <TabPanels>
+            {testTabs.map((tab) => (
+              <TabPanel id={tab.id}>{tab.content}</TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
+      ));
 
       const tablist = screen.getByRole('tablist');
       expect(tablist).toBeInTheDocument();
@@ -682,6 +704,66 @@ describe('Tabs', () => {
       const result = checkAriaIdIntegrity(document.body);
       expect(result.ok).toBe(true);
       expect(result.totalRefsChecked).toBeGreaterThan(0);
+    });
+  });
+
+  describe('TabPanels animation sizing', () => {
+    it('should detect block-size in transition for TabPanels', async () => {
+      const originalGetComputedStyle = window.getComputedStyle;
+      window.getComputedStyle = ((element: Element) => {
+        const style = originalGetComputedStyle(element);
+        Object.defineProperty(style, 'transition', { value: 'block-size 400ms ease', configurable: true });
+        return style;
+      }) as typeof window.getComputedStyle;
+      const heightSpy = vi.spyOn(window.HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(42);
+
+      const [selectedKey, setSelectedKey] = createSignal<Key>('tab1');
+      render(() => (
+        <TabsStateContext.Provider value={{ selectedKey } as any}>
+          <TabPanels>
+            <div role="tabpanel">Content</div>
+          </TabPanels>
+        </TabsStateContext.Provider>
+      ));
+
+      setSelectedKey('tab2');
+
+      await waitFor(() => {
+        const panels = document.querySelector('.solidaria-TabPanels') as HTMLElement;
+        expect(panels.style.getPropertyValue('--tab-panel-height')).toBe('42px');
+      });
+
+      heightSpy.mockRestore();
+      window.getComputedStyle = originalGetComputedStyle;
+    });
+
+    it('should detect inline-size in transition for TabPanels', async () => {
+      const originalGetComputedStyle = window.getComputedStyle;
+      window.getComputedStyle = ((element: Element) => {
+        const style = originalGetComputedStyle(element);
+        Object.defineProperty(style, 'transition', { value: 'inline-size 400ms ease', configurable: true });
+        return style;
+      }) as typeof window.getComputedStyle;
+      const widthSpy = vi.spyOn(window.HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(120);
+
+      const [selectedKey, setSelectedKey] = createSignal<Key>('tab1');
+      render(() => (
+        <TabsStateContext.Provider value={{ selectedKey } as any}>
+          <TabPanels>
+            <div role="tabpanel">Content</div>
+          </TabPanels>
+        </TabsStateContext.Provider>
+      ));
+
+      setSelectedKey('tab2');
+
+      await waitFor(() => {
+        const panels = document.querySelector('.solidaria-TabPanels') as HTMLElement;
+        expect(panels.style.getPropertyValue('--tab-panel-width')).toBe('120px');
+      });
+
+      widthSpy.mockRestore();
+      window.getComputedStyle = originalGetComputedStyle;
     });
   });
 

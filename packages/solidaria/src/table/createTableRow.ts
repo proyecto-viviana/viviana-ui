@@ -18,6 +18,7 @@ export function createTableRow<T extends object>(
   _ref: Accessor<HTMLTableRowElement | null>
 ): TableRowAria {
   const [isPressed, setIsPressed] = createSignal(false);
+  let didSelectOnPointer = false;
 
   const isSelected = createMemo(() => {
     const s = state();
@@ -28,7 +29,7 @@ export function createTableRow<T extends object>(
   const isDisabled = createMemo(() => {
     const s = state();
     const p = props();
-    return s.isDisabled(p.node.key);
+    return !!p.isDisabled || s.isDisabled(p.node.key);
   });
 
   const isFocused = createMemo(() => {
@@ -36,6 +37,41 @@ export function createTableRow<T extends object>(
     const p = props();
     return s.focusedKey === p.node.key;
   });
+
+  const isInteractive = () => {
+    const s = state();
+    const p = props();
+    const tableData = getTableData(s);
+    return s.selectionMode !== 'none' || !!tableData?.actions.onRowAction || !!p.onAction || !!p.href;
+  };
+
+  const selectRow = (e: MouseEvent | PointerEvent | KeyboardEvent, forceReplace = false) => {
+    const s = state();
+    const p = props();
+
+    if (s.selectionMode !== 'none') {
+      if (e.shiftKey && s.selectionMode === 'multiple') {
+        s.extendSelection(p.node.key);
+      } else if (!forceReplace && (e.ctrlKey || e.metaKey || s.selectionBehavior === 'toggle')) {
+        s.toggleSelection(p.node.key);
+      } else if (!forceReplace && s.selectionMode === 'single' && s.isSelected(p.node.key)) {
+        s.toggleSelection(p.node.key);
+      } else {
+        // Replace selection
+        s.replaceSelection(p.node.key);
+      }
+    }
+  };
+
+  const activateLink = (e: MouseEvent | KeyboardEvent) => {
+    props().onLinkAction?.(e);
+  };
+
+  const isFromInteractiveElement = (e: Event) => {
+    const target = e.target;
+    if (!(target instanceof Element)) return false;
+    return !!target.closest('a[href],button,input,select,textarea,[role="button"],[role="checkbox"],[role="link"]');
+  };
 
   // Handle click/press for selection
   const onClick = (e: MouseEvent) => {
@@ -48,17 +84,27 @@ export function createTableRow<T extends object>(
     const tableData = getTableData(s);
     const onRowAction = tableData?.actions.onRowAction;
 
-    // Handle selection
-    if (s.selectionMode !== 'none') {
-      if (e.shiftKey && s.selectionMode === 'multiple') {
-        s.extendSelection(p.node.key);
-      } else if (e.ctrlKey || e.metaKey) {
-        s.toggleSelection(p.node.key);
-      } else {
-        // Replace selection
-        s.replaceSelection(p.node.key);
-      }
+    if (isFromInteractiveElement(e)) {
+      didSelectOnPointer = false;
+      return;
     }
+
+    if (p.href) {
+      if (s.selectionBehavior === 'replace' && s.selectionMode !== 'none') {
+        if (!didSelectOnPointer) {
+          selectRow(e, true);
+        }
+      } else {
+        activateLink(e);
+      }
+      didSelectOnPointer = false;
+      return;
+    }
+
+    if (!didSelectOnPointer) {
+      selectRow(e);
+    }
+    didSelectOnPointer = false;
 
     // Call action handler
     if (onRowAction) {
@@ -70,22 +116,36 @@ export function createTableRow<T extends object>(
     }
   };
 
+  const onDblClick = (e: MouseEvent) => {
+    const s = state();
+    const p = props();
+
+    if (isDisabled() || !p.href || s.selectionBehavior !== 'replace') return;
+
+    activateLink(e);
+  };
+
   const onKeyDown = (e: KeyboardEvent) => {
     const s = state();
     const p = props();
 
     if (isDisabled()) return;
 
-    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Space' || e.key === 'Spacebar') {
+    if (e.key === 'Enter') {
       e.preventDefault();
 
       // Get table metadata for actions
       const tableData = getTableData(s);
       const onRowAction = tableData?.actions.onRowAction;
 
+      if (p.href) {
+        activateLink(e);
+        return;
+      }
+
       // Handle selection
       if (s.selectionMode !== 'none') {
-        s.toggleSelection(p.node.key);
+        selectRow(e);
       }
 
       // Call action handler
@@ -97,6 +157,24 @@ export function createTableRow<T extends object>(
         p.onAction();
       }
     }
+
+    if (e.key === ' ' || e.key === 'Space' || e.key === 'Spacebar') {
+      e.preventDefault();
+
+      if (p.href && s.selectionMode !== 'none') {
+        selectRow(e, s.selectionBehavior === 'replace');
+        return;
+      }
+
+      if (p.href) {
+        activateLink(e);
+        return;
+      }
+
+      if (s.selectionMode !== 'none') {
+        selectRow(e);
+      }
+    }
   };
 
   const onFocus = () => {
@@ -105,11 +183,25 @@ export function createTableRow<T extends object>(
     s.setFocusedKey(p.node.key);
   };
 
-  const onPointerDown = () => {
-    setIsPressed(true);
+  const onPointerDown = (e: PointerEvent) => {
+    if (isInteractive() && !isDisabled()) {
+      setIsPressed(true);
+    }
+    const s = state();
+    const tableData = getTableData(s);
+    if (s.selectionMode !== 'none' && !tableData?.shouldSelectOnPressUp && !isDisabled()) {
+      selectRow(e);
+      didSelectOnPointer = true;
+    }
   };
 
-  const onPointerUp = () => {
+  const onPointerUp = (e: PointerEvent) => {
+    const s = state();
+    const tableData = getTableData(s);
+    if (s.selectionMode !== 'none' && tableData?.shouldSelectOnPressUp && !isDisabled()) {
+      selectRow(e);
+      didSelectOnPointer = true;
+    }
     setIsPressed(false);
   };
 
@@ -124,6 +216,7 @@ export function createTableRow<T extends object>(
       'aria-disabled': isDisabled() || undefined,
       tabIndex: isFocused() ? 0 : -1,
       onClick,
+      onDblClick,
       onKeyDown,
       onFocus,
       onPointerDown,

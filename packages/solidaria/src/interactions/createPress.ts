@@ -305,6 +305,19 @@ export function createPress(props: CreatePressProps = {}): PressResult {
     }
 
     if (e.button === 0) {
+      if (!pressState.isPressed) {
+        pressState.isPressed = true;
+        pressState.isOverTarget = true;
+        pressState.target = e.currentTarget;
+        pressState.pointerType = isVirtualClick(e) ? 'virtual' : 'mouse';
+
+        if (!props.allowTextSelectionOnPress) {
+          disableTextSelection(pressState.target as HTMLElement);
+        }
+
+        triggerPressStart(e, pressState.pointerType);
+      }
+
       // Prevent focus if requested
       if (props.preventFocusOnPress) {
         preventFocus(e.currentTarget);

@@ -133,6 +133,8 @@ export interface GridState<T, C extends GridCollection<T> = GridCollection<T>> {
   readonly isFocused: boolean;
   /** The selection mode. */
   readonly selectionMode: 'none' | 'single' | 'multiple';
+  /** The selection behavior. */
+  readonly selectionBehavior: 'toggle' | 'replace';
   /** The currently selected keys. */
   readonly selectedKeys: 'all' | Set<Key>;
   /** Check if a key is selected. */

@@ -5,8 +5,8 @@
  * Port direction: react-aria-components/src/FieldError.tsx
  */
 
-import { type JSX, createContext, createMemo, splitProps, useContext } from 'solid-js';
-import type { ValidationResult } from '@proyecto-viviana/solid-stately';
+import { type JSX, Show, createContext, createMemo, splitProps, useContext } from 'solid-js';
+import { DEFAULT_VALIDATION_RESULT, type ValidationResult } from '@proyecto-viviana/solid-stately';
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -17,6 +17,11 @@ import {
 } from './utils';
 
 export type FieldErrorRenderProps = ValidationResult;
+
+export interface FieldErrorContextValue {
+  validation: ValidationResult | null;
+  errorMessageProps?: JSX.HTMLAttributes<HTMLElement>;
+}
 
 export interface FieldErrorProps
   extends Omit<JSX.HTMLAttributes<HTMLElement>, 'children' | 'class' | 'style'>,
@@ -31,37 +36,50 @@ export interface FieldErrorProps
   style?: StyleOrFunction<FieldErrorRenderProps>;
 }
 
-export const FieldErrorContext = createContext<ValidationResult | null>(null);
+export const FieldErrorContext = createContext<ValidationResult | FieldErrorContextValue | null>(null);
 
 export function FieldError(props: FieldErrorProps): JSX.Element | null {
-  const contextValidation = useContext(FieldErrorContext);
+  const contextValue = useContext(FieldErrorContext);
+  const contextValidation = () => {
+    if (contextValue && 'validation' in contextValue) {
+      return contextValue.validation;
+    }
+    return contextValue;
+  };
+  const contextErrorMessageProps = () => {
+    if (contextValue && 'validation' in contextValue) {
+      return contextValue.errorMessageProps ?? {};
+    }
+    return {};
+  };
   const [local, domProps] = splitProps(props, ['validation', 'children', 'class', 'style', 'slot']);
 
-  const validation = createMemo<ValidationResult | null>(() => local.validation ?? contextValidation);
-  if (!validation()?.isInvalid) return null;
+  const validation = createMemo<ValidationResult | null>(() => local.validation ?? contextValidation());
 
   const renderProps = useRenderProps(
     {
-      children: local.children ?? validation()!.validationErrors.join(' '),
+      children: local.children ?? ((currentValidation) => currentValidation.validationErrors.join(' ')),
       class: local.class,
       style: local.style,
       defaultClassName: 'solidaria-FieldError',
     },
-    () => validation()!
+    () => validation() ?? DEFAULT_VALIDATION_RESULT
   );
 
-  if (renderProps.renderChildren() == null) return null;
-
   const filteredDomProps = filterDOMProps(domProps, { global: true });
+  const children = () => renderProps.renderChildren();
 
   return (
-    <div
-      {...filteredDomProps}
-      slot={local.slot ?? 'errorMessage'}
-      class={renderProps.class()}
-      style={renderProps.style()}
-    >
-      {renderProps.renderChildren()}
-    </div>
+    <Show when={validation()?.isInvalid && children()}>
+      <div
+        {...contextErrorMessageProps() as unknown as JSX.HTMLAttributes<HTMLDivElement>}
+        {...filteredDomProps as JSX.HTMLAttributes<HTMLDivElement>}
+        slot={local.slot ?? 'errorMessage'}
+        class={renderProps.class()}
+        style={renderProps.style()}
+      >
+        {children()}
+      </div>
+    </Show>
   );
 }

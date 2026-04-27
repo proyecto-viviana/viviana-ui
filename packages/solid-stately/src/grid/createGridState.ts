@@ -298,6 +298,9 @@ export function createGridState<T extends object, C extends GridCollection<T> = 
     get selectionMode() {
       return selectionMode();
     },
+    get selectionBehavior() {
+      return selectionBehavior();
+    },
     get selectedKeys() {
       return selectedKeys();
     },

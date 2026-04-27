@@ -22,6 +22,7 @@ import {
   createOption,
   createHover,
   createInteractOutside,
+  mergeProps,
   type AriaComboBoxProps,
   type AriaListBoxProps,
   type AriaOptionProps,
@@ -65,6 +66,8 @@ export interface ComboBoxRenderProps {
   isRequired: boolean;
   /** Whether the combobox is invalid. */
   isInvalid: boolean;
+  /** Whether the combobox is read only. */
+  isReadOnly: boolean;
   /** Whether a value is selected. */
   isSelected: boolean;
   /** The current input value. */
@@ -129,11 +132,13 @@ export interface ComboBoxProps<T>
    */
   formValue?: 'key' | 'text';
   /** The children of the component (compound components: ComboBoxInput, ComboBoxButton, ComboBoxListBox). */
-  children: JSX.Element;
+  children: RenderChildren<ComboBoxRenderProps>;
   /** The CSS className for the element. */
   class?: ClassNameOrFunction<ComboBoxRenderProps>;
   /** The inline style for the element. */
   style?: StyleOrFunction<ComboBoxRenderProps>;
+  /** Slot definitions provided through ComboBoxContext. */
+  slots?: Record<string, Partial<ComboBoxProps<T>>>;
 }
 
 export interface ComboBoxInputRenderProps {
@@ -268,6 +273,8 @@ export interface ComboBoxOptionProps<T>
   style?: StyleOrFunction<ComboBoxOptionRenderProps>;
   /** The text value of the option (for typeahead). */
   textValue?: string;
+  /** Handler called when the option is activated. */
+  onAction?: () => void;
 }
 
 // ============================================
@@ -292,6 +299,7 @@ interface ComboBoxContextValue<T> {
   setButtonRef: (el: HTMLElement | null) => void;
   listBoxRef: () => HTMLElement | null;
   setListBoxRef: (el: HTMLElement | null) => void;
+  slots?: Record<string, Partial<ComboBoxProps<T>>>;
 }
 
 export const ComboBoxContext = createContext<ComboBoxContextValue<unknown> | null>(null);
@@ -306,9 +314,12 @@ export const ComboBoxValueContext = ComboBoxContext;
  * A combobox combines a text input with a listbox, allowing users to filter a list of options.
  */
 export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
+  const parentContext = useContext(ComboBoxContext) as ComboBoxContextValue<T> | null;
+  const contextSlotProps = parentContext?.slots?.[props.slot ?? 'default'];
+  const mergedComboBoxProps = contextSlotProps ? mergeProps(contextSlotProps, props) as ComboBoxProps<T> : props;
   const [local, stateProps, ariaProps] = splitProps(
-    props,
-    ['class', 'style', 'slot', 'children'],
+    mergedComboBoxProps,
+    ['class', 'style', 'slot', 'children', 'slots'],
     [
       'items',
       'getKey',
@@ -428,14 +439,24 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
     return stateProps.formValue ?? 'key';
   });
 
+  const comboBoxAriaProps = createMemo(() => {
+    const cleanProps: Record<string, unknown> = {};
+    for (const key in ariaProps) {
+      if (!key.startsWith('data-')) {
+        cleanProps[key] = (ariaProps as Record<string, unknown>)[key];
+      }
+    }
+    return cleanProps as AriaComboBoxProps;
+  });
+
   // Create combobox aria props
   const comboBoxAria = createComboBox<T>(
-    {
-      ...ariaProps,
+    () => ({
+      ...comboBoxAriaProps(),
       get name() {
         return effectiveFormValue() === 'text' ? stateProps.name : undefined;
       },
-    },
+    }),
     state,
     () => inputRef,
     () => buttonRef,
@@ -457,6 +478,7 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
     isDisabled: !!ariaProps.isDisabled,
     isRequired: !!ariaProps.isRequired,
     isInvalid: !!ariaProps.isInvalid,
+    isReadOnly: !!ariaProps.isReadOnly,
     isSelected: state.selectedKey() != null,
     inputValue: state.inputValue(),
   }));
@@ -483,6 +505,11 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
     return rest;
   };
 
+  const ComboBoxChildren = () =>
+    typeof local.children === 'function'
+      ? (local.children as (values: ComboBoxRenderProps) => JSX.Element)(renderValues())
+      : local.children;
+
   return (
     <ComboBoxContext.Provider
       value={{
@@ -503,7 +530,8 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
         setButtonRef: (el) => { buttonRef = el; },
         listBoxRef: () => listBoxRef,
         setListBoxRef: (el) => { listBoxRef = el; },
-      }}
+        slots: local.slots,
+      } as ComboBoxContextValue<unknown>}
     >
       <ComboBoxStateContext.Provider value={state}>
         <div
@@ -517,17 +545,20 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
           data-disabled={ariaProps.isDisabled || undefined}
           data-required={ariaProps.isRequired || undefined}
           data-invalid={ariaProps.isInvalid || undefined}
+          data-readonly={ariaProps.isReadOnly || undefined}
           data-hovered={isHovered() || undefined}
+          slot={local.slot}
         >
           {/* Hidden input for key-based form submission parity */}
           <Show when={stateProps.name && effectiveFormValue() === 'key'}>
             <input
               type="hidden"
               name={stateProps.name}
+              form={ariaProps.form}
               value={state.selectedKey()?.toString() ?? ''}
             />
           </Show>
-          {local.children}
+          <ComboBoxChildren />
         </div>
       </ComboBoxStateContext.Provider>
     </ComboBoxContext.Provider>
@@ -799,6 +830,7 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
       class={renderProps.class()}
       style={renderProps.style()}
       data-open={isOpen() || undefined}
+      data-pressed={isOpen() || undefined}
       data-focused={isFocused() || undefined}
       data-hovered={isHovered() || undefined}
       data-disabled={state.isDisabled || undefined}
@@ -961,6 +993,7 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
     'id',
     'item',
     'textValue',
+    'onAction',
   ]);
 
   // Get state from context
@@ -979,6 +1012,9 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
       },
       get 'aria-label'() {
         return ariaProps['aria-label'];
+      },
+      get onAction() {
+        return local.onAction;
       },
     },
     createComboBoxListStateAdapter(state)

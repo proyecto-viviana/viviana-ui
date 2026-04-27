@@ -172,8 +172,32 @@ export function createPopover(
     }
   });
 
+  const merged = mergeProps(overlayProps, positionProps) as Record<string, unknown>;
+  const popoverProps = new Proxy(merged, {
+    get(target, key: string) {
+      if (key === 'style') return positionProps.style;
+      return target[key];
+    },
+    has(target, key) {
+      return key in target;
+    },
+    ownKeys(target) {
+      return Reflect.ownKeys(target);
+    },
+    getOwnPropertyDescriptor(target, key) {
+      if (key === 'style') {
+        return {
+          configurable: true,
+          enumerable: true,
+          get: () => positionProps.style,
+        };
+      }
+      return Reflect.getOwnPropertyDescriptor(target, key);
+    },
+  });
+
   return {
-    popoverProps: mergeProps(overlayProps, positionProps),
+    popoverProps,
     arrowProps,
     underlayProps,
     placement,

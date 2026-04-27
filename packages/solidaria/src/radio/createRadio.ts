@@ -177,6 +177,7 @@ export function createRadio(
     get onPressChange() { return getProps().onPressChange; },
     get onPress() { return getProps().onPress; },
     get onPressUp() { return getProps().onPressUp; },
+    get onClick() { return getProps().onClick; },
     get isDisabled() { return isDisabled(); },
   });
 
@@ -186,6 +187,7 @@ export function createRadio(
     get onPressEnd() { return getProps().onPressEnd; },
     get onPressChange() { return getProps().onPressChange; },
     get onPressUp() { return getProps().onPressUp; },
+    get onClick() { return getProps().onClick; },
     onPress(e: PressEvent) {
       getProps().onPress?.(e);
       state.setSelectedValue(value());
@@ -273,7 +275,7 @@ export function createRadio(
         form: groupData?.form,
         tabIndex: getTabIndex(),
         disabled: isDisabled(),
-        required: state.isRequired && groupData?.validationBehavior === 'native',
+        required: state.isRequired,
         checked: isSelected(),
         value: value(),
         onChange,

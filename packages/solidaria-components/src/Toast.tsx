@@ -7,6 +7,7 @@
 
 import {
   type JSX,
+  type Accessor,
   createContext,
   createMemo,
   createEffect,
@@ -67,7 +68,7 @@ export interface ToastRenderProps {
 
 export interface ToastRegionRenderProps {
   /** The visible toasts. */
-  visibleToasts: QueuedToast<ToastContent>[];
+  visibleToasts: Accessor<QueuedToast<ToastContent>[]>;
 }
 
 export interface ToastRegionProps {
@@ -110,6 +111,7 @@ interface ToastAriaContextValue {
 }
 
 const ToastAriaContext = createContext<ToastAriaContextValue | null>(null);
+const toastStateByKey = new Map<string, ToastState<ToastContent>>();
 
 export function useToastContext(): ToastState<ToastContent> {
   const context = useContext(ToastContext);
@@ -231,7 +233,7 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
 
   // Render props values
   const renderValues = createMemo<ToastRegionRenderProps>(() => ({
-    visibleToasts: state()?.visibleToasts() ?? [],
+    visibleToasts: () => state()?.visibleToasts() ?? [],
   }));
 
   // Resolve render props
@@ -244,6 +246,7 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
     },
     renderValues
   );
+  const renderedChildren = createMemo(() => renderProps.renderChildren());
 
   // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
@@ -304,7 +307,7 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
         style={mergedStyle()}
         data-placement={local.placement ?? 'bottom-end'}
       >
-        {renderProps.renderChildren()}
+        {renderedChildren()}
       </div>
     );
   };
@@ -351,6 +354,16 @@ export function Toast(props: ToastProps): JSX.Element {
   // Get state from context
   const state = useToastContext();
 
+  createEffect(() => {
+    const key = local.toast.key;
+    toastStateByKey.set(key, state);
+    onCleanup(() => {
+      if (toastStateByKey.get(key) === state) {
+        toastStateByKey.delete(key);
+      }
+    });
+  });
+
   // Create toast accessibility props
   const toastAria = createToast({
     toast: local.toast,
@@ -386,6 +399,15 @@ export function Toast(props: ToastProps): JSX.Element {
     const custom = renderProps.style();
     if (!custom) return { 'pointer-events': 'auto' as const };
     return { 'pointer-events': 'auto' as const, ...custom } as JSX.CSSProperties;
+  };
+
+  const handleRootClick = (event: MouseEvent) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest('[data-solidaria-toast-close-button]')) {
+      state.close(local.toast.key);
+      state.remove(local.toast.key);
+    }
   };
 
   // Exit animation lifecycle:
@@ -470,6 +492,7 @@ export function Toast(props: ToastProps): JSX.Element {
         style={mergedStyle()}
         data-animation={local.toast.animation}
         data-type={local.toast.content.type}
+        on:click={handleRootClick}
       >
         {renderProps.renderChildren()}
       </div>
@@ -534,10 +557,12 @@ export interface ToastCloseButtonProps {
  * ToastCloseButton is a button that closes the toast.
  */
 export function ToastCloseButton(props: ToastCloseButtonProps): JSX.Element {
-  const state = useToastContext();
-
+  const contextState = useContext(ToastContext);
   const handleClose = () => {
-    state.close(props.toast.key);
+    const key = props.toast.key;
+    const state = contextState ?? toastStateByKey.get(key);
+    state?.close(key);
+    state?.remove(key);
   };
 
   return (
@@ -546,6 +571,8 @@ export function ToastCloseButton(props: ToastCloseButtonProps): JSX.Element {
       class={props.class}
       style={props.style}
       aria-label={props['aria-label'] ?? 'Close'}
+      data-solidaria-toast-close-button=""
+      on:click={handleClose}
       onClick={handleClose}
     >
       {props.children ?? '×'}

@@ -59,6 +59,13 @@ function isRow<T>(node: GridNode<T> | null): boolean {
   return node?.type === 'item';
 }
 
+function focusCurrentElement(el: HTMLElement | null | undefined) {
+  const target = el?.querySelector<HTMLElement>(
+    '[role="row"][tabindex="0"], [role="rowheader"][tabindex="0"], [role="gridcell"][tabindex="0"], [role="columnheader"][tabindex="0"]'
+  );
+  target?.focus();
+}
+
 /**
  * Creates accessibility props for a table component.
  */
@@ -73,6 +80,8 @@ export function createTable<T extends object>(
   // Track previous sort descriptor for announcements
   let prevSortDescriptor: { column: Key; direction: 'ascending' | 'descending' } | null = null;
   let isFirstRender = true;
+  let typeaheadBuffer = '';
+  let typeaheadTimeout: ReturnType<typeof setTimeout> | undefined;
 
   // Store metadata for child components
   const storeTableData = () => {
@@ -127,6 +136,47 @@ export function createTable<T extends object>(
     const p = props();
     const focusMode = p.focusMode ?? 'row';
     const isRTL = locale().direction === 'rtl';
+    const setFocusedKey = (key: Key) => {
+      s.setFocusedKey(key);
+      queueMicrotask(() => focusCurrentElement(ref()));
+    };
+    const runTypeahead = () => {
+      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) {
+        return false;
+      }
+
+      typeaheadBuffer += e.key.toLocaleLowerCase();
+      if (typeaheadTimeout) {
+        clearTimeout(typeaheadTimeout);
+      }
+      typeaheadTimeout = setTimeout(() => {
+        typeaheadBuffer = '';
+        typeaheadTimeout = undefined;
+      }, 500);
+
+      const rows = Array.from(collection).filter((node) => !s.isDisabled(node.key));
+      if (rows.length === 0) {
+        return true;
+      }
+
+      const currentRowKey = isCell(focusedItem) && focusedItem.parentKey != null
+        ? focusedItem.parentKey
+        : focusedKey;
+      const currentIndex = rows.findIndex((node) => node.key === currentRowKey);
+      const orderedRows = currentIndex >= 0
+        ? [...rows.slice(currentIndex + 1), ...rows.slice(0, currentIndex + 1)]
+        : rows;
+      const match = orderedRows.find((node) =>
+        collection.getTextValue(node.key).toLocaleLowerCase().startsWith(typeaheadBuffer)
+      );
+
+      if (match) {
+        e.preventDefault();
+        setFocusedKey(match.key);
+      }
+
+      return true;
+    };
 
     if (s.isKeyboardNavigationDisabled) {
       return;
@@ -139,7 +189,7 @@ export function createTable<T extends object>(
         const firstKey = collection.getFirstKey();
         if (firstKey != null) {
           e.preventDefault();
-          s.setFocusedKey(firstKey);
+          setFocusedKey(firstKey);
         }
       }
       return;
@@ -295,7 +345,7 @@ export function createTable<T extends object>(
         e.preventDefault();
         // Move down by roughly a page (using DOM measurements if available)
         const el = ref();
-        if (el) {
+        if (el && el.clientHeight > 0) {
           const visibleHeight = el.clientHeight;
           let currentKey: Key | null = focusedKey;
           let traveled = 0;
@@ -352,7 +402,7 @@ export function createTable<T extends object>(
         e.preventDefault();
         // Move up by roughly a page
         const el = ref();
-        if (el) {
+        if (el && el.clientHeight > 0) {
           const visibleHeight = el.clientHeight;
           let currentKey: Key | null = focusedKey;
           let traveled = 0;
@@ -404,7 +454,9 @@ export function createTable<T extends object>(
       }
 
       case 'Escape':
-        s.clearSelection();
+        if (p.escapeKeyBehavior !== 'none') {
+          s.clearSelection();
+        }
         return;
 
       case 'a':
@@ -435,11 +487,14 @@ export function createTable<T extends object>(
         return;
 
       default:
+        if (runTypeahead()) {
+          return;
+        }
         return;
     }
 
     if (nextKey != null) {
-      s.setFocusedKey(nextKey);
+      setFocusedKey(nextKey);
 
       // Handle shift+arrow for range selection
       if (e.shiftKey && s.selectionMode === 'multiple') {

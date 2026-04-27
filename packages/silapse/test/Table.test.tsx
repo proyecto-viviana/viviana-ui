@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableColumn,
   TableBody,
+  TableFooter,
   TableRow,
   TableCell,
 } from '../src/table';
@@ -83,6 +84,48 @@ describe('Table (silapse)', () => {
       // default wrapper: 'rounded-lg border border-bg-300 overflow-hidden'
       const wrapper = container.querySelector('.rounded-lg.overflow-hidden');
       expect(wrapper).toBeInTheDocument();
+    });
+
+    it('renders a styled table footer', () => {
+      render(() => (
+        <Table
+          items={rows}
+          columns={columns}
+          getKey={(r: any) => r.id}
+          aria-label="Test table"
+        >
+          {() => (
+            <>
+              <TableHeader>
+                <TableColumn id="name">{() => <>Name</>}</TableColumn>
+                <TableColumn id="role">{() => <>Role</>}</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {(row: any) => (
+                  <TableRow id={row.id} item={row}>
+                    {() => (
+                      <>
+                        <TableCell>{() => <>{row.name}</>}</TableCell>
+                        <TableCell>{() => <>{row.role}</>}</TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={2}>{() => <>3 people</>}</TableCell>
+                </TableRow>
+              </TableFooter>
+            </>
+          )}
+        </Table>
+      ));
+
+      const footer = document.querySelector('tfoot');
+      expect(footer).toBeInTheDocument();
+      expect(footer?.className).toContain('bg-bg-300');
+      expect(screen.getByText('3 people')).toHaveAttribute('colspan', '2');
     });
   });
 

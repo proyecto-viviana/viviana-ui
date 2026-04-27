@@ -13,6 +13,7 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
+import { createSignal } from 'solid-js';
 import {
   ComboBox,
   ComboBoxInput,
@@ -116,6 +117,29 @@ describe('ComboBox', () => {
       expect(combobox).toBeInTheDocument();
     });
 
+    it('should expose isReadOnly in root render props', () => {
+      render(() => (
+        <ComboBox
+          aria-label="Test ComboBox"
+          items={items}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.name}
+          isReadOnly
+          class={(renderProps) => renderProps.isReadOnly ? 'readonly-combobox' : 'editable-combobox'}
+        >
+          <ComboBoxInput />
+          <ComboBoxButton>▼</ComboBoxButton>
+          <ComboBoxListBox>
+            {(item) => <ComboBoxOption id={item.id}>{item.name}</ComboBoxOption>}
+          </ComboBoxListBox>
+        </ComboBox>
+      ));
+
+      const combobox = document.querySelector('.readonly-combobox');
+      expect(combobox).toBeInTheDocument();
+      expect(combobox).toHaveAttribute('data-readonly');
+    });
+
     it('should render selected text from ComboBoxValue when input text differs', () => {
       render(() => (
         <ComboBox
@@ -137,6 +161,78 @@ describe('ComboBox', () => {
 
       expect(screen.getByText('Banana')).toBeInTheDocument();
       expect(screen.queryByText('typed text')).not.toBeInTheDocument();
+    });
+
+    it('provides slots', () => {
+      render(() => (
+        <ComboBox
+          aria-label="Outer ComboBox"
+          items={[]}
+          slots={{
+            test: {
+              'aria-label': 'Slot ComboBox',
+              items,
+              getKey: (item) => item.id,
+              getTextValue: (item) => item.name,
+            },
+          }}
+        >
+          <ComboBox slot="test">
+            <ComboBoxInput />
+            <ComboBoxButton>▼</ComboBoxButton>
+            <ComboBoxListBox>
+              {(item) => <ComboBoxOption id={item.id}>{item.name}</ComboBoxOption>}
+            </ComboBoxListBox>
+          </ComboBox>
+        </ComboBox>
+      ));
+
+      const roots = document.querySelectorAll('.solidaria-ComboBox');
+      expect(roots[1]).toHaveAttribute('aria-label', 'Slot ComboBox');
+      expect(roots[1]).toHaveAttribute('slot', 'test');
+    });
+
+    it('should support slot', () => {
+      render(() => <TestComboBox comboBoxProps={{ slot: 'test' }} />);
+
+      expect(screen.getByRole('combobox').closest('.solidaria-ComboBox')).toHaveAttribute('slot', 'test');
+    });
+
+    it('should support custom render function', () => {
+      render(() => (
+        <TestComboBox
+          comboBoxProps={{
+            defaultOpen: true,
+            class: ({ isOpen }) => isOpen ? 'is-open' : 'is-closed',
+          }}
+        />
+      ));
+
+      expect(document.querySelector('.is-open')).toBeInTheDocument();
+    });
+
+    it('should support render props', () => {
+      render(() => (
+        <ComboBox
+          aria-label="Test ComboBox"
+          items={items}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.name}
+          defaultInputValue="Apple"
+        >
+          {({ inputValue }) => (
+            <>
+              <ComboBoxInput />
+              <ComboBoxButton>{inputValue}</ComboBoxButton>
+              <ComboBoxListBox>
+                {(item) => <ComboBoxOption id={item.id}>{item.name}</ComboBoxOption>}
+              </ComboBoxListBox>
+            </>
+          )}
+        </ComboBox>
+      ));
+
+      expect(screen.getByRole('button')).toHaveTextContent('Apple');
     });
   });
 
@@ -167,6 +263,14 @@ describe('ComboBox', () => {
         const listbox = screen.getByRole('listbox');
         expect(listbox).toBeInTheDocument();
       });
+    });
+
+    it('should not open the menu when isReadOnly', async () => {
+      render(() => <TestComboBox comboBoxProps={{ isReadOnly: true, menuTrigger: 'focus' }} />);
+
+      await user.click(screen.getByRole('combobox'));
+
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     });
 
     it('should open on ArrowDown', async () => {
@@ -210,6 +314,19 @@ describe('ComboBox', () => {
       await waitFor(() => {
         expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
       });
+    });
+
+    it('should not close on input scrolling for cursor placement', async () => {
+      render(() => <TestComboBox />);
+
+      const input = screen.getByRole('combobox');
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+      expect(input).toHaveFocus();
+
+      fireEvent.scroll(input);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
 
     it('should close on trigger button click when already open', async () => {
@@ -290,6 +407,7 @@ describe('ComboBox', () => {
         expect(screen.getByText('Banana')).toBeInTheDocument();
       });
     });
+
   });
 
   // ============================================
@@ -370,7 +488,6 @@ describe('ComboBox', () => {
           items={items}
           getKey={(item) => item.id}
           getTextValue={(item) => item.name}
-          defaultOpen
           defaultSelectedKey="1"
         >
           <ComboBoxInput />
@@ -469,6 +586,48 @@ describe('ComboBox', () => {
         expect(options).toHaveLength(5);
       });
     });
+
+    it('should support dynamic collections', async () => {
+      function DynamicComboBox() {
+        const [dynamicItems, setDynamicItems] = createSignal([
+          { id: 'cat', name: 'Cat' },
+          { id: 'dog', name: 'Dog' },
+        ]);
+
+        return (
+          <>
+            <button type="button" onClick={() => setDynamicItems([{ id: 'kangaroo', name: 'Kangaroo' }])}>
+              Update
+            </button>
+            <ComboBox
+              aria-label="Favorite Animal"
+              items={dynamicItems()}
+              getKey={(item) => item.id}
+              getTextValue={(item) => item.name}
+              defaultOpen
+            >
+              <ComboBoxInput />
+              <ComboBoxButton>▼</ComboBoxButton>
+              <ComboBoxListBox>
+                {(item) => <ComboBoxOption id={item.id}>{item.name}</ComboBoxOption>}
+              </ComboBoxListBox>
+            </ComboBox>
+          </>
+        );
+      }
+
+      render(() => <DynamicComboBox />);
+
+      await waitFor(() => {
+        expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['Cat', 'Dog']);
+      });
+
+      fireEvent.click(screen.getByText('Update'));
+
+      await waitFor(() => {
+        expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['Kangaroo']);
+      });
+    });
   });
 
   // ============================================
@@ -511,6 +670,42 @@ describe('ComboBox', () => {
       await waitFor(() => {
         expect(onSelectionChange).toHaveBeenCalled();
       });
+    });
+
+    it.each(['keyboard', 'mouse'])('should support onAction with %s', async (interactionType) => {
+      const onAction = vi.fn();
+      render(() => (
+        <ComboBox
+          aria-label="Test ComboBox"
+          items={items}
+          getKey={(item) => item.id}
+          getTextValue={(item) => item.name}
+          defaultOpen
+        >
+          <ComboBoxInput />
+          <ComboBoxButton>▼</ComboBoxButton>
+          <ComboBoxListBox>
+            {(item) => (
+              <ComboBoxOption id={item.id} onAction={onAction}>
+                {item.name}
+              </ComboBoxOption>
+            )}
+          </ComboBoxListBox>
+        </ComboBox>
+      ));
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      if (interactionType === 'keyboard') {
+        screen.getByRole('option', { name: 'Apple' }).focus();
+        await user.keyboard('{Enter}');
+      } else {
+        await user.click(screen.getByRole('option', { name: 'Apple' }));
+      }
+
+      expect(onAction).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -647,6 +842,13 @@ describe('ComboBox', () => {
       const button = screen.getByRole('button', { hidden: true });
       expect(button).toHaveClass('pressed');
     });
+
+    it('should apply isPressed state to button when expanded', () => {
+      render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
+
+      const button = screen.getByRole('button', { hidden: true });
+      expect(button).toHaveAttribute('data-pressed');
+    });
   });
 
   // ============================================
@@ -675,6 +877,14 @@ describe('ComboBox', () => {
 
       const combobox = document.querySelector('.solidaria-ComboBox');
       expect(combobox).toHaveAttribute('data-invalid');
+    });
+
+    it('should render data- attributes on outer element', () => {
+      render(() => <TestComboBox comboBoxProps={{ 'data-testid': 'combobox-root' } as never} />);
+
+      const combobox = screen.getByTestId('combobox-root');
+      expect(combobox).toHaveClass('solidaria-ComboBox');
+      expect(screen.getByRole('combobox')).not.toHaveAttribute('data-testid');
     });
   });
 
@@ -737,6 +947,17 @@ describe('ComboBox', () => {
   // ============================================
 
   describe('form integration', () => {
+    it('should support formValue', () => {
+      render(() => (
+        <TestComboBox comboBoxProps={{ name: 'fruit', formValue: 'key', defaultSelectedKey: '2' }} />
+      ));
+
+      const input = screen.getByRole('combobox');
+      const hiddenInput = document.querySelector('input[type="hidden"][name="fruit"]');
+      expect(input).not.toHaveAttribute('name');
+      expect(hiddenInput).toHaveValue('2');
+    });
+
     it('should render hidden input with selected key by default', () => {
       render(() => (
         <TestComboBox comboBoxProps={{ name: 'fruit', defaultSelectedKey: '1' }} />
@@ -783,6 +1004,12 @@ describe('ComboBox', () => {
       expect(input).toHaveAttribute('name', 'fruit');
       expect(input).toHaveValue('Dragonfruit');
       expect(hiddenInput).not.toBeInTheDocument();
+    });
+
+    it('should support form prop', () => {
+      render(() => <TestComboBox comboBoxProps={{ form: 'test-form' } as never} />);
+
+      expect(screen.getByRole('combobox')).toHaveAttribute('form', 'test-form');
     });
   });
 

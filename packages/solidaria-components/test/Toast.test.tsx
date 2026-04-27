@@ -179,7 +179,7 @@ describe('Toast', () => {
         <ToastProvider useGlobalQueue>
           <ToastRegion portal={false}>
             {(renderProps) => (
-              <For each={renderProps.visibleToasts}>
+              <For each={renderProps.visibleToasts()}>
                 {(toast) => <DefaultToast toast={toast} />}
               </For>
             )}

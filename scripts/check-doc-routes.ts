@@ -1,7 +1,8 @@
 import { readdir, readFile } from "node:fs/promises";
 
-const componentsDir = "apps/web/src/routes/docs/components";
-const hooksDir = "apps/web/src/routes/docs/hooks";
+const docsBasePath = "/silapse/docs";
+const componentsDir = "apps/web/src/routes/silapse/docs/components";
+const hooksDir = "apps/web/src/routes/silapse/docs/hooks";
 const routeTreeFile = "apps/web/src/routeTree.gen.ts";
 
 async function listRouteSlugs(dir: string): Promise<string[]> {
@@ -17,8 +18,8 @@ const hookSlugs = await listRouteSlugs(hooksDir);
 const routeTree = await readFile(routeTreeFile, "utf8");
 
 const expectedPaths = [
-  ...componentSlugs.map((slug) => `/docs/components/${slug}`),
-  ...hookSlugs.map((slug) => `/docs/hooks/${slug}`),
+  ...componentSlugs.map((slug) => `${docsBasePath}/components/${slug}`),
+  ...hookSlugs.map((slug) => `${docsBasePath}/hooks/${slug}`),
 ];
 
 const missingPaths = expectedPaths.filter((path) => !routeTree.includes(`'${path}'`));

@@ -68,6 +68,8 @@ export interface AriaComboBoxProps {
   onFocusChange?: (isFocused: boolean) => void;
   /** The name of the combobox, used when submitting an HTML form. */
   name?: string;
+  /** The form owner for the combobox input. */
+  form?: string;
   /**
    * Describes the type of autocomplete functionality the input should provide.
    * @default 'list'
@@ -181,7 +183,10 @@ export function createComboBox<T>(
 
   // Filter DOM props
   const domProps = () =>
-    filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
+    filterDOMProps(getProps() as unknown as Record<string, unknown>, {
+      labelable: true,
+      propNames: new Set(['form']),
+    });
 
   // Share data with child options
   createEffect(() => {

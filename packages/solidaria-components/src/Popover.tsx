@@ -368,6 +368,28 @@ export function Popover(props: PopoverProps): JSX.Element {
     renderValues
   )
 
+  const [triggerWidth, setTriggerWidth] = createSignal<string | undefined>()
+  const hasExplicitTriggerWidth = () => {
+    const style = renderProps.style() as (JSX.CSSProperties & Record<string, unknown>) | undefined
+    return style?.['--trigger-width'] != null
+  }
+  const updateTriggerWidth = () => {
+    const trigger = getTriggerRef()
+    if (!trigger || hasExplicitTriggerWidth()) return
+    setTriggerWidth(`${trigger.getBoundingClientRect().width}px`)
+  }
+  createEffect(() => {
+    if (!isOpen()) return
+    updateTriggerWidth()
+
+    const trigger = getTriggerRef()
+    if (!trigger || hasExplicitTriggerWidth() || typeof ResizeObserver === 'undefined') return
+
+    const observer = new ResizeObserver(updateTriggerWidth)
+    observer.observe(trigger)
+    onCleanup(() => observer.disconnect())
+  })
+
   // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }))
 
@@ -379,10 +401,11 @@ export function Popover(props: PopoverProps): JSX.Element {
 
   const mergedStyle = (): JSX.CSSProperties => {
     const ariaStyle = (popoverAria.popoverProps as Record<string, unknown>).style as JSX.CSSProperties | undefined
-    const renderStyle = renderProps.style() || {}
+    const renderStyle = (renderProps.style() || {}) as JSX.CSSProperties & Record<string, unknown>
     return {
       ...(ariaStyle ?? {}),
       ...renderStyle,
+      '--trigger-width': renderStyle['--trigger-width'] ?? triggerWidth(),
     }
   }
 

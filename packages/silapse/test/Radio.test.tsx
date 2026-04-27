@@ -435,7 +435,7 @@ describe('RadioGroup', () => {
         </RadioGroup>
       ));
       const radio = screen.getByRole('radio');
-      expect(radio).toHaveAttribute('data-testid', 'custom-radio');
+      expect(radio.closest('label')).toHaveAttribute('data-testid', 'custom-radio');
     });
   });
 

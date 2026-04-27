@@ -40,6 +40,15 @@ export function createSearchField(
 ): SearchFieldAria {
   const getProps = () => access(props);
 
+  const setValue = (value: string) => {
+    if (state.value() === value) {
+      return;
+    }
+
+    state.setValue(value);
+    getProps().onChange?.(value);
+  };
+
   // Use createTextField for the base implementation
   const textFieldAria = createTextField({
     get value() {
@@ -151,10 +160,7 @@ export function createSearchField(
       return getProps().onInput;
     },
     type: 'search',
-    onChange: (value: string) => {
-      state.setValue(value);
-      getProps().onChange?.(value);
-    },
+    onChange: setValue,
   });
 
   // Handle keyboard events for search field
@@ -181,7 +187,11 @@ export function createSearchField(
       if (currentValue !== '' || inputValue !== '') {
         e.preventDefault();
         e.stopPropagation();
-        state.setValue('');
+        const input = inputRef?.();
+        if (input) {
+          input.value = '';
+        }
+        setValue('');
         p.onClear?.();
       }
     }
@@ -191,7 +201,11 @@ export function createSearchField(
   const onClearButtonClick = () => {
     const p = getProps();
     if (p.isDisabled || p.isReadOnly) return;
-    state.setValue('');
+    const input = inputRef?.();
+    if (input) {
+      input.value = '';
+    }
+    setValue('');
     p.onClear?.();
     // Focus the input after clearing
     inputRef?.()?.focus();

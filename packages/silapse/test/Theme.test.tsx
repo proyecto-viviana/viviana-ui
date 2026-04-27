@@ -12,26 +12,25 @@ import { useContext } from 'solid-js';
 describe('Theme System', () => {
   describe('lightTheme', () => {
     it('has all required background tokens', () => {
-      expect(lightTheme.properties['--vui-bg-100']).toBeDefined();
-      expect(lightTheme.properties['--vui-bg-200']).toBeDefined();
-      expect(lightTheme.properties['--vui-bg-300']).toBeDefined();
+      expect(lightTheme.properties['--color-bg-100']).toBeDefined();
+      expect(lightTheme.properties['--color-bg-200']).toBeDefined();
+      expect(lightTheme.properties['--color-bg-300']).toBeDefined();
     });
 
     it('has all required text tokens', () => {
-      expect(lightTheme.properties['--vui-text-primary']).toBeDefined();
-      expect(lightTheme.properties['--vui-text-secondary']).toBeDefined();
+      expect(lightTheme.properties['--color-text']).toBeDefined();
+      expect(lightTheme.properties['--color-text-secondary']).toBeDefined();
     });
 
     it('has accent tokens', () => {
-      expect(lightTheme.properties['--vui-accent']).toBeDefined();
-      expect(lightTheme.properties['--vui-accent-hover']).toBeDefined();
+      expect(lightTheme.properties['--color-accent']).toBeDefined();
+      expect(lightTheme.properties['--color-accent-highlight']).toBeDefined();
     });
 
     it('has status tokens', () => {
-      expect(lightTheme.properties['--vui-danger']).toBeDefined();
-      expect(lightTheme.properties['--vui-success']).toBeDefined();
-      expect(lightTheme.properties['--vui-warning']).toBeDefined();
-      expect(lightTheme.properties['--vui-info']).toBeDefined();
+      expect(lightTheme.properties['--color-danger']).toBeDefined();
+      expect(lightTheme.properties['--color-success']).toBeDefined();
+      expect(lightTheme.properties['--color-warning']).toBeDefined();
     });
 
     it('has className set', () => {
@@ -41,14 +40,14 @@ describe('Theme System', () => {
 
   describe('darkTheme', () => {
     it('has all required background tokens', () => {
-      expect(darkTheme.properties['--vui-bg-100']).toBeDefined();
-      expect(darkTheme.properties['--vui-bg-200']).toBeDefined();
-      expect(darkTheme.properties['--vui-bg-300']).toBeDefined();
+      expect(darkTheme.properties['--color-bg-100']).toBeDefined();
+      expect(darkTheme.properties['--color-bg-200']).toBeDefined();
+      expect(darkTheme.properties['--color-bg-300']).toBeDefined();
     });
 
     it('has all required text tokens', () => {
-      expect(darkTheme.properties['--vui-text-primary']).toBeDefined();
-      expect(darkTheme.properties['--vui-text-secondary']).toBeDefined();
+      expect(darkTheme.properties['--color-text']).toBeDefined();
+      expect(darkTheme.properties['--color-text-secondary']).toBeDefined();
     });
 
     it('has className set', () => {
@@ -56,7 +55,7 @@ describe('Theme System', () => {
     });
 
     it('has different bg values than light theme', () => {
-      expect(darkTheme.properties['--vui-bg-100']).not.toBe(lightTheme.properties['--vui-bg-100']);
+      expect(darkTheme.properties['--color-bg-100']).not.toBe(lightTheme.properties['--color-bg-100']);
     });
   });
 
@@ -75,7 +74,7 @@ describe('Theme System', () => {
       ));
       const wrapper = container.firstElementChild as HTMLElement;
       // Should have CSS custom properties applied
-      expect(wrapper.style.getPropertyValue('--vui-accent')).toBeTruthy();
+      expect(wrapper.style.getPropertyValue('--color-accent')).toBeTruthy();
     });
 
     it('applies theme class name', () => {

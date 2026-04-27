@@ -187,6 +187,17 @@ export function Dialog(props: DialogProps): JSX.Element {
     triggerContext?.state.close()
   }
 
+  createEffect(() => {
+    if (!dialogRef || ariaProps['aria-label'] || ariaProps['aria-labelledby']) return
+    const labelledBy = dialogRef.getAttribute('aria-labelledby')
+    if (labelledBy && dialogRef.ownerDocument.getElementById(labelledBy)) return
+
+    const trigger = triggerContext?.triggerRef()
+    if (trigger?.id) {
+      dialogRef.setAttribute('aria-labelledby', trigger.id)
+    }
+  })
+
   // Render props values
   const renderValues = createMemo<DialogRenderProps>(() => ({
     close,
@@ -214,6 +225,7 @@ export function Dialog(props: DialogProps): JSX.Element {
         ref={dialogRef}
         class={renderProps.class()}
         style={renderProps.style()}
+        slot={local.slot}
       >
         {renderProps.renderChildren()}
       </div>

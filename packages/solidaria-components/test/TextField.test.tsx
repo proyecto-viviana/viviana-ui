@@ -11,11 +11,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
 import {
   TextField,
+  TextFieldContext,
   Input,
   Label,
   TextArea,
   type TextFieldRenderProps,
 } from '../src/TextField';
+import { FieldError } from '../src/FieldError';
+import { Text } from '../src/Text';
 import { setupUser, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
 
 // setupUser is consolidated in solidaria-test-utils.
@@ -30,6 +33,23 @@ describe('TextField', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
+
+  function TestTextField(props: Parameters<typeof TextField>[0] & { input?: typeof Input | typeof TextArea } = {}) {
+    const Component = props.input ?? Input;
+    const { input: _input, ...rest } = props;
+    return (
+      <TextField defaultValue="test" data-testid="text-field-test" data-foo="bar" {...rest}>
+        {() => (
+          <>
+            <Label>Test</Label>
+            <Component />
+            <Text slot="description">Description</Text>
+            <Text slot="errorMessage">Error</Text>
+          </>
+        )}
+      </TextField>
+    );
+  }
 
   describe('rendering', () => {
     it('should render a text field with default class', () => {
@@ -60,6 +80,40 @@ describe('TextField', () => {
       ));
 
       expect(screen.getByPlaceholderText('Enter name')).toBeInTheDocument();
+    });
+
+    it('provides slots', () => {
+      render(() => <TestTextField />);
+
+      const input = screen.getByRole('textbox');
+      expect(input).toHaveValue('test');
+      expect(input).toHaveAttribute('class', 'solidaria-Input');
+      expect(input).toHaveAttribute('type', 'text');
+      expect(input.closest('.solidaria-TextField')).toHaveAttribute('data-foo', 'bar');
+      expect(screen.getByText('Test')).toHaveAttribute('class', 'solidaria-Label');
+    });
+
+    it('should support slot', () => {
+      render(() => (
+        <TextFieldContext.Provider value={{ slots: { test: { 'aria-label': 'test' } } }}>
+          <TestTextField slot="test" />
+        </TextFieldContext.Provider>
+      ));
+
+      const input = screen.getByRole('textbox');
+      expect(input.closest('.solidaria-TextField')).toHaveAttribute('slot', 'test');
+      expect(input).toHaveAttribute('aria-label', 'test');
+    });
+
+    it('should support custom render function', () => {
+      render(() => (
+        <TestTextField
+          render={(props) => <div {...props} data-custom="true" />}
+        />
+      ));
+
+      const field = screen.getByRole('textbox').closest('.solidaria-TextField');
+      expect(field).toHaveAttribute('data-custom', 'true');
     });
   });
 
@@ -97,6 +151,36 @@ describe('TextField', () => {
 
       await user.hover(wrapper);
       expect(wrapper).toHaveClass('hovered');
+    });
+
+    it('should support hover state', async () => {
+      render(() => (
+        <TestTextField class={({ isHovered }) => isHovered ? 'hover' : ''} />
+      ));
+
+      const input = screen.getByRole('textbox');
+      const wrapper = input.closest('div')!;
+      expect(wrapper).not.toHaveAttribute('data-hovered');
+      expect(wrapper).not.toHaveClass('hover');
+
+      await user.hover(wrapper);
+      expect(wrapper).toHaveAttribute('data-hovered');
+      expect(wrapper).toHaveClass('hover');
+    });
+
+    it('should support focus visible state', async () => {
+      render(() => (
+        <TestTextField class={({ isFocusVisible }) => isFocusVisible ? 'focus' : ''} />
+      ));
+
+      const input = screen.getByRole('textbox');
+      const wrapper = input.closest('div')!;
+      expect(wrapper).not.toHaveAttribute('data-focus-visible');
+      expect(wrapper).not.toHaveClass('focus');
+
+      await user.tab();
+      expect(wrapper).toHaveAttribute('data-focus-visible');
+      expect(wrapper).toHaveClass('focus');
     });
 
     it('should provide isInvalid in render props', () => {
@@ -142,6 +226,77 @@ describe('TextField', () => {
       ));
 
       expect(screen.getByText('ReadOnly')).toBeInTheDocument();
+    });
+
+    it('should support read-only state', () => {
+      render(() => <TestTextField isReadOnly />);
+      const input = screen.getByRole('textbox');
+
+      expect(input.closest('.solidaria-TextField')).toHaveAttribute('data-readonly');
+    });
+
+    it('should support required state', () => {
+      render(() => <TestTextField isRequired />);
+      const input = screen.getByRole('textbox');
+
+      expect(input.closest('.solidaria-TextField')).toHaveAttribute('data-required');
+    });
+
+    it('supports validation errors', () => {
+      render(() => (
+        <TextField isInvalid errorMessage="Constraints not satisfied">
+          {() => (
+            <>
+              <Label>Test</Label>
+              <Input />
+              <FieldError />
+            </>
+          )}
+        </TextField>
+      ));
+
+      const input = screen.getByRole('textbox');
+      expect(input).toHaveAttribute('aria-describedby');
+      expect(document.getElementById(input.getAttribute('aria-describedby')!)).toHaveTextContent('Constraints not satisfied');
+      expect(input.closest('.solidaria-TextField')).toHaveAttribute('data-invalid');
+    });
+
+    it('should not render the field error div if no error is provided and isInvalid is true', () => {
+      render(() => (
+        <TextField isRequired isInvalid>
+          {() => (
+            <>
+              <Label>Test</Label>
+              <Input />
+              <FieldError />
+            </>
+          )}
+        </TextField>
+      ));
+
+      const input = screen.getByRole('textbox');
+      expect(input).toHaveAttribute('aria-invalid');
+      expect(input.closest('.solidaria-TextField')).toHaveAttribute('data-invalid');
+      expect(input).not.toHaveAttribute('aria-describedby');
+      expect(document.querySelector('.solidaria-FieldError')).not.toBeInTheDocument();
+    });
+
+    it('supports customizing validation errors', () => {
+      render(() => (
+        <TextField isInvalid errorMessage="Default error">
+          {() => (
+            <>
+              <Label>Test</Label>
+              <Input />
+              <FieldError>{({ isInvalid }) => isInvalid ? 'Please enter a name' : null}</FieldError>
+            </>
+          )}
+        </TextField>
+      ));
+
+      const input = screen.getByRole('textbox');
+      expect(input).toHaveAttribute('aria-describedby');
+      expect(document.getElementById(input.getAttribute('aria-describedby')!)).toHaveTextContent('Please enter a name');
     });
   });
 
@@ -202,6 +357,13 @@ describe('TextField', () => {
 
       await user.hover(wrapper);
       expect(wrapper).toHaveAttribute('data-hovered');
+    });
+
+    it('should render data- attributes only on the outer element', () => {
+      render(() => <TestTextField />);
+      const outerEl = screen.getAllByTestId('text-field-test');
+      expect(outerEl).toHaveLength(1);
+      expect(outerEl[0]).toHaveClass('solidaria-TextField');
     });
 
     // Note: data-focused and data-focus-visible require the Input component to track focus
@@ -267,6 +429,44 @@ describe('TextField', () => {
       ));
 
       expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+    });
+
+    it('should render the id attribute only on the input element', () => {
+      render(() => <TestTextField id="name" />);
+      const outerEl = screen.getAllByTestId('text-field-test');
+      const input = screen.getByRole('textbox');
+
+      expect(outerEl).toHaveLength(1);
+      expect(outerEl[0]).not.toHaveAttribute('id');
+      expect(input).toHaveAttribute('id', 'name');
+    });
+
+    it('should link an id on the input to the label htmlFor', () => {
+      render(() => (
+        <TextField defaultValue="test" data-testid="text-field-test" data-foo="bar">
+          {() => (
+            <>
+              <Label>Test</Label>
+              <Input id="name" />
+              <Text slot="description">Description</Text>
+              <Text slot="errorMessage">Error</Text>
+            </>
+          )}
+        </TextField>
+      ));
+      const outerEl = screen.getAllByTestId('text-field-test');
+      const input = screen.getByRole('textbox');
+      const label = screen.getByText('Test');
+
+      expect(outerEl).toHaveLength(1);
+      expect(outerEl[0]).not.toHaveAttribute('id');
+      expect(input).toHaveAttribute('id', 'name');
+      expect(label).toHaveAttribute('for', 'name');
+    });
+
+    it('should support form prop', () => {
+      render(() => <TestTextField form="test" />);
+      expect(screen.getByRole('textbox')).toHaveAttribute('form', 'test');
     });
   });
 

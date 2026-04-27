@@ -22,19 +22,19 @@ Proyecto Viviana.
 From the monorepo root:
 
 ```bash
-pnpm run comparison:install
-pnpm run comparison:dev
+vp run comparison:install
+vp run comparison:dev
 ```
 
 Root-level commands also exist for:
 
 ```bash
-pnpm run comparison:build
-pnpm run comparison:preview
-pnpm run comparison:typecheck
-pnpm run comparison:dev:worker
-pnpm run comparison:deploy:dry-run
-pnpm run comparison:deploy
+vp run comparison:build
+vp run comparison:preview
+vp run comparison:typecheck
+vp run comparison:dev:worker
+vp run comparison:deploy:dry-run
+vp run comparison:deploy
 ```
 
 The root wrappers invoke Astro or Wrangler directly; they do not rebuild the
@@ -43,18 +43,18 @@ Proyecto Viviana packages first.
 ```bash
 cd apps/comparison
 pnpm install
-pnpm run dev
+vp run dev
 ```
 
 Additional tasks:
 
 ```bash
-pnpm run typecheck
-pnpm run build
-pnpm run preview
-pnpm run dev:worker
-pnpm run deploy:dry-run
-pnpm run deploy
+vp run typecheck
+vp run build
+vp run preview
+vp run dev:worker
+vp run deploy:dry-run
+vp run deploy
 ```
 
 ## Current Coverage
@@ -113,27 +113,27 @@ surface is static and the Worker is only acting as an asset host.
 Typical flow:
 
 ```bash
-pnpm run comparison:install
-pnpm run comparison:deploy
+vp run comparison:install
+vp run comparison:deploy
 ```
 
 Or from inside `apps/comparison`:
 
 ```bash
 pnpm install
-pnpm run deploy
+vp run deploy
 ```
 
 For local Worker-style runtime validation, use:
 
 ```bash
-pnpm run comparison:dev:worker
+vp run comparison:dev:worker
 ```
 
 Optional:
 
 ```bash
-pnpm run comparison:types
+vp run comparison:types
 ```
 
 `wrangler types` is useful for generated binding types, but it is not required
@@ -144,7 +144,7 @@ for deployment.
 The root runner is:
 
 ```bash
-pnpm run comparison:dev
+vp run comparison:dev
 ```
 
 Keeping Astro local and Cloudflare deployment separate avoids root workspace

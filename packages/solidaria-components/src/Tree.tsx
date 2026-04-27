@@ -944,6 +944,20 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
           getKeyPageBelow: (key) => state.collection.getKeyAfter(key),
           getKeyPageAbove: (key) => state.collection.getKeyBefore(key),
         },
+        get collection() {
+          return state.collection;
+        },
+        get selectedKeys() {
+          return state.selectedKeys;
+        },
+        setSelectedKeys: (keys: Set<Key>) => {
+          if (state.selectionMode === 'none') return;
+          state.clearSelection();
+          for (const key of keys) {
+            state.toggleSelection(key);
+          }
+        },
+        setFocusedKey: (key) => state.setFocusedKey(key),
         onDropActivate: (event) => {
           if (event.target.type !== 'item') return;
           const key = event.target.key;

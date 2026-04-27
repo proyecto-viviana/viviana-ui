@@ -98,6 +98,9 @@ export function createTableState<
     get selectionMode() {
       return gridState.selectionMode;
     },
+    get selectionBehavior() {
+      return gridState.selectionBehavior;
+    },
     get selectedKeys() {
       return gridState.selectedKeys;
     },

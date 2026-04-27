@@ -8,6 +8,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "test:dialog": "playwright test e2e/dialog-visual.spec.ts --reporter=line",
+    "test:datepicker": "playwright test e2e/datepicker-visual.spec.ts --reporter=line",
+    "test:select": "playwright test e2e/select-visual.spec.ts --reporter=line",
     "preview": "astro preview",
     "typecheck": "astro check",
     "dev:worker": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler dev --config wrangler.jsonc",

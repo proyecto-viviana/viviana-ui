@@ -157,11 +157,13 @@ describe('SearchField', () => {
       const onChange = vi.fn();
       render(() => <TestSearchField fieldProps={{ defaultValue: 'hello', onClear, onChange }} />);
 
+      const input = screen.getByRole('searchbox');
       const clearButton = screen.getByRole('button');
       await user.click(clearButton);
 
       // Verify the clear callback was called
       expect(onClear).toHaveBeenCalled();
+      expect(input).toHaveValue('');
       // After clicking clear, the clear button should no longer be visible (since value is empty)
       await waitFor(() => {
         expect(screen.queryByRole('button')).not.toBeInTheDocument();

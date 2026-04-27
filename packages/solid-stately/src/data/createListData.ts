@@ -143,11 +143,8 @@ export function createListData<T>(options: ListOptions<T>): ListData<T> {
 
     insertBefore(key: Key, ...values: T[]) {
       setState(s => {
-        let index = s.items.findIndex(item => getKey(item) === key);
-        if (index === -1) {
-          index = s.items.length === 0 ? 0 : -1;
-          if (index === -1) return s;
-        }
+        const index = s.items.findIndex(item => getKey(item) === key);
+        if (index === -1) return s;
         return insertItems(s, index, ...values);
       });
     },

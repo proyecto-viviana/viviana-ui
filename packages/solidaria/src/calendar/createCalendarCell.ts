@@ -7,6 +7,7 @@
 
 import { createSignal, createMemo, createEffect } from 'solid-js';
 import { access, type MaybeAccessor } from '../utils/reactivity';
+import { focusSafely } from '../utils/focus';
 import type { CalendarState, CalendarDate, DateValue } from '@proyecto-viviana/solid-stately';
 import { isToday as isTodayUtil, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 
@@ -108,10 +109,14 @@ export function createCalendarCell<T extends CalendarState>(
   };
 
   // Keep DOM focus synchronized with focused date updates.
+  // Use focusSafely (preventScroll) to match @react-aria/calendar — bare focus()
+  // causes the browser to auto-scroll the page when bringing the cell into view,
+  // which is wrong inside a popover. Scroll-into-view should be opt-in based on
+  // interaction modality (handled at a higher layer when needed).
   createEffect(() => {
     const element = ref?.();
     if (element && isFocused()) {
-      element.focus();
+      focusSafely(element);
     }
   });
 

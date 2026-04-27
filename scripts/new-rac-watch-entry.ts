@@ -47,10 +47,10 @@ function buildEntry(date: string, sha: string, commitDate: string): string {
 
 ### Guard Summary
 
-1. \`pnpm run guard:rac-parity\`: pass|fail - <short note>
-2. \`pnpm run guard:rac-export-gap\`: pass|fail - <short note>
-3. \`pnpm run guard:layer-parity\`: pass|fail - <short note>
-4. \`pnpm run guard:dnd-keyboard-parity\`: pass|fail - <short note>
+1. \`vp run guard:rac-parity\`: pass|fail - <short note>
+2. \`vp run guard:rac-export-gap\`: pass|fail - <short note>
+3. \`vp run guard:layer-parity\`: pass|fail - <short note>
+4. \`vp run guard:dnd-keyboard-parity\`: pass|fail - <short note>
 
 ### Behavioral Delta Review
 

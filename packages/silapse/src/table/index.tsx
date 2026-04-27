@@ -11,6 +11,7 @@ import {
   TableHeader as HeadlessTableHeader,
   TableColumn as HeadlessTableColumn,
   TableBody as HeadlessTableBody,
+  TableFooter as HeadlessTableFooter,
   TableRow as HeadlessTableRow,
   TableCell as HeadlessTableCell,
   TableSelectionCheckbox as HeadlessTableSelectionCheckbox,
@@ -21,6 +22,7 @@ import {
   type TableHeaderProps as HeadlessTableHeaderProps,
   type TableColumnProps as HeadlessTableColumnProps,
   type TableBodyProps as HeadlessTableBodyProps,
+  type TableFooterProps as HeadlessTableFooterProps,
   type TableRowProps as HeadlessTableRowProps,
   type TableCellProps as HeadlessTableCellProps,
   type ColumnResizerProps as HeadlessColumnResizerProps,
@@ -28,6 +30,7 @@ import {
   type ColumnResizerRenderProps,
   type TableRenderProps,
   type TableColumnRenderProps,
+  type TableFooterRenderProps,
   type TableRowRenderProps,
   type TableCellRenderProps,
 } from '@proyecto-viviana/solidaria-components'
@@ -83,6 +86,11 @@ export interface TableColumnProps extends Omit<HeadlessTableColumnProps, 'class'
 }
 
 export interface TableBodyProps<T> extends Omit<HeadlessTableBodyProps<T>, 'class' | 'style'> {
+  /** Additional CSS class name. */
+  class?: string
+}
+
+export interface TableFooterProps<T> extends Omit<HeadlessTableFooterProps<T>, 'class' | 'style'> {
   /** Additional CSS class name. */
   class?: string
 }
@@ -373,6 +381,30 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
 }
 
 // ============================================
+// TABLE FOOTER COMPONENT
+// ============================================
+
+/**
+ * The footer of a table containing summary rows.
+ */
+export function TableFooter<T extends object>(props: TableFooterProps<T>): JSX.Element {
+  const [local, headlessProps] = splitProps(props, ['class'])
+  const context = useContext(TableSizeContext)
+  const variantStyle = variantStyles[context.variant]
+  const customClass = local.class ?? ''
+
+  const getClassName = (_renderProps: TableFooterRenderProps): string => {
+    return [variantStyle.header, customClass].filter(Boolean).join(' ')
+  }
+
+  return (
+    <HeadlessTableFooter {...headlessProps} class={getClassName}>
+      {props.children}
+    </HeadlessTableFooter>
+  )
+}
+
+// ============================================
 // TABLE ROW COMPONENT
 // ============================================
 
@@ -596,6 +628,7 @@ function EmptyIcon(props: { class?: string }): JSX.Element {
 Table.Header = TableHeader
 Table.Column = TableColumn
 Table.Body = TableBody
+Table.Footer = TableFooter
 Table.Row = TableRow
 Table.Cell = TableCell
 Table.SelectionCheckbox = TableSelectionCheckbox
@@ -604,6 +637,7 @@ Table.ColumnResizer = ColumnResizer
 
 export const TableView = Table
 export const Column = TableColumn
+export const Footer = TableFooter
 export const Row = TableRow
 export const Cell = TableCell
 

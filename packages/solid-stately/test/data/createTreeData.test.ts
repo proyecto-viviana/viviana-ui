@@ -324,6 +324,16 @@ describe('createTreeData', () => {
     });
   });
 
+  it('moveAfter rejects cyclical move into its own subtree', () => {
+    createRoot(dispose => {
+      const tree = createTestTree();
+      expect(() => tree.moveAfter(11, [1])).toThrow('Cannot move an item to be a child of itself.');
+      expect(tree.items.map(item => item.value.name)).toEqual(['A', 'B', 'C']);
+      expect(tree.getItem(11)!.parentKey).toBe(1);
+      dispose();
+    });
+  });
+
   it('moveBefore with nonexistent target key is a no-op', () => {
     createRoot(dispose => {
       const tree = createTestTree();

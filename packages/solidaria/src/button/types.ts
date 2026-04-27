@@ -55,6 +55,8 @@ export interface AriaButtonProps {
   'aria-controls'?: string;
   /** Indicates the current "pressed" state of toggle buttons. */
   'aria-current'?: boolean | 'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false';
+  /** Indicates that the button is perceivable but disabled. */
+  'aria-disabled'?: boolean | 'true' | 'false';
   /** Additional attributes for form buttons. */
   form?: string;
   formAction?: string;

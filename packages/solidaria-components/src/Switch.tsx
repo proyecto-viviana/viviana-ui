@@ -11,7 +11,9 @@ import {
   type JSX,
   createContext,
   createMemo,
+  createUniqueId,
   splitProps,
+  Show,
 } from 'solid-js';
 import {
   createSwitch,
@@ -49,6 +51,8 @@ export interface ToggleSwitchRenderProps {
   isDisabled: boolean;
   /** Whether the switch is read only. */
   isReadOnly: boolean;
+  /** Whether the switch is invalid. */
+  isInvalid: boolean;
   /** State of the switch. */
   state: ToggleState;
 }
@@ -62,6 +66,10 @@ export interface ToggleSwitchProps
   class?: ClassNameOrFunction<ToggleSwitchRenderProps>;
   /** The inline style for the element. */
   style?: StyleOrFunction<ToggleSwitchRenderProps>;
+  /** A description for the switch. */
+  description?: JSX.Element;
+  /** An error message for the switch. */
+  errorMessage?: JSX.Element;
 }
 
 // ============================================
@@ -104,7 +112,11 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
     'class',
     'style',
     'slot',
+    'description',
+    'errorMessage',
   ]);
+  const descriptionId = createUniqueId();
+  const errorMessageId = createUniqueId();
 
   // Create toggle state
   // Use getters to ensure props are read lazily inside reactive contexts
@@ -124,6 +136,14 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
     state,
     () => inputRef
   );
+  const describedBy = () => {
+    const ids = [
+      ariaProps['aria-describedby'],
+      local.description ? descriptionId : undefined,
+      switchAria.isInvalid && local.errorMessage ? errorMessageId : undefined,
+    ].filter(Boolean);
+    return ids.length ? ids.join(' ') : undefined;
+  };
 
   // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
@@ -144,6 +164,7 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
     isFocusVisible: isFocusVisible(),
     isDisabled: switchAria.isDisabled,
     isReadOnly: switchAria.isReadOnly,
+    isInvalid: switchAria.isInvalid,
     state,
   }));
 
@@ -204,10 +225,20 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
           ref={(el) => (inputRef = el)}
           {...cleanInputProps()}
           {...cleanFocusProps()}
+          aria-describedby={describedBy()}
         />
       </VisuallyHidden>
       {renderProps.renderChildren()}
+      <Show when={local.description}>
+        <span id={descriptionId} slot="description">
+          {local.description}
+        </span>
+      </Show>
+      <Show when={switchAria.isInvalid && local.errorMessage}>
+        <span id={errorMessageId} slot="errorMessage">
+          {local.errorMessage}
+        </span>
+      </Show>
     </label>
   );
 }
-

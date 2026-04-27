@@ -205,7 +205,11 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
 
       const key = isRowDef ? row.key : getKey?.(row as T) ?? i;
       const value = isRowDef ? row.value : (row as T);
-      const textValue = isRowDef ? row.textValue : undefined;
+      const textValue = isRowDef
+        ? row.textValue
+        : typeof (row as Record<string, unknown>)?.textValue === 'string'
+          ? ((row as Record<string, unknown>).textValue as string)
+          : undefined;
 
       // Build cells for this row
       const cells: GridNode<T>[] = this._columns.map((col, colIndex) => {

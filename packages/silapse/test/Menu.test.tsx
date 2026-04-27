@@ -256,6 +256,32 @@ describe('Menu (silapse)', () => {
   });
 
   describe('MenuItem', () => {
+    it('renders href items as anchors', () => {
+      render(() => (
+        <MenuTrigger defaultOpen>
+          <MenuButton>Actions</MenuButton>
+          <Menu items={items} getKey={(i) => i.id} aria-label="Actions">
+            {(item) => (
+              <MenuItem
+                id={item.id}
+                href={`https://example.com/${item.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {item.label}
+              </MenuItem>
+            )}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      const menuItems = screen.getAllByRole('menuitem');
+      expect(menuItems[0].tagName).toBe('A');
+      expect(menuItems[0]).toHaveAttribute('href', 'https://example.com/edit');
+      expect(menuItems[0]).toHaveAttribute('target', '_blank');
+      expect(menuItems[0]).toHaveAttribute('rel', 'noopener noreferrer');
+    });
+
     it('renders label text', () => {
       render(() => (
         <MenuTrigger defaultOpen>

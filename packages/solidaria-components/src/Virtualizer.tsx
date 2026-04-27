@@ -643,8 +643,15 @@ export function Virtualizer<O>(props: VirtualizerProps<O>): JSX.Element {
     updateViewportSize();
     const handleResize = () => updateViewportSize();
     window.addEventListener('resize', handleResize);
+    const resizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(() => updateViewportSize())
+      : null;
+    if (containerRef && resizeObserver) {
+      resizeObserver.observe(containerRef);
+    }
     onCleanup(() => {
       window.removeEventListener('resize', handleResize);
+      resizeObserver?.disconnect();
     });
   });
 

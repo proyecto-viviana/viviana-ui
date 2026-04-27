@@ -2,7 +2,7 @@
  * Tests for solidaria-components Virtualizer
  */
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@solidjs/testing-library';
+import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
 import { createMemo, type JSX } from 'solid-js';
 import {
   GridLayout,
@@ -211,6 +211,53 @@ describe('Virtualizer', () => {
     expect(screen.getByTestId('viewport-width-range-layout').textContent).toContain('"start":0');
     expect(typeof capturedRangeViewportWidth).toBe('number');
     expect(typeof capturedLayoutViewportWidth).toBe('number');
+  });
+
+  it('updates layout sizing when the virtualizer container is resized', async () => {
+    let resizeCallback: ResizeObserverCallback | undefined;
+    class TestResizeObserver {
+      constructor(callback: ResizeObserverCallback) {
+        resizeCallback = callback;
+      }
+      observe = vi.fn();
+      disconnect = vi.fn();
+      unobserve = vi.fn();
+    }
+
+    vi.stubGlobal('ResizeObserver', TestResizeObserver);
+    let width = 120;
+    let height = 80;
+    const widthSpy = vi.spyOn(window.HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(() => width);
+    const heightSpy = vi.spyOn(window.HTMLElement.prototype, 'clientHeight', 'get').mockImplementation(() => height);
+
+    function Consumer(): JSX.Element {
+      const ctx = createMemo(() => useVirtualizerContext());
+      return (
+        <output data-testid="resized-layout">
+          {JSON.stringify(ctx()?.getLayoutInfo(0) ?? null)}
+        </output>
+      );
+    }
+
+    render(() => (
+      <Virtualizer layout={{}}>
+        <Consumer />
+      </Virtualizer>
+    ));
+
+    expect(screen.getByTestId('resized-layout').textContent).toContain('"width":120');
+
+    width = 260;
+    height = 100;
+    resizeCallback?.([], {} as ResizeObserver);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('resized-layout').textContent).toContain('"width":260');
+    });
+
+    widthSpy.mockRestore();
+    heightSpy.mockRestore();
+    vi.unstubAllGlobals();
   });
 
   it('drop-target delegate falls back to sibling positions before root', () => {

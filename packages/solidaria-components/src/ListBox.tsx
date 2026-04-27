@@ -81,6 +81,14 @@ export interface ListBoxRenderProps {
   isEmpty: boolean;
 }
 
+type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
+
+function assignRef<T>(ref: RefLike<T>, el: T): void {
+  if (!ref) return;
+  if (typeof ref === 'function') ref(el);
+  else ref.current = el;
+}
+
 export interface ListBoxProps<T>
   extends Omit<AriaListBoxProps, 'children'>,
     SlotProps {
@@ -120,12 +128,16 @@ export interface ListBoxProps<T>
   isLoading?: boolean;
   /** Called when the load more sentinel becomes visible. */
   onLoadMore?: () => void | Promise<void>;
+  /** Ref for the listbox element. */
+  ref?: RefLike<HTMLUListElement>;
   /** Drag and drop hooks from `useDragAndDrop`. */
   dragAndDropHooks?: DragAndDropHooks<T>;
   /** Layout hint for styling parity. */
   layout?: 'stack' | 'grid';
   /** Orientation hint for styling parity. */
   orientation?: 'vertical' | 'horizontal';
+  /** Slot definitions provided through ListBoxContext. */
+  slots?: Record<string, Partial<ListBoxProps<T>>>;
 }
 
 export interface ListBoxOptionRenderProps {
@@ -158,6 +170,8 @@ export interface ListBoxOptionProps<T>
   style?: StyleOrFunction<ListBoxOptionRenderProps>;
   /** The text value of the option (for typeahead). */
   textValue?: string;
+  /** Ref for the option element. */
+  ref?: RefLike<HTMLLIElement>;
 }
 
 export interface ListBoxLoadMoreItemProps extends SlotProps {
@@ -187,6 +201,7 @@ interface ListBoxContextValue<T> {
   dragAndDropHooks?: DragAndDropHooks<unknown>;
   dragState?: unknown;
   dropState?: unknown;
+  slots?: Record<string, Partial<ListBoxProps<T>>>;
 }
 
 export const ListBoxContext = createContext<ListBoxContextValue<unknown> | null>(null);
@@ -201,9 +216,12 @@ export const ListStateContext = ListBoxStateContext;
  * A listbox displays a list of options and allows a user to select one or more of them.
  */
 export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
+  const parentContext = useContext(ListBoxContext) as ListBoxContextValue<T> | null;
+  const contextSlotProps = parentContext?.slots?.[props.slot ?? 'default'];
+  const mergedListBoxProps = contextSlotProps ? mergeProps(contextSlotProps, props) as ListBoxProps<T> : props;
   const [local, stateProps, ariaProps] = splitProps(
-    props,
-    ['children', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore', 'dragAndDropHooks'],
+    mergedListBoxProps,
+    ['children', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore', 'dragAndDropHooks', 'slots', 'ref'],
     ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'disabledBehavior', 'selectionMode', 'selectionBehavior', 'selectedKeys', 'defaultSelectedKeys', 'onSelectionChange', 'layout', 'orientation']
   );
 
@@ -478,7 +496,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   });
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     ...parentCollectionRenderer,
-    renderItem: (item) => props.children(item as T),
+    renderItem: (item) => local.children(item as T),
     renderDropIndicator: (index, position) =>
       dndDropIndicator(index, position) ?? parentCollectionRenderer?.renderDropIndicator?.(index, position),
   }));
@@ -491,7 +509,8 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
         dragAndDropHooks: local.dragAndDropHooks as DragAndDropHooks<unknown> | undefined,
         dragState: dragState(),
         dropState: dropState(),
-      }}
+        slots: local.slots,
+      } as ListBoxContextValue<unknown>}
     >
       <ListBoxStateContext.Provider value={state}>
         <CollectionRendererContext.Provider value={collectionRenderer()}>
@@ -508,6 +527,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
               )}
               ref={(el) => {
                 setListRef(el);
+                assignRef(local.ref, el);
               }}
               class={renderProps.class()}
               style={renderProps.style()}
@@ -518,6 +538,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
               data-layout={stateProps.layout}
               data-orientation={stateProps.orientation}
               data-drop-target={isRootDropTarget() || undefined}
+              slot={local.slot}
             >
               <SharedElementTransition>
               {isEmpty() && local.renderEmptyState
@@ -544,7 +565,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
                                         <>
                                           {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'before')}
                                           {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'on')}
-                                          {props.children(indexedItem.item)}
+                                          {local.children(indexedItem.item)}
                                           {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'after')}
                                         </>
                                       )}
@@ -558,7 +579,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
                             <>
                               {collectionRenderer().renderDropIndicator?.(entry.item.index, 'before')}
                               {collectionRenderer().renderDropIndicator?.(entry.item.index, 'on')}
-                              {props.children(entry.item.item)}
+                              {local.children(entry.item.item)}
                               {collectionRenderer().renderDropIndicator?.(entry.item.index, 'after')}
                             </>
                           )
@@ -580,7 +601,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
                             <>
                               {beforeIndicator()}
                               {onIndicator()}
-                              {props.children(item as T)}
+                              {local.children(item as T)}
                               {afterIndicator()}
                             </>
                           );
@@ -618,6 +639,7 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     'id',
     'item',
     'textValue',
+    'ref',
   ]);
 
   // Get state from context
@@ -650,6 +672,15 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return optionAria.isDisabled();
+    },
+    onHoverStart(e) {
+      (ariaProps as Record<string, (e: unknown) => void>).onHoverStart?.(e);
+    },
+    onHoverEnd(e) {
+      (ariaProps as Record<string, (e: unknown) => void>).onHoverEnd?.(e);
+    },
+    onHoverChange(isHovering) {
+      (ariaProps as Record<string, (isHovering: boolean) => void>).onHoverChange?.(isHovering);
     },
   });
 
@@ -716,12 +747,17 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     const { ref: _ref2, ...rest } = hoverProps as Record<string, unknown>;
     return rest;
   };
+  const domProps = () => filterDOMProps(ariaProps as Record<string, unknown>, { global: true });
 
   return (
     <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
       <li
-        ref={setRef}
+        ref={(el) => {
+          setRef(el);
+          assignRef(local.ref, el);
+        }}
         {...mergeProps(
+          domProps(),
           cleanOptionProps(),
           cleanHoverProps(),
           (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
@@ -737,6 +773,7 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
         data-disabled={optionAria.isDisabled() || undefined}
         data-dragging={draggableItem()?.isDragging || undefined}
         data-drop-target={droppableItem()?.isDropTarget || undefined}
+        slot={local.slot}
       >
         {hasPrimitiveLabel()
           ? <span {...optionAria.labelProps}>{renderProps.renderChildren()}</span>

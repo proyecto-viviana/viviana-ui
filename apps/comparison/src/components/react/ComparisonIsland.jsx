@@ -179,11 +179,48 @@ function ReactTextFieldDemo() {
   ] });
 }
 function ReactSelectDemo() {
-  return /* @__PURE__ */ jsxs(RACSelect, { className: "comparison-form-control", defaultSelectedKey: "bravo", children: [
-    /* @__PURE__ */ jsx(RACLabel, { children: "Channel" }),
-    /* @__PURE__ */ jsx(RACButton, { className: "comparison-field-button", children: /* @__PURE__ */ jsx(RACSelectValue, {}) }),
-    /* @__PURE__ */ jsx(RACPopover, { className: "comparison-popover", children: /* @__PURE__ */ jsx(RACListBox, { className: "comparison-listbox", children: selectItems.map((item) => /* @__PURE__ */ jsx(RACListBoxItem, { id: item.id, className: "comparison-listbox-item", children: item.label }, item.id)) }) })
-  ] });
+  const [selectedKey, setSelectedKey] = useState("bravo");
+  return /* @__PURE__ */ jsx("div", { className: "comparison-spectrum-skin", "data-comparison-selected-key": selectedKey, children: /* @__PURE__ */ jsxs(
+    RACSelect,
+    {
+      className: "comparison-spectrum-Select",
+      defaultSelectedKey: "bravo",
+      onSelectionChange: (key) => {
+        setSelectedKey(key == null ? "" : String(key));
+      },
+      children: [
+        /* @__PURE__ */ jsx(RACLabel, { className: "comparison-spectrum-Field-label", "data-slot": "label", children: "Channel" }),
+        /* @__PURE__ */ jsx(
+          RACButton,
+          {
+            className: "comparison-spectrum-Field-input comparison-spectrum-Select-trigger",
+            children: /* @__PURE__ */ jsx(RACSelectValue, { className: "comparison-spectrum-Select-value", "data-slot": "value" })
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          RACPopover,
+          {
+            className: "comparison-popover",
+            children: /* @__PURE__ */ jsx(
+              RACListBox,
+              {
+                className: "comparison-spectrum-Select-listbox",
+                children: selectItems.map((item) => /* @__PURE__ */ jsx(
+                  RACListBoxItem,
+                  {
+                    id: item.id,
+                    className: "comparison-spectrum-Select-option",
+                    children: item.label
+                  },
+                  item.id
+                ))
+              }
+            )
+          }
+        )
+      ]
+    }
+  ) });
 }
 function ReactDialogDemo() {
   return /* @__PURE__ */ jsx("div", { className: "comparison-spectrum-skin", children: /* @__PURE__ */ jsxs(RACDialogTrigger, { children: [
@@ -208,14 +245,14 @@ function ReactRadioDemo() {
 function ReactDatePickerDemo() {
   const [value, setValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  return /* @__PURE__ */ jsx("div", { className: "comparison-stack", "data-comparison-value": value, "data-comparison-open": String(isOpen), children: /* @__PURE__ */ jsxs(RACDatePicker, { className: "comparison-form-control", "aria-label": "Due date", onChange: (nextValue) => setValue(nextValue == null ? "" : String(nextValue)), onOpenChange: setIsOpen, children: [
-    /* @__PURE__ */ jsx(RACLabel, { children: "Due date" }),
-    /* @__PURE__ */ jsxs(RACGroup, { children: [
+  return /* @__PURE__ */ jsx("div", { className: "comparison-spectrum-skin comparison-stack", "data-comparison-value": value, "data-comparison-open": String(isOpen), children: /* @__PURE__ */ jsxs(RACDatePicker, { className: "comparison-form-control comparison-datepicker-root", "aria-label": "Due date", onChange: (nextValue) => setValue(nextValue == null ? "" : String(nextValue)), onOpenChange: setIsOpen, children: [
+    /* @__PURE__ */ jsx(RACLabel, { className: "comparison-spectrum-Field-label", "data-slot": "label", children: "Due date" }),
+    /* @__PURE__ */ jsxs(RACGroup, { className: "comparison-datepicker-group", children: [
       /* @__PURE__ */ jsx(RACDateInput, { className: "comparison-date-input", children: (segment) => /* @__PURE__ */ jsx(RACDateSegment, { segment }) }),
       /* @__PURE__ */ jsx(RACButton, { className: "comparison-field-button", children: "Calendar" })
     ] }),
-    /* @__PURE__ */ jsx(RACPopover, { className: "comparison-popover", children: /* @__PURE__ */ jsx(RACDialog, { className: "comparison-popover-dialog", children: /* @__PURE__ */ jsxs(RACCalendar, { children: [
-      /* @__PURE__ */ jsxs("header", { children: [
+    /* @__PURE__ */ jsx(RACPopover, { className: "comparison-popover comparison-datepicker-popover", children: /* @__PURE__ */ jsx(RACDialog, { className: "comparison-popover-dialog", children: /* @__PURE__ */ jsxs(RACCalendar, { children: [
+      /* @__PURE__ */ jsxs("header", { className: "comparison-datepicker-header", children: [
         /* @__PURE__ */ jsx(RACButton, { slot: "previous", className: "comparison-rac-button", children: "Previous" }),
         /* @__PURE__ */ jsx(RACHeading, { className: "comparison-popover-title" }),
         /* @__PURE__ */ jsx(RACButton, { slot: "next", className: "comparison-rac-button", children: "Next" })

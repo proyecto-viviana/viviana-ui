@@ -9,7 +9,9 @@ import {
   type Accessor,
   type JSX,
   createContext,
+  createEffect,
   createMemo,
+  createSignal,
   splitProps,
   useContext,
   For,
@@ -526,12 +528,52 @@ function TabInner(props: {
 export function TabPanels(props: TabPanelsProps): JSX.Element {
   const [local, rest] = splitProps(props, ['class', 'style', 'slot', 'children']);
   const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const state = useContext(TabsStateContext);
+  let ref: HTMLDivElement | undefined;
+  let previousSelectedKey: Key | null | undefined = undefined;
+  const [panelSize, setPanelSize] = createSignal<{ width?: string; height?: string }>({});
+
+  createEffect(() => {
+    const selectedKey = state?.selectedKey() ?? null;
+    if (!ref) {
+      previousSelectedKey = selectedKey;
+      return;
+    }
+
+    if (previousSelectedKey === undefined) {
+      previousSelectedKey = selectedKey;
+      return;
+    }
+
+    if (previousSelectedKey === selectedKey) return;
+    previousSelectedKey = selectedKey;
+
+    const transition = window.getComputedStyle(ref).transition;
+    const shouldMeasureWidth = /width|inline-size|all/.test(transition);
+    const shouldMeasureHeight = /height|block-size|all/.test(transition);
+    if (!shouldMeasureWidth && !shouldMeasureHeight) return;
+
+    const selectedPanel = ref.querySelector<HTMLElement>('[role="tabpanel"]:not([hidden])');
+    if (!selectedPanel) return;
+
+    setPanelSize({
+      width: shouldMeasureWidth ? `${selectedPanel.offsetWidth}px` : undefined,
+      height: shouldMeasureHeight ? `${selectedPanel.offsetHeight}px` : undefined,
+    });
+  });
+
+  const mergedStyle = (): JSX.CSSProperties => ({
+    ...(local.style ?? {}),
+    ...(panelSize().width ? { '--tab-panel-width': panelSize().width } : {}),
+    ...(panelSize().height ? { '--tab-panel-height': panelSize().height } : {}),
+  } as JSX.CSSProperties);
 
   return (
     <div
       {...domProps()}
+      ref={(el) => { ref = el; }}
       class={local.class ?? 'solidaria-TabPanels'}
-      style={local.style}
+      style={mergedStyle()}
     >
       {local.children}
     </div>

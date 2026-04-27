@@ -176,7 +176,7 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
       }}
     >
       {(regionProps: ToastRegionRenderProps) => (
-        <For each={regionProps.visibleToasts}>
+        <For each={regionProps.visibleToasts()}>
           {(toast) => <Toast toast={toast} />}
         </For>
       )}

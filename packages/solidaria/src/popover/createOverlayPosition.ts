@@ -334,23 +334,29 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
 
   return {
     overlayProps: {
-      style: {
-        position: position() ? 'absolute' : 'fixed',
-        top: !position() ? 0 : undefined,
-        left: !position() ? 0 : undefined,
-        'z-index': 100000,
-        'max-height': position()?.maxHeight ?? '100vh',
-      } as JSX.CSSProperties,
+      get style(): JSX.CSSProperties {
+        const current = position();
+        return {
+          position: current ? 'absolute' : 'fixed',
+          top: !current ? 0 : undefined,
+          left: !current ? 0 : undefined,
+          'z-index': 100000,
+          'max-height': current?.maxHeight ?? '100vh',
+        } as JSX.CSSProperties;
+      },
     },
     placement: () => position()?.placement ?? null,
     triggerAnchorPoint: () => position()?.triggerAnchorPoint ?? null,
     arrowProps: {
       'aria-hidden': 'true',
       role: 'presentation',
-      style: {
-        left: position()?.arrowOffsetLeft != null ? `${position()!.arrowOffsetLeft}px` : undefined,
-        top: position()?.arrowOffsetTop != null ? `${position()!.arrowOffsetTop}px` : undefined,
-      } as JSX.CSSProperties,
+      get style(): JSX.CSSProperties {
+        const current = position();
+        return {
+          left: current?.arrowOffsetLeft != null ? `${current.arrowOffsetLeft}px` : undefined,
+          top: current?.arrowOffsetTop != null ? `${current.arrowOffsetTop}px` : undefined,
+        };
+      },
     },
     updatePosition,
   };

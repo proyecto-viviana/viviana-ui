@@ -461,7 +461,7 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
       )}
       {...getPanelProps()}
       ref={(el) => panelRefSetter?.(el)}
-      role={local.role ?? 'group'}
+      role={local.role ?? 'region'}
       class={renderProps.class()}
       style={renderProps.style()}
       data-expanded={dataAttr(isExpanded())}

@@ -52,7 +52,7 @@ export function createTableSelectAllCheckbox<T extends object>(
       checked: isSelectAll(),
       disabled: isDisabled(),
       onChange,
-      'aria-label': s.selectionMode === 'single' ? 'Select' : 'Select all',
+      'aria-label': s.selectionMode === 'single' ? 'Select' : 'Select All',
     };
 
     // Handle indeterminate state

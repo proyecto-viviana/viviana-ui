@@ -312,7 +312,7 @@ export function DateInput(props: DateInputProps): JSX.Element {
  */
 export function DateSegment(props: DateSegmentProps): JSX.Element {
   const { state } = useDateFieldContext();
-  const [segmentRef, setSegmentRef] = createSignal<HTMLDivElement | null>(null);
+  const [segmentRef, setSegmentRef] = createSignal<HTMLElement | null>(null);
 
   // Create segment ARIA props
   const segmentAria = createDateSegment(
@@ -350,7 +350,7 @@ export function DateSegment(props: DateSegmentProps): JSX.Element {
   };
 
   return (
-    <div
+    <span
       ref={setSegmentRef}
       {...segmentAria.segmentProps}
       class={renderProps.class()}
@@ -361,7 +361,7 @@ export function DateSegment(props: DateSegmentProps): JSX.Element {
       data-type={props.segment.type}
     >
       {getChildren()}
-    </div>
+    </span>
   );
 }
 

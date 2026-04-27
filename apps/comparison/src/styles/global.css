@@ -598,7 +598,7 @@ a {
   white-space: nowrap;
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Select-listbox {
+.comparison-spectrum-Select-listbox {
   position: absolute;
   z-index: 40;
   inset-block-start: calc(100% + 6px);
@@ -618,18 +618,18 @@ a {
   overflow: auto;
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Select-option {
+.comparison-spectrum-Select-option {
   padding: 6px 8px;
   border-radius: 3px;
   cursor: pointer;
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Select-option[data-hovered],
-.comparison-spectrum-skin .comparison-spectrum-Select-option[data-focused] {
+.comparison-spectrum-Select-option[data-hovered],
+.comparison-spectrum-Select-option[data-focused] {
   background: rgba(124, 197, 255, 0.16);
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Select-option[data-selected] {
+.comparison-spectrum-Select-option[data-selected] {
   background: rgba(124, 197, 255, 0.26);
   color: #ffffff;
 }
@@ -713,6 +713,13 @@ a {
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
 }
 
+.comparison-datepicker-popover {
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
 .comparison-popover-title {
   margin-bottom: 8px;
   color: var(--cmp-text);
@@ -745,6 +752,29 @@ a {
   background: var(--cmp-surface);
   color: var(--cmp-text);
   font: inherit;
+}
+
+.comparison-datepicker-group {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.comparison-datepicker-group .comparison-date-input {
+  flex: 1 1 auto;
+}
+
+.comparison-datepicker-group .comparison-field-button {
+  width: auto;
+  min-width: 92px;
+}
+
+.comparison-datepicker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .comparison-field-button {

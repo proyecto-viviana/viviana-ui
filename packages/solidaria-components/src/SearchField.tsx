@@ -509,14 +509,21 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
     throw new Error('SearchFieldClearButton must be used within a SearchField');
   }
 
+  const isDisabled = () => context.isDisabled || context.isReadOnly;
+  const isEmpty = () => context.state.value() === '';
+  const clear = () => {
+    if (!isDisabled() && !isEmpty()) {
+      context.clearButtonProps.onClick();
+    }
+  };
+
   // Create press
   const { isPressed, pressProps } = createPress({
     get isDisabled() {
       return context.isDisabled || context.isReadOnly;
     },
-    onPress: () => {
-      context.clearButtonProps.onClick();
-    },
+    onClick: clear,
+    onPress: clear,
   });
 
   // Create hover
@@ -525,9 +532,6 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
       return context.isDisabled || context.isReadOnly;
     },
   });
-
-  const isDisabled = () => context.isDisabled || context.isReadOnly;
-  const isEmpty = () => context.state.value() === '';
 
   // Render props values
   const renderValues = createMemo<SearchFieldClearButtonRenderProps>(() => ({
@@ -568,6 +572,9 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
         disabled={context.clearButtonProps.disabled}
         onMouseDown={context.clearButtonProps.onMouseDown}
         {...cleanPressProps()}
+        onPointerUp={clear}
+        onMouseUp={clear}
+        onClick={clear}
         {...cleanHoverProps()}
         class={renderProps.class()}
         style={renderProps.style()}

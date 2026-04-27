@@ -201,11 +201,12 @@ export class ToastQueue<T> {
 
     // Cancel any existing timer
     toast.timer?.cancel();
-    toast.timer = null;
 
     if (this.hasExitAnimation && toast.animation !== 'queued') {
       // Mark as exiting for animation
-      toast.animation = 'exiting';
+      this.queue = this.queue.map((t) => (
+        t.key === key ? { ...t, timer: null, animation: 'exiting' } : t
+      ));
       this.notify();
     } else {
       // Remove immediately
@@ -252,20 +253,27 @@ export class ToastQueue<T> {
     ).length;
 
     let promoted = 0;
-    for (const toast of this.queue) {
-      if (toast.animation === 'queued' && visibleCount + promoted < this.maxVisibleToasts) {
-        toast.animation = 'entering';
+    this.queue = this.queue.map((toast) => {
+      let nextToast = toast;
+
+      if (nextToast.animation === 'queued' && visibleCount + promoted < this.maxVisibleToasts) {
+        nextToast = { ...nextToast, animation: 'entering' };
         promoted++;
       }
-      if (toast.animation === 'queued') continue;
+      if (nextToast.animation === 'queued') return nextToast;
 
       // Start timer for visible toasts
-      if (toast.timeout != null && toast.timer === null && toast.animation !== 'exiting') {
-        toast.timer = new Timer(() => {
-          this.close(toast.key);
-        }, toast.timeout);
+      if (nextToast.timeout != null && nextToast.timer === null && nextToast.animation !== 'exiting') {
+        nextToast = {
+          ...nextToast,
+          timer: new Timer(() => {
+            this.close(nextToast.key);
+          }, nextToast.timeout),
+        };
       }
-    }
+
+      return nextToast;
+    });
 
     this.notify();
   }

@@ -168,7 +168,7 @@ export function createRadioGroupState(
       return getProps().validate;
     },
     get validationBehavior() {
-      return getProps().validationBehavior ?? 'aria';
+      return getProps().validationBehavior ?? 'native';
     },
     get name() {
       return getProps().name;

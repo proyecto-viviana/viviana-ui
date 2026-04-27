@@ -57,9 +57,11 @@ describe('SearchField (silapse)', () => {
     it('clears value when clear button is clicked', () => {
       const onChangeSpy = vi.fn();
       render(() => <SearchField aria-label="Search" defaultValue="test" onChange={onChangeSpy} />);
+      const input = screen.getByRole('searchbox');
       const clearButton = screen.getByRole('button');
       fireEvent.click(clearButton);
       expect(onChangeSpy).toHaveBeenCalledWith('');
+      expect(input).toHaveValue('');
     });
   });
 

@@ -5,7 +5,6 @@ import { Provider as SilapseProvider } from "@proyecto-viviana/silapse";
 import {
   Button as SilapseButton,
   Checkbox,
-  DatePicker,
   Dialog,
   Radio,
   RadioGroup,
@@ -28,6 +27,17 @@ import {
   DialogTrigger as HeadlessDialogTrigger,
   Popover as HeadlessPopover,
   PopoverTrigger as HeadlessPopoverTrigger,
+  Calendar as HeadlessCalendar,
+  CalendarButton as HeadlessCalendarButton,
+  CalendarCell as HeadlessCalendarCell,
+  CalendarGrid as HeadlessCalendarGrid,
+  CalendarHeading as HeadlessCalendarHeading,
+  DateInput as HeadlessDateInput,
+  DatePicker as HeadlessDatePicker,
+  DatePickerButton as HeadlessDatePickerButton,
+  DatePickerContent as HeadlessDatePickerContent,
+  DatePickerLabel as HeadlessDatePickerLabel,
+  DateSegment as HeadlessDateSegment,
   Input as HeadlessInput,
   Label as HeadlessLabel,
   Modal as HeadlessModal,
@@ -303,7 +313,7 @@ function SolidDatePickerDemo() {
   return hc(
     "div",
     {
-      class: "comparison-stack",
+      class: "comparison-spectrum-skin comparison-stack",
       ref: (element: HTMLDivElement) => {
         root = element;
       },
@@ -315,12 +325,82 @@ function SolidDatePickerDemo() {
       },
     },
     [
-      hc(DatePicker, {
-        label: "Due date",
-        onChange: (nextValue: unknown) => {
-          setValue(nextValue == null ? "" : String(nextValue));
+      hc(
+        HeadlessDatePicker,
+        {
+          class: "comparison-form-control comparison-datepicker-root",
+          "aria-label": "Due date",
+          onChange: (nextValue: unknown) => {
+            setValue(nextValue == null ? "" : String(nextValue));
+          },
         },
-      }),
+        [
+          hc(
+            HeadlessDatePickerLabel,
+            { class: "comparison-spectrum-Field-label", "data-slot": "label" },
+            ["Due date"],
+          ),
+          hc(
+            "div",
+            { class: "comparison-datepicker-group" },
+            [
+              hc(
+                HeadlessDateInput,
+                {
+                  class: "comparison-date-input",
+                  children: renderProp((segment: unknown) => h(HeadlessDateSegment, { segment })),
+                },
+              ),
+              hc(
+                HeadlessDatePickerButton,
+                { class: "comparison-field-button" },
+                ["Calendar"],
+              ),
+            ],
+          ),
+          hc(
+            HeadlessDatePickerContent,
+            { class: "comparison-popover comparison-datepicker-popover" },
+            [
+              hc(
+                "div",
+                { class: "comparison-popover-dialog" },
+                [
+                  hc(
+                    HeadlessCalendar,
+                    {},
+                    [
+                      hc(
+                        "header",
+                        { class: "comparison-datepicker-header" },
+                        [
+                          hc(
+                            HeadlessCalendarButton,
+                            { slot: "previous", class: "comparison-rac-button" },
+                            ["Previous"],
+                          ),
+                          hc(HeadlessCalendarHeading, { class: "comparison-popover-title" }),
+                          hc(
+                            HeadlessCalendarButton,
+                            { slot: "next", class: "comparison-rac-button" },
+                            ["Next"],
+                          ),
+                        ],
+                      ),
+                      hc(
+                        HeadlessCalendarGrid,
+                        {
+                          children: renderProp((date: unknown) => h(HeadlessCalendarCell, { date })),
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
     ],
   );
 }
@@ -645,11 +725,18 @@ function SolidariaSpectrumSelectDemo() {
         },
         getKey: (item: (typeof selectItems)[number]) => item.id,
         getTextValue: (item: (typeof selectItems)[number]) => item.label,
-        "aria-label": "Channel",
         "data-size": "medium",
         "data-variant": "default",
       },
       [
+        hc(
+          HeadlessLabel,
+          {
+            class: comparisonSpectrumSkin.fieldLabelClass,
+            "data-slot": "label",
+          },
+          ["Channel"],
+        ),
         hc(
           HeadlessSelectTrigger,
           { class: comparisonSpectrumSkin.selectTriggerClass },

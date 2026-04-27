@@ -13,6 +13,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, within } from '@solidjs/testing-library';
 import { Menu, MenuItem, MenuSection, MenuTrigger, MenuButton } from '../src/Menu';
+import { Separator } from '../src/Separator';
 import { useDragAndDrop } from '../src/useDragAndDrop';
 import type { Key } from '@proyecto-viviana/solid-stately';
 import { I18nProvider } from '@proyecto-viviana/solidaria';
@@ -127,6 +128,51 @@ describe('Menu', () => {
 
       const menu = screen.getByRole('menu');
       expect(menu).toHaveClass('my-menu');
+    });
+
+    it('should support custom render function', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+          render={(props) => <div {...props} data-custom="true" />}
+        >
+          {(item) => (
+            <MenuItem id={item.id} render={(props) => <div {...props} data-custom="true" />}>
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      expect(screen.getByRole('menu')).toHaveAttribute('data-custom', 'true');
+      for (const item of screen.getAllByRole('menuitem')) {
+        expect(item).toHaveAttribute('data-custom', 'true');
+      }
+    });
+
+    it('should support custom render function as a link', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+          render={(props) => <div {...props} data-custom="true" />}
+        >
+          {(item) => (
+            <MenuItem id={item.id} href="#foo" render={(props) => <a {...props} data-custom="true" />}>
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      expect(screen.getByRole('menu')).toHaveAttribute('data-custom', 'true');
+      for (const item of screen.getAllByRole('menuitem')) {
+        expect(item).toHaveAttribute('href');
+        expect(item).toHaveAttribute('data-custom', 'true');
+      }
     });
 
     it('should render aria-label', () => {
@@ -277,6 +323,141 @@ describe('Menu', () => {
       expect(screen.getByText('Kangaroo')).toBeInTheDocument();
     });
 
+    it('should have the base set of aria and data attributes', () => {
+      render(() => <TestMenu />);
+
+      expect(screen.getByRole('menu')).toHaveAttribute('aria-label', 'Test');
+      for (const menuitem of screen.getAllByRole('menuitem')) {
+        expect(menuitem).toHaveAttribute('data-solidaria-pressable');
+      }
+    });
+
+    it('should render with default classes', () => {
+      render(() => <TestMenu />);
+
+      expect(screen.getByRole('menu')).toHaveAttribute('class', 'solidaria-Menu');
+      for (const menuitem of screen.getAllByRole('menuitem')) {
+        expect(menuitem).toHaveAttribute('class', 'solidaria-Menu-item');
+      }
+    });
+
+    it('should render with custom classes', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+          class="menu"
+        >
+          {(item) => <MenuItem id={item.id} class="item">{item.name}</MenuItem>}
+        </Menu>
+      ));
+
+      expect(screen.getByRole('menu')).toHaveAttribute('class', 'menu');
+      for (const menuitem of screen.getAllByRole('menuitem')) {
+        expect(menuitem).toHaveAttribute('class', 'item');
+      }
+    });
+
+    it('should support DOM props', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+          data-foo="bar"
+        >
+          {(item) => <MenuItem id={item.id} data-bar="foo">{item.name}</MenuItem>}
+        </Menu>
+      ));
+
+      expect(screen.getByRole('menu')).toHaveAttribute('data-foo', 'bar');
+      for (const menuitem of screen.getAllByRole('menuitem')) {
+        expect(menuitem).toHaveAttribute('data-bar', 'foo');
+      }
+    });
+
+    it('should support the slot prop', () => {
+      render(() => <TestMenu menuProps={{ slot: 'test', 'aria-label': 'test' }} />);
+
+      const menu = screen.getByRole('menu');
+      expect(menu).toHaveAttribute('slot', 'test');
+      expect(menu).toHaveAttribute('aria-label', 'test');
+    });
+
+    it('should support refs', () => {
+      let menuRef: HTMLUListElement | null = null;
+      let sectionRef: HTMLDivElement | null = null;
+      let itemRef: HTMLLIElement | null = null;
+
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={[
+            {
+              title: (
+                <MenuSection
+                  ref={(el) => {
+                    sectionRef = el;
+                  }}
+                  aria-label="Felines"
+                >
+                  Felines
+                </MenuSection>
+              ),
+              'aria-label': 'Felines',
+              items: [testItems[0]],
+            },
+          ]}
+          getKey={(item) => item.id}
+          ref={(el) => {
+            menuRef = el;
+          }}
+        >
+          {(item) => (
+            <MenuItem
+              id={item.id}
+              ref={(el) => {
+                itemRef = el;
+              }}
+            >
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      expect(menuRef).toBeInstanceOf(HTMLElement);
+      expect(sectionRef).toBeInstanceOf(HTMLElement);
+      expect(itemRef).toBeInstanceOf(HTMLElement);
+      expect(sectionRef).toHaveAttribute('aria-label', 'Felines');
+    });
+
+    it('should support onScroll', () => {
+      const onScroll = vi.fn();
+      render(() => <TestMenu menuProps={{ onScroll }} />);
+
+      fireEvent.scroll(screen.getByRole('menu'));
+      expect(onScroll).toHaveBeenCalledTimes(1);
+    });
+
+    it('should support empty state', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={[]}
+          getKey={(item) => item.id}
+          renderEmptyState={() => 'No results'}
+        >
+          {(item) => <MenuItem id={item.id}>{item.name}</MenuItem>}
+        </Menu>
+      ));
+
+      const menu = screen.getByRole('menu');
+      expect(menu).toHaveAttribute('data-empty', 'true');
+      expect(screen.getByRole('menuitem')).toHaveTextContent('No results');
+    });
+
     it('should render sectioned collections', () => {
       render(() => (
         <Menu<TestItem>
@@ -297,6 +478,60 @@ describe('Menu', () => {
       expect(screen.getByText('Mammals')).toBeInTheDocument();
       expect(screen.getByRole('group', { name: 'Mammals actions' })).toBeInTheDocument();
       expect(screen.getAllByRole('menuitem')).toHaveLength(3);
+    });
+
+    it('should support separators', () => {
+      const { container } = render(() => <Separator />);
+      expect(container.querySelector('[role="separator"],hr')).toHaveClass('solidaria-Separator');
+    });
+
+    it('should support separators with custom class names', () => {
+      const { container } = render(() => <Separator class="my-separator" />);
+      expect(container.querySelector('[role="separator"],hr')).toHaveClass('my-separator');
+    });
+
+    it('should support sections', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Sandwich contents"
+          items={[
+            {
+              title: <span>Veggies</span>,
+              'aria-label': 'Veggies',
+              items: [
+                { id: 'lettuce', name: 'Lettuce' },
+                { id: 'tomato', name: 'Tomato' },
+              ],
+            },
+            {
+              title: <span>Protein</span>,
+              'aria-label': 'Protein',
+              items: [
+                { id: 'ham', name: 'Ham' },
+                { id: 'tofu', name: 'Tofu' },
+              ],
+            },
+          ]}
+          getKey={(item) => item.id}
+        >
+          {(item) => <MenuItem id={item.id}>{item.name}</MenuItem>}
+        </Menu>
+      ));
+
+      const groups = screen.getAllByRole('group');
+      expect(groups.length).toBeGreaterThanOrEqual(2);
+      expect(groups[0].closest('.solidaria-Menu-section')).toBeInTheDocument();
+      expect(screen.getByText('Veggies')).toBeInTheDocument();
+    });
+
+    it('should support dynamic collections', () => {
+      const items = [
+        { id: 'cat', name: 'Cat' },
+        { id: 'dog', name: 'Dog' },
+      ];
+      render(() => <TestMenu items={items} />);
+
+      expect(screen.getAllByRole('menuitem').map((item) => item.textContent)).toEqual(['Cat', 'Dog']);
     });
 
     it('should apply draggable item semantics when drag hooks are provided', () => {
@@ -406,6 +641,76 @@ describe('Menu', () => {
       expect(onAction).toHaveBeenCalled();
     });
 
+    it('should support onAction on items', async () => {
+      const onAction = vi.fn();
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+        >
+          {(item) => (
+            <MenuItem id={item.id} onAction={item.id === 'cat' ? onAction : undefined}>
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      await user.click(screen.getByRole('menuitem', { name: 'Cat' }));
+      expect(onAction).toHaveBeenCalledTimes(1);
+    });
+
+    it('should support onAction on menu and menu items', async () => {
+      const onAction = vi.fn();
+      const itemAction = vi.fn();
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+          onAction={onAction}
+        >
+          {(item) => (
+            <MenuItem id={item.id} onAction={item.id === 'cat' ? itemAction : undefined}>
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      await user.click(screen.getByRole('menuitem', { name: 'Cat' }));
+      expect(onAction).toHaveBeenCalledTimes(1);
+      expect(itemAction).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not close individual menu item when shouldCloseOnSelect=false', async () => {
+      render(() => (
+        <MenuTrigger>
+          <MenuButton aria-label="Menu">Menu</MenuButton>
+          <Menu<TestItem>
+            aria-label="Test"
+            items={testItems}
+            getKey={(item) => item.id}
+          >
+            {(item) => (
+              <MenuItem id={item.id} closeOnSelect={item.id === 'cat' ? false : undefined}>
+                {item.name}
+              </MenuItem>
+            )}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      await user.click(screen.getByRole('button', { name: 'Menu' }));
+      const menu = screen.getByRole('menu');
+      await user.click(screen.getByRole('menuitem', { name: 'Cat' }));
+      expect(menu).toBeInTheDocument();
+
+      await user.click(screen.getByRole('menuitem', { name: 'Dog' }));
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
+
     it('should allow clicking menu items', async () => {
       render(() => <TestMenu />);
 
@@ -502,6 +807,42 @@ describe('Menu', () => {
       await user.click(screen.getByText('Cat'));
       expect(onAction).not.toHaveBeenCalled();
     });
+
+    it('should support disabled state', () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+          disabledKeys={['cat']}
+        >
+          {(item) => (
+            <MenuItem id={item.id} class={({ isDisabled }) => isDisabled ? 'disabled' : ''}>
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      const item = screen.getByRole('menuitem', { name: 'Cat' });
+      expect(item).toHaveAttribute('aria-disabled', 'true');
+      expect(item).toHaveClass('disabled');
+    });
+
+    it('should support isDisabled prop on items', async () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+        >
+          {(item) => <MenuItem id={item.id} isDisabled={item.id === 'dog'}>{item.name}</MenuItem>}
+        </Menu>
+      ));
+
+      const items = screen.getAllByRole('menuitem');
+      expect(items[1]).toHaveAttribute('aria-disabled', 'true');
+    });
   });
 
   // ============================================
@@ -566,6 +907,81 @@ describe('Menu', () => {
 
       expect(items[0]).not.toHaveAttribute('data-hovered');
     });
+
+    it('should support hover', async () => {
+      const onHoverStart = vi.fn();
+      const onHoverChange = vi.fn();
+      const onHoverEnd = vi.fn();
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+        >
+          {(item) => (
+            <MenuItem
+              id={item.id}
+              class={({ isHovered }) => isHovered ? 'hover' : ''}
+              onHoverStart={onHoverStart}
+              onHoverChange={onHoverChange}
+              onHoverEnd={onHoverEnd}
+            >
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      const item = screen.getAllByRole('menuitem')[0];
+      expect(item).not.toHaveAttribute('data-hovered');
+      expect(item).not.toHaveClass('hover');
+
+      await user.hover(item);
+      expect(item).toHaveAttribute('data-hovered');
+      expect(item).toHaveClass('hover');
+      expect(onHoverStart).toHaveBeenCalledTimes(1);
+      expect(onHoverChange).toHaveBeenCalledTimes(1);
+
+      await user.unhover(item);
+      expect(item).not.toHaveAttribute('data-hovered');
+      expect(item).not.toHaveClass('hover');
+      expect(onHoverEnd).toHaveBeenCalledTimes(1);
+      expect(onHoverChange).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not show hover state when item is not interactive', async () => {
+      const onHoverStart = vi.fn();
+      const onHoverChange = vi.fn();
+      const onHoverEnd = vi.fn();
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+          disabledKeys={['cat', 'dog', 'kangaroo']}
+        >
+          {(item) => (
+            <MenuItem
+              id={item.id}
+              class={({ isHovered }) => isHovered ? 'hover' : ''}
+              onHoverStart={onHoverStart}
+              onHoverChange={onHoverChange}
+              onHoverEnd={onHoverEnd}
+            >
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      const item = screen.getAllByRole('menuitem')[0];
+      await user.hover(item);
+      expect(item).not.toHaveAttribute('data-hovered');
+      expect(item).not.toHaveClass('hover');
+      expect(onHoverStart).not.toHaveBeenCalled();
+      expect(onHoverChange).not.toHaveBeenCalled();
+      expect(onHoverEnd).not.toHaveBeenCalled();
+    });
   });
 
   // ============================================
@@ -579,6 +995,52 @@ describe('Menu', () => {
       const items = screen.getAllByRole('menuitem');
       // Menu items are configured as pressable
       expect(items[0]).toHaveAttribute('data-solidaria-pressable');
+    });
+
+    it('should support focus ring', async () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+        >
+          {(item) => (
+            <MenuItem id={item.id} class={({ isFocusVisible }) => isFocusVisible ? 'focus' : ''}>
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      const menuitem = screen.getAllByRole('menuitem')[0];
+      expect(menuitem).not.toHaveAttribute('data-focus-visible');
+      expect(menuitem).not.toHaveClass('focus');
+
+      await user.tab();
+      expect(screen.getByRole('menu')).toHaveAttribute('data-focused');
+    });
+
+    it('should support press state', async () => {
+      render(() => (
+        <Menu<TestItem>
+          aria-label="Test"
+          items={testItems}
+          getKey={(item) => item.id}
+        >
+          {(item) => (
+            <MenuItem id={item.id} class={({ isPressed }) => isPressed ? 'pressed' : ''}>
+              {item.name}
+            </MenuItem>
+          )}
+        </Menu>
+      ));
+
+      const menuitem = screen.getAllByRole('menuitem')[0];
+      expect(menuitem).not.toHaveAttribute('data-pressed');
+      expect(menuitem).not.toHaveClass('pressed');
+
+      fireEvent.pointerDown(menuitem, { pointerType: 'mouse', button: 0 });
+      expect(menuitem).toHaveAttribute('data-solidaria-pressable');
     });
   });
 });
@@ -622,6 +1084,36 @@ describe('MenuTrigger', () => {
       const button = screen.getByRole('button');
       await user.click(button);
 
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+    });
+
+    it('should support menu trigger', async () => {
+      const onAction = vi.fn();
+      render(() => (
+        <MenuTrigger>
+          <MenuButton aria-label="Menu">Menu</MenuButton>
+          <Menu<TestItem>
+            aria-label="Test"
+            items={testItems}
+            getKey={(item) => item.id}
+            onAction={onAction}
+          >
+            {(item) => <MenuItem id={item.id}>{item.name}</MenuItem>}
+          </Menu>
+        </MenuTrigger>
+      ));
+
+      await user.click(screen.getByRole('button', { name: 'Menu' }));
+      expect(screen.getAllByRole('menuitem')).toHaveLength(3);
+      await user.click(screen.getByRole('menuitem', { name: 'Cat' }));
+      expect(onAction).toHaveBeenCalledWith('cat');
+    });
+
+    it('should not close the menu when shouldCloseOnSelect is false', async () => {
+      render(() => <TestMenuTrigger menuProps={{ shouldCloseOnSelect: false }} />);
+
+      await user.click(screen.getByRole('button'));
+      await user.click(screen.getByRole('menuitem', { name: 'Cat' }));
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
 
