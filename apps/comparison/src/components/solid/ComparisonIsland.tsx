@@ -62,42 +62,22 @@ import type {
   ComparisonLayerId,
   ComparisonSlug,
 } from "@comparison/data/comparison-manifest";
+import {
+  comparisonReferenceDataset,
+  comparisonSelectItems as selectItems,
+  comparisonSpectrumSkin,
+  comparisonTabItems as tabItems,
+  getComparisonReferenceKind,
+  type ComparisonFramework,
+  type ComparisonReferenceKind,
+} from "@comparison/data/comparison-contract";
 
 interface ComparisonIslandProps {
   componentSlug: ComparisonSlug;
   layer: ComparisonLayerId;
 }
 
-interface TabItem {
-  id: string;
-  label: string;
-  content: string;
-}
-
-const tabItems: TabItem[] = [
-  {
-    id: "overview",
-    label: "Overview",
-    content: "Overlay dismissal now respects the local portal scope.",
-  },
-  {
-    id: "parity",
-    label: "Parity",
-    content:
-      "Collection composition is the main remaining styled-layer nuance.",
-  },
-  {
-    id: "testing",
-    label: "Testing",
-    content: "This page is intended to become a Playwright and axe target.",
-  },
-];
-
-const selectItems = [
-  { id: "alpha", label: "Alpha" },
-  { id: "bravo", label: "Bravo" },
-  { id: "charlie", label: "Charlie" },
-];
+type TabItem = (typeof tabItems)[number];
 
 export default function ComparisonIsland(props: ComparisonIslandProps) {
   let overlayRoot: HTMLDivElement | undefined;
@@ -120,19 +100,42 @@ export default function ComparisonIsland(props: ComparisonIslandProps) {
 }
 
 function renderLayer(props: ComparisonIslandProps) {
+  let rendered;
   if (props.layer === "styled") {
-    return renderStyled(props.componentSlug);
+    rendered = renderStyled(props.componentSlug);
+  } else if (props.layer === "components") {
+    rendered = renderComponents(props.componentSlug);
+  } else if (props.layer === "headless") {
+    rendered = renderHeadless(props.componentSlug);
+  } else {
+    rendered = emptyState("This layer is tracked in the manifest but not rendered yet.");
   }
 
-  if (props.layer === "components") {
-    return renderComponents(props.componentSlug);
-  }
+  return comparisonReferenceFrame({
+    componentSlug: props.componentSlug,
+    framework: "solid",
+    layer: props.layer,
+    reference: getComparisonReferenceKind("solid", props.layer, props.componentSlug),
+  }, rendered);
+}
 
-  if (props.layer === "headless") {
-    return renderHeadless(props.componentSlug);
-  }
-
-  return emptyState("This layer is tracked in the manifest but not rendered yet.");
+function comparisonReferenceFrame(
+  input: {
+    componentSlug: ComparisonSlug;
+    framework: ComparisonFramework;
+    layer: ComparisonLayerId;
+    reference: ComparisonReferenceKind;
+  },
+  children: ReturnType<typeof h>,
+) {
+  return h(
+    "div",
+    {
+      class: "comparison-reference-frame",
+      ...comparisonReferenceDataset(input),
+    },
+    h("div", { class: "comparison-reference-canvas" }, children),
+  );
 }
 
 function renderStyled(componentSlug: ComparisonSlug) {
@@ -353,8 +356,11 @@ function SolidDatePickerDemo() {
               ),
               hc(
                 HeadlessDatePickerButton,
-                { class: "comparison-field-button" },
-                ["Calendar"],
+                {
+                  class: "comparison-field-button",
+                  "aria-label": "Calendar",
+                },
+                [hCalendarIcon()],
               ),
             ],
           ),
@@ -376,14 +382,22 @@ function SolidDatePickerDemo() {
                         [
                           hc(
                             HeadlessCalendarButton,
-                            { slot: "previous", class: "comparison-rac-button" },
-                            ["Previous"],
+                            {
+                              slot: "previous",
+                              class: "comparison-rac-button comparison-calendar-nav-button",
+                              "aria-label": "Previous",
+                            },
+                            [hChevronIcon("left")],
                           ),
                           hc(HeadlessCalendarHeading, { class: "comparison-popover-title" }),
                           hc(
                             HeadlessCalendarButton,
-                            { slot: "next", class: "comparison-rac-button" },
-                            ["Next"],
+                            {
+                              slot: "next",
+                              class: "comparison-rac-button comparison-calendar-nav-button",
+                              "aria-label": "Next",
+                            },
+                            [hChevronIcon("right")],
                           ),
                         ],
                       ),
@@ -401,6 +415,50 @@ function SolidDatePickerDemo() {
           ),
         ],
       ),
+    ],
+  );
+}
+
+function hCalendarIcon() {
+  return h(
+    "svg",
+    {
+      "aria-hidden": "true",
+      fill: "none",
+      focusable: "false",
+      viewBox: "0 0 18 18",
+    },
+    [
+      h("path", {
+        d: "M5 2.25v2.5M13 2.25v2.5M3.25 6.75h11.5M4 3.75h10A1.25 1.25 0 0 1 15.25 5v9A1.25 1.25 0 0 1 14 15.25H4A1.25 1.25 0 0 1 2.75 14V5A1.25 1.25 0 0 1 4 3.75Z",
+        stroke: "currentColor",
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "stroke-width": "1.5",
+      }),
+    ],
+  );
+}
+
+function hChevronIcon(direction: "left" | "right") {
+  const path = direction === "left" ? "M11.25 3.75 6 9l5.25 5.25" : "M6.75 3.75 12 9l-5.25 5.25";
+
+  return h(
+    "svg",
+    {
+      "aria-hidden": "true",
+      fill: "none",
+      focusable: "false",
+      viewBox: "0 0 18 18",
+    },
+    [
+      h("path", {
+        d: path,
+        stroke: "currentColor",
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "stroke-width": "1.75",
+      }),
     ],
   );
 }
@@ -610,31 +668,6 @@ function SolidariaSpectrumButtonDemo() {
     )],
   );
 }
-
-/**
- * Button skin adapter prototype.
- *
- * The comparison app intentionally skins `solidaria-components/Button` through
- * stable public signals instead of pushing React Spectrum generated CSS-module
- * classes: root class, data-state attributes, variant attributes, slots, and CSS
- * variables. Behavior remains owned by `solidaria-components/Button`.
- */
-const comparisonSpectrumSkin = {
-  rootClass: "comparison-spectrum-skin",
-  buttonClass: "solidaria-Button comparison-spectrum-Button",
-  labelClass: "comparison-spectrum-Button-label",
-  dialogClass: "solidaria-Dialog comparison-spectrum-Dialog",
-  dialogTitleClass: "solidaria-Heading comparison-spectrum-Dialog-title",
-  dialogBodyClass: "comparison-spectrum-Dialog-body",
-  fieldRootClass: "solidaria-TextField comparison-spectrum-Field",
-  fieldLabelClass: "solidaria-Label comparison-spectrum-Field-label",
-  fieldInputClass: "solidaria-Input comparison-spectrum-Field-input",
-  selectRootClass: "solidaria-Select comparison-spectrum-Select",
-  selectTriggerClass: "solidaria-Select-trigger comparison-spectrum-Field-input comparison-spectrum-Select-trigger",
-  selectValueClass: "solidaria-Select-value comparison-spectrum-Select-value",
-  selectListBoxClass: "solidaria-Select-listbox comparison-spectrum-Select-listbox",
-  selectOptionClass: "solidaria-Select-option comparison-spectrum-Select-option",
-} as const;
 
 function hSpectrumButton(
   props: {

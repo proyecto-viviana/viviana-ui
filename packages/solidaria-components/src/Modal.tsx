@@ -221,6 +221,16 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
     return !topMostModal || overlayRef?.contains(topMostModal)
   }
 
+  const handleOverlayPointerDown: JSX.EventHandler<HTMLDivElement, PointerEvent> = (event) => {
+    if (
+      local.isDismissable &&
+      event.target === event.currentTarget &&
+      isTopMostModalInOverlay()
+    ) {
+      close()
+    }
+  }
+
   createEffect(() => {
     if (!isOpen() || local.isKeyboardDismissDisabled) return
 
@@ -261,6 +271,7 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
               style={renderProps.style()}
               data-entering={dataAttr(local.isEntering)}
               data-exiting={dataAttr(local.isExiting)}
+              onPointerDown={handleOverlayPointerDown}
             >
               {resolveChildren()}
             </div>

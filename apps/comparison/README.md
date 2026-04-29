@@ -51,6 +51,7 @@ Additional tasks:
 ```bash
 vp run typecheck
 vp run build
+vp run test:contract
 vp run preview
 vp run dev:worker
 vp run deploy:dry-run
@@ -88,6 +89,33 @@ The current imports are visible in:
 
 - [`src/components/solid/ComparisonIsland.tsx`](./src/components/solid/ComparisonIsland.tsx)
 - [`src/components/react/ComparisonIsland.jsx`](./src/components/react/ComparisonIsland.jsx)
+
+## Visual Reference Contract
+
+Every live comparison cell is wrapped in a `.comparison-reference-frame` and
+declares:
+
+- `data-comparison-contract`
+- `data-comparison-component`
+- `data-comparison-framework`
+- `data-comparison-layer`
+- `data-comparison-reference`
+
+The shared contract lives in
+[`src/data/comparison-contract.ts`](./src/data/comparison-contract.ts). It is the
+single place for fixture data, Spectrum-skin class names, and the rule that says
+whether a cell is real React Spectrum, the Spectrum skin adapter, Silapse,
+React Aria Components, or solidaria-components.
+
+Use the contract test whenever a component is added or moved to `live`:
+
+```bash
+vp run comparison:test:contract
+```
+
+Pixel tests can still compare individual components, but this guard catches the
+systemic failure mode where one side silently renders in the app chrome instead
+of the intended reference surface.
 
 ## Validation Notes
 

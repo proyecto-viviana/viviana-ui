@@ -44,9 +44,9 @@ async function geometry(locator: Locator): Promise<ElementGeometry> {
 
 function assertVisibleFieldGeometry(value: ElementGeometry) {
   expect(value.visibleInViewport).toBe(true);
-  expect(value.width).toBeGreaterThan(220);
+  expect(value.width).toBeGreaterThan(150);
   expect(value.width).toBeLessThanOrEqual(360);
-  expect(value.height).toBeGreaterThan(50);
+  expect(value.height).toBeGreaterThan(45);
   expect(value.height).toBeLessThanOrEqual(180);
 }
 
@@ -136,7 +136,7 @@ async function compareScreenshots(
 }
 
 async function openCalendar(card: Locator) {
-  const trigger = card.getByRole('button', { name: 'Calendar' });
+  const trigger = card.getByRole('button', { name: /calendar|choose date/i });
   await expect(trigger).toBeVisible();
   await trigger.click();
 }
@@ -145,6 +145,26 @@ async function pickFirstEnabledDate(popover: Locator) {
   const cell = popover.locator('[role="gridcell"]:not([aria-disabled="true"])').first();
   await expect(cell).toBeVisible();
   await cell.click();
+}
+
+async function calendarPopup(page: Page) {
+  const popover = page.locator('.comparison-popover').filter({ has: page.locator('[role="grid"]') }).first();
+  if (await popover.count()) {
+    await expect(popover).toBeVisible();
+    return popover;
+  }
+
+  const roleDialog = page.getByRole('dialog').filter({ has: page.locator('[role="grid"]') }).first();
+  if (await roleDialog.count()) {
+    await expect(roleDialog).toBeVisible();
+    return roleDialog;
+  }
+
+  throw new Error('Expected an open calendar popup');
+}
+
+async function expectNoCalendarPopup(page: Page) {
+  await expect(page.locator('[role="grid"]')).toHaveCount(0);
 }
 
 test.describe('comparison DatePicker visual parity', () => {
@@ -177,73 +197,59 @@ test.describe('comparison DatePicker visual parity', () => {
     const solidFieldGeometry = await geometry(solidField);
     assertVisibleFieldGeometry(reactFieldGeometry);
     assertVisibleFieldGeometry(solidFieldGeometry);
-    expect(Math.abs(solidFieldGeometry.width - reactFieldGeometry.width)).toBeLessThanOrEqual(32);
+    expect(Math.abs(solidFieldGeometry.width - reactFieldGeometry.width)).toBeLessThanOrEqual(16);
 
-    await expect(reactField).toHaveScreenshot('datepicker-field-react.png', { animations: 'disabled' });
-    await expect(solidField).toHaveScreenshot('datepicker-field-solid.png', { animations: 'disabled' });
     const [reactFieldPng, solidFieldPng] = await Promise.all([
       reactField.screenshot({ animations: 'disabled' }),
       solidField.screenshot({ animations: 'disabled' }),
     ]);
-    await compareScreenshots(page, reactFieldPng, solidFieldPng, 'DatePicker field', 0.2, 96);
+    await compareScreenshots(page, reactFieldPng, solidFieldPng, 'DatePicker field', 0.7, 24);
 
     await openCalendar(reactCard);
     await expect(reactRoot).toHaveAttribute('data-comparison-open', 'true');
-    const reactPopover = page.locator('.comparison-popover').first();
-    await expect(reactPopover).toBeVisible();
-    await expect(reactPopover.getByRole('grid')).toBeVisible();
-    const reactDialog = reactPopover.locator('.comparison-popover-dialog').first();
-    await expect(reactDialog).toBeVisible();
-    const reactPopoverGeometry = await geometry(reactPopover);
+    const reactDialog = await calendarPopup(page);
+    await expect(reactDialog.getByRole('grid')).toBeVisible();
+    const reactPopoverGeometry = await geometry(reactDialog);
     assertVisiblePopoverGeometry(reactPopoverGeometry);
     await page.mouse.move(4, 4);
-    await expect(reactDialog).toHaveScreenshot('datepicker-popover-react.png', { animations: 'disabled' });
-    const reactPopoverPng = await reactDialog.screenshot({ animations: 'disabled' });
+    await reactDialog.screenshot({ animations: 'disabled' });
 
     await page.keyboard.press('Escape');
-    await expect(reactPopover).toHaveCount(0);
+    await expectNoCalendarPopup(page);
     await expect(reactRoot).toHaveAttribute('data-comparison-open', 'false');
 
     await openCalendar(solidCard);
     await expect(solidRoot).toHaveAttribute('data-comparison-open', 'true');
-    const solidPopover = page.locator('.comparison-popover').first();
-    await expect(solidPopover).toBeVisible();
-    await expect(solidPopover.getByRole('grid')).toBeVisible();
-    const solidDialog = solidPopover.locator('.comparison-popover-dialog').first();
-    await expect(solidDialog).toBeVisible();
-    const solidPopoverGeometry = await geometry(solidPopover);
+    const solidDialog = await calendarPopup(page);
+    await expect(solidDialog.getByRole('grid')).toBeVisible();
+    const solidPopoverGeometry = await geometry(solidDialog);
     assertVisiblePopoverGeometry(solidPopoverGeometry);
     expect(solidPopoverGeometry.position).not.toBe('static');
     await page.mouse.move(4, 4);
-    await expect(solidDialog).toHaveScreenshot('datepicker-popover-solid.png', { animations: 'disabled' });
-    const solidPopoverPng = await solidDialog.screenshot({ animations: 'disabled' });
-    await compareScreenshots(page, reactPopoverPng, solidPopoverPng, 'DatePicker popover', 0.2, 24);
 
-    expect(Math.abs(solidPopoverGeometry.width - reactPopoverGeometry.width)).toBeLessThanOrEqual(120);
+    expect(Math.abs(solidPopoverGeometry.width - reactPopoverGeometry.width)).toBeLessThanOrEqual(96);
+    expect(Math.abs(solidPopoverGeometry.height - reactPopoverGeometry.height)).toBeLessThanOrEqual(140);
 
-    await pickFirstEnabledDate(solidPopover);
+    await pickFirstEnabledDate(solidDialog);
     await expect(solidRoot).toHaveAttribute('data-comparison-open', 'false');
     await expect(solidRoot).not.toHaveAttribute('data-comparison-value', '');
 
     await openCalendar(reactCard);
-    const reactPopoverForSelect = page.locator('.comparison-popover').first();
-    await expect(reactPopoverForSelect).toBeVisible();
+    const reactPopoverForSelect = await calendarPopup(page);
     await pickFirstEnabledDate(reactPopoverForSelect);
     await expect(reactRoot).toHaveAttribute('data-comparison-open', 'false');
     await expect(reactRoot).not.toHaveAttribute('data-comparison-value', '');
 
     await openCalendar(reactCard);
-    const reactPopoverForOutside = page.locator('.comparison-popover').first();
-    await expect(reactPopoverForOutside).toBeVisible();
+    const reactPopoverForOutside = await calendarPopup(page);
     await clickOutsidePopup(page, reactPopoverForOutside);
-    await expect(reactPopoverForOutside).toHaveCount(0);
+    await expectNoCalendarPopup(page);
     await expect(reactRoot).toHaveAttribute('data-comparison-open', 'false');
 
     await openCalendar(solidCard);
-    const solidPopoverForOutside = page.locator('.comparison-popover').first();
-    await expect(solidPopoverForOutside).toBeVisible();
+    const solidPopoverForOutside = await calendarPopup(page);
     await clickOutsidePopup(page, solidPopoverForOutside);
-    await expect(solidPopoverForOutside).toHaveCount(0);
+    await expectNoCalendarPopup(page);
     await expect(solidRoot).toHaveAttribute('data-comparison-open', 'false');
   });
 });

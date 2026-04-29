@@ -1,81 +1,57 @@
-import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { jsx, jsxs } from "react/jsx-runtime";
 // Keep this module JSX-free. Vite dev import-analysis currently sees this
 // client-script dependency before Astro's React JSX transform runs.
 import { useMemo, useRef, useState } from "react";
-import { Provider as SpectrumProvider } from "@react-spectrum/provider";
-import { Button as SpectrumButton } from "@react-spectrum/button";
 import {
+  ActionButton as SpectrumActionButton,
+  ActionGroup as SpectrumActionGroup,
+  Button as SpectrumButton,
+  Checkbox as SpectrumCheckbox,
+  Content as SpectrumContent,
+  DatePicker as SpectrumDatePicker,
+  Dialog as SpectrumDialog,
+  DialogTrigger as SpectrumDialogTrigger,
+  Heading as SpectrumHeading,
   Item as SpectrumItem,
+  Picker as SpectrumPicker,
+  Provider as SpectrumProvider,
+  Radio as SpectrumRadio,
+  RadioGroup as SpectrumRadioGroup,
+  SearchField as SpectrumSearchField,
   TabList as SpectrumTabList,
   TabPanels as SpectrumTabPanels,
-  Tabs as SpectrumTabs
-} from "@react-spectrum/tabs";
-import { theme as defaultTheme } from "@react-spectrum/theme-default";
+  Tabs as SpectrumTabs,
+  Text as SpectrumText,
+  TextField as SpectrumTextField,
+  Tooltip as SpectrumTooltip,
+  TooltipTrigger as SpectrumTooltipTrigger,
+  defaultTheme
+} from "@adobe/react-spectrum";
 import {
   Button as RACButton,
-  Calendar as RACCalendar,
-  CalendarCell as RACCalendarCell,
-  CalendarGrid as RACCalendarGrid,
-  Checkbox as RACCheckbox,
-  DateInput as RACDateInput,
-  DatePicker as RACDatePicker,
-  DateSegment as RACDateSegment,
   Dialog as RACDialog,
   DialogTrigger as RACDialogTrigger,
-  Group as RACGroup,
   Heading as RACHeading,
-  Input as RACInput,
-  Label as RACLabel,
-  ListBox as RACListBox,
-  ListBoxItem as RACListBoxItem,
-  Modal as RACModal,
-  ModalOverlay as RACModalOverlay,
   Popover as RACPopover,
-  Radio as RACRadio,
-  RadioGroup as RACRadioGroup,
-  SearchField as RACSearchField,
-  Select as RACSelect,
-  SelectValue as RACSelectValue,
   Tab as RACTab,
   TabList as RACTabList,
   TabPanel as RACTabPanel,
-  Tabs as RACTabs,
-  TextField as RACTextField,
-  Toolbar as RACToolbar,
-  Tooltip as RACTooltip,
-  TooltipTrigger as RACTooltipTrigger,
-  ToggleButton as RACToggleButton
+  Tabs as RACTabs
 } from "react-aria-components";
 import { UNSAFE_PortalProvider, useButton } from "react-aria";
-const tabItems = [
-  {
-    key: "overview",
-    label: "Overview",
-    content: "Overlay dismissal now respects the local portal scope."
-  },
-  {
-    key: "parity",
-    label: "Parity",
-    content: "Collection composition is the main remaining styled-layer nuance."
-  },
-  {
-    key: "testing",
-    label: "Testing",
-    content: "This page is intended to become a Playwright and axe target."
-  }
-];
-const selectItems = [
-  { id: "alpha", label: "Alpha" },
-  { id: "bravo", label: "Bravo" },
-  { id: "charlie", label: "Charlie" }
-];
+import {
+  comparisonReferenceDataset,
+  comparisonSelectItems as selectItems,
+  comparisonTabItems as tabItems,
+  getComparisonReferenceKind
+} from "@comparison/data/comparison-contract";
 function ComparisonIsland(props) {
   const overlayRootRef = useRef(null);
   return /* @__PURE__ */ jsxs("div", { className: "comparison-island", children: [
     /* @__PURE__ */ jsx(
       UNSAFE_PortalProvider,
       {
-        getContainer: () => overlayRootRef.current ?? document.body,
+        getContainer: () => document.body,
         children: renderLayer(props)
       }
     ),
@@ -83,16 +59,49 @@ function ComparisonIsland(props) {
   ] });
 }
 function renderLayer({ componentSlug, layer }) {
+  let rendered;
   if (layer === "styled") {
-    return renderStyled(componentSlug);
+    rendered = renderStyled(componentSlug);
+  } else if (layer === "components") {
+    rendered = renderComponents(componentSlug);
+  } else if (layer === "headless") {
+    rendered = renderHeadless(componentSlug);
+  } else {
+    rendered = /* @__PURE__ */ jsx("div", { className: "comparison-empty-state", children: "This layer is tracked in the manifest but not rendered yet." });
   }
-  if (layer === "components") {
-    return renderComponents(componentSlug);
-  }
-  if (layer === "headless") {
-    return renderHeadless(componentSlug);
-  }
-  return /* @__PURE__ */ jsx("div", { className: "comparison-empty-state", children: "This layer is tracked in the manifest but not rendered yet." });
+
+  return /* @__PURE__ */ jsx(ComparisonReferenceFrame, {
+    componentSlug,
+    layer,
+    children: rendered
+  });
+}
+function ComparisonReferenceFrame({ componentSlug, layer, children }) {
+  const reference = getComparisonReferenceKind("react", layer, componentSlug);
+  return /* @__PURE__ */ jsx(
+    "div",
+    {
+      className: "comparison-reference-frame",
+      ...comparisonReferenceDataset({
+        componentSlug,
+        framework: "react",
+        layer,
+        reference
+      }),
+      children: /* @__PURE__ */ jsx("div", { className: "comparison-reference-canvas", children })
+    }
+  );
+}
+function renderReactSpectrumReference(children) {
+  return /* @__PURE__ */ jsx(
+    SpectrumProvider,
+    {
+      theme: defaultTheme,
+      colorScheme: "dark",
+      UNSAFE_style: providerShellStyle,
+      children
+    }
+  );
 }
 function renderStyled(componentSlug) {
   switch (componentSlug) {
@@ -122,38 +131,22 @@ function renderStyled(componentSlug) {
         }
       );
     case "button":
-      return /* @__PURE__ */ jsx(
-        SpectrumProvider,
-        {
-          theme: defaultTheme,
-          colorScheme: "dark",
-          UNSAFE_style: providerShellStyle,
-          children: /* @__PURE__ */ jsxs("div", { className: "comparison-button-row", children: [
-            /* @__PURE__ */ jsx(SpectrumButton, { variant: "primary", children: "Primary" }),
-            /* @__PURE__ */ jsx(SpectrumButton, { variant: "accent", children: "Accent" }),
-            /* @__PURE__ */ jsx(SpectrumButton, { variant: "secondary", children: "Secondary" })
-          ] })
-        }
-      );
+      return renderReactSpectrumReference(/* @__PURE__ */ jsxs("div", { className: "comparison-button-row", children: [
+        /* @__PURE__ */ jsx(SpectrumButton, { variant: "primary", children: "Primary" }),
+        /* @__PURE__ */ jsx(SpectrumButton, { variant: "accent", children: "Accent" }),
+        /* @__PURE__ */ jsx(SpectrumButton, { variant: "secondary", children: "Secondary" })
+      ] }));
     case "tabs":
-      return /* @__PURE__ */ jsx(
-        SpectrumProvider,
-        {
-          theme: defaultTheme,
-          colorScheme: "dark",
-          UNSAFE_style: providerShellStyle,
-          children: /* @__PURE__ */ jsxs(SpectrumTabs, { "aria-label": "React Spectrum tabs", maxWidth: 360, children: [
-            /* @__PURE__ */ jsx(SpectrumTabList, { children: tabItems.map((item) => /* @__PURE__ */ jsx(SpectrumItem, { children: item.label }, item.key)) }),
-            /* @__PURE__ */ jsx(SpectrumTabPanels, { children: tabItems.map((item) => /* @__PURE__ */ jsx(SpectrumItem, { children: item.content }, item.key)) })
-          ] })
-        }
-      );
+      return renderReactSpectrumReference(/* @__PURE__ */ jsxs(SpectrumTabs, { "aria-label": "React Spectrum tabs", maxWidth: 360, children: [
+        /* @__PURE__ */ jsx(SpectrumTabList, { children: tabItems.map((item) => /* @__PURE__ */ jsx(SpectrumItem, { children: item.label }, item.id)) }),
+        /* @__PURE__ */ jsx(SpectrumTabPanels, { children: tabItems.map((item) => /* @__PURE__ */ jsx(SpectrumItem, { children: item.content }, item.id)) })
+      ] }));
     case "textfield":
       return /* @__PURE__ */ jsx(ReactTextFieldDemo, {});
     case "select":
       return /* @__PURE__ */ jsx(ReactSelectDemo, {});
     case "checkbox":
-      return /* @__PURE__ */ jsx(RACCheckbox, { className: "comparison-check", children: "Enable alerts" });
+      return /* @__PURE__ */ jsx(ReactCheckboxDemo, {});
     case "dialog":
       return /* @__PURE__ */ jsx(ReactDialogDemo, {});
     case "radio":
@@ -173,122 +166,70 @@ function renderStyled(componentSlug) {
   }
 }
 function ReactTextFieldDemo() {
-  return /* @__PURE__ */ jsxs(RACTextField, { className: "comparison-form-control", defaultValue: "Quarterly report", children: [
-    /* @__PURE__ */ jsx(RACLabel, { children: "Name" }),
-    /* @__PURE__ */ jsx(RACInput, {})
-  ] });
+  const [value, setValue] = useState("Quarterly report");
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-value": value, children: /* @__PURE__ */ jsx(SpectrumTextField, { label: "Name", defaultValue: "Quarterly report", onChange: setValue }) }));
 }
 function ReactSelectDemo() {
   const [selectedKey, setSelectedKey] = useState("bravo");
-  return /* @__PURE__ */ jsx("div", { className: "comparison-spectrum-skin", "data-comparison-selected-key": selectedKey, children: /* @__PURE__ */ jsxs(
-    RACSelect,
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-selected-key": selectedKey, children: /* @__PURE__ */ jsx(
+    SpectrumPicker,
     {
-      className: "comparison-spectrum-Select",
+      label: "Channel",
       defaultSelectedKey: "bravo",
-      onSelectionChange: (key) => {
-        setSelectedKey(key == null ? "" : String(key));
-      },
-      children: [
-        /* @__PURE__ */ jsx(RACLabel, { className: "comparison-spectrum-Field-label", "data-slot": "label", children: "Channel" }),
-        /* @__PURE__ */ jsx(
-          RACButton,
-          {
-            className: "comparison-spectrum-Field-input comparison-spectrum-Select-trigger",
-            children: /* @__PURE__ */ jsx(RACSelectValue, { className: "comparison-spectrum-Select-value", "data-slot": "value" })
-          }
-        ),
-        /* @__PURE__ */ jsx(
-          RACPopover,
-          {
-            className: "comparison-popover",
-            children: /* @__PURE__ */ jsx(
-              RACListBox,
-              {
-                className: "comparison-spectrum-Select-listbox",
-                children: selectItems.map((item) => /* @__PURE__ */ jsx(
-                  RACListBoxItem,
-                  {
-                    id: item.id,
-                    className: "comparison-spectrum-Select-option",
-                    children: item.label
-                  },
-                  item.id
-                ))
-              }
-            )
-          }
-        )
-      ]
+      onSelectionChange: (key) => setSelectedKey(key == null ? "" : String(key)),
+      items: selectItems,
+      children: (item) => /* @__PURE__ */ jsx(SpectrumItem, { children: item.label }, item.id)
     }
-  ) });
+  ) }));
 }
 function ReactDialogDemo() {
-  return /* @__PURE__ */ jsx("div", { className: "comparison-spectrum-skin", children: /* @__PURE__ */ jsxs(RACDialogTrigger, { children: [
-    /* @__PURE__ */ jsx(RACButton, { className: "comparison-spectrum-Button", "data-variant": "primary", "data-style": "outline", children: "Open Dialog" }),
-    /* @__PURE__ */ jsx(RACModalOverlay, { className: "comparison-dialog-underlay", isDismissable: true, children: /* @__PURE__ */ jsx("div", { className: "comparison-dialog-positioner", children: /* @__PURE__ */ jsx(RACModal, { className: "comparison-dialog-modal", children: /* @__PURE__ */ jsx(RACDialog, { className: "comparison-dialog-surface comparison-spectrum-Dialog", children: ({ close }) => /* @__PURE__ */ jsxs(Fragment, { children: [
-      /* @__PURE__ */ jsx(RACHeading, { slot: "title", className: "comparison-spectrum-Dialog-title", children: "Review Changes" }),
-      /* @__PURE__ */ jsx("p", { className: "comparison-spectrum-Dialog-body", children: "Dialog focus and dismissal are compared from this island." }),
-      /* @__PURE__ */ jsx(RACButton, { className: "comparison-spectrum-Dialog-closeButton", "aria-label": "Close dialog", onPress: close, children: /* @__PURE__ */ jsx("svg", { "aria-hidden": "true", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", children: /* @__PURE__ */ jsxs(Fragment, { children: [
-        /* @__PURE__ */ jsx("path", { d: "M18 6 6 18" }),
-        /* @__PURE__ */ jsx("path", { d: "m6 6 12 12" })
-      ] }) }) })
-    ] }) }) }) }) })
-  ] }) });
+  const [isOpen, setIsOpen] = useState(false);
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-open": String(isOpen), children: /* @__PURE__ */ jsxs(SpectrumDialogTrigger, { isDismissable: true, onOpenChange: setIsOpen, children: [
+    /* @__PURE__ */ jsx(SpectrumButton, { variant: "primary", children: "Open Dialog" }),
+    /* @__PURE__ */ jsxs(SpectrumDialog, { children: [
+      /* @__PURE__ */ jsx(SpectrumHeading, { children: "Review Changes" }),
+      /* @__PURE__ */ jsx(SpectrumContent, { children: /* @__PURE__ */ jsx(SpectrumText, { children: "Dialog focus and dismissal are compared from this island." }) })
+    ] })
+  ] }) }));
+}
+function ReactCheckboxDemo() {
+  const [checked, setChecked] = useState(true);
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-checked": String(checked), children: /* @__PURE__ */ jsx(SpectrumCheckbox, { defaultSelected: true, onChange: setChecked, children: "Enable alerts" }) }));
 }
 function ReactRadioDemo() {
-  return /* @__PURE__ */ jsxs(RACRadioGroup, { className: "comparison-form-control", defaultValue: "compact", "aria-label": "Density", children: [
-    /* @__PURE__ */ jsx(RACLabel, { children: "Density" }),
-    /* @__PURE__ */ jsx(RACRadio, { value: "compact", className: "comparison-check", children: "Compact" }),
-    /* @__PURE__ */ jsx(RACRadio, { value: "comfortable", className: "comparison-check", children: "Comfortable" })
-  ] });
+  const [selectedKey, setSelectedKey] = useState("compact");
+  return renderReactSpectrumReference(/* @__PURE__ */ jsxs("div", { "data-comparison-selected-key": selectedKey, children: [
+    /* @__PURE__ */ jsxs(SpectrumRadioGroup, { label: "Density", defaultValue: "compact", onChange: setSelectedKey, children: [
+      /* @__PURE__ */ jsx(SpectrumRadio, { value: "compact", children: "Compact" }),
+      /* @__PURE__ */ jsx(SpectrumRadio, { value: "comfortable", children: "Comfortable" })
+    ] })
+  ] }));
 }
 function ReactDatePickerDemo() {
   const [value, setValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  return /* @__PURE__ */ jsx("div", { className: "comparison-spectrum-skin comparison-stack", "data-comparison-value": value, "data-comparison-open": String(isOpen), children: /* @__PURE__ */ jsxs(RACDatePicker, { className: "comparison-form-control comparison-datepicker-root", "aria-label": "Due date", onChange: (nextValue) => setValue(nextValue == null ? "" : String(nextValue)), onOpenChange: setIsOpen, children: [
-    /* @__PURE__ */ jsx(RACLabel, { className: "comparison-spectrum-Field-label", "data-slot": "label", children: "Due date" }),
-    /* @__PURE__ */ jsxs(RACGroup, { className: "comparison-datepicker-group", children: [
-      /* @__PURE__ */ jsx(RACDateInput, { className: "comparison-date-input", children: (segment) => /* @__PURE__ */ jsx(RACDateSegment, { segment }) }),
-      /* @__PURE__ */ jsx(RACButton, { className: "comparison-field-button", children: "Calendar" })
-    ] }),
-    /* @__PURE__ */ jsx(RACPopover, { className: "comparison-popover comparison-datepicker-popover", children: /* @__PURE__ */ jsx(RACDialog, { className: "comparison-popover-dialog", children: /* @__PURE__ */ jsxs(RACCalendar, { children: [
-      /* @__PURE__ */ jsxs("header", { className: "comparison-datepicker-header", children: [
-        /* @__PURE__ */ jsx(RACButton, { slot: "previous", className: "comparison-rac-button", children: "Previous" }),
-        /* @__PURE__ */ jsx(RACHeading, { className: "comparison-popover-title" }),
-        /* @__PURE__ */ jsx(RACButton, { slot: "next", className: "comparison-rac-button", children: "Next" })
-      ] }),
-      /* @__PURE__ */ jsx(RACCalendarGrid, { children: (date) => /* @__PURE__ */ jsx(RACCalendarCell, { date }) })
-    ] }) }) })
-  ] }) });
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-value": value, "data-comparison-open": String(isOpen), children: /* @__PURE__ */ jsx(SpectrumDatePicker, { label: "Due date", onChange: (nextValue) => setValue(nextValue == null ? "" : String(nextValue)), onOpenChange: setIsOpen, UNSAFE_className: "comparison-datepicker-root" }) }));
 }
 function ReactSearchFieldDemo() {
   const [value, setValue] = useState("status");
   const [clearCount, setClearCount] = useState(0);
-  return /* @__PURE__ */ jsx("div", { className: "comparison-stack", "data-comparison-input-value": value, "data-comparison-clear-count": String(clearCount), children: /* @__PURE__ */ jsxs(RACSearchField, { className: "comparison-form-control", defaultValue: "status", onChange: setValue, onClear: () => {
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-input-value": value, "data-comparison-clear-count": String(clearCount), children: /* @__PURE__ */ jsx(SpectrumSearchField, { label: "Search", defaultValue: "status", onChange: setValue, onClear: () => {
     setValue("");
     setClearCount((count) => count + 1);
-  }, children: [
-    /* @__PURE__ */ jsx(RACLabel, { children: "Search" }),
-    /* @__PURE__ */ jsx(RACInput, {}),
-    /* @__PURE__ */ jsx(RACButton, { className: "comparison-rac-button", children: "Clear search" })
-  ] }) });
+  } }) }));
 }
 function ReactTooltipDemo() {
-  return /* @__PURE__ */ jsxs(RACTooltipTrigger, { isOpen: true, children: [
-    /* @__PURE__ */ jsx(RACButton, { className: "comparison-rac-button", children: "Inspect" }),
-    /* @__PURE__ */ jsx(RACTooltip, { className: "comparison-tooltip", children: "Tooltip content" })
-  ] });
+  return renderReactSpectrumReference(/* @__PURE__ */ jsxs(SpectrumTooltipTrigger, { isOpen: true, children: [
+    /* @__PURE__ */ jsx(SpectrumActionButton, { children: "Inspect" }),
+    /* @__PURE__ */ jsx(SpectrumTooltip, { children: "Tooltip content" })
+  ] }));
 }
 function ReactToolbarDemo() {
-  const [boldPressed, setBoldPressed] = useState(false);
   const [actionCount, setActionCount] = useState(0);
-  return /* @__PURE__ */ jsx("div", { className: "comparison-stack", "data-comparison-pressed": String(boldPressed), "data-comparison-action-count": String(actionCount), children: /* @__PURE__ */ jsxs(RACToolbar, { className: "comparison-toolbar", "aria-label": "Formatting tools", children: [
-    /* @__PURE__ */ jsx(RACToggleButton, { className: "comparison-rac-button", isSelected: boldPressed, onChange: (selected) => {
-      setBoldPressed(selected);
-      setActionCount((count) => count + 1);
-    }, children: "Bold" }),
-    /* @__PURE__ */ jsx(RACButton, { className: "comparison-rac-button", children: "Italic" })
-  ] }) });
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-action-count": String(actionCount), children: /* @__PURE__ */ jsx(SpectrumActionGroup, { "aria-label": "Formatting tools", onAction: () => setActionCount((count) => count + 1), children: [
+    /* @__PURE__ */ jsx(SpectrumItem, { children: "Bold" }, "bold"),
+    /* @__PURE__ */ jsx(SpectrumItem, { children: "Italic" }, "italic")
+  ] }) }));
 }
 function renderComponents(componentSlug) {
   switch (componentSlug) {
@@ -324,20 +265,20 @@ function renderComponents(componentSlug) {
         /* @__PURE__ */ jsx(RACTabList, { className: "comparison-rac-tab-list", children: tabItems.map((item) => /* @__PURE__ */ jsx(
           RACTab,
           {
-            id: item.key,
+            id: item.id,
             className: "comparison-rac-tab",
             children: item.label
           },
-          item.key
+          item.id
         )) }),
         tabItems.map((item) => /* @__PURE__ */ jsx(
           RACTabPanel,
           {
-            id: item.key,
+            id: item.id,
             className: "comparison-tabs-panel",
             children: item.content
           },
-          item.key
+          item.id
         ))
       ] });
     default:
