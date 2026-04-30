@@ -668,6 +668,7 @@ function SolidToastDemo() {
 function SolidariaSpectrumButtonDemo() {
   const [actionCount, setActionCount] = createSignal(0);
   const [demoProps, setDemoProps] = createSignal(buttonDemoPropsFromWindow());
+  const [showPendingSpinner, setShowPendingSpinner] = createSignal(false);
   let root: HTMLDivElement | undefined;
 
   onMount(() => {
@@ -697,6 +698,16 @@ function SolidariaSpectrumButtonDemo() {
     }
   });
 
+  createEffect(() => {
+    setShowPendingSpinner(false);
+    if (!demoProps().isPending) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => setShowPendingSpinner(true), 1000);
+    onCleanup(() => window.clearTimeout(timeoutId));
+  });
+
   return hc(
     "div",
     {
@@ -722,11 +733,11 @@ function SolidariaSpectrumButtonDemo() {
               get isDisabled() {
                 return demoProps().isDisabled;
               },
-              get isPending() {
-                return demoProps().isPending;
-              },
               class: comparisonSpectrumSkin.buttonClass,
               style: (renderProps: ButtonRenderProps) => buttonPressStyle(renderProps, demoProps().children),
+              get "aria-disabled"() {
+                return demoProps().isPending ? "true" : undefined;
+              },
               get "data-variant"() {
                 return demoProps().variant;
               },
@@ -739,7 +750,14 @@ function SolidariaSpectrumButtonDemo() {
               get "data-static-color"() {
                 return demoProps().staticColor;
               },
-              onPress: (_event: unknown) => setActionCount((count) => count + 1),
+              get "data-pending-visible"() {
+                return showPendingSpinner() ? "true" : undefined;
+              },
+              onPress: (_event: unknown) => {
+                if (!demoProps().isPending) {
+                  setActionCount((count) => count + 1);
+                }
+              },
             },
             [
               h(
@@ -748,9 +766,55 @@ function SolidariaSpectrumButtonDemo() {
                   class: comparisonSpectrumSkin.labelClass,
                   "data-slot": "label",
                   "data-rsp-slot": "text",
+                  get style() {
+                    return showPendingSpinner() ? { visibility: "hidden" } : undefined;
+                  },
                 },
                 () => demoProps().children,
               ),
+              () => showPendingSpinner()
+                ? h(
+                    "div",
+                    { class: "comparison-spectrum-Button-pendingSpinner" },
+                    h(
+                      "div",
+                      {
+                        class: "comparison-spectrum-Button-progressCircle",
+                        role: "progressbar",
+                        "aria-label": "pending",
+                        "aria-valuemin": "0",
+                        "aria-valuemax": "100",
+                      },
+                      h(
+                        "svg",
+                        { fill: "none", width: "100%", height: "100%" },
+                        [
+                          h("circle", {
+                            cx: "50%",
+                            cy: "50%",
+                            r: "calc(50% - 0.0625rem)",
+                            class: "comparison-spectrum-Button-progressCircleTrackTransparent",
+                          }),
+                          h("circle", {
+                            cx: "50%",
+                            cy: "50%",
+                            r: "calc(50% - 0.0625rem)",
+                            class: "comparison-spectrum-Button-progressCircleTrack",
+                          }),
+                          h("circle", {
+                            cx: "50%",
+                            cy: "50%",
+                            r: "calc(50% - 0.0625rem)",
+                            pathLength: "100",
+                            "stroke-dasharray": "100 200",
+                            "stroke-linecap": "round",
+                            class: "comparison-spectrum-Button-progressCircleFill",
+                          }),
+                        ],
+                      ),
+                    ),
+                  )
+                : null,
             ],
           ),
         ],

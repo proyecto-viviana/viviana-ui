@@ -1,12 +1,45 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { frameworkCanvas, styledSection } from './comparison-page';
-import { compareScreenshots, compareLocatorScreenshots } from './visual-diff';
+import { compareScreenshots } from './visual-diff';
 
 const strictPairDiff = {
   maxMismatchRatio: 0,
   maxDimensionDelta: 0,
   pixelThreshold: 0,
 };
+
+type ButtonMatrixCase = {
+  id: string;
+  label: string;
+  params: Record<string, string | boolean>;
+};
+
+const buttonMatrixCases: ButtonMatrixCase[] = [
+  { id: 'variant-primary-fill', label: 'Button variant primary fill', params: { variant: 'primary', fillStyle: 'fill' } },
+  { id: 'variant-secondary-fill', label: 'Button variant secondary fill', params: { variant: 'secondary', fillStyle: 'fill' } },
+  { id: 'variant-accent-fill', label: 'Button variant accent fill', params: { variant: 'accent', fillStyle: 'fill' } },
+  { id: 'variant-negative-fill', label: 'Button variant negative fill', params: { variant: 'negative', fillStyle: 'fill' } },
+  { id: 'variant-premium-fill', label: 'Button variant premium fill', params: { variant: 'premium', fillStyle: 'fill' } },
+  { id: 'variant-genai-fill', label: 'Button variant genai fill', params: { variant: 'genai', fillStyle: 'fill' } },
+  { id: 'variant-primary-outline', label: 'Button variant primary outline', params: { variant: 'primary', fillStyle: 'outline' } },
+  { id: 'variant-secondary-outline', label: 'Button variant secondary outline', params: { variant: 'secondary', fillStyle: 'outline' } },
+  { id: 'variant-accent-outline', label: 'Button variant accent outline', params: { variant: 'accent', fillStyle: 'outline' } },
+  { id: 'variant-negative-outline', label: 'Button variant negative outline', params: { variant: 'negative', fillStyle: 'outline' } },
+  { id: 'variant-premium-outline', label: 'Button variant premium outline', params: { variant: 'premium', fillStyle: 'outline' } },
+  { id: 'variant-genai-outline', label: 'Button variant genai outline', params: { variant: 'genai', fillStyle: 'outline' } },
+  { id: 'size-s', label: 'Button size S', params: { size: 'S' } },
+  { id: 'size-m', label: 'Button size M', params: { size: 'M' } },
+  { id: 'size-l', label: 'Button size L', params: { size: 'L' } },
+  { id: 'size-xl', label: 'Button size XL', params: { size: 'XL' } },
+  { id: 'static-white-fill', label: 'Button staticColor white fill', params: { staticColor: 'white', fillStyle: 'fill' } },
+  { id: 'static-black-fill', label: 'Button staticColor black fill', params: { staticColor: 'black', fillStyle: 'fill' } },
+  { id: 'static-auto-fill', label: 'Button staticColor auto fill', params: { staticColor: 'auto', fillStyle: 'fill' } },
+  { id: 'static-white-outline', label: 'Button staticColor white outline', params: { staticColor: 'white', fillStyle: 'outline' } },
+  { id: 'static-black-outline', label: 'Button staticColor black outline', params: { staticColor: 'black', fillStyle: 'outline' } },
+  { id: 'static-auto-outline', label: 'Button staticColor auto outline', params: { staticColor: 'auto', fillStyle: 'outline' } },
+  { id: 'disabled', label: 'Button disabled', params: { isDisabled: true } },
+  { id: 'pending', label: 'Button pending', params: { isPending: true } },
+];
 
 async function frameworkCard(
   section: Locator,
@@ -17,8 +50,17 @@ async function frameworkCard(
   return card;
 }
 
-async function buttonFixtures(page: Page) {
-  await page.goto('/components/button/');
+function buttonQuery(params: Record<string, string | boolean> = {}) {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    search.set(key, String(value));
+  }
+  const query = search.toString();
+  return query ? `?${query}` : '';
+}
+
+async function buttonFixtures(page: Page, params: Record<string, string | boolean> = {}) {
+  await page.goto(`/components/button/${buttonQuery(params)}`);
   await page.waitForLoadState('networkidle');
   await expect(page.locator('astro-island')).toHaveCount(0);
 
@@ -50,16 +92,17 @@ async function expectScreenshotPair(
   label: string,
   snapshotName: string,
 ) {
-  await expect(reactTarget).toHaveScreenshot(`${snapshotName}-react.png`, {
-    animations: 'disabled',
-  });
-  await expect(solidTarget).toHaveScreenshot(`${snapshotName}-solid.png`, {
-    animations: 'disabled',
-  });
-  await compareLocatorScreenshots(
+  const [reactPng, solidPng] = await Promise.all([
+    reactTarget.screenshot({ animations: 'disabled' }),
+    solidTarget.screenshot({ animations: 'disabled' }),
+  ]);
+
+  expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
+  expect(solidPng).toMatchSnapshot(`${snapshotName}-solid.png`);
+  await compareScreenshots(
     page,
-    reactTarget,
-    solidTarget,
+    reactPng,
+    solidPng,
     label,
     strictPairDiff,
   );
@@ -77,19 +120,15 @@ async function expectPreparedScreenshotPair(
   await clearPointer(page);
   await prepareReact();
   await page.waitForTimeout(220);
-  await expect(reactTarget).toHaveScreenshot(`${snapshotName}-react.png`, {
-    animations: 'disabled',
-  });
   const reactPng = await reactTarget.screenshot({ animations: 'disabled' });
+  expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
 
   await page.mouse.up();
   await clearPointer(page);
   await prepareSolid();
   await page.waitForTimeout(220);
-  await expect(solidTarget).toHaveScreenshot(`${snapshotName}-solid.png`, {
-    animations: 'disabled',
-  });
   const solidPng = await solidTarget.screenshot({ animations: 'disabled' });
+  expect(solidPng).toMatchSnapshot(`${snapshotName}-solid.png`);
 
   await page.mouse.up();
   await compareScreenshots(page, reactPng, solidPng, label, strictPairDiff);
@@ -171,6 +210,20 @@ test.describe('comparison Button visual parity', () => {
     );
   });
 
+  test('Button delayed pending spinner is pixel-identical', async ({ page }) => {
+    const fixtures = await buttonFixtures(page, { isPending: true });
+
+    await expect(fixtures.reactRow.getByRole('progressbar', { name: 'pending' })).toBeVisible();
+    await expect(fixtures.solidRow.getByRole('progressbar', { name: 'pending' })).toBeVisible();
+    await expectScreenshotPair(
+      page,
+      fixtures.reactRow,
+      fixtures.solidRow,
+      'Button delayed pending spinner',
+      'button-pending-spinner',
+    );
+  });
+
   test('Button prop controls drive both implementations', async ({ page }) => {
     const fixtures = await buttonFixtures(page);
 
@@ -199,4 +252,19 @@ test.describe('comparison Button visual parity', () => {
     await expect(fixtures.solidCanvas.getByRole('button', { name: 'Delete' })).toHaveAttribute('data-style', 'outline');
     await expect(fixtures.solidCanvas.getByRole('button', { name: 'Delete' })).toHaveAttribute('data-size', 'L');
   });
+
+  for (const item of buttonMatrixCases) {
+    test(`${item.label} is pixel-identical`, async ({ page }) => {
+      const fixtures = await buttonFixtures(page, item.params);
+
+      await clearPointer(page);
+      await expectScreenshotPair(
+        page,
+        fixtures.reactRow,
+        fixtures.solidRow,
+        item.label,
+        `button-${item.id}`,
+      );
+    });
+  }
 });

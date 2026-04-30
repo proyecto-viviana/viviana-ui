@@ -17,8 +17,8 @@ async function frameworkCard(section: Locator, framework: Framework) {
   return card;
 }
 
-async function buttonFamilyCards(page: Page, slug: string) {
-  await page.goto(`/components/${slug}/`);
+async function buttonFamilyCards(page: Page, slug: string, query = '') {
+  await page.goto(`/components/${slug}/${query}`);
   await page.waitForLoadState('networkidle');
   await expect(page.locator('astro-island')).toHaveCount(0);
 
@@ -38,6 +38,20 @@ test.describe('comparison button-family behavior contracts', () => {
       await expect(root).toHaveAttribute('data-comparison-action-count', '0');
       await card.getByRole('button', { name: 'Save' }).click();
       await expect(root).toHaveAttribute('data-comparison-action-count', '1');
+    }
+  });
+
+  test('Button pending remains focusable and suppresses press actions', async ({ page }) => {
+    const cards = await buttonFamilyCards(page, 'button', '?isPending=true');
+
+    for (const card of [cards.react, cards.solid]) {
+      const root = card.locator('[data-comparison-action-count]').first();
+      const button = card.getByRole('button', { name: 'Save' });
+      await expect(root).toHaveAttribute('data-comparison-action-count', '0');
+      await button.focus();
+      await expect(button).toBeFocused();
+      await button.click({ force: true });
+      await expect(root).toHaveAttribute('data-comparison-action-count', '0');
     }
   });
 

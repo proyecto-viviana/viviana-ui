@@ -50,6 +50,8 @@ For every state, add both:
 
 - A Playwright behavior assertion when the state changes through interaction.
 - A screenshot assertion when the state has any visual output.
+- For time-based states, cover each visible phase separately. For example,
+  Button pending has both an immediate pending state and a delayed spinner state.
 
 Typical visual states:
 
@@ -69,6 +71,9 @@ Every React-vs-Solid screenshot comparison is strict: `maxMismatchRatio: 0`,
 For controlled props, add at least one Playwright assertion that changing the
 docs-style controls updates both implementations. When a prop produces a visual
 state, add or plan the matching strict pair screenshot row in the matrix.
+Capture each side once per assertion and use that same buffer for both the
+committed snapshot and the React-vs-Solid pair diff, so timing-sensitive states
+cannot pass the snapshot and fail the pair diff against a different frame.
 
 ## 5. Update The Matrix
 
@@ -112,10 +117,12 @@ Button is the pilot for this process:
   uses React Spectrum S2 names: `variant`, `fillStyle`, `size`, `staticColor`,
   `isDisabled`, and `isPending`.
 - `e2e/button-visual.spec.ts` covers default, hover, focus-visible, and pressed
-  screenshots with strict pair diffs, and asserts that the prop controls update
-  both stacks.
-- `e2e/button-family-contract.spec.ts` asserts the Button press callback on
-  both stacks.
-- Exhaustive variant, size, disabled, pending, and static-color visual
-  screenshots remain planned Button gaps until each controlled prop state has a
-  strict React-vs-Solid pair diff.
+  screenshots with strict pair diffs, asserts that the prop controls update both
+  stacks, and snapshots the documented visual prop matrix: variants in fill and
+  outline, sizes, staticColor values, disabled, immediate pending, and delayed
+  pending spinner.
+- `e2e/button-family-contract.spec.ts` asserts the Button press callback and the
+  S2 pending behavior: pending remains focusable while suppressing press actions.
+- Button is not considered complete if a documented visual prop or visible
+  intermediate state exists without a strict React-vs-Solid pair diff row in
+  `src/data/visual-state-matrix.ts`.

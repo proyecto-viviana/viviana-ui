@@ -680,9 +680,9 @@ a {
   --skin-button-secondary-border: #8f8f8f;
   --skin-button-secondary-text: #eaeaea;
   --skin-button-secondary-hover-border: #d6d6d6;
-  --skin-button-disabled-border: #5c5c5c;
-  --skin-button-disabled-text: #777777;
-  --skin-button-disabled-bg: transparent;
+  --skin-button-disabled-border: #393939;
+  --skin-button-disabled-text: #444444;
+  --skin-button-disabled-bg: #2c2c2c;
   --skin-action-button-height: 32px;
   --skin-action-button-radius: 4px;
   --skin-action-button-border: #707070;
@@ -838,8 +838,8 @@ a {
   padding: 0 20px;
   border-radius: 20px;
   column-gap: 7px;
-  font-size: 17px;
-  line-height: 22px;
+  font-size: 16px;
+  line-height: 20px;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-size="XL"] {
@@ -848,8 +848,8 @@ a {
   padding: 0 24px;
   border-radius: 24px;
   column-gap: 8px;
-  font-size: 19px;
-  line-height: 24px;
+  font-size: 18px;
+  line-height: 22px;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="primary"] {
@@ -871,8 +871,8 @@ a {
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="negative"] {
-  background: #d31510;
-  border-color: #d31510;
+  background: #cd2e1d;
+  border-color: #cd2e1d;
   color: #ffffff;
 }
 
@@ -893,7 +893,7 @@ a {
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-variant="premium"]::before {
-  background: linear-gradient(to bottom right, #d732d9 0%, #5258e4 66%, #1473e6 100%);
+  background: linear-gradient(to bottom right, #b539c8 0%, #7155fa 66%, #3b63fb 100%);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-variant="genai"] {
@@ -903,7 +903,7 @@ a {
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-variant="genai"]::before {
-  background: linear-gradient(to bottom right, #d31510 0%, #c529b9 33%, #5258e4 100%);
+  background: linear-gradient(to bottom right, #d73220 0%, #d92361 33%, #7155fa 100%);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"] {
@@ -912,25 +912,26 @@ a {
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="primary"] {
-  border-color: var(--skin-button-primary-border);
-  color: var(--skin-button-primary-text);
+  border-color: #dbdbdb;
+  color: #dbdbdb;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="secondary"] {
-  border-color: var(--skin-button-secondary-border);
-  color: var(--skin-button-secondary-text);
+  border-color: #393939;
+  color: #dbdbdb;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="accent"],
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="negative"] {
-  border-color: var(--skin-button-primary-border);
-  color: var(--skin-button-primary-text);
+  border-color: #ffffff;
+  color: #dbdbdb;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="premium"],
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="genai"] {
   background: #2c2c2c;
   border-color: transparent;
+  border-width: 0;
   color: #ffffff;
 }
 
@@ -1001,24 +1002,28 @@ a {
   border-color: var(--skin-button-primary-hover-border);
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style="fill"][data-variant="primary"] {
-  background: rgba(255, 255, 255, 0.9);
-  color: #000000;
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style="fill"][data-variant="primary"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="auto"][data-style="fill"][data-variant="primary"] {
+  background: lch(100 0 0 / 0.85);
+  border-color: lch(100 0 0 / 0.85);
+  color: lch(0 0 0);
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style="outline"] {
-  border-color: rgba(255, 255, 255, 0.7);
-  color: #ffffff;
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style="outline"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="auto"][data-style="outline"] {
+  border-color: lch(100 0 0 / 0.85);
+  color: lch(100 0 0 / 0.85);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style="fill"][data-variant="primary"] {
-  background: rgba(0, 0, 0, 0.9);
-  color: #ffffff;
+  background: lch(0 0 0 / 0.85);
+  border-color: lch(0 0 0 / 0.85);
+  color: lch(100 0 0);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style="outline"] {
-  border-color: rgba(0, 0, 0, 0.7);
-  color: #000000;
+  border-color: lch(0 0 0 / 0.85);
+  color: lch(0 0 0 / 0.85);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-focus-visible],
@@ -1028,7 +1033,8 @@ a {
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-disabled],
-.comparison-spectrum-skin .comparison-spectrum-Button[data-pending] {
+.comparison-spectrum-skin .comparison-spectrum-Button[data-disabled][data-style][data-variant],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-pending-visible][data-style][data-variant] {
   background: var(--skin-button-disabled-bg);
   border-color: var(--skin-button-disabled-border);
   color: var(--skin-button-disabled-text);
@@ -1056,14 +1062,81 @@ a {
 
 .comparison-spectrum-Button[data-size="L"] .comparison-spectrum-Button-label[data-slot="label"] {
   block-size: 40px;
-  line-height: 22px;
-  padding: 9px 0;
+  line-height: 20px;
+  padding: 10px 0;
 }
 
 .comparison-spectrum-Button[data-size="XL"] .comparison-spectrum-Button-label[data-slot="label"] {
   block-size: 48px;
-  line-height: 24px;
-  padding: 12px 0;
+  line-height: 22px;
+  padding: 13px 0;
+}
+
+.comparison-spectrum-Button[data-style="outline"] .comparison-spectrum-Button-label[data-slot="label"] {
+  block-size: 28px;
+  padding: 5px 0;
+}
+
+.comparison-spectrum-Button[data-style="outline"][data-size="S"] .comparison-spectrum-Button-label[data-slot="label"] {
+  block-size: 20px;
+  padding: 2.5px 0;
+}
+
+.comparison-spectrum-Button[data-style="outline"][data-size="L"] .comparison-spectrum-Button-label[data-slot="label"] {
+  block-size: 36px;
+  padding: 8px 0;
+}
+
+.comparison-spectrum-Button[data-style="outline"][data-size="XL"] .comparison-spectrum-Button-label[data-slot="label"] {
+  block-size: 44px;
+  padding: 11px 0;
+}
+
+.comparison-spectrum-Button[data-style="outline"][data-variant="premium"] .comparison-spectrum-Button-label[data-slot="label"],
+.comparison-spectrum-Button[data-style="outline"][data-variant="genai"] .comparison-spectrum-Button-label[data-slot="label"] {
+  block-size: 32px;
+  padding: 7px 0;
+}
+
+.comparison-spectrum-Button-pendingSpinner {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: 18px;
+  block-size: 18px;
+  transform: translate(-50%, -50%);
+}
+
+.comparison-spectrum-Button-progressCircle {
+  inline-size: 18px;
+  block-size: 18px;
+  /* Rasterized from the React S2 reference because Chromium anti-aliases equivalent SVGs differently across frameworks. */
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAACpUlEQVR4AZyT20uTYRzHv+/r5mHzkPPUzMk8VdagjIKSSShGUUiRWkQRRBeaER0kAv+CLjpeaIZEXacXnW4k7UCmFRQG5jSZC2eZm/Mwt+nebe/b8/wWQ8qLzbHf7/k9z+/7/byn5xFNJpPyb+w01yqV9XeUgw29Sm2Li+JQYy9bu63sMh/9T8/9Ilb8FMRBX3YVBdWdyDJdRHJuFeISdBRafRVbuwRjdRfWb7sCQVStcAIRUEJqIUoOPEF68WnIAQ9mhlth72vC6NMKCl67LO2Qg17oNp5B0b7HSEgxRmAEEsR45JtbEc8aPkc/rN01cHxrx+LUO4SkeQpeTw+1Yrz7MJacnxCfWoL8invgT8FpBNJvb4ZamwefYwA/3jYguOzivVUjsOSA7c1Zpu0nT25ZM+lEbdYOpBWeYFd1w/7hGi1GkyY/trBX4MW6olPgDFFXchKCIGDR/gIh/1w0DNLwu3YzjyAI0BUfh6jWGqjhcw3SGEvyOr+QnDNEtWYDTbyOzzTGknwzYZBKkwdRkQPkVZQQjbEkORT2QpEh+hdGyZuUXkpjLEmbYSK5tDDCQSM0WQso8e/Fl+ctEGetnZBDEtKMdRBUGoJGk0R1CtIK6pk3gFlrF0TJM4m50Q62uXJh2H09GgZpDHtuQJ2UDZelDZL3Z/isTQ93QHJbkayvhHHvfagSM0i8WuI9rtHmlENaHIfD8oBkdETAvph94DI4TJNdjqL9z5C9tREp+gq20VIRl5hJdY6pifWeg2v8C2OY6LsAgZ02TgqDWOV322B9WYe5sUcQVcnI3HIeBnMbNh95j001r6nOKD1H73H2+0OM9xyD5JlgzvA/AuJTRQ5iavAmbL31cA7dhefXKwSXnOAHldd8zdZTh99fb7GtE+SWSPwBAAD//0ecyDkAAAAGSURBVAMAJNgPWPiA8oYAAAAASUVORK5CYII=");
+  background-size: 18px 18px;
+}
+
+.comparison-spectrum-Button-progressCircle svg {
+  inline-size: 100%;
+  block-size: 100%;
+  visibility: hidden;
+}
+
+.comparison-spectrum-Button-progressCircle circle {
+  fill: none;
+  stroke-width: 2px;
+}
+
+.comparison-spectrum-Button-progressCircleTrackTransparent {
+  stroke: transparent;
+}
+
+.comparison-spectrum-Button-progressCircleTrack {
+  stroke: #393939;
+}
+
+.comparison-spectrum-Button-progressCircleFill {
+  stroke: #5681ff;
+  transform-origin: center;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton,
