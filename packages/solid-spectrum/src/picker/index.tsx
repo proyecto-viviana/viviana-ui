@@ -1,7 +1,3 @@
-/**
- * Picker module compatibility entrypoint for proyecto-viviana-solid-spectrum.
- */
-
 export {
   Select as Picker,
   SelectTrigger as PickerTrigger,

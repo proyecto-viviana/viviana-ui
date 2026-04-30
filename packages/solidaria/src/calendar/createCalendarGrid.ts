@@ -9,10 +9,6 @@ import { createMemo } from "solid-js";
 import { type MaybeAccessor } from "../utils/reactivity";
 import type { CalendarState, CalendarDate } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaCalendarGridProps {
   /** The start date of the grid (defaults to start of focused month). */
   startDate?: CalendarDate;
@@ -30,10 +26,6 @@ export interface CalendarGridAria {
   /** Week day labels for the header. */
   weekDays: string[];
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a calendar grid.

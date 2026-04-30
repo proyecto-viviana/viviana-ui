@@ -11,10 +11,6 @@ import { type JSX, createMemo } from "solid-js";
 import { type ToastState } from "@proyecto-viviana/solid-stately";
 import { createHover } from "../interactions/createHover";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaToastRegionProps<T> {
   /** The toast state from createToastState. */
   state: ToastState<T>;
@@ -26,10 +22,6 @@ export interface ToastRegionAria {
   /** Props for the toast region container element. */
   regionProps: JSX.HTMLAttributes<HTMLElement>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the accessibility implementation for a ToastRegion component.

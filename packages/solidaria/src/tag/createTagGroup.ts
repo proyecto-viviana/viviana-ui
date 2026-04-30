@@ -16,10 +16,6 @@ import { createId } from "../ssr";
 import { access, type MaybeAccessor } from "../utils/reactivity";
 import type { ListState, Key } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaTagGroupProps {
   /** An ID for the tag group. */
   id?: string;
@@ -63,10 +59,6 @@ interface TagGroupData {
 export function getTagGroupData(state: ListState): TagGroupData | undefined {
   return tagGroupData.get(state);
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a tag group component.

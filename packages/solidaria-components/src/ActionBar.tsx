@@ -28,10 +28,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ActionBarRenderProps {
   /** Whether the action bar is visible. */
   isOpen: boolean;
@@ -60,10 +56,6 @@ export interface ActionBarProps extends SlotProps {
   onKeyDown?: JSX.EventHandlerUnion<HTMLDivElement, KeyboardEvent>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export interface ActionBarContextValue {
   selectedItemCount: () => number | "all";
   onClearSelection: () => void;
@@ -75,10 +67,6 @@ export const ActionBarContext = createContext<ActionBarContextValue | null>(null
 export function useActionBarContext(): ActionBarContextValue | null {
   return useContext(ActionBarContext);
 }
-
-// ============================================
-// ACTIONBAR COMPONENT
-// ============================================
 
 export function ActionBar(props: ActionBarProps): JSX.Element {
   const [local, domProps] = splitProps(props, [
@@ -175,10 +163,6 @@ export function ActionBar(props: ActionBarProps): JSX.Element {
   );
 }
 
-// ============================================
-// ACTIONBAR CONTAINER
-// ============================================
-
 export interface ActionBarContainerProps extends ParentProps {
   class?: string;
   style?: JSX.CSSProperties;
@@ -197,10 +181,6 @@ export function ActionBarContainer(props: ActionBarContainerProps): JSX.Element 
     </div>
   );
 }
-
-// ============================================
-// SELECTION COUNT
-// ============================================
 
 export interface ActionBarSelectionCountProps {
   class?: string;
@@ -222,10 +202,6 @@ export function ActionBarSelectionCount(props: ActionBarSelectionCountProps): JS
 
   return <span class={props.class}>{text()}</span>;
 }
-
-// ============================================
-// CLEAR BUTTON
-// ============================================
 
 export interface ActionBarClearButtonProps {
   class?: string;

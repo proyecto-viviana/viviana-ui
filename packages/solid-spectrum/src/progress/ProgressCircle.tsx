@@ -1,18 +1,8 @@
-/**
- * ProgressCircle component for proyecto-viviana-solid-spectrum
- *
- * A circular SVG progress indicator.
- */
-
 import { type JSX, splitProps, Show } from "solid-js";
 import {
   ProgressBar as HeadlessProgressBar,
   type ProgressBarRenderProps,
 } from "@proyecto-viviana/solidaria-components";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type ProgressCircleSize = "sm" | "md" | "lg";
 export type ProgressCircleVariant = "primary" | "accent";
@@ -36,10 +26,6 @@ export interface ProgressCircleProps {
   "aria-label"?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeConfig: Record<ProgressCircleSize, { size: number; stroke: number }> = {
   sm: { size: 24, stroke: 3 },
   md: { size: 36, stroke: 3 },
@@ -50,10 +36,6 @@ const variantColors: Record<ProgressCircleVariant, string> = {
   primary: "stroke-primary-400",
   accent: "stroke-accent",
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A circular progress indicator using SVG.

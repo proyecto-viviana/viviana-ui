@@ -1,13 +1,3 @@
-/**
- * GridList component for proyecto-viviana-solid-spectrum
- *
- * Styled grid list component built on top of solidaria-components.
- * Inspired by Spectrum 2's GridList component patterns.
- *
- * GridList is similar to ListBox but supports interactive elements within items
- * and uses grid keyboard navigation.
- */
-
 import { type JSX, splitProps, createContext, createMemo, useContext, Show } from "solid-js";
 import {
   GridList as HeadlessGridList,
@@ -19,10 +9,6 @@ import {
   type GridListItemRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import type { Key } from "@proyecto-viviana/solid-stately";
-
-// ============================================
-// SIZE CONTEXT
-// ============================================
 
 export type GridListSize = "sm" | "md" | "lg";
 export type GridListVariant = "default" | "cards" | "bordered";
@@ -39,10 +25,6 @@ const GridListSizeContext = createContext<GridListContextValue>({
   variant: "default",
   layout: "list",
 });
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface GridListProps<T extends object> extends Omit<
   HeadlessGridListProps<T>,
@@ -84,10 +66,6 @@ export interface GridListItemProps<T extends object> extends Omit<
   /** Alt text for the image. */
   imageAlt?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -140,15 +118,10 @@ const variantStyles = {
   },
 };
 
-// ============================================
-// GRID LIST COMPONENT
-// ============================================
-
 /**
  * A grid list displays a list of interactive items, with support for
  * keyboard navigation, single or multiple selection, and row actions.
  *
- * Built on solidaria-components GridList for full accessibility support.
  *
  * @example
  * ```tsx
@@ -249,10 +222,6 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
   );
 }
 
-// ============================================
-// GRID LIST ITEM COMPONENT
-// ============================================
-
 /**
  * An item in a grid list.
  */
@@ -347,10 +316,6 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
   );
 }
 
-// ============================================
-// GRID LIST SELECTION CHECKBOX COMPONENT
-// ============================================
-
 /**
  * A styled checkbox for item selection in a grid list.
  */
@@ -365,10 +330,6 @@ export function GridListSelectionCheckbox(props: { itemKey: Key; class?: string 
     </span>
   );
 }
-
-// ============================================
-// ICONS
-// ============================================
 
 function CheckIcon(props: { class?: string }): JSX.Element {
   return (
@@ -396,9 +357,7 @@ function EmptyIcon(props: { class?: string }): JSX.Element {
   );
 }
 
-// Attach sub-components for convenience
 GridList.Item = GridListItem;
 GridList.SelectionCheckbox = GridListSelectionCheckbox;
 
-// Re-export Key type for convenience
 export type { Key };

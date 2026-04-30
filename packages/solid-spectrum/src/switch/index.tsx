@@ -1,12 +1,3 @@
-/**
- * Switch components for proyecto-viviana-solid-spectrum
- *
- * This file exports:
- * - ToggleSwitch: The primary switch component built on solidaria-components
- *                 (named to avoid conflict with SolidJS's built-in Switch)
- * - TabSwitch: A styled two-option selector composed with headless toggle primitives
- */
-
 import { type JSX, createMemo } from "solid-js";
 import type { Key } from "@proyecto-viviana/solid-stately";
 import {
@@ -14,7 +5,6 @@ import {
   ToggleButton as HeadlessToggleButton,
 } from "@proyecto-viviana/solidaria-components";
 
-// Re-export ToggleSwitch (the solidaria-components based switch)
 export {
   ToggleSwitch,
   ToggleSwitch as Switch,
@@ -22,10 +12,6 @@ export {
   type ToggleSwitchProps as SwitchProps,
   type SwitchSize,
 } from "./ToggleSwitch";
-
-// ============================================
-// TAB SWITCH (Two-option selector)
-// ============================================
 
 interface SwitchOption {
   label: string;

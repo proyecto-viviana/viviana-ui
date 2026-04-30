@@ -18,10 +18,6 @@ import { createId } from "../ssr";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 import { type RadioGroupState, type ValidityState } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaRadioGroupProps {
   /** The content to display as the label. */
   label?: JSX.Element;
@@ -92,10 +88,6 @@ interface RadioGroupData {
 }
 
 export const radioGroupData: WeakMap<RadioGroupState, RadioGroupData> = new WeakMap();
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a radio group component.

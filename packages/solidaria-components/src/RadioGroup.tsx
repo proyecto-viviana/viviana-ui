@@ -46,10 +46,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
 
 function assignRef<T>(ref: RefLike<T>, el: T): void {
@@ -177,10 +173,6 @@ export interface RadioProps extends Omit<AriaRadioProps, "children">, SlotProps 
   onHoverChange?: (isHovered: boolean) => void;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export interface RadioGroupContextValue extends RadioGroupProps {
   slots?: Record<string, RadioGroupProps>;
 }
@@ -190,10 +182,6 @@ export interface RadioContextValue extends RadioProps {
   slots?: Record<string, RadioProps>;
 }
 export const RadioContext = createContext<RadioContextValue | null>(null);
-
-// ============================================
-// RADIO GROUP COMPONENT
-// ============================================
 
 /**
  * A radio group allows a user to select a single item from a list of mutually exclusive options.
@@ -436,10 +424,6 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
     </RadioGroupStateContext.Provider>
   );
 }
-
-// ============================================
-// RADIO COMPONENT
-// ============================================
 
 /**
  * Internal Radio implementation that has access to RadioGroupStateContext.

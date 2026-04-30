@@ -15,10 +15,6 @@
 import { type Accessor, createSignal, createEffect, onCleanup } from "solid-js";
 import { isServer } from "solid-js/web";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface VirtualFocusOptions<T> {
   /**
    * The items in the collection.
@@ -118,15 +114,7 @@ export interface VirtualFocusResult<T> {
   };
 }
 
-// ============================================
-// CONSTANTS
-// ============================================
-
 const DEFAULT_PAGE_SIZE = 10;
-
-// ============================================
-// HOOK
-// ============================================
 
 /**
  * Creates virtual focus management for a collection.

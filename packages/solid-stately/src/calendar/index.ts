@@ -34,7 +34,6 @@ export {
   type TimeValue,
 } from "./createTimeFieldState";
 
-// Re-export date types from @internationalized/date
 export type {
   CalendarDate,
   CalendarDateTime,
@@ -43,7 +42,6 @@ export type {
   Time,
 } from "@internationalized/date";
 
-// Re-export commonly used date utilities
 export {
   today,
   now,

@@ -43,10 +43,6 @@ import {
   useIsHydrated,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface CalendarRenderProps {
   /** Whether the calendar is disabled. */
   isDisabled: boolean;
@@ -137,10 +133,6 @@ export interface CalendarGridBodyProps extends SlotProps {
   style?: JSX.CSSProperties;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const CalendarContext = createContext<CalendarState<DateValue> | null>(null);
 const CalendarGridMonthContext = createContext<CalendarDate | null>(null);
 
@@ -151,10 +143,6 @@ export function useCalendarContext(): CalendarState<DateValue> {
   }
   return context;
 }
-
-// ============================================
-// CALENDAR COMPONENT
-// ============================================
 
 /**
  * A calendar displays a grid of days in a month and allows users to select a single date.
@@ -317,10 +305,6 @@ function CalendarInner<T extends DateValue = CalendarDate>(props: CalendarProps<
   );
 }
 
-// ============================================
-// CALENDAR HEADING COMPONENT
-// ============================================
-
 export interface CalendarHeadingProps extends SlotProps {
   /** The CSS className for the element. */
   class?: string;
@@ -340,10 +324,6 @@ export function CalendarHeading(props: CalendarHeadingProps): JSX.Element {
     </h2>
   );
 }
-
-// ============================================
-// CALENDAR BUTTON COMPONENT
-// ============================================
 
 export interface CalendarButtonProps extends SlotProps {
   /** The slot for this button (previous or next). */
@@ -383,10 +363,6 @@ export function CalendarButton(props: CalendarButtonProps): JSX.Element {
     </button>
   );
 }
-
-// ============================================
-// CALENDAR GRID COMPONENT
-// ============================================
 
 /**
  * Displays a grid of calendar cells.
@@ -504,10 +480,6 @@ export function CalendarHeaderCell(props: CalendarHeaderCellProps): JSX.Element 
   );
 }
 
-// ============================================
-// CALENDAR CELL COMPONENT
-// ============================================
-
 /**
  * A cell in the calendar grid representing a single day.
  */
@@ -581,5 +553,4 @@ export function CalendarCell(props: CalendarCellProps): JSX.Element {
   );
 }
 
-// Re-export types
 export type { CalendarState, CalendarDate, DateValue };

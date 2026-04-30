@@ -11,10 +11,6 @@ import { access, type MaybeAccessor } from "../utils/reactivity";
 import { mergeProps } from "../utils/mergeProps";
 import type { RangeCalendarState } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaRangeCalendarProps {
   /** An ID for the calendar. */
   id?: string;
@@ -42,10 +38,6 @@ export interface RangeCalendarAria {
   /** An accessible label for the title. */
   title: string;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a range calendar component.

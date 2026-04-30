@@ -1,10 +1,3 @@
-/**
- * ListBox component for proyecto-viviana-solid-spectrum
- *
- * Styled listbox component built on top of solidaria-components.
- * Inspired by Spectrum 2's ListBox component patterns.
- */
-
 import { type JSX, splitProps, createContext, useContext, Show, createUniqueId } from "solid-js";
 import {
   ListBox as HeadlessListBox,
@@ -19,17 +12,9 @@ import {
 import type { Key } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// SIZE CONTEXT
-// ============================================
-
 export type ListBoxSize = "sm" | "md" | "lg";
 
 const ListBoxSizeContext = createContext<ListBoxSize>("md");
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface ListBoxProps<T> extends Omit<HeadlessListBoxProps<T>, "class" | "style"> {
   /** The size of the listbox. */
@@ -62,10 +47,6 @@ export interface ListBoxSectionProps extends Omit<HeadlessListBoxSectionProps, "
   class?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     list: "py-1",
@@ -90,14 +71,9 @@ const sizeStyles = {
   },
 };
 
-// ============================================
-// LISTBOX COMPONENT
-// ============================================
-
 /**
  * A listbox displays a list of options and allows a user to select one or more of them.
  *
- * Built on solidaria-components ListBox for full accessibility support.
  */
 export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   const mergedProps = useProviderProps(props);
@@ -181,10 +157,6 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   );
 }
 
-// ============================================
-// LISTBOX OPTION COMPONENT
-// ============================================
-
 /**
  * An option in a listbox.
  * SSR-compatible - renders icon, check, content, and description directly without render props.
@@ -248,10 +220,6 @@ export function ListBoxSection(props: ListBoxSectionProps): JSX.Element {
   );
 }
 
-// ============================================
-// ICONS
-// ============================================
-
 function CheckIcon(props: { class?: string }): JSX.Element {
   return (
     <svg class={props.class} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -260,7 +228,6 @@ function CheckIcon(props: { class?: string }): JSX.Element {
   );
 }
 
-// Attach sub-components for convenience
 ListBox.Option = ListBoxOption;
 ListBox.Section = ListBoxSection;
 
@@ -268,5 +235,4 @@ export const Item = ListBoxOption;
 export const Section = ListBoxSection;
 export const ListBoxBase = ListBox;
 
-// Re-export Key type for convenience
 export type { Key };

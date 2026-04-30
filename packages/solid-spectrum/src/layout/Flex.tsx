@@ -1,14 +1,4 @@
-/**
- * Flex component for proyecto-viviana-solid-spectrum
- *
- * A styled flex container with gap, direction, wrap, align, and justify props.
- */
-
 import { type JSX, splitProps } from "solid-js";
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface FlexProps {
   /** The flex direction. @default 'row' */
@@ -28,10 +18,6 @@ export interface FlexProps {
   /** The content. */
   children?: JSX.Element;
 }
-
-// ============================================
-// HELPERS
-// ============================================
 
 const directionMap: Record<string, string> = {
   row: "flex-row",
@@ -56,10 +42,6 @@ const justifyMap: Record<string, string> = {
   around: "justify-around",
   evenly: "justify-evenly",
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A flex container layout component.

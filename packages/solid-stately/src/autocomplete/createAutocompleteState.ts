@@ -7,10 +7,6 @@
 import { createSignal, type Accessor } from "solid-js";
 import { access, type MaybeAccessor } from "../utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AutocompleteState {
   /** The current value of the autocomplete input. */
   inputValue: Accessor<string>;
@@ -30,10 +26,6 @@ export interface AutocompleteStateOptions {
   /** Handler that is called when the autocomplete input value changes. */
   onInputChange?: (value: string) => void;
 }
-
-// ============================================
-// CREATE AUTOCOMPLETE STATE
-// ============================================
 
 /**
  * Provides state management for an autocomplete component.

@@ -11,10 +11,6 @@ import { type TooltipTriggerState } from "@proyecto-viviana/solid-stately";
 import { createHover } from "../interactions/createHover";
 import { filterDOMProps, mergeProps } from "../utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TooltipProps {
   /** Whether the tooltip is disabled. */
   isDisabled?: boolean;
@@ -30,10 +26,6 @@ export interface TooltipAria {
   /** Props to spread on the tooltip element. */
   tooltipProps: JSX.HTMLAttributes<HTMLElement>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the accessibility implementation for a Tooltip component.

@@ -19,10 +19,6 @@ import { type MaybeAccessor, access } from "../utils/reactivity";
 import { isTestEnv } from "../utils/env";
 import { createGlobalListeners, nodeContains } from "../utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface HoverEvent {
   /** The type of hover event being fired. */
   type: "hoverstart" | "hoverend";
@@ -63,10 +59,6 @@ export interface HoverResult {
   /** Whether the element is currently hovered. */
   isHovered: Accessor<boolean>;
 }
-
-// ============================================
-// GLOBAL STATE
-// ============================================
 
 // iOS fires onPointerEnter twice: once with pointerType="touch" and again with pointerType="mouse".
 // We want to ignore these emulated events so they do not trigger hover behavior.
@@ -113,10 +105,6 @@ function setupGlobalTouchEvents() {
     }
   };
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Handles pointer hover interactions for an element.

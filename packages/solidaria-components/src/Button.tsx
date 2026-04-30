@@ -25,10 +25,6 @@ import {
 } from "./utils";
 import { DialogTriggerContext, PopoverTriggerContext } from "./contexts";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ButtonRenderProps {
   /** Whether the button is currently hovered with a mouse. */
   isHovered: boolean;
@@ -66,19 +62,11 @@ export interface ButtonProps extends Omit<AriaButtonProps, "children">, SlotProp
   onHoverChange?: (isHovered: boolean) => void;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export interface ButtonContextValue extends ButtonProps {
   slots?: Record<string, ButtonProps>;
 }
 
 export const ButtonContext = createContext<ButtonContextValue | null>(null);
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A button allows a user to perform an action.

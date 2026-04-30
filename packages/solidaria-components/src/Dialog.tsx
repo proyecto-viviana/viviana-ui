@@ -32,10 +32,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface DialogRenderProps {
   /** Function to close the dialog */
   close: () => void;
@@ -63,10 +59,6 @@ export interface DialogTriggerProps {
   onOpenChange?: (isOpen: boolean) => void;
 }
 
-// ============================================
-// CONTEXTS
-// ============================================
-
 interface DialogContextValue {
   close: () => void;
   titleId?: string;
@@ -74,12 +66,7 @@ interface DialogContextValue {
 
 export const DialogContext = createContext<DialogContextValue | null>(null);
 
-// Re-export DialogTriggerContext from shared contexts (also imported above for local use)
 export { DialogTriggerContext, useDialogTrigger } from "./contexts";
-
-// ============================================
-// DIALOG TRIGGER COMPONENT
-// ============================================
 
 /**
  * A DialogTrigger opens a dialog when a trigger element is pressed.
@@ -129,10 +116,6 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
     </DialogTriggerContext.Provider>
   );
 }
-
-// ============================================
-// DIALOG COMPONENT
-// ============================================
 
 /**
  * A dialog is an overlay shown above other content in an application.
@@ -230,10 +213,6 @@ export function Dialog(props: DialogProps): JSX.Element {
     </DialogContext.Provider>
   );
 }
-
-// ============================================
-// HEADING COMPONENT
-// ============================================
 
 export interface HeadingProps {
   /** The children of the heading. */

@@ -1,13 +1,3 @@
-/**
- * Tree component for proyecto-viviana-solid-spectrum
- *
- * Styled tree component built on top of solidaria-components.
- * Inspired by Spectrum 2's Tree component patterns.
- *
- * Tree displays hierarchical data with expandable/collapsible nodes,
- * supporting keyboard navigation and selection.
- */
-
 import { type JSX, splitProps, createContext, createMemo, useContext, Show } from "solid-js";
 import {
   Tree as HeadlessTree,
@@ -27,10 +17,6 @@ import {
 import type { Key, TreeItemData } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// SIZE CONTEXT
-// ============================================
-
 export type TreeSize = "sm" | "md" | "lg";
 export type TreeVariant = "default" | "bordered" | "quiet";
 
@@ -40,10 +26,6 @@ interface TreeContextValue {
 }
 
 const TreeSizeContext = createContext<TreeContextValue>({ size: "md", variant: "default" });
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface TreeProps<T extends object> extends Omit<HeadlessTreeProps<T>, "class" | "style"> {
   /** The size of the tree. */
@@ -88,10 +70,6 @@ export interface TreeItemContentProps extends Omit<
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -147,15 +125,10 @@ const variantStyles = {
   },
 };
 
-// ============================================
-// TREE COMPONENT
-// ============================================
-
 /**
  * A tree displays hierarchical data with expandable/collapsible nodes,
  * supporting keyboard navigation and selection.
  *
- * Built on solidaria-components Tree for full accessibility support.
  *
  * @example
  * ```tsx
@@ -250,10 +223,6 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     </TreeSizeContext.Provider>
   );
 }
-
-// ============================================
-// TREE ITEM COMPONENT
-// ============================================
 
 /**
  * An item in a tree.
@@ -353,10 +322,6 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
   );
 }
 
-// ============================================
-// TREE EXPAND BUTTON COMPONENT
-// ============================================
-
 /**
  * A button to expand/collapse a tree item.
  */
@@ -405,10 +370,6 @@ export function TreeItemContent(props: TreeItemContentProps): JSX.Element {
   );
 }
 
-// ============================================
-// TREE SELECTION CHECKBOX COMPONENT
-// ============================================
-
 /**
  * A styled checkbox for item selection in a tree.
  */
@@ -423,10 +384,6 @@ export function TreeSelectionCheckbox(props: { itemKey: Key; class?: string }): 
     </span>
   );
 }
-
-// ============================================
-// ICONS
-// ============================================
 
 function ChevronIcon(props: { class?: string }): JSX.Element {
   return (
@@ -506,7 +463,6 @@ function EmptyTreeIcon(props: { class?: string }): JSX.Element {
   );
 }
 
-// Attach sub-components for convenience
 Tree.Item = TreeItem;
 Tree.Content = TreeItemContent;
 Tree.ExpandButton = TreeExpandButton;
@@ -517,5 +473,4 @@ export const TreeViewItem = TreeItem;
 export const TreeViewItemContent = TreeItemContent;
 export { Collection } from "@proyecto-viviana/solidaria-components";
 
-// Re-export types for convenience
 export type { Key, TreeItemData, TreeRenderItemState };

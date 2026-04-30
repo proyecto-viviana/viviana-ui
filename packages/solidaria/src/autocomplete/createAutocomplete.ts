@@ -11,10 +11,6 @@ import { createSignal, createEffect, onCleanup, type Accessor } from "solid-js";
 import { createId, getOwnerDocument } from "../ssr";
 import { type AutocompleteState } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface CollectionOptions {
   /** The id of the collection element. */
   id?: string;
@@ -105,17 +101,9 @@ function toKeyboardEventInit(e: KeyboardEvent): KeyboardEventInit {
   };
 }
 
-// ============================================
-// CONSTANTS
-// ============================================
-
 // Custom event names for collection communication
 export const AUTOCOMPLETE_FOCUS_EVENT = "autocomplete:focus";
 export const AUTOCOMPLETE_CLEAR_FOCUS_EVENT = "autocomplete:clearfocus";
-
-// ============================================
-// CREATE AUTOCOMPLETE HOOK
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for an autocomplete component.

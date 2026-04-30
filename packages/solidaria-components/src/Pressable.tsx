@@ -19,20 +19,12 @@ import {
   type CreateFocusableProps,
 } from "@proyecto-viviana/solidaria";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface PressableProps extends CreatePressProps {
   /** A single child element to make pressable. */
   children: JSX.Element;
   /** Ref callback. */
   ref?: HTMLElement | ((el: HTMLElement) => void);
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * Makes its child element pressable and focusable.

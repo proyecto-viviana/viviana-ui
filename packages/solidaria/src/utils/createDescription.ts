@@ -26,24 +26,12 @@
 import { createSignal, createEffect, onCleanup, type Accessor } from "solid-js";
 import { isServer } from "solid-js/web";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface DescriptionProps {
   "aria-describedby"?: string;
 }
 
-// ============================================
-// STATE
-// ============================================
-
 let descriptionId = 0;
 const descriptionNodes = new Map<string, { refCount: number; element: Element }>();
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Creates an invisible description element and returns aria-describedby props.

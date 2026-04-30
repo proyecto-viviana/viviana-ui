@@ -56,10 +56,6 @@ export {
   type SelectionIndicatorRenderProps,
 } from "./SelectionIndicator";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TabsRenderProps {
   /** The orientation of the tabs. */
   orientation: TabOrientation;
@@ -181,10 +177,6 @@ export interface TabPanelsProps extends SlotProps {
   style?: JSX.CSSProperties;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface TabsContextValue<T> {
   state: TabListState<T>;
   items: Accessor<T[]>;
@@ -192,10 +184,6 @@ interface TabsContextValue<T> {
 
 export const TabsContext = createContext<TabsContextValue<unknown> | null>(null);
 export const TabsStateContext = createContext<TabListState<unknown> | null>(null);
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * Tabs provide a way to organize content into multiple sections, with only one section visible at a time.
@@ -675,7 +663,6 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
   );
 }
 
-// Attach sub-components
 Tabs.List = TabList;
 Tabs.Tab = Tab;
 Tabs.Panels = TabPanels;

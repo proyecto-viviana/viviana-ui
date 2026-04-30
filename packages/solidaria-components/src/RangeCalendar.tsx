@@ -43,10 +43,6 @@ import {
   useIsHydrated,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface RangeCalendarRenderProps {
   /** Whether the calendar is disabled. */
   isDisabled: boolean;
@@ -122,10 +118,6 @@ export interface RangeCalendarCellProps extends SlotProps {
   style?: StyleOrFunction<RangeCalendarCellRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const RangeCalendarContext = createContext<RangeCalendarState<DateValue> | null>(null);
 export const RangeCalendarStateContext = createContext<RangeCalendarState<DateValue> | null>(null);
 const RangeCalendarGridMonthContext = createContext<CalendarDate | null>(null);
@@ -137,10 +129,6 @@ export function useRangeCalendarContext(): RangeCalendarState<DateValue> {
   }
   return context;
 }
-
-// ============================================
-// RANGE CALENDAR COMPONENT
-// ============================================
 
 /**
  * A range calendar displays a grid of days and allows users to select a contiguous range of dates.
@@ -251,10 +239,6 @@ function RangeCalendarInner<T extends DateValue = CalendarDate>(
   );
 }
 
-// ============================================
-// RANGE CALENDAR HEADING COMPONENT
-// ============================================
-
 export interface RangeCalendarHeadingProps extends SlotProps {
   /** The CSS className for the element. */
   class?: string;
@@ -278,10 +262,6 @@ export function RangeCalendarHeading(props: RangeCalendarHeadingProps): JSX.Elem
     </h2>
   );
 }
-
-// ============================================
-// RANGE CALENDAR BUTTON COMPONENT
-// ============================================
 
 export interface RangeCalendarButtonProps extends SlotProps {
   /** The slot for this button (previous or next). */
@@ -321,10 +301,6 @@ export function RangeCalendarButton(props: RangeCalendarButtonProps): JSX.Elemen
     </button>
   );
 }
-
-// ============================================
-// RANGE CALENDAR GRID COMPONENT
-// ============================================
 
 /**
  * Displays a grid of range calendar cells.
@@ -416,10 +392,6 @@ export function RangeCalendarGrid(props: RangeCalendarGridProps): JSX.Element {
   );
 }
 
-// ============================================
-// RANGE CALENDAR CELL COMPONENT
-// ============================================
-
 /**
  * A cell in the range calendar grid representing a single day.
  */
@@ -497,5 +469,4 @@ export function RangeCalendarCell(props: RangeCalendarCellProps): JSX.Element {
   );
 }
 
-// Re-export types
 export type { RangeCalendarState, RangeValue };

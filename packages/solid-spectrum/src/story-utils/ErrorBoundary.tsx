@@ -1,14 +1,4 @@
-/**
- * ErrorBoundary component for proyecto-viviana-solid-spectrum
- *
- * A styled error boundary for use in stories and development.
- */
-
 import { type JSX, ErrorBoundary as SolidErrorBoundary } from "solid-js";
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface StoryErrorBoundaryProps {
   /** The content to render. */
@@ -16,10 +6,6 @@ export interface StoryErrorBoundaryProps {
   /** Custom fallback component. */
   fallback?: (err: Error, reset: () => void) => JSX.Element;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A styled error boundary that catches and displays errors in stories.

@@ -1,13 +1,3 @@
-/**
- * ToggleSwitch component for proyecto-viviana-solid-spectrum
- *
- * A styled switch component built on top of solidaria-components.
- * This component only handles styling - all behavior and accessibility
- * is provided by the headless Switch from solidaria-components.
- *
- * Named "ToggleSwitch" to avoid conflict with SolidJS's built-in Switch component.
- */
-
 import { type JSX, splitProps, mergeProps as solidMergeProps } from "solid-js";
 import {
   ToggleSwitch as HeadlessToggleSwitch,
@@ -15,10 +5,6 @@ import {
   type ToggleSwitchRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type SwitchSize = "sm" | "md" | "lg";
 
@@ -30,10 +16,6 @@ export interface ToggleSwitchProps extends Omit<HeadlessToggleSwitchProps, "clas
   /** Label text for the switch. */
   children?: JSX.Element;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -53,14 +35,9 @@ const sizeStyles = {
   },
 };
 
-// ============================================
-// COMPONENT
-// ============================================
-
 /**
  * A switch allows users to toggle between two mutually exclusive states.
  *
- * Built on solidaria-components Switch for full accessibility support.
  * Named "ToggleSwitch" to avoid conflict with SolidJS's built-in Switch component.
  */
 export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
@@ -75,7 +52,6 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
 
   const size = () => sizeStyles[local.size!];
 
-  // Generate class based on render props
   const getClassName = (renderProps: ToggleSwitchRenderProps): string => {
     const base = "inline-flex items-center gap-2 cursor-pointer";
     const disabledClass = renderProps.isDisabled ? "cursor-not-allowed opacity-50" : "";

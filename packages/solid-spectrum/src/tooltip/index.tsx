@@ -1,10 +1,3 @@
-/**
- * Tooltip component for proyecto-viviana-solid-spectrum
- *
- * A tooltip displays a description of an element on hover or focus.
- * Built on top of solidaria-components for accessibility.
- */
-
 import { type JSX, Show, splitProps } from "solid-js";
 import {
   Tooltip as HeadlessTooltip,
@@ -13,10 +6,6 @@ import {
   type TooltipTriggerComponentProps as HeadlessTooltipTriggerProps,
   type TooltipRenderProps,
 } from "@proyecto-viviana/solidaria-components";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type TooltipPlacement = "top" | "bottom" | "left" | "right";
 export type TooltipVariant = "default" | "neutral" | "info";
@@ -38,10 +27,6 @@ export interface TooltipProps extends Omit<HeadlessTooltipProps, "class" | "styl
   /** Whether to show an arrow pointing to the trigger. */
   showArrow?: boolean;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 // Note: Position is now calculated by the headless layer (solidaria-components)
 // so we don't need CSS positioning classes here
@@ -77,10 +62,6 @@ const getArrowBorderColor = (variant: TooltipVariant): string => {
   };
   return colors[variant];
 };
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * TooltipTrigger wraps around a trigger element and a Tooltip.
@@ -145,10 +126,6 @@ export function Tooltip(props: TooltipProps): JSX.Element {
   );
 }
 
-// ============================================
-// SIMPLE CSS-ONLY TOOLTIP (Legacy)
-// ============================================
-
 export interface SimpleTooltipProps {
   /** The content to show in the tooltip */
   label: string;
@@ -186,5 +163,4 @@ export function SimpleTooltip(props: SimpleTooltipProps): JSX.Element {
   );
 }
 
-// Re-export types
 export type { TooltipRenderProps };

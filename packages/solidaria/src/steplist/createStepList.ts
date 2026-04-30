@@ -7,10 +7,6 @@ import type { JSX } from "solid-js";
 import type { StepListState } from "@proyecto-viviana/solid-stately";
 import type { Key } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// createStepList
-// ============================================
-
 export interface AriaStepListProps {
   /** Accessible label for the step list. */
   "aria-label"?: string;
@@ -38,10 +34,6 @@ export function createStepList(props: AriaStepListProps, _state: StepListState):
     },
   };
 }
-
-// ============================================
-// createStep
-// ============================================
 
 export interface AriaStepProps {
   /** The key of this step. */

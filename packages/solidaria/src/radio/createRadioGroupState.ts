@@ -11,10 +11,6 @@ import { createSignal, Accessor, untrack } from "solid-js";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 import { createId } from "../ssr";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface RadioGroupProps {
   /** The current selected value (controlled). */
   value?: string | null;
@@ -78,10 +74,6 @@ export interface RadioGroupState {
   setLastFocusedValue(value: string | null): void;
 }
 
-// ============================================
-// INTERNAL: SolidJS-specific sync mechanism
-// ============================================
-
 /**
  * Internal WeakMap to store sync version accessors for each radio group state.
  * This is used by createRadio to trigger DOM sync when native radio behavior
@@ -91,10 +83,6 @@ export interface RadioGroupState {
  * @internal
  */
 export const radioGroupSyncVersion: WeakMap<RadioGroupState, Accessor<number>> = new WeakMap();
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides state management for a radio group component.

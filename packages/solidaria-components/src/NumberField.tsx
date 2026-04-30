@@ -23,10 +23,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface NumberFieldRenderProps {
   /** Whether the number field is disabled. */
   isDisabled: boolean;
@@ -114,10 +110,6 @@ export interface NumberFieldDecrementButtonProps extends SlotProps {
   style?: StyleOrFunction<NumberFieldButtonRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface NumberFieldContextValue {
   state: NumberFieldState;
   inputProps: JSX.InputHTMLAttributes<HTMLInputElement>;
@@ -136,10 +128,6 @@ interface NumberFieldContextValue {
 
 export const NumberFieldContext = createContext<NumberFieldContextValue | null>(null);
 export const NumberFieldStateContext = createContext<NumberFieldState | null>(null);
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A number field allows a user to enter a number and increment/decrement the value.
@@ -664,7 +652,6 @@ export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProp
   );
 }
 
-// Attach sub-components
 NumberField.Label = NumberFieldLabel;
 NumberField.Group = NumberFieldGroup;
 NumberField.Input = NumberFieldInput;

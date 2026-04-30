@@ -9,10 +9,6 @@ import type { JSX } from "solid-js";
 import { access, type MaybeAccessor } from "../utils";
 import { filterDOMProps } from "../utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type Orientation = "horizontal" | "vertical";
 
 export interface AriaSeparatorProps {
@@ -38,10 +34,6 @@ export interface SeparatorAria {
   /** Props for the separator element. */
   separatorProps: JSX.HTMLAttributes<HTMLElement>;
 }
-
-// ============================================
-// CREATE SEPARATOR
-// ============================================
 
 /**
  * Provides the accessibility implementation for a separator.

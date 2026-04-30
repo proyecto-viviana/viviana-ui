@@ -1,7 +1,3 @@
-/**
- * DatePicker module compatibility entrypoint for proyecto-viviana-solid-spectrum.
- */
-
 export { DatePicker } from "../calendar/DatePicker";
 export type { DatePickerProps, DatePickerSize } from "../calendar/DatePicker";
 

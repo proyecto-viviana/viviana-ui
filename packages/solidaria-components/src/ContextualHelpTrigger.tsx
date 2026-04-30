@@ -15,10 +15,6 @@ import {
   createUniqueId,
 } from "solid-js";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ContextualHelpTriggerProps extends Omit<
   JSX.ButtonHTMLAttributes<HTMLButtonElement>,
   "class" | "children"
@@ -41,10 +37,6 @@ export interface ContextualHelpTriggerRenderProps {
   isUnavailable: boolean;
   isDisabled: boolean;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A trigger that opens contextual help content.

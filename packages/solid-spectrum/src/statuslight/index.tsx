@@ -1,9 +1,3 @@
-/**
- * StatusLight component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only status indicator primitive.
- */
-
 import { type JSX, Show, splitProps } from "solid-js";
 
 export type StatusLightVariant = "neutral" | "positive" | "notice" | "negative" | "info";

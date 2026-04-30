@@ -1,14 +1,4 @@
-/**
- * Grid component for proyecto-viviana-solid-spectrum
- *
- * A styled CSS grid container with columns, rows, gap, and areas props.
- */
-
 import { type JSX, splitProps } from "solid-js";
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface GridProps {
   /** The number of columns, or a grid-template-columns value. */
@@ -36,10 +26,6 @@ export interface GridProps {
   /** The content. */
   children?: JSX.Element;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A CSS Grid layout component.

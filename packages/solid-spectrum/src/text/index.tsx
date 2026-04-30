@@ -1,9 +1,3 @@
-/**
- * Text component for proyecto-viviana-solid-spectrum
- *
- * Styling-only wrapper around solidaria-components Text.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Text as HeadlessText,

@@ -10,10 +10,6 @@
 import { createSignal, Accessor } from "solid-js";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface CheckboxGroupProps {
   /** The current selected values (controlled). */
   value?: string[];
@@ -70,10 +66,6 @@ export interface CheckboxGroupState {
   /** Toggles a value in the set of selected values. */
   toggleValue(value: string): void;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides state management for a checkbox group component.

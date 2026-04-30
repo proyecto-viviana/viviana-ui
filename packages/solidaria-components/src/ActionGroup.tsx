@@ -38,10 +38,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ActionGroupRenderProps {
   /** The orientation of the action group. */
   orientation: "horizontal" | "vertical";
@@ -98,20 +94,12 @@ export interface ActionGroupProps<T extends ActionGroupItem = ActionGroupItem> e
   style?: StyleOrFunction<ActionGroupRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export interface ActionGroupContextValue<T extends ActionGroupItem = ActionGroupItem> {
   state: ListState<T>;
 }
 
 export const ActionGroupContext = createContext<ActionGroupContextValue | null>(null);
 export const ActionGroupStateContext = createContext<ListState<ActionGroupItem> | null>(null);
-
-// ============================================
-// ACTIONGROUP COMPONENT
-// ============================================
 
 export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
   props: ActionGroupProps<T>,
@@ -239,10 +227,6 @@ export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
   );
 }
 
-// ============================================
-// INTERNAL ITEM WRAPPER
-// ============================================
-
 interface ActionGroupItemWrapperProps {
   item: ActionGroupItem;
   state: ListState<ActionGroupItem>;
@@ -287,10 +271,6 @@ function ActionGroupItemWrapper(props: ActionGroupItemWrapperProps): JSX.Element
     </button>
   );
 }
-
-// ============================================
-// HOOKS
-// ============================================
 
 export function useActionGroupContext(): ActionGroupContextValue | null {
   return useContext(ActionGroupContext);

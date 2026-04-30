@@ -10,10 +10,6 @@ import { useLocale } from "../i18n";
 import { access, type MaybeAccessor } from "../utils/reactivity";
 import type { TimeFieldState, TimeSegment, TimeSegmentType } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaTimeSegmentProps {
   /** The segment data. */
   segment: TimeSegment;
@@ -31,10 +27,6 @@ export interface TimeSegmentAria {
   /** The text to display. */
   text: string;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a time segment.
@@ -299,10 +291,6 @@ export function createTimeSegment<T extends TimeFieldState>(
     },
   };
 }
-
-// ============================================
-// HELPERS
-// ============================================
 
 type EditableTimeSegmentType = Exclude<TimeSegmentType, "literal">;
 

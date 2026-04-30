@@ -1,10 +1,3 @@
-/**
- * Provider component for proyecto-viviana-solid-spectrum
- *
- * Compound provider wrapping locale, modal, and theme context.
- * Modeled after React Spectrum's <Provider> behavior.
- */
-
 import {
   type JSX,
   type ParentProps,
@@ -25,10 +18,6 @@ import {
 import type { Theme } from "../theme/types";
 import { lightTheme } from "../theme-light";
 import { darkTheme } from "../theme-dark";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type ColorScheme = "light" | "dark";
 export type Scale = "medium" | "large";
@@ -85,10 +74,6 @@ export interface ProviderProps extends ParentProps, ProviderInheritedProps {
 interface InternalProviderContextValue extends ProviderContextValue {
   themeSource?: string | Theme;
 }
-
-// ============================================
-// CONTEXT
-// ============================================
 
 const defaultThemeContext: ThemeContextValue = {
   colorScheme: "light",
@@ -148,10 +133,6 @@ export function useProviderProps<T extends object>(props: T): T {
   ) as T;
 }
 
-// ============================================
-// THEME RESOLUTION
-// ============================================
-
 function getBuiltInTheme(colorScheme: ColorScheme): Theme {
   return colorScheme === "dark" ? darkTheme : lightTheme;
 }
@@ -194,10 +175,6 @@ function resolveTheme(
   };
 }
 
-// ============================================
-// INTERNAL COMPONENTS
-// ============================================
-
 interface ProviderRootProps {
   children: JSX.Element;
   class: string;
@@ -224,10 +201,6 @@ function ProviderRoot(props: ProviderRootProps): JSX.Element {
     </div>
   );
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * Root provider for proyecto-viviana UI.

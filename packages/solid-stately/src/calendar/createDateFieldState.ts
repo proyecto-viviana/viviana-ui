@@ -20,10 +20,6 @@ import {
 import { access, type MaybeAccessor } from "../utils";
 import type { ValidationState } from "./createCalendarState";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type DateSegmentType =
   | "year"
   | "month"
@@ -132,10 +128,6 @@ export interface DateFieldState<T extends DateValue = DateValue> {
   /** The time zone. */
   timeZone: string;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides state management for a date field component.
@@ -434,10 +426,6 @@ export function createDateFieldState<T extends DateValue = CalendarDate>(
     timeZone,
   };
 }
-
-// ============================================
-// HELPER TYPES & FUNCTIONS
-// ============================================
 
 interface DateParts {
   year?: number;

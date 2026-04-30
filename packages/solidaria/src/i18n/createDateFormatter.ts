@@ -10,10 +10,6 @@ import { createMemo } from "solid-js";
 import { useLocale } from "./locale";
 import { createCacheKey } from "./utils";
 
-// ============================================
-// CACHE
-// ============================================
-
 const dateFormatterCache = new Map<string, Intl.DateTimeFormat>();
 
 /**
@@ -33,10 +29,6 @@ function getCachedDateFormatter(
   dateFormatterCache.set(cacheKey, formatter);
   return formatter;
 }
-
-// ============================================
-// HOOK
-// ============================================
 
 /**
  * Provides localized date and time formatting for the current locale.

@@ -16,10 +16,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ProgressBarRenderProps {
   /** The value as a percentage between the minimum and maximum (0-100). */
   percentage: number | undefined;
@@ -38,15 +34,7 @@ export interface ProgressBarProps extends AriaProgressBarProps, SlotProps {
   style?: StyleOrFunction<ProgressBarRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const ProgressBarContext = createContext<ProgressBarProps | null>(null);
-
-// ============================================
-// UTILITIES
-// ============================================
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -56,10 +44,6 @@ function getSafeRange(min: number, max: number): number {
   const range = max - min;
   return Number.isFinite(range) && range > 0 ? range : 1;
 }
-
-// ============================================
-// PROGRESSBAR COMPONENT
-// ============================================
 
 /**
  * Progress bars show either determinate or indeterminate progress of an operation

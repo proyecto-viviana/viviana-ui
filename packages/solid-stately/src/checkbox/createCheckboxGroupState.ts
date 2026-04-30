@@ -16,10 +16,6 @@ import {
   type ValidationResult,
 } from "../form";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface CheckboxGroupProps {
   /** The current selected values (controlled). */
   value?: string[];
@@ -92,10 +88,6 @@ export interface CheckboxGroupState extends Pick<
   /** Current display validation result for the group. */
   readonly displayValidation: Accessor<ValidationResult>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides state management for a checkbox group component.

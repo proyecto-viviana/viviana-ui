@@ -63,10 +63,6 @@ import {
   useRenderDropIndicator,
 } from "./DragAndDrop";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface GridListRenderProps {
   /** Whether the grid list has focus. */
   isFocused: boolean;
@@ -168,10 +164,6 @@ export interface GridListHeaderProps extends SlotProps {
   style?: JSX.CSSProperties;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface GridListContextValue<T extends object> {
   state: GridState<T, GridCollection<T>>;
   collection: GridCollection<T>;
@@ -186,10 +178,6 @@ export const GridListStateContext = createContext<GridState<object, GridCollecti
   null,
 );
 export const GridListHeaderContext = createContext<null>(null);
-
-// ============================================
-// HELPER: Build GridCollection from items
-// ============================================
 
 function buildGridCollection<T extends object>(
   items: T[],
@@ -267,10 +255,6 @@ function buildGridCollection<T extends object>(
     },
   };
 }
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A grid list displays a list of interactive items, with support for

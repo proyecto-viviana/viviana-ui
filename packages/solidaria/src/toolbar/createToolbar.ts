@@ -11,10 +11,6 @@ import { useLocale } from "../i18n";
 import { getOwnerDocument, isFocusable } from "../utils";
 import { focusSafely } from "../utils/focus";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type Orientation = "horizontal" | "vertical";
 
 export interface AriaToolbarProps {
@@ -39,10 +35,6 @@ export interface ToolbarAria {
   /** The orientation of the toolbar. */
   orientation: Accessor<Orientation>;
 }
-
-// ============================================
-// FOCUS MANAGER FOR TOOLBAR
-// ============================================
 
 interface FocusManagerOptions {
   from?: Element;
@@ -249,10 +241,6 @@ function createFocusManager(ref: Accessor<HTMLElement | undefined>): FocusManage
     },
   };
 }
-
-// ============================================
-// CREATE TOOLBAR HOOK
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a toolbar.

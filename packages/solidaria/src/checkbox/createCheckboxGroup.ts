@@ -19,10 +19,6 @@ import {
   type ValidityState,
 } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaCheckboxGroupProps extends CheckboxGroupProps {
   /** Defines a string value that labels the current element. */
   "aria-label"?: string;
@@ -66,10 +62,6 @@ export const checkboxGroupData = new WeakMap<
     validationBehavior: "aria" | "native";
   }
 >();
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a checkbox group component.

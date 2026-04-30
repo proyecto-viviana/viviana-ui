@@ -21,10 +21,6 @@ import {
 } from "solid-js";
 import { isServer } from "solid-js/web";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface SSRProviderProps extends ParentProps {}
 
 export interface SSRContextValue {
@@ -34,18 +30,10 @@ export interface SSRContextValue {
   prefix: string;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 const SSRContext = createContext<SSRContextValue>({
   isSSR: isServer,
   prefix: "",
 });
-
-// ============================================
-// BASIC UTILITIES
-// ============================================
 
 /**
  * Returns whether the component is currently being server side rendered.
@@ -92,10 +80,6 @@ export function createId(defaultId?: string): string {
   return ctx.prefix ? `solidaria-${ctx.prefix}-${uniqueId}` : `solidaria-${uniqueId}`;
 }
 
-// ============================================
-// SSR PROVIDER
-// ============================================
-
 /**
  * Provides SSR context to the component tree.
  *
@@ -132,10 +116,6 @@ export function SSRProvider(props: SSRProviderProps & { prefix?: string }): JSX.
 
   return <SSRContext.Provider value={value()}>{props.children}</SSRContext.Provider>;
 }
-
-// ============================================
-// HYDRATION STATE
-// ============================================
 
 /**
  * Tracks whether the component is currently hydrating.
@@ -199,10 +179,6 @@ export function createHydrationState(): Accessor<boolean> {
 export function useIsSSR(): Accessor<boolean> {
   return createHydrationState();
 }
-
-// ============================================
-// SAFE BROWSER EFFECTS
-// ============================================
 
 /**
  * Creates an effect that only runs on the client after hydration.
@@ -269,10 +245,6 @@ export function createBrowserValue<T>(fn: () => T, fallback: T): Accessor<T> {
   return value;
 }
 
-// ============================================
-// WINDOW/DOCUMENT SAFE ACCESS
-// ============================================
-
 /**
  * Returns the window object if available, or undefined during SSR.
  * Useful for accessing browser globals safely.
@@ -328,10 +300,6 @@ export function getOwnerDocument(el: Element | null | undefined): Document | und
 export function getOwnerWindow(el: Element | null | undefined): Window | undefined {
   return getOwnerDocument(el)?.defaultView ?? getWindow();
 }
-
-// ============================================
-// PORTAL HELPERS
-// ============================================
 
 /**
  * Gets the appropriate container for portals, with SSR safety.

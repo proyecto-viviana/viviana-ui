@@ -1,10 +1,3 @@
-/**
- * Menu component for proyecto-viviana-solid-spectrum
- *
- * Styled menu component built on top of solidaria-components.
- * Inspired by Spectrum 2's Menu component patterns.
- */
-
 import { type JSX, splitProps, createContext, useContext } from "solid-js";
 import {
   Menu as HeadlessMenu,
@@ -24,17 +17,9 @@ import {
 import type { Key } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// SIZE CONTEXT
-// ============================================
-
 export type MenuSize = "sm" | "md" | "lg";
 
 const MenuSizeContext = createContext<MenuSize>("md");
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface MenuTriggerProps extends Omit<HeadlessMenuTriggerProps, "class" | "style"> {
   /** The size of the menu. */
@@ -74,10 +59,6 @@ export interface MenuSectionProps extends Omit<HeadlessMenuSectionProps, "class"
   class?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     button: "h-8 text-sm px-3 gap-2",
@@ -106,10 +87,6 @@ const buttonVariants = {
   quiet: "bg-transparent text-primary-200 border-transparent hover:bg-bg-300",
 };
 
-// ============================================
-// MENU TRIGGER COMPONENT
-// ============================================
-
 /**
  * A menu trigger wraps a button and menu, handling the open/close state.
  */
@@ -126,10 +103,6 @@ export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
     </MenuSizeContext.Provider>
   );
 }
-
-// ============================================
-// MENU BUTTON COMPONENT
-// ============================================
 
 /**
  * A button that opens a menu.
@@ -178,10 +151,6 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
   );
 }
 
-// ============================================
-// MENU COMPONENT
-// ============================================
-
 /**
  * A menu displays a list of actions or options for the user to choose from.
  */
@@ -201,10 +170,6 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
 
   return <HeadlessMenu {...headlessProps} class={getClassName} children={props.children} />;
 }
-
-// ============================================
-// MENU ITEM COMPONENT
-// ============================================
 
 /**
  * An item in a menu.
@@ -266,10 +231,6 @@ export function MenuSection(props: MenuSectionProps): JSX.Element {
   );
 }
 
-// ============================================
-// MENU SEPARATOR COMPONENT
-// ============================================
-
 export interface MenuSeparatorProps {
   /** Additional CSS class name. */
   class?: string;
@@ -282,10 +243,6 @@ export function MenuSeparator(props: MenuSeparatorProps): JSX.Element {
   return <li role="separator" class={`my-1 border-t border-primary-600 ${props.class ?? ""}`} />;
 }
 
-// ============================================
-// ICONS
-// ============================================
-
 function ChevronIcon(props: { class?: string }): JSX.Element {
   return (
     <svg class={props.class} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -294,7 +251,6 @@ function ChevronIcon(props: { class?: string }): JSX.Element {
   );
 }
 
-// Attach sub-components for convenience
 Menu.Item = MenuItem;
 Menu.Section = MenuSection;
 Menu.Separator = MenuSeparator;
@@ -303,7 +259,6 @@ MenuTrigger.Button = MenuButton;
 export const Item = MenuItem;
 export const Section = MenuSection;
 
-// Re-export Key type for convenience
 export type { Key };
 
 // Sub-component re-exports

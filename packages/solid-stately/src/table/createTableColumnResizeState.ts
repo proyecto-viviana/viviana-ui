@@ -10,10 +10,6 @@
 import { createSignal, createMemo, type Accessor } from "solid-js";
 import type { Key } from "../collections/types";
 
-// ============================================
-// TYPES
-// ============================================
-
 /** Column size: a number (px) or a string ('100px', '50%', '1fr'). */
 export type ColumnSize = number | string;
 
@@ -53,10 +49,6 @@ export interface TableColumnResizeState {
   /** Get the maximum width for a column. */
   getColumnMaxWidth(key: Key): number;
 }
-
-// ============================================
-// HELPERS
-// ============================================
 
 const DEFAULT_MIN_WIDTH = 75;
 const DEFAULT_MAX_WIDTH = Infinity;
@@ -143,10 +135,6 @@ function distributeWidths(columns: ColumnResizeDefinition[], tableWidth: number)
 
   return widths;
 }
-
-// ============================================
-// STATE HOOK
-// ============================================
 
 /**
  * Creates column resize state for a table component.

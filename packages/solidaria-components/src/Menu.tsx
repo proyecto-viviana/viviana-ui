@@ -71,10 +71,6 @@ import {
 } from "./DragAndDrop";
 import { PopoverTriggerContext } from "./contexts";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface MenuRenderProps {
   /** Whether the menu is focused. */
   isFocused: boolean;
@@ -218,10 +214,6 @@ export interface SubmenuTriggerProps extends SlotProps {
   onOpenChange?: (isOpen: boolean) => void;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface MenuContextValue<T> {
   state: MenuState<T>;
   isDisabled: () => boolean;
@@ -256,10 +248,6 @@ function assignRef<T>(ref: RefLike<T>, el: T): void {
   if (typeof ref === "function") ref(el);
   else ref.current = el;
 }
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A menu trigger wraps a button and menu, handling the open/close state.

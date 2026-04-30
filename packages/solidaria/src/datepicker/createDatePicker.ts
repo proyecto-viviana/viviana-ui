@@ -13,10 +13,6 @@ import { mergeProps } from "../utils/mergeProps";
 import { useLocale } from "../i18n";
 import type { DateFieldState, CalendarState } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaDatePickerProps {
   /** An ID for the date picker. */
   id?: string;
@@ -77,10 +73,6 @@ export interface DatePickerAria {
   /** Props for the error message element. */
   errorMessageProps: Record<string, unknown>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a date picker component.

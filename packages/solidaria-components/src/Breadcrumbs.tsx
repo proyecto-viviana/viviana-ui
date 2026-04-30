@@ -34,10 +34,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface BreadcrumbsRenderProps {
   /** Whether the breadcrumbs are disabled. */
   isDisabled: boolean;
@@ -87,10 +83,6 @@ export interface BreadcrumbItemProps
   isDisabled?: boolean;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface BreadcrumbsContextValue {
   isDisabled: Accessor<boolean>;
   onAction?: (key: string | number) => void;
@@ -109,10 +101,6 @@ function defaultItemKey(item: unknown, index: number): string | number {
   const maybeItem = item as { key?: string | number; id?: string | number };
   return maybeItem.key ?? maybeItem.id ?? index;
 }
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * Breadcrumbs show hierarchy and navigational context for a user's location within an application.
@@ -352,5 +340,4 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
   );
 }
 
-// Attach sub-components
 Breadcrumbs.Item = BreadcrumbItem;

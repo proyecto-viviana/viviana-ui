@@ -66,10 +66,6 @@ import {
   flattenCollectionEntries,
 } from "./Collection";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ListBoxRenderProps {
   /** Whether the listbox has focus. */
   isFocused: boolean;
@@ -188,10 +184,6 @@ export interface ListBoxLoadMoreItemProps extends SlotProps {
 
 export interface ListBoxSectionProps extends SectionProps {}
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface ListBoxContextValue<T> {
   state: ListState<T>;
   isDisabled: () => boolean;
@@ -204,10 +196,6 @@ interface ListBoxContextValue<T> {
 export const ListBoxContext = createContext<ListBoxContextValue<unknown> | null>(null);
 export const ListBoxStateContext = createContext<ListState<unknown> | null>(null);
 export const ListStateContext = ListBoxStateContext;
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A listbox displays a list of options and allows a user to select one or more of them.

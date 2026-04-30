@@ -1,7 +1,3 @@
-/**
- * Accordion module compatibility entrypoint for proyecto-viviana-solid-spectrum.
- */
-
 export {
   DisclosureGroup as Accordion,
   Disclosure as AccordionItem,

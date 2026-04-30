@@ -12,10 +12,6 @@ import { createFocusable, type FocusableProps } from "../interactions";
 import { mergeProps, filterDOMProps } from "../utils";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaTextFieldProps extends AriaFieldProps, FocusableProps {
   /** The current value (controlled). */
   value?: string;
@@ -82,10 +78,6 @@ export interface TextFieldAria<
   /** Whether the text field is invalid. */
   isInvalid: boolean;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a text field.

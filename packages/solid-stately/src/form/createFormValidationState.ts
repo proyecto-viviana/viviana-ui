@@ -16,10 +16,6 @@ import {
   useContext,
 } from "solid-js";
 
-// ============================================
-// TYPES
-// ============================================
-
 /** Standard HTML ValidityState interface. */
 export interface ValidityState {
   badInput: boolean;
@@ -84,10 +80,6 @@ export interface FormValidationState {
   commitValidation(): void;
 }
 
-// ============================================
-// CONSTANTS
-// ============================================
-
 /** A valid validity state. */
 export const VALID_VALIDITY_STATE: ValidityState = {
   badInput: false,
@@ -117,19 +109,11 @@ export const DEFAULT_VALIDATION_RESULT: ValidationResult = {
   validationErrors: [],
 };
 
-// ============================================
-// CONTEXT
-// ============================================
-
 /** Context for server-side validation errors. */
 export const FormValidationContext = createContext<ValidationErrors>({});
 
 /** Private prop key for passing validation state to children. */
 export const privateValidationStateProp = "__formValidationState" + Date.now();
-
-// ============================================
-// HELPERS
-// ============================================
 
 function asArray<T>(v: T | T[] | undefined): T[] {
   if (!v) {
@@ -173,10 +157,6 @@ function isEqualValidation(a: ValidationResult | null, b: ValidationResult | nul
     )
   );
 }
-
-// ============================================
-// HOOK
-// ============================================
 
 /**
  * Creates form validation state for a field.

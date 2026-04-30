@@ -1,9 +1,3 @@
-/**
- * Well component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only emphasized container primitive.
- */
-
 import { type JSX, splitProps } from "solid-js";
 
 export interface WellProps extends JSX.HTMLAttributes<HTMLDivElement> {

@@ -1,16 +1,4 @@
-/**
- * RangeSlider component for proyecto-viviana-solid-spectrum
- *
- * A dual-thumb range slider for selecting value ranges.
- * Self-contained component that manages its own dual-value state,
- * since the headless Slider only supports single-value.
- */
-
 import { type JSX, createSignal, createMemo, Show, onCleanup } from "solid-js";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type RangeSliderSize = "sm" | "md" | "lg";
 
@@ -50,19 +38,11 @@ export interface RangeSliderProps {
   "aria-label"?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles: Record<RangeSliderSize, { track: string; thumb: string; label: string }> = {
   sm: { track: "h-1", thumb: "w-3 h-3", label: "text-sm" },
   md: { track: "h-2", thumb: "w-4 h-4", label: "text-sm" },
   lg: { track: "h-3", thumb: "w-5 h-5", label: "text-base" },
 };
-
-// ============================================
-// HELPERS
-// ============================================
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -74,10 +54,6 @@ function snapToStep(value: number, min: number, max: number, step: number): numb
   const rounded = parseFloat(snapped.toFixed(decimalPlaces));
   return clamp(rounded, min, max);
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A dual-thumb slider for selecting a range of values.

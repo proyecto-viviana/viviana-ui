@@ -23,10 +23,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface SearchFieldRenderProps {
   /** Whether the search field is empty. */
   isEmpty: boolean;
@@ -105,10 +101,6 @@ export interface SearchFieldClearButtonProps
   style?: StyleOrFunction<SearchFieldClearButtonRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface SearchFieldContextValue {
   state: SearchFieldState;
   inputProps: JSX.InputHTMLAttributes<HTMLInputElement>;
@@ -130,10 +122,6 @@ interface SearchFieldContextValue {
 }
 
 export const SearchFieldContext = createContext<SearchFieldContextValue | null>(null);
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A search field allows a user to enter and clear a search query.
@@ -588,7 +576,6 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
   );
 }
 
-// Attach sub-components
 SearchField.Label = SearchFieldLabel;
 SearchField.Input = SearchFieldInput;
 SearchField.ClearButton = SearchFieldClearButton;

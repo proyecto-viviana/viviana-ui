@@ -16,10 +16,6 @@ import {
 } from "@proyecto-viviana/solidaria";
 import { type SlotProps, filterDOMProps } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface LandmarkRenderProps {
   /** The ARIA landmark role. */
   role: AriaLandmarkRole;
@@ -39,18 +35,9 @@ export interface LandmarkProps extends AriaLandmarkProps, SlotProps {
   children?: JSX.Element;
 }
 
-// Re-export types
 export type { AriaLandmarkRole, LandmarkController };
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const LandmarkContext = createContext<LandmarkProps | null>(null);
-
-// ============================================
-// SEMANTIC ELEMENT MAPPING
-// ============================================
 
 /**
  * Maps ARIA landmark roles to their semantic HTML elements.
@@ -66,10 +53,6 @@ const roleToSemanticElement: Partial<Record<AriaLandmarkRole, keyof JSX.Intrinsi
   form: "form",
   region: "section",
 };
-
-// ============================================
-// LANDMARK COMPONENT
-// ============================================
 
 /**
  * A landmark is a region of the page that helps screen reader users navigate.
@@ -181,10 +164,6 @@ export function Landmark(props: LandmarkProps): JSX.Element {
     </Dynamic>
   );
 }
-
-// ============================================
-// LANDMARK CONTROLLER EXPORT
-// ============================================
 
 /**
  * Returns a controller for programmatic landmark navigation.

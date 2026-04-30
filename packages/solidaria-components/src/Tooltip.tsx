@@ -37,10 +37,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TooltipRenderProps {
   /** Whether the tooltip is currently entering (for animations). */
   isEntering: boolean;
@@ -72,10 +68,6 @@ export interface TooltipProps extends SlotProps {
   shouldFlip?: boolean;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface TooltipTriggerContextValue {
   state: TooltipTriggerState;
   tooltipProps: { id: string };
@@ -85,10 +77,6 @@ interface TooltipTriggerContextValue {
 const TooltipTriggerContext = createContext<TooltipTriggerContextValue | null>(null);
 export const TooltipContext = TooltipTriggerContext;
 export const TooltipTriggerStateContext = createContext<TooltipTriggerState | null>(null);
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * TooltipTrigger wraps around a trigger element and a Tooltip.
@@ -538,5 +526,4 @@ function TooltipContent(
   );
 }
 
-// Re-export types
 export type { TooltipTriggerState };

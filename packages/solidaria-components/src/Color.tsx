@@ -86,10 +86,6 @@ const ColorPickerStateContextInternal = createContext<ColorPickerStateContextVal
 const ColorSwatchContextInternal = createContext<{ color?: Color | string } | null>(null);
 const ColorSwatchPickerContextInternal = createContext<ColorSwatchPickerContextValue | null>(null);
 
-// ============================================
-// COLOR SLIDER
-// ============================================
-
 export interface ColorSliderRenderProps {
   /** Whether the slider is disabled. */
   isDisabled: boolean;
@@ -418,13 +414,8 @@ export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
   );
 }
 
-// Attach sub-components
 ColorSlider.Track = ColorSliderTrack;
 ColorSlider.Thumb = ColorSliderThumb;
-
-// ============================================
-// COLOR AREA
-// ============================================
 
 export interface ColorAreaRenderProps {
   /** Whether the area is disabled. */
@@ -768,13 +759,8 @@ export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
   );
 }
 
-// Attach sub-components
 ColorArea.Gradient = ColorAreaGradient;
 ColorArea.Thumb = ColorAreaThumb;
-
-// ============================================
-// COLOR WHEEL
-// ============================================
 
 export interface ColorWheelRenderProps {
   /** Whether the wheel is disabled. */
@@ -1088,13 +1074,8 @@ export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
   );
 }
 
-// Attach sub-components
 ColorWheel.Track = ColorWheelTrack;
 ColorWheel.Thumb = ColorWheelThumb;
-
-// ============================================
-// COLOR FIELD
-// ============================================
 
 export interface ColorFieldRenderProps {
   /** Whether the field is disabled. */
@@ -1337,12 +1318,7 @@ export function ColorFieldInput(props: ColorFieldInputProps): JSX.Element {
   );
 }
 
-// Attach sub-components
 ColorField.Input = ColorFieldInput;
-
-// ============================================
-// COLOR SWATCH
-// ============================================
 
 export interface ColorSwatchRenderProps {
   /** The color being displayed. */

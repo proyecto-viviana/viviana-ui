@@ -1,9 +1,3 @@
-/**
- * FileTrigger component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only wrapper around solidaria-components FileTrigger primitive.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   FileTrigger as HeadlessFileTrigger,

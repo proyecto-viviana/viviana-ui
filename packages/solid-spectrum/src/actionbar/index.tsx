@@ -1,11 +1,3 @@
-/**
- * ActionBar components for proyecto-viviana-solid-spectrum.
- *
- * Styled wrappers around the headless ActionBar component.
- * Shows a selection count, clear button, and action buttons
- * when items are selected in a collection.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   ActionBar as HeadlessActionBar,
@@ -15,10 +7,6 @@ import {
   type ActionBarRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import type { Key } from "@proyecto-viviana/solid-stately";
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface ActionBarProps {
   /** The number of selected items. ActionBar is hidden when 0. */
@@ -44,10 +32,6 @@ export interface ActionBarContainerProps {
   class?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 function getBarClassName(renderProps: ActionBarRenderProps, extraClass?: string): string {
   return [
     "vui-action-bar flex items-center gap-2 rounded-lg border border-primary-600 bg-bg-300 p-2",
@@ -56,10 +40,6 @@ function getBarClassName(renderProps: ActionBarRenderProps, extraClass?: string)
     .filter(Boolean)
     .join(" ");
 }
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 export function ActionBar(props: ActionBarProps): JSX.Element {
   const [local, headlessProps] = splitProps(props, ["class", "children"]);

@@ -1,9 +1,3 @@
-/**
- * ColorSwatchPicker component for proyecto-viviana-solid-spectrum
- *
- * Styled grid of selectable color swatches.
- */
-
 import { type JSX, splitProps, createContext, createMemo, useContext } from "solid-js";
 import {
   ColorSwatchPicker as HeadlessColorSwatchPicker,
@@ -14,10 +8,6 @@ import {
   type ColorSwatchRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import type { Color } from "@proyecto-viviana/solid-stately";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type SwatchPickerSize = "xs" | "sm" | "md" | "lg" | "XS" | "S" | "M" | "L";
 export type SwatchPickerDensity = "compact" | "regular" | "spacious";
@@ -47,10 +37,6 @@ export interface ColorSwatchPickerItemProps extends Omit<
   class?: string;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface SwatchPickerContextValue {
   size: "xs" | "sm" | "md" | "lg";
   rounding: SwatchPickerRounding;
@@ -60,10 +46,6 @@ const SwatchPickerContext = createContext<SwatchPickerContextValue>({
   size: "md",
   rounding: "none",
 });
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeMap: Record<"xs" | "sm" | "md" | "lg", string> = {
   xs: "w-5 h-5",
@@ -83,10 +65,6 @@ const roundingMap: Record<SwatchPickerRounding, string> = {
   default: "rounded",
   full: "rounded-full",
 };
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A ColorSwatchPicker displays a list of color swatches and allows a user to select one.

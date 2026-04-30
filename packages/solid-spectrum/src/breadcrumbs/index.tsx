@@ -1,10 +1,3 @@
-/**
- * Breadcrumbs component for proyecto-viviana-solid-spectrum
- *
- * Styled breadcrumbs component built on top of solidaria-components.
- * Inspired by Spectrum 2's Breadcrumbs component patterns.
- */
-
 import { type JSX, splitProps, createContext, useContext } from "solid-js";
 import {
   Breadcrumbs as HeadlessBreadcrumbs,
@@ -15,10 +8,6 @@ import {
   type BreadcrumbItemRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// SIZE CONTEXT
-// ============================================
 
 export type BreadcrumbsSize = "sm" | "md" | "lg";
 export type BreadcrumbsVariant = "default" | "subtle";
@@ -35,10 +24,6 @@ const BreadcrumbsSizeContext = createContext<BreadcrumbsContextValue>({
   showSeparator: true,
 });
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface BreadcrumbsProps<T> extends Omit<HeadlessBreadcrumbsProps<T>, "class" | "style"> {
   /** The size of the breadcrumbs. */
   size?: BreadcrumbsSize;
@@ -54,10 +39,6 @@ export interface BreadcrumbItemProps extends Omit<HeadlessBreadcrumbItemProps, "
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -90,14 +71,9 @@ const variantStyles = {
   },
 };
 
-// ============================================
-// BREADCRUMBS COMPONENT
-// ============================================
-
 /**
  * Breadcrumbs show hierarchy and navigational context for a user's location within an application.
  *
- * Built on solidaria-components Breadcrumbs for full accessibility support.
  */
 export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
   const mergedProps = useProviderProps(props);
@@ -126,10 +102,6 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
     </BreadcrumbsSizeContext.Provider>
   );
 }
-
-// ============================================
-// BREADCRUMB ITEM COMPONENT
-// ============================================
 
 /**
  * A BreadcrumbItem represents an individual breadcrumb in the navigation trail.
@@ -183,10 +155,6 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
   );
 }
 
-// ============================================
-// ICONS
-// ============================================
-
 function ChevronIcon(props: { class?: string }): JSX.Element {
   return (
     <svg
@@ -202,7 +170,6 @@ function ChevronIcon(props: { class?: string }): JSX.Element {
   );
 }
 
-// Attach sub-components for convenience
 Breadcrumbs.Item = BreadcrumbItem;
 
 export const Item = BreadcrumbItem;

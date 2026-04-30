@@ -16,10 +16,6 @@ import { filterDOMProps } from "../utils/filterDOMProps";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 import { type PressEvent } from "../interactions/PressEvent";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaLinkProps {
   /** Whether the link is disabled. */
   isDisabled?: boolean;
@@ -86,10 +82,6 @@ export interface LinkAria {
   /** Whether the link is currently pressed. */
   isPressed: Accessor<boolean>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a link component.

@@ -1,9 +1,3 @@
-/**
- * Label component for proyecto-viviana-solid-spectrum
- *
- * Styling-only wrapper around solidaria-components Label.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Label as HeadlessLabel,

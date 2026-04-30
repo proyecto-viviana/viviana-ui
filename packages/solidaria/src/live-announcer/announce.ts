@@ -13,23 +13,11 @@
 import { onCleanup, createEffect } from "solid-js";
 import { isServer } from "solid-js/web";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type Assertiveness = "assertive" | "polite";
 
 export type Message = string | { "aria-labelledby": string };
 
-// ============================================
-// CONSTANTS
-// ============================================
-
 const LIVEREGION_TIMEOUT_DELAY = 7000;
-
-// ============================================
-// LIVE ANNOUNCER CLASS
-// ============================================
 
 /**
  * Singleton class that manages live region announcements.
@@ -135,15 +123,7 @@ class LiveAnnouncer {
   }
 }
 
-// ============================================
-// SINGLETON INSTANCE
-// ============================================
-
 let liveAnnouncer: LiveAnnouncer | null = null;
-
-// ============================================
-// PUBLIC API
-// ============================================
 
 /**
  * Announces a message to screen readers using ARIA live regions.
@@ -233,10 +213,6 @@ export function destroyAnnouncer(): void {
     liveAnnouncer = null;
   }
 }
-
-// ============================================
-// HOOK-BASED API
-// ============================================
 
 export interface UseAnnouncerResult {
   /** Announce a message to screen readers. */

@@ -20,10 +20,6 @@ import {
 } from "@proyecto-viviana/solidaria";
 import { type SlotProps, filterDOMProps } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ToolbarRenderProps {
   /** The orientation of the toolbar. */
   orientation: Orientation;
@@ -38,10 +34,6 @@ export interface ToolbarProps extends AriaToolbarProps, ParentProps, SlotProps {
   [key: `data-${string}`]: string | undefined;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export interface ToolbarContextValue {
   slots?: {
     [name: string]: Record<string, unknown>;
@@ -49,10 +41,6 @@ export interface ToolbarContextValue {
 }
 
 export const ToolbarContext = createContext<ToolbarContextValue | null>(null);
-
-// ============================================
-// TOOLBAR COMPONENT
-// ============================================
 
 /**
  * A toolbar is a container for a set of interactive controls,

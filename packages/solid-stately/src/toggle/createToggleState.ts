@@ -9,10 +9,6 @@
 import { createSignal, Accessor } from "solid-js";
 import { type MaybeAccessor, access } from "../utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ToggleStateOptions {
   /** Whether the element should be selected (controlled). */
   isSelected?: boolean;
@@ -34,10 +30,6 @@ export interface ToggleState {
   /** Toggle the selection state. */
   toggle(): void;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides state management for toggle components like checkboxes and switches.

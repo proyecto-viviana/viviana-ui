@@ -27,7 +27,6 @@ import {
   setEventTarget,
 } from "../utils";
 
-// Re-export PressEvent types
 export { PressEvent, type PointerType } from "./PressEvent";
 export type { IPressEvent, PressEventType } from "./PressEvent";
 

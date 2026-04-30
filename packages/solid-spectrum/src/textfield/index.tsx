@@ -1,9 +1,3 @@
-/**
- * TextField component for proyecto-viviana-solid-spectrum
- *
- * Styled text field built on top of solidaria-components.
- */
-
 import { type JSX, splitProps, Show, useContext } from "solid-js";
 import {
   TextField as HeadlessTextField,
@@ -14,10 +8,6 @@ import {
   type TextFieldRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type TextFieldSize = "sm" | "md" | "lg";
 export type TextFieldVariant = "outline" | "filled";
@@ -39,10 +29,6 @@ export interface TextFieldProps extends Omit<
   /** Error message shown when invalid. */
   errorMessage?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -92,10 +78,6 @@ function TextFieldError(props: { class?: string; children?: JSX.Element }): JSX.
     </p>
   );
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 export { TextArea } from "./TextArea";
 export type { TextAreaProps, TextAreaSize, TextAreaVariant } from "./TextArea";

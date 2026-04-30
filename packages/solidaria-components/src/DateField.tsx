@@ -38,10 +38,6 @@ import {
   useIsHydrated,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface DateFieldRenderProps {
   /** Whether the field is disabled. */
   isDisabled: boolean;
@@ -108,10 +104,6 @@ export interface DateSegmentProps extends SlotProps {
   style?: StyleOrFunction<DateSegmentRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export interface DateFieldContextValue {
   state: DateFieldState<DateValue>;
   aria: {
@@ -132,10 +124,6 @@ export function useDateFieldContext(): DateFieldContextValue {
   }
   return context;
 }
-
-// ============================================
-// DATE FIELD COMPONENT
-// ============================================
 
 /**
  * A date field allows users to enter and edit date values using a keyboard.
@@ -259,10 +247,6 @@ function DateFieldInner<T extends DateValue = CalendarDate>(props: DateFieldProp
   );
 }
 
-// ============================================
-// DATE INPUT COMPONENT
-// ============================================
-
 /**
  * The input area containing date segments.
  */
@@ -301,10 +285,6 @@ export function DateInput(props: DateInputProps): JSX.Element {
     </div>
   );
 }
-
-// ============================================
-// DATE SEGMENT COMPONENT
-// ============================================
 
 /**
  * A segment of a date field (year, month, day, etc.).
@@ -402,5 +382,4 @@ export function DateFieldErrorMessage(props: DateFieldErrorMessageProps): JSX.El
   );
 }
 
-// Re-export types
 export type { DateFieldState, DateSegmentType };

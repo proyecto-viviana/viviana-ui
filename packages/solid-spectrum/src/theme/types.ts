@@ -1,7 +1,3 @@
-/**
- * Theme type definition for proyecto-viviana-solid-spectrum
- */
-
 export interface Theme {
   /** CSS class to apply to the root element. */
   className: string;

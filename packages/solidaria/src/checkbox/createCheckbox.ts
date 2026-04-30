@@ -15,10 +15,6 @@ import { createPress } from "../interactions/createPress";
 import { mergeProps } from "../utils/mergeProps";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaCheckboxProps extends AriaToggleProps {
   /**
    * Indeterminism is presentational only.
@@ -52,10 +48,6 @@ export interface CheckboxAria {
   /** Whether the checkbox is invalid. */
   isInvalid: boolean;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a checkbox component.

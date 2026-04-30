@@ -19,10 +19,6 @@ import {
 } from "solid-js";
 import { isRTL } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 /** Text direction: left-to-right or right-to-left. */
 export type Direction = "ltr" | "rtl";
 
@@ -38,10 +34,6 @@ export interface I18nProviderProps extends ParentProps {
   /** The locale to apply to the children. If not provided, uses browser default. */
   locale?: string;
 }
-
-// ============================================
-// GLOBAL STATE
-// ============================================
 
 // Symbol for server-provided locale
 const localeSymbol = Symbol.for("solidaria.i18n.locale");
@@ -80,15 +72,7 @@ function updateLocale(): void {
   }
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 const I18nContext = createContext<Accessor<Locale> | null>(null);
-
-// ============================================
-// HOOKS
-// ============================================
 
 /**
  * Returns the current browser/system locale, and updates when it changes.
@@ -145,10 +129,6 @@ export function useLocale(): Accessor<Locale> {
   const defaultLocale = createDefaultLocale();
   return context || defaultLocale;
 }
-
-// ============================================
-// PROVIDER
-// ============================================
 
 /**
  * Provides the locale for the application to all child components.

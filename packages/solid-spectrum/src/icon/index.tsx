@@ -68,7 +68,6 @@ export function Icon(props: IconProps): JSX.Element {
   );
 }
 
-// Re-export common icons
 export { GitHubIcon } from "./icons/GitHubIcon";
 export type { GitHubIconProps } from "./icons/GitHubIcon";
 

@@ -11,10 +11,6 @@ import { type Accessor, createEffect, onCleanup } from "solid-js";
 import { type FormValidationState, type ValidationResult } from "@proyecto-viviana/solid-stately";
 import { setInteractionModality } from "../interactions/createInteractionModality";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type ValidatableElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
 export type ValidationBehavior = "aria" | "native";
@@ -25,10 +21,6 @@ export interface FormValidationProps {
   /** Custom focus function to call on validation error. */
   focus?: () => void;
 }
-
-// ============================================
-// HELPERS
-// ============================================
 
 function getValidity(input: ValidatableElement): ValidityState {
   // Create a snapshot of the validity state (the native object is live)
@@ -65,10 +57,6 @@ function getFirstInvalidInput(form: HTMLFormElement): ValidatableElement | null 
   }
   return null;
 }
-
-// ============================================
-// HOOK
-// ============================================
 
 /**
  * Connects form validation state to a native HTML form input.

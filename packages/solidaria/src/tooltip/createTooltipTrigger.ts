@@ -13,10 +13,6 @@ import { createHover } from "../interactions/createHover";
 import { createFocusable } from "../interactions/createFocusable";
 import { createId } from "../ssr";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TooltipTriggerProps {
   /** Whether the tooltip should be disabled. */
   isDisabled?: boolean;
@@ -38,10 +34,6 @@ export interface TooltipTriggerAria {
   /** Props to spread on the tooltip element (id for accessibility). */
   tooltipProps: { id: string };
 }
-
-// ============================================
-// GLOBAL STATE
-// ============================================
 
 type Modality = "keyboard" | "pointer" | "virtual";
 let currentModality: Modality | null = null;
@@ -74,10 +66,6 @@ if (typeof document !== "undefined") {
 function isFocusVisible(): boolean {
   return currentModality === "keyboard";
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a tooltip trigger.

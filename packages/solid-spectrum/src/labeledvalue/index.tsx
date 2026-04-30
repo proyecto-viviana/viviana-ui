@@ -1,9 +1,3 @@
-/**
- * LabeledValue component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only presentation primitive for read-only label/value pairs.
- */
-
 import { type JSX, Show, splitProps } from "solid-js";
 import { Label as UILabel } from "../label";
 import { Text as UIText } from "../text";

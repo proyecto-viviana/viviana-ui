@@ -1,9 +1,3 @@
-/**
- * ActionMenu component for proyecto-viviana-solid-spectrum
- *
- * A menu triggered by an action button (three-dot or icon button).
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   MenuTrigger as HeadlessMenuTrigger,
@@ -14,10 +8,6 @@ import {
   type MenuTriggerRenderProps,
   type MenuItemRenderProps,
 } from "@proyecto-viviana/solidaria-components";
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface ActionMenuProps<T> extends Omit<HeadlessMenuProps<T>, "class" | "children"> {
   /** Additional CSS class name for the menu. */
@@ -31,10 +21,6 @@ export interface ActionMenuProps<T> extends Omit<HeadlessMenuProps<T>, "class" |
   /** The alignment of the menu relative to the trigger. */
   align?: "start" | "end";
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A menu triggered by an action button, typically used for "more actions" menus.

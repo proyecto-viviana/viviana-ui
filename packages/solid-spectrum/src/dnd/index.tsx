@@ -1,7 +1,3 @@
-/**
- * Drag-and-drop module compatibility entrypoint for proyecto-viviana-solid-spectrum.
- */
-
 export {
   DragAndDropContext,
   DropIndicator,

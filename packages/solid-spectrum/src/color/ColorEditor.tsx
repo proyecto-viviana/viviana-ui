@@ -1,27 +1,13 @@
-/**
- * ColorEditor component for proyecto-viviana-solid-spectrum
- *
- * Styled color editor composing ColorArea, ColorSliders, and ColorFields.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   ColorEditor as HeadlessColorEditor,
   type ColorEditorProps as HeadlessColorEditorProps,
 } from "@proyecto-viviana/solidaria-components";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ColorEditorProps extends Omit<HeadlessColorEditorProps, "class" | "style"> {
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A complete color editor with area, hue slider, alpha slider,

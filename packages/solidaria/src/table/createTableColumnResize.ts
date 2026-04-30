@@ -10,10 +10,6 @@ import { createSignal, createMemo, type Accessor, type JSX } from "solid-js";
 import type { Key, TableColumnResizeState } from "@proyecto-viviana/solid-stately";
 import { useLocale } from "../i18n";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface CreateTableColumnResizeProps {
   /** The column being resized. */
   column: { key: Key };
@@ -38,15 +34,7 @@ export interface TableColumnResizeResult {
   isResizing: Accessor<boolean>;
 }
 
-// ============================================
-// CONSTANTS
-// ============================================
-
 const KEYBOARD_STEP = 10; // px per arrow key press
-
-// ============================================
-// HOOK
-// ============================================
 
 /**
  * Creates ARIA-compliant column resize behavior.

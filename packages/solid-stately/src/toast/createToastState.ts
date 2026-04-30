@@ -5,10 +5,6 @@
 
 import { createSignal, onCleanup, type Accessor } from "solid-js";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ToastOptions {
   /** A timeout to automatically close the toast, in milliseconds. */
   timeout?: number;
@@ -66,10 +62,6 @@ export interface ToastState<T> {
   resumeAll: () => void;
 }
 
-// ============================================
-// TIMER CLASS
-// ============================================
-
 /**
  * A Timer that supports pause and resume.
  */
@@ -118,10 +110,6 @@ export class Timer {
     }
   }
 }
-
-// ============================================
-// TOAST QUEUE CLASS
-// ============================================
 
 type SubscribeCallback<T> = (toasts: QueuedToast<T>[]) => void;
 
@@ -286,10 +274,6 @@ export class ToastQueue<T> {
   }
 }
 
-// ============================================
-// HOOK
-// ============================================
-
 /**
  * Creates reactive toast state from a ToastQueue.
  * Use this hook to subscribe to toast changes in your component.
@@ -315,10 +299,6 @@ export function createToastState<T>(props: ToastStateProps<T>): ToastState<T> {
     resumeAll: () => props.queue.resumeAll(),
   };
 }
-
-// ============================================
-// CONVENIENCE HOOKS
-// ============================================
 
 /**
  * Creates a new ToastQueue and returns reactive state.

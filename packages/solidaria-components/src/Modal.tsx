@@ -37,10 +37,6 @@ import {
   type OverlayTriggerState,
 } from "./contexts";
 
-// ============================================
-// INTERNAL CONTEXT
-// ============================================
-
 /**
  * Internal context to signal that Modal is wrapped in ModalOverlay.
  * When present, Modal should not create its own Portal.
@@ -63,10 +59,6 @@ function pruneDisconnectedModals() {
     }
   }
 }
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface ModalRenderProps {
   /** Whether the modal is currently entering (for animations). */
@@ -100,14 +92,9 @@ export interface ModalOverlayProps {
 
 export interface ModalProps extends ModalOverlayProps {}
 
-// Re-export from contexts for backwards compatibility
 export { OverlayTriggerStateContext, type OverlayTriggerState } from "./contexts";
 export { useOverlayTriggerState } from "./contexts";
 export const ModalContext = OverlayTriggerStateContext;
-
-// ============================================
-// MODAL OVERLAY COMPONENT
-// ============================================
 
 /**
  * ModalOverlay is the backdrop/underlay behind a modal.
@@ -281,10 +268,6 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
     </Show>
   );
 }
-
-// ============================================
-// MODAL COMPONENT
-// ============================================
 
 /**
  * Modal is a dialog container that manages focus trapping, scroll prevention,

@@ -11,10 +11,6 @@ import { focusSafely } from "../utils/focus";
 import type { CalendarState, CalendarDate, DateValue } from "@proyecto-viviana/solid-stately";
 import { isToday as isTodayUtil, DateFormatter, getLocalTimeZone } from "@internationalized/date";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaCalendarCellProps {
   /** The date represented by the cell. */
   date: DateValue;
@@ -46,10 +42,6 @@ export interface CalendarCellAria {
   /** The formatted date string. */
   formattedDate: string;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a calendar cell.

@@ -10,10 +10,6 @@ import { type Accessor, createSignal, createEffect, onCleanup } from "solid-js";
 import { isServer } from "solid-js/web";
 import { getOwnerDocument, getOwnerWindow, isMac, isVirtualClick, openLink } from "../utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type Modality = "keyboard" | "pointer" | "virtual";
 export type PointerType = "mouse" | "pen" | "touch" | "keyboard" | "virtual";
 type HandlerEvent = PointerEvent | MouseEvent | KeyboardEvent | FocusEvent | null;
@@ -37,10 +33,6 @@ export interface InteractionModalityResult {
   /** The current interaction modality. */
   modality: Accessor<Modality | null>;
 }
-
-// ============================================
-// GLOBAL STATE
-// ============================================
 
 let currentModality: Modality | null = null;
 let currentPointerType: PointerType = "keyboard";

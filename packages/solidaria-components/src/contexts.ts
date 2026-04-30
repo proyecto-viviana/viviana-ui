@@ -8,10 +8,6 @@
 import { createContext, useContext } from "solid-js";
 import type { OverlayTriggerState as StatelyOverlayTriggerState } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// OVERLAY TRIGGER STATE CONTEXT
-// ============================================
-
 export interface OverlayTriggerState {
   isOpen: boolean;
   open: () => void;
@@ -28,10 +24,6 @@ export function useOverlayTriggerState(): OverlayTriggerState | null {
   return useContext(OverlayTriggerStateContext);
 }
 
-// ============================================
-// DIALOG TRIGGER CONTEXT
-// ============================================
-
 export interface DialogTriggerContextValue {
   state: StatelyOverlayTriggerState;
   triggerRef: () => HTMLElement | null;
@@ -47,10 +39,6 @@ export const DialogTriggerContext = createContext<DialogTriggerContextValue | nu
 export function useDialogTrigger(): DialogTriggerContextValue | null {
   return useContext(DialogTriggerContext);
 }
-
-// ============================================
-// POPOVER TRIGGER CONTEXT
-// ============================================
 
 export interface PopoverTriggerContextValue {
   state: {

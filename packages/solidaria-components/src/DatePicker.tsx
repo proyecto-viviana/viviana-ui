@@ -52,10 +52,6 @@ import { DateFieldContext } from "./DateField";
 import { CalendarContext } from "./Calendar";
 import { RangeCalendarContext } from "./RangeCalendar";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface DatePickerRenderProps {
   /** Whether the picker is disabled. */
   isDisabled: boolean;
@@ -149,10 +145,6 @@ export interface DatePickerButtonProps extends SlotProps {
 
 export interface DateRangePickerButtonProps extends DatePickerButtonProps {}
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const DatePickerContext = createContext<DatePickerContextValue | null>(null);
 export const DateRangePickerContext = createContext<DateRangePickerContextValue | null>(null);
 export const DatePickerStateContext = createContext<DateFieldState<DateValue> | null>(null);
@@ -175,10 +167,6 @@ export function useDateRangePickerContext(): DateRangePickerContextValue {
   }
   return context;
 }
-
-// ============================================
-// DATE PICKER COMPONENT
-// ============================================
 
 /**
  * A date picker combines a DateField and a Calendar popover.
@@ -514,10 +502,6 @@ function DateRangePickerInner<T extends DateValue = CalendarDate>(
   );
 }
 
-// ============================================
-// DATE PICKER BUTTON COMPONENT
-// ============================================
-
 /**
  * A button that opens the date picker calendar.
  */
@@ -607,10 +591,6 @@ export function DateRangePickerButton(props: DateRangePickerButtonProps): JSX.El
     </button>
   );
 }
-
-// ============================================
-// DATE PICKER CONTENT COMPONENT
-// ============================================
 
 export interface DatePickerContentProps extends SlotProps {
   /** The children of the component. */

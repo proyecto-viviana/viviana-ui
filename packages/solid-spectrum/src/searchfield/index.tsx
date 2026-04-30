@@ -1,10 +1,3 @@
-/**
- * SearchField component for proyecto-viviana-solid-spectrum
- *
- * Styled search field component with clear button and search icon.
- * Built on top of solidaria-components.
- */
-
 import { type JSX, splitProps, Show, useContext } from "solid-js";
 import {
   SearchField as HeadlessSearchField,
@@ -18,10 +11,6 @@ import {
   type SearchFieldClearButtonRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type SearchFieldSize = "sm" | "md" | "lg";
 export type SearchFieldVariant = "outline" | "filled";
@@ -45,10 +34,6 @@ export interface SearchFieldProps extends Omit<
   /** Whether to hide the search icon. */
   hideSearchIcon?: boolean;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -76,10 +61,6 @@ const sizeStyles = {
     clearButton: "w-7 h-7 right-2.5",
   },
 };
-
-// ============================================
-// ICONS
-// ============================================
 
 function SearchIcon(props: { class?: string }) {
   return (
@@ -120,10 +101,6 @@ function SearchFieldError(props: { class?: string; children?: JSX.Element }): JS
     </span>
   );
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 export function SearchField(props: SearchFieldProps): JSX.Element {
   const mergedProps = useProviderProps(props);
@@ -268,5 +245,4 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
   );
 }
 
-// Re-export types
 export type { SearchFieldState } from "@proyecto-viviana/solid-stately";

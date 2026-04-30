@@ -37,10 +37,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ToastContent {
   /** The title of the toast. */
   title?: string;
@@ -99,10 +95,6 @@ export interface ToastProps {
   style?: StyleOrFunction<ToastRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const ToastContext = createContext<ToastState<ToastContent> | null>(null);
 
 interface ToastAriaContextValue {
@@ -121,10 +113,6 @@ export function useToastContext(): ToastState<ToastContent> {
   return context;
 }
 
-// ============================================
-// GLOBAL TOAST QUEUE
-// ============================================
-
 /** Default global toast queue that can be used for app-wide toasts. */
 export const globalToastQueue = new ToastQueue<ToastContent>({
   maxVisibleToasts: 5,
@@ -141,10 +129,6 @@ export function addToast(
 ): string {
   return globalToastQueue.add(content, options);
 }
-
-// ============================================
-// TOAST PROVIDER
-// ============================================
 
 export interface ToastProviderProps {
   /** The children of the provider. */
@@ -176,10 +160,6 @@ export function ToastProvider(props: ToastProviderProps): JSX.Element {
 
   return <ToastContext.Provider value={state}>{props.children}</ToastContext.Provider>;
 }
-
-// ============================================
-// TOAST REGION COMPONENT
-// ============================================
 
 /**
  * ToastRegion is a container that displays all visible toasts.
@@ -324,10 +304,6 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
     </Show>
   );
 }
-
-// ============================================
-// TOAST COMPONENT
-// ============================================
 
 /**
  * Toast is an individual notification component.
@@ -504,10 +480,6 @@ export function Toast(props: ToastProps): JSX.Element {
   );
 }
 
-// ============================================
-// TOAST SUB-COMPONENTS
-// ============================================
-
 export interface ToastTitleProps {
   children: JSX.Element;
   class?: string;
@@ -591,10 +563,6 @@ export function ToastCloseButton(props: ToastCloseButtonProps): JSX.Element {
     </button>
   );
 }
-
-// ============================================
-// DEFAULT TOAST RENDERING
-// ============================================
 
 export interface DefaultToastProps {
   toast: QueuedToast<ToastContent>;

@@ -1,10 +1,3 @@
-/**
- * TagGroup component for proyecto-viviana-solid-spectrum
- *
- * Styled tag group component built on top of solidaria-components.
- * A tag group displays a collection of tags that can be selected and/or removed.
- */
-
 import { type JSX, splitProps, Show, createUniqueId } from "solid-js";
 import {
   TagList as HeadlessTagList,
@@ -12,10 +5,6 @@ import {
   TagRemoveButton as HeadlessTagRemoveButton,
 } from "@proyecto-viviana/solidaria-components";
 import type { Key, SelectionMode } from "@proyecto-viviana/solid-stately";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type TagGroupSize = "sm" | "md" | "lg";
 export type TagGroupVariant = "default" | "outline" | "solid";
@@ -64,10 +53,6 @@ export interface TagProps {
   class?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     tag: "text-xs px-2 py-0.5 gap-1",
@@ -103,10 +88,6 @@ const variantStyles = {
     disabled: "opacity-50 cursor-not-allowed",
   },
 };
-
-// ============================================
-// TAG GROUP COMPONENT
-// ============================================
 
 /**
  * A tag group displays a collection of tags that can be selected and/or removed.
@@ -241,5 +222,4 @@ export function TagGroup<T extends { id?: Key; key?: Key }>(props: TagGroupProps
   );
 }
 
-// Re-export types
 export type { Key, SelectionMode };

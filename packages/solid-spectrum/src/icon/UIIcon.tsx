@@ -1,14 +1,4 @@
-/**
- * UIIcon component for proyecto-viviana-solid-spectrum
- *
- * A utility icon component for internal UI icons (chevrons, close, etc).
- */
-
 import { type JSX, splitProps } from "solid-js";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type UIIconSize = "xs" | "sm" | "md" | "lg";
 
@@ -25,20 +15,12 @@ export interface UIIconProps {
   "aria-hidden"?: boolean;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles: Record<UIIconSize, string> = {
   xs: "w-3 h-3",
   sm: "w-4 h-4",
   md: "w-5 h-5",
   lg: "w-6 h-6",
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A utility icon wrapper for internal UI icons.

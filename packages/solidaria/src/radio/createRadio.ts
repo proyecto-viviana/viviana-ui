@@ -18,10 +18,6 @@ import { type RadioGroupState, radioGroupSyncVersion } from "@proyecto-viviana/s
 import { radioGroupData } from "./createRadioGroup";
 import { type PressEvent } from "../interactions/PressEvent";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaRadioProps {
   /** The value of the radio button, used when submitting an HTML form. */
   value: string;
@@ -73,10 +69,6 @@ export interface RadioAria {
   /** Whether the radio is in a pressed state. */
   isPressed: Accessor<boolean>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for an individual

@@ -1,15 +1,5 @@
-/**
- * Heading component for proyecto-viviana-solid-spectrum
- *
- * Styled heading (h1-h6) with configurable level and size.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -24,10 +14,6 @@ export interface HeadingProps {
   children?: JSX.Element;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const levelStyles: Record<HeadingLevel, string> = {
   1: "text-4xl font-bold",
   2: "text-3xl font-bold",
@@ -36,10 +22,6 @@ const levelStyles: Record<HeadingLevel, string> = {
   5: "text-lg font-medium",
   6: "text-base font-medium",
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A styled heading component with configurable level.

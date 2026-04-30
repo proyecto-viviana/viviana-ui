@@ -20,10 +20,6 @@ import {
 import { mergeProps } from "../utils/mergeProps";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface HelpTextProps {
   /** A description for the field. Provides a hint such as specific requirements for what to choose. */
   description?: JSX.Element;
@@ -58,10 +54,6 @@ export interface FieldAria extends LabelAria {
   /** Props for the error message element, if any. */
   errorMessageProps: JSX.HTMLAttributes<HTMLElement>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the accessibility implementation for input fields.

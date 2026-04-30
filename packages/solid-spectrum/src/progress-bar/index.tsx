@@ -1,18 +1,8 @@
-/**
- * ProgressBar component for proyecto-viviana-solid-spectrum
- *
- * Styled progress bar component built on top of solidaria-components.
- */
-
 import { type JSX, splitProps, Show, createUniqueId } from "solid-js";
 import {
   ProgressBar as HeadlessProgressBar,
   type ProgressBarRenderProps as HeadlessProgressBarRenderProps,
 } from "@proyecto-viviana/solidaria-components";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type ProgressBarSize = "sm" | "md" | "lg";
 export type ProgressBarVariant = "primary" | "accent" | "success" | "warning" | "danger";
@@ -44,10 +34,6 @@ export interface ProgressBarProps {
   "aria-labelledby"?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     track: "h-1",
@@ -70,10 +56,6 @@ const variantStyles = {
   warning: "bg-yellow-500",
   danger: "bg-red-500",
 };
-
-// ============================================
-// PROGRESSBAR COMPONENT
-// ============================================
 
 /**
  * Progress bars show either determinate or indeterminate progress of an operation

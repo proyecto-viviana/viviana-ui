@@ -1,9 +1,3 @@
-/**
- * Form components for proyecto-viviana-solid-spectrum
- *
- * Styling-only wrappers around solidaria-components form primitives.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Form as HeadlessForm,

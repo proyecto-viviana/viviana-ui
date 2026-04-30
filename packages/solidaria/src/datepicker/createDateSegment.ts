@@ -10,10 +10,6 @@ import { access, type MaybeAccessor } from "../utils/reactivity";
 import type { DateFieldState, DateSegment, DateSegmentType } from "@proyecto-viviana/solid-stately";
 import { useLocale } from "../i18n";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaDateSegmentProps {
   /** The segment data. */
   segment: DateSegment;
@@ -31,10 +27,6 @@ export interface DateSegmentAria {
   /** The text to display. */
   text: string;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a date segment.
@@ -311,10 +303,6 @@ export function createDateSegment<T extends DateFieldState>(
     },
   };
 }
-
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
 
 const SEGMENT_LABELS: Record<string, Record<Exclude<DateSegmentType, "literal">, string>> = {
   en: {

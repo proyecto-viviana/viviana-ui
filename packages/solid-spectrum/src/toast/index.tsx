@@ -1,10 +1,3 @@
-/**
- * Toast components for proyecto-viviana-solid-spectrum
- *
- * Toast notifications with auto-dismiss, animations, and variants.
- * Built on top of solidaria-components for accessibility.
- */
-
 import { type JSX, splitProps, For, Show } from "solid-js";
 import {
   Toast as HeadlessToast,
@@ -25,10 +18,6 @@ import {
   type ToastRegionRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { ToastQueue, type QueuedToast, type ToastOptions } from "@proyecto-viviana/solid-stately";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type ToastPlacement =
   | "top"
@@ -55,10 +44,6 @@ export interface ToastProps extends Omit<HeadlessToastProps, "class" | "style"> 
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const regionStyles = ["flex flex-col gap-3", "p-4"].join(" ");
 
@@ -100,10 +85,6 @@ const closeButtonStyles = [
   "transition-opacity",
   "focus:outline-none focus:ring-2 focus:ring-offset-2",
 ].join(" ");
-
-// ============================================
-// ICONS
-// ============================================
 
 const InfoIcon = () => (
   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -174,10 +155,6 @@ const getVariantIcon = (variant: ToastVariant) => {
       return <InfoIcon />;
   }
 };
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * ToastProvider creates a toast queue context for descendant components.
@@ -276,10 +253,6 @@ export function Toast(props: ToastProps): JSX.Element {
   );
 }
 
-// ============================================
-// GLOBAL TOAST API
-// ============================================
-
 /**
  * Add a toast to the global queue.
  * Use this to show toasts from anywhere in your app.
@@ -343,7 +316,6 @@ export function toastInfo(message: string, options?: Omit<ToastOptions, "priorit
   return addToast({ title: message, type: "info" }, { timeout: 5000, ...options });
 }
 
-// Re-exports
 export {
   ToastContext,
   globalToastQueue,

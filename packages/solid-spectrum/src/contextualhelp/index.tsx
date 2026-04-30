@@ -1,9 +1,3 @@
-/**
- * ContextualHelp component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only composition around tooltip primitives.
- */
-
 import { type JSX, Show, splitProps } from "solid-js";
 import { TooltipTrigger, Tooltip } from "../tooltip";
 

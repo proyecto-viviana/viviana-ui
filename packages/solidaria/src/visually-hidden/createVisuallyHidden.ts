@@ -12,10 +12,6 @@ import { createFocusWithin } from "../interactions/createFocusWithin";
 import { access, type MaybeAccessor } from "../utils";
 import { mergeProps } from "../utils/mergeProps";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaVisuallyHiddenProps {
   /** Inline styles to merge with the visually hidden styles. */
   style?: JSX.CSSProperties;
@@ -27,10 +23,6 @@ export interface VisuallyHiddenAria {
   /** Props to spread on the visually hidden element. */
   visuallyHiddenProps: Accessor<JSX.HTMLAttributes<HTMLElement>>;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 /**
  * CSS styles that visually hide an element while keeping it accessible.
@@ -48,10 +40,6 @@ export const visuallyHiddenStyles: JSX.CSSProperties = {
   width: "1px",
   "white-space": "nowrap",
 };
-
-// ============================================
-// HOOK
-// ============================================
 
 /**
  * Provides props for an element that hides its children visually

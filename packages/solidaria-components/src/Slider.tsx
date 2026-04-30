@@ -26,10 +26,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface SliderRenderProps {
   /** Whether the slider is disabled. */
   isDisabled: boolean;
@@ -141,10 +137,6 @@ export interface SliderOutputProps
   style?: StyleOrFunction<SliderOutputRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface SliderContextValue {
   state: SliderState;
   trackProps: JSX.HTMLAttributes<HTMLElement>;
@@ -159,10 +151,6 @@ export const SliderContext = createContext<SliderContextValue | null>(null);
 export const SliderStateContext = SliderContext;
 export const SliderTrackContext = SliderContext;
 export const SliderOutputContext = SliderContext;
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A slider allows users to select a value from a range.
@@ -510,7 +498,6 @@ export function SliderOutput(props: SliderOutputProps): JSX.Element {
   );
 }
 
-// Attach sub-components
 Slider.Track = SliderTrack;
 Slider.Thumb = SliderThumb;
 Slider.Output = SliderOutput;

@@ -1,11 +1,3 @@
-/**
- * Theme Light module for proyecto-viviana-solid-spectrum
- *
- * Light theme CSS custom properties using the unified --color-* naming
- * that matches the Tailwind @theme tokens in theme.css.
- * Apply via Provider with colorScheme="light".
- */
-
 import type { Theme } from "../theme/types";
 
 export const themeLightClass = "vui-theme-light";

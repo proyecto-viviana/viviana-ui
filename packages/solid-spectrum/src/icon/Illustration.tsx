@@ -1,14 +1,4 @@
-/**
- * Illustration component for proyecto-viviana-solid-spectrum
- *
- * A styled illustration container for decorative or explanatory images.
- */
-
 import { type JSX, splitProps } from "solid-js";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type IllustrationSize = "sm" | "md" | "lg";
 
@@ -23,19 +13,11 @@ export interface IllustrationProps {
   "aria-label"?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles: Record<IllustrationSize, string> = {
   sm: "w-16 h-16",
   md: "w-24 h-24",
   lg: "w-32 h-32",
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A styled container for decorative illustrations.

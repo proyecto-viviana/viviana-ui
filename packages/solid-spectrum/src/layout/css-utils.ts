@@ -1,10 +1,4 @@
 /**
- * CSS utility functions for proyecto-viviana-solid-spectrum
- *
- * Helper functions for common CSS grid/layout values.
- */
-
-/**
  * Creates a CSS `fit-content()` value.
  * @param value - The max content size (e.g., '200px', '50%')
  */

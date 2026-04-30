@@ -1,7 +1,3 @@
-/**
- * List module compatibility entrypoint for proyecto-viviana-solid-spectrum.
- */
-
 export {
   GridList as ListView,
   GridListItem as ListViewItem,

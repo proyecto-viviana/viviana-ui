@@ -24,10 +24,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface CollectionPrimitiveRenderProps {
   /** Whether the primitive has visible children content. */
   hasChildren: boolean;
@@ -157,10 +153,6 @@ export interface CollectionRenderer<T = unknown> {
   CollectionBranch: (props: CollectionBranchProps<T>) => JSX.Element;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const CollectionRendererContext =
   createContext<CollectionRendererContextValue<unknown> | null>(null);
 export const SelectableCollectionContext = CollectionRendererContext;
@@ -172,10 +164,6 @@ export const HeadingContext = createContext<Partial<HeaderProps> | null>(null);
 export function useCollectionRenderer<T>(): CollectionRendererContextValue<T> | null {
   return useContext(CollectionRendererContext) as CollectionRendererContextValue<T> | null;
 }
-
-// ============================================
-// HELPERS
-// ============================================
 
 export function isCollectionSection<T>(entry: CollectionEntry<T>): entry is CollectionSection<T> {
   return (
@@ -242,10 +230,6 @@ export function Collection<T>(props: AriaCollectionProps<T>): unknown {
 }
 
 export { createLeafComponent, createBranchComponent };
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A semantic section wrapper for grouped collection content.

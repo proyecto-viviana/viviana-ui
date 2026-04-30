@@ -54,10 +54,6 @@ import {
   type SelectionIndicatorContextValue,
 } from "./SelectionIndicator";
 
-// ============================================
-// TYPES
-// ============================================
-
 type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
 
 function assignRef<T>(ref: RefLike<T>, el: T): void {
@@ -246,10 +242,6 @@ export interface SelectOptionProps<T> extends Omit<AriaOptionProps, "children" |
   textValue?: string;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface SelectContextValue<T> {
   state: SelectState<T>;
   triggerProps: JSX.HTMLAttributes<HTMLElement>;
@@ -272,10 +264,6 @@ interface SelectContextValue<T> {
 export const SelectContext = createContext<SelectContextValue<unknown> | null>(null);
 export const SelectStateContext = createContext<SelectState<unknown> | null>(null);
 export const SelectValueContext = SelectContext;
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A select displays a collapsible list of options and allows a user to select one of them.
@@ -1219,7 +1207,6 @@ function createSelectListStateAdapter<T>(state: SelectState<T>): ListState<T> {
   };
 }
 
-// Attach sub-components
 Select.Trigger = SelectTrigger;
 Select.Value = SelectValue;
 Select.ListBox = SelectListBox;

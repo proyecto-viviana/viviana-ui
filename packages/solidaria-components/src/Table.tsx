@@ -80,10 +80,6 @@ import {
   useRenderDropIndicator,
 } from "./DragAndDrop";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TableRenderProps {
   /** Whether the table has focus. */
   isFocused: boolean;
@@ -372,10 +368,6 @@ export interface TableLoadMoreItemProps extends SlotProps {
   style?: StyleOrFunction<{ isLoading: boolean }>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface TableContextValue<T extends object> {
   state: TableState<T, TableCollection<T>>;
   collection: TableCollection<T>;
@@ -405,10 +397,6 @@ interface TableRowContextValue {
 }
 
 export const TableRowContext = createContext<TableRowContextValue | null>(null);
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A table displays data in rows and columns and enables a user to navigate its contents via directional navigation keys,
@@ -1867,10 +1855,6 @@ Table.Cell = TableCell;
 Table.SelectionCheckbox = TableSelectionCheckbox;
 Table.SelectAllCheckbox = TableSelectAllCheckbox;
 
-// ============================================
-// COLUMN RESIZER TYPES & COMPONENT
-// ============================================
-
 export interface ColumnResizerRenderProps {
   /** Whether the resizer handle is hovered. */
   isHovered: boolean;
@@ -2006,10 +1990,6 @@ export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
     </div>
   );
 }
-
-// ============================================
-// RESIZABLE TABLE CONTAINER TYPES & COMPONENT
-// ============================================
 
 export interface ResizableTableContainerProps extends SlotProps {
   /** Children (should contain a Table). */

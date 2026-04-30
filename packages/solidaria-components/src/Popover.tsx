@@ -38,10 +38,6 @@ import {
 } from "./utils";
 import { PopoverTriggerContext } from "./contexts";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface PopoverRenderProps {
   /**
    * The name of the component that triggered the popover.
@@ -140,11 +136,6 @@ export interface PopoverTriggerProps {
   onOpenChange?: (isOpen: boolean) => void;
 }
 
-// ============================================
-// CONTEXTS
-// ============================================
-
-// Re-export from shared contexts
 export {
   PopoverTriggerContext,
   usePopoverTrigger,
@@ -159,10 +150,6 @@ interface PopoverContextValue {
 // Internal context for placement + arrow
 export const PopoverContext = createContext<PopoverContextValue | null>(null);
 const PopoverGroupContext = createContext<(() => HTMLElement | null) | null>(null);
-
-// ============================================
-// POPOVER TRIGGER COMPONENT
-// ============================================
 
 /**
  * A PopoverTrigger opens a popover when a trigger element is pressed.
@@ -214,10 +201,6 @@ export function PopoverTrigger(props: PopoverTriggerProps): JSX.Element {
     </PopoverTriggerContext.Provider>
   );
 }
-
-// ============================================
-// POPOVER COMPONENT
-// ============================================
 
 /**
  * A popover is an overlay element positioned relative to a trigger.
@@ -495,10 +478,6 @@ export function Popover(props: PopoverProps): JSX.Element {
     </Show>
   );
 }
-
-// ============================================
-// OVERLAY ARROW COMPONENT
-// ============================================
 
 export interface OverlayArrowProps {
   /** The children - should be an SVG or element for the arrow. */

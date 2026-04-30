@@ -12,10 +12,6 @@ import { access, type MaybeAccessor } from "../utils/reactivity";
 import { mergeProps } from "../utils/mergeProps";
 import type { DateFieldState, DateSegment } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaDateFieldProps {
   /** An ID for the date field. */
   id?: string;
@@ -55,10 +51,6 @@ export interface DateFieldAria {
   /** The segments to render. */
   segments: DateSegment[];
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a date field component.

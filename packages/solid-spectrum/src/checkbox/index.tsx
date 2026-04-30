@@ -1,11 +1,3 @@
-/**
- * Checkbox component for proyecto-viviana-solid-spectrum
- *
- * A styled checkbox component built on top of solidaria-components.
- * This component only handles styling - all behavior and accessibility
- * is provided by the headless Checkbox from solidaria-components.
- */
-
 import { type JSX, splitProps, mergeProps as solidMergeProps, Show } from "solid-js";
 import {
   Checkbox as HeadlessCheckbox,
@@ -16,10 +8,6 @@ import {
   type CheckboxGroupRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type CheckboxSize = "sm" | "md" | "lg";
 
@@ -48,10 +36,6 @@ export interface CheckboxGroupProps extends Omit<
   errorMessage?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     box: "h-4 w-4",
@@ -69,10 +53,6 @@ const sizeStyles = {
     label: "text-lg",
   },
 };
-
-// ============================================
-// ICONS
-// ============================================
 
 function CheckIcon(props: { class?: string }) {
   return (
@@ -108,14 +88,9 @@ function IndeterminateIcon(props: { class?: string }) {
   );
 }
 
-// ============================================
-// CHECKBOX COMPONENT
-// ============================================
-
 /**
  * A checkbox allows users to select one or more items from a set.
  *
- * Built on solidaria-components Checkbox for full accessibility support.
  */
 export function Checkbox(props: CheckboxProps): JSX.Element {
   const providerProps = useProviderProps(props);
@@ -129,7 +104,6 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
 
   const size = () => sizeStyles[local.size!];
 
-  // Generate class based on render props
   const getClassName = (renderProps: CheckboxRenderProps): string => {
     const base = "inline-flex items-center gap-2 cursor-pointer";
     const disabledClass = renderProps.isDisabled ? "cursor-not-allowed opacity-50" : "";
@@ -199,14 +173,9 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
   );
 }
 
-// ============================================
-// CHECKBOX GROUP COMPONENT
-// ============================================
-
 /**
  * A checkbox group allows users to select multiple items from a list.
  *
- * Built on solidaria-components CheckboxGroup for full accessibility support.
  */
 export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
   const mergedProps = useProviderProps(props);
@@ -217,7 +186,6 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
     "errorMessage",
   ]);
 
-  // Generate class based on render props
   const getClassName = (renderProps: CheckboxGroupRenderProps): string => {
     const base = "flex flex-col gap-2";
     const disabledClass = renderProps.isDisabled ? "opacity-50" : "";

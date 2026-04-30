@@ -1,9 +1,3 @@
-/**
- * Card component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only surface container primitive.
- */
-
 import { type JSX, splitProps } from "solid-js";
 
 export interface CardProps extends JSX.HTMLAttributes<HTMLDivElement> {

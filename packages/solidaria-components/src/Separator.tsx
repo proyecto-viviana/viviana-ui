@@ -14,10 +14,6 @@ import {
 } from "@proyecto-viviana/solidaria";
 import { type SlotProps, filterDOMProps } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface SeparatorRenderProps {
   /** The orientation of the separator. */
   orientation: Orientation;
@@ -30,15 +26,7 @@ export interface SeparatorProps extends AriaSeparatorProps, SlotProps {
   style?: JSX.CSSProperties | ((renderProps: SeparatorRenderProps) => JSX.CSSProperties);
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const SeparatorContext = createContext<SeparatorProps | null>(null);
-
-// ============================================
-// SEPARATOR COMPONENT
-// ============================================
 
 /**
  * A separator is a visual divider between two groups of content,

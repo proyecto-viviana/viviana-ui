@@ -12,13 +12,8 @@ import { createListState } from "../collections/createListState";
 import { createOverlayTriggerState } from "../overlays";
 import type { Key, CollectionNode, Collection, FocusStrategy } from "../collections/types";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type MenuTriggerAction = "focus" | "input" | "manual";
 
-// Re-export FocusStrategy for convenience
 export type { FocusStrategy } from "../collections/types";
 
 export type FilterFn = (textValue: string, inputValue: string) => boolean;
@@ -141,20 +136,12 @@ export interface ComboBoxState<T = unknown> {
   readonly isRequired: boolean;
 }
 
-// ============================================
-// DEFAULT FILTER
-// ============================================
-
 /**
  * Default filter function that does case-insensitive "contains" matching.
  */
 export const defaultContainsFilter: FilterFn = (textValue, inputValue) => {
   return textValue.toLowerCase().includes(inputValue.toLowerCase());
 };
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Creates state for a combobox component.
@@ -646,10 +633,6 @@ export function createComboBoxState<T = unknown>(
     },
   };
 }
-
-// ============================================
-// COLLECTION FILTERING
-// ============================================
 
 /**
  * Filter a collection based on input value.

@@ -1,14 +1,4 @@
-/**
- * Field component for proyecto-viviana-solid-spectrum
- *
- * A compound field layout with label, input slot, help text, and error message.
- */
-
 import { type JSX, splitProps, Show } from "solid-js";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type FieldSize = "sm" | "md" | "lg";
 
@@ -35,19 +25,11 @@ export interface FieldProps {
   htmlFor?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles: Record<FieldSize, { label: string; text: string; gap: string }> = {
   sm: { label: "text-xs", text: "text-xs", gap: "gap-1" },
   md: { label: "text-sm", text: "text-sm", gap: "gap-1.5" },
   lg: { label: "text-base", text: "text-sm", gap: "gap-2" },
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A field layout component that provides label, help text, and error message

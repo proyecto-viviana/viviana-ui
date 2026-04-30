@@ -16,10 +16,6 @@ import {
 } from "./utils";
 import { Button, type ButtonProps } from "./Button";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type AlertVariant = "info" | "success" | "warning" | "error";
 
 export interface AlertRenderProps {
@@ -46,10 +42,6 @@ export interface AlertProps extends SlotProps {
   id?: string;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export interface AlertContextValue {
   variant: () => AlertVariant;
   isDismissible: () => boolean;
@@ -57,10 +49,6 @@ export interface AlertContextValue {
 }
 
 export const AlertContext = createContext<AlertContextValue | null>(null);
-
-// ============================================
-// ALERT COMPONENT
-// ============================================
 
 /**
  * An alert displays a brief, important message in a way that
@@ -139,10 +127,6 @@ export function Alert(props: AlertProps): JSX.Element {
     </AlertContext.Provider>
   );
 }
-
-// ============================================
-// ALERT DISMISS BUTTON
-// ============================================
 
 export interface AlertDismissButtonProps extends Omit<ButtonProps, "onPress"> {}
 

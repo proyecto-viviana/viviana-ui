@@ -23,10 +23,6 @@ import {
 } from "@internationalized/date";
 import { access, type MaybeAccessor } from "../utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type ValidationState = "valid" | "invalid";
 
 export interface CalendarStateProps<T extends DateValue = DateValue> {
@@ -142,10 +138,6 @@ export interface CalendarState<T extends DateValue = DateValue> {
   /** Whether the calendar is paginating (for animations). */
   isPaginating: Accessor<boolean>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides state management for a calendar component.
@@ -443,10 +435,6 @@ export function createCalendarState<T extends DateValue = CalendarDate>(
     isPaginating,
   };
 }
-
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
 
 /**
  * Converts a DateValue to a CalendarDate.

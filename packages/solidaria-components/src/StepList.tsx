@@ -20,10 +20,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface StepListItemRenderProps {
   /** Whether this step is currently selected. */
   isSelected: boolean;
@@ -86,10 +82,6 @@ export interface StepProps {
   style?: JSX.CSSProperties;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const StepListStateContext = createContext<StepListState | null>(null);
 export const StepListContext = createContext<{} | null>(null);
 
@@ -98,10 +90,6 @@ export function useStepListState(): StepListState {
   if (!ctx) throw new Error("useStepListState must be used within a StepList");
   return ctx;
 }
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * StepList displays a sequence of steps with completion tracking and selection.

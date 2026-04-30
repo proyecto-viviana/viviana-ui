@@ -1,19 +1,8 @@
-/**
- * ContextualHelpTrigger UI wrapper for proyecto-viviana-solid-spectrum
- *
- * A styled button that opens contextual help in a popover.
- * Accepts either `title`/`content` convenience props or raw children tuple.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   ContextualHelpTrigger as HeadlessContextualHelpTrigger,
   type ContextualHelpTriggerProps as HeadlessContextualHelpTriggerProps,
 } from "@proyecto-viviana/solidaria-components";
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface ContextualHelpTriggerProps extends Omit<
   HeadlessContextualHelpTriggerProps,
@@ -30,10 +19,6 @@ export interface ContextualHelpTriggerProps extends Omit<
   /** Raw children tuple [trigger, content] — overrides title/content props. */
   children?: [JSX.Element, JSX.Element];
 }
-
-// ============================================
-// HELPERS
-// ============================================
 
 const helpIcon = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -52,10 +37,6 @@ const infoIcon = (
     </text>
   </svg>
 );
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A button that opens contextual help in a popover.

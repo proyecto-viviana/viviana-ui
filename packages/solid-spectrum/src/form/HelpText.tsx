@@ -1,14 +1,4 @@
-/**
- * HelpText component for proyecto-viviana-solid-spectrum
- *
- * Displays description or error text below a form field.
- */
-
 import { type JSX, splitProps, Show } from "solid-js";
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface HelpTextProps {
   /** The description text. */
@@ -22,10 +12,6 @@ export interface HelpTextProps {
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * Displays description or error text below a form field.

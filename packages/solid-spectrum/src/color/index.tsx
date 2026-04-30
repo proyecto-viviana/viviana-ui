@@ -1,10 +1,3 @@
-/**
- * Color components for proyecto-viviana-solid-spectrum
- *
- * Styled color picker components built on top of solidaria-components.
- * Inspired by Spectrum 2's color picker patterns.
- */
-
 import { type JSX, splitProps, createContext, createMemo, useContext, Show } from "solid-js";
 import {
   ColorSlider as HeadlessColorSlider,
@@ -36,10 +29,6 @@ import {
 } from "@proyecto-viviana/solidaria-components";
 import type { Color, ColorChannel, ColorFormat } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// SIZE CONTEXT
-// ============================================
-
 export type ColorSize = "sm" | "md" | "lg";
 
 interface ColorContextValue {
@@ -47,10 +36,6 @@ interface ColorContextValue {
 }
 
 const ColorSizeContext = createContext<ColorContextValue>({ size: "md" });
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -117,10 +102,6 @@ const sizeStyles = {
     swatch: "w-12 h-12",
   },
 };
-
-// ============================================
-// COLOR SLIDER
-// ============================================
 
 export interface ColorSliderProps extends Omit<
   HeadlessColorSliderProps,
@@ -231,10 +212,6 @@ export function ColorSliderThumb(props: { class?: string }): JSX.Element {
   return <HeadlessColorSliderThumb class={getClassName} />;
 }
 
-// ============================================
-// COLOR AREA
-// ============================================
-
 export interface ColorAreaProps extends Omit<
   HeadlessColorAreaProps,
   "class" | "style" | "children"
@@ -320,10 +297,6 @@ export function ColorAreaThumb(props: { class?: string }): JSX.Element {
 
   return <HeadlessColorAreaThumb class={getClassName} />;
 }
-
-// ============================================
-// COLOR WHEEL
-// ============================================
 
 export interface ColorWheelProps extends Omit<
   HeadlessColorWheelProps,
@@ -411,10 +384,6 @@ export function ColorWheelThumb(props: { class?: string }): JSX.Element {
 
   return <HeadlessColorWheelThumb class={getClassName} />;
 }
-
-// ============================================
-// COLOR FIELD
-// ============================================
 
 export interface ColorFieldProps extends Omit<
   HeadlessColorFieldProps,
@@ -508,10 +477,6 @@ export function ColorFieldInput(props: { class?: string; isInvalid?: boolean }):
   return <HeadlessColorFieldInput class={className} />;
 }
 
-// ============================================
-// COLOR SWATCH
-// ============================================
-
 export interface ColorSwatchProps extends Omit<HeadlessColorSwatchProps, "class" | "style"> {
   /** The size of the color swatch. */
   size?: ColorSize;
@@ -594,10 +559,6 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
     <HeadlessColorSwatch {...headlessProps} aria-label={local["aria-label"]} class={getClassName} />
   );
 }
-
-// ============================================
-// COLOR PICKER (Composite Component)
-// ============================================
 
 export interface ColorPickerProps {
   /** The current color value (controlled). */
@@ -698,7 +659,6 @@ export function ColorPicker(props: ColorPickerProps): JSX.Element {
   );
 }
 
-// Attach sub-components for convenience
 ColorSlider.Track = ColorSliderTrack;
 ColorSlider.Thumb = ColorSliderThumb;
 ColorArea.Gradient = ColorAreaGradient;
@@ -707,10 +667,8 @@ ColorWheel.Track = ColorWheelTrack;
 ColorWheel.Thumb = ColorWheelThumb;
 ColorField.Input = ColorFieldInput;
 
-// Re-export types for convenience
 export type { Color, ColorChannel, ColorFormat };
 
-// Re-exports from lower layers
 export { parseColor, getColorChannels } from "@proyecto-viviana/solid-stately";
 
 // ColorEditor

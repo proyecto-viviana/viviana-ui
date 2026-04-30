@@ -1,9 +1,3 @@
-/**
- * ButtonGroup component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only button grouping primitive.
- */
-
 import { type JSX, splitProps } from "solid-js";
 
 export interface ButtonGroupProps extends JSX.HTMLAttributes<HTMLDivElement> {

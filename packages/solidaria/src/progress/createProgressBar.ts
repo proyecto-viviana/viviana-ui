@@ -13,10 +13,6 @@ import { mergeProps } from "../utils/mergeProps";
 import { filterDOMProps } from "../utils/filterDOMProps";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaProgressBarProps {
   /** The current value (controlled). */
   value?: number;
@@ -49,10 +45,6 @@ export interface ProgressBarAria {
   labelProps: Record<string, unknown>;
 }
 
-// ============================================
-// UTILITIES
-// ============================================
-
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
@@ -61,10 +53,6 @@ function getSafeRange(min: number, max: number): number {
   const range = max - min;
   return Number.isFinite(range) && range > 0 ? range : 1;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the accessibility implementation for a progress bar component.

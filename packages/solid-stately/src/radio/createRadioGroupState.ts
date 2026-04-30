@@ -17,10 +17,6 @@ import {
   type ValidationResult,
 } from "../form";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface RadioGroupProps {
   /** The current selected value (controlled). */
   value?: string | null;
@@ -100,10 +96,6 @@ export interface RadioGroupState extends Pick<
   readonly displayValidation: Accessor<ValidationResult>;
 }
 
-// ============================================
-// INTERNAL: SolidJS-specific sync mechanism
-// ============================================
-
 /**
  * Internal WeakMap to store sync version accessors for each radio group state.
  * This is used by createRadio to trigger DOM sync when native radio behavior
@@ -113,10 +105,6 @@ export interface RadioGroupState extends Pick<
  * @internal
  */
 export const radioGroupSyncVersion: WeakMap<RadioGroupState, Accessor<number>> = new WeakMap();
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides state management for a radio group component.

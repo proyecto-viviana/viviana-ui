@@ -1,9 +1,3 @@
-/**
- * DropZone component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only wrapper around solidaria-components DropZone primitive.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   DropZone as HeadlessDropZone,

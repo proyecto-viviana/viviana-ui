@@ -18,10 +18,6 @@ import { isServer } from "solid-js/web";
 import { getOwnerDocument, isFocusable } from "../utils";
 import { focusSafely } from "../utils/focus";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface FocusScopeProps {
   /** The contents of the focus scope. */
   children: JSX.Element;
@@ -61,10 +57,6 @@ export interface FocusManager {
   focusLast(opts?: FocusManagerOptions): HTMLElement | null;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface FocusScopeContextValue {
   focusManager: FocusManager;
   scopeRef: Accessor<Element[]>;
@@ -80,10 +72,6 @@ const FocusScopeContext = createContext<FocusScopeContextValue | null>(null);
 export function useFocusManager(): FocusManager | undefined {
   return useContext(FocusScopeContext)?.focusManager;
 }
-
-// ============================================
-// UTILITIES
-// ============================================
 
 /**
  * Checks if an element is tabbable (focusable via Tab key).
@@ -146,10 +134,6 @@ function getActiveElement(doc: Document): Element | null {
   }
   return activeElement;
 }
-
-// ============================================
-// FOCUS SCOPE COMPONENT
-// ============================================
 
 /**
  * A FocusScope manages focus for its descendants. It supports containing focus inside

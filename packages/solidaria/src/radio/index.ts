@@ -1,4 +1,3 @@
-// Re-export state from solid-stately
 export {
   createRadioGroupState,
   radioGroupSyncVersion,

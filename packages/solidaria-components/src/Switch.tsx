@@ -25,10 +25,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ToggleSwitchRenderProps {
   /** Whether the switch is selected. */
   isSelected: boolean;
@@ -63,15 +59,7 @@ export interface ToggleSwitchProps extends Omit<AriaSwitchProps, "children">, Sl
   errorMessage?: JSX.Element;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const ToggleSwitchContext = createContext<ToggleSwitchProps | null>(null);
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A switch allows a user to turn a setting on or off.

@@ -1,19 +1,8 @@
-/**
- * Meter component for proyecto-viviana-solid-spectrum
- *
- * Styled meter component built on top of solidaria-components.
- * Meters represent a quantity within a known range (unlike progress bars which show progress toward a goal).
- */
-
 import { type JSX, splitProps, Show, createUniqueId } from "solid-js";
 import {
   Meter as HeadlessMeter,
   type MeterRenderProps as HeadlessMeterRenderProps,
 } from "@proyecto-viviana/solidaria-components";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type MeterSize = "sm" | "md" | "lg";
 export type MeterVariant = "primary" | "accent" | "success" | "warning" | "danger" | "info";
@@ -43,10 +32,6 @@ export interface MeterProps {
   "aria-labelledby"?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     track: "h-1",
@@ -70,10 +55,6 @@ const variantStyles = {
   danger: "bg-red-500",
   info: "bg-blue-500",
 };
-
-// ============================================
-// METER COMPONENT
-// ============================================
 
 /**
  * Meters represent a quantity within a known range, or a fractional value.

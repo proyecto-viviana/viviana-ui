@@ -11,10 +11,6 @@ import { createId } from "../ssr";
 import { useLocale } from "../i18n";
 import type { Key, Collection, CollectionNode } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type TabOrientation = "horizontal" | "vertical";
 export type KeyboardActivation = "automatic" | "manual";
 
@@ -127,10 +123,6 @@ export interface TabPanelAria {
   isSelected: Accessor<boolean>;
 }
 
-// ============================================
-// ID MANAGEMENT
-// ============================================
-
 const tabListIds = new WeakMap<TabListState<unknown>, string>();
 
 function getTabListId<T>(state: TabListState<T>): string {
@@ -153,10 +145,6 @@ function generateTabPanelId<T>(state: TabListState<T>, key: Key): string {
   const keyStr = String(key).replace(/\s+/g, "-");
   return `${baseId}-tabpanel-${keyStr}`;
 }
-
-// ============================================
-// KEYBOARD DELEGATE
-// ============================================
 
 function getNextKey<T>(state: TabListState<T>, currentKey: Key): Key | null {
   const coll = state.collection();
@@ -216,10 +204,6 @@ function getLastKey<T>(state: TabListState<T>): Key | null {
   }
   return null;
 }
-
-// ============================================
-// HOOKS
-// ============================================
 
 /**
  * Creates ARIA props for a tab list container.

@@ -1,4 +1,3 @@
-// Re-export state from solid-stately
 export { createToggleState } from "@proyecto-viviana/solid-stately";
 export type { ToggleStateOptions, ToggleState } from "@proyecto-viviana/solid-stately";
 

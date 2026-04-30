@@ -987,10 +987,6 @@ export {
   type RouterOptions,
 } from "./RouterProvider";
 
-// ============================================
-// RE-EXPORTS FROM LOWER LAYERS
-// ============================================
-
 // DnD utilities
 export { DIRECTORY_DRAG_TYPE } from "@proyecto-viviana/solid-stately";
 export { isDirectoryDropItem, isFileDropItem, isTextDropItem } from "@proyecto-viviana/solidaria";

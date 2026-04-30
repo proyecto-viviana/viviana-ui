@@ -10,10 +10,6 @@ import { createMemo } from "solid-js";
 import { useLocale } from "./locale";
 import { createCacheKey } from "./utils";
 
-// ============================================
-// CACHE
-// ============================================
-
 const collatorCache = new Map<string, Intl.Collator>();
 
 /**
@@ -30,10 +26,6 @@ function getCachedCollator(locale: string, options?: Intl.CollatorOptions): Intl
   collatorCache.set(cacheKey, collator);
   return collator;
 }
-
-// ============================================
-// HOOK
-// ============================================
 
 /**
  * Provides localized string collation for the current locale.

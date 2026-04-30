@@ -1,9 +1,3 @@
-/**
- * Image component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only wrapper for semantic images.
- */
-
 import { type JSX, splitProps } from "solid-js";
 
 export interface ImageProps extends JSX.ImgHTMLAttributes<HTMLImageElement> {

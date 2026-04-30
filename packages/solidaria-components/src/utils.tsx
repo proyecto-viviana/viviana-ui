@@ -17,10 +17,6 @@ import {
 } from "solid-js";
 import { isServer } from "solid-js/web";
 
-// ============================================
-// TYPES
-// ============================================
-
 /**
  * Render props pattern - children can be a function that receives state
  */
@@ -57,10 +53,6 @@ export interface SlotProps {
 }
 
 export const DEFAULT_SLOT = "default";
-
-// ============================================
-// RENDER PROPS
-// ============================================
 
 /**
  * Return type for useRenderProps
@@ -147,10 +139,6 @@ export function composeRenderProps<T extends object>(
   };
 }
 
-// ============================================
-// CONTEXT UTILITIES
-// ============================================
-
 /**
  * Context value that can be null or the actual value
  */
@@ -187,10 +175,6 @@ export const Provider: ParentComponent<{
   return props.children;
 };
 
-// ============================================
-// DATA ATTRIBUTES
-// ============================================
-
 /**
  * Converts boolean state values to data attributes
  */
@@ -220,10 +204,6 @@ export function createDataAttributes<T extends Record<string, boolean | string |
 function camelToKebab(str: string): string {
   return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 }
-
-// ============================================
-// PROPS UTILITIES
-// ============================================
 
 /**
  * Remove data attributes from props (for internal use)
@@ -288,10 +268,6 @@ export function filterDOMProps<R extends object = Record<string, unknown>>(
 
   return result as R;
 }
-
-// ============================================
-// CLIENT-ONLY UTILITIES
-// ============================================
 
 export interface ClientOnlyProps {
   /** The children to render only on the client */

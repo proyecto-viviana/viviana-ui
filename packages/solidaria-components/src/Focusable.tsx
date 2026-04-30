@@ -14,20 +14,12 @@ import {
 } from "solid-js";
 import { createFocusable, type CreateFocusableProps } from "@proyecto-viviana/solidaria";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface FocusableProps extends CreateFocusableProps {
   /** A single child element to make focusable. */
   children: JSX.Element;
   /** Ref callback. */
   ref?: HTMLElement | ((el: HTMLElement) => void);
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * Makes its child element focusable and capable of auto focus.

@@ -1,27 +1,13 @@
-/**
- * Keyboard component for proyecto-viviana-solid-spectrum
- *
- * Styled <kbd> element wrapping the headless Keyboard component.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Keyboard as HeadlessKeyboard,
   type KeyboardProps as HeadlessKeyboardProps,
 } from "@proyecto-viviana/solidaria-components";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface KeyboardProps extends Omit<HeadlessKeyboardProps, "class"> {
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * Displays a keyboard shortcut or key combination in a styled <kbd> tag.

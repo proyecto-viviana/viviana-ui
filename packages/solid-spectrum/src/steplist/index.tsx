@@ -1,10 +1,3 @@
-/**
- * StepList component for proyecto-viviana-solid-spectrum.
- *
- * Styled step list built on top of solidaria-components.
- * Horizontal layout with numbered indicators, connector lines, and visual states.
- */
-
 import { type JSX, splitProps, createContext, useContext } from "solid-js";
 import {
   StepList as HeadlessStepList,
@@ -16,10 +9,6 @@ import {
 import type { Key } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// SIZE CONTEXT
-// ============================================
-
 export type StepListSize = "sm" | "md" | "lg";
 
 interface StepListContextValue {
@@ -27,10 +16,6 @@ interface StepListContextValue {
 }
 
 const StepListSizeContext = createContext<StepListContextValue>({ size: "md" });
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface StepListProps<T extends { key: Key; label: string }> extends Omit<
   HeadlessStepListProps<T>,
@@ -48,10 +33,6 @@ export interface StepProps extends Omit<HeadlessStepProps, "class" | "style"> {
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -77,14 +58,9 @@ const sizeStyles = {
   },
 };
 
-// ============================================
-// STEPLIST COMPONENT
-// ============================================
-
 /**
  * StepList displays a sequence of steps with visual indicators and connector lines.
  *
- * Built on solidaria-components StepList for full accessibility support.
  */
 export function StepList<T extends { key: Key; label: string }>(
   props: StepListProps<T>,
@@ -122,10 +98,6 @@ export function StepList<T extends { key: Key; label: string }>(
     </StepListSizeContext.Provider>
   );
 }
-
-// ============================================
-// DEFAULT STEP RENDERING
-// ============================================
 
 function DefaultStep<T extends { key: Key; label: string }>(props: {
   item: T;
@@ -210,10 +182,6 @@ function DefaultStep<T extends { key: Key; label: string }>(props: {
   );
 }
 
-// ============================================
-// STEP COMPONENT (pass-through for custom rendering)
-// ============================================
-
 /**
  * Step represents an individual styled step within a StepList.
  * Use this when providing custom step rendering via StepList children.
@@ -222,10 +190,6 @@ export function Step(props: StepProps): JSX.Element {
   const [local, headlessProps] = splitProps(props, ["class"]);
   return <HeadlessStep {...headlessProps} class={local.class} />;
 }
-
-// ============================================
-// ICONS
-// ============================================
 
 function CheckIcon(): JSX.Element {
   return (

@@ -21,10 +21,6 @@ import {
 import { Button } from "./Button";
 import type { PressEvent } from "@proyecto-viviana/solidaria";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface IconRenderProps {
   /** Whether the icon is purely decorative (no label). */
   isDecorative: boolean;
@@ -49,15 +45,7 @@ export interface IconProps extends SlotProps {
   id?: string;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const IconContext = createContext<IconProps | null>(null);
-
-// ============================================
-// ICON COMPONENT
-// ============================================
 
 /**
  * An icon wrapper that provides correct ARIA semantics.

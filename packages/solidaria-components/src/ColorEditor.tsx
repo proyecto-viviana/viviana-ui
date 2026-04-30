@@ -20,10 +20,6 @@ import {
 import { getColorChannels } from "@proyecto-viviana/solid-stately";
 import type { Color, ColorChannel, ColorSpace } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type ColorEditorColorSpace = "rgb" | "hsl" | "hsb";
 
 export interface ColorEditorRenderProps {
@@ -52,10 +48,6 @@ export interface ColorEditorProps {
   /** Whether the editor is disabled. */
   isDisabled?: boolean;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * ColorEditor provides a default UI for editing colors.

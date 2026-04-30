@@ -19,10 +19,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface MeterRenderProps {
   /** The value as a percentage between the minimum and maximum (0-100). */
   percentage: number;
@@ -39,15 +35,7 @@ export interface MeterProps extends AriaMeterProps, SlotProps {
   style?: StyleOrFunction<MeterRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const MeterContext = createContext<MeterProps | null>(null);
-
-// ============================================
-// UTILITIES
-// ============================================
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -57,10 +45,6 @@ function getSafeRange(min: number, max: number): number {
   const range = max - min;
   return Number.isFinite(range) && range > 0 ? range : 1;
 }
-
-// ============================================
-// METER COMPONENT
-// ============================================
 
 /**
  * A meter represents a quantity within a known range, or a fractional value.

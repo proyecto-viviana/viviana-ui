@@ -1,11 +1,3 @@
-/**
- * Theme Dark module for proyecto-viviana-solid-spectrum
- *
- * Dark theme CSS custom properties using the unified --color-* naming
- * that matches the Tailwind @theme tokens in theme.css.
- * Apply via Provider with colorScheme="dark".
- */
-
 import type { Theme } from "../theme/types";
 
 export const themeDarkClass = "vui-theme-dark";

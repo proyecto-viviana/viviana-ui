@@ -10,10 +10,6 @@ import { type JSX, createMemo } from "solid-js";
 import { type QueuedToast, type ToastState } from "@proyecto-viviana/solid-stately";
 import { createId } from "../ssr";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaToastProps<T> {
   /** The toast to display. */
   toast: QueuedToast<T>;
@@ -37,10 +33,6 @@ export interface ToastAria {
   /** Props for the close button. */
   closeButtonProps: JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the accessibility implementation for a Toast component.

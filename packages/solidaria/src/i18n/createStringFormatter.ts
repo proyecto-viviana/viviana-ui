@@ -83,7 +83,6 @@ export function createStringFormatter<
   return createMemo(() => new LocalizedStringFormatter(localeAccessor().locale, dictionary));
 }
 
-// Re-export types for convenience
 export type {
   LocalizedString,
   LocalizedStringDictionary,

@@ -1,10 +1,3 @@
-/**
- * ComboBox component for proyecto-viviana-solid-spectrum
- *
- * Styled combobox component built on top of solidaria-components.
- * Inspired by Spectrum 2's ComboBox component patterns.
- */
-
 import { type JSX, splitProps, createContext, useContext, Show } from "solid-js";
 import {
   ComboBox as HeadlessComboBox,
@@ -34,17 +27,9 @@ import {
 import type { Key, FilterFn, MenuTriggerAction } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// SIZE CONTEXT
-// ============================================
-
 export type ComboBoxSize = "sm" | "md" | "lg";
 
 const ComboBoxSizeContext = createContext<ComboBoxSize>("md");
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface ComboBoxProps<T> extends Omit<HeadlessComboBoxProps<T>, "class" | "style"> {
   /** The size of the combobox. */
@@ -87,10 +72,6 @@ export interface ComboBoxOptionProps<T> extends Omit<
   class?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     wrapper: "h-8",
@@ -118,14 +99,9 @@ const sizeStyles = {
   },
 };
 
-// ============================================
-// COMBOBOX COMPONENT
-// ============================================
-
 /**
  * A combobox combines a text input with a listbox, allowing users to filter a list of options.
  *
- * Built on solidaria-components ComboBox for full accessibility support.
  */
 export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
   const mergedProps = useProviderProps(props);
@@ -178,10 +154,6 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
   );
 }
 
-// ============================================
-// COMBOBOX INPUT GROUP COMPONENT
-// ============================================
-
 /**
  * A wrapper for the input and button that provides proper styling.
  */
@@ -195,10 +167,6 @@ export function ComboBoxInputGroup(props: { children: JSX.Element; class?: strin
     </div>
   );
 }
-
-// ============================================
-// COMBOBOX INPUT COMPONENT
-// ============================================
 
 /**
  * The text input for a combobox.
@@ -234,10 +202,6 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
 
   return <HeadlessComboBoxInput {...headlessProps} class={getClassName} />;
 }
-
-// ============================================
-// COMBOBOX BUTTON COMPONENT
-// ============================================
 
 /**
  * The trigger button for a combobox.
@@ -280,10 +244,6 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
   );
 }
 
-// ============================================
-// COMBOBOX LISTBOX COMPONENT
-// ============================================
-
 /**
  * The listbox popup for a combobox.
  */
@@ -301,10 +261,6 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
     <HeadlessComboBoxListBox {...headlessProps} class={getClassName} children={props.children} />
   );
 }
-
-// ============================================
-// COMBOBOX OPTION COMPONENT
-// ============================================
 
 /**
  * An option in a combobox listbox.
@@ -353,10 +309,6 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
   );
 }
 
-// ============================================
-// COMBOBOX TAG GROUP COMPONENT
-// ============================================
-
 export interface ComboBoxTagGroupProps extends Omit<
   HeadlessComboBoxTagGroupProps,
   "class" | "style"
@@ -378,10 +330,6 @@ export function ComboBoxTagGroup(props: ComboBoxTagGroupProps): JSX.Element {
     />
   );
 }
-
-// ============================================
-// COMBOBOX TAG COMPONENT
-// ============================================
 
 export interface ComboBoxTagProps extends Omit<HeadlessComboBoxTagProps, "class" | "style"> {
   /** Additional CSS class name. */
@@ -409,10 +357,6 @@ export function ComboBoxTag(props: ComboBoxTagProps): JSX.Element {
   );
 }
 
-// ============================================
-// ICONS
-// ============================================
-
 function ChevronIcon(props: { class?: string }): JSX.Element {
   return (
     <svg class={props.class} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -429,7 +373,6 @@ function CheckIcon(props: { class?: string }): JSX.Element {
   );
 }
 
-// Attach sub-components for convenience
 ComboBox.InputGroup = ComboBoxInputGroup;
 ComboBox.Input = ComboBoxInput;
 ComboBox.Button = ComboBoxButton;
@@ -440,6 +383,5 @@ ComboBox.Tag = ComboBoxTag;
 
 export const Item = ComboBoxOption;
 
-// Re-export types and utilities for convenience
 export type { Key, FilterFn, MenuTriggerAction };
 export { defaultContainsFilter };

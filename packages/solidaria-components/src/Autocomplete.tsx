@@ -29,20 +29,12 @@ import {
 } from "@proyecto-viviana/solid-stately";
 import { type SlotProps } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AutocompleteProps<T = unknown>
   extends
     Omit<AutocompleteStateOptions, "children">,
     Omit<AriaAutocompleteOptions<T>, "inputRef" | "collectionRef">,
     ParentProps,
     SlotProps {}
-
-// ============================================
-// CONTEXTS
-// ============================================
 
 export interface AutocompleteContextValue {
   inputProps: AutocompleteInputProps;
@@ -82,10 +74,6 @@ export function useAutocompleteState() {
 export function useAutocompleteCollection() {
   return useContext(AutocompleteCollectionContext);
 }
-
-// ============================================
-// AUTOCOMPLETE COMPONENT
-// ============================================
 
 /**
  * An autocomplete allows users to search or filter a list of suggestions.

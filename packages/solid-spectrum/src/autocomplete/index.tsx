@@ -1,10 +1,3 @@
-/**
- * SearchAutocomplete component for proyecto-viviana-solid-spectrum
- *
- * Styled autocomplete built on top of headless-backed ComboBox.
- * UI layer owns styling only; behavior lives in solidaria layers.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   ComboBox,
@@ -15,10 +8,6 @@ import {
   type FilterFn,
   type Key,
 } from "../combobox";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type SearchAutocompleteSize = "sm" | "md" | "lg";
 
@@ -63,10 +52,6 @@ export interface SearchAutocompleteProps<
   textKey?: keyof T;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     container: "text-sm",
@@ -78,10 +63,6 @@ const sizeStyles = {
     container: "text-lg",
   },
 };
-
-// ============================================
-// SEARCH AUTOCOMPLETE COMPONENT
-// ============================================
 
 /**
  * A styled autocomplete component for searching and selecting from a list.

@@ -10,10 +10,6 @@ import { type JSX, createMemo } from "solid-js";
 import { type DisclosureGroupState } from "@proyecto-viviana/solid-stately";
 import { access, type MaybeAccessor } from "../utils/reactivity";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaDisclosureGroupProps {
   /** Whether the disclosure group is disabled. */
   isDisabled?: boolean;
@@ -23,10 +19,6 @@ export interface DisclosureGroupAria {
   /** Props for the disclosure group container. */
   groupProps: JSX.HTMLAttributes<HTMLElement>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides accessibility implementation for a group of disclosures (accordion).

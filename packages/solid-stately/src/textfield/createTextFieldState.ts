@@ -10,10 +10,6 @@
 import { createSignal, Accessor } from "solid-js";
 import { type MaybeAccessor, access } from "../utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TextFieldStateOptions {
   /** The current value (controlled). */
   value?: string;
@@ -29,10 +25,6 @@ export interface TextFieldState {
   /** Sets the value of the text field. */
   setValue(value: string): void;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides state management for text input components.

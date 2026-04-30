@@ -9,10 +9,6 @@ import { type JSX, type ParentProps, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { createVisuallyHidden, mergeProps } from "@proyecto-viviana/solidaria";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface VisuallyHiddenProps extends ParentProps, JSX.HTMLAttributes<HTMLElement> {
   /** The element type to render. @default 'span' */
   elementType?: keyof JSX.IntrinsicElements;
@@ -21,10 +17,6 @@ export interface VisuallyHiddenProps extends ParentProps, JSX.HTMLAttributes<HTM
   /** Inline style object merged with visually hidden styles. */
   style?: JSX.CSSProperties;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * VisuallyHidden hides its children visually, while keeping content visible to screen readers.

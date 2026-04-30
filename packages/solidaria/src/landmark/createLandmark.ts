@@ -13,10 +13,6 @@ import { createEffect, onCleanup } from "solid-js";
 import { access, type MaybeAccessor } from "../utils";
 import { filterDOMProps } from "../utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 /** ARIA landmark roles */
 export type AriaLandmarkRole =
   | "main"
@@ -63,10 +59,6 @@ export interface LandmarkController {
   navigate: (role: AriaLandmarkRole) => void;
 }
 
-// ============================================
-// INTERNAL: Landmark Entry
-// ============================================
-
 interface LandmarkEntry {
   ref: HTMLElement;
   role: AriaLandmarkRole;
@@ -74,10 +66,6 @@ interface LandmarkEntry {
   focus?: () => void;
   lastFocused?: HTMLElement;
 }
-
-// ============================================
-// LANDMARK MANAGER (Singleton)
-// ============================================
 
 /**
  * Manages all registered landmarks and handles F6 keyboard navigation.
@@ -290,10 +278,6 @@ function getLandmarkManager(): LandmarkManager {
   return landmarkManager;
 }
 
-// ============================================
-// CREATE LANDMARK
-// ============================================
-
 /**
  * Provides landmark navigation in an application.
  * Call this with a role and label to register a landmark navigable with F6.
@@ -356,10 +340,6 @@ export function createLandmark<T extends HTMLElement = HTMLElement>(
     },
   };
 }
-
-// ============================================
-// LANDMARK CONTROLLER
-// ============================================
 
 /**
  * Returns a controller for programmatic landmark navigation.

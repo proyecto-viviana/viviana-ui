@@ -10,10 +10,6 @@ import { filterDOMProps } from "../utils/filterDOMProps";
 import { mergeProps } from "../utils/mergeProps";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaBreadcrumbsProps {
   /** Provides a label for the breadcrumbs navigation. */
   "aria-label"?: string;
@@ -45,10 +41,6 @@ export interface BreadcrumbItemAria extends LinkAria {
   /** Props for the breadcrumb item element. */
   itemProps: Record<string, unknown>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides accessibility implementation for the breadcrumbs navigation container.

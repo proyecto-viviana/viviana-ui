@@ -10,10 +10,6 @@
 
 import { createProgressBar, type AriaProgressBarProps } from "../progress/createProgressBar";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaMeterProps extends Omit<AriaProgressBarProps, "isIndeterminate"> {
   /** The current value (controlled). */
   value?: number;
@@ -43,10 +39,6 @@ export interface MeterAria {
   /** Props for the meter's visual label element (if any). */
   labelProps: Record<string, unknown>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the accessibility implementation for a meter component.

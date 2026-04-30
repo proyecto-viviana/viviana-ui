@@ -1,7 +1,3 @@
-// ============================================
-// SPECTRUM-BASED COMPONENTS
-// ============================================
-
 // Button
 export { Button } from "./button";
 export type {
@@ -734,10 +730,6 @@ export type {
   SolidSpectrumThemeResult,
   ColorScheme as ThemeColorScheme,
 } from "./theme";
-
-// ============================================
-// CUSTOM COMPONENTS
-// ============================================
 
 // Chip
 export { Chip } from "./custom/chip";

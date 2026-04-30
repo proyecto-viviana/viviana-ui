@@ -1,11 +1,3 @@
-/**
- * Landmark component for proyecto-viviana-solid-spectrum
- *
- * Styled landmark component built on top of solidaria-components.
- * Landmarks help screen reader users navigate between major sections of a page.
- * Press F6 to cycle through landmarks, or Shift+F6 to go backwards.
- */
-
 import { type JSX, splitProps, Show } from "solid-js";
 import {
   Landmark as HeadlessLandmark,
@@ -15,10 +7,6 @@ import {
   type LandmarkController,
 } from "@proyecto-viviana/solidaria-components";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface LandmarkProps extends Omit<HeadlessLandmarkProps, "class" | "style"> {
   /** Additional CSS class name. */
   class?: string;
@@ -27,10 +15,6 @@ export interface LandmarkProps extends Omit<HeadlessLandmarkProps, "class" | "st
 }
 
 export type { AriaLandmarkRole, LandmarkController };
-
-// ============================================
-// STYLES
-// ============================================
 
 const roleLabels: Record<AriaLandmarkRole, string> = {
   main: "Main",
@@ -53,10 +37,6 @@ const roleColors: Record<AriaLandmarkRole, string> = {
   form: "bg-accent-200/10 border-accent-200",
   region: "bg-bg-200/50 border-bg-300",
 };
-
-// ============================================
-// LANDMARK COMPONENT
-// ============================================
 
 /**
  * A landmark is a region of the page that helps screen reader users navigate.
@@ -110,10 +90,6 @@ export function Landmark(props: LandmarkProps): JSX.Element {
   );
 }
 
-// ============================================
-// SKIP LINK COMPONENT
-// ============================================
-
 export interface SkipLinkProps {
   /** The ID of the element to skip to (usually the main landmark). */
   href: string;
@@ -161,10 +137,6 @@ export function SkipLink(props: SkipLinkProps): JSX.Element {
     </a>
   );
 }
-
-// ============================================
-// LANDMARK NAVIGATOR COMPONENT
-// ============================================
 
 export interface LandmarkNavigatorProps {
   /** Additional CSS class name. */

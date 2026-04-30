@@ -1,11 +1,3 @@
-/**
- * Popover component for proyecto-viviana-solid-spectrum
- *
- * A popover displays content in an overlay positioned relative to a trigger.
- * Built on top of solidaria-components for accessibility.
- * Follows Spectrum 2 design patterns.
- */
-
 import { type JSX, Show, splitProps } from "solid-js";
 import {
   Popover as HeadlessPopover,
@@ -15,10 +7,6 @@ import {
   type PopoverTriggerProps as HeadlessPopoverTriggerProps,
   type PopoverRenderProps,
 } from "@proyecto-viviana/solidaria-components";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type PopoverPlacement = NonNullable<HeadlessPopoverProps["placement"]>;
 export type Placement = PopoverPlacement;
@@ -44,10 +32,6 @@ export interface PopoverProps extends Omit<HeadlessPopoverProps, "class" | "styl
   /** Custom padding inside the popover. */
   padding?: "none" | "sm" | "md" | "lg";
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const baseStyles = [
   "bg-bg-300",
@@ -96,10 +80,6 @@ const getArrowRotation = (placement: PlacementAxis | null): string => {
       return "";
   }
 };
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * PopoverTrigger wraps around a trigger element and a Popover.
@@ -220,10 +200,6 @@ function PopoverArrow(props: PopoverArrowProps): JSX.Element {
   );
 }
 
-// ============================================
-// POPOVER CONTENT SECTIONS
-// ============================================
-
 export interface PopoverHeaderProps {
   /** The title of the popover. */
   title: string;
@@ -267,5 +243,4 @@ export function PopoverFooter(props: PopoverFooterProps): JSX.Element {
   );
 }
 
-// Re-export types
 export type { PopoverRenderProps };

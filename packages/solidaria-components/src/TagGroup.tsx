@@ -41,10 +41,6 @@ import {
   type SelectionIndicatorContextValue,
 } from "./SelectionIndicator";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TagGroupRenderProps {
   /** Whether the tag group is disabled. */
   isDisabled: boolean;
@@ -146,10 +142,6 @@ export interface TagProps extends SlotProps {
   style?: StyleOrFunction<TagRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface TagGroupContextValue {
   state: ListState;
   onRemove?: (keys: Set<Key>) => void;
@@ -168,10 +160,6 @@ export const TagContext = createContext<TagContextValue | null>(null);
 export function useTagGroupContext(): TagGroupContextValue | null {
   return useContext(TagGroupContext);
 }
-
-// ============================================
-// TAG GROUP COMPONENT
-// ============================================
 
 /**
  * A tag group is a focusable list of labels, categories, keywords, filters, or other items,
@@ -201,10 +189,6 @@ export function TagGroup(props: TagGroupProps): JSX.Element {
     </div>
   );
 }
-
-// ============================================
-// TAG LIST COMPONENT
-// ============================================
 
 /**
  * TagList contains the list of tags within a TagGroup.
@@ -358,10 +342,6 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
   );
 }
 
-// ============================================
-// TAG COMPONENT
-// ============================================
-
 /**
  * A Tag is an individual item within a TagList.
  */
@@ -475,10 +455,6 @@ export function Tag(props: TagProps): JSX.Element {
   );
 }
 
-// ============================================
-// TAG REMOVE BUTTON COMPONENT
-// ============================================
-
 export interface TagRemoveButtonProps {
   /** The children of the button (usually an X icon). */
   children?: JSX.Element;
@@ -531,5 +507,4 @@ export function TagRemoveButton(props: TagRemoveButtonProps): JSX.Element {
   );
 }
 
-// Re-export types
 export type { Key, SelectionMode, SelectionBehavior };

@@ -23,10 +23,6 @@ import {
   isFocusVisible as isGlobalFocusVisible,
 } from "./createInteractionModality";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface FocusRingProps {
   /** Whether the element is a text input. */
   isTextInput?: boolean;
@@ -44,10 +40,6 @@ export interface FocusRingResult {
   /** Props to spread on the element to track focus. */
   focusProps: JSX.HTMLAttributes<HTMLElement>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Determines whether a focus ring should be visible for a given element.

@@ -9,10 +9,6 @@
 import { createMemo } from "solid-js";
 import { createCollator } from "./createCollator";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface Filter {
   /** Returns whether a string starts with a given substring. */
   startsWith(string: string, substring: string): boolean;
@@ -21,10 +17,6 @@ export interface Filter {
   /** Returns whether a string contains a given substring. */
   contains(string: string, substring: string): boolean;
 }
-
-// ============================================
-// HOOK
-// ============================================
 
 /**
  * Provides localized string search functionality for filtering or matching items.

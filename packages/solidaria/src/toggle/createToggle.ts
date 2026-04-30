@@ -16,10 +16,6 @@ import { isDevEnv } from "../utils/env";
 import { type ToggleState } from "@proyecto-viviana/solid-stately";
 import { type PressEvent } from "../interactions/PressEvent";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaToggleProps {
   /** Whether the element should be selected (controlled). */
   isSelected?: boolean;
@@ -99,10 +95,6 @@ export interface ToggleAria {
   /** Whether the toggle is invalid. */
   isInvalid: boolean;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Handles interactions for toggle elements, e.g. Checkboxes and Switches.

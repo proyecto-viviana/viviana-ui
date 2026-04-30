@@ -70,10 +70,6 @@ import {
 } from "./Collection";
 import { useVirtualizerContext } from "./Virtualizer";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TreeRenderProps {
   /** Whether the tree has focus. */
   isFocused: boolean;
@@ -197,10 +193,6 @@ export interface TreeLoadMoreItemProps extends SlotProps {
 
 export interface TreeSectionProps extends SectionProps {}
 export interface TreeHeaderProps extends HeaderProps {}
-
-// ============================================
-// CONTEXT
-// ============================================
 
 interface TreeContextValue<T extends object> {
   state: TreeState<T, TreeCollection<T>>;
@@ -743,10 +735,6 @@ export const TreeStateContext = createContext<TreeState<object, TreeCollection<o
 );
 export const TreeItemContext = createContext<TreeItemContextValue<object> | null>(null);
 const TreeItemContentContext = createContext<TreeItemRenderProps | null>(null);
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A tree displays hierarchical data with expandable/collapsible nodes,

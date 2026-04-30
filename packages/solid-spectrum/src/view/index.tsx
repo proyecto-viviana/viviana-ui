@@ -1,9 +1,3 @@
-/**
- * View component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only container primitive.
- */
-
 import { type JSX, splitProps } from "solid-js";
 
 export interface ViewProps extends JSX.HTMLAttributes<HTMLDivElement> {

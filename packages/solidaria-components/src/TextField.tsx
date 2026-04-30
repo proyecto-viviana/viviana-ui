@@ -36,10 +36,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TextFieldRenderProps {
   /** Whether the text field is disabled. */
   isDisabled: boolean;
@@ -71,10 +67,6 @@ export interface TextFieldProps extends Omit<AriaTextFieldProps, "children">, Sl
   ) => JSX.Element;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export interface TextFieldContextValue {
   labelProps?: JSX.LabelHTMLAttributes<HTMLLabelElement>;
   inputProps?: JSX.InputHTMLAttributes<HTMLInputElement>;
@@ -91,10 +83,6 @@ export const LabelContext = TextFieldContext;
 export const InputContext = TextFieldContext;
 export const TextAreaContext = TextFieldContext;
 export const FieldInputContext = TextFieldContext;
-
-// ============================================
-// SUB-COMPONENTS
-// ============================================
 
 export interface LabelProps extends JSX.LabelHTMLAttributes<HTMLLabelElement> {
   children?: JSX.Element;
@@ -197,10 +185,6 @@ export function TextArea(props: TextAreaProps): JSX.Element {
 
   return <textarea {...mergedProps()} />;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A text field allows a user to enter a plain text value with a keyboard.

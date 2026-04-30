@@ -24,10 +24,6 @@ import {
 import { access, type MaybeAccessor } from "../utils";
 import type { ValidationState } from "./createCalendarState";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface DateRange {
   start: CalendarDate;
   end: CalendarDate;
@@ -159,10 +155,6 @@ export interface RangeCalendarState<T extends DateValue = DateValue> {
   /** Sets whether the user is dragging to select. */
   setDragging: (dragging: boolean) => void;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides state management for a range calendar component.
@@ -518,10 +510,6 @@ export function createRangeCalendarState<T extends DateValue = CalendarDate>(
     setDragging,
   };
 }
-
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
 
 /**
  * Converts a DateValue to a CalendarDate.

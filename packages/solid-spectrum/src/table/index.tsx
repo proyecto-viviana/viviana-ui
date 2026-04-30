@@ -1,10 +1,3 @@
-/**
- * Table component for proyecto-viviana-solid-spectrum
- *
- * Styled table component built on top of solidaria-components.
- * Inspired by Spectrum 2's Table component patterns.
- */
-
 import { type JSX, splitProps, createContext, createMemo, useContext, Show } from "solid-js";
 import {
   Table as HeadlessTable,
@@ -37,10 +30,6 @@ import {
 import type { Key, SortDescriptor, ColumnDefinition } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// SIZE CONTEXT
-// ============================================
-
 export type TableSize = "sm" | "md" | "lg";
 export type TableVariant = "default" | "striped" | "bordered";
 
@@ -50,10 +39,6 @@ interface TableContextValue {
 }
 
 const TableSizeContext = createContext<TableContextValue>({ size: "md", variant: "default" });
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface TableProps<T extends object> extends Omit<
   HeadlessTableProps<T>,
@@ -109,10 +94,6 @@ export interface TableCellProps extends Omit<HeadlessTableCellProps, "class" | "
   align?: "left" | "center" | "right";
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     table: "text-sm",
@@ -164,15 +145,10 @@ const alignStyles = {
   right: "text-right",
 };
 
-// ============================================
-// TABLE COMPONENT
-// ============================================
-
 /**
  * A table displays data in rows and columns and enables a user to navigate its contents
  * via directional navigation keys, and optionally supports row selection and sorting.
  *
- * Built on solidaria-components Table for full accessibility support.
  *
  * @example
  * ```tsx
@@ -269,10 +245,6 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
   );
 }
 
-// ============================================
-// TABLE HEADER COMPONENT
-// ============================================
-
 /**
  * A header row in a table containing column headers.
  */
@@ -290,10 +262,6 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
     </HeadlessTableHeader>
   );
 }
-
-// ============================================
-// TABLE COLUMN COMPONENT
-// ============================================
 
 /**
  * A column header in a table.
@@ -347,10 +315,6 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
   );
 }
 
-// ============================================
-// TABLE BODY COMPONENT
-// ============================================
-
 /**
  * The body of a table containing data rows.
  */
@@ -380,10 +344,6 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
   );
 }
 
-// ============================================
-// TABLE FOOTER COMPONENT
-// ============================================
-
 /**
  * The footer of a table containing summary rows.
  */
@@ -403,10 +363,6 @@ export function TableFooter<T extends object>(props: TableFooterProps<T>): JSX.E
     </HeadlessTableFooter>
   );
 }
-
-// ============================================
-// TABLE ROW COMPONENT
-// ============================================
 
 /**
  * A row in a table.
@@ -446,10 +402,6 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
   );
 }
 
-// ============================================
-// TABLE CELL COMPONENT
-// ============================================
-
 /**
  * A cell in a table row.
  */
@@ -475,10 +427,6 @@ export function TableCell(props: TableCellProps): JSX.Element {
     </HeadlessTableCell>
   );
 }
-
-// ============================================
-// TABLE SELECTION CHECKBOX COMPONENT
-// ============================================
 
 /**
  * A styled checkbox cell for row selection.
@@ -514,10 +462,6 @@ export function TableSelectAllCheckbox(): JSX.Element {
   );
 }
 
-// ============================================
-// COLUMN RESIZER COMPONENT
-// ============================================
-
 export interface ColumnResizerProps extends Omit<HeadlessColumnResizerProps, "class" | "style"> {
   /** Additional CSS class name. */
   class?: string;
@@ -549,10 +493,6 @@ export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
   return <HeadlessColumnResizer {...headlessProps} class={getClassName} />;
 }
 
-// ============================================
-// RESIZABLE TABLE CONTAINER COMPONENT
-// ============================================
-
 export interface ResizableTableContainerProps extends Omit<
   HeadlessResizableTableContainerProps,
   "class" | "style"
@@ -572,10 +512,6 @@ export function ResizableTableContainer(props: ResizableTableContainerProps): JS
 
   return <HeadlessResizableTableContainer {...headlessProps} class={className} />;
 }
-
-// ============================================
-// ICONS
-// ============================================
 
 function SortIcon(props: { direction: "ascending" | "descending"; class?: string }): JSX.Element {
   return (
@@ -607,7 +543,6 @@ function EmptyIcon(props: { class?: string }): JSX.Element {
   );
 }
 
-// Attach sub-components for convenience
 Table.Header = TableHeader;
 Table.Column = TableColumn;
 Table.Body = TableBody;
@@ -624,5 +559,4 @@ export const Footer = TableFooter;
 export const Row = TableRow;
 export const Cell = TableCell;
 
-// Re-export types for convenience
 export type { Key, SortDescriptor, ColumnDefinition };

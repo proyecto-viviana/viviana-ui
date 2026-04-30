@@ -12,10 +12,6 @@ import { createId, canUseDOM } from "../ssr";
 import { createPress } from "../interactions/createPress";
 import { mergeProps } from "../utils/mergeProps";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaDisclosureProps {
   /** Whether the disclosure is disabled. */
   isDisabled?: boolean;
@@ -27,10 +23,6 @@ export interface DisclosureAria {
   /** Props for the disclosure panel. */
   panelProps: JSX.HTMLAttributes<HTMLElement>;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a disclosure component.

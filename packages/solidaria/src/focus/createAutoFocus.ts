@@ -9,10 +9,6 @@ import { createEffect, onCleanup, onMount } from "solid-js";
 import { isServer } from "solid-js/web";
 import { focusSafely } from "../utils/focus";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AutoFocusOptions {
   /**
    * Whether auto-focus is enabled.
@@ -61,10 +57,6 @@ export interface AutoFocusResult {
    */
   cancel: () => void;
 }
-
-// ============================================
-// AUTO-FOCUS QUEUE
-// ============================================
 
 interface QueuedFocus {
   ref: () => HTMLElement | null | undefined;
@@ -167,10 +159,6 @@ function queueAutoFocus(item: QueuedFocus): void {
 function removeFromQueue(ref: () => HTMLElement | null | undefined): void {
   autoFocusQueue = autoFocusQueue.filter((item) => item.ref !== ref);
 }
-
-// ============================================
-// HOOK
-// ============================================
 
 /**
  * Creates auto-focus behavior for an element.
@@ -295,10 +283,6 @@ export function createAutoFocus(
     cancel,
   };
 }
-
-// ============================================
-// UTILITIES
-// ============================================
 
 /**
  * Clears all pending auto-focus requests.

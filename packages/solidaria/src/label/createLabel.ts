@@ -13,10 +13,6 @@ import { createLabels } from "./createLabels";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 import { isDevEnv } from "../utils/env";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaLabelingProps {
   /** Defines a string value that labels the current element. */
   "aria-label"?: string;
@@ -52,10 +48,6 @@ export interface LabelAria {
   /** Props to apply to the field container element being labeled. */
   fieldProps: AriaLabelingProps & DOMProps;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the accessibility implementation for labels and their associated elements.

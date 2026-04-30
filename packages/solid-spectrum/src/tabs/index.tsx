@@ -1,10 +1,3 @@
-/**
- * Tabs component for proyecto-viviana-solid-spectrum
- *
- * Styled tabs component built on top of solidaria-components.
- * Inspired by Spectrum 2's Tabs component patterns.
- */
-
 import { type JSX, splitProps, createContext, useContext } from "solid-js";
 import {
   Tabs as HeadlessTabs,
@@ -25,10 +18,6 @@ import {
 import type { Key, TabOrientation } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// SIZE CONTEXT
-// ============================================
-
 export type TabsSize = "sm" | "md" | "lg";
 export type TabsVariant = "underline" | "pill" | "boxed";
 
@@ -38,10 +27,6 @@ interface TabsContextValue {
 }
 
 const TabsSizeContext = createContext<TabsContextValue>({ size: "md", variant: "underline" });
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface TabsProps<T> extends Omit<HeadlessTabsProps<T>, "class" | "style"> {
   /** The size of the tabs. */
@@ -71,10 +56,6 @@ export interface TabPanelsProps extends Omit<HeadlessTabPanelsProps, "class" | "
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -125,14 +106,9 @@ const variantStyles = {
   },
 };
 
-// ============================================
-// TABS COMPONENT
-// ============================================
-
 /**
  * Tabs organize content into multiple sections and allow users to navigate between them.
  *
- * Built on solidaria-components Tabs for full accessibility support.
  */
 export function Tabs<T>(props: TabsProps<T>): JSX.Element {
   const mergedProps = useProviderProps(props);
@@ -155,10 +131,6 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
     </TabsSizeContext.Provider>
   );
 }
-
-// ============================================
-// TAB LIST COMPONENT
-// ============================================
 
 /**
  * A TabList contains Tab elements that represent the available tabs.
@@ -185,10 +157,6 @@ export function TabList<T>(props: TabListProps<T>): JSX.Element {
 
   return <HeadlessTabList {...headlessProps} class={getClassName} children={props.children} />;
 }
-
-// ============================================
-// TAB COMPONENT
-// ============================================
 
 /**
  * A Tab represents an individual tab in a TabList.
@@ -227,10 +195,6 @@ export function Tab(props: TabProps): JSX.Element {
   return <HeadlessTab {...headlessProps} class={getClassName} children={props.children} />;
 }
 
-// ============================================
-// TAB PANELS COMPONENT
-// ============================================
-
 /**
  * A TabPanels groups TabPanel elements for composition parity.
  */
@@ -244,10 +208,6 @@ export function TabPanels(props: TabPanelsProps): JSX.Element {
     </HeadlessTabPanels>
   );
 }
-
-// ============================================
-// TAB PANEL COMPONENT
-// ============================================
 
 /**
  * A TabPanel displays the content for a selected Tab.
@@ -271,11 +231,9 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
   return <HeadlessTabPanel {...headlessProps} class={getClassName} children={props.children} />;
 }
 
-// Attach sub-components for convenience
 Tabs.List = TabList;
 Tabs.Tab = Tab;
 Tabs.Panels = TabPanels;
 Tabs.Panel = TabPanel;
 
-// Re-export types for convenience
 export type { Key, TabOrientation };

@@ -16,10 +16,6 @@ import {
 import { access, type MaybeAccessor } from "../utils";
 import type { ValidationState } from "./createCalendarState";
 
-// ============================================
-// TYPES
-// ============================================
-
 export type TimeValue = Time | CalendarDateTime | ZonedDateTime;
 
 export type TimeSegmentType = "hour" | "minute" | "second" | "dayPeriod" | "literal";
@@ -104,10 +100,6 @@ export interface TimeFieldState<T extends TimeValue = Time> {
   /** The hour cycle. */
   hourCycle: 12 | 24;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides state management for a time field component.
@@ -322,10 +314,6 @@ export function createTimeFieldState<T extends TimeValue = Time>(
     hourCycle,
   };
 }
-
-// ============================================
-// HELPER TYPES & FUNCTIONS
-// ============================================
 
 interface TimeParts {
   hour?: number;

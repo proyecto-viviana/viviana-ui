@@ -13,10 +13,6 @@ import { type ToggleState, type CheckboxGroupState } from "@proyecto-viviana/sol
 import { checkboxGroupData } from "./createCheckboxGroup";
 import { type MaybeAccessor, access } from "../utils/reactivity";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaCheckboxGroupItemProps extends Omit<
   AriaCheckboxProps,
   "isSelected" | "defaultSelected"
@@ -24,10 +20,6 @@ export interface AriaCheckboxGroupItemProps extends Omit<
   /** The value of the checkbox. */
   value: string;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a checkbox component

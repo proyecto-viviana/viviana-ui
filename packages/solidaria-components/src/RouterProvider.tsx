@@ -8,10 +8,6 @@
 
 import { type JSX, createContext, useContext } from "solid-js";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface RouterClickModifiers {
   metaKey?: boolean;
   ctrlKey?: boolean;
@@ -51,10 +47,6 @@ export interface RouterProviderProps {
   children: JSX.Element;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 const defaultRouter: RouterContextValue = {
   isNative: true,
   navigate: () => {},
@@ -65,10 +57,6 @@ const defaultRouter: RouterContextValue = {
 };
 
 export const RouterContext = createContext<RouterContextValue>(defaultRouter);
-
-// ============================================
-// HELPERS
-// ============================================
 
 export interface LinkDOMProps {
   href?: string;
@@ -189,10 +177,6 @@ export function handleLinkClick(
     router.open(event.currentTarget, event, href, routerOptions);
   }
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A RouterProvider accepts a `navigate` function from a client-side router,

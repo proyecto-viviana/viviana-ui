@@ -1,7 +1,3 @@
-/**
- * Layout module compatibility entrypoint for proyecto-viviana-solid-spectrum.
- */
-
 export { PageLayout as Layout } from "../custom/page-layout";
 export type { PageLayoutProps as LayoutProps } from "../custom/page-layout";
 export { Flex } from "./Flex";

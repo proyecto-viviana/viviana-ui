@@ -12,10 +12,6 @@ import { access, type MaybeAccessor } from "../utils/reactivity";
 import { mergeProps } from "../utils/mergeProps";
 import type { TimeFieldState, TimeSegment, TimeValue } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaTimeFieldProps {
   /** An ID for the time field. */
   id?: string;
@@ -55,10 +51,6 @@ export interface TimeFieldAria {
   /** The segments to render. */
   segments: TimeSegment[];
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a time field component.

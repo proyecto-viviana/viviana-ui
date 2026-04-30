@@ -1,9 +1,3 @@
-/**
- * Link component for proyecto-viviana-solid-spectrum
- *
- * Styled link component built on top of solidaria-components.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Link as HeadlessLink,
@@ -11,10 +5,6 @@ import {
   type LinkRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type LinkVariant = "primary" | "secondary" | "subtle";
 
@@ -31,25 +21,16 @@ export interface LinkProps extends Omit<HeadlessLinkProps, "class" | "style" | "
   children?: JSX.Element;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const variantStyles = {
   primary: "text-accent hover:text-accent-300",
   secondary: "text-primary-300 hover:text-primary-200",
   subtle: "text-primary-400 hover:text-primary-300",
 };
 
-// ============================================
-// LINK COMPONENT
-// ============================================
-
 /**
  * Links allow users to navigate to a different location.
  * They can be presented inline inside a paragraph or as standalone text.
  *
- * Built on solidaria-components Link for full accessibility support.
  *
  * @example
  * ```tsx
@@ -74,7 +55,6 @@ export function Link(props: LinkProps): JSX.Element {
   const variant = local.variant ?? "primary";
   const customClass = local.class ?? "";
 
-  // Generate class based on render props
   const getClassName = (renderProps: LinkRenderProps): string => {
     const base = "transition-colors duration-200 cursor-pointer rounded-sm outline-none";
 

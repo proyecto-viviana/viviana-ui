@@ -40,10 +40,6 @@ import {
   filterDOMProps,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
 
 function assignRef<T>(ref: RefLike<T>, el: T): void {
@@ -131,20 +127,12 @@ export interface CheckboxProps extends Omit<AriaCheckboxProps, "children">, Slot
   onHoverChange?: (isHovered: boolean) => void;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const CheckboxGroupContext = createContext<CheckboxGroupProps | null>(null);
 export const CheckboxGroupStateContext = createContext<CheckboxGroupState | null>(null);
 export interface CheckboxContextValue extends CheckboxProps {
   slots?: Record<string, CheckboxProps>;
 }
 export const CheckboxContext = createContext<CheckboxContextValue | null>(null);
-
-// ============================================
-// CHECKBOX GROUP COMPONENT
-// ============================================
 
 /**
  * A checkbox group allows a user to select multiple items from a list of options.
@@ -282,10 +270,6 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
     </CheckboxGroupStateContext.Provider>
   );
 }
-
-// ============================================
-// CHECKBOX COMPONENT
-// ============================================
 
 /**
  * A checkbox allows a user to select multiple items from a list of individual items,

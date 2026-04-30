@@ -1,10 +1,3 @@
-/**
- * Slider component for proyecto-viviana-solid-spectrum
- *
- * A styled slider component with track, thumb, and value display.
- * Built on top of solidaria-components.
- */
-
 import { type JSX, splitProps, Show, createUniqueId } from "solid-js";
 import {
   Slider as HeadlessSlider,
@@ -18,10 +11,6 @@ import {
 } from "@proyecto-viviana/solidaria-components";
 import { type SliderOrientation } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type SliderSize = "sm" | "md" | "lg";
 export type SliderVariant = "default" | "accent";
@@ -43,10 +32,6 @@ export interface SliderProps extends Omit<
   /** Whether to show min/max labels. */
   showMinMax?: boolean;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -71,10 +56,6 @@ const sizeStyles = {
     output: "text-base",
   },
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A slider allows users to select a value from a range.
@@ -242,7 +223,6 @@ export function Slider(props: SliderProps): JSX.Element {
   );
 }
 
-// Re-export types
 export type { SliderState, SliderOrientation } from "@proyecto-viviana/solid-stately";
 
 // Sub-component

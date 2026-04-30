@@ -49,10 +49,6 @@ import {
   type SelectionIndicatorContextValue,
 } from "./SelectionIndicator";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ComboBoxRenderProps {
   /** Whether the combobox listbox is open. */
   isOpen: boolean;
@@ -274,10 +270,6 @@ export interface ComboBoxOptionProps<T>
   onAction?: () => void;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface ComboBoxContextValue<T> {
   state: ComboBoxState<T>;
   inputProps: JSX.InputHTMLAttributes<HTMLInputElement>;
@@ -302,10 +294,6 @@ interface ComboBoxContextValue<T> {
 export const ComboBoxContext = createContext<ComboBoxContextValue<unknown> | null>(null);
 export const ComboBoxStateContext = createContext<ComboBoxState<unknown> | null>(null);
 export const ComboBoxValueContext = ComboBoxContext;
-
-// ============================================
-// COMPONENTS
-// ============================================
 
 /**
  * A combobox combines a text input with a listbox, allowing users to filter a list of options.
@@ -1077,10 +1065,6 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
   );
 }
 
-// ============================================
-// COMBOBOX TAG GROUP
-// ============================================
-
 export interface ComboBoxTagGroupProps {
   /** Render function for each selected item. */
   children: (item: { key: Key; label: string }) => JSX.Element;
@@ -1120,10 +1104,6 @@ export function ComboBoxTagGroup(props: ComboBoxTagGroupProps): JSX.Element {
     </Show>
   );
 }
-
-// ============================================
-// COMBOBOX TAG
-// ============================================
 
 export interface ComboBoxTagProps {
   /** The item data. */
@@ -1177,7 +1157,6 @@ export function ComboBoxTag(props: ComboBoxTagProps): JSX.Element {
   );
 }
 
-// Attach sub-components
 ComboBox.Input = ComboBoxInput;
 ComboBox.Button = ComboBoxButton;
 ComboBox.ListBox = ComboBoxListBox;
@@ -1188,7 +1167,6 @@ ComboBox.ErrorMessage = ComboBoxErrorMessage;
 ComboBox.TagGroup = ComboBoxTagGroup;
 ComboBox.Tag = ComboBoxTag;
 
-// Re-export filter function for convenience
 export { defaultContainsFilter };
 
 function createComboBoxListStateAdapter<T>(state: ComboBoxState<T>): ListState<T> {

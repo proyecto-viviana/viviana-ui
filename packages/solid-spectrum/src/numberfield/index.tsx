@@ -1,10 +1,3 @@
-/**
- * NumberField component for proyecto-viviana-solid-spectrum
- *
- * A styled number field component with increment/decrement buttons.
- * Built on top of solidaria-components.
- */
-
 import { type JSX, splitProps, Show, useContext } from "solid-js";
 import {
   NumberField as HeadlessNumberField,
@@ -20,10 +13,6 @@ import {
   type NumberFieldButtonRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type NumberFieldSize = "sm" | "md" | "lg";
 export type NumberFieldVariant = "outline" | "filled";
@@ -48,10 +37,6 @@ export interface NumberFieldProps extends Omit<
   hideStepper?: boolean;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     input: "h-8 px-2 text-sm",
@@ -75,10 +60,6 @@ const sizeStyles = {
     buttonGap: "gap-1",
   },
 };
-
-// ============================================
-// ICONS
-// ============================================
 
 function PlusIcon(props: { class?: string }) {
   return (
@@ -128,10 +109,6 @@ function NumberFieldError(props: { class?: string; children?: JSX.Element }): JS
     </span>
   );
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A number field allows users to enter a numeric value with increment/decrement controls.
@@ -274,5 +251,4 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
   );
 }
 
-// Re-export types
 export type { NumberFieldState } from "@proyecto-viviana/solid-stately";

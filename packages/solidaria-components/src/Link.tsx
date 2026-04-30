@@ -24,10 +24,6 @@ import {
 } from "./utils";
 import { handleLinkClick, useRouter } from "./RouterProvider";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface LinkRenderProps {
   /** Whether the link is the current item within a list. */
   isCurrent: boolean;
@@ -52,15 +48,7 @@ export interface LinkProps extends Omit<AriaLinkProps, "elementType">, HoverEven
   style?: StyleOrFunction<LinkRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export const LinkContext = createContext<LinkProps | null>(null);
-
-// ============================================
-// LINK COMPONENT
-// ============================================
 
 /**
  * A link allows a user to navigate to another page or resource within a web page

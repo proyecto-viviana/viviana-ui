@@ -1,9 +1,3 @@
-/**
- * Toolbar component for proyecto-viviana-solid-spectrum
- *
- * Styled toolbar component built on top of solidaria-components Toolbar.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Toolbar as HeadlessToolbar,
@@ -11,10 +5,6 @@ import {
   type ToolbarRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type ToolbarSize = "sm" | "md" | "lg";
 export type ToolbarVariant = "default" | "bordered" | "ghost";
@@ -29,10 +19,6 @@ export interface ToolbarProps extends Omit<HeadlessToolbarProps, "class" | "styl
   /** Inline styles. */
   style?: JSX.CSSProperties;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const baseStyles = "vui-toolbar inline-flex items-center";
 
@@ -52,10 +38,6 @@ const orientationStyles = {
   horizontal: "flex-row",
   vertical: "flex-col",
 };
-
-// ============================================
-// TOOLBAR COMPONENT
-// ============================================
 
 /**
  * A styled toolbar for grouping interactive controls with keyboard navigation.

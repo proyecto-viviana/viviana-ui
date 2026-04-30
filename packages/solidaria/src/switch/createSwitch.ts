@@ -12,10 +12,6 @@ import { createToggle, type AriaToggleProps } from "../toggle/createToggle";
 import { type ToggleState } from "@proyecto-viviana/solid-stately";
 import { type MaybeAccessor } from "../utils/reactivity";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaSwitchProps extends AriaToggleProps {
   // Switch uses the same props as toggle
 }
@@ -36,10 +32,6 @@ export interface SwitchAria {
   /** Whether the switch is invalid. */
   isInvalid: boolean;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a switch component.

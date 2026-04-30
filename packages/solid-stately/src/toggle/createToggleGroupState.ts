@@ -11,10 +11,6 @@ import { createSignal } from "solid-js";
 import type { Key } from "../collections";
 import { type MaybeAccessor, access } from "../utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface ToggleGroupProps {
   /**
    * Whether single or multiple selection is enabled.
@@ -51,10 +47,6 @@ export interface ToggleGroupState {
 function toKeySet(keys?: Iterable<Key>): Set<Key> {
   return new Set(keys ? Array.from(keys) : []);
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Manages state for a group of toggle buttons.

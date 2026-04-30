@@ -38,10 +38,6 @@ import {
   dataAttr,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface DisclosureRenderProps {
   /** Whether the disclosure is expanded. */
   isExpanded: boolean;
@@ -100,10 +96,6 @@ export interface DisclosurePanelProps {
   role?: "group" | "region";
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface DisclosureContextValue {
   state: DisclosureState;
   isDisabled: () => boolean;
@@ -131,10 +123,6 @@ export const DisclosureGroupStateContext = createContext<DisclosureGroupState | 
 export function useDisclosureGroupContext(): DisclosureGroupContextValue | null {
   return useContext(DisclosureGroupContext);
 }
-
-// ============================================
-// DISCLOSURE GROUP (Accordion)
-// ============================================
 
 /**
  * DisclosureGroup manages a group of Disclosure components.
@@ -223,10 +211,6 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
     </DisclosureGroupStateContext.Provider>
   );
 }
-
-// ============================================
-// DISCLOSURE
-// ============================================
 
 /**
  * Disclosure is a widget that can be toggled to show or hide content.
@@ -358,10 +342,6 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
 // Internal context to pass panel ref setter
 const DisclosurePanelRefContext = createContext<((el: HTMLElement | null) => void) | null>(null);
 
-// ============================================
-// DISCLOSURE TRIGGER
-// ============================================
-
 /**
  * DisclosureTrigger is the button that toggles the disclosure.
  * Pattern matches SelectTrigger for consistency.
@@ -398,10 +378,6 @@ export function DisclosureTrigger(props: DisclosureTriggerProps): JSX.Element {
     </button>
   );
 }
-
-// ============================================
-// DISCLOSURE PANEL
-// ============================================
 
 /**
  * DisclosurePanel contains the content that is shown/hidden.
@@ -473,5 +449,4 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
   );
 }
 
-// Re-export state types for convenience
 export type { DisclosureState, DisclosureGroupState };

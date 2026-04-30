@@ -17,10 +17,6 @@ import { access, type MaybeAccessor } from "../utils/reactivity";
 import { getTagGroupData } from "./createTagGroup";
 import type { ListState, Key } from "@proyecto-viviana/solid-stately";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface AriaTagProps {
   /** The unique key for this tag. */
   key: Key;
@@ -48,10 +44,6 @@ export interface TagAria {
   /** Whether the tag is pressed. */
   isPressed: boolean;
 }
-
-// ============================================
-// IMPLEMENTATION
-// ============================================
 
 /**
  * Provides the behavior and accessibility implementation for a tag component.

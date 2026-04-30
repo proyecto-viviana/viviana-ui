@@ -1,9 +1,3 @@
-/**
- * IllustratedMessage component for proyecto-viviana-solid-spectrum.
- *
- * Styling-only empty-state/message primitive.
- */
-
 import { type JSX, Show, splitProps } from "solid-js";
 
 export interface IllustratedMessageProps extends JSX.HTMLAttributes<HTMLDivElement> {

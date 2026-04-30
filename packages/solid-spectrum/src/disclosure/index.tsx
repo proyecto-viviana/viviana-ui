@@ -1,10 +1,3 @@
-/**
- * Disclosure and Accordion components for proyecto-viviana-solid-spectrum
- *
- * Styled disclosure/accordion components built on top of solidaria-components.
- * Inspired by Spectrum 2's disclosure patterns.
- */
-
 import { type JSX, splitProps, createContext, useContext, Show } from "solid-js";
 import {
   Disclosure as HeadlessDisclosure,
@@ -20,10 +13,6 @@ import {
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// SIZE AND VARIANT CONTEXT
-// ============================================
-
 export type DisclosureSize = "sm" | "md" | "lg";
 export type DisclosureVariant = "default" | "bordered" | "filled" | "ghost";
 
@@ -36,10 +25,6 @@ const DisclosureSizeContext = createContext<DisclosureContextValue>({
   size: "md",
   variant: "default",
 });
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface DisclosureGroupProps extends Omit<
   HeadlessDisclosureGroupProps,
@@ -79,10 +64,6 @@ export interface DisclosurePanelProps extends Omit<
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -144,10 +125,6 @@ const variantStyles = {
   },
 };
 
-// ============================================
-// DISCLOSURE GROUP COMPONENT
-// ============================================
-
 /**
  * DisclosureGroup manages a group of Disclosure components.
  * Use this to create an accordion where only one item can be expanded at a time.
@@ -187,10 +164,6 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
   );
 }
 
-// ============================================
-// DISCLOSURE COMPONENT
-// ============================================
-
 /**
  * Disclosure is a widget that can be toggled to show or hide content.
  *
@@ -224,10 +197,6 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
     </DisclosureSizeContext.Provider>
   );
 }
-
-// ============================================
-// DISCLOSURE TRIGGER COMPONENT
-// ============================================
 
 /**
  * DisclosureTrigger is the button that toggles the disclosure.
@@ -275,10 +244,6 @@ export function DisclosureTrigger(props: DisclosureTriggerProps): JSX.Element {
   );
 }
 
-// ============================================
-// DISCLOSURE PANEL COMPONENT
-// ============================================
-
 /**
  * DisclosurePanel contains the content that is shown/hidden.
  */
@@ -298,7 +263,6 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
   );
 }
 
-// Attach sub-components for convenience
 Disclosure.Trigger = DisclosureTrigger;
 Disclosure.Panel = DisclosurePanel;
 DisclosureGroup.Item = Disclosure;

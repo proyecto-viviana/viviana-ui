@@ -261,10 +261,6 @@ export function openLink(target: HTMLAnchorElement, event: Event, allowOpener = 
 
 (openLink as { isOpening?: boolean }).isOpening = false;
 
-// ============================================
-// Scroll utilities
-// ============================================
-
 /**
  * Checks if an element is scrollable based on its overflow style.
  * @param node - The element to check

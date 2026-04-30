@@ -1,10 +1,3 @@
-/**
- * TextArea component for proyecto-viviana-solid-spectrum
- *
- * Styled multiline text field with auto-resize support.
- * Built on top of solidaria-components TextField + TextArea.
- */
-
 import { type JSX, splitProps, Show, useContext } from "solid-js";
 import {
   TextField as HeadlessTextField,
@@ -15,10 +8,6 @@ import {
   type TextFieldRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type TextAreaSize = "sm" | "md" | "lg";
 export type TextAreaVariant = "outline" | "filled";
@@ -40,10 +29,6 @@ export interface TextAreaProps extends Omit<
   /** Error message shown when invalid. */
   errorMessage?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -93,10 +78,6 @@ function TextAreaError(props: { class?: string; children?: JSX.Element }): JSX.E
     </p>
   );
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * TextAreas are multiline text inputs, useful for cases where users have

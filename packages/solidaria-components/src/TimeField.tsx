@@ -37,10 +37,6 @@ import {
   useIsHydrated,
 } from "./utils";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TimeFieldRenderProps {
   /** Whether the field is disabled. */
   isDisabled: boolean;
@@ -107,10 +103,6 @@ export interface TimeSegmentProps extends SlotProps {
   style?: StyleOrFunction<TimeSegmentRenderProps>;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 export interface TimeFieldContextValue {
   state: TimeFieldState<TimeValue>;
   aria: {
@@ -135,10 +127,6 @@ function useTimeFieldContextValue(): TimeFieldContextValue {
 export function useTimeFieldContext(): TimeFieldState<TimeValue> {
   return useTimeFieldContextValue().state;
 }
-
-// ============================================
-// TIME FIELD COMPONENT
-// ============================================
 
 /**
  * A time field allows users to enter and edit time values using a keyboard.
@@ -249,10 +237,6 @@ function TimeFieldInner<T extends TimeValue = TimeValue>(props: TimeFieldProps<T
   );
 }
 
-// ============================================
-// TIME INPUT COMPONENT
-// ============================================
-
 /**
  * The input area containing time segments.
  */
@@ -290,10 +274,6 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
     </div>
   );
 }
-
-// ============================================
-// TIME SEGMENT COMPONENT
-// ============================================
 
 /**
  * A segment of a time field (hour, minute, second, AM/PM).
@@ -352,10 +332,6 @@ export function TimeSegment(props: TimeSegmentProps): JSX.Element {
   );
 }
 
-// ============================================
-// LABEL / DESCRIPTION / ERROR
-// ============================================
-
 export interface TimeFieldLabelProps {
   children?: JSX.Element;
   class?: string;
@@ -398,5 +374,4 @@ export function TimeFieldErrorMessage(props: TimeFieldErrorMessageProps): JSX.El
   );
 }
 
-// Re-export types
 export type { TimeFieldState, TimeSegmentType, TimeValue };

@@ -1,18 +1,8 @@
-/**
- * Separator component for proyecto-viviana-solid-spectrum
- *
- * Styled separator component built on top of solidaria-components.
- */
-
 import { type JSX, splitProps, createMemo } from "solid-js";
 import {
   Separator as HeadlessSeparator,
   type SeparatorProps as HeadlessSeparatorProps,
 } from "@proyecto-viviana/solidaria-components";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type SeparatorVariant = "default" | "subtle" | "strong";
 export type SeparatorSize = "sm" | "md" | "lg";
@@ -25,10 +15,6 @@ export interface SeparatorProps extends Omit<HeadlessSeparatorProps, "class" | "
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const variantStyles = {
   default: "bg-bg-100",
@@ -47,10 +33,6 @@ const verticalSizeStyles = {
   md: "w-0.5",
   lg: "w-1",
 };
-
-// ============================================
-// SEPARATOR COMPONENT
-// ============================================
 
 /**
  * A separator is a visual divider between two groups of content,

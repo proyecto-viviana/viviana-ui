@@ -10,10 +10,6 @@ import { isServer } from "solid-js/web";
 import { getOwnerDocument } from "../utils";
 import { focusSafely } from "../utils/focus";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface FocusRestoreOptions {
   /**
    * Whether to restore focus when the component unmounts.
@@ -64,10 +60,6 @@ export interface FocusRestoreResult {
   clear: () => void;
 }
 
-// ============================================
-// GLOBAL FOCUS STACK
-// ============================================
-
 // Stack to track focus history across scopes
 const focusStack: HTMLElement[] = [];
 
@@ -98,10 +90,6 @@ export function getFocusStackLength(): number {
 export function clearFocusStack(): void {
   focusStack.length = 0;
 }
-
-// ============================================
-// UTILITIES
-// ============================================
 
 /**
  * Gets the active element, accounting for shadow DOM.
@@ -168,10 +156,6 @@ function tryRestoreFocus(
   // Use requestAnimationFrame for the first attempt to ensure DOM is ready
   requestAnimationFrame(attempt);
 }
-
-// ============================================
-// HOOK
-// ============================================
 
 /**
  * Creates a focus restoration manager.

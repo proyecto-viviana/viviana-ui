@@ -6,10 +6,6 @@
 import { createSignal, createEffect, createMemo, type Accessor } from "solid-js";
 import { access, type MaybeAccessor } from "../utils";
 
-// ============================================
-// SINGLE DISCLOSURE STATE
-// ============================================
-
 export interface DisclosureStateProps {
   /** Whether the disclosure is expanded (controlled). */
   isExpanded?: boolean;
@@ -72,10 +68,6 @@ export function createDisclosureState(
     toggle,
   };
 }
-
-// ============================================
-// DISCLOSURE GROUP STATE (Accordion)
-// ============================================
 
 export type Key = string | number;
 

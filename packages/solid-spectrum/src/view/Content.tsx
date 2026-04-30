@@ -1,14 +1,4 @@
-/**
- * Content/Header/Footer view slot components for proyecto-viviana-solid-spectrum
- *
- * Simple styled slot components for composing dialog, card, and panel layouts.
- */
-
 import { type JSX, splitProps } from "solid-js";
-
-// ============================================
-// CONTENT
-// ============================================
 
 export interface ContentProps {
   /** Additional CSS class name. */
@@ -28,10 +18,6 @@ export function Content(props: ContentProps): JSX.Element {
     </div>
   );
 }
-
-// ============================================
-// HEADER
-// ============================================
 
 export interface ViewHeaderProps {
   /** Additional CSS class name. */
@@ -54,10 +40,6 @@ export function ViewHeader(props: ViewHeaderProps): JSX.Element {
     </header>
   );
 }
-
-// ============================================
-// FOOTER
-// ============================================
 
 export interface ViewFooterProps {
   /** Additional CSS class name. */

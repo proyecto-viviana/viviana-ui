@@ -1,11 +1,3 @@
-/**
- * ActionGroup components for proyecto-viviana-solid-spectrum.
- *
- * Styling wrappers around the headless ActionGroup component.
- * Uses createActionGroup under the hood for proper dynamic roles
- * (toolbar/radiogroup), keyboard navigation, and ARIA semantics.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   ActionGroup as HeadlessActionGroup,
@@ -16,10 +8,6 @@ import {
 } from "@proyecto-viviana/solidaria-components";
 import type { Key, SelectionMode } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface ActionGroupProps<T extends ActionGroupItem = ActionGroupItem> {
   /** The items in the action group. */
@@ -52,10 +40,6 @@ export interface ActionGroupProps<T extends ActionGroupItem = ActionGroupItem> {
   class?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 function getContainerClassName(renderProps: ActionGroupRenderProps, extraClass?: string): string {
   const orientationClass = renderProps.orientation === "vertical" ? "flex-col" : "flex-row";
   return [
@@ -78,10 +62,6 @@ function getItemClassName(renderProps: ActionGroupItemRenderProps): string {
     disabledClass,
   ].join(" ");
 }
-
-// ============================================
-// ACTIONGROUP COMPONENT
-// ============================================
 
 export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
   props: ActionGroupProps<T>,
