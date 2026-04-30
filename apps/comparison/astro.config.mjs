@@ -10,7 +10,7 @@ const localSolidPackages = [
   "@proyecto-viviana/solid-stately",
   "@proyecto-viviana/solidaria",
   "@proyecto-viviana/solidaria-components",
-  "@proyecto-viviana/silapse",
+  "@proyecto-viviana/solid-spectrum",
 ];
 
 export default defineConfig(({ command }) => ({
@@ -22,7 +22,7 @@ export default defineConfig(({ command }) => ({
         "../../packages/solid-stately/src/**/*",
         "../../packages/solidaria/src/**/*",
         "../../packages/solidaria-components/src/**/*",
-        "../../packages/silapse/src/**/*",
+        "../../packages/solid-spectrum/src/**/*",
       ],
     }),
     solid({
@@ -55,8 +55,8 @@ export default defineConfig(({ command }) => ({
           replacement: path.resolve(repoRoot, "packages/solidaria-components/dist/index.js"),
         },
         {
-          find: /^@proyecto-viviana\/silapse$/,
-          replacement: path.resolve(repoRoot, "packages/silapse/dist/index.js"),
+          find: /^@proyecto-viviana\/solid-spectrum$/,
+          replacement: path.resolve(repoRoot, "packages/solid-spectrum/dist/index.js"),
         },
       ],
     },

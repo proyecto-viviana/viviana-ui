@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Calendar } from "@proyecto-viviana/silapse";
+import { Calendar } from "@proyecto-viviana/solid-spectrum";
 import {
   CalendarDateClass as CalendarDate,
   type DateValue,
@@ -33,7 +33,7 @@ function CalendarPage() {
     <DocPage
       title="Calendar"
       description="A calendar displays a grid of days organized into weeks and months. Users can select a single date by clicking on a day cell. Calendars are useful for date selection in scheduling, booking, and form contexts."
-      importCode={`import { Calendar } from '@proyecto-viviana/silapse';
+      importCode={`import { Calendar } from '@proyecto-viviana/solid-spectrum';
 import { CalendarDateClass as CalendarDate } from '@proyecto-viviana/solid-stately';`}
     >
       <Example

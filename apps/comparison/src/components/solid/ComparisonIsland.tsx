@@ -1,10 +1,10 @@
 import h from "solid-js/h";
 import { createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { hc, renderProp } from "./solid-h";
-import { Provider as SilapseProvider } from "@proyecto-viviana/silapse";
+import { Provider as SolidSpectrumProvider } from "@proyecto-viviana/solid-spectrum";
 import {
-  ButtonGroup as SilapseButtonGroup,
-  Button as SilapseButton,
+  ButtonGroup as SolidSpectrumButtonGroup,
+  Button as SolidSpectrumButton,
   Checkbox,
   Dialog,
   Radio,
@@ -22,7 +22,7 @@ import {
   ToggleButton,
   addToast,
   globalToastQueue,
-} from "@proyecto-viviana/silapse";
+} from "@proyecto-viviana/solid-spectrum";
 import {
   Button as HeadlessButton,
   type ButtonRenderProps,
@@ -157,7 +157,7 @@ function renderStyled(componentSlug: ComparisonSlug) {
   switch (componentSlug) {
     case "provider":
       return h(
-        SilapseProvider,
+        SolidSpectrumProvider,
         { colorScheme: "dark", style: providerShellStyle },
         h(
           "div",
@@ -167,16 +167,16 @@ function renderStyled(componentSlug: ComparisonSlug) {
             { class: "comparison-provider-caption" },
             "Outer provider: dark / medium scale",
           ),
-          h(SilapseButton, { variant: "primary" }, "Inherited Action"),
+          h(SolidSpectrumButton, { variant: "primary" }, "Inherited Action"),
           h(
-            SilapseProvider,
+            SolidSpectrumProvider,
             { colorScheme: "light", style: nestedProviderStyle },
             h(
               "div",
               { class: "comparison-provider-caption" },
               "Nested provider: local light override",
             ),
-            h(SilapseButton, { variant: "accent" }, "Nested Override"),
+            h(SolidSpectrumButton, { variant: "accent" }, "Nested Override"),
           ),
         ),
       );
@@ -192,7 +192,7 @@ function renderStyled(componentSlug: ComparisonSlug) {
       return h(SolidariaSpectrumToggleButtonDemo, {});
     case "tabs":
       return h(
-        SilapseProvider,
+        SolidSpectrumProvider,
         { colorScheme: "dark", style: providerShellStyle },
         h(
           Tabs,
@@ -203,7 +203,7 @@ function renderStyled(componentSlug: ComparisonSlug) {
           },
           h(
             TabList,
-            { "aria-label": "Silapse tabs" },
+            { "aria-label": "Solid Spectrum tabs" },
             (item: TabItem) => h(Tab, { id: item.id }, item.label),
           ),
           tabItems.map((item) => h(TabPanel, { id: item.id }, item.content)),
@@ -263,7 +263,7 @@ function SolidDialogDemo() {
         },
         [
           hc(
-            SilapseButton,
+            SolidSpectrumButton,
             {
               variant: "primary",
               buttonStyle: "fill",
@@ -542,7 +542,7 @@ function SolidTooltipDemo() {
         },
         [
           hc(
-            SilapseButton,
+            SolidSpectrumButton,
             {
               variant: "secondary",
               onFocus: () => setFocusReturned(false),
@@ -592,7 +592,7 @@ function SolidToolbarDemo() {
             ["Bold"],
           ),
           hc(
-            SilapseButton,
+            SolidSpectrumButton,
             {
               variant: "secondary",
               buttonStyle: "outline",
@@ -903,7 +903,7 @@ function SolidariaSpectrumButtonGroupDemo() {
     },
     [
       hc(
-        SilapseButtonGroup,
+        SolidSpectrumButtonGroup,
         { class: comparisonSpectrumSkin.buttonGroupClass, "aria-label": "Approval actions" },
         [
           hSpectrumButton({

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Dialog, DialogTrigger, DialogFooter, Button, TextField } from "@proyecto-viviana/silapse";
+import { Dialog, DialogTrigger, DialogFooter, Button, TextField } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/dialog")({
@@ -14,7 +14,7 @@ function DialogPage() {
     <DocPage
       title="Dialog"
       description="Dialogs are modal windows that appear over the main content. They're used for important messages, confirmations, or collecting user input."
-      importCode={`import { Dialog, DialogTrigger, DialogFooter } from '@proyecto-viviana/silapse';`}
+      importCode={`import { Dialog, DialogTrigger, DialogFooter } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic Dialog"

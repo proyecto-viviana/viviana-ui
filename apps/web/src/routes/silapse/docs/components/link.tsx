@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Link } from "@proyecto-viviana/silapse";
+import { Link } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/link")({
@@ -14,7 +14,7 @@ function LinkPage() {
     <DocPage
       title="Link"
       description="An accessible link component that supports both navigation and press-event patterns. Normalizes mouse, touch, and keyboard interactions."
-      importCode={`import { Link } from '@proyecto-viviana/silapse';`}
+      importCode={`import { Link } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic Usage"

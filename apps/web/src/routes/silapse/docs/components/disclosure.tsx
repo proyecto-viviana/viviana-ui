@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Disclosure, DisclosureGroup, DisclosureTrigger, DisclosurePanel } from "@proyecto-viviana/silapse";
+import { Disclosure, DisclosureGroup, DisclosureTrigger, DisclosurePanel } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 type FaqEntry = {
@@ -80,7 +80,7 @@ function DisclosurePage() {
   DisclosureGroup,
   DisclosureTrigger,
   DisclosurePanel
-} from '@proyecto-viviana/silapse';`}
+} from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Single Disclosure"

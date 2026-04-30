@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { TextField } from "@proyecto-viviana/silapse";
+import { TextField } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/textfield")({
@@ -14,7 +14,7 @@ function TextFieldPage() {
     <DocPage
       title="TextField"
       description="TextFields allow users to enter and edit text. They support various input types, validation, and accessibility features."
-      importCode={`import { TextField } from '@proyecto-viviana/silapse';`}
+      importCode={`import { TextField } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic Usage"

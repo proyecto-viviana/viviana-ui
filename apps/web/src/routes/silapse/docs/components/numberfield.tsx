@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { NumberField } from "@proyecto-viviana/silapse";
+import { NumberField } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/numberfield")({
@@ -15,7 +15,7 @@ function NumberFieldPage() {
     <DocPage
       title="NumberField"
       description="NumberFields allow users to enter and adjust numeric values with increment and decrement controls. They support range constraints, step values, and locale-aware formatting."
-      importCode={`import { NumberField } from '@proyecto-viviana/silapse';`}
+      importCode={`import { NumberField } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic Usage"

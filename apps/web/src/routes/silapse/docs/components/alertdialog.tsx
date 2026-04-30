@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { AlertDialog, Button } from "@proyecto-viviana/silapse";
+import { AlertDialog, Button } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/alertdialog")({
@@ -14,7 +14,7 @@ function AlertDialogPage() {
     <DocPage
       title="AlertDialog"
       description="A modal dialog that interrupts the user with important information, requiring an explicit action before continuing. Ideal for destructive actions and confirmations."
-      importCode={`import { AlertDialog, Button } from '@proyecto-viviana/silapse';`}
+      importCode={`import { AlertDialog, Button } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Destructive Action"

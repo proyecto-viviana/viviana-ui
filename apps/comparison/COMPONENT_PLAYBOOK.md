@@ -15,7 +15,7 @@ comparison entry complete.
 - Keep the comparison canvas to the component itself. Do not add decorative
   gradients, helper cards, or app-only styling inside the component fixture.
 - Mirror the official S2 props and TypeScript names. Compatibility aliases are
-  allowed in Silapse, but the comparison controls and fixtures use the S2 API
+  allowed in Solid Spectrum, but the comparison controls and fixtures use the S2 API
   names first.
 
 ## 2. Wire Matching Behavior

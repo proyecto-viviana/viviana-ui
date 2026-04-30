@@ -1,0 +1,417 @@
+/*
+ * Solid Spectrum Design System — Theme Variables
+ *
+ * Dual-mode: Dark (default) & Light (via [data-theme="light"])
+ * Aesthetic: Brutalist void — zero border-radius, drop-shadow glows, angular clip-paths
+ *
+ * IMPORTANT: Due to Tailwind v4's @theme processing, the @theme block
+ * should be COPIED into your app's CSS, not imported via @import.
+ * The :root and [data-theme="light"] blocks CAN be imported.
+ *
+ * Usage:
+ *
+ * 1. Add fonts in HTML <head>:
+ *    <link rel="preconnect" href="https://fonts.googleapis.com">
+ *    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ *    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Sen:wght@400..800&display=swap" rel="stylesheet">
+ *
+ * 2. In your app's CSS:
+ *    @import "tailwindcss";
+ *
+ *    @theme {
+ *      // Copy the @theme block below
+ *    }
+ *
+ *    @import "@proyecto-viviana/solid-spectrum/components.css";
+ */
+
+@theme {
+  /* ── Breakpoints ── */
+  --breakpoint-xxs: 320px;
+  --breakpoint-xs: 475px;
+
+  /* ══════════════════════════════════════════
+     RAW COLOR SCALES (absolute, mode-independent)
+     These are the base palettes. Applied/semantic
+     variables below reference these conceptually.
+     ══════════════════════════════════════════ */
+
+  /* Grey Scale (9 shades — pure neutral for void aesthetic) */
+  --color-grey-50: #ffffff;
+  --color-grey-100: #e0e0e0;
+  --color-grey-200: #c0c0c0;
+  --color-grey-300: #a0a0a0;
+  --color-grey-400: #606060;
+  --color-grey-500: #404040;
+  --color-grey-600: #1a1a1a;
+  --color-grey-700: #111111;
+  --color-grey-800: #0a0a0a;
+  --color-grey-900: #000000;
+
+  /* Blue Scale (9 shades — bright blues for void contrast) */
+  --color-blue-50: #f0f7ff;
+  --color-blue-100: #ddf4ff;
+  --color-blue-200: #b6e3ff;
+  --color-blue-300: #80ccff;
+  --color-blue-400: #54aeff;
+  --color-blue-500: #388bfd;
+  --color-blue-600: #1f6feb;
+  --color-blue-700: #1158c7;
+  --color-blue-800: #0d419d;
+  --color-blue-900: #050a12;
+
+  /* Pink Scale (9 shades — vivid pinks for void contrast) */
+  --color-pink-50: #fff5f9;
+  --color-pink-100: #ffe4f3;
+  --color-pink-200: #ffc9e9;
+  --color-pink-300: #ffa0d5;
+  --color-pink-400: #f778ba;
+  --color-pink-500: #d84a8f;
+  --color-pink-600: #b13570;
+  --color-pink-700: #912b5a;
+  --color-pink-800: #702244;
+  --color-pink-900: #0f0508;
+
+  /* ══════════════════════════════════════════
+     APPLIED COLOR SCALES (dark mode defaults)
+     Used by vui-* component classes.
+     ══════════════════════════════════════════ */
+
+  /* Background — pure void */
+  --color-bg-100: #404040;
+  --color-bg-200: #252525;
+  --color-bg-300: #1a1a1a;
+  --color-bg-400: #111111;
+  --color-bg-light: #515151;
+
+  /* Primary — Solid Spectrum blue scale */
+  --color-primary: #75ABC7;
+  --color-primary-50: #081018;
+  --color-primary-100: #ddf4ff;
+  --color-primary-200: #b6e3ff;
+  --color-primary-300: #80ccff;
+  --color-primary-400: #54aeff;
+  --color-primary-500: #4da0ff;
+  --color-primary-600: #3080f4;
+  --color-primary-700: #1158c7;
+  --color-primary-800: #0d419d;
+  --color-primary-900: #050a12;
+
+  /* Accent — Solid Spectrum pink */
+  --color-accent: #DF5C9A;
+  --color-accent-50: #100810;
+  --color-accent-100: #0f0508;
+  --color-accent-200: #150a12;
+  --color-accent-300: #ffa0d5;
+  --color-accent-400: #f778ba;
+  --color-accent-500: #d84a8f;
+  --color-accent-600: #f778ba;
+  --color-accent-700: #ffa0d5;
+  --color-accent-800: #ffc9e9;
+  --color-accent-900: #0f0508;
+  --color-accent-highlight: #e2a2be;
+
+  /* Semantic colors */
+  --color-success-100: #E5FFF3;
+  --color-success-200: #102a18;
+  --color-success-300: #1a3a25;
+  --color-success-400: #C2FFC8;
+  --color-success-500: #5BC96E;
+  --color-success-600: #238636;
+  --color-success-700: #9FEFAA;
+  --color-success-800: #C2FFC8;
+  --color-success-900: #E5FFF3;
+  --color-warning-100: #FFFBE5;
+  --color-warning-200: #2a2010;
+  --color-warning-300: #3a2c18;
+  --color-warning-400: #FFDD87;
+  --color-warning-500: #E5C462;
+  --color-warning-600: #966a13;
+  --color-warning-700: #FFEA9F;
+  --color-warning-800: #FFF3C2;
+  --color-warning-900: #FFFBE5;
+  --color-danger-100: #FFE5E5;
+  --color-danger-200: #2a1010;
+  --color-danger-300: #401818;
+  --color-danger-400: #FF8787;
+  --color-danger-500: #E56767;
+  --color-danger-600: #da3633;
+  --color-danger-700: #FFA8A8;
+  --color-danger-800: #FFC7C7;
+  --color-danger-900: #FFE5E5;
+
+  /* Cards */
+  --color-cards-bg: #373737;
+  --color-cards-bg-load: #484848;
+  --color-correct: #83f1a7;
+  --color-incorrect: #e74c3c;
+
+  /* ══════════════════════════════════════════
+     SEMANTIC MAPPINGS (dark mode defaults)
+     High-level tokens for layout & typography.
+     Used by solid-spectrum-* component classes.
+     ══════════════════════════════════════════ */
+
+  /* Canvas */
+  --color-canvas-bg: #000000;
+
+  /* Surfaces */
+  --color-background: #000000;
+  --color-surface: #0a0a0a;
+  --color-surface-elevated: #111111;
+
+  /* Blue depth backgrounds */
+  --color-bg-blue-deep: #050a12;
+  --color-bg-blue-dark: #081020;
+  --color-bg-blue-mid: #0a1830;
+  --color-bg-blue-light: #102040;
+
+  /* On-color — text/border on colored backgrounds (overridable per theme) */
+  --color-on-color: #ffffff;
+
+  /* Text */
+  --color-text: #ffffff;
+  --color-text-secondary: #a0a0a0;
+  --color-text-muted: #606060;
+  --color-text-dim: #4F6D85;
+  --color-text-disabled: #404040;
+
+  /* Borders */
+  --color-border: #1a1a1a;
+  --color-border-muted: #141414;
+  --color-divider: #141414;
+
+  /* Semantic base + dim */
+  --color-success: #3fb950;
+  --color-success-dim: #238636;
+  --color-warning: #d29922;
+  --color-warning-dim: #966a13;
+  --color-danger: #f85149;
+  --color-danger-dim: #da3633;
+
+  /* ── Typography ── */
+  --font-sen: 'Sen', sans-serif;
+  --font-jost: 'Jost', sans-serif;
+  --font-sans: 'Sen', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-title: 'Jost', system-ui, sans-serif;
+  --font-body: 'Sen', system-ui, sans-serif;
+
+  /* ── Radius — Brutalist: zero ── */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+}
+
+/* ══════════════════════════════════════════════
+   DESIGN TOKENS (dark mode defaults)
+   ══════════════════════════════════════════════ */
+:root {
+  /* Radius — Brutalist: none */
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+
+  /* Shadows — Brutalist: none (use drop-shadow glows instead) */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-glow-accent: none;
+  --shadow-glow-primary: none;
+
+  /* Animation */
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.15s ease;
+  --transition-slow: 0.25s ease;
+
+  /* Component dimensions */
+  --navbar-height: 40px;
+  --sidebar-width: 280px;
+  --statusbar-height: 32px;
+  --panel-gap: 1px;
+
+  /* Dim versions (wire base / inactive elements) */
+  --color-primary-dim: #1a3040;
+  --color-accent-dim: #301520;
+
+  /* Header background */
+  --color-header-bg: #181818;
+
+  /* Glow effects (for drop-shadow filters) */
+  --color-primary-glow: rgba(128, 204, 255, 0.6);
+  --color-accent-glow: rgba(255, 160, 213, 0.6);
+
+  /* Fusion glow */
+  --color-fusion-glow: rgba(180, 140, 230, 0.7);
+
+  /* Semantic background tints */
+  --color-success-bg: rgba(63, 185, 80, 0.1);
+  --color-warning-bg: rgba(210, 153, 34, 0.1);
+  --color-danger-bg: rgba(248, 81, 73, 0.1);
+}
+
+/* ══════════════════════════════════════════════
+   LIGHT MODE — Ocean Mist
+   Soft ocean-inspired blues with pink accents.
+   AAA contrast tuned for readability.
+   ══════════════════════════════════════════════ */
+[data-theme="light"] {
+  /* Raw scales — light mode variants */
+  --color-grey-100: #f5f5f5;
+  --color-grey-200: #e5e5e5;
+  --color-grey-300: #d4d4d4;
+  --color-grey-400: #a3a3a3;
+  --color-grey-500: #737373;
+  --color-grey-600: #525252;
+  --color-grey-700: #404040;
+  --color-grey-800: #262626;
+  --color-grey-900: #171717;
+
+  --color-blue-100: #e0f0f7;
+  --color-blue-200: #b6d9eb;
+  --color-blue-300: #8bc4db;
+  --color-blue-400: #75ABC7;
+  --color-blue-500: #5a94b3;
+  --color-blue-600: #3d7a9c;
+  --color-blue-700: #2b6080;
+  --color-blue-800: #1a4560;
+  --color-blue-900: #0d2a3d;
+
+  --color-pink-100: #fef2f7;
+  --color-pink-200: #fcc7e0;
+  --color-pink-300: #f78fb9;
+  --color-pink-400: #DF5C9A;
+  --color-pink-500: #cf2c74;
+  --color-pink-600: #a31f58;
+  --color-pink-700: #8a1a4a;
+  --color-pink-800: #6b143a;
+  --color-pink-900: #4d0f2a;
+
+  /* Applied scales */
+  --color-bg-100: #7096a8;
+  --color-bg-200: #a8c5d4;
+  --color-bg-300: #c8dce6;
+  --color-bg-400: #dbe8ef;
+  --color-bg-light: #ffffff;
+
+  --color-primary: #75ABC7;
+  --color-primary-50: #f0f7ff;
+  --color-primary-100: #06131d;
+  --color-primary-200: #0c2436;
+  --color-primary-300: #133a54;
+  --color-primary-400: #195073;
+  --color-primary-500: #1e6090;
+  --color-primary-600: #2470a5;
+  --color-primary-700: #5ea8d0;
+  --color-primary-800: #9dcce4;
+  --color-primary-900: #0d2a3d;
+
+  --color-accent: #DF5C9A;
+  --color-accent-100: #fef2f7;
+  --color-accent-200: #7d1c48;
+  --color-accent-300: #f78fb9;
+  --color-accent-400: #DF5C9A;
+  --color-accent-500: #8a1e4a;
+  --color-accent-highlight: #d4508a;
+
+  --color-success-100: #E5FFF3;
+  --color-success-200: #C2FFC8;
+  --color-success-300: #9FEFAA;
+  --color-success-400: #1a7f37;
+  --color-success-500: #5BC96E;
+  --color-success-600: #116329;
+  --color-success-700: #3D7A5F;
+  --color-success-800: #2A5741;
+  --color-success-900: #1A3529;
+  --color-warning-100: #FFFBE5;
+  --color-warning-200: #FFF3C2;
+  --color-warning-300: #FFEA9F;
+  --color-warning-400: #7d5200;
+  --color-warning-500: #E5C462;
+  --color-warning-600: #654200;
+  --color-warning-700: #7A6D42;
+  --color-warning-800: #574D2F;
+  --color-warning-900: #352F1C;
+  --color-danger-100: #FFE5E5;
+  --color-danger-200: #FFC7C7;
+  --color-danger-300: #FFA8A8;
+  --color-danger-400: #cf222e;
+  --color-danger-500: #E56767;
+  --color-danger-600: #a40e26;
+  --color-danger-700: #7A4242;
+  --color-danger-800: #572F2F;
+  --color-danger-900: #351C1C;
+
+  --color-cards-bg: #ecf2f5;
+  --color-cards-bg-load: #dfeaef;
+  --color-correct: #1a7f37;
+  --color-incorrect: #cf222e;
+
+  --color-canvas-bg: #404040;
+
+  /* Semantic mappings */
+  --color-background: #f2f7fa;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #e6f0f5;
+
+  --color-bg-blue-deep: #e0f0f7;
+  --color-bg-blue-dark: #b6d9eb;
+  --color-bg-blue-mid: #8bc4db;
+  --color-bg-blue-light: #75ABC7;
+
+  --color-on-color: #ffffff;
+
+  --color-text: #1a3040;
+  --color-text-secondary: #405d70;
+  --color-text-muted: #7096a8;
+  --color-text-disabled: #a8c5d4;
+
+  --color-border: #c8dce6;
+  --color-border-muted: #dbe8ef;
+  --color-divider: #dbe8ef;
+
+  --color-success: #5BC96E;
+  --color-success-dim: #559D87;
+  --color-warning: #E5C462;
+  --color-warning-dim: #9D8D55;
+  --color-danger: #E56767;
+  --color-danger-dim: #9D5555;
+
+  --color-primary-dim: #b6d9eb;
+  --color-accent-dim: #fcc7e0;
+  --color-header-bg: #d0e4ed;
+  --color-primary-glow: rgba(117, 171, 199, 0.4);
+  --color-accent-glow: rgba(223, 92, 154, 0.4);
+  --color-fusion-glow: rgba(170, 130, 180, 0.5);
+  --color-success-bg: rgba(63, 185, 80, 0.1);
+  --color-warning-bg: rgba(210, 153, 34, 0.15);
+  --color-danger-bg: rgba(248, 81, 73, 0.1);
+}
+
+/* ── Font Utility Classes ── */
+.font-sen {
+  font-family: 'Sen', sans-serif;
+}
+
+.font-jost {
+  font-family: 'Jost', sans-serif;
+}
+
+/* ── Custom Drop Shadows ── */
+.drop-shadow-title-card {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.drop-shadow-logo {
+  filter: drop-shadow(0 0 10px rgba(255, 160, 213, 0.8));
+}
+
+.shadow-primary-chip {
+  box-shadow: 0 2px 8px rgba(17, 88, 199, 0.4);
+}

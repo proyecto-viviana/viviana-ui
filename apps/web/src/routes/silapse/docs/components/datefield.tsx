@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { DateField } from "@proyecto-viviana/silapse";
+import { DateField } from "@proyecto-viviana/solid-spectrum";
 import {
   CalendarDateClass as CalendarDate,
   type DateValue,
@@ -18,7 +18,7 @@ function DateFieldPage() {
     <DocPage
       title="DateField"
       description="A date field allows users to type a date value using individually editable segments for month, day, and year. Each segment can be incremented or decremented with arrow keys, making it efficient for keyboard-driven date entry."
-      importCode={`import { DateField } from '@proyecto-viviana/silapse';
+      importCode={`import { DateField } from '@proyecto-viviana/solid-spectrum';
 import { CalendarDateClass as CalendarDate } from '@proyecto-viviana/solid-stately';`}
     >
       <Example

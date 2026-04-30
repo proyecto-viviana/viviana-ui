@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Slider } from "@proyecto-viviana/silapse";
+import { Slider } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/slider")({
@@ -14,7 +14,7 @@ function SliderPage() {
     <DocPage
       title="Slider"
       description="A range input with a draggable thumb. Supports keyboard navigation, number formatting, custom ranges, and step values."
-      importCode={`import { Slider } from '@proyecto-viviana/silapse';`}
+      importCode={`import { Slider } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic Usage"

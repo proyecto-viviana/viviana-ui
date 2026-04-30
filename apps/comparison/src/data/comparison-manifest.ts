@@ -8,7 +8,7 @@ export type ComparisonLayerId = "styled" | "components" | "headless" | "state";
 export type ComponentStatus =
   | "parity"
   | "composition"
-  | "silapse-native"
+  | "solid-spectrum-native"
   | "tracked-gap";
 export type ComparisonSlug = string;
 export type ParityStatus = "matched" | "partial" | "gap";
@@ -318,7 +318,7 @@ const entryOverrides: Record<string, ComparisonEntry> = {
       "Grouped related buttons mounted on both stacks for layout and overflow parity work.",
     styledSummary: "React Spectrum ButtonGroup vs Solid grouped Spectrum-skinned buttons.",
     styledNote:
-      "React uses @react-spectrum/s2 ButtonGroup directly; Solid uses the Silapse grouping wrapper with Spectrum-skinned buttons.",
+      "React uses @react-spectrum/s2 ButtonGroup directly; Solid uses the Solid Spectrum grouping wrapper with Spectrum-skinned buttons.",
   }),
 
   togglebutton: styledLiveOfficialEntry({
@@ -351,7 +351,7 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     layers: {
       styled: layerTrack(
         "Styled Tabs",
-        "React Spectrum Tabs vs Silapse Tabs.",
+        "React Spectrum Tabs vs Solid Spectrum Tabs.",
         "live",
         "live",
         "React and Solid styled tab demos are both mounted directly in the comparison app.",

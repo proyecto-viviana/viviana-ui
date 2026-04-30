@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from "@proyecto-viviana/silapse";
+import { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 type SelectItem = {
@@ -48,7 +48,7 @@ function SelectPage() {
   SelectValue,
   SelectListBox,
   SelectOption
-} from '@proyecto-viviana/silapse';`}
+} from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic Usage"

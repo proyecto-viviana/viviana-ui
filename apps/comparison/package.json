@@ -30,7 +30,7 @@
   "dependencies": {
     "@astrojs/react": "^4.2.2",
     "@astrojs/solid-js": "^5.1.1",
-    "@proyecto-viviana/silapse": "workspace:*",
+    "@proyecto-viviana/solid-spectrum": "workspace:*",
     "@proyecto-viviana/solid-stately": "workspace:*",
     "@proyecto-viviana/solidaria": "workspace:*",
     "@proyecto-viviana/solidaria-components": "workspace:*",

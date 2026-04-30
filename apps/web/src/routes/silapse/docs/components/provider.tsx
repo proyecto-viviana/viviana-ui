@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import { Provider, Button } from "@proyecto-viviana/silapse";
+import { Provider, Button } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/provider")({
@@ -11,14 +11,14 @@ function ProviderPage() {
     <DocPage
       title="Provider / Theme"
       description="The Provider component is the root-level context wrapper for Proyecto Viviana. It supplies color scheme (light/dark), scale, and locale context to all descendant components."
-      importCode={`import { Provider } from '@proyecto-viviana/silapse';`}
+      importCode={`import { Provider } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic Setup"
         description="Wrap your application with Provider at the root level."
         code={`// In your app entry point:
-import { Provider } from '@proyecto-viviana/silapse';
-import '@proyecto-viviana/silapse/styles.css';
+import { Provider } from '@proyecto-viviana/solid-spectrum';
+import '@proyecto-viviana/solid-spectrum/styles.css';
 
 function App() {
   return (
@@ -79,7 +79,7 @@ function App() {
       <Example
         title="Using useTheme"
         description="Access the current theme context in any descendant component."
-        code={`import { useTheme } from '@proyecto-viviana/silapse';
+        code={`import { useTheme } from '@proyecto-viviana/solid-spectrum';
 
 function MyComponent() {
   const theme = useTheme();
@@ -88,7 +88,7 @@ function MyComponent() {
       >
         <div class="rounded-lg bg-bg-300 p-4 font-mono text-sm text-primary-300">
           <p>{'// Import the hook'}</p>
-          <p>{"import { useTheme } from '@proyecto-viviana/silapse';"}</p>
+          <p>{"import { useTheme } from '@proyecto-viviana/solid-spectrum';"}</p>
           <br />
           <p>{'// Inside any descendant component:'}</p>
           <p>{'const theme = useTheme();'}</p>

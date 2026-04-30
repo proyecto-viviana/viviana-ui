@@ -6,7 +6,7 @@ export type ComparisonFramework = "react" | "solid";
 export type ComparisonReferenceKind =
   | "react-spectrum"
   | "spectrum-skin"
-  | "silapse"
+  | "solid-spectrum"
   | "react-aria-components"
   | "solidaria-components"
   | "react-aria"
@@ -75,7 +75,7 @@ export const comparisonSpectrumSkin = {
   selectOptionClass: "solidaria-Select-option comparison-spectrum-Select-option",
 } as const;
 
-const nativeSilapseStyledSlugs = new Set<ComparisonSlug>([
+const nativeSolidSpectrumStyledSlugs = new Set<ComparisonSlug>([
   "provider",
   "tabs",
   "toast",
@@ -91,8 +91,8 @@ export function getComparisonReferenceKind(
       return "react-spectrum";
     }
 
-    return nativeSilapseStyledSlugs.has(componentSlug)
-      ? "silapse"
+    return nativeSolidSpectrumStyledSlugs.has(componentSlug)
+      ? "solid-spectrum"
       : "spectrum-skin";
   }
 

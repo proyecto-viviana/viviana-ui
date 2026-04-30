@@ -60,7 +60,7 @@ import {
   Provider,
   useTheme,
   TextField,
-} from '@proyecto-viviana/silapse'
+} from '@proyecto-viviana/solid-spectrum'
 import {
   createCheckboxGroup,
   createCheckboxGroupItem,

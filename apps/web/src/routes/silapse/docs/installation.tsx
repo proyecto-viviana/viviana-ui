@@ -44,10 +44,10 @@ function InstallationPage() {
       </p>
 
       <SectionHeading color={colors().blue}>Using pnpm</SectionHeading>
-      <pre style={codeBlock("")}><code>{`pnpm add @proyecto-viviana/silapse @proyecto-viviana/solidaria`}</code></pre>
+      <pre style={codeBlock("")}><code>{`pnpm add @proyecto-viviana/solid-spectrum @proyecto-viviana/solidaria`}</code></pre>
 
       <SectionHeading color={colors().blue}>From npm</SectionHeading>
-      <pre style={codeBlock("")}><code>{`npm install @proyecto-viviana/silapse @proyecto-viviana/solidaria`}</code></pre>
+      <pre style={codeBlock("")}><code>{`npm install @proyecto-viviana/solid-spectrum @proyecto-viviana/solidaria`}</code></pre>
 
       <SectionHeading color={colors().blue}>Peer Dependencies</SectionHeading>
       <p style={{ "margin-bottom": "0.75rem" }}>Make sure you have SolidJS installed:</p>
@@ -65,7 +65,7 @@ function InstallationPage() {
             </tr>
           </thead>
           <tbody>
-            <PkgRow pkg="@proyecto-viviana/silapse" desc="Pre-styled components, ready to use" colors={colors()} />
+            <PkgRow pkg="@proyecto-viviana/solid-spectrum" desc="Pre-styled components, ready to use" colors={colors()} />
             <PkgRow pkg="@proyecto-viviana/solidaria" desc="ARIA hooks for custom components" colors={colors()} />
             <PkgRow pkg="@proyecto-viviana/solidaria-components" desc="Headless components with render props" colors={colors()} />
             <PkgRow pkg="@proyecto-viviana/solid-stately" desc="State management hooks only" colors={colors()} />

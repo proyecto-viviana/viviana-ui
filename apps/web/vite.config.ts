@@ -27,7 +27,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: [
-      "@proyecto-viviana/silapse",
+      "@proyecto-viviana/solid-spectrum",
       "@proyecto-viviana/solidaria",
       "@proyecto-viviana/solidaria-components",
       "@proyecto-viviana/solid-stately",

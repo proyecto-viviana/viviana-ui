@@ -1,4 +1,4 @@
-@import "@proyecto-viviana/silapse/components.css";
+@import "@proyecto-viviana/solid-spectrum/components.css";
 
 :root {
   --cmp-surface: #f8f8f8;
@@ -556,7 +556,7 @@ a {
 }
 
 .status-pill--na,
-.status-pill--silapse-native {
+.status-pill--solid-spectrum-native {
   color: var(--cmp-text-secondary);
 }
 
@@ -716,7 +716,7 @@ a {
   background: #1f1f1f;
 }
 
-.comparison-reference-frame[data-comparison-reference="silapse"] {
+.comparison-reference-frame[data-comparison-reference="solid-spectrum"] {
   background: #141414;
 }
 

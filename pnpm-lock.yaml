@@ -85,9 +85,9 @@ importers:
       '@astrojs/solid-js':
         specifier: ^5.1.1
         version: 5.1.3(@testing-library/jest-dom@6.9.1)(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(solid-js@1.9.12)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3)
-      '@proyecto-viviana/silapse':
+      '@proyecto-viviana/solid-spectrum':
         specifier: workspace:*
-        version: link:../../packages/silapse
+        version: link:../../packages/solid-spectrum
       '@proyecto-viviana/solid-stately':
         specifier: workspace:*
         version: link:../../packages/solid-stately
@@ -137,9 +137,9 @@ importers:
 
   apps/web:
     dependencies:
-      '@proyecto-viviana/silapse':
-        specifier: ^0.4.2
-        version: 0.4.2(solid-js@1.9.12)
+      '@proyecto-viviana/solid-spectrum':
+        specifier: workspace:*
+        version: link:../../packages/solid-spectrum
       '@proyecto-viviana/solid-stately':
         specifier: ^0.2.7
         version: 0.2.7(solid-js@1.9.12)
@@ -199,7 +199,7 @@ importers:
         specifier: ^4.67.0
         version: 4.78.0
 
-  packages/silapse:
+  packages/solid-spectrum:
     dependencies:
       '@proyecto-viviana/solid-stately':
         specifier: workspace:*
@@ -215,7 +215,7 @@ importers:
         specifier: ^1.9.11
         version: 1.9.12
 
-  packages/silapse-test-utils:
+  packages/solid-spectrum-test-utils:
     dependencies:
       '@solidjs/testing-library':
         specifier: ^0.8.10
@@ -1567,11 +1567,6 @@ packages:
 
   '@poppinss/exception@1.2.3':
     resolution: {integrity: sha512-dCED+QRChTVatE9ibtoaxc+WkdzOSjYTKi/+uacHWIsfodVfpsueo3+DKpgU5Px8qXjgmXkSvhXvSCz3fnP9lw==}
-
-  '@proyecto-viviana/silapse@0.4.2':
-    resolution: {integrity: sha512-EJ7W5LQyXABwaLkJjg766dB/OoEiC457E4yp90jpoC3ck18Xl4iVssLVi3KL/QbbR+35KGfItPdBftN8BrbPpA==}
-    peerDependencies:
-      solid-js: ^1.9.0
 
   '@proyecto-viviana/solid-stately@0.2.7':
     resolution: {integrity: sha512-6vFoCyd0Ja+PP+NRWiJzYoYdlLmFrrHl+gOGvDiCRpWjQ+q6ZLFu1fJE8ueABjKB8O6PMArG1gWt9NESWIfrpQ==}
@@ -6356,13 +6351,6 @@ snapshots:
       supports-color: 10.2.2
 
   '@poppinss/exception@1.2.3': {}
-
-  '@proyecto-viviana/silapse@0.4.2(solid-js@1.9.12)':
-    dependencies:
-      '@proyecto-viviana/solid-stately': 0.2.7(solid-js@1.9.12)
-      '@proyecto-viviana/solidaria': 0.2.8(solid-js@1.9.12)
-      '@proyecto-viviana/solidaria-components': 0.2.9(solid-js@1.9.12)
-      solid-js: 1.9.12
 
   '@proyecto-viviana/solid-stately@0.2.7(solid-js@1.9.12)':
     dependencies:

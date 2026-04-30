@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/solid-router";
-import { GitHubIcon } from "@proyecto-viviana/silapse";
+import { GitHubIcon } from "@proyecto-viviana/solid-spectrum";
 import { Header } from "@/components";
 import { useSilapseColors, useSilapseTheme } from "@/utils/theme";
 

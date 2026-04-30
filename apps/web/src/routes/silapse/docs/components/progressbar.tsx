@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, onCleanup } from "solid-js";
-import { ProgressBar, Button } from "@proyecto-viviana/silapse";
+import { ProgressBar, Button } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/progressbar")({
@@ -31,7 +31,7 @@ function ProgressBarPage() {
     <DocPage
       title="ProgressBar"
       description="ProgressBar shows the completion progress of a task, either as a determinate bar showing exact progress, or an indeterminate animation for tasks with unknown duration."
-      importCode={`import { ProgressBar } from '@proyecto-viviana/silapse';`}
+      importCode={`import { ProgressBar } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic Progress"

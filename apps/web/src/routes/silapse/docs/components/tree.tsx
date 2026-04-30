@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Tree, TreeItem } from "@proyecto-viviana/silapse";
+import { Tree, TreeItem } from "@proyecto-viviana/solid-spectrum";
 import type { Key, TreeItemData } from "@proyecto-viviana/solid-stately";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
@@ -65,7 +65,7 @@ function TreePage() {
     <DocPage
       title="Tree"
       description="Tree displays hierarchical data in an expandable and collapsible structure. It supports keyboard navigation, selection, and accessible tree patterns for file browsers, org charts, and nested data."
-      importCode={`import { Tree, TreeItem } from '@proyecto-viviana/silapse';`}
+      importCode={`import { Tree, TreeItem } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic Tree View"

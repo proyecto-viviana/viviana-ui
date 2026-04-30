@@ -102,7 +102,7 @@ for roadmap status.
 The app is using the real local Proyecto Viviana packages, not copied component
 code:
 
-- Styled layer imports `@proyecto-viviana/silapse`
+- Styled layer imports `@proyecto-viviana/solid-spectrum`
 - Headless component layer imports `@proyecto-viviana/solidaria-components`
 - ARIA/headless primitive layer imports `@proyecto-viviana/solidaria`
 
@@ -131,7 +131,7 @@ declares:
 The shared contract lives in
 [`src/data/comparison-contract.ts`](./src/data/comparison-contract.ts). It is the
 single place for fixture data, Spectrum-skin class names, and the rule that says
-whether a cell is real React Spectrum, the Spectrum skin adapter, Silapse,
+whether a cell is real React Spectrum, the Spectrum skin adapter, Solid Spectrum,
 React Aria Components, or solidaria-components.
 
 Use the contract test whenever a component is added or moved to `live`:

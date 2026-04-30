@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 /* Scan UI package for Tailwind classes */
-@source "../../../packages/silapse/src/**/*.tsx";
+@source "../../../packages/solid-spectrum/src/**/*.tsx";
 
 /* Viviana UI Theme — Silapse Design System (canonical values from silapse/theme.css) */
 @theme {
@@ -190,7 +190,7 @@
 }
 
 /* Import UI package component styles (after theme vars are defined) */
-@import "../../../packages/silapse/src/components.css";
+@import "../../../packages/solid-spectrum/src/components.css";
 
 /* ===== FONT UTILITIES ===== */
 .font-sen {

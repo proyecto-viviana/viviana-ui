@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import { Button, ToastProvider, ToastRegion, toastSuccess, toastError, toastWarning, toastInfo } from "@proyecto-viviana/silapse";
+import { Button, ToastProvider, ToastRegion, toastSuccess, toastError, toastWarning, toastInfo } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/toast")({
@@ -18,7 +18,7 @@ function ToastPage() {
   toastError,
   toastWarning,
   toastInfo
-} from '@proyecto-viviana/silapse';`}
+} from '@proyecto-viviana/solid-spectrum';`}
     >
       <h2>Setup</h2>
       <p>

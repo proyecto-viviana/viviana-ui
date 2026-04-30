@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Button, Link } from "@proyecto-viviana/silapse";
+import { Button, Link } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/button")({
@@ -14,7 +14,7 @@ function ButtonPage() {
     <DocPage
       title="Button"
       description="Buttons allow users to perform actions with a single click or tap. They are the primary way users interact with your application."
-      importCode={`import { Button, Link } from '@proyecto-viviana/silapse';`}
+      importCode={`import { Button, Link } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Variants"

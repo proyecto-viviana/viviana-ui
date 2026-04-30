@@ -92,7 +92,7 @@ import {
   RangeCalendar,
   DateField,
   TimeField,
-} from '@proyecto-viviana/silapse'
+} from '@proyecto-viviana/solid-spectrum'
 import {
   createButton,
   createCheckboxGroup,

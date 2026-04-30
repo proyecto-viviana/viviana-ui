@@ -1,0 +1,1508 @@
+/*
+ * Viviana UI Component Styles
+ *
+ * Pure CSS component styles that use theme CSS variables.
+ * These styles work with any theme that defines the required variables.
+ */
+
+/* ===== BASE TYPOGRAPHY ===== */
+/* Sen = body text, paragraphs, descriptions */
+/* Jost = titles, headings, labels, buttons */
+
+.font-sen {
+  font-family: 'Sen', sans-serif;
+}
+
+.font-jost {
+  font-family: 'Jost', sans-serif;
+}
+
+/* Base body font */
+.vui-body {
+  font-family: 'Sen', sans-serif;
+}
+
+/* Titles and headings */
+.vui-title {
+  font-family: 'Jost', sans-serif;
+}
+
+/* ===== CUSTOM SHADOWS ===== */
+.drop-shadow-title-card {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.drop-shadow-logo {
+  filter: drop-shadow(0 0 10px rgba(255, 160, 213, 0.8));
+}
+
+
+/* ===== BUTTON COMPONENT ===== */
+.vui-button {
+  position: relative;
+  font-family: 'Jost', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  text-transform: uppercase;
+  border-radius: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  overflow: hidden;
+}
+
+/* Shimmer overlay for hover effect */
+.vui-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.vui-button:hover::before {
+  transform: translateX(100%);
+}
+
+.vui-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-bg-400),
+              0 0 0 4px var(--color-accent-300),
+              0 0 20px rgba(255, 160, 213, 0.3);
+}
+
+.vui-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vui-button:disabled::before {
+  display: none;
+}
+
+.vui-button.is-pressed {
+  transform: scale(0.97);
+}
+
+/* Size variants */
+.vui-button--sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.vui-button--md {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.vui-button--lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+.vui-button--xl {
+  padding: 0.875rem 1.75rem;
+  font-size: 1.25rem;
+}
+
+/* Full width */
+.vui-button--full-width {
+  width: 100%;
+}
+
+/* ===== FILL VARIANTS ===== */
+
+/* Primary = bg-primary-700, text-primary-200, border-bottom-primary-200 */
+.vui-button--fill.vui-button--primary {
+  background: var(--color-primary-700);
+  color: var(--color-primary-200);
+  border-bottom: 1px solid var(--color-primary-200);
+}
+
+/* Secondary = darker blue for AA-safe text contrast */
+.vui-button--fill.vui-button--secondary {
+  background: var(--color-primary-700);
+  color: var(--color-primary-100);
+}
+
+/* Accent = light pink background with dark foreground for contrast */
+.vui-button--fill.vui-button--accent {
+  background: var(--color-accent);
+  color: var(--color-bg-400);
+}
+
+.vui-button--fill.vui-button--accent:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(255, 160, 213, 0.4),
+              0 4px 12px rgba(255, 160, 213, 0.3);
+}
+
+/* Positive = bg-success-600, text-success-100, border-success-400 */
+.vui-button--fill.vui-button--positive {
+  background: var(--color-success-600);
+  color: #ffffff;
+  border: 1px solid var(--color-success-400);
+}
+
+/* Negative = bg-danger-600, text-danger-100, border-danger-400 */
+.vui-button--fill.vui-button--negative {
+  background: var(--color-danger-600);
+  color: #ffffff;
+  border: 1px solid var(--color-danger-400);
+}
+
+.vui-button--fill.vui-button--premium {
+  background: linear-gradient(135deg, #d732d9 0%, #5258e4 66%, #1473e6 100%);
+  color: #ffffff;
+}
+
+.vui-button--fill.vui-button--genai {
+  background: linear-gradient(135deg, #d31510 0%, #c529b9 33%, #5258e4 100%);
+  color: #ffffff;
+}
+
+/* Ghost = transparent, text-primary-300, hover:bg-bg-200 */
+.vui-button--fill.vui-button--ghost,
+.vui-button--outline.vui-button--ghost {
+  background: transparent;
+  color: var(--color-primary-300);
+}
+.vui-button--fill.vui-button--ghost:hover:not(:disabled),
+.vui-button--outline.vui-button--ghost:hover:not(:disabled) {
+  background: var(--color-bg-200);
+}
+
+/* Link = transparent, text-accent-200, hover:text-accent-300 */
+.vui-button--fill.vui-button--link,
+.vui-button--outline.vui-button--link {
+  background: transparent;
+  color: var(--color-accent-200);
+}
+.vui-button--fill.vui-button--link:hover:not(:disabled),
+.vui-button--outline.vui-button--link:hover:not(:disabled) {
+  color: var(--color-accent-300);
+}
+
+/* ===== OUTLINE VARIANTS ===== */
+
+/* Primary outline = bg-bg-400, text-primary-500, border-primary-500 */
+.vui-button--outline.vui-button--primary {
+  background: var(--color-bg-400);
+  color: var(--color-primary-500);
+  border: 1px solid var(--color-primary-500);
+}
+
+/* Secondary outline = transparent, text-primary-300, border-primary-600 */
+.vui-button--outline.vui-button--secondary {
+  background: transparent;
+  color: var(--color-primary-300);
+  border: 1px solid var(--color-primary-600);
+}
+
+/* Accent outline = transparent, text-accent-200, border-accent */
+.vui-button--outline.vui-button--accent {
+  background: transparent;
+  color: var(--color-accent-200);
+  border: 1px solid var(--color-accent);
+}
+
+/* Positive outline = transparent, text-success-400, border-success-400 */
+.vui-button--outline.vui-button--positive {
+  background: transparent;
+  color: var(--color-success-400);
+  border: 1px solid var(--color-success-400);
+}
+
+/* Negative outline = transparent, text-danger-400, border-danger-400 */
+.vui-button--outline.vui-button--negative {
+  background: transparent;
+  color: var(--color-danger-400);
+  border: 1px solid var(--color-danger-400);
+}
+
+.vui-button--outline.vui-button--premium,
+.vui-button--outline.vui-button--genai {
+  background: var(--color-bg-400);
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
+/* ===== ICON COMPONENT ===== */
+.vui-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vui-icon--button {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.vui-icon__main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vui-icon__shadow {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+}
+
+/* ===== CHIP COMPONENT ===== */
+.vui-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.vui-chip--primary {
+  background: var(--color-primary-700);
+  color: var(--color-primary-100);
+  box-shadow: 0 2px 8px rgba(17, 88, 199, 0.4);
+  border-bottom: 1px solid var(--color-primary-200);
+}
+
+.vui-chip--accent {
+  background: var(--color-accent);
+  color: var(--color-bg-400);
+}
+
+.vui-chip--success {
+  background: var(--color-success-600);
+  color: #ffffff;
+}
+
+.vui-chip--warning {
+  background: var(--color-warning-600);
+  color: var(--color-warning-100);
+}
+
+.vui-chip--danger {
+  background: var(--color-danger-600);
+  color: #ffffff;
+}
+
+/* ===== BADGE COMPONENT ===== */
+.vui-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+}
+
+.vui-badge--primary {
+  background: var(--color-primary-700);
+  color: var(--color-primary-100);
+}
+
+.vui-badge--accent {
+  background: var(--color-accent);
+  color: var(--color-bg-400);
+}
+
+.vui-badge--success {
+  background: var(--color-success-600);
+  color: #ffffff;
+}
+
+.vui-badge--warning {
+  background: var(--color-warning-600);
+  color: var(--color-warning-100);
+}
+
+.vui-badge--danger {
+  background: var(--color-danger-600);
+  color: #ffffff;
+}
+
+/* ===== ALERT COMPONENT ===== */
+.vui-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+}
+
+.vui-alert--info {
+  background: color-mix(in srgb, var(--color-primary-700) 20%, transparent);
+  border-color: var(--color-primary-600);
+  color: var(--color-primary-200);
+}
+
+.vui-alert--success {
+  background: color-mix(in srgb, var(--color-success-600) 20%, transparent);
+  border-color: var(--color-success-600);
+  color: var(--color-success-100);
+}
+
+.vui-alert--warning {
+  background: color-mix(in srgb, var(--color-warning-600) 20%, transparent);
+  border-color: var(--color-warning-600);
+  color: var(--color-warning-100);
+}
+
+.vui-alert--error {
+  background: color-mix(in srgb, var(--color-danger-600) 20%, transparent);
+  border-color: var(--color-danger-400);
+  color: var(--color-danger-100);
+}
+
+/* ===== AVATAR COMPONENT ===== */
+.vui-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: var(--color-bg-300);
+  color: var(--color-primary-300);
+  font-weight: 600;
+}
+
+.vui-avatar--sm {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.75rem;
+}
+
+.vui-avatar--md {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.875rem;
+}
+
+.vui-avatar--lg {
+  width: 3rem;
+  height: 3rem;
+  font-size: 1rem;
+}
+
+.vui-avatar--xl {
+  width: 4rem;
+  height: 4rem;
+  font-size: 1.25rem;
+}
+
+/* ===== CARD COMPONENT ===== */
+.vui-card {
+  background: var(--color-bg-300);
+  border: 1px solid var(--color-primary-600);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.vui-card--accent-border {
+  border-bottom-color: var(--color-accent-500);
+}
+
+/* ===== GRADIENTS ===== */
+.hero-gradient {
+  background: linear-gradient(135deg, var(--color-bg-300) 0%, var(--color-bg-400) 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary-300), var(--color-accent-300));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== PROSE/DOCS — Solid Spectrum angular aesthetic ===== */
+.prose {
+  max-width: 65ch;
+}
+
+.prose h1 {
+  font-family: 'Jost', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  padding-bottom: 10px;
+  padding-left: 12px;
+  border-left: 3px solid var(--color-accent);
+  border-bottom: 1px solid rgba(255, 160, 213, 0.25);
+  letter-spacing: -0.01em;
+  color: var(--color-primary-100);
+  filter: drop-shadow(0 0 4px rgba(255, 160, 213, 0.4));
+}
+
+.prose h2 {
+  font-family: 'Jost', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  padding-left: 10px;
+  border-left: 2px solid var(--color-primary-300);
+  color: var(--color-primary-200);
+}
+
+.prose h3 {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.prose p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+  font-size: 0.875rem;
+  color: var(--color-primary-300);
+}
+
+.prose code {
+  background: rgba(128, 204, 255, 0.08);
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  font-weight: 500;
+  color: var(--color-primary-300);
+  border: 1px solid rgba(128, 204, 255, 0.25);
+  clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+}
+
+.prose pre {
+  background: var(--color-bg-400);
+  color: var(--color-primary-100);
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+  border: 1px solid rgba(128, 204, 255, 0.1);
+  border-left: 3px solid var(--color-primary-500);
+}
+
+.prose pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  border: none;
+  clip-path: none;
+}
+
+.prose ul, .prose ol {
+  padding-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.prose li {
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--color-primary-300);
+  margin-bottom: 0.375rem;
+}
+
+.prose strong {
+  color: var(--color-primary-100);
+  font-weight: 600;
+}
+
+/* ===== SIDEBAR — Solid Spectrum flat navigation ===== */
+.sidebar-link {
+  position: relative;
+  display: block;
+  padding: 7px 14px;
+  border-left: 3px solid transparent;
+  color: var(--color-primary-400);
+  font-size: 0.8125rem;
+  font-family: 'Sen', sans-serif;
+  text-decoration: none;
+  transition: all 0.1s ease;
+}
+
+.sidebar-link:hover {
+  background: rgba(255, 160, 213, 0.08);
+  color: var(--color-primary-200);
+}
+
+.sidebar-link.active {
+  background: var(--color-accent);
+  border-left-color: var(--color-accent);
+  color: var(--color-bg-400);
+  font-weight: 600;
+}
+
+/* ===== LOGO COMPONENT ===== */
+.vui-logo {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: 'Jost', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.vui-logo__first {
+  color: var(--color-primary-800);
+  font-weight: 300;
+}
+
+.vui-logo__second {
+  position: relative;
+  color: var(--color-primary-500);
+  font-weight: 900;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+  paint-order: stroke fill;
+}
+
+.vui-logo__second::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  color: transparent;
+  -webkit-text-stroke: 0;
+  text-shadow: 4px 3px 0 var(--color-accent);
+}
+
+/* Logo size variants */
+.vui-logo--sm {
+  font-size: 2.5rem;
+}
+
+.vui-logo--md {
+  font-size: 3.5rem;
+}
+
+.vui-logo--lg {
+  font-size: 2.0rem;
+}
+
+.vui-logo--lg .vui-logo__second::before {
+  text-shadow: 5px 4px 0 var(--color-accent);
+}
+
+.vui-logo--xl {
+  font-size: 6rem;
+}
+
+.vui-logo--xl .vui-logo__second::before {
+  text-shadow: 6px 5px 0 var(--color-accent);
+}
+
+/* Inverted variant - first word gets the 3D effect, second word is muted */
+.vui-logo.vui-logo--inverted .vui-logo__first {
+  position: relative;
+  color: var(--color-primary-500);
+  font-weight: 900;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+  paint-order: stroke fill;
+}
+
+.vui-logo.vui-logo--inverted .vui-logo__first::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  color: transparent;
+  -webkit-text-stroke: 0;
+  text-shadow: 4px 3px 0 var(--color-accent);
+}
+
+.vui-logo.vui-logo--inverted .vui-logo__second {
+  position: static;
+  color: var(--color-primary-800);
+  font-weight: 300;
+  -webkit-text-stroke: 0;
+  paint-order: normal;
+}
+
+.vui-logo.vui-logo--inverted .vui-logo__second::before {
+  content: none;
+}
+
+.vui-logo.vui-logo--inverted.vui-logo--lg .vui-logo__first::before {
+  text-shadow: 5px 4px 0 var(--color-accent);
+}
+
+.vui-logo.vui-logo--inverted.vui-logo--xl .vui-logo__first::before {
+  text-shadow: 6px 5px 0 var(--color-accent);
+}
+
+/* ===== HEADER COMPONENT ===== */
+.vui-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-bottom: 4px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-bg-400) 80%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.vui-header__container {
+  height: 70px;
+  padding-left: 32px;
+  padding-right: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vui-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.vui-header__link {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary-300);
+  transition: color 0.15s;
+}
+
+.vui-header__link:hover {
+  color: var(--color-primary-100);
+}
+
+.vui-header__link--active {
+  color: var(--color-accent);
+}
+
+.vui-header__link--active:hover {
+  color: var(--color-accent-300);
+}
+
+/* ===== PAGE LAYOUT ===== */
+.vui-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg-100);
+  font-family: 'Sen', sans-serif;
+}
+
+/* Use this modifier for pages with fixed header where content shouldn't go behind it */
+.vui-page--with-header {
+  padding-top: 4rem; /* 64px - matches h-16 header */
+}
+
+.vui-page h1,
+.vui-page h2,
+.vui-page h3,
+.vui-page h4,
+.vui-page h5,
+.vui-page h6 {
+  font-family: 'Jost', sans-serif;
+}
+
+/* ===== LANDING PAGE LAYOUT ===== */
+.vui-landing {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg-100);
+  font-family: 'Sen', sans-serif;
+}
+
+/* Hero Section */
+.vui-hero {
+  min-height: 50vh;
+  padding-top: 7.5rem;
+  padding-bottom: 2rem;
+  background: var(--color-bg-200);
+  border-bottom: 1px solid var(--color-primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vui-hero__container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 56rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+.vui-hero__title {
+  font-family: 'Jost', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--color-primary-100);
+  line-height: 1.1;
+}
+
+@media (min-width: 640px) {
+  .vui-hero__title {
+    font-size: 3.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .vui-hero__title {
+    font-size: 4.5rem;
+  }
+}
+
+.vui-hero__subtitle {
+  margin-top: 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 42rem;
+  font-size: 1.25rem;
+  color: var(--color-primary-300);
+  line-height: 1.75;
+}
+
+.vui-hero__actions {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Section */
+.vui-section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.vui-section--alt {
+  background: var(--color-bg-200);
+}
+
+.vui-section__container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 72rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.vui-section__container--narrow {
+  max-width: 56rem;
+}
+
+.vui-section__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.vui-section__title {
+  font-family: 'Jost', sans-serif;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-primary-100);
+}
+
+.vui-section__description {
+  margin-top: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 42rem;
+  font-size: 1.125rem;
+  color: var(--color-primary-300);
+}
+
+/* Feature Grid */
+.vui-feature-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 640px) {
+  .vui-feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .vui-feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Feature Card */
+.vui-feature-card {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-bg-300);
+  background: var(--color-bg-200);
+  color: var(--color-primary-100);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.vui-feature-card--alt {
+  background: var(--color-bg-300);
+  border-color: var(--color-bg-400);
+}
+
+.vui-feature-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-primary-600);
+}
+
+.vui-feature-card__icon {
+  font-size: 1.875rem;
+  margin-bottom: 1rem;
+}
+
+.vui-feature-card__title {
+  font-family: 'Jost', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-primary-100);
+}
+
+.vui-feature-card__description {
+  margin-top: 0.5rem;
+  color: var(--color-primary-300);
+  line-height: 1.625;
+}
+
+/* Code Block */
+.vui-code-block {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-bg-300);
+  background: var(--color-bg-400);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.vui-code-block__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-bg-300);
+  background: var(--color-bg-300);
+}
+
+.vui-code-block__dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+}
+
+.vui-code-block__dot--red {
+  background: var(--color-danger-400);
+}
+
+.vui-code-block__dot--yellow {
+  background: var(--color-warning-400);
+}
+
+.vui-code-block__dot--green {
+  background: var(--color-success-400);
+}
+
+.vui-code-block__filename {
+  margin-left: 1rem;
+  font-size: 0.875rem;
+  color: var(--color-primary-400);
+}
+
+.vui-code-block__content {
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+.vui-code-block__code {
+  font-size: 0.875rem;
+  line-height: 1.625;
+  color: var(--color-primary-200);
+  font-family: var(--font-mono);
+}
+
+/* Footer */
+.vui-footer {
+  border-top: 1px solid var(--color-bg-300);
+  background: var(--color-bg-300);
+}
+
+.vui-footer__container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 72rem;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .vui-footer__container {
+    flex-direction: row;
+  }
+}
+
+.vui-footer__text {
+  font-size: 0.875rem;
+  color: var(--color-primary-400);
+}
+
+.vui-footer__links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.vui-footer__link {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.875rem;
+  color: var(--color-primary-300);
+  transition: color 0.15s;
+}
+
+.vui-footer__link:hover {
+  color: var(--color-primary-100);
+}
+
+/* Gradient Text Utility */
+.vui-gradient-text {
+  background: linear-gradient(135deg, var(--color-primary-300), var(--color-accent-300));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== TOOLTIP COMPONENT ===== */
+.vui-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.vui-tooltip__trigger {
+  display: inline-flex;
+}
+
+.vui-tooltip__content {
+  position: absolute;
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  background: var(--color-primary-700);
+  color: var(--color-primary-200);
+  border: 1px solid var(--color-primary-500);
+  border-radius: 0.5rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+}
+
+.vui-tooltip__content--bottom {
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(0.25rem);
+}
+
+.vui-tooltip__content--top {
+  bottom: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-0.25rem);
+}
+
+.vui-tooltip:hover .vui-tooltip__content {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== PROJECT CARD COMPONENT ===== */
+.vui-project-card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-primary-700);
+  background: var(--color-bg-200);
+  transition: background 0.15s ease-in-out;
+  text-decoration: none;
+}
+
+.vui-project-card:hover {
+  background: var(--color-bg-300);
+}
+
+.vui-project-card--sm {
+  height: 4rem;
+}
+
+.vui-project-card--md {
+  height: 6rem;
+}
+
+.vui-project-card--lg {
+  padding: 1rem;
+}
+
+.vui-project-card--inactive {
+  filter: grayscale(1);
+  background: var(--color-bg-400);
+}
+
+.vui-project-card--inactive:hover {
+  background: var(--color-bg-400);
+}
+
+.vui-project-card__tooltip {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  background: var(--color-primary-700);
+  color: var(--color-primary-200);
+  border: 1px solid var(--color-primary-500);
+  border-radius: 0.5rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.vui-project-card:hover .vui-project-card__tooltip {
+  opacity: 1;
+}
+
+.vui-project-card__image {
+  max-height: 2rem;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.vui-project-card--lg .vui-project-card__image {
+  max-height: none;
+  max-width: 300px;
+  width: 100%;
+}
+
+/* ===== LIGHT MODE OVERRIDES ===== */
+
+[data-theme="light"] .vui-button:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-bg-400),
+              0 0 0 4px var(--color-accent-300),
+              0 0 20px rgba(160, 37, 88, 0.2);
+}
+
+[data-theme="light"] .vui-button--fill.vui-button--accent:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(160, 37, 88, 0.3),
+              0 4px 12px rgba(160, 37, 88, 0.2);
+}
+
+[data-theme="light"] .drop-shadow-logo {
+  filter: drop-shadow(0 0 10px rgba(160, 37, 88, 0.6));
+}
+
+[data-theme="light"] .sidebar-link:hover {
+  background: rgba(160, 37, 88, 0.06);
+}
+
+[data-theme="light"] .sidebar-link.active {
+  background: var(--color-accent);
+  color: #ffffff;
+}
+
+[data-theme="light"] .prose h1 {
+  filter: drop-shadow(0 0 4px rgba(160, 37, 88, 0.3));
+}
+
+[data-theme="light"] .prose code {
+  background: rgba(25, 80, 115, 0.08);
+  border-color: rgba(25, 80, 115, 0.2);
+}
+
+[data-theme="light"] .vui-logo__second {
+  -webkit-text-stroke: 2px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .vui-logo.vui-logo--inverted .vui-logo__first {
+  -webkit-text-stroke: 2px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .vui-feature-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .vui-code-block {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== FORCED COLORS MODE (Windows High Contrast) =====
+ *
+ * When forced-colors mode is active (e.g. Windows High Contrast), the browser
+ * overrides most colors. These rules ensure interactive components remain
+ * visible and usable by explicitly setting system colors for borders, focus
+ * indicators, disabled states, and selection highlights.
+ *
+ * System colors used:
+ *   Highlight     — focus rings, selection backgrounds, active indicators
+ *   HighlightText — text on Highlight backgrounds
+ *   ButtonText    — button borders and foreground text
+ *   ButtonFace    — button backgrounds
+ *   GrayText      — disabled elements
+ *   Canvas        — page/component backgrounds
+ *   CanvasText    — regular text on Canvas backgrounds
+ */
+
+@media (forced-colors: active) {
+
+  /* ---------- BUTTON ---------- */
+
+  .vui-button {
+    border: 2px solid ButtonText;
+    color: ButtonText;
+    background: ButtonFace;
+  }
+
+  .vui-button:hover:not(:disabled) {
+    border-color: Highlight;
+    color: Highlight;
+  }
+
+  .vui-button:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  .vui-button:disabled {
+    border-color: GrayText;
+    color: GrayText;
+    opacity: 1;
+  }
+
+  /* Remove shimmer pseudo-element — it is invisible in forced colors */
+  .vui-button::before {
+    display: none;
+  }
+
+  /* Fill variants — ensure visible background on primary actions */
+  .vui-button--fill.vui-button--primary,
+  .vui-button--fill.vui-button--accent,
+  .vui-button--fill.vui-button--positive,
+  .vui-button--fill.vui-button--negative {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+
+  .vui-button--fill.vui-button--primary:hover:not(:disabled),
+  .vui-button--fill.vui-button--accent:hover:not(:disabled),
+  .vui-button--fill.vui-button--positive:hover:not(:disabled),
+  .vui-button--fill.vui-button--negative:hover:not(:disabled) {
+    background: HighlightText;
+    color: Highlight;
+    border-color: Highlight;
+  }
+
+  /* Outline and ghost variants */
+  .vui-button--outline.vui-button--primary,
+  .vui-button--outline.vui-button--secondary,
+  .vui-button--outline.vui-button--accent,
+  .vui-button--outline.vui-button--positive,
+  .vui-button--outline.vui-button--negative,
+  .vui-button--fill.vui-button--ghost,
+  .vui-button--outline.vui-button--ghost {
+    background: Canvas;
+    color: ButtonText;
+    border-color: ButtonText;
+  }
+
+  .vui-button--fill.vui-button--accent:hover:not(:disabled) {
+    box-shadow: none;
+  }
+
+  /* ---------- CHECKBOX ---------- */
+
+  /* The checkbox box (the visual indicator span inside the label) */
+  .solidaria-Checkbox span:first-child {
+    border: 2px solid ButtonText !important;
+    background: Canvas !important;
+  }
+
+  .solidaria-Checkbox[data-selected] span:first-child {
+    background: Highlight !important;
+    border-color: Highlight !important;
+    color: HighlightText;
+  }
+
+  .solidaria-Checkbox[data-disabled] span:first-child {
+    border-color: GrayText !important;
+    background: Canvas !important;
+  }
+
+  .solidaria-Checkbox[data-disabled] {
+    color: GrayText;
+    opacity: 1;
+  }
+
+  /* Check/indeterminate icon */
+  .solidaria-Checkbox[data-selected] span:first-child svg {
+    color: HighlightText;
+  }
+
+  /* Focus ring */
+  .solidaria-Checkbox[data-focus-visible] span:first-child {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* ---------- SWITCH (ToggleSwitch) ---------- */
+
+  /* Track */
+  .solidaria-ToggleSwitch span:first-child {
+    border: 2px solid ButtonText !important;
+    background: Canvas !important;
+  }
+
+  .solidaria-ToggleSwitch[data-selected] span:first-child {
+    background: Highlight !important;
+    border-color: Highlight !important;
+  }
+
+  /* Thumb */
+  .solidaria-ToggleSwitch span:first-child > span {
+    background: ButtonText !important;
+  }
+
+  .solidaria-ToggleSwitch[data-selected] span:first-child > span {
+    background: HighlightText !important;
+  }
+
+  .solidaria-ToggleSwitch[data-disabled] span:first-child {
+    border-color: GrayText !important;
+    background: Canvas !important;
+  }
+
+  .solidaria-ToggleSwitch[data-disabled] span:first-child > span {
+    background: GrayText !important;
+  }
+
+  .solidaria-ToggleSwitch[data-disabled] {
+    color: GrayText;
+    opacity: 1;
+  }
+
+  /* Focus ring */
+  .solidaria-ToggleSwitch[data-focus-visible] span:first-child {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* ---------- TEXT FIELD ---------- */
+
+  .solidaria-TextField input {
+    border: 2px solid ButtonText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+  }
+
+  .solidaria-TextField input:focus {
+    border-color: Highlight !important;
+    outline: 1px solid Highlight;
+    box-shadow: none;
+  }
+
+  .solidaria-TextField input:disabled {
+    border-color: GrayText !important;
+    color: GrayText !important;
+  }
+
+  .solidaria-TextField input::placeholder {
+    color: GrayText;
+  }
+
+  /* Also target textarea for TextArea component */
+  .solidaria-TextField textarea {
+    border: 2px solid ButtonText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+  }
+
+  .solidaria-TextField textarea:focus {
+    border-color: Highlight !important;
+    outline: 1px solid Highlight;
+    box-shadow: none;
+  }
+
+  .solidaria-TextField textarea:disabled {
+    border-color: GrayText !important;
+    color: GrayText !important;
+  }
+
+  /* ---------- MENU ---------- */
+
+  .solidaria-Menu {
+    border: 2px solid CanvasText;
+    background: Canvas;
+  }
+
+  /* Menu items */
+  .solidaria-Menu [role="menuitem"] {
+    color: CanvasText;
+    background: Canvas;
+  }
+
+  .solidaria-Menu [role="menuitem"][data-focused],
+  .solidaria-Menu [role="menuitem"][data-hovered] {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .solidaria-Menu [role="menuitem"][data-disabled] {
+    color: GrayText;
+  }
+
+  /* Menu separator */
+  .solidaria-Menu [role="separator"] {
+    border-color: CanvasText;
+  }
+
+  /* Menu button focus */
+  .solidaria-MenuButton:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* ---------- LISTBOX ---------- */
+
+  .solidaria-ListBox {
+    border: 2px solid CanvasText;
+    background: Canvas;
+  }
+
+  /* ListBox options */
+  .solidaria-ListBox [role="option"] {
+    color: CanvasText;
+    background: Canvas;
+  }
+
+  .solidaria-ListBox [role="option"][data-focused],
+  .solidaria-ListBox [role="option"][data-hovered] {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .solidaria-ListBox [role="option"][data-selected] {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .solidaria-ListBox [role="option"][data-selected][data-focused] {
+    outline: 2px solid HighlightText;
+    outline-offset: -2px;
+  }
+
+  .solidaria-ListBox [role="option"][data-disabled] {
+    color: GrayText;
+  }
+
+  /* ListBox focus */
+  .solidaria-ListBox:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* ---------- TABS ---------- */
+
+  .solidaria-Tabs {
+    color: CanvasText;
+  }
+
+  /* Tab list border */
+  .solidaria-TabList {
+    border-color: CanvasText;
+  }
+
+  /* Individual tabs */
+  .solidaria-Tab {
+    color: CanvasText;
+    border-color: transparent;
+  }
+
+  .solidaria-Tab[data-selected] {
+    border-color: Highlight;
+    color: Highlight;
+  }
+
+  /* For the underline variant, ensure the bottom border is visible */
+  .solidaria-Tab[data-selected] {
+    border-bottom: 3px solid Highlight !important;
+  }
+
+  .solidaria-Tab[data-focused] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+
+  .solidaria-Tab[data-disabled] {
+    color: GrayText;
+    border-color: transparent;
+  }
+
+  .solidaria-Tab:hover:not([data-disabled]) {
+    color: Highlight;
+  }
+
+  /* Tab panel focus */
+  .solidaria-TabPanel:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* ---------- SHARED: Gradient text fallback ---------- */
+  /* Gradient text is invisible in forced colors — revert to plain text */
+  .gradient-text,
+  .vui-gradient-text {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: CanvasText !important;
+    background-clip: unset !important;
+  }
+}

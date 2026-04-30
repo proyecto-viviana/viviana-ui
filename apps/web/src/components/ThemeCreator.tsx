@@ -1,5 +1,5 @@
 import { createSignal, createEffect, For } from 'solid-js'
-import { TabSwitch } from '@proyecto-viviana/silapse'
+import { TabSwitch } from '@proyecto-viviana/solid-spectrum'
 import {
   type ThemeMode,
   generatePalette,

@@ -13,7 +13,7 @@
     "@proyecto-viviana/solid-stately": "^0.2.7",
     "@proyecto-viviana/solidaria": "^0.2.8",
     "@proyecto-viviana/solidaria-components": "^0.2.9",
-    "@proyecto-viviana/silapse": "^0.4.2",
+    "@proyecto-viviana/solid-spectrum": "workspace:*",
     "@tanstack/router-core": "1.161.1",
     "@tanstack/solid-router": "1.161.1",
     "@tanstack/solid-start": "1.161.1",

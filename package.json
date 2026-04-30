@@ -5,11 +5,11 @@
   "description": "Monorepo for Proyecto Viviana SolidJS libraries",
   "type": "module",
   "scripts": {
-    "build": "vp run typecheck && vp run build:stately && vp run build:solidaria && vp run build:components && vp run build:silapse",
+    "build": "vp run typecheck && vp run build:stately && vp run build:solidaria && vp run build:components && vp run build:solid-spectrum",
     "build:stately": "vp run --filter @proyecto-viviana/solid-stately build",
     "build:solidaria": "vp run --filter @proyecto-viviana/solidaria build",
     "build:components": "vp run --filter @proyecto-viviana/solidaria-components build",
-    "build:silapse": "vp run --filter @proyecto-viviana/silapse build",
+    "build:solid-spectrum": "vp run --filter @proyecto-viviana/solid-spectrum build",
     "build:web": "vp run --filter @proyecto-viviana/web build",
     "dev": "vp run --filter @proyecto-viviana/web dev",
     "start": "vp run --filter @proyecto-viviana/web start",

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For } from "solid-js";
-import { ColorSwatchPicker, ColorSwatchPickerItem, ColorEditor } from "@proyecto-viviana/silapse";
+import { ColorSwatchPicker, ColorSwatchPickerItem, ColorEditor } from "@proyecto-viviana/solid-spectrum";
 import {
   ColorSlider,
   ColorSliderTrack,
@@ -47,7 +47,7 @@ import { ColorWheel, ColorWheelTrack, ColorWheelThumb } from '@proyecto-viviana/
 import { ColorField, ColorFieldInput, ColorSwatch } from '@proyecto-viviana/solidaria-components';
 
 // Styled components (ui):
-import { ColorSwatchPicker, ColorSwatchPickerItem, ColorEditor } from '@proyecto-viviana/silapse';
+import { ColorSwatchPicker, ColorSwatchPickerItem, ColorEditor } from '@proyecto-viviana/solid-spectrum';
 
 // Utilities:
 import { parseColor, type Color } from '@proyecto-viviana/solid-stately';`}

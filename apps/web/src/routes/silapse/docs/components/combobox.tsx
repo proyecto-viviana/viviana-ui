@@ -8,7 +8,7 @@ import {
   ComboBoxListBox,
   ComboBoxOption,
   defaultContainsFilter,
-} from "@proyecto-viviana/silapse";
+} from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/combobox")({
@@ -45,7 +45,7 @@ function ComboBoxPage() {
   ComboBoxListBox,
   ComboBoxOption,
   defaultContainsFilter,
-} from '@proyecto-viviana/silapse';`}
+} from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic with Filtering"

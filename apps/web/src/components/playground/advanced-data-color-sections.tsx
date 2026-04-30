@@ -1,5 +1,5 @@
 import { type Accessor, createSignal, For } from 'solid-js'
-import { RangeCalendar, DateField, TimeField, DateRangePicker, ColorSwatchPicker, ColorSwatchPickerItem, ColorEditor } from '@proyecto-viviana/silapse'
+import { RangeCalendar, DateField, TimeField, DateRangePicker, ColorSwatchPicker, ColorSwatchPickerItem, ColorEditor } from '@proyecto-viviana/solid-spectrum'
 import {
   Table,
   TableHeader,

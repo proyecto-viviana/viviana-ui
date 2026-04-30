@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Meter, Button } from "@proyecto-viviana/silapse";
+import { Meter, Button } from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/meter")({
@@ -29,7 +29,7 @@ function MeterPage() {
     <DocPage
       title="Meter"
       description="Meter represents a quantity within a known range, such as disk usage, signal strength, or a relevance score. Unlike ProgressBar, Meter displays a static value rather than tracking progress toward completion."
-      importCode={`import { Meter } from '@proyecto-viviana/silapse';`}
+      importCode={`import { Meter } from '@proyecto-viviana/solid-spectrum';`}
     >
       <Example
         title="Basic Meter"

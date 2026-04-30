@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/solid-router'
 import { Header } from '@/components'
-import { ProjectCard, PageLayout } from '@proyecto-viviana/silapse'
+import { ProjectCard, PageLayout } from '@proyecto-viviana/solid-spectrum'
 
 export const Route = createFileRoute('/silapse/ecosystem')({
   component: Ecosystem,
@@ -24,10 +24,10 @@ function Ecosystem() {
           <h2 class="text-2xl font-semibold text-primary-200 mb-4">Core Packages</h2>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <ProjectCard
-              name="@proyecto-viviana/silapse"
+              name="@proyecto-viviana/solid-spectrum"
               imageSrc="/images/ecosystem/ui.svg"
               size="sm"
-              href="https://github.com/proyecto-viviana/proyecto-viviana/tree/main/packages/silapse"
+              href="https://github.com/proyecto-viviana/proyecto-viviana/tree/main/packages/solid-spectrum"
             />
             <ProjectCard
               name="@proyecto-viviana/solidaria-components"

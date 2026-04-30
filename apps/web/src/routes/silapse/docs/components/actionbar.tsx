@@ -11,7 +11,7 @@ function ActionBarPage() {
       title="ActionBar"
       description="Action bars expose contextual actions for the current selection or page state."
       importCode={
-`import { ActionBar, ActionBarContainer } from '@proyecto-viviana/silapse';`      }
+`import { ActionBar, ActionBarContainer } from '@proyecto-viviana/solid-spectrum';`      }
     >
       <p class="text-sm text-bg-500" style={{ "max-width": "60ch" }}>
         ActionBar and ActionBarContainer are exported and available even though the deeper design examples are still being expanded.

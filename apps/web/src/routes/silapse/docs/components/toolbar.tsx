@@ -11,7 +11,7 @@ function ToolbarPage() {
       title="Toolbar"
       description="Toolbars group related actions into a compact horizontal command surface."
       importCode={
-`import { Toolbar } from '@proyecto-viviana/silapse';`      }
+`import { Toolbar } from '@proyecto-viviana/solid-spectrum';`      }
     >
       <p class="text-sm text-bg-500" style={{ "max-width": "60ch" }}>
         Toolbar is part of the public styled surface and is now discoverable directly from the docs navigation.

@@ -11,7 +11,7 @@
       "@proyecto-viviana/solidaria-components": [
         "../../packages/solidaria-components/src/index.ts"
       ],
-      "@proyecto-viviana/silapse": ["../../packages/silapse/src/index.ts"]
+      "@proyecto-viviana/solid-spectrum": ["../../packages/solid-spectrum/src/index.ts"]
     }
   },
   "include": ["src/**/*", "astro.config.mjs"]

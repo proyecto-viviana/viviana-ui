@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { RangeCalendar } from "@proyecto-viviana/silapse";
+import { RangeCalendar } from "@proyecto-viviana/solid-spectrum";
 import {
   CalendarDateClass as CalendarDate,
   type DateValue,
@@ -39,7 +39,7 @@ function RangeCalendarPage() {
     <DocPage
       title="RangeCalendar"
       description="A range calendar displays a grid of days and allows users to select a contiguous range of dates by clicking a start date and then an end date. It is useful for booking flows, report filtering, and any scenario that requires a date span."
-      importCode={`import { RangeCalendar } from '@proyecto-viviana/silapse';
+      importCode={`import { RangeCalendar } from '@proyecto-viviana/solid-spectrum';
 import {
   CalendarDateClass as CalendarDate,
   type DateValue,
