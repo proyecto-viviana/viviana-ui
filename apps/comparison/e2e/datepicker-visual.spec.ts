@@ -177,6 +177,7 @@ test.describe('comparison DatePicker visual parity', () => {
       has: page.getByRole('heading', { name: 'Styled Layer' }),
     });
     await expect(styledSection).toHaveCount(1);
+    await styledSection.scrollIntoViewIfNeeded();
 
     const reactCard = await frameworkCard(styledSection, 'React Spectrum stack');
     const solidCard = await frameworkCard(styledSection, 'Solidaria stack');
@@ -199,6 +200,8 @@ test.describe('comparison DatePicker visual parity', () => {
     assertVisibleFieldGeometry(solidFieldGeometry);
     expect(Math.abs(solidFieldGeometry.width - reactFieldGeometry.width)).toBeLessThanOrEqual(16);
 
+    await expect(reactField).toHaveScreenshot('datepicker-field-react.png', { animations: 'disabled' });
+    await expect(solidField).toHaveScreenshot('datepicker-field-solid.png', { animations: 'disabled' });
     const [reactFieldPng, solidFieldPng] = await Promise.all([
       reactField.screenshot({ animations: 'disabled' }),
       solidField.screenshot({ animations: 'disabled' }),
@@ -212,6 +215,7 @@ test.describe('comparison DatePicker visual parity', () => {
     const reactPopoverGeometry = await geometry(reactDialog);
     assertVisiblePopoverGeometry(reactPopoverGeometry);
     await page.mouse.move(4, 4);
+    await expect(reactDialog).toHaveScreenshot('datepicker-popover-react.png', { animations: 'disabled' });
     await reactDialog.screenshot({ animations: 'disabled' });
 
     await page.keyboard.press('Escape');
@@ -226,6 +230,7 @@ test.describe('comparison DatePicker visual parity', () => {
     assertVisiblePopoverGeometry(solidPopoverGeometry);
     expect(solidPopoverGeometry.position).not.toBe('static');
     await page.mouse.move(4, 4);
+    await expect(solidDialog).toHaveScreenshot('datepicker-popover-solid.png', { animations: 'disabled' });
 
     expect(Math.abs(solidPopoverGeometry.width - reactPopoverGeometry.width)).toBeLessThanOrEqual(96);
     expect(Math.abs(solidPopoverGeometry.height - reactPopoverGeometry.height)).toBeLessThanOrEqual(140);

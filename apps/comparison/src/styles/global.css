@@ -159,11 +159,13 @@ a {
 .stat-label,
 .category-pill,
 .status-pill,
+.state-kind,
+.state-pill,
 .entry-link,
 .comparison-provider-caption {
   font-family: var(--cmp-mono);
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -299,8 +301,95 @@ a {
   margin-bottom: 14px;
   font-family: var(--cmp-mono);
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
+}
+
+.state-matrix {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--cmp-border);
+}
+
+.state-matrix h2,
+.state-row h3 {
+  margin: 0;
+}
+
+.state-matrix h2 {
+  color: var(--cmp-text);
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.state-matrix-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.state-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  padding-top: 12px;
+  border-top: 1px solid rgba(112, 112, 112, 0.24);
+}
+
+.state-row h3 {
+  margin-top: 6px;
+  color: var(--cmp-text);
+  font-size: 0.92rem;
+}
+
+.state-row p {
+  margin: 6px 0 0;
+  color: var(--cmp-text-muted);
+  line-height: 1.55;
+}
+
+.state-kind {
+  color: var(--cmp-blue);
+}
+
+.state-status-stack {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.state-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 5px 8px;
+  border: 1px solid var(--cmp-border);
+  color: var(--cmp-text-secondary);
+}
+
+.state-pill--snapshotted,
+.state-pill--asserted,
+.state-pill--strict {
+  color: var(--cmp-success);
+  border-color: rgba(131, 241, 167, 0.38);
+}
+
+.state-pill--planned,
+.state-pill--tolerant {
+  color: var(--cmp-warning);
+  border-color: rgba(255, 221, 135, 0.38);
+}
+
+.state-pill--missing,
+.state-pill--blocked {
+  color: var(--cmp-danger);
+  border-color: rgba(255, 135, 135, 0.38);
+}
+
+.state-pill--na {
+  color: var(--cmp-text-secondary);
 }
 
 .comparison-grid {
@@ -1280,5 +1369,13 @@ body.comparison-app [class*="spectrum-Modal-wrapper"] {
   .detail-hero h1 {
     max-width: none;
     font-size: 2.4rem;
+  }
+
+  .state-row {
+    grid-template-columns: 1fr;
+  }
+
+  .state-status-stack {
+    justify-content: flex-start;
   }
 }

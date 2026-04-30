@@ -70,6 +70,14 @@ Use the gap report to see the current roadmap shape:
 vp run comparison:report:gaps
 ```
 
+The report separates route coverage from visual state coverage:
+
+- missing official React Spectrum entries stay non-failing roadmap gaps
+- committed screenshots are counted only when both React and Solid baselines
+  exist
+- pair diff status is tracked separately, so temporary tolerant comparisons stay
+  visible until they can become strict
+
 The first live official comparisons include:
 
 - `Provider` on the styled layer
@@ -130,6 +138,11 @@ vp run comparison:test:contract
 Pixel tests can still compare individual components, but this guard catches the
 systemic failure mode where one side silently renders in the app chrome instead
 of the intended reference surface.
+
+Component state coverage lives in
+[`src/data/visual-state-matrix.ts`](./src/data/visual-state-matrix.ts). Add a
+state there whenever a visual or behavioral state is covered, and commit the
+Playwright snapshots next to the spec when the state is visual.
 
 ## Validation Notes
 

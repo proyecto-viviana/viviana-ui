@@ -5,6 +5,7 @@ import {
   officialComparisonEntries,
 } from "@comparison/data/comparison-manifest";
 import { reactSpectrumCatalogueSource } from "@comparison/data/react-spectrum-catalogue";
+import { officialVisualStateSummary } from "@comparison/data/visual-state-matrix";
 import "@comparison/styles/global.css";
 
 const matchedCount = comparisonEntries.filter((entry) => entry.parity === "matched").length;
@@ -13,6 +14,8 @@ const gapCount = comparisonEntries.filter((entry) => entry.parity === "gap").len
 const liveCount = comparisonEntries.filter((entry) => entry.priority === "live").length;
 const officialCount = officialComparisonEntries.length;
 const missingOfficialCount = missingOfficialComparisonEntries.length;
+const snapshottedStateCount = officialVisualStateSummary.snapshottedStates;
+const strictStateCount = officialVisualStateSummary.strictPairDiffStates;
 ---
 
 <html lang="en">
@@ -52,6 +55,14 @@ const missingOfficialCount = missingOfficialComparisonEntries.length;
           <div class="stat-card">
             <span class="stat-label">Official gaps</span>
             <strong>{missingOfficialCount}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">State screenshots</span>
+            <strong>{snapshottedStateCount}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Strict pair diffs</span>
+            <strong>{strictStateCount}</strong>
           </div>
           <div class="stat-card">
             <span class="stat-label">Matched</span>

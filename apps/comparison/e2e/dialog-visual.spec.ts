@@ -203,6 +203,7 @@ test.describe('comparison Dialog visual parity', () => {
       has: page.getByRole('heading', { name: 'Styled Layer' }),
     });
     await expect(styledSection).toHaveCount(1);
+    await styledSection.scrollIntoViewIfNeeded();
 
     const reactCard = await frameworkCard(styledSection, 'React Spectrum stack');
     const solidCard = await frameworkCard(styledSection, 'Solidaria stack');
@@ -216,6 +217,8 @@ test.describe('comparison Dialog visual parity', () => {
     });
 
     await expect(solidRoot).toHaveAttribute('data-comparison-open', 'false');
+    await expect(reactTrigger).toHaveScreenshot('dialog-trigger-react.png', { animations: 'disabled' });
+    await expect(solidTrigger).toHaveScreenshot('dialog-trigger-solid.png', { animations: 'disabled' });
     await compareElementScreenshots(page, reactTrigger, solidTrigger, 'Dialog trigger', 0.45, 8);
 
     await reactTrigger.hover();
@@ -240,6 +243,7 @@ test.describe('comparison Dialog visual parity', () => {
       animations: 'disabled',
       path: testInfo.outputPath('dialog-after-react-click.png'),
     });
+    await expect(reactDialog).toHaveScreenshot('dialog-surface-react.png', { animations: 'disabled' });
     const reactDialogPng = await reactDialog.screenshot({ animations: 'disabled' });
     await expectTabFocusContained(page, reactDialog);
 
@@ -264,6 +268,7 @@ test.describe('comparison Dialog visual parity', () => {
     const solidGeometry = await dialogGeometry(solidDialog);
     assertVisibleDialogGeometry(solidGeometry);
     expect(solidGeometry.position).not.toBe('static');
+    await expect(solidDialog).toHaveScreenshot('dialog-surface-solid.png', { animations: 'disabled' });
     const solidDialogPng = await solidDialog.screenshot({ animations: 'disabled' });
     await compareScreenshots(page, reactDialogPng, solidDialogPng, 'Dialog surface', 0.9, 80);
     await expectTabFocusContained(page, solidDialog);
