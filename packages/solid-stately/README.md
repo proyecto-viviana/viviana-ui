@@ -5,7 +5,7 @@ A SolidJS port of [React Stately](https://react-spectrum.adobe.com/react-stately
 ## Installation
 
 ```bash
-pnpm add @proyecto-viviana/solid-stately solid-js
+npm install @proyecto-viviana/solid-stately solid-js
 ```
 
 ## Overview

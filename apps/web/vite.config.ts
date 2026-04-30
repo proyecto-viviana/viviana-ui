@@ -1,5 +1,4 @@
 import { defineConfig } from "vite";
-import tsConfigPaths from "vite-tsconfig-paths";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { tanstackStart } from "@tanstack/solid-start/plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
@@ -15,6 +14,7 @@ export default defineConfig({
     port: 3000,
   },
   resolve: {
+    tsconfigPaths: true,
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "~": path.resolve(__dirname, "./src"),
@@ -37,9 +37,6 @@ export default defineConfig({
     tanstackStart(),
     viteSolid({ ssr: true }),
     tailwindcss(),
-    tsConfigPaths({
-      projects: ["./tsconfig.json"],
-    }),
     ...(isProd ? [cloudflare({ viteEnvironment: { name: "ssr" } })] : []),
   ],
 });

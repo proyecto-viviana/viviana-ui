@@ -5,17 +5,14 @@ Proyecto Viviana.
 
 ## Scope
 
-- External dependencies are intended to stay local to `apps/comparison`.
-- The Proyecto Viviana packages are installed into this app as local `file:`
-  dependencies so the app resolves them through package metadata, like
-  `apps/web`, instead of bespoke Vite aliases.
-- The app is intentionally separate from the root pnpm workspace so it can
-  evolve without affecting `apps/web`.
+- The app is part of the root workspace and imports Proyecto Viviana packages
+  through `workspace:*` dependencies.
+- Root commands forward into this app's local `package.json` scripts through
+  `vp run --filter @proyecto-viviana/comparison ...`.
 - Astro stays app-local. Cloudflare runtime tooling stays at the monorepo root
   with the rest of the repo.
-- Root commands forward into this app's local `package.json` scripts, while
-  dependency installation stays local so the Astro package set remains
-  isolated from the publishable package workspace.
+- Dependency changes should use Vite Plus commands (`vp install`, `vp add`,
+  `vp remove`) so pnpm stays an implementation detail of the workspace.
 
 ## Commands
 
@@ -41,9 +38,8 @@ The root wrappers invoke Astro or Wrangler directly; they do not rebuild the
 Proyecto Viviana packages first.
 
 ```bash
-cd apps/comparison
-pnpm install
-vp run dev
+vp install --filter @proyecto-viviana/comparison
+vp run comparison:dev
 ```
 
 Additional tasks:
@@ -106,7 +102,7 @@ code:
 - Headless component layer imports `@proyecto-viviana/solidaria-components`
 - ARIA/headless primitive layer imports `@proyecto-viviana/solidaria`
 
-Those package names resolve through app-local `file:` dependencies, matching the
+Those package names resolve through workspace package metadata, matching the
 package-oriented setup already used by `apps/web`.
 
 The only app-local code is the comparison shell, fixture data, route manifest,
@@ -202,7 +198,7 @@ vp run comparison:deploy
 Or from inside `apps/comparison`:
 
 ```bash
-pnpm install
+vp install
 vp run deploy
 ```
 

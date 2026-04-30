@@ -5,7 +5,7 @@ Styled UI components for SolidJS - beautiful, accessible, and ready to use.
 ## Installation
 
 ```bash
-pnpm add @proyecto-viviana/solid-spectrum solid-js
+npm install @proyecto-viviana/solid-spectrum solid-js
 ```
 
 ## Setup

@@ -783,7 +783,7 @@ function updateFocusAfterDrop(
   opts.setFocusedKey?.(focusKey);
 
   queueMicrotask(() => {
-    const row = opts.ref().querySelector<HTMLElement>('[role="row"][tabindex="0"]');
+    const row = opts.ref()?.querySelector<HTMLElement>('[role="row"][tabindex="0"]');
     row?.focus();
   });
 }

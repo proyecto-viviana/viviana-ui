@@ -5,7 +5,7 @@ A SolidJS port of [React Aria](https://react-spectrum.adobe.com/react-aria/) - a
 ## Installation
 
 ```bash
-pnpm add @proyecto-viviana/solidaria @proyecto-viviana/solid-stately solid-js
+npm install @proyecto-viviana/solidaria @proyecto-viviana/solid-stately solid-js
 ```
 
 ## Overview

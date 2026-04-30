@@ -5,7 +5,7 @@ Pre-wired headless components for SolidJS - a port of [React Aria Components](ht
 ## Installation
 
 ```bash
-pnpm add @proyecto-viviana/solidaria-components solid-js
+npm install @proyecto-viviana/solidaria-components solid-js
 ```
 
 ## Overview

@@ -43,9 +43,6 @@ function InstallationPage() {
         Install Proyecto Viviana packages using your preferred package manager or registry.
       </p>
 
-      <SectionHeading color={colors().blue}>Using pnpm</SectionHeading>
-      <pre style={codeBlock("")}><code>{`pnpm add @proyecto-viviana/solid-spectrum @proyecto-viviana/solidaria`}</code></pre>
-
       <SectionHeading color={colors().blue}>From npm</SectionHeading>
       <pre style={codeBlock("")}><code>{`npm install @proyecto-viviana/solid-spectrum @proyecto-viviana/solidaria`}</code></pre>
 

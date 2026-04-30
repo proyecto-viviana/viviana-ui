@@ -26,7 +26,7 @@ Consumers can opt into any layer; higher layers compose lower ones without pulli
 ## Quick start
 
 ```bash
-pnpm install
+vp install
 vp run dev                 # docs + playground on localhost:3000
 vp run comparison:dev      # side-by-side parity harness
 vp test run packages         # unit suite
@@ -38,6 +38,7 @@ Tracked project docs live under [`docs/`](./docs):
 
 1. [`docs/s2-styling-and-package-plan.md`](./docs/s2-styling-and-package-plan.md)
 2. [`docs/release-policy.md`](./docs/release-policy.md)
+3. [`docs/tooling.md`](./docs/tooling.md)
 
 ## License
 

@@ -2,15 +2,15 @@
  * Appends a new RAC watch-log entry scaffold for today's date.
  *
  * Usage:
- *   npx tsx scripts/new-rac-watch-entry.ts
- *   npx tsx scripts/new-rac-watch-entry.ts --dry-run
- *   npx tsx scripts/new-rac-watch-entry.ts --force
+ *   vp exec tsx scripts/new-rac-watch-entry.ts
+ *   vp exec tsx scripts/new-rac-watch-entry.ts --dry-run
+ *   vp exec tsx scripts/new-rac-watch-entry.ts --force
  */
 
 import { spawnSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 
-const LOG_PATH = ".claude/docs/rac-watch-log.md";
+const LOG_PATH = "docs/rac-watch-log.md";
 const args = new Set(process.argv.slice(2));
 const dryRun = args.has("--dry-run");
 const force = args.has("--force");

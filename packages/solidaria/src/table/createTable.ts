@@ -140,7 +140,7 @@ export function createTable<T extends object>(
       s.setFocusedKey(key);
       queueMicrotask(() => focusCurrentElement(ref()));
     };
-    const runTypeahead = () => {
+    const runTypeahead = (focusedKey: Key, focusedItem: GridNode<T>) => {
       if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) {
         return false;
       }
@@ -487,7 +487,7 @@ export function createTable<T extends object>(
         return;
 
       default:
-        if (runTypeahead()) {
+        if (runTypeahead(focusedKey, focusedItem)) {
           return;
         }
         return;
