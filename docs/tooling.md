@@ -36,6 +36,15 @@ for `fmt`, `lint`, and `staged`. Do not add `.oxfmtrc.json` or
 `.oxlintrc.json`; Vite Plus reads the Oxfmt and Oxlint settings from the
 config blocks in that file.
 
+Install the repo git hooks once per checkout:
+
+```bash
+vp config
+```
+
+The tracked hook entrypoint is [`.vite-hooks/pre-commit`](../.vite-hooks/pre-commit).
+Generated hook shims under `.vite-hooks/_` stay untracked.
+
 The daily static gate is:
 
 ```bash
@@ -61,3 +70,14 @@ Apps should use Vite Plus commands directly where they map cleanly:
 Prefer native Vite Plus/Vite capabilities over compatibility plugins when the
 project can express the same behavior directly. For example, `apps/web` uses
 Vite's native `resolve.tsconfigPaths` support instead of `vite-tsconfig-paths`.
+
+## Future Package Build Migration
+
+Package builds intentionally stay on the existing `tsup` + `tsc` pipeline for
+now. Migrating them to a native Vite Plus package build should be a separate
+change after we validate one package end to end.
+
+That migration should compare generated `dist` files, type declarations,
+declaration maps, package exports, and packed npm contents before rolling the
+pattern across all packages. Do not mix that migration into comparison app or
+component parity work.

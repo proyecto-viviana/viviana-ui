@@ -16,6 +16,6 @@
     "@proyecto-viviana/web",
     "@proyecto-viviana/comparison",
     "@proyecto-viviana/solidaria-test-utils",
-    "@proyecto-viviana/silapse-test-utils"
+    "@proyecto-viviana/solid-spectrum-test-utils"
   ]
 }

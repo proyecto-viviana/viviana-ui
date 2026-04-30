@@ -32,15 +32,15 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: vp install --frozen-lockfile
 
       - name: Run release readiness checks
-        run: pnpm run ci:release-readiness
+        run: vp run ci:release-readiness
 
       - name: Publish summary
         if: always()
         run: |
           echo "## Release Readiness Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "This workflow mirrors \`pnpm run ci:release-readiness\` and the non-publishing checks from \`pnpm run release:prepare\`." >> "$GITHUB_STEP_SUMMARY"
+          echo "This workflow mirrors \`vp run ci:release-readiness\` and the non-publishing checks from \`vp run release:prepare\`." >> "$GITHUB_STEP_SUMMARY"
           echo "It validates build health and the Vitest suite without publishing anything." >> "$GITHUB_STEP_SUMMARY"

@@ -9,16 +9,16 @@
 
 ## Release Matrix
 
-| Workspace                       | Classification    | Registry target | Privacy | Versioning  |
-| ------------------------------- | ----------------- | --------------- | ------- | ----------- |
-| `packages/solid-stately`        | releasable        | npm             | public  | independent |
-| `packages/solidaria`            | releasable        | npm             | public  | independent |
-| `packages/solidaria-components` | releasable        | npm             | public  | independent |
-| `packages/silapse`              | releasable        | npm             | public  | independent |
-| `packages/solidaria-test-utils` | private/test-only | none            | private | n/a         |
-| `packages/silapse-test-utils`   | private/test-only | none            | private | n/a         |
-| `apps/web`                      | app-only          | none            | private | n/a         |
-| `apps/comparison`               | app-only          | none            | private | n/a         |
+| Workspace                            | Classification    | Registry target | Privacy | Versioning  |
+| ------------------------------------ | ----------------- | --------------- | ------- | ----------- |
+| `packages/solid-stately`             | releasable        | npm             | public  | independent |
+| `packages/solidaria`                 | releasable        | npm             | public  | independent |
+| `packages/solidaria-components`      | releasable        | npm             | public  | independent |
+| `packages/solid-spectrum`            | releasable        | npm             | public  | independent |
+| `packages/solidaria-test-utils`      | private/test-only | none            | private | n/a         |
+| `packages/solid-spectrum-test-utils` | private/test-only | none            | private | n/a         |
+| `apps/web`                           | app-only          | none            | private | n/a         |
+| `apps/comparison`                    | app-only          | none            | private | n/a         |
 
 ## Release Flow
 

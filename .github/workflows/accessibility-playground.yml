@@ -32,13 +32,13 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: vp install --frozen-lockfile
 
       - name: Install Playwright Chromium
-        run: cd apps/web && pnpm exec playwright install --with-deps chromium
+        run: vp exec --filter @proyecto-viviana/web -- playwright install --with-deps chromium
 
       - name: Run blocking accessibility checks
-        run: pnpm run ci:a11y
+        run: vp run ci:a11y
 
       - name: Upload Playwright artifacts
         if: always()
@@ -56,5 +56,5 @@ jobs:
           echo "## Accessibility Check Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "This workflow is blocking on pull requests." >> "$GITHUB_STEP_SUMMARY"
-          echo "It mirrors \`pnpm run ci:a11y\` and enforces the blocking AA + smoke gate, with axe \`color-contrast\` temporarily excluded." >> "$GITHUB_STEP_SUMMARY"
-          echo "Stricter contrast, best-practice, AAA, and experimental scans remain available via \`pnpm run a11y:full\`." >> "$GITHUB_STEP_SUMMARY"
+          echo "It mirrors \`vp run ci:a11y\` and enforces the blocking AA + smoke gate, with axe \`color-contrast\` temporarily excluded." >> "$GITHUB_STEP_SUMMARY"
+          echo "Stricter contrast, best-practice, AAA, and experimental scans remain available via \`vp run a11y:full\`." >> "$GITHUB_STEP_SUMMARY"

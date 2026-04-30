@@ -19,10 +19,10 @@
     "test:select": "playwright test e2e/select-visual.spec.ts --reporter=line",
     "preview": "astro preview",
     "typecheck": "astro check",
-    "dev:worker": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler dev --config wrangler.jsonc",
-    "types": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler types src/worker-configuration.d.ts --config wrangler.jsonc",
-    "deploy": "vp run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --config wrangler.jsonc",
-    "deploy:dry-run": "vp run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --dry-run --config wrangler.jsonc"
+    "dev:worker": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler vp exec wrangler dev --config wrangler.jsonc",
+    "types": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler vp exec wrangler types src/worker-configuration.d.ts --config wrangler.jsonc",
+    "deploy": "vp run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler vp exec wrangler deploy --config wrangler.jsonc",
+    "deploy:dry-run": "vp run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler vp exec wrangler deploy --dry-run --config wrangler.jsonc"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.2",

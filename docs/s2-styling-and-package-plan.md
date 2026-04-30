@@ -14,8 +14,6 @@ This is the controlling direction for the styled packages and the comparison app
 | Spectrum styled components | `@proyecto-viviana/solid-spectrum`       | Spectrum 2-compatible styled Solid components.              |
 | Viviana design system      | `@proyecto-viviana/viviana-ui`           | Proyecto Viviana's own product design system.               |
 
-`silapse` is retired as a name. New docs, routes, package references, and comparison surfaces should use `viviana-ui` or `solid-spectrum` depending on the layer they mean.
-
 ## S2 Styling Research
 
 The current Spectrum 2 styling policy is macro-based, not selector-based. Adobe documents `@react-spectrum/s2/style` as a build-time `style` macro that emits atomic CSS from Spectrum 2 tokens. Component examples use imports such as:
@@ -67,7 +65,7 @@ The first implementation can be a compiled/static package stylesheet if that is 
 
 ## Migration Order
 
-1. Rename documentation and app copy from Silapse to Viviana UI or Solid Spectrum.
+1. Keep documentation and app copy aligned to Viviana UI or Solid Spectrum.
 2. Create `@proyecto-viviana/solid-spectrum` package boundaries and move S2 parity components there.
 3. Keep `solidaria-components` as the behavior source of truth.
 4. Make the comparison app consume `solid-spectrum` for the Solid parity side.
