@@ -34,15 +34,10 @@ vp test run packages         # unit suite
 
 ## Contributing
 
-Working docs live under [`.claude/`](./.claude). New contributors read in order:
+Tracked project docs live under [`docs/`](./docs):
 
-1. [`.claude/docs/PLAN.md`](./.claude/docs/PLAN.md) — current plan and status
-2. [`.claude/docs/architecture.md`](./.claude/docs/architecture.md)
-3. [`docs/s2-styling-and-package-plan.md`](./docs/s2-styling-and-package-plan.md)
-4. [`.claude/docs/skin-system-research.md`](./.claude/docs/skin-system-research.md)
-5. [`.claude/docs/getting-started.md`](./.claude/docs/getting-started.md)
-6. [`.claude/docs/contributing.md`](./.claude/docs/contributing.md)
-7. [`.claude/reference/patterns.md`](./.claude/reference/patterns.md)
+1. [`docs/s2-styling-and-package-plan.md`](./docs/s2-styling-and-package-plan.md)
+2. [`docs/release-policy.md`](./docs/release-policy.md)
 
 ## License
 
