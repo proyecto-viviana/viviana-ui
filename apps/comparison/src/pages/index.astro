@@ -4,18 +4,27 @@ import {
   missingOfficialComparisonEntries,
   officialComparisonEntries,
 } from "@comparison/data/comparison-manifest";
+import { getComponentControlGroup } from "@comparison/data/component-controls";
+import { getComponentCoverage } from "@comparison/data/coverage";
 import { reactSpectrumCatalogueSource } from "@comparison/data/react-spectrum-catalogue";
 import { officialVisualStateSummary } from "@comparison/data/visual-state-matrix";
 import "@comparison/styles/global.css";
 
-const matchedCount = comparisonEntries.filter((entry) => entry.parity === "matched").length;
-const partialCount = comparisonEntries.filter((entry) => entry.parity === "partial").length;
-const gapCount = comparisonEntries.filter((entry) => entry.parity === "gap").length;
 const liveCount = comparisonEntries.filter((entry) => entry.priority === "live").length;
 const officialCount = officialComparisonEntries.length;
 const missingOfficialCount = missingOfficialComparisonEntries.length;
 const snapshottedStateCount = officialVisualStateSummary.snapshottedStates;
 const strictStateCount = officialVisualStateSummary.strictPairDiffStates;
+
+const entriesWithCoverage = comparisonEntries.map((entry) => ({
+  entry,
+  coverage: getComponentCoverage(entry, getComponentControlGroup(entry)),
+}));
+
+const overallCoverage = Math.round(
+  entriesWithCoverage.reduce((sum, item) => sum + item.coverage.overall, 0) /
+    entriesWithCoverage.length,
+);
 ---
 
 <html lang="en">
@@ -23,125 +32,168 @@ const strictStateCount = officialVisualStateSummary.strictPairDiffStates;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Comparison App</title>
+    <title>Solid Spectrum</title>
   </head>
-  <body class="comparison-app">
-    <main class="docs-shell">
-      <header class="docs-topbar">
-        <div>
-          <p class="eyebrow">Comparison Harness</p>
-          <h1>React Spectrum S2 parity</h1>
-        </div>
-        <a class="entry-link" href={reactSpectrumCatalogueSource.url}>React Spectrum catalogue</a>
-      </header>
+  <body class="comparison-app s2-docs" data-theme="system">
+    <div class="s2-topbar">
+      <a href="/" class="s2-brand" aria-label="Solid Spectrum home">
+        <span class="s2-brand-mark" aria-hidden="true">S</span>
+        <span>Solid Spectrum</span>
+      </a>
+      <button class="s2-search" type="button">
+        <span>Search Solid Spectrum</span>
+        <kbd>/</kbd>
+      </button>
+      <nav class="s2-topnav" aria-label="Top navigation">
+        <a href="/">Docs</a>
+        <a href={reactSpectrumCatalogueSource.url}>React Spectrum</a>
+        <a href="https://www.npmjs.com/package/@proyecto-viviana/solid-spectrum">npm</a>
+      </nav>
+      <button class="s2-theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme">
+        <span data-theme-toggle-icon>system</span>
+      </button>
+    </div>
 
-      <div class="docs-layout">
-        <aside class="docs-rail">
-          <form class="catalogue-controls" data-catalogue-controls>
-            <label>
-              <span>Search</span>
-              <input name="query" type="search" placeholder="Button, Dialog, Picker" />
-            </label>
-            <label>
-              <span>Parity</span>
-              <select name="parity">
-                <option value="all">All</option>
-                <option value="matched">Matched</option>
-                <option value="partial">Partial</option>
-                <option value="gap">Gap</option>
-              </select>
-            </label>
-            <label>
-              <span>Status</span>
-              <select name="status">
-                <option value="all">All</option>
-                <option value="live">Live</option>
-                <option value="tracked">Tracked</option>
-              </select>
-            </label>
-            <label>
-              <span>Source</span>
-              <select name="source">
-                <option value="all">All</option>
-                <option value="react-spectrum-s2">Official S2</option>
-                <option value="legacy-solidaria">Legacy</option>
-              </select>
-            </label>
-            <label>
-              <span>Sort</span>
-              <select name="sort">
-                <option value="docs">Docs order</option>
-                <option value="name">Name</option>
-                <option value="parity">Parity</option>
-                <option value="status">Status</option>
-              </select>
-            </label>
-          </form>
+    <div class="s2-layout">
+      <aside class="s2-sidebar">
+        <nav class="s2-nav" aria-label="Documentation">
+          <p>Overview</p>
+          <a href="/" aria-current="page">Getting started</a>
+          <p>Components</p>
+          {comparisonEntries.map((item) => (
+            <a href={`/components/${item.slug}`}>{item.title}</a>
+          ))}
+          <p>Guides</p>
+          <a href="/components/button">Visual parity</a>
+          <a href="/components/button#api">API coverage</a>
+          <p>Reference</p>
+          <a href={reactSpectrumCatalogueSource.url}>S2 catalogue</a>
+        </nav>
+      </aside>
 
-          <div class="stat-list">
-            <div><span>Live routes</span><strong>{liveCount}</strong></div>
-            <div><span>Official S2</span><strong>{officialCount}</strong></div>
-            <div><span>Official gaps</span><strong>{missingOfficialCount}</strong></div>
-            <div><span>State screenshots</span><strong>{snapshottedStateCount}</strong></div>
-            <div><span>Strict pairs</span><strong>{strictStateCount}</strong></div>
-            <div><span>Matched</span><strong>{matchedCount}</strong></div>
-            <div><span>Partial</span><strong>{partialCount}</strong></div>
-            <div><span>Gap</span><strong>{gapCount}</strong></div>
+      <main class="s2-main">
+        <section class="s2-hero" aria-labelledby="page-title">
+          <h1 id="page-title">Solid Spectrum</h1>
+          <p>
+            A component-by-component parity harness for React Spectrum S2 and
+            @proyecto-viviana/solid-spectrum.
+          </p>
+        </section>
+
+        <section class="s2-example" aria-labelledby="coverage-title">
+          <div class="s2-example-preview">
+            <div class="s2-coverage-ring" style={`--value: ${overallCoverage}%`}>
+              <strong>{overallCoverage}%</strong>
+              <span>overall coverage</span>
+            </div>
+            <div class="s2-stat-grid">
+              <div><span>Official S2</span><strong>{officialCount}</strong></div>
+              <div><span>Live routes</span><strong>{liveCount}</strong></div>
+              <div><span>Gaps</span><strong>{missingOfficialCount}</strong></div>
+              <div><span>State screenshots</span><strong>{snapshottedStateCount}</strong></div>
+              <div><span>Strict pairs</span><strong>{strictStateCount}</strong></div>
+            </div>
           </div>
-        </aside>
-
-        <section class="docs-content">
-          <div class="section-heading">
-            <h2>Components</h2>
-            <p>
-              Official S2 catalogue order, implementation gaps, and strict visual
-              coverage in one sortable list.
-            </p>
+          <div class="s2-example-controls">
+            <h2 id="coverage-title">Catalogue controls</h2>
+            <form class="s2-control-grid" data-catalogue-controls>
+              <label class="s2-field">
+                <span>Search</span>
+                <input name="query" type="search" placeholder="Button, Dialog, Picker" />
+              </label>
+              <label class="s2-field">
+                <span>Parity</span>
+                <select name="parity">
+                  <option value="all">All</option>
+                  <option value="matched">Matched</option>
+                  <option value="partial">Partial</option>
+                  <option value="gap">Gap</option>
+                </select>
+              </label>
+              <label class="s2-field">
+                <span>Status</span>
+                <select name="status">
+                  <option value="all">All</option>
+                  <option value="live">Live</option>
+                  <option value="tracked">Tracked</option>
+                </select>
+              </label>
+              <label class="s2-field">
+                <span>Sort</span>
+                <select name="sort">
+                  <option value="docs">Docs order</option>
+                  <option value="name">Name</option>
+                  <option value="coverage">Coverage</option>
+                  <option value="parity">Parity</option>
+                </select>
+              </label>
+            </form>
           </div>
-          <div class="result-count" data-result-count>{comparisonEntries.length} components</div>
-          <div class="entry-grid" data-entry-list>
-            {comparisonEntries.map((entry, index) => (
+        </section>
+
+        <section class="s2-section" aria-labelledby="components-title">
+          <div class="s2-section-heading">
+            <h2 id="components-title">Components</h2>
+            <span data-result-count>{comparisonEntries.length} components</span>
+          </div>
+          <div class="s2-component-list" data-entry-list>
+            {entriesWithCoverage.map(({ entry, coverage }, index) => (
               <a
                 href={`/components/${entry.slug}`}
-                class="entry-card"
+                class="s2-component-row"
                 data-entry-card
                 data-index={index}
                 data-title={entry.title}
                 data-summary={entry.summary}
                 data-parity={entry.parity}
                 data-status={entry.priority}
-                data-component-status={entry.componentStatus}
                 data-source={entry.catalogueSource}
-                data-category={entry.category}
+                data-coverage={coverage.overall}
               >
-              <div class="entry-card-title">
-                <h3>{entry.title}</h3>
-                <span class="entry-link">
-                  Open comparison
+                <span class="s2-component-name">{entry.title}</span>
+                <span class="s2-component-summary">{entry.summary}</span>
+                <span class="s2-meter" aria-label={`${coverage.overall}% coverage`}>
+                  <span style={`width: ${coverage.overall}%`}></span>
                 </span>
-              </div>
-              <div class="entry-card-main">
-                <p>{entry.summary}</p>
-                <ul class="entry-notes">
-                  {entry.gapSummary.slice(0, 2).map((note) => (
-                    <li>{note}</li>
-                  ))}
-                </ul>
-              </div>
-              <div class="entry-card-top">
-                <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
-                <span class={`status-pill status-pill--${entry.componentStatus}`}>
-                  {entry.componentStatus}
-                </span>
-                <span class="category-pill">{entry.category}</span>
-              </div>
-            </a>
+                <span class={`s2-pill s2-pill--${entry.parity}`}>{entry.parity}</span>
+              </a>
             ))}
           </div>
         </section>
-      </div>
-    </main>
+      </main>
+
+      <aside class="s2-toc" aria-label="On this page">
+        <p>On this page</p>
+        <a href="#page-title">Solid Spectrum</a>
+        <a href="#coverage-title">Catalogue controls</a>
+        <a href="#components-title">Components</a>
+        <div class="s2-toc-actions">
+          <a href={reactSpectrumCatalogueSource.url}>S2 source</a>
+        </div>
+      </aside>
+    </div>
+
     <script is:inline>
+      const root = document.body;
+      const themeToggle = document.querySelector("[data-theme-toggle]");
+      const themeIcon = document.querySelector("[data-theme-toggle-icon]");
+      const savedTheme = window.localStorage.getItem("solid-spectrum-theme") || "system";
+      const themeOrder = ["system", "light", "dark"];
+
+      function applyTheme(theme) {
+        root.dataset.theme = theme;
+        if (themeIcon) {
+          themeIcon.textContent = theme;
+        }
+        window.localStorage.setItem("solid-spectrum-theme", theme);
+      }
+
+      themeToggle?.addEventListener("click", () => {
+        const current = root.dataset.theme || "system";
+        applyTheme(themeOrder[(themeOrder.indexOf(current) + 1) % themeOrder.length]);
+      });
+      applyTheme(savedTheme);
+
       const controls = document.querySelector("[data-catalogue-controls]");
       const list = document.querySelector("[data-entry-list]");
       const count = document.querySelector("[data-result-count]");
@@ -160,7 +212,6 @@ const strictStateCount = officialVisualStateSummary.strictPairDiffStates;
         const query = normalize(data.get("query"));
         const parity = String(data.get("parity") || "all");
         const status = String(data.get("status") || "all");
-        const source = String(data.get("source") || "all");
         const sort = String(data.get("sort") || "docs");
         const visible = [];
 
@@ -169,12 +220,11 @@ const strictStateCount = officialVisualStateSummary.strictPairDiffStates;
             continue;
           }
 
-          const searchable = normalize(`${card.dataset.title} ${card.dataset.summary} ${card.dataset.category}`);
+          const searchable = normalize(`${card.dataset.title} ${card.dataset.summary}`);
           const matches =
             (!query || searchable.includes(query)) &&
             (parity === "all" || card.dataset.parity === parity) &&
-            (status === "all" || card.dataset.status === status) &&
-            (source === "all" || card.dataset.source === source);
+            (status === "all" || card.dataset.status === status);
 
           card.hidden = !matches;
           if (matches) {
@@ -186,12 +236,11 @@ const strictStateCount = officialVisualStateSummary.strictPairDiffStates;
           if (sort === "name") {
             return String(a.dataset.title).localeCompare(String(b.dataset.title));
           }
+          if (sort === "coverage") {
+            return Number(b.dataset.coverage) - Number(a.dataset.coverage);
+          }
           if (sort === "parity") {
             return String(a.dataset.parity).localeCompare(String(b.dataset.parity)) ||
-              Number(a.dataset.index) - Number(b.dataset.index);
-          }
-          if (sort === "status") {
-            return String(a.dataset.componentStatus).localeCompare(String(b.dataset.componentStatus)) ||
               Number(a.dataset.index) - Number(b.dataset.index);
           }
           return Number(a.dataset.index) - Number(b.dataset.index);

@@ -17,10 +17,23 @@ test.describe("comparison catalogue controls", () => {
 
     await page.getByLabel("Sort").selectOption("name");
 
-    const titles = await page.locator("[data-entry-card]:not([hidden]) h3").allTextContents();
+    const titles = await page
+      .locator("[data-entry-card]:not([hidden]) .s2-component-name")
+      .allTextContents();
     const firstTen = titles.slice(0, 10);
     const sortedFirstTen = [...firstTen].sort((a, b) => a.localeCompare(b));
 
+    expect(firstTen.length).toBeGreaterThan(0);
     expect(firstTen).toEqual(sortedFirstTen);
+  });
+
+  test("switches the docs theme", async ({ page }) => {
+    await page.goto("/");
+
+    await expect(page.locator("body")).toHaveAttribute("data-theme", "system");
+    await page.getByRole("button", { name: "Switch color theme" }).click();
+    await expect(page.locator("body")).toHaveAttribute("data-theme", "light");
+    await page.getByRole("button", { name: "Switch color theme" }).click();
+    await expect(page.locator("body")).toHaveAttribute("data-theme", "dark");
   });
 });

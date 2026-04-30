@@ -1,19 +1,14 @@
 ---
 import ReactMount from "../../components/ReactMount.astro";
 import SolidMount from "../../components/SolidMount.astro";
+import { getComponentControlGroup } from "@comparison/data/component-controls";
+import { getComponentCoverage } from "@comparison/data/coverage";
 import {
   comparisonEntries,
   layerOrder,
   type ComparisonEntry,
   type ComparisonLayerId,
 } from "@comparison/data/comparison-manifest";
-import {
-  buttonDemoDefaults,
-  buttonFillStyleOptions,
-  buttonSizeOptions,
-  buttonStaticColorOptions,
-  buttonVariantOptions,
-} from "@comparison/data/button-demo";
 import { getVisualStateTargets } from "@comparison/data/visual-state-matrix";
 import "@comparison/styles/global.css";
 
@@ -25,7 +20,12 @@ export function getStaticPaths() {
 }
 
 const { entry } = Astro.props as { entry: ComparisonEntry };
+const controlGroup = getComponentControlGroup(entry);
+const coverage = getComponentCoverage(entry, controlGroup);
 const visualStates = getVisualStateTargets(entry);
+const playgroundLayer: ComparisonLayerId = "styled";
+const playgroundTrack = entry.layers[playgroundLayer];
+const supportingLayers = layerOrder.filter((layer) => layer !== playgroundLayer);
 
 const layerTitles: Record<ComparisonLayerId, string> = {
   styled: "Styled Layer",
@@ -33,10 +33,6 @@ const layerTitles: Record<ComparisonLayerId, string> = {
   headless: "Headless Layer",
   state: "State Layer",
 };
-
-const playgroundLayer: ComparisonLayerId = "styled";
-const playgroundTrack = entry.layers[playgroundLayer];
-const supportingLayers = layerOrder.filter((layer) => layer !== playgroundLayer);
 ---
 
 <html lang="en">
@@ -44,297 +40,291 @@ const supportingLayers = layerOrder.filter((layer) => layer !== playgroundLayer)
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{entry.title} Comparison</title>
+    <title>{entry.title} | Solid Spectrum</title>
   </head>
-  <body class="comparison-app">
-    <main class="docs-shell">
-      <header class="docs-topbar">
-        <div>
-          <a href="/" class="back-link">Components</a>
-          <h1>{entry.title}</h1>
-        </div>
-        {entry.docsUrl ? (
-          <a class="entry-link" href={entry.docsUrl}>
-            React Spectrum documentation
-          </a>
-        ) : null}
-      </header>
+  <body class="comparison-app s2-docs" data-theme="system">
+    <div class="s2-topbar">
+      <a href="/" class="s2-brand" aria-label="Solid Spectrum home">
+        <span class="s2-brand-mark" aria-hidden="true">S</span>
+        <span>Solid Spectrum</span>
+      </a>
+      <button class="s2-search" type="button">
+        <span>Search Solid Spectrum</span>
+        <kbd>/</kbd>
+      </button>
+      <nav class="s2-topnav" aria-label="Top navigation">
+        <a href="/">Docs</a>
+        {entry.docsUrl ? <a href={entry.docsUrl}>React Spectrum</a> : null}
+        <a href="https://www.npmjs.com/package/@proyecto-viviana/solid-spectrum">npm</a>
+      </nav>
+      <button class="s2-theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme">
+        <span data-theme-toggle-icon>system</span>
+      </button>
+    </div>
 
-      <div class="docs-layout docs-layout--detail">
-        <aside class="docs-rail">
-          <nav class="component-nav" aria-label="Components">
-            <p>Components</p>
-            {comparisonEntries.map((componentEntry) => (
-              <a
-                href={`/components/${componentEntry.slug}`}
-                aria-current={componentEntry.slug === entry.slug ? "page" : undefined}
+    <div class="s2-layout">
+      <aside class="s2-sidebar">
+        <nav class="s2-nav" aria-label="Components">
+          <p>Overview</p>
+          <a href="/">Getting started</a>
+          <p>Components</p>
+          {comparisonEntries.map((componentEntry) => (
+            <a
+              href={`/components/${componentEntry.slug}`}
+              aria-current={componentEntry.slug === entry.slug ? "page" : undefined}
+            >
+              {componentEntry.title}
+            </a>
+          ))}
+          <p>Guides</p>
+          <a href="#visual-state-coverage">Visual parity</a>
+          <a href="#api">API coverage</a>
+          <p>Reference</p>
+          {entry.docsUrl ? <a href={entry.docsUrl}>S2 docs</a> : null}
+        </nav>
+      </aside>
+
+      <main class="s2-main">
+        <section class="s2-hero" aria-labelledby="page-title">
+          <h1 id="page-title">{entry.title}</h1>
+          <p>{entry.summary}</p>
+          <div class="s2-hero-meta">
+            <span class={`s2-pill s2-pill--${entry.parity}`}>{entry.parity}</span>
+            <span class={`s2-pill s2-pill--${entry.componentStatus}`}>{entry.componentStatus}</span>
+            <span class="s2-pill">{coverage.overall}% coverage</span>
+          </div>
+        </section>
+
+        <section class="s2-example" id="example" aria-labelledby="example-title">
+          <div class="s2-example-preview">
+            <div class="s2-comparison-frame">
+              <article class="s2-framework-panel" data-framework="react">
+                <header>
+                  <span>React</span>
+                  <strong>React Spectrum S2</strong>
+                  <em>{playgroundTrack.react}</em>
+                </header>
+                {playgroundTrack.react === "live" ? (
+                  <ReactMount componentSlug={entry.slug} layer={playgroundLayer} />
+                ) : (
+                  <div class="s2-empty-state">
+                    {playgroundTrack.react === "missing"
+                      ? "React reference is missing."
+                      : "React reference is tracked but not wired yet."}
+                  </div>
+                )}
+              </article>
+
+              <article class="s2-framework-panel" data-framework="solid">
+                <header>
+                  <span>Solid</span>
+                  <strong>solid-spectrum</strong>
+                  <em>{playgroundTrack.solid}</em>
+                </header>
+                {playgroundTrack.solid === "live" ? (
+                  <SolidMount componentSlug={entry.slug} layer={playgroundLayer} />
+                ) : (
+                  <div class="s2-empty-state">
+                    {playgroundTrack.solid === "missing"
+                      ? "Solid implementation is missing."
+                      : "Solid implementation is tracked but not wired yet."}
+                  </div>
+                )}
+              </article>
+            </div>
+          </div>
+
+          <div class="s2-example-controls">
+            <h2 id="example-title">Example</h2>
+            <p>{controlGroup.note}</p>
+            {controlGroup.controls.length > 0 ? (
+              <form
+                class="s2-prop-controls"
+                data-comparison-controls={entry.slug}
+                data-control-coverage={controlGroup.coverage}
               >
-                {componentEntry.title}
-              </a>
-            ))}
-          </nav>
-        </aside>
-
-        <div class="docs-content">
-          <section class="section-block detail-summary" id="overview">
-            <div class="rail-status">
-              <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
-              <span class={`status-pill status-pill--${entry.componentStatus}`}>
-                {entry.componentStatus}
-              </span>
-              <span class="category-pill">{entry.category}</span>
-            </div>
-            <p class="hero-copy">{entry.summary}</p>
-          </section>
-
-          <section class="section-block playground-block" id="playground">
-            <div class="section-heading">
-              <h2>Playground</h2>
-              <p>{playgroundTrack.summary}</p>
-              <p class="layer-note">{playgroundTrack.note}</p>
-            </div>
-
-            <div class="playground-surface">
-              {entry.slug === "button" ? (
-                <div class="component-controls component-controls--embedded" data-comparison-controls="button">
-                  <form class="control-grid">
-                    <label>
-                      <span>children</span>
-                      <input name="children" value={buttonDemoDefaults.children} />
-                    </label>
-                    <label>
-                      <span>variant</span>
-                      <select name="variant">
-                        {buttonVariantOptions.map((option) => (
-                          <option value={option} selected={option === buttonDemoDefaults.variant}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      <span>fillStyle</span>
-                      <select name="fillStyle">
-                        {buttonFillStyleOptions.map((option) => (
-                          <option value={option} selected={option === buttonDemoDefaults.fillStyle}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      <span>size</span>
-                      <select name="size">
-                        {buttonSizeOptions.map((option) => (
-                          <option value={option} selected={option === buttonDemoDefaults.size}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      <span>staticColor</span>
-                      <select name="staticColor">
-                        <option value="">none</option>
-                        {buttonStaticColorOptions.map((option) => (
-                          <option value={option}>{option}</option>
-                        ))}
-                      </select>
-                    </label>
-                    <label class="checkbox-control">
-                      <input name="isDisabled" type="checkbox" />
-                      <span>isDisabled</span>
-                    </label>
-                    <label class="checkbox-control">
-                      <input name="isPending" type="checkbox" />
-                      <span>isPending</span>
-                    </label>
-                    <button type="button" class="reset-control" data-reset-controls>Reset</button>
-                  </form>
-                </div>
-              ) : null}
-
-              <div class="comparison-grid">
-                <article class="framework-card">
-                  <div class="framework-card-head">
-                    <div>
-                      <span class="framework-label">React</span>
-                      <h3>React Spectrum stack</h3>
-                    </div>
-                    <span class={`status-pill status-pill--${playgroundTrack.react}`}>
-                      {playgroundTrack.react}
-                    </span>
+                {controlGroup.controls.map((control) => (
+                  <div class="s2-prop-control">
+                    {control.kind === "text" ? (
+                      <label class="s2-field">
+                        <span>{control.label}</span>
+                        <input name={control.name} value={String(control.defaultValue)} />
+                      </label>
+                    ) : control.kind === "select" ? (
+                      <label class="s2-field">
+                        <span>{control.label}</span>
+                        <select name={control.name}>
+                          {control.options?.map((option) => (
+                            <option
+                              value={option.value}
+                              selected={option.value === control.defaultValue}
+                            >
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    ) : control.kind === "radio" ? (
+                      <fieldset class="s2-radio-group">
+                        <legend>{control.label}</legend>
+                        <div>
+                          {control.options?.map((option) => (
+                            <label>
+                              <input
+                                type="radio"
+                                name={control.name}
+                                value={option.value}
+                                checked={option.value === control.defaultValue}
+                              />
+                              <span>{option.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+                    ) : (
+                      <label class="s2-switch">
+                        <input name={control.name} type="checkbox" />
+                        <span>{control.label}</span>
+                      </label>
+                    )}
                   </div>
-                  {playgroundTrack.react === "live" ? (
-                    <ReactMount componentSlug={entry.slug} layer={playgroundLayer} />
-                  ) : (
-                    <div class="comparison-empty-state">
-                      {playgroundTrack.react === "na"
-                        ? "No direct React layer exists here."
-                        : playgroundTrack.react === "missing"
-                          ? "Missing React reference implementation."
-                          : "This React comparison is tracked but not wired yet."}
-                    </div>
-                  )}
-                </article>
-
-                <article class="framework-card">
-                  <div class="framework-card-head">
-                    <div>
-                      <span class="framework-label">Solid</span>
-                      <h3>Solidaria stack</h3>
-                    </div>
-                    <span class={`status-pill status-pill--${playgroundTrack.solid}`}>
-                      {playgroundTrack.solid}
-                    </span>
-                  </div>
-                  {playgroundTrack.solid === "live" ? (
-                    <SolidMount componentSlug={entry.slug} layer={playgroundLayer} />
-                  ) : (
-                    <div class="comparison-empty-state">
-                      {playgroundTrack.solid === "na"
-                        ? "No direct Solid layer exists here."
-                        : playgroundTrack.solid === "missing"
-                          ? "Missing Solid implementation."
-                          : "This Solid comparison is tracked but not wired yet."}
-                    </div>
-                  )}
-                </article>
+                ))}
+                <button type="button" class="s2-reset" data-reset-controls>Reset</button>
+              </form>
+            ) : (
+              <div class="s2-empty-state">
+                Interactive S2 prop controls are missing for this component.
               </div>
-            </div>
-          </section>
+            )}
+          </div>
+        </section>
 
-          <section class="section-block state-matrix" id="visual-state-coverage">
-            <div class="section-heading">
-              <h2>Visual State Coverage</h2>
-            </div>
-            <div class="state-matrix-grid">
-              {visualStates.map((state) => (
-                <article class="state-row">
-                  <div>
-                    <span class="state-kind">{state.kind}</span>
-                    <h3>{state.label}</h3>
-                    <p>{state.note}</p>
-                  </div>
-                  <div class="state-status-stack">
-                    <span class={`state-pill state-pill--${state.react}`}>
-                      React {state.react}
-                    </span>
-                    <span class={`state-pill state-pill--${state.solid}`}>
-                      Solid {state.solid}
-                    </span>
-                    <span class={`state-pill state-pill--${state.pairDiff}`}>
-                      Pair diff {state.pairDiff}
-                    </span>
-                  </div>
-                </article>
+        <section class="s2-section" id="coverage" aria-labelledby="coverage-title">
+          <div class="s2-section-heading">
+            <h2 id="coverage-title">Coverage</h2>
+            <span>{coverage.overall}%</span>
+          </div>
+          <div class="s2-coverage-list">
+            {coverage.metrics.map((item) => (
+              <div class="s2-coverage-row">
+                <span>{item.label}</span>
+                <div class="s2-meter"><span style={`width: ${item.value}%`}></span></div>
+                <strong>{item.value}%</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section class="s2-section" id="visual-state-coverage" aria-labelledby="visual-title">
+          <div class="s2-section-heading">
+            <h2 id="visual-title">Visual State Coverage</h2>
+            <span>{visualStates.length} states</span>
+          </div>
+          <div class="s2-state-list">
+            {visualStates.map((state) => (
+              <article class="s2-state-row">
+                <div>
+                  <span>{state.kind}</span>
+                  <h3>{state.label}</h3>
+                  <p>{state.note}</p>
+                </div>
+                <div>
+                  <span class={`s2-pill s2-pill--${state.react}`}>React {state.react}</span>
+                  <span class={`s2-pill s2-pill--${state.solid}`}>Solid {state.solid}</span>
+                  <span class={`s2-pill s2-pill--${state.pairDiff}`}>{state.pairDiff}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section class="s2-section" id="api" aria-labelledby="api-title">
+          <div class="s2-section-heading">
+            <h2 id="api-title">API</h2>
+            <span>{controlGroup.apiProps.length || "missing"}</span>
+          </div>
+          {controlGroup.apiProps.length > 0 ? (
+            <div class="s2-api-table" role="table" aria-label={`${entry.title} API props`}>
+              {controlGroup.apiProps.map((prop) => (
+                <div role="row">
+                  <code role="cell">{prop}</code>
+                  <span role="cell">tracked</span>
+                </div>
               ))}
             </div>
-          </section>
+          ) : (
+            <div class="s2-empty-state">API prop metadata has not been imported yet.</div>
+          )}
+        </section>
 
-      {supportingLayers.map((layer) => {
-        const track = entry.layers[layer];
+        {supportingLayers.map((layer) => {
+          const track = entry.layers[layer];
 
-        return (
-          <section class="section-block layer-block" id={layer}>
-            <div class="section-heading">
-              <h2>{layerTitles[layer]}</h2>
+          return (
+            <section class="s2-section" id={layer} aria-labelledby={`${layer}-title`}>
+              <div class="s2-section-heading">
+                <h2 id={`${layer}-title`}>{layerTitles[layer]}</h2>
+                <span>{track.solid}</span>
+              </div>
               <p>{track.summary}</p>
-              <p class="layer-note">{track.note}</p>
-            </div>
+              <p>{track.note}</p>
+            </section>
+          );
+        })}
+      </main>
 
-            <div class="comparison-grid">
-              <article class="framework-card">
-                <div class="framework-card-head">
-                  <div>
-                    <span class="framework-label">React</span>
-                    <h3>React Spectrum stack</h3>
-                  </div>
-                  <span class={`status-pill status-pill--${track.react}`}>
-                    {track.react}
-                  </span>
-                </div>
-                {track.react === "live" ? (
-                  <ReactMount componentSlug={entry.slug} layer={layer} />
-                ) : (
-                  <div class="comparison-empty-state">
-                    {track.react === "na"
-                      ? "No direct React layer exists here."
-                      : track.react === "missing"
-                        ? "Missing React reference implementation."
-                        : "This React comparison is tracked but not wired yet."}
-                  </div>
-                )}
-              </article>
-
-              <article class="framework-card">
-                <div class="framework-card-head">
-                  <div>
-                    <span class="framework-label">Solid</span>
-                    <h3>Solidaria stack</h3>
-                  </div>
-                  <span class={`status-pill status-pill--${track.solid}`}>
-                    {track.solid}
-                  </span>
-                </div>
-                {track.solid === "live" ? (
-                  <SolidMount componentSlug={entry.slug} layer={layer} />
-                ) : (
-                  <div class="comparison-empty-state">
-                    {track.solid === "na"
-                      ? "No direct Solid layer exists here."
-                      : track.solid === "missing"
-                        ? "Missing Solid implementation."
-                        : "This Solid comparison is tracked but not wired yet."}
-                  </div>
-                )}
-              </article>
-            </div>
-          </section>
-        );
-      })}
+      <aside class="s2-toc" aria-label="On this page">
+        <p>On this page</p>
+        <a href="#page-title">{entry.title}</a>
+        <a href="#example">Example</a>
+        <a href="#coverage">Coverage</a>
+        <a href="#visual-state-coverage">Visual State Coverage</a>
+        <a href="#api">API</a>
+        {supportingLayers.map((layer) => (
+          <a href={`#${layer}`}>{layerTitles[layer]}</a>
+        ))}
+        <div class="s2-toc-actions">
+          {entry.docsUrl ? <a href={entry.docsUrl}>S2 source</a> : null}
         </div>
+      </aside>
+    </div>
 
-        <aside class="docs-toc" aria-label="On this page">
-          <p>On this page</p>
-          <a href="#overview">Overview</a>
-          <a href="#playground">Playground</a>
-          <a href="#visual-state-coverage">Visual State Coverage</a>
-          {supportingLayers.map((layer) => (
-            <a href={`#${layer}`}>{layerTitles[layer]}</a>
-          ))}
-          <div class="toc-divider"></div>
-          <div class="rail-status">
-            <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
-            <span class={`status-pill status-pill--${entry.componentStatus}`}>
-              {entry.componentStatus}
-            </span>
-            <span class="category-pill">{entry.category}</span>
-          </div>
-          <ul class="entry-notes">
-            {entry.gapSummary.map((note) => (
-              <li>{note}</li>
-            ))}
-          </ul>
-        </aside>
-      </div>
-    </main>
     <script is:inline>
+      const root = document.body;
+      const themeToggle = document.querySelector("[data-theme-toggle]");
+      const themeIcon = document.querySelector("[data-theme-toggle-icon]");
+      const savedTheme = window.localStorage.getItem("solid-spectrum-theme") || "system";
+      const themeOrder = ["system", "light", "dark"];
+
+      function applyTheme(theme) {
+        root.dataset.theme = theme;
+        if (themeIcon) {
+          themeIcon.textContent = theme;
+        }
+        window.localStorage.setItem("solid-spectrum-theme", theme);
+      }
+
+      themeToggle?.addEventListener("click", () => {
+        const current = root.dataset.theme || "system";
+        applyTheme(themeOrder[(themeOrder.indexOf(current) + 1) % themeOrder.length]);
+      });
+      applyTheme(savedTheme);
+
       const panel = document.querySelector('[data-comparison-controls="button"]');
-      const form = panel?.querySelector("form");
-      const resetButton = panel?.querySelector("[data-reset-controls]");
+      const form = panel instanceof HTMLFormElement ? panel : null;
+      const resetButton = form?.querySelector("[data-reset-controls]");
       const defaults = {
         children: "Save",
         variant: "primary",
         fillStyle: "fill",
         size: "M",
-        staticColor: "",
+        staticColor: "none",
         isDisabled: false,
         isPending: false,
       };
 
       function readButtonControls() {
-        if (!(form instanceof HTMLFormElement)) {
+        if (!form) {
           return defaults;
         }
 
@@ -344,23 +334,27 @@ const supportingLayers = layerOrder.filter((layer) => layer !== playgroundLayer)
           variant: String(data.get("variant") || defaults.variant),
           fillStyle: String(data.get("fillStyle") || defaults.fillStyle),
           size: String(data.get("size") || defaults.size),
-          staticColor: String(data.get("staticColor") || ""),
+          staticColor: String(data.get("staticColor") || defaults.staticColor),
           isDisabled: data.get("isDisabled") === "on",
           isPending: data.get("isPending") === "on",
         };
       }
 
       function writeButtonControls(values) {
-        if (!(form instanceof HTMLFormElement)) {
+        if (!form) {
           return;
         }
 
         for (const [key, value] of Object.entries(values)) {
-          const field = form.elements.namedItem(key);
-          if (field instanceof HTMLInputElement && field.type === "checkbox") {
-            field.checked = Boolean(value);
-          } else if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement) {
-            field.value = String(value ?? "");
+          const fields = Array.from(form.elements).filter((field) => field.name === key);
+          for (const field of fields) {
+            if (field instanceof HTMLInputElement && field.type === "checkbox") {
+              field.checked = Boolean(value);
+            } else if (field instanceof HTMLInputElement && field.type === "radio") {
+              field.checked = field.value === String(value);
+            } else if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement) {
+              field.value = String(value ?? "");
+            }
           }
         }
       }
@@ -371,7 +365,7 @@ const supportingLayers = layerOrder.filter((layer) => layer !== playgroundLayer)
           variant: values.variant,
           fillStyle: values.fillStyle,
           size: values.size,
-          staticColor: values.staticColor || undefined,
+          staticColor: values.staticColor === "none" ? undefined : values.staticColor,
           isDisabled: Boolean(values.isDisabled),
           isPending: Boolean(values.isPending),
         };
@@ -393,7 +387,7 @@ const supportingLayers = layerOrder.filter((layer) => layer !== playgroundLayer)
         }));
       }
 
-      if (form instanceof HTMLFormElement) {
+      if (form) {
         const params = new URLSearchParams(window.location.search);
         const initial = {
           ...defaults,
@@ -401,7 +395,7 @@ const supportingLayers = layerOrder.filter((layer) => layer !== playgroundLayer)
           variant: params.get("variant") || defaults.variant,
           fillStyle: params.get("fillStyle") || defaults.fillStyle,
           size: params.get("size") || defaults.size,
-          staticColor: params.get("staticColor") || "",
+          staticColor: params.get("staticColor") || defaults.staticColor,
           isDisabled: params.get("isDisabled") === "true",
           isPending: params.get("isPending") === "true",
         };

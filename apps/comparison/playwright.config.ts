@@ -23,7 +23,7 @@ export default defineConfig({
   ],
   webServer: managesPreviewServer
     ? {
-        command: `vp run comparison:preview -- --host ${host} --port ${port}`,
+        command: `vp run comparison:preview --host ${host} --port ${port}`,
         url: `${baseURL}/components/dialog/`,
         reuseExistingServer: !process.env.CI,
         timeout: 120000,
