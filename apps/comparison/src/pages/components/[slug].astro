@@ -34,7 +34,9 @@ const layerTitles: Record<ComparisonLayerId, string> = {
   state: "State Layer",
 };
 
-const propsHref = entry.slug === "button" ? "#props" : null;
+const playgroundLayer: ComparisonLayerId = "styled";
+const playgroundTrack = entry.layers[playgroundLayer];
+const supportingLayers = layerOrder.filter((layer) => layer !== playgroundLayer);
 ---
 
 <html lang="en">
@@ -85,67 +87,122 @@ const propsHref = entry.slug === "button" ? "#props" : null;
             <p class="hero-copy">{entry.summary}</p>
           </section>
 
-          {entry.slug === "button" ? (
-            <section class="section-block component-controls" id="props" data-comparison-controls="button">
-              <div class="section-heading">
-                <h2>Props</h2>
+          <section class="section-block playground-block" id="playground">
+            <div class="section-heading">
+              <h2>Playground</h2>
+              <p>{playgroundTrack.summary}</p>
+              <p class="layer-note">{playgroundTrack.note}</p>
+            </div>
+
+            <div class="playground-surface">
+              {entry.slug === "button" ? (
+                <div class="component-controls component-controls--embedded" data-comparison-controls="button">
+                  <form class="control-grid">
+                    <label>
+                      <span>children</span>
+                      <input name="children" value={buttonDemoDefaults.children} />
+                    </label>
+                    <label>
+                      <span>variant</span>
+                      <select name="variant">
+                        {buttonVariantOptions.map((option) => (
+                          <option value={option} selected={option === buttonDemoDefaults.variant}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      <span>fillStyle</span>
+                      <select name="fillStyle">
+                        {buttonFillStyleOptions.map((option) => (
+                          <option value={option} selected={option === buttonDemoDefaults.fillStyle}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      <span>size</span>
+                      <select name="size">
+                        {buttonSizeOptions.map((option) => (
+                          <option value={option} selected={option === buttonDemoDefaults.size}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      <span>staticColor</span>
+                      <select name="staticColor">
+                        <option value="">none</option>
+                        {buttonStaticColorOptions.map((option) => (
+                          <option value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label class="checkbox-control">
+                      <input name="isDisabled" type="checkbox" />
+                      <span>isDisabled</span>
+                    </label>
+                    <label class="checkbox-control">
+                      <input name="isPending" type="checkbox" />
+                      <span>isPending</span>
+                    </label>
+                    <button type="button" class="reset-control" data-reset-controls>Reset</button>
+                  </form>
+                </div>
+              ) : null}
+
+              <div class="comparison-grid">
+                <article class="framework-card">
+                  <div class="framework-card-head">
+                    <div>
+                      <span class="framework-label">React</span>
+                      <h3>React Spectrum stack</h3>
+                    </div>
+                    <span class={`status-pill status-pill--${playgroundTrack.react}`}>
+                      {playgroundTrack.react}
+                    </span>
+                  </div>
+                  {playgroundTrack.react === "live" ? (
+                    <ReactMount componentSlug={entry.slug} layer={playgroundLayer} />
+                  ) : (
+                    <div class="comparison-empty-state">
+                      {playgroundTrack.react === "na"
+                        ? "No direct React layer exists here."
+                        : playgroundTrack.react === "missing"
+                          ? "Missing React reference implementation."
+                          : "This React comparison is tracked but not wired yet."}
+                    </div>
+                  )}
+                </article>
+
+                <article class="framework-card">
+                  <div class="framework-card-head">
+                    <div>
+                      <span class="framework-label">Solid</span>
+                      <h3>Solidaria stack</h3>
+                    </div>
+                    <span class={`status-pill status-pill--${playgroundTrack.solid}`}>
+                      {playgroundTrack.solid}
+                    </span>
+                  </div>
+                  {playgroundTrack.solid === "live" ? (
+                    <SolidMount componentSlug={entry.slug} layer={playgroundLayer} />
+                  ) : (
+                    <div class="comparison-empty-state">
+                      {playgroundTrack.solid === "na"
+                        ? "No direct Solid layer exists here."
+                        : playgroundTrack.solid === "missing"
+                          ? "Missing Solid implementation."
+                          : "This Solid comparison is tracked but not wired yet."}
+                    </div>
+                  )}
+                </article>
               </div>
-              <form class="control-grid">
-                <label>
-                  <span>children</span>
-                  <input name="children" value={buttonDemoDefaults.children} />
-                </label>
-                <label>
-                  <span>variant</span>
-                  <select name="variant">
-                    {buttonVariantOptions.map((option) => (
-                      <option value={option} selected={option === buttonDemoDefaults.variant}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  <span>fillStyle</span>
-                  <select name="fillStyle">
-                    {buttonFillStyleOptions.map((option) => (
-                      <option value={option} selected={option === buttonDemoDefaults.fillStyle}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  <span>size</span>
-                  <select name="size">
-                    {buttonSizeOptions.map((option) => (
-                      <option value={option} selected={option === buttonDemoDefaults.size}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  <span>staticColor</span>
-                  <select name="staticColor">
-                    <option value="">none</option>
-                    {buttonStaticColorOptions.map((option) => (
-                      <option value={option}>{option}</option>
-                    ))}
-                  </select>
-                </label>
-                <label class="checkbox-control">
-                  <input name="isDisabled" type="checkbox" />
-                  <span>isDisabled</span>
-                </label>
-                <label class="checkbox-control">
-                  <input name="isPending" type="checkbox" />
-                  <span>isPending</span>
-                </label>
-                <button type="button" class="reset-control" data-reset-controls>Reset</button>
-              </form>
-            </section>
-          ) : null}
+            </div>
+          </section>
 
           <section class="section-block state-matrix" id="visual-state-coverage">
             <div class="section-heading">
@@ -175,7 +232,7 @@ const propsHref = entry.slug === "button" ? "#props" : null;
             </div>
           </section>
 
-      {layerOrder.map((layer) => {
+      {supportingLayers.map((layer) => {
         const track = entry.layers[layer];
 
         return (
@@ -241,9 +298,9 @@ const propsHref = entry.slug === "button" ? "#props" : null;
         <aside class="docs-toc" aria-label="On this page">
           <p>On this page</p>
           <a href="#overview">Overview</a>
-          {propsHref ? <a href={propsHref}>Props</a> : null}
+          <a href="#playground">Playground</a>
           <a href="#visual-state-coverage">Visual State Coverage</a>
-          {layerOrder.map((layer) => (
+          {supportingLayers.map((layer) => (
             <a href={`#${layer}`}>{layerTitles[layer]}</a>
           ))}
           <div class="toc-divider"></div>

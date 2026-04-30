@@ -356,6 +356,34 @@ a {
   background: var(--cmp-surface-elevated);
 }
 
+.playground-block {
+  padding-bottom: 34px;
+}
+
+.playground-surface {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid var(--cmp-border-muted);
+  border-radius: 8px;
+  background: var(--cmp-surface-elevated);
+}
+
+.component-controls--embedded .control-grid {
+  padding: 0 0 18px;
+  border-width: 0 0 1px;
+  border-radius: 0;
+  background: transparent;
+}
+
+.playground-surface .comparison-grid {
+  gap: 14px;
+}
+
+.playground-surface .framework-card {
+  background: #ffffff;
+}
+
 .checkbox-control {
   grid-template-columns: auto 1fr;
   align-items: center;
