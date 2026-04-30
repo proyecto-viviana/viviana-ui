@@ -7,6 +7,13 @@ import {
   type ComparisonEntry,
   type ComparisonLayerId,
 } from "@comparison/data/comparison-manifest";
+import {
+  buttonDemoDefaults,
+  buttonFillStyleOptions,
+  buttonSizeOptions,
+  buttonStaticColorOptions,
+  buttonVariantOptions,
+} from "@comparison/data/button-demo";
 import { getVisualStateTargets } from "@comparison/data/visual-state-matrix";
 import "@comparison/styles/global.css";
 
@@ -32,70 +39,146 @@ const layerTitles: Record<ComparisonLayerId, string> = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Jost:ital,wght@0,100..900;1,100..900&family=Sen:wght@400..800&display=swap"
-    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{entry.title} Comparison</title>
   </head>
   <body class="comparison-app">
-    <main class="page-shell">
-      <header class="detail-hero">
-        <a href="/" class="back-link">Back to manifest</a>
-        <div class="detail-hero-top">
-          <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
-          <span class={`status-pill status-pill--${entry.componentStatus}`}>
-            {entry.componentStatus}
-          </span>
-          <span class="category-pill">{entry.category}</span>
+    <main class="docs-shell">
+      <header class="docs-topbar">
+        <div>
+          <a href="/" class="back-link">Components</a>
+          <h1>{entry.title}</h1>
         </div>
-        <h1>{entry.title}</h1>
-        <p class="hero-copy">{entry.summary}</p>
         {entry.docsUrl ? (
           <a class="entry-link" href={entry.docsUrl}>
             React Spectrum documentation
           </a>
         ) : null}
-        <ul class="entry-notes">
-          {entry.gapSummary.map((note) => (
-            <li>{note}</li>
-          ))}
-        </ul>
-        <div class="state-matrix">
-          <h2>Visual State Coverage</h2>
-          <div class="state-matrix-grid">
-            {visualStates.map((state) => (
-              <article class="state-row">
-                <div>
-                  <span class="state-kind">{state.kind}</span>
-                  <h3>{state.label}</h3>
-                  <p>{state.note}</p>
-                </div>
-                <div class="state-status-stack">
-                  <span class={`state-pill state-pill--${state.react}`}>
-                    React {state.react}
-                  </span>
-                  <span class={`state-pill state-pill--${state.solid}`}>
-                    Solid {state.solid}
-                  </span>
-                  <span class={`state-pill state-pill--${state.pairDiff}`}>
-                    Pair diff {state.pairDiff}
-                  </span>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
       </header>
+
+      <div class="docs-layout">
+        <aside class="docs-rail">
+          <div class="rail-status">
+            <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
+            <span class={`status-pill status-pill--${entry.componentStatus}`}>
+              {entry.componentStatus}
+            </span>
+            <span class="category-pill">{entry.category}</span>
+          </div>
+
+          <nav class="layer-nav" aria-label="Comparison layers">
+            {layerOrder.map((layer) => (
+              <a href={`#${layer}`}>{layerTitles[layer]}</a>
+            ))}
+          </nav>
+
+          <ul class="entry-notes">
+            {entry.gapSummary.map((note) => (
+              <li>{note}</li>
+            ))}
+          </ul>
+        </aside>
+
+        <div class="docs-content">
+          <section class="section-block detail-summary">
+            <p class="hero-copy">{entry.summary}</p>
+          </section>
+
+          {entry.slug === "button" ? (
+            <section class="section-block component-controls" data-comparison-controls="button">
+              <div class="section-heading">
+                <h2>Props</h2>
+              </div>
+              <form class="control-grid">
+                <label>
+                  <span>children</span>
+                  <input name="children" value={buttonDemoDefaults.children} />
+                </label>
+                <label>
+                  <span>variant</span>
+                  <select name="variant">
+                    {buttonVariantOptions.map((option) => (
+                      <option value={option} selected={option === buttonDemoDefaults.variant}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>fillStyle</span>
+                  <select name="fillStyle">
+                    {buttonFillStyleOptions.map((option) => (
+                      <option value={option} selected={option === buttonDemoDefaults.fillStyle}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>size</span>
+                  <select name="size">
+                    {buttonSizeOptions.map((option) => (
+                      <option value={option} selected={option === buttonDemoDefaults.size}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>staticColor</span>
+                  <select name="staticColor">
+                    <option value="">none</option>
+                    {buttonStaticColorOptions.map((option) => (
+                      <option value={option}>{option}</option>
+                    ))}
+                  </select>
+                </label>
+                <label class="checkbox-control">
+                  <input name="isDisabled" type="checkbox" />
+                  <span>isDisabled</span>
+                </label>
+                <label class="checkbox-control">
+                  <input name="isPending" type="checkbox" />
+                  <span>isPending</span>
+                </label>
+                <button type="button" class="reset-control" data-reset-controls>Reset</button>
+              </form>
+            </section>
+          ) : null}
+
+          <section class="section-block state-matrix">
+            <div class="section-heading">
+              <h2>Visual State Coverage</h2>
+            </div>
+            <div class="state-matrix-grid">
+              {visualStates.map((state) => (
+                <article class="state-row">
+                  <div>
+                    <span class="state-kind">{state.kind}</span>
+                    <h3>{state.label}</h3>
+                    <p>{state.note}</p>
+                  </div>
+                  <div class="state-status-stack">
+                    <span class={`state-pill state-pill--${state.react}`}>
+                      React {state.react}
+                    </span>
+                    <span class={`state-pill state-pill--${state.solid}`}>
+                      Solid {state.solid}
+                    </span>
+                    <span class={`state-pill state-pill--${state.pairDiff}`}>
+                      Pair diff {state.pairDiff}
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
 
       {layerOrder.map((layer) => {
         const track = entry.layers[layer];
 
         return (
-          <section class="section-block layer-block">
+          <section class="section-block layer-block" id={layer}>
             <div class="section-heading">
               <h2>{layerTitles[layer]}</h2>
               <p>{track.summary}</p>
@@ -152,6 +235,105 @@ const layerTitles: Record<ComparisonLayerId, string> = {
           </section>
         );
       })}
+        </div>
+      </div>
     </main>
+    <script is:inline>
+      const panel = document.querySelector('[data-comparison-controls="button"]');
+      const form = panel?.querySelector("form");
+      const resetButton = panel?.querySelector("[data-reset-controls]");
+      const defaults = {
+        children: "Save",
+        variant: "primary",
+        fillStyle: "fill",
+        size: "M",
+        staticColor: "",
+        isDisabled: false,
+        isPending: false,
+      };
+
+      function readButtonControls() {
+        if (!(form instanceof HTMLFormElement)) {
+          return defaults;
+        }
+
+        const data = new FormData(form);
+        return {
+          children: String(data.get("children") || defaults.children),
+          variant: String(data.get("variant") || defaults.variant),
+          fillStyle: String(data.get("fillStyle") || defaults.fillStyle),
+          size: String(data.get("size") || defaults.size),
+          staticColor: String(data.get("staticColor") || ""),
+          isDisabled: data.get("isDisabled") === "on",
+          isPending: data.get("isPending") === "on",
+        };
+      }
+
+      function writeButtonControls(values) {
+        if (!(form instanceof HTMLFormElement)) {
+          return;
+        }
+
+        for (const [key, value] of Object.entries(values)) {
+          const field = form.elements.namedItem(key);
+          if (field instanceof HTMLInputElement && field.type === "checkbox") {
+            field.checked = Boolean(value);
+          } else if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement) {
+            field.value = String(value ?? "");
+          }
+        }
+      }
+
+      function dispatchButtonControls(values, updateUrl = true) {
+        const props = {
+          children: values.children || defaults.children,
+          variant: values.variant,
+          fillStyle: values.fillStyle,
+          size: values.size,
+          staticColor: values.staticColor || undefined,
+          isDisabled: Boolean(values.isDisabled),
+          isPending: Boolean(values.isPending),
+        };
+
+        if (updateUrl) {
+          const url = new URL(window.location.href);
+          for (const [key, value] of Object.entries(values)) {
+            if (value === defaults[key] || value === "" || value === false) {
+              url.searchParams.delete(key);
+            } else {
+              url.searchParams.set(key, String(value));
+            }
+          }
+          window.history.replaceState(null, "", url);
+        }
+
+        window.dispatchEvent(new CustomEvent("comparison:controls-change", {
+          detail: { component: "button", props },
+        }));
+      }
+
+      if (form instanceof HTMLFormElement) {
+        const params = new URLSearchParams(window.location.search);
+        const initial = {
+          ...defaults,
+          children: params.get("children") || defaults.children,
+          variant: params.get("variant") || defaults.variant,
+          fillStyle: params.get("fillStyle") || defaults.fillStyle,
+          size: params.get("size") || defaults.size,
+          staticColor: params.get("staticColor") || "",
+          isDisabled: params.get("isDisabled") === "true",
+          isPending: params.get("isPending") === "true",
+        };
+        writeButtonControls(initial);
+        dispatchButtonControls(initial, false);
+        form.addEventListener("input", () => dispatchButtonControls(readButtonControls()));
+        form.addEventListener("change", () => dispatchButtonControls(readButtonControls()));
+      }
+
+      resetButton?.addEventListener("click", () => {
+        writeButtonControls(defaults);
+        dispatchButtonControls(defaults);
+      });
+    </script>
   </body>
 </html>

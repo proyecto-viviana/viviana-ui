@@ -111,6 +111,11 @@
   font-size: 1.125rem;
 }
 
+.vui-button--xl {
+  padding: 0.875rem 1.75rem;
+  font-size: 1.25rem;
+}
+
 /* Full width */
 .vui-button--full-width {
   width: 100%;
@@ -154,6 +159,16 @@
   background: var(--color-danger-600);
   color: #ffffff;
   border: 1px solid var(--color-danger-400);
+}
+
+.vui-button--fill.vui-button--premium {
+  background: linear-gradient(135deg, #d732d9 0%, #5258e4 66%, #1473e6 100%);
+  color: #ffffff;
+}
+
+.vui-button--fill.vui-button--genai {
+  background: linear-gradient(135deg, #d31510 0%, #c529b9 33%, #5258e4 100%);
+  color: #ffffff;
 }
 
 /* Ghost = transparent, text-primary-300, hover:bg-bg-200 */
@@ -213,6 +228,13 @@
   background: transparent;
   color: var(--color-danger-400);
   border: 1px solid var(--color-danger-400);
+}
+
+.vui-button--outline.vui-button--premium,
+.vui-button--outline.vui-button--genai {
+  background: var(--color-bg-400);
+  color: #ffffff;
+  border: 1px solid transparent;
 }
 
 /* ===== ICON COMPONENT ===== */

@@ -36,7 +36,7 @@ test.describe('comparison button-family behavior contracts', () => {
     for (const card of [cards.react, cards.solid]) {
       const root = card.locator('[data-comparison-action-count]').first();
       await expect(root).toHaveAttribute('data-comparison-action-count', '0');
-      await card.getByRole('button', { name: 'Primary' }).click();
+      await card.getByRole('button', { name: 'Save' }).click();
       await expect(root).toHaveAttribute('data-comparison-action-count', '1');
     }
   });

@@ -1,5 +1,5 @@
 import h from "solid-js/h";
-import { createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { hc, renderProp } from "./solid-h";
 import { Provider as SilapseProvider } from "@proyecto-viviana/silapse";
 import {
@@ -75,6 +75,16 @@ import {
   type ComparisonFramework,
   type ComparisonReferenceKind,
 } from "@comparison/data/comparison-contract";
+import {
+  buttonDemoPropsFromWindow,
+  comparisonControlsEvent,
+  serializeButtonDemoProps,
+  type ButtonDemoFillStyle,
+  type ButtonDemoProps,
+  type ButtonDemoSize,
+  type ButtonDemoStaticColor,
+  type ButtonDemoVariant,
+} from "@comparison/data/button-demo";
 
 interface ComparisonIslandProps {
   componentSlug: ComparisonSlug;
@@ -657,28 +667,95 @@ function SolidToastDemo() {
 
 function SolidariaSpectrumButtonDemo() {
   const [actionCount, setActionCount] = createSignal(0);
+  const [demoProps, setDemoProps] = createSignal(buttonDemoPropsFromWindow());
+  let root: HTMLDivElement | undefined;
+
+  onMount(() => {
+    const handleControlsChange = (event: Event) => {
+      if (event instanceof CustomEvent && event.detail?.component === "button") {
+        setDemoProps(event.detail.props as ButtonDemoProps);
+      }
+    };
+    window.addEventListener(comparisonControlsEvent, handleControlsChange);
+    onCleanup(() => window.removeEventListener(comparisonControlsEvent, handleControlsChange));
+  });
+
+  createEffect(() => {
+    const props = demoProps();
+    const button = root?.querySelector<HTMLButtonElement>("button.comparison-spectrum-Button");
+    if (!button) {
+      return;
+    }
+
+    button.setAttribute("data-variant", props.variant);
+    button.setAttribute("data-style", props.fillStyle);
+    button.setAttribute("data-size", props.size);
+    if (props.staticColor) {
+      button.setAttribute("data-static-color", props.staticColor);
+    } else {
+      button.removeAttribute("data-static-color");
+    }
+  });
 
   return hc(
     "div",
     {
       class: comparisonSpectrumSkin.rootClass,
+      ref: (element: HTMLDivElement) => {
+        root = element;
+      },
       get "data-comparison-action-count"() {
         return String(actionCount());
       },
+      get "data-comparison-button-props"() {
+        return serializeButtonDemoProps(demoProps());
+      },
     },
-    [hc(
-      "div",
-      { class: "comparison-button-row" },
-      [
-        hSpectrumButton({
-          variant: "primary",
-          style: "fill",
-          onPress: (_event: unknown) => setActionCount((count) => count + 1),
-        }, "Primary"),
-        hSpectrumButton({ variant: "accent", style: "fill" }, "Accent"),
-        hSpectrumButton({ variant: "secondary", style: "fill" }, "Secondary"),
-      ],
-    )],
+    [
+      hc(
+        "div",
+        { class: "comparison-button-row" },
+        [
+          hc(
+            HeadlessButton,
+            {
+              get isDisabled() {
+                return demoProps().isDisabled;
+              },
+              get isPending() {
+                return demoProps().isPending;
+              },
+              class: comparisonSpectrumSkin.buttonClass,
+              style: (renderProps: ButtonRenderProps) => buttonPressStyle(renderProps, demoProps().children),
+              get "data-variant"() {
+                return demoProps().variant;
+              },
+              get "data-style"() {
+                return demoProps().fillStyle;
+              },
+              get "data-size"() {
+                return demoProps().size;
+              },
+              get "data-static-color"() {
+                return demoProps().staticColor;
+              },
+              onPress: (_event: unknown) => setActionCount((count) => count + 1),
+            },
+            [
+              h(
+                "span",
+                {
+                  class: comparisonSpectrumSkin.labelClass,
+                  "data-slot": "label",
+                  "data-rsp-slot": "text",
+                },
+                () => demoProps().children,
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
   );
 }
 
@@ -767,12 +844,12 @@ function SolidariaSpectrumButtonGroupDemo() {
         [
           hSpectrumButton({
             variant: "primary",
-            style: "outline",
+            fillStyle: "outline",
             onPress: (_event: unknown) => setActionKey("save"),
           }, "Save"),
           hSpectrumButton({
             variant: "secondary",
-            style: "outline",
+            fillStyle: "outline",
             onPress: (_event: unknown) => setActionKey("cancel"),
           }, "Cancel"),
         ],
@@ -812,8 +889,10 @@ function SolidariaSpectrumToggleButtonDemo() {
 function hSpectrumButton(
   props: {
     isDisabled?: boolean;
-    variant: "primary" | "accent" | "secondary";
-    style: "fill" | "outline";
+    variant: ButtonDemoVariant;
+    fillStyle: ButtonDemoFillStyle;
+    size?: ButtonDemoSize;
+    staticColor?: ButtonDemoStaticColor;
     onPress?: (event: unknown) => void;
     onFocus?: () => void;
   },
@@ -824,19 +903,11 @@ function hSpectrumButton(
     {
       isDisabled: props.isDisabled,
       class: comparisonSpectrumSkin.buttonClass,
-      style: (renderProps: ButtonRenderProps) => ({
-        "will-change": "transform",
-        ...(
-          renderProps.isPressed
-            ? {
-                "user-select": "none",
-                transform: `perspective(${buttonPressPerspective(label)}px) translate3d(0px, 0px, -2px)`,
-              }
-            : {}
-        ),
-      }),
+      style: (renderProps: ButtonRenderProps) => buttonPressStyle(renderProps, label),
       "data-variant": props.variant,
-      "data-style": props.style,
+      "data-style": props.fillStyle,
+      "data-size": props.size ?? "M",
+      "data-static-color": props.staticColor,
       onPress: props.onPress,
       onFocus: props.onFocus,
     },
@@ -852,6 +923,20 @@ function hSpectrumButton(
       ),
     ],
   );
+}
+
+function buttonPressStyle(renderProps: ButtonRenderProps, label: string) {
+  return {
+    "will-change": "transform",
+    ...(
+      renderProps.isPressed
+        ? {
+            "user-select": "none",
+            transform: `perspective(${buttonPressPerspective(label)}px) translate3d(0px, 0px, -2px)`,
+          }
+        : {}
+    ),
+  };
 }
 
 function buttonPressPerspective(label: string) {

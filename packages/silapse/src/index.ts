@@ -4,7 +4,18 @@
 
 // Button
 export { Button } from './button';
-export type { ButtonProps, ButtonVariant, ButtonStyle, StaticColor } from './button';
+export type {
+  ButtonFillStyle,
+  ButtonProps,
+  ButtonSize,
+  ButtonStyle,
+  ButtonVariant,
+  LegacyButtonSize,
+  LegacyButtonVariant,
+  SpectrumButtonSize,
+  SpectrumButtonVariant,
+  StaticColor,
+} from './button';
 
 // Badge
 export { Badge } from './badge';

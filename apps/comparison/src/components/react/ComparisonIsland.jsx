@@ -1,7 +1,7 @@
 import { jsx, jsxs } from "react/jsx-runtime";
 // Keep this module JSX-free. Vite dev import-analysis currently sees this
 // client-script dependency before Astro's React JSX transform runs.
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionButton as SpectrumActionButton,
   ActionButtonGroup as SpectrumActionButtonGroup,
@@ -49,6 +49,11 @@ import {
   comparisonTabItems as tabItems,
   getComparisonReferenceKind
 } from "@comparison/data/comparison-contract";
+import {
+  buttonDemoPropsFromWindow,
+  comparisonControlsEvent,
+  serializeButtonDemoProps
+} from "@comparison/data/button-demo";
 function ComparisonIsland(props) {
   const overlayRootRef = useRef(null);
   return /* @__PURE__ */ jsxs("div", { className: "comparison-island", children: [
@@ -175,11 +180,40 @@ function renderStyled(componentSlug) {
 }
 function ReactButtonDemo() {
   const [actionCount, setActionCount] = useState(0);
-  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-action-count": String(actionCount), children: /* @__PURE__ */ jsxs("div", { className: "comparison-button-row", children: [
-    /* @__PURE__ */ jsx(SpectrumButton, { variant: "primary", onPress: () => setActionCount((count) => count + 1), children: "Primary" }),
-    /* @__PURE__ */ jsx(SpectrumButton, { variant: "accent", children: "Accent" }),
-    /* @__PURE__ */ jsx(SpectrumButton, { variant: "secondary", children: "Secondary" })
-  ] }) }));
+  const demoProps = useButtonDemoControls();
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx(
+    "div",
+    {
+      "data-comparison-action-count": String(actionCount),
+      "data-comparison-button-props": serializeButtonDemoProps(demoProps),
+      children: /* @__PURE__ */ jsx("div", { className: "comparison-button-row", children: /* @__PURE__ */ jsx(
+        SpectrumButton,
+        {
+          variant: demoProps.variant,
+          fillStyle: demoProps.fillStyle,
+          size: demoProps.size,
+          staticColor: demoProps.staticColor,
+          isDisabled: demoProps.isDisabled,
+          isPending: demoProps.isPending,
+          onPress: () => setActionCount((count) => count + 1),
+          children: demoProps.children
+        }
+      ) })
+    }
+  ));
+}
+function useButtonDemoControls() {
+  const [demoProps, setDemoProps] = useState(buttonDemoPropsFromWindow);
+  useEffect(() => {
+    const handleControlsChange = (event) => {
+      if (event instanceof CustomEvent && event.detail?.component === "button") {
+        setDemoProps(event.detail.props);
+      }
+    };
+    window.addEventListener(comparisonControlsEvent, handleControlsChange);
+    return () => window.removeEventListener(comparisonControlsEvent, handleControlsChange);
+  }, []);
+  return demoProps;
 }
 function ReactActionButtonDemo() {
   const [actionCount, setActionCount] = useState(0);

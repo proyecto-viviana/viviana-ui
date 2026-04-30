@@ -113,6 +113,26 @@
   transform: scale(0.98);
 }
 
+.vui-button--sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.vui-button--md {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.vui-button--lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+.vui-button--xl {
+  padding: 0.875rem 1.75rem;
+  font-size: 1.25rem;
+}
+
 /* Fill variants - pokeforos style */
 /* Primary = Pink accent (main CTA) */
 .vui-button--fill.vui-button--primary {
@@ -162,6 +182,16 @@
   background: var(--color-danger-400);
 }
 
+.vui-button--fill.vui-button--premium {
+  background: linear-gradient(135deg, #d732d9 0%, #5258e4 66%, #1473e6 100%);
+  color: white;
+}
+
+.vui-button--fill.vui-button--genai {
+  background: linear-gradient(135deg, #d31510 0%, #c529b9 33%, #5258e4 100%);
+  color: white;
+}
+
 /* Outline variants */
 .vui-button--outline.vui-button--primary {
   border: 2px solid var(--color-accent);
@@ -197,6 +227,13 @@
 }
 .vui-button--outline.vui-button--negative:hover:not(:disabled) {
   background: color-mix(in srgb, var(--color-danger-400) 15%, transparent);
+}
+
+.vui-button--outline.vui-button--premium,
+.vui-button--outline.vui-button--genai {
+  border: 2px solid transparent;
+  background: var(--color-bg-400);
+  color: white;
 }
 
 /* ===== CHIP COMPONENT ===== */

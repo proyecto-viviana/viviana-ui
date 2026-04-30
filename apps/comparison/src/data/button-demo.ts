@@ -1,0 +1,96 @@
+export const buttonVariantOptions = [
+  "primary",
+  "secondary",
+  "accent",
+  "negative",
+  "premium",
+  "genai",
+] as const;
+
+export const buttonFillStyleOptions = ["fill", "outline"] as const;
+export const buttonSizeOptions = ["S", "M", "L", "XL"] as const;
+export const buttonStaticColorOptions = ["auto", "white", "black"] as const;
+
+export type ButtonDemoVariant = (typeof buttonVariantOptions)[number];
+export type ButtonDemoFillStyle = (typeof buttonFillStyleOptions)[number];
+export type ButtonDemoSize = (typeof buttonSizeOptions)[number];
+export type ButtonDemoStaticColor = (typeof buttonStaticColorOptions)[number];
+
+export interface ButtonDemoProps {
+  children: string;
+  variant: ButtonDemoVariant;
+  fillStyle: ButtonDemoFillStyle;
+  size: ButtonDemoSize;
+  staticColor?: ButtonDemoStaticColor;
+  isDisabled: boolean;
+  isPending: boolean;
+}
+
+export const buttonDemoDefaults: ButtonDemoProps = {
+  children: "Save",
+  variant: "primary",
+  fillStyle: "fill",
+  size: "M",
+  staticColor: undefined,
+  isDisabled: false,
+  isPending: false,
+};
+
+export const comparisonControlsEvent = "comparison:controls-change";
+
+function isOneOf<T extends readonly string[]>(
+  value: string | null | undefined,
+  options: T,
+): value is T[number] {
+  return value != null && options.includes(value);
+}
+
+function booleanParam(value: string | null | undefined) {
+  return value === "true" || value === "on" || value === "1";
+}
+
+export function buttonDemoPropsFromSearch(search: string): ButtonDemoProps {
+  const params = new URLSearchParams(search);
+  const variant = params.get("variant");
+  const fillStyle = params.get("fillStyle");
+  const size = params.get("size");
+  const staticColor = params.get("staticColor");
+
+  return {
+    children: params.get("children") || buttonDemoDefaults.children,
+    variant: isOneOf(variant, buttonVariantOptions)
+      ? variant
+      : buttonDemoDefaults.variant,
+    fillStyle: isOneOf(fillStyle, buttonFillStyleOptions)
+      ? fillStyle
+      : buttonDemoDefaults.fillStyle,
+    size: isOneOf(size, buttonSizeOptions)
+      ? size
+      : buttonDemoDefaults.size,
+    staticColor: isOneOf(staticColor, buttonStaticColorOptions)
+      ? staticColor
+      : undefined,
+    isDisabled: booleanParam(params.get("isDisabled")),
+    isPending: booleanParam(params.get("isPending")),
+  };
+}
+
+export function buttonDemoPropsFromWindow(): ButtonDemoProps {
+  if (typeof window === "undefined") {
+    return buttonDemoDefaults;
+  }
+
+  return buttonDemoPropsFromSearch(window.location.search);
+}
+
+export function serializeButtonDemoProps(props: ButtonDemoProps) {
+  return JSON.stringify({
+    children: props.children,
+    variant: props.variant,
+    fillStyle: props.fillStyle,
+    size: props.size,
+    staticColor: props.staticColor ?? "none",
+    isDisabled: props.isDisabled,
+    isPending: props.isPending,
+  });
+}

@@ -1,5 +1,16 @@
 export { Button } from './Button';
-export type { ButtonProps, ButtonVariant, ButtonStyle, ButtonSize, StaticColor } from './types';
+export type {
+  ButtonFillStyle,
+  ButtonProps,
+  ButtonSize,
+  ButtonStyle,
+  ButtonVariant,
+  LegacyButtonSize,
+  LegacyButtonVariant,
+  SpectrumButtonSize,
+  SpectrumButtonVariant,
+  StaticColor,
+} from './types';
 export { ToggleButton } from './ToggleButton';
 export type { ToggleButtonProps, ToggleButtonSize } from './ToggleButton';
 export { ActionButton } from './ActionButton';

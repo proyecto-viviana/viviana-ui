@@ -8,7 +8,7 @@
 
 import { type JSX, splitProps, mergeProps as solidMergeProps } from 'solid-js';
 import { Button as HeadlessButton, type ButtonRenderProps } from '@proyecto-viviana/solidaria-components';
-import type { ButtonProps } from './types';
+import type { ButtonFillStyle, ButtonProps, ButtonSize, ButtonVariant } from './types';
 import { useProviderProps } from '../provider';
 
 /**
@@ -23,14 +23,14 @@ export function Button(props: ButtonProps): JSX.Element {
   const providerProps = useProviderProps(props);
   const defaultProps: Partial<ButtonProps> = {
     variant: 'primary',
-    buttonStyle: 'fill',
-    size: 'md',
+    size: 'M',
   };
 
   const merged = solidMergeProps(defaultProps, providerProps);
 
   const [local, headlessProps] = splitProps(merged, [
     'variant',
+    'fillStyle',
     'buttonStyle',
     'size',
     'fullWidth',
@@ -38,13 +38,17 @@ export function Button(props: ButtonProps): JSX.Element {
     'class',
   ]);
 
+  const fillStyle = (): ButtonFillStyle => local.fillStyle ?? local.buttonStyle ?? 'fill';
+  const variantClass = () => normalizeVariantClass(local.variant ?? 'primary');
+  const sizeClass = () => normalizeSizeClass(local.size ?? 'M');
+
   // Generate class based on render props
   const getClassName = (renderProps: ButtonRenderProps): string => {
     const classList = [
       'vui-button',
-      `vui-button--${local.buttonStyle}`,
-      `vui-button--${local.variant}`,
-      `vui-button--${local.size}`,
+      `vui-button--${fillStyle()}`,
+      `vui-button--${variantClass()}`,
+      `vui-button--${sizeClass()}`,
     ];
 
     if (renderProps.isPressed) {
@@ -67,10 +71,38 @@ export function Button(props: ButtonProps): JSX.Element {
       {...headlessProps}
       class={getClassName}
       data-variant={local.variant}
-      data-style={local.buttonStyle}
+      data-style={fillStyle()}
       data-static-color={local.staticColor || undefined}
     >
       {props.children}
     </HeadlessButton>
   );
+}
+
+function normalizeVariantClass(variant: ButtonVariant): string {
+  if (variant === 'danger') {
+    return 'negative';
+  }
+
+  if (variant === 'success') {
+    return 'positive';
+  }
+
+  return variant;
+}
+
+function normalizeSizeClass(size: ButtonSize): string {
+  if (size === 'S' || size === 'sm') {
+    return 'sm';
+  }
+
+  if (size === 'L' || size === 'lg') {
+    return 'lg';
+  }
+
+  if (size === 'XL') {
+    return 'xl';
+  }
+
+  return 'md';
 }

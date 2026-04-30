@@ -201,6 +201,18 @@ describe('Button', () => {
       expect(button).toHaveAttribute('data-variant', 'secondary');
     });
 
+    it('renders with all React Spectrum S2 variants', () => {
+      const variants = ['primary', 'secondary', 'accent', 'negative', 'premium', 'genai'] as const;
+
+      for (const variant of variants) {
+        const { unmount } = render(() => <Button variant={variant}>Click Me</Button>);
+        const button = screen.getByRole('button');
+        expect(button).toHaveAttribute('data-variant', variant);
+        expect(button.className).toContain(`vui-button--${variant}`);
+        unmount();
+      }
+    });
+
     it('renders with danger variant', () => {
       render(() => <Button variant="danger">Click Me</Button>);
       const button = screen.getByRole('button');
@@ -238,6 +250,31 @@ describe('Button', () => {
       const button = screen.getByRole('button');
       expect(button).toHaveAttribute('data-style', 'outline');
     });
+
+    it('supports React Spectrum S2 fillStyle', () => {
+      render(() => <Button fillStyle="outline">Click Me</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('data-style', 'outline');
+      expect(button.className).toContain('vui-button--outline');
+    });
+  });
+
+  describe('sizes', () => {
+    it('maps React Spectrum S2 sizes to stable style classes', () => {
+      const cases = [
+        ['S', 'sm'],
+        ['M', 'md'],
+        ['L', 'lg'],
+        ['XL', 'xl'],
+      ] as const;
+
+      for (const [size, classSuffix] of cases) {
+        const { unmount } = render(() => <Button size={size}>Click Me</Button>);
+        const button = screen.getByRole('button');
+        expect(button.className).toContain(`vui-button--${classSuffix}`);
+        unmount();
+      }
+    });
   });
 
   describe('static colors', () => {
@@ -251,6 +288,12 @@ describe('Button', () => {
       render(() => <Button staticColor="black">Click Me</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveAttribute('data-static-color', 'black');
+    });
+
+    it('renders with auto static color', () => {
+      render(() => <Button staticColor="auto">Click Me</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('data-static-color', 'auto');
     });
   });
 

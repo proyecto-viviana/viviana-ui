@@ -33,8 +33,8 @@ async function buttonFixtures(page: Page) {
     solidCanvas,
     reactRow: reactCard.locator('.comparison-button-row'),
     solidRow: solidCard.locator('.comparison-button-row'),
-    reactPrimary: reactCard.getByRole('button', { name: 'Primary' }),
-    solidPrimary: solidCard.getByRole('button', { name: 'Primary' }),
+    reactButton: reactCard.getByRole('button', { name: 'Save' }),
+    solidButton: solidCard.getByRole('button', { name: 'Save' }),
   };
 }
 
@@ -96,7 +96,7 @@ async function expectPreparedScreenshotPair(
 }
 
 test.describe('comparison Button visual parity', () => {
-  test('Button default row is pixel-identical', async ({ page }) => {
+  test('Button default control is pixel-identical', async ({ page }) => {
     const fixtures = await buttonFixtures(page);
 
     await clearPointer(page);
@@ -104,70 +104,99 @@ test.describe('comparison Button visual parity', () => {
       page,
       fixtures.reactRow,
       fixtures.solidRow,
-      'Button default row',
-      'button-default-row',
+      'Button default control',
+      'button-default-control',
     );
   });
 
-  test('Button primary hover state is pixel-identical', async ({ page }) => {
+  test('Button hover state is pixel-identical', async ({ page }) => {
     const fixtures = await buttonFixtures(page);
 
     await expectPreparedScreenshotPair(
       page,
-      fixtures.reactPrimary,
-      fixtures.solidPrimary,
-      'Button primary hover',
-      'button-primary-hover',
+      fixtures.reactButton,
+      fixtures.solidButton,
+      'Button hover',
+      'button-hover',
       async () => {
-        await fixtures.reactPrimary.hover();
-        await expect(fixtures.reactPrimary).toHaveAttribute('data-hovered', 'true');
+        await fixtures.reactButton.hover();
+        await expect(fixtures.reactButton).toHaveAttribute('data-hovered', 'true');
       },
       async () => {
-        await fixtures.solidPrimary.hover();
-        await expect(fixtures.solidPrimary).toHaveAttribute('data-hovered', 'true');
+        await fixtures.solidButton.hover();
+        await expect(fixtures.solidButton).toHaveAttribute('data-hovered', 'true');
       },
     );
   });
 
-  test('Button primary focus-visible state is pixel-identical', async ({ page }) => {
+  test('Button focus-visible state is pixel-identical', async ({ page }) => {
     const fixtures = await buttonFixtures(page);
 
     await expectPreparedScreenshotPair(
       page,
       fixtures.reactCanvas,
       fixtures.solidCanvas,
-      'Button primary focus-visible',
-      'button-primary-focus-visible',
+      'Button focus-visible',
+      'button-focus-visible',
       async () => {
-        await fixtures.reactPrimary.focus();
-        await expect(fixtures.reactPrimary).toHaveAttribute('data-focus-visible', 'true');
+        await fixtures.reactButton.focus();
+        await expect(fixtures.reactButton).toHaveAttribute('data-focus-visible', 'true');
       },
       async () => {
-        await fixtures.solidPrimary.focus();
-        await expect(fixtures.solidPrimary).toHaveAttribute('data-focus-visible', 'true');
+        await fixtures.solidButton.focus();
+        await expect(fixtures.solidButton).toHaveAttribute('data-focus-visible', 'true');
       },
     );
   });
 
-  test('Button primary pressed state is pixel-identical', async ({ page }) => {
+  test('Button pressed state is pixel-identical', async ({ page }) => {
     const fixtures = await buttonFixtures(page);
 
     await expectPreparedScreenshotPair(
       page,
-      fixtures.reactPrimary,
-      fixtures.solidPrimary,
-      'Button primary pressed',
-      'button-primary-pressed',
+      fixtures.reactButton,
+      fixtures.solidButton,
+      'Button pressed',
+      'button-pressed',
       async () => {
-        await fixtures.reactPrimary.hover();
+        await fixtures.reactButton.hover();
         await page.mouse.down();
-        await expect(fixtures.reactPrimary).toHaveAttribute('data-pressed', 'true');
+        await expect(fixtures.reactButton).toHaveAttribute('data-pressed', 'true');
       },
       async () => {
-        await fixtures.solidPrimary.hover();
+        await fixtures.solidButton.hover();
         await page.mouse.down();
-        await expect(fixtures.solidPrimary).toHaveAttribute('data-pressed', 'true');
+        await expect(fixtures.solidButton).toHaveAttribute('data-pressed', 'true');
       },
     );
+  });
+
+  test('Button prop controls drive both implementations', async ({ page }) => {
+    const fixtures = await buttonFixtures(page);
+
+    await page.getByLabel('children').fill('Delete');
+    await page.getByLabel('variant').selectOption('negative');
+    await page.getByLabel('fillStyle').selectOption('outline');
+    await page.getByLabel('size').selectOption('L');
+    await page.getByLabel('staticColor').selectOption('white');
+
+    const reactRoot = fixtures.reactCanvas.locator('[data-comparison-button-props]').first();
+    const solidRoot = fixtures.solidCanvas.locator('[data-comparison-button-props]').first();
+    const expected = JSON.stringify({
+      children: 'Delete',
+      variant: 'negative',
+      fillStyle: 'outline',
+      size: 'L',
+      staticColor: 'white',
+      isDisabled: false,
+      isPending: false,
+    });
+
+    await expect(reactRoot).toHaveAttribute('data-comparison-button-props', expected);
+    await expect(solidRoot).toHaveAttribute('data-comparison-button-props', expected);
+    await expect(fixtures.reactCanvas.getByRole('button', { name: 'Delete' })).toBeVisible();
+    await expect(fixtures.solidCanvas.getByRole('button', { name: 'Delete' })).toHaveAttribute('data-variant', 'negative');
+    await expect(fixtures.solidCanvas.getByRole('button', { name: 'Delete' })).toHaveAttribute('data-style', 'outline');
+    await expect(fixtures.solidCanvas.getByRole('button', { name: 'Delete' })).toHaveAttribute('data-size', 'L');
   });
 });

@@ -14,11 +14,17 @@ comparison entry complete.
   important variants, add them deliberately and name them in the state matrix.
 - Keep the comparison canvas to the component itself. Do not add decorative
   gradients, helper cards, or app-only styling inside the component fixture.
+- Mirror the official S2 props and TypeScript names. Compatibility aliases are
+  allowed in Silapse, but the comparison controls and fixtures use the S2 API
+  names first.
 
 ## 2. Wire Matching Behavior
 
 - Give both React and Solid fixtures the same labels, values, selected keys,
   disabled flags, open state, and callbacks.
+- Add a docs-style props panel when the component has meaningful visual props.
+  Controls should dispatch one typed payload that both React and Solid fixtures
+  consume, and the route query string should reproduce the same state.
 - Expose state through `data-comparison-*` attributes so Playwright can assert
   behavior without relying on pixels.
 - For overlays, assert open state, outside-click dismissal, Escape dismissal,
@@ -28,8 +34,10 @@ comparison entry complete.
 
 ## 3. Measure Before Styling
 
-- Inspect the React S2 side in browser and record computed styles for the
-  default state and every state being implemented.
+- Inspect the React S2 side in browser with the reusable component controls and
+  record computed styles for the default state and every state being
+  implemented. Ad-hoc Playwright inspection is only the discovery step; promote
+  useful checks into a fixture, a state-matrix row, and a committed spec.
 - Copy the visible contract into the Solid S2 skin: geometry, slot layout,
   typography, colors, focus rings, transforms, overlays, and disabled treatment.
 - Prefer real package APIs and shared helpers. Only use app-local CSS when this
@@ -57,6 +65,10 @@ Typical visual states:
 
 Every React-vs-Solid screenshot comparison is strict: `maxMismatchRatio: 0`,
 `maxDimensionDelta: 0`, and `pixelThreshold: 0`.
+
+For controlled props, add at least one Playwright assertion that changing the
+docs-style controls updates both implementations. When a prop produces a visual
+state, add or plan the matching strict pair screenshot row in the matrix.
 
 ## 5. Update The Matrix
 
@@ -96,9 +108,14 @@ still marks gaps or planned work.
 
 Button is the pilot for this process:
 
-- `e2e/button-visual.spec.ts` covers default, primary hover, primary
-  focus-visible, and primary pressed screenshots with strict pair diffs.
+- `src/data/button-demo.ts` is the typed control model for the Button route and
+  uses React Spectrum S2 names: `variant`, `fillStyle`, `size`, `staticColor`,
+  `isDisabled`, and `isPending`.
+- `e2e/button-visual.spec.ts` covers default, hover, focus-visible, and pressed
+  screenshots with strict pair diffs, and asserts that the prop controls update
+  both stacks.
 - `e2e/button-family-contract.spec.ts` asserts the Button press callback on
   both stacks.
-- Disabled variants remain a planned Button gap until the fixture includes
-  primary, accent, and secondary disabled examples.
+- Exhaustive variant, size, disabled, pending, and static-color visual
+  screenshots remain planned Button gaps until each controlled prop state has a
+  strict React-vs-Solid pair diff.
