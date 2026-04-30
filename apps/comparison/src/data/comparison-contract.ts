@@ -46,9 +46,21 @@ export const comparisonSelectItems = [
   { id: "charlie", label: "Charlie" },
 ] as const;
 
+export const comparisonActionItems = [
+  { id: "bold", label: "Bold" },
+  { id: "italic", label: "Italic" },
+  { id: "underline", label: "Underline" },
+] as const;
+
 export const comparisonSpectrumSkin = {
   rootClass: "comparison-spectrum-skin",
   buttonClass: "solidaria-Button comparison-spectrum-Button",
+  actionButtonClass: "solidaria-Button comparison-spectrum-ActionButton",
+  actionGroupClass: "solidaria-ActionGroup comparison-spectrum-ActionGroup",
+  buttonGroupClass: "solidaria-ButtonGroup comparison-spectrum-ButtonGroup",
+  logicButtonClass: "solidaria-Button comparison-spectrum-LogicButton",
+  toggleButtonClass:
+    "solidaria-ToggleButton comparison-spectrum-ActionButton comparison-spectrum-ToggleButton",
   labelClass: "comparison-spectrum-Button-label",
   dialogClass: "solidaria-Dialog comparison-spectrum-Dialog",
   dialogTitleClass: "solidaria-Heading comparison-spectrum-Dialog-title",

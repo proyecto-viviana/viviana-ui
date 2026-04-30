@@ -6,13 +6,16 @@ import {
   ActionButton as SpectrumActionButton,
   ActionGroup as SpectrumActionGroup,
   Button as SpectrumButton,
+  ButtonGroup as SpectrumButtonGroup,
   Checkbox as SpectrumCheckbox,
   Content as SpectrumContent,
   DatePicker as SpectrumDatePicker,
   Dialog as SpectrumDialog,
   DialogTrigger as SpectrumDialogTrigger,
+  FileTrigger as SpectrumFileTrigger,
   Heading as SpectrumHeading,
   Item as SpectrumItem,
+  LogicButton as SpectrumLogicButton,
   Picker as SpectrumPicker,
   Provider as SpectrumProvider,
   Radio as SpectrumRadio,
@@ -25,6 +28,7 @@ import {
   TextField as SpectrumTextField,
   Tooltip as SpectrumTooltip,
   TooltipTrigger as SpectrumTooltipTrigger,
+  ToggleButton as SpectrumToggleButton,
   defaultTheme
 } from "@adobe/react-spectrum";
 import {
@@ -40,6 +44,7 @@ import {
 } from "react-aria-components";
 import { UNSAFE_PortalProvider, useButton } from "react-aria";
 import {
+  comparisonActionItems as actionItems,
   comparisonReferenceDataset,
   comparisonSelectItems as selectItems,
   comparisonTabItems as tabItems,
@@ -136,6 +141,18 @@ function renderStyled(componentSlug) {
         /* @__PURE__ */ jsx(SpectrumButton, { variant: "accent", children: "Accent" }),
         /* @__PURE__ */ jsx(SpectrumButton, { variant: "secondary", children: "Secondary" })
       ] }));
+    case "actionbutton":
+      return /* @__PURE__ */ jsx(ReactActionButtonDemo, {});
+    case "actiongroup":
+      return /* @__PURE__ */ jsx(ReactActionGroupDemo, {});
+    case "buttongroup":
+      return /* @__PURE__ */ jsx(ReactButtonGroupDemo, {});
+    case "filetrigger":
+      return /* @__PURE__ */ jsx(ReactFileTriggerDemo, {});
+    case "logicbutton":
+      return /* @__PURE__ */ jsx(ReactLogicButtonDemo, {});
+    case "togglebutton":
+      return /* @__PURE__ */ jsx(ReactToggleButtonDemo, {});
     case "tabs":
       return renderReactSpectrumReference(/* @__PURE__ */ jsxs(SpectrumTabs, { "aria-label": "React Spectrum tabs", maxWidth: 360, children: [
         /* @__PURE__ */ jsx(SpectrumTabList, { children: tabItems.map((item) => /* @__PURE__ */ jsx(SpectrumItem, { children: item.label }, item.id)) }),
@@ -164,6 +181,53 @@ function renderStyled(componentSlug) {
     default:
       return /* @__PURE__ */ jsx("div", { className: "comparison-empty-state", children: "No styled React Spectrum demo is wired for this component yet." });
   }
+}
+function ReactActionButtonDemo() {
+  const [actionCount, setActionCount] = useState(0);
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-action-count": String(actionCount), children: /* @__PURE__ */ jsx(SpectrumActionButton, { onPress: () => setActionCount((count) => count + 1), children: "Inspect" }) }));
+}
+function ReactActionGroupDemo() {
+  const [selectedKeys, setSelectedKeys] = useState(() => /* @__PURE__ */ new Set(["bold"]));
+  const [actionKey, setActionKey] = useState("");
+  const selectedKeyText = Array.from(selectedKeys).join(",");
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-action-key": actionKey, "data-comparison-selected-keys": selectedKeyText, children: /* @__PURE__ */ jsx(
+    SpectrumActionGroup,
+    {
+      "aria-label": "Formatting actions",
+      selectionMode: "single",
+      selectedKeys,
+      onAction: (key) => setActionKey(String(key)),
+      onSelectionChange: (keys) => {
+        if (keys === "all") {
+          setSelectedKeys(new Set(actionItems.map((item) => item.id)));
+          return;
+        }
+        setSelectedKeys(new Set(Array.from(keys, String)));
+      },
+      children: actionItems.map((item) => /* @__PURE__ */ jsx(SpectrumItem, { children: item.label }, item.id))
+    }
+  ) }));
+}
+function ReactButtonGroupDemo() {
+  const [actionKey, setActionKey] = useState("");
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-action-key": actionKey, children: /* @__PURE__ */ jsxs(SpectrumButtonGroup, { children: [
+    /* @__PURE__ */ jsx(SpectrumButton, { variant: "primary", onPress: () => setActionKey("save"), children: "Save" }),
+    /* @__PURE__ */ jsx(SpectrumButton, { variant: "secondary", onPress: () => setActionKey("cancel"), children: "Cancel" })
+  ] }) }));
+}
+function ReactFileTriggerDemo() {
+  const [selectedCount, setSelectedCount] = useState(0);
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-selected-count": String(selectedCount), children: /* @__PURE__ */ jsx(SpectrumFileTrigger, { onSelect: (files) => setSelectedCount(files == null ? 0 : files.length), children: /* @__PURE__ */ jsx(SpectrumActionButton, { children: "Upload" }) }) }));
+}
+function ReactLogicButtonDemo() {
+  return renderReactSpectrumReference(/* @__PURE__ */ jsxs("div", { className: "comparison-button-row", children: [
+    /* @__PURE__ */ jsx(SpectrumLogicButton, { variant: "and", "aria-label": "And" }),
+    /* @__PURE__ */ jsx(SpectrumLogicButton, { variant: "or", "aria-label": "Or" })
+  ] }));
+}
+function ReactToggleButtonDemo() {
+  const [selected, setSelected] = useState(false);
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-selected": String(selected), children: /* @__PURE__ */ jsx(SpectrumToggleButton, { isSelected: selected, onChange: setSelected, children: "Pin" }) }));
 }
 function ReactTextFieldDemo() {
   const [value, setValue] = useState("Quarterly report");
@@ -219,7 +283,7 @@ function ReactSearchFieldDemo() {
   } }) }));
 }
 function ReactTooltipDemo() {
-  return renderReactSpectrumReference(/* @__PURE__ */ jsxs(SpectrumTooltipTrigger, { isOpen: true, children: [
+  return renderReactSpectrumReference(/* @__PURE__ */ jsxs(SpectrumTooltipTrigger, { delay: 0, children: [
     /* @__PURE__ */ jsx(SpectrumActionButton, { children: "Inspect" }),
     /* @__PURE__ */ jsx(SpectrumTooltip, { children: "Tooltip content" })
   ] }));

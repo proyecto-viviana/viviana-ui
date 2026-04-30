@@ -53,6 +53,7 @@ vp run typecheck
 vp run build
 vp run test:contract
 vp run test:default
+vp run test:buttons
 vp run preview
 vp run dev:worker
 vp run deploy:dry-run
@@ -82,6 +83,8 @@ The report separates route coverage from visual state coverage:
 The first live official comparisons include:
 
 - `Provider` on the styled layer
+- `ActionButton`, `ActionGroup`, `ButtonGroup`, `FileTrigger`, `LogicButton`,
+  and `ToggleButton` on the styled layer
 - `Button` on the styled, component, and headless layers
 - `Tabs` on the styled and component layers
 - `TextField`, `Checkbox`, `Dialog`, `DatePicker`, `SearchField`, and `Tooltip`
@@ -149,6 +152,12 @@ Default static screenshots for live official components are covered by:
 
 ```bash
 vp run comparison:test:default
+```
+
+Button-family interaction contracts are covered by:
+
+```bash
+vp run comparison:test:buttons
 ```
 
 ## Validation Notes

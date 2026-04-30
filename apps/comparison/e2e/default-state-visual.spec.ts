@@ -8,6 +8,12 @@ type DefaultVisualCase = {
 const defaultVisualCases: DefaultVisualCase[] = [
   { slug: 'provider', title: 'Provider' },
   { slug: 'button', title: 'Button' },
+  { slug: 'actionbutton', title: 'ActionButton' },
+  { slug: 'actiongroup', title: 'ActionGroup' },
+  { slug: 'buttongroup', title: 'ButtonGroup' },
+  { slug: 'filetrigger', title: 'FileTrigger' },
+  { slug: 'logicbutton', title: 'LogicButton' },
+  { slug: 'togglebutton', title: 'ToggleButton' },
   { slug: 'tabs', title: 'Tabs' },
   { slug: 'textfield', title: 'TextField' },
   { slug: 'checkbox', title: 'Checkbox' },

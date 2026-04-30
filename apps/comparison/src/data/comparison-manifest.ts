@@ -132,6 +132,62 @@ function legacyEntry(input: {
   };
 }
 
+function styledLiveOfficialEntry(input: {
+  slug: string;
+  title: string;
+  category: ReactSpectrumCatalogueCategory;
+  summary: string;
+  styledSummary: string;
+  styledNote: string;
+}): ComparisonEntry {
+  return {
+    ...createGapEntry({
+      slug: input.slug,
+      title: input.title,
+      category: input.category,
+      docsUrl: `${reactSpectrumCatalogueSource.url.replace("/index.html", "")}/${input.title}.html`,
+    }),
+    componentStatus: "parity",
+    summary: input.summary,
+    parity: "partial",
+    priority: "live",
+    gapSummary: [
+      "Styled React Spectrum and Solid comparison islands are mounted.",
+      "Default screenshots are committed; exhaustive state coverage and strict pair diff remain open.",
+    ],
+    layers: {
+      styled: layerTrack(
+        `Styled ${input.title}`,
+        input.styledSummary,
+        "live",
+        "live",
+        input.styledNote,
+      ),
+      components: layerTrack(
+        `Component ${input.title}`,
+        "Component-layer parity target.",
+        "tracked",
+        "tracked",
+        "Tracked separately from the styled Spectrum comparison surface.",
+      ),
+      headless: layerTrack(
+        `Headless ${input.title}`,
+        "ARIA behavior hooks below the styled layer.",
+        "tracked",
+        "tracked",
+        "Tracked for keyboard, focus, and semantic parity once the styled surface is stable.",
+      ),
+      state: layerTrack(
+        `${input.title} State`,
+        "Component-specific state coverage.",
+        "tracked",
+        "tracked",
+        "State screenshots and assertions should be added per component rather than using a generic matrix blindly.",
+      ),
+    },
+  };
+}
+
 const entryOverrides: Record<string, ComparisonEntry> = {
   provider: {
     ...createGapEntry({
@@ -228,6 +284,72 @@ const entryOverrides: Record<string, ComparisonEntry> = {
       ),
     },
   },
+
+  actionbutton: styledLiveOfficialEntry({
+    slug: "actionbutton",
+    title: "ActionButton",
+    category: "Buttons",
+    summary:
+      "Task-oriented ActionButton reference mounted with React Spectrum and the Solid Spectrum skin.",
+    styledSummary: "React Spectrum ActionButton vs Solid action button behavior with Spectrum-shaped styling.",
+    styledNote:
+      "React uses @adobe/react-spectrum ActionButton directly; Solid uses solidaria button behavior under the comparison Spectrum skin.",
+  }),
+
+  actiongroup: styledLiveOfficialEntry({
+    slug: "actiongroup",
+    title: "ActionGroup",
+    category: "Buttons",
+    summary:
+      "Related action collection with single selection and action tracking on both stacks.",
+    styledSummary: "React Spectrum ActionGroup vs Solid action group behavior with the comparison Spectrum skin.",
+    styledNote:
+      "React uses @adobe/react-spectrum ActionGroup directly; Solid uses solidaria collection behavior under the comparison Spectrum skin.",
+  }),
+
+  buttongroup: styledLiveOfficialEntry({
+    slug: "buttongroup",
+    title: "ButtonGroup",
+    category: "Buttons",
+    summary:
+      "Grouped related buttons mounted on both stacks for layout and overflow parity work.",
+    styledSummary: "React Spectrum ButtonGroup vs Solid grouped Spectrum-skinned buttons.",
+    styledNote:
+      "React uses @adobe/react-spectrum ButtonGroup directly; Solid uses the Silapse grouping wrapper with Spectrum-skinned buttons.",
+  }),
+
+  filetrigger: styledLiveOfficialEntry({
+    slug: "filetrigger",
+    title: "FileTrigger",
+    category: "Buttons",
+    summary:
+      "File picker trigger mounted with a pressable Spectrum action trigger on both stacks.",
+    styledSummary: "React Spectrum FileTrigger vs Solid FileTrigger with a Spectrum-skinned trigger.",
+    styledNote:
+      "React uses @adobe/react-spectrum FileTrigger directly; Solid uses the Silapse FileTrigger wrapper around solidaria behavior.",
+  }),
+
+  logicbutton: styledLiveOfficialEntry({
+    slug: "logicbutton",
+    title: "LogicButton",
+    category: "Buttons",
+    summary:
+      "Boolean operator buttons mounted for visual parity of the compact AND/OR surface.",
+    styledSummary: "React Spectrum LogicButton vs Solid Spectrum-skinned logic button.",
+    styledNote:
+      "React uses @adobe/react-spectrum LogicButton directly; Solid renders matching logic operators with solidaria button behavior.",
+  }),
+
+  togglebutton: styledLiveOfficialEntry({
+    slug: "togglebutton",
+    title: "ToggleButton",
+    category: "Buttons",
+    summary:
+      "Selectable action button mounted on both stacks with controlled selected-state data.",
+    styledSummary: "React Spectrum ToggleButton vs Solid toggle button behavior with Spectrum-shaped styling.",
+    styledNote:
+      "React uses @adobe/react-spectrum ToggleButton directly; Solid uses solidaria toggle behavior under the comparison Spectrum skin.",
+  }),
 
   tabs: {
     ...createGapEntry({

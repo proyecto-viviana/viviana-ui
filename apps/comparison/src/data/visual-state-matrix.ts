@@ -88,6 +88,92 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       note: "Button row screenshots are committed for both sides; strict variant-by-variant pair diff remains planned.",
     }),
   ],
+  actionbutton: [
+    snapshottedDefaultState({
+      slug: "actionbutton",
+      note: "ActionButton default screenshots are committed for both sides; hover, pressed, focus-visible, disabled, quiet, and static-color states remain planned.",
+    }),
+    {
+      id: "styled.action.press",
+      label: "Press action",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "Press behavior updates the comparison action counter on both React Spectrum and Solid.",
+    },
+  ],
+  actiongroup: [
+    snapshottedDefaultState({
+      slug: "actiongroup",
+      note: "ActionGroup default single-selection screenshots are committed for both sides; density, quiet, overflow, wrapping, disabled item, keyboard, and action states remain planned.",
+    }),
+    {
+      id: "styled.selection.single-action",
+      label: "Single selection and action",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "Selecting an action updates both the selected key and action callback data on both stacks.",
+    },
+  ],
+  buttongroup: [
+    snapshottedDefaultState({
+      slug: "buttongroup",
+      note: "ButtonGroup default screenshots are committed for both sides; orientation, alignment, disabled, overflow, and grouped interaction states remain planned.",
+    }),
+    {
+      id: "styled.grouped-actions.press",
+      label: "Grouped button actions",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "Grouped Save and Cancel actions update state on both stacks.",
+    },
+  ],
+  filetrigger: [
+    snapshottedDefaultState({
+      slug: "filetrigger",
+      note: "FileTrigger default trigger screenshots are committed for both sides; file selection behavior and disabled trigger states remain planned.",
+    }),
+    {
+      id: "styled.file.select",
+      label: "File selection callback",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "Programmatic file selection updates the selected file count on both stacks.",
+    },
+  ],
+  logicbutton: [
+    snapshottedDefaultState({
+      slug: "logicbutton",
+      note: "LogicButton AND/OR screenshots are committed for both sides; hover, pressed, focus-visible, and disabled states remain planned.",
+    }),
+  ],
+  togglebutton: [
+    snapshottedDefaultState({
+      slug: "togglebutton",
+      note: "ToggleButton default unselected screenshots are committed for both sides; selected, hover, pressed, focus-visible, emphasized, disabled, and keyboard states remain planned.",
+    }),
+    {
+      id: "styled.toggle.selected",
+      label: "Toggle selected state",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "Clicking the ToggleButton toggles selected-state data on both stacks.",
+    },
+  ],
   tabs: [
     snapshottedDefaultState({
       slug: "tabs",

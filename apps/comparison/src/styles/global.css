@@ -498,6 +498,17 @@ a {
   --skin-button-disabled-border: #5c5c5c;
   --skin-button-disabled-text: #777777;
   --skin-button-disabled-bg: transparent;
+  --skin-action-button-height: 32px;
+  --skin-action-button-radius: 4px;
+  --skin-action-button-border: #707070;
+  --skin-action-button-border-hover: #8f8f8f;
+  --skin-action-button-border-active: #bcbcbc;
+  --skin-action-button-bg: transparent;
+  --skin-action-button-bg-hover: #2c2c2c;
+  --skin-action-button-bg-active: #3b3b3b;
+  --skin-action-button-bg-selected: #3b3b3b;
+  --skin-action-button-text: #eaeaea;
+  --skin-action-button-text-disabled: #777777;
   width: fit-content;
   max-inline-size: 100%;
   padding: 0;
@@ -701,6 +712,109 @@ a {
   text-overflow: ellipsis;
   text-transform: none;
   white-space: nowrap;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-ActionButton,
+.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button {
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: fit-content;
+  min-block-size: var(--skin-action-button-height);
+  max-inline-size: 100%;
+  padding: 0 11px;
+  border: 1px solid var(--skin-action-button-border);
+  border-radius: var(--skin-action-button-radius);
+  background: var(--skin-action-button-bg);
+  color: var(--skin-action-button-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: none;
+  user-select: none;
+  transition:
+    background-color 130ms ease,
+    border-color 130ms ease,
+    box-shadow 130ms ease,
+    color 130ms ease;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-ActionButton[data-hovered],
+.comparison-spectrum-skin .comparison-spectrum-ActionButton:hover,
+.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button:hover {
+  background: var(--skin-action-button-bg-hover);
+  border-color: var(--skin-action-button-border-hover);
+}
+
+.comparison-spectrum-skin .comparison-spectrum-ActionButton[data-pressed],
+.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button:active {
+  background: var(--skin-action-button-bg-active);
+  border-color: var(--skin-action-button-border-active);
+}
+
+.comparison-spectrum-skin .comparison-spectrum-ActionButton[data-selected],
+.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button[data-selected] {
+  background: var(--skin-action-button-bg-selected);
+  border-color: var(--skin-action-button-border-active);
+  color: #ffffff;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-ActionButton[data-focus-visible],
+.comparison-spectrum-skin .comparison-spectrum-ActionButton:focus-visible,
+.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button:focus-visible {
+  box-shadow:
+    0 0 0 2px #000000,
+    0 0 0 4px var(--skin-button-focus-ring);
+  outline: none;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-ActionButton[data-disabled],
+.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button[data-disabled] {
+  border-color: var(--skin-button-disabled-border);
+  color: var(--skin-action-button-text-disabled);
+  cursor: default;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-ActionGroup {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  width: fit-content;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-ActionGroup[data-orientation="vertical"] {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-ButtonGroup {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-LogicButton {
+  min-block-size: 24px;
+  min-inline-size: 20px;
+  inline-size: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: #1473e6;
+  color: transparent;
+  font-size: 0;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-LogicButton[data-variant="or"] {
+  background: #d83790;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Field,
