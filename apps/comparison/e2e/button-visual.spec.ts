@@ -210,9 +210,15 @@ async function expectComputedButtonParity(reactButton: Locator, solidButton: Loc
 }
 
 async function normalizedScreenshot(target: Locator) {
-  const previousStyle = await target.evaluate((element) => {
+  const previousState = await target.evaluate((element) => {
     const htmlElement = element as HTMLElement;
-    const style = htmlElement.getAttribute("style");
+    const state = {
+      className: htmlElement.getAttribute("class"),
+      style: htmlElement.getAttribute("style"),
+      dataAttrs: Array.from(htmlElement.attributes)
+        .filter((attribute) => attribute.name.startsWith("data-"))
+        .map((attribute) => [attribute.name, attribute.value] as const),
+    };
 
     htmlElement.style.position = "fixed";
     htmlElement.style.insetBlockStart = "64px";
@@ -220,22 +226,65 @@ async function normalizedScreenshot(target: Locator) {
     htmlElement.style.margin = "0";
     htmlElement.style.zIndex = "2147483647";
 
-    return style;
+    return state;
   });
 
   try {
     await target.evaluate(() => new Promise(requestAnimationFrame));
+    await target.evaluate((element, state) => {
+      const htmlElement = element as HTMLElement;
+
+      if (state.className === null) {
+        htmlElement.removeAttribute("class");
+      } else {
+        htmlElement.setAttribute("class", state.className);
+      }
+
+      for (const [name, value] of state.dataAttrs) {
+        htmlElement.setAttribute(name, value);
+      }
+
+      if (state.style === null) {
+        htmlElement.removeAttribute("style");
+      } else {
+        htmlElement.setAttribute("style", state.style);
+      }
+
+      htmlElement.style.position = "fixed";
+      htmlElement.style.insetBlockStart = "64px";
+      htmlElement.style.insetInlineStart = "64px";
+      htmlElement.style.margin = "0";
+      htmlElement.style.zIndex = "2147483647";
+    }, previousState);
+
     return await target.screenshot({ animations: "disabled" });
   } finally {
-    await target.evaluate((element, style) => {
+    await target.evaluate((element, state) => {
       const htmlElement = element as HTMLElement;
-      if (style === null) {
+
+      if (state.className === null) {
+        htmlElement.removeAttribute("class");
+      } else {
+        htmlElement.setAttribute("class", state.className);
+      }
+
+      for (const attribute of Array.from(htmlElement.attributes)) {
+        if (attribute.name.startsWith("data-")) {
+          htmlElement.removeAttribute(attribute.name);
+        }
+      }
+
+      for (const [name, value] of state.dataAttrs) {
+        htmlElement.setAttribute(name, value);
+      }
+
+      if (state.style === null) {
         htmlElement.removeAttribute("style");
         return;
       }
 
-      htmlElement.setAttribute("style", style);
-    }, previousStyle);
+      htmlElement.setAttribute("style", state.style);
+    }, previousState);
   }
 }
 
@@ -251,9 +300,9 @@ async function expectScreenshotPair(
     normalizedScreenshot(solidTarget),
   ]);
 
+  await compareScreenshots(page, reactPng, solidPng, label, strictPairDiff);
   expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
   expect(solidPng).toMatchSnapshot(`${snapshotName}-solid.png`);
-  await compareScreenshots(page, reactPng, solidPng, label, strictPairDiff);
 }
 
 async function expectPreparedScreenshotPair(
@@ -269,17 +318,17 @@ async function expectPreparedScreenshotPair(
   await prepareReact();
   await page.waitForTimeout(220);
   const reactPng = await normalizedScreenshot(reactTarget);
-  expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
 
   await page.mouse.up();
   await clearPointer(page);
   await prepareSolid();
   await page.waitForTimeout(220);
   const solidPng = await normalizedScreenshot(solidTarget);
-  expect(solidPng).toMatchSnapshot(`${snapshotName}-solid.png`);
 
   await page.mouse.up();
   await compareScreenshots(page, reactPng, solidPng, label, strictPairDiff);
+  expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
+  expect(solidPng).toMatchSnapshot(`${snapshotName}-solid.png`);
 }
 
 test.describe("comparison Button visual parity", () => {
@@ -521,6 +570,11 @@ test.describe("comparison Button visual parity", () => {
   for (const item of buttonMatrixCases) {
     test(`${item.label} is pixel-identical`, async ({ page }) => {
       const fixtures = await buttonFixtures(page, item.params);
+
+      if (item.params.isPending === true) {
+        await expect(fixtures.reactRow.getByRole("progressbar", { name: "pending" })).toBeVisible();
+        await expect(fixtures.solidRow.getByRole("progressbar", { name: "pending" })).toBeVisible();
+      }
 
       await clearPointer(page);
       await expectScreenshotPair(

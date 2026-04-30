@@ -96,6 +96,15 @@ state, add or plan the matching strict pair screenshot row in the matrix.
 Capture each side once per assertion and use that same buffer for both the
 committed snapshot and the React-vs-Solid pair diff, so timing-sensitive states
 cannot pass the snapshot and fail the pair diff against a different frame.
+Run the React-vs-Solid pair diff before `toMatchSnapshot`; stale baselines
+should not hide a real implementation mismatch.
+
+When a screenshot helper normalizes coordinates, preserve the rendered
+state before the move: class, data attributes, and inline style. React Spectrum
+can drop transient `data-pressed` and transform styles when a live element is
+repositioned. Time-delayed states must wait for the intended visible phase
+before capture, such as waiting for pending progressbars before snapshotting a
+spinner state.
 
 ## 6. Update The Matrix
 
