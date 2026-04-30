@@ -9,6 +9,7 @@
     "build": "astro build",
     "report:gaps": "tsx scripts/report-catalogue-gaps.ts",
     "test:contract": "playwright test e2e/styled-contract.spec.ts --reporter=line",
+    "test:default": "playwright test e2e/default-state-visual.spec.ts --reporter=line",
     "test:dialog": "playwright test e2e/dialog-visual.spec.ts --reporter=line",
     "test:datepicker": "playwright test e2e/datepicker-visual.spec.ts --reporter=line",
     "test:select": "playwright test e2e/select-visual.spec.ts --reporter=line",

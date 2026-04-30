@@ -52,6 +52,7 @@ Additional tasks:
 vp run typecheck
 vp run build
 vp run test:contract
+vp run test:default
 vp run preview
 vp run dev:worker
 vp run deploy:dry-run
@@ -143,6 +144,12 @@ Component state coverage lives in
 [`src/data/visual-state-matrix.ts`](./src/data/visual-state-matrix.ts). Add a
 state there whenever a visual or behavioral state is covered, and commit the
 Playwright snapshots next to the spec when the state is visual.
+
+Default static screenshots for live official components are covered by:
+
+```bash
+vp run comparison:test:default
+```
 
 ## Validation Notes
 

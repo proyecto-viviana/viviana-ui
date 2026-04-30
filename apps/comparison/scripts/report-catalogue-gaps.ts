@@ -19,10 +19,15 @@ const officialLive = officialComparisonEntries.filter(
 const legacyEntries = comparisonEntries.filter(
   (entry) => entry.catalogueSource === "legacy-solidaria",
 );
-const tolerantOfficialStates = officialVisualStateCoverage.flatMap((entry) =>
+const nonStrictSnapshottedOfficialStates = officialVisualStateCoverage.flatMap((entry) =>
   entry.states
-    .filter((state) => state.pairDiff === "tolerant")
-    .map((state) => `${entry.title}: ${state.label}`),
+    .filter(
+      (state) =>
+        state.react === "snapshotted" &&
+        state.solid === "snapshotted" &&
+        state.pairDiff !== "strict",
+    )
+    .map((state) => `${entry.title}: ${state.label} (${state.pairDiff})`),
 );
 const plannedOfficialStates = officialVisualStateCoverage.flatMap((entry) =>
   entry.states
@@ -58,9 +63,9 @@ if (missingOfficialComparisonEntries.length > 0) {
   }
 }
 
-if (tolerantOfficialStates.length > 0) {
+if (nonStrictSnapshottedOfficialStates.length > 0) {
   console.log("\nOfficial states with committed screenshots but non-strict pair diff:");
-  for (const state of tolerantOfficialStates) {
+  for (const state of nonStrictSnapshottedOfficialStates) {
     console.log(`- ${state}`);
   }
 }

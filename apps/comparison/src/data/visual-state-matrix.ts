@@ -51,7 +51,74 @@ function plannedState(entry: ComparisonEntry): VisualStateTarget {
   };
 }
 
+function snapshottedDefaultState(input: {
+  slug: string;
+  label?: string;
+  note?: string;
+}): VisualStateTarget {
+  const label = input.label ?? "Styled default";
+
+  return {
+    id: "styled.default",
+    label,
+    kind: "static",
+    react: "snapshotted",
+    solid: "snapshotted",
+    pairDiff: "planned",
+    spec: "e2e/default-state-visual.spec.ts",
+    snapshots: [
+      `e2e/default-state-visual.spec.ts-snapshots/${input.slug}-default-react-chromium-linux.png`,
+      `e2e/default-state-visual.spec.ts-snapshots/${input.slug}-default-solid-chromium-linux.png`,
+    ],
+    note: input.note ??
+      "Committed default-state screenshots exist for both sides; strict pair diff remains planned.",
+  };
+}
+
 const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
+  provider: [
+    snapshottedDefaultState({
+      slug: "provider",
+      note: "Provider nesting screenshots are committed for both sides; pair diff remains planned because the surfaces use different provider implementations.",
+    }),
+  ],
+  button: [
+    snapshottedDefaultState({
+      slug: "button",
+      note: "Button row screenshots are committed for both sides; strict variant-by-variant pair diff remains planned.",
+    }),
+  ],
+  tabs: [
+    snapshottedDefaultState({
+      slug: "tabs",
+      note: "Default Tabs screenshots are committed for both sides; keyboard and selected-state matrices remain planned.",
+    }),
+  ],
+  textfield: [
+    snapshottedDefaultState({
+      slug: "textfield",
+      note: "TextField default screenshots are committed for both sides; input, focus, invalid, disabled, and value-change states remain planned.",
+    }),
+  ],
+  checkbox: [
+    snapshottedDefaultState({
+      slug: "checkbox",
+      note: "Checkbox default selected screenshots are committed for both sides; hover, focus, pressed, unchecked, disabled, invalid, and indeterminate states remain planned.",
+    }),
+  ],
+  searchfield: [
+    snapshottedDefaultState({
+      slug: "searchfield",
+      note: "SearchField default-value screenshots are committed for both sides; clear, empty, focus, hover, and keyboard states remain planned.",
+    }),
+  ],
+  tooltip: [
+    snapshottedDefaultState({
+      slug: "tooltip",
+      label: "Default trigger",
+      note: "Tooltip trigger screenshots are committed for both sides; open hover/focus tooltip screenshots remain planned.",
+    }),
+  ],
   dialog: [
     {
       id: "styled.trigger.default",

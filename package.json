@@ -20,6 +20,7 @@
     "comparison:preview": "vp run --filter @proyecto-viviana/comparison preview",
     "comparison:report:gaps": "vp run --filter @proyecto-viviana/comparison report:gaps",
     "comparison:test:contract": "vp run --filter @proyecto-viviana/comparison test:contract",
+    "comparison:test:default": "vp run --filter @proyecto-viviana/comparison test:default",
     "comparison:test:datepicker": "vp run --filter @proyecto-viviana/comparison test:datepicker",
     "comparison:test:dialog": "vp run --filter @proyecto-viviana/comparison test:dialog",
     "comparison:test:select": "vp run --filter @proyecto-viviana/comparison test:select",
