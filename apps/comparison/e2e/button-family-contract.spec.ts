@@ -3,8 +3,8 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 type Framework = 'React Spectrum stack' | 'Solidaria stack';
 
 async function styledSection(page: Page) {
-  const section = page.locator('.layer-block').filter({
-    has: page.getByRole('heading', { name: 'Styled Layer' }),
+  const section = page.locator('#playground').filter({
+    has: page.getByRole('heading', { name: 'Playground' }),
   });
   await expect(section).toHaveCount(1);
   await section.scrollIntoViewIfNeeded();

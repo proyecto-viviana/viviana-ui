@@ -895,7 +895,8 @@ a {
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button {
-  appearance: none;
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
   box-sizing: border-box;
   display: flex;
   align-items: baseline;
@@ -910,7 +911,7 @@ a {
   background: transparent;
   color: #ffffff;
   column-gap: 5.99999px;
-  cursor: pointer;
+  cursor: default;
   font-family: adobe-clean, "Source Sans Pro", system-ui, sans-serif;
   font-size: 14px;
   font-weight: 700;
@@ -918,6 +919,7 @@ a {
   line-height: 18px;
   outline: none;
   outline-offset: 2px;
+  position: relative;
   text-decoration: none;
   text-transform: none;
   user-select: none;
@@ -980,7 +982,7 @@ a {
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-variant="premium"] {
   background: #2c2c2c;
-  border-color: transparent;
+  border-color: #ffffff;
   color: #ffffff;
 }
 
@@ -1000,7 +1002,7 @@ a {
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-variant="genai"] {
   background: #2c2c2c;
-  border-color: transparent;
+  border-color: #ffffff;
   color: #ffffff;
 }
 
@@ -1072,14 +1074,14 @@ a {
 .comparison-spectrum-skin .comparison-spectrum-Button:hover[data-variant="premium"]::before,
 .comparison-spectrum-skin .comparison-spectrum-Button[data-focus-visible][data-variant="premium"]::before,
 .comparison-spectrum-skin .comparison-spectrum-Button[data-pressed][data-variant="premium"]::before {
-  background: linear-gradient(to bottom right, #bd27bc 0%, #4046ca 66%, #095aba 100%);
+  background: linear-gradient(to bottom right, #a32db6 0%, #6740f1 66%, #2d53ef 100%);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-hovered][data-variant="genai"]::before,
 .comparison-spectrum-skin .comparison-spectrum-Button:hover[data-variant="genai"]::before,
 .comparison-spectrum-skin .comparison-spectrum-Button[data-focus-visible][data-variant="genai"]::before,
 .comparison-spectrum-skin .comparison-spectrum-Button[data-pressed][data-variant="genai"]::before {
-  background: linear-gradient(to bottom right, #b51a1d 0%, #a727a7 33%, #4046ca 100%);
+  background: linear-gradient(to bottom right, #b72818 0%, #ba1650 33%, #6338ee 100%);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-hovered][data-style="outline"][data-variant="primary"],
@@ -1111,10 +1113,44 @@ a {
   color: lch(0 0 0);
 }
 
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style="fill"][data-variant="secondary"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="auto"][data-style="fill"][data-variant="secondary"] {
+  background: lch(100 0 0 / 0.11);
+  border-color: lch(100 0 0 / 0.17);
+  color: lch(100 0 0 / 0.85);
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style="fill"][data-variant="accent"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style="fill"][data-variant="negative"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="auto"][data-style="fill"][data-variant="accent"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="auto"][data-style="fill"][data-variant="negative"] {
+  background: transparent;
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style][data-variant="premium"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style][data-variant="genai"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="auto"][data-style][data-variant="premium"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="auto"][data-style][data-variant="genai"] {
+  background: lch(100 0 0 / 0.11);
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
 .comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style="outline"],
 .comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="auto"][data-style="outline"] {
-  border-color: lch(100 0 0 / 0.85);
   color: lch(100 0 0 / 0.85);
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style="outline"][data-variant="primary"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="auto"][data-style="outline"][data-variant="primary"] {
+  border-color: lch(100 0 0 / 0.85);
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="white"][data-style="outline"][data-variant="secondary"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="auto"][data-style="outline"][data-variant="secondary"] {
+  border-color: lch(100 0 0 / 0.17);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style="fill"][data-variant="primary"] {
@@ -1123,9 +1159,36 @@ a {
   color: lch(100 0 0);
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style="outline"] {
-  border-color: lch(0 0 0 / 0.85);
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style="fill"][data-variant="secondary"] {
+  background: lch(0 0 0 / 0.11);
+  border-color: lch(0 0 0 / 0.17);
   color: lch(0 0 0 / 0.85);
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style="fill"][data-variant="accent"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style="fill"][data-variant="negative"] {
+  background: transparent;
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style][data-variant="premium"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style][data-variant="genai"] {
+  background: lch(0 0 0 / 0.11);
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style="outline"] {
+  color: lch(0 0 0 / 0.85);
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style="outline"][data-variant="primary"] {
+  border-color: lch(0 0 0 / 0.85);
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-static-color="black"][data-style="outline"][data-variant="secondary"] {
+  border-color: lch(0 0 0 / 0.17);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-focus-visible],

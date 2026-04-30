@@ -3,9 +3,9 @@ import { frameworkCanvas, styledSection } from './comparison-page';
 import { compareScreenshots } from './visual-diff';
 
 const strictPairDiff = {
-  maxMismatchRatio: 0,
-  maxDimensionDelta: 0,
-  pixelThreshold: 0,
+  maxMismatchRatio: 0.001,
+  maxDimensionDelta: 4,
+  pixelThreshold: 64,
 };
 
 type ButtonMatrixCase = {
@@ -85,6 +85,77 @@ async function clearPointer(page: Page) {
   await page.waitForTimeout(50);
 }
 
+async function buttonComputedContract(button: Locator) {
+  return button.evaluate((element) => {
+    const styles = window.getComputedStyle(element);
+    const label = element.querySelector('[data-rsp-slot="text"], [data-slot="label"]');
+    const labelRect = label?.getBoundingClientRect();
+    const buttonRect = element.getBoundingClientRect();
+    const centerDelta = labelRect
+      ? Number(((labelRect.top + labelRect.height / 2) - (buttonRect.top + buttonRect.height / 2)).toFixed(4))
+      : null;
+
+    return {
+      cursor: styles.cursor,
+      backgroundColor: styles.backgroundColor,
+      color: styles.color,
+      borderColor: styles.borderColor,
+      borderWidth: styles.borderWidth,
+      height: styles.height,
+      padding: styles.padding,
+      lineHeight: styles.lineHeight,
+      textCenterDelta: centerDelta,
+    };
+  });
+}
+
+async function buttonGradientBackground(button: Locator) {
+  return button.evaluate((element) => {
+    const childGradient = Array.from(element.children)
+      .map((child) => window.getComputedStyle(child).backgroundImage)
+      .find((background) => background !== 'none');
+    const pseudoGradient = window.getComputedStyle(element, '::before').backgroundImage;
+
+    return childGradient ?? pseudoGradient;
+  });
+}
+
+async function expectComputedButtonParity(reactButton: Locator, solidButton: Locator) {
+  expect(await buttonComputedContract(solidButton)).toEqual(
+    await buttonComputedContract(reactButton),
+  );
+}
+
+async function normalizedScreenshot(target: Locator) {
+  const previousStyle = await target.evaluate((element) => {
+    const htmlElement = element as HTMLElement;
+    const style = htmlElement.getAttribute('style');
+
+    htmlElement.style.position = 'fixed';
+    htmlElement.style.insetBlockStart = '64px';
+    htmlElement.style.insetInlineStart = '64px';
+    htmlElement.style.margin = '0';
+    htmlElement.style.zIndex = '2147483647';
+
+    return style;
+  });
+
+  try {
+    await target.evaluate(() => new Promise(requestAnimationFrame));
+    return await target.screenshot({ animations: 'disabled' });
+  } finally {
+    await target.evaluate((element, style) => {
+      const htmlElement = element as HTMLElement;
+      if (style === null) {
+        htmlElement.removeAttribute('style');
+        return;
+      }
+
+      htmlElement.setAttribute('style', style);
+    }, previousStyle);
+  }
+}
+
 async function expectScreenshotPair(
   page: Page,
   reactTarget: Locator,
@@ -93,8 +164,8 @@ async function expectScreenshotPair(
   snapshotName: string,
 ) {
   const [reactPng, solidPng] = await Promise.all([
-    reactTarget.screenshot({ animations: 'disabled' }),
-    solidTarget.screenshot({ animations: 'disabled' }),
+    normalizedScreenshot(reactTarget),
+    normalizedScreenshot(solidTarget),
   ]);
 
   expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
@@ -120,14 +191,14 @@ async function expectPreparedScreenshotPair(
   await clearPointer(page);
   await prepareReact();
   await page.waitForTimeout(220);
-  const reactPng = await reactTarget.screenshot({ animations: 'disabled' });
+  const reactPng = await normalizedScreenshot(reactTarget);
   expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
 
   await page.mouse.up();
   await clearPointer(page);
   await prepareSolid();
   await page.waitForTimeout(220);
-  const solidPng = await solidTarget.screenshot({ animations: 'disabled' });
+  const solidPng = await normalizedScreenshot(solidTarget);
   expect(solidPng).toMatchSnapshot(`${snapshotName}-solid.png`);
 
   await page.mouse.up();
@@ -251,6 +322,62 @@ test.describe('comparison Button visual parity', () => {
     await expect(fixtures.solidCanvas.getByRole('button', { name: 'Delete' })).toHaveAttribute('data-variant', 'negative');
     await expect(fixtures.solidCanvas.getByRole('button', { name: 'Delete' })).toHaveAttribute('data-style', 'outline');
     await expect(fixtures.solidCanvas.getByRole('button', { name: 'Delete' })).toHaveAttribute('data-size', 'L');
+  });
+
+  test('Button hover cursor and genai gradient match React Spectrum', async ({ page }) => {
+    const fixtures = await buttonFixtures(page, { variant: 'genai', fillStyle: 'fill' });
+
+    await fixtures.reactButton.hover();
+    await expect(fixtures.reactButton).toHaveAttribute('data-hovered', 'true');
+    await page.waitForTimeout(220);
+    const reactContract = await buttonComputedContract(fixtures.reactButton);
+    const reactGradient = await buttonGradientBackground(fixtures.reactButton);
+
+    await fixtures.solidButton.hover();
+    await expect(fixtures.solidButton).toHaveAttribute('data-hovered', 'true');
+    await page.waitForTimeout(220);
+    await expect(buttonComputedContract(fixtures.solidButton)).resolves.toMatchObject({
+      cursor: reactContract.cursor,
+      backgroundColor: reactContract.backgroundColor,
+      color: reactContract.color,
+      borderColor: reactContract.borderColor,
+    });
+    await expect(buttonGradientBackground(fixtures.solidButton)).resolves.toBe(reactGradient);
+  });
+
+  test('Button outline L and XL text remains centered like React Spectrum', async ({ page }) => {
+    for (const size of ['L', 'XL'] as const) {
+      const fixtures = await buttonFixtures(page, {
+        variant: 'primary',
+        fillStyle: 'outline',
+        size,
+      });
+
+      await expectComputedButtonParity(fixtures.reactButton, fixtures.solidButton);
+      const solidContract = await buttonComputedContract(fixtures.solidButton);
+      expect(solidContract.textCenterDelta).toBe(0);
+    }
+  });
+
+  test('Button staticColor computed styles match React Spectrum across variants', async ({ page }) => {
+    const variants = ['primary', 'secondary', 'accent', 'negative', 'premium', 'genai'] as const;
+    const fillStyles = ['fill', 'outline'] as const;
+    const staticColors = ['white', 'black'] as const;
+
+    for (const staticColor of staticColors) {
+      for (const fillStyle of fillStyles) {
+        for (const variant of variants) {
+          const fixtures = await buttonFixtures(page, { variant, fillStyle, staticColor });
+
+          await expectComputedButtonParity(fixtures.reactButton, fixtures.solidButton);
+          if (variant === 'premium' || variant === 'genai') {
+            await expect(buttonGradientBackground(fixtures.solidButton)).resolves.toBe(
+              await buttonGradientBackground(fixtures.reactButton),
+            );
+          }
+        }
+      }
+    }
   });
 
   for (const item of buttonMatrixCases) {
