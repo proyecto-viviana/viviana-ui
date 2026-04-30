@@ -1471,6 +1471,36 @@ a {
   font-family: adobe-clean, "Source Sans Pro", system-ui, sans-serif;
 }
 
+.comparison-spectrum-skin[data-comparison-color-scheme="light"] {
+  --skin-button-focus-ring: #0265dc;
+  --skin-button-primary-border: #292929;
+  --skin-button-primary-text: #292929;
+  --skin-button-primary-fill-bg: #292929;
+  --skin-button-primary-fill-text: #ffffff;
+  --skin-button-primary-hover-border: #000000;
+  --skin-button-primary-active-border: #4b4b4b;
+  --skin-button-accent-bg: #0265dc;
+  --skin-button-accent-bg-hover: #0054b6;
+  --skin-button-accent-bg-active: #004491;
+  --skin-button-accent-border: #0265dc;
+  --skin-button-secondary-border: #d5d5d5;
+  --skin-button-secondary-text: #222222;
+  --skin-button-secondary-hover-border: #b8b8b8;
+  --skin-button-disabled-border: #d5d5d5;
+  --skin-button-disabled-text: #b8b8b8;
+  --skin-button-disabled-bg: #e6e6e6;
+  --skin-action-button-border: #b8b8b8;
+  --skin-action-button-border-hover: #8c8c8c;
+  --skin-action-button-border-active: #6d6d6d;
+  --skin-action-button-bg: transparent;
+  --skin-action-button-bg-hover: #f5f5f5;
+  --skin-action-button-bg-active: #e6e6e6;
+  --skin-action-button-bg-selected: #e6e6e6;
+  --skin-action-button-text: #222222;
+  --skin-action-button-text-disabled: #b8b8b8;
+  color: var(--skin-button-primary-text);
+}
+
 .comparison-reference-frame[data-comparison-reference="spectrum-skin"] .comparison-form-control {
   display: grid;
   gap: 6px;
@@ -1636,16 +1666,44 @@ a {
   color: #111111;
 }
 
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-style="fill"][data-variant="primary"] {
+  background: var(--skin-button-primary-fill-bg);
+  border-color: var(--skin-button-primary-fill-bg);
+  color: var(--skin-button-primary-fill-text);
+}
+
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="accent"] {
   background: #345bf8;
   border-color: #ffffff;
   color: #ffffff;
 }
 
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-style="fill"][data-variant="accent"] {
+  background: rgba(59, 99, 251, 0.86);
+  border-color: #1f1f1f;
+  color: #e1e1e1;
+}
+
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="secondary"] {
   background: #2c2c2c;
   border-color: #393939;
   color: #dbdbdb;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-style="fill"][data-variant="secondary"] {
+  background: rgba(233, 233, 233, 0.86);
+  border-color: #c1c1c1;
+  color: #292929;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-style="fill"][data-variant="negative"] {
+  background: rgba(215, 50, 33, 0.945);
+  border-color: #000000;
+  color: #f6f6f6;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="negative"] {
@@ -1695,10 +1753,24 @@ a {
   color: #dbdbdb;
 }
 
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-style="outline"][data-variant="primary"] {
+  background: rgba(41, 41, 41, 0.14);
+  border-color: #292929;
+  color: #484848;
+}
+
 .comparison-spectrum-skin
   .comparison-spectrum-Button[data-style="outline"][data-variant="secondary"] {
   border-color: #393939;
   color: #dbdbdb;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-style="outline"][data-variant="secondary"] {
+  background: rgba(233, 233, 233, 0.133);
+  border-color: #dadada;
+  color: #292929;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="accent"],
@@ -1706,6 +1778,20 @@ a {
   .comparison-spectrum-Button[data-style="outline"][data-variant="negative"] {
   border-color: #ffffff;
   color: #dbdbdb;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-style="outline"][data-variant="accent"] {
+  background: rgba(59, 99, 251, 0.133);
+  border-color: #000000;
+  color: #3e3e3e;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-style="outline"][data-variant="negative"] {
+  background: rgba(215, 50, 32, 0.14);
+  border-color: #000000;
+  color: #464646;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="premium"],

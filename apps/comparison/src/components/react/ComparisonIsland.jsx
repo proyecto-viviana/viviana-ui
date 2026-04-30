@@ -54,6 +54,10 @@ import {
   comparisonControlsEvent,
   serializeButtonDemoProps,
 } from "@comparison/data/button-demo";
+import {
+  comparisonThemeChangeEvent,
+  getComparisonResolvedThemeFromDocument,
+} from "@comparison/data/theme";
 function ComparisonIsland(props) {
   const overlayRootRef = useRef(null);
   return /* @__PURE__ */ jsxs("div", {
@@ -101,9 +105,9 @@ function ComparisonReferenceFrame({ componentSlug, layer, children }) {
     children: /* @__PURE__ */ jsx("div", { className: "comparison-reference-canvas", children }),
   });
 }
-function renderReactSpectrumReference(children) {
+function renderReactSpectrumReference(children, colorScheme = "dark") {
   return /* @__PURE__ */ jsx(SpectrumProvider, {
-    colorScheme: "dark",
+    colorScheme,
     background: "base",
     UNSAFE_style: providerShellStyle,
     children,
@@ -208,6 +212,7 @@ function renderStyled(componentSlug) {
 function ReactButtonDemo() {
   const [actionCount, setActionCount] = useState(0);
   const demoProps = useButtonDemoControls();
+  const colorScheme = useComparisonResolvedTheme();
   return renderReactSpectrumReference(
     /* @__PURE__ */ jsx("div", {
       "data-comparison-action-count": String(actionCount),
@@ -226,7 +231,22 @@ function ReactButtonDemo() {
         }),
       }),
     }),
+    colorScheme,
   );
+}
+function useComparisonResolvedTheme() {
+  const [colorScheme, setColorScheme] = useState(getComparisonResolvedThemeFromDocument);
+  useEffect(() => {
+    const handleThemeChange = (event) => {
+      if (event instanceof CustomEvent && event.detail?.resolvedTheme) {
+        setColorScheme(event.detail.resolvedTheme);
+      }
+    };
+    window.addEventListener(comparisonThemeChangeEvent, handleThemeChange);
+    setColorScheme(getComparisonResolvedThemeFromDocument());
+    return () => window.removeEventListener(comparisonThemeChangeEvent, handleThemeChange);
+  }, []);
+  return colorScheme;
 }
 function useButtonDemoControls() {
   const [demoProps, setDemoProps] = useState(buttonDemoPropsFromWindow);

@@ -42,7 +42,7 @@ const layerTitles: Record<ComparisonLayerId, string> = {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{entry.title} | Solid Spectrum</title>
   </head>
-  <body class="comparison-app s2-docs" data-theme="system">
+  <body class="comparison-app s2-docs" data-theme="system" data-resolved-theme="light">
     <div class="s2-topbar">
       <a href="/" class="s2-brand" aria-label="Solid Spectrum home">
         <span class="s2-brand-mark" aria-hidden="true">S</span>
@@ -137,6 +137,23 @@ const layerTitles: Record<ComparisonLayerId, string> = {
           <div class="s2-example-controls">
             <h2 id="example-title">Example</h2>
             <p>{controlGroup.note}</p>
+            <fieldset class="s2-radio-group s2-theme-control">
+              <legend>Color scheme</legend>
+              <div>
+                <label>
+                  <input type="radio" name="comparisonTheme" value="system" checked />
+                  <span>system</span>
+                </label>
+                <label>
+                  <input type="radio" name="comparisonTheme" value="light" />
+                  <span>light</span>
+                </label>
+                <label>
+                  <input type="radio" name="comparisonTheme" value="dark" />
+                  <span>dark</span>
+                </label>
+              </div>
+            </fieldset>
             {controlGroup.controls.length > 0 ? (
               <form
                 class="s2-prop-controls"
@@ -289,27 +306,10 @@ const layerTitles: Record<ComparisonLayerId, string> = {
       </aside>
     </div>
 
+    <script>
+      import "@comparison/scripts/docs-theme";
+    </script>
     <script is:inline>
-      const root = document.body;
-      const themeToggle = document.querySelector("[data-theme-toggle]");
-      const themeIcon = document.querySelector("[data-theme-toggle-icon]");
-      const savedTheme = window.localStorage.getItem("solid-spectrum-theme") || "system";
-      const themeOrder = ["system", "light", "dark"];
-
-      function applyTheme(theme) {
-        root.dataset.theme = theme;
-        if (themeIcon) {
-          themeIcon.textContent = theme;
-        }
-        window.localStorage.setItem("solid-spectrum-theme", theme);
-      }
-
-      themeToggle?.addEventListener("click", () => {
-        const current = root.dataset.theme || "system";
-        applyTheme(themeOrder[(themeOrder.indexOf(current) + 1) % themeOrder.length]);
-      });
-      applyTheme(savedTheme);
-
       const panel = document.querySelector('[data-comparison-controls="button"]');
       const form = panel instanceof HTMLFormElement ? panel : null;
       const resetButton = form?.querySelector("[data-reset-controls]");

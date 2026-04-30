@@ -79,6 +79,11 @@ import {
   type ButtonDemoStaticColor,
   type ButtonDemoVariant,
 } from "@comparison/data/button-demo";
+import {
+  comparisonThemeChangeEvent,
+  getComparisonResolvedThemeFromDocument,
+  type ComparisonResolvedTheme,
+} from "@comparison/data/theme";
 
 interface ComparisonIslandProps {
   componentSlug: ComparisonSlug;
@@ -634,6 +639,9 @@ function SolidToastDemo() {
 function SolidariaSpectrumButtonDemo() {
   const [actionCount, setActionCount] = createSignal(0);
   const [demoProps, setDemoProps] = createSignal(buttonDemoPropsFromWindow());
+  const [colorScheme, setColorScheme] = createSignal<ComparisonResolvedTheme>(
+    getComparisonResolvedThemeFromDocument(),
+  );
   const [showPendingSpinner, setShowPendingSpinner] = createSignal(false);
   let root: HTMLDivElement | undefined;
 
@@ -643,8 +651,18 @@ function SolidariaSpectrumButtonDemo() {
         setDemoProps(event.detail.props as ButtonDemoProps);
       }
     };
+    const handleThemeChange = (event: Event) => {
+      if (event instanceof CustomEvent && event.detail?.resolvedTheme) {
+        setColorScheme(event.detail.resolvedTheme as ComparisonResolvedTheme);
+      }
+    };
     window.addEventListener(comparisonControlsEvent, handleControlsChange);
-    onCleanup(() => window.removeEventListener(comparisonControlsEvent, handleControlsChange));
+    window.addEventListener(comparisonThemeChangeEvent, handleThemeChange);
+    setColorScheme(getComparisonResolvedThemeFromDocument());
+    onCleanup(() => {
+      window.removeEventListener(comparisonControlsEvent, handleControlsChange);
+      window.removeEventListener(comparisonThemeChangeEvent, handleThemeChange);
+    });
   });
 
   createEffect(() => {
@@ -678,6 +696,9 @@ function SolidariaSpectrumButtonDemo() {
     "div",
     {
       class: comparisonSpectrumSkin.rootClass,
+      get "data-comparison-color-scheme"() {
+        return colorScheme();
+      },
       ref: (element: HTMLDivElement) => {
         root = element;
       },

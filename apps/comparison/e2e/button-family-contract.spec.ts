@@ -3,8 +3,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 type Framework = "React Spectrum stack" | "Solidaria stack";
 
 async function styledSection(page: Page) {
-  const section = page.locator("#playground").filter({
-    has: page.getByRole("heading", { name: "Playground" }),
+  const section = page.locator("#example").filter({
+    has: page.getByRole("heading", { name: "Example" }),
   });
   await expect(section).toHaveCount(1);
   await section.scrollIntoViewIfNeeded();
@@ -12,12 +12,19 @@ async function styledSection(page: Page) {
 }
 
 async function frameworkCard(section: Locator, framework: Framework) {
-  const card = section.locator(".framework-card").filter({ hasText: framework });
+  const card = section.locator(
+    framework === "React Spectrum stack"
+      ? '.s2-framework-panel[data-framework="react"]'
+      : '.s2-framework-panel[data-framework="solid"]',
+  );
   await expect(card).toHaveCount(1);
   return card;
 }
 
 async function buttonFamilyCards(page: Page, slug: string, query = "") {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("solid-spectrum-theme", "dark");
+  });
   await page.goto(`/components/${slug}/${query}`);
   await page.waitForLoadState("networkidle");
   await expect(page.locator("astro-island")).toHaveCount(0);

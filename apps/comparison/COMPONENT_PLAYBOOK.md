@@ -22,6 +22,9 @@ comparison entry complete.
 
 - Give both React and Solid fixtures the same labels, values, selected keys,
   disabled flags, open state, and callbacks.
+- Theme is behavior, not page chrome. The docs shell, prop viewer, React S2
+  fixture, and Solid fixture must all consume the same `system | light | dark`
+  signal from `src/scripts/docs-theme.ts`.
 - Add a docs-style props panel when the component has meaningful visual props.
   Controls should dispatch one typed payload that both React and Solid fixtures
   consume, and the route query string should reproduce the same state.
@@ -80,6 +83,9 @@ Typical visual states:
 - open overlay
 - keyboard navigation intermediate state
 - loading/pending, if the S2 component supports it
+- light and dark color schemes for every styled component. Keep existing visual
+  states deterministic by pinning their scheme, and add explicit light/dark
+  coverage instead of inheriting the runner machine's system preference.
 
 Every React-vs-Solid screenshot comparison is strict: `maxMismatchRatio: 0`,
 `maxDimensionDelta: 0`, and `pixelThreshold: 0`.
@@ -110,10 +116,12 @@ Run the component-specific loop first, then the broader app checks:
 
 ```bash
 vp run comparison:typecheck
-vp run comparison:build
-COMPARISON_BASE_URL=http://127.0.0.1:4325 vp run comparison:test:<component>
+vp run comparison:test:<component>
 vp run comparison:report:gaps
 ```
+
+The comparison Playwright scripts build before previewing. Do not run visual
+tests against a stale `dist` directory.
 
 When snapshots intentionally change:
 
@@ -139,6 +147,9 @@ Button is the pilot for this process:
   pending spinner.
 - `e2e/button-family-contract.spec.ts` asserts the Button press callback and the
   S2 pending behavior: pending remains focusable while suppressing press actions.
+- The Button example owns the first theme contract: the page-level theme control
+  drives the React `SpectrumProvider` color scheme and the Solid S2 comparison
+  skin together.
 - Button is not considered complete if a documented visual prop or visible
   intermediate state exists without a strict React-vs-Solid pair diff row in
   `src/data/visual-state-matrix.ts`.

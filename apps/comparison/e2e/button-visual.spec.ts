@@ -117,7 +117,11 @@ async function frameworkCard(
   section: Locator,
   framework: "React Spectrum stack" | "Solidaria stack",
 ) {
-  const card = section.locator(".framework-card").filter({ hasText: framework });
+  const card = section.locator(
+    framework === "React Spectrum stack"
+      ? '.s2-framework-panel[data-framework="react"]'
+      : '.s2-framework-panel[data-framework="solid"]',
+  );
   await expect(card).toHaveCount(1);
   return card;
 }
@@ -132,6 +136,9 @@ function buttonQuery(params: Record<string, string | boolean> = {}) {
 }
 
 async function buttonFixtures(page: Page, params: Record<string, string | boolean> = {}) {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("solid-spectrum-theme", "dark");
+  });
   await page.goto(`/components/button/${buttonQuery(params)}`);
   await page.waitForLoadState("networkidle");
   await expect(page.locator("astro-island")).toHaveCount(0);
@@ -370,9 +377,9 @@ test.describe("comparison Button visual parity", () => {
 
     await page.getByLabel("children").fill("Delete");
     await page.getByLabel("variant").selectOption("negative");
-    await page.getByLabel("fillStyle").selectOption("outline");
-    await page.getByLabel("size").selectOption("L");
-    await page.getByLabel("staticColor").selectOption("white");
+    await page.locator('input[name="fillStyle"][value="outline"]').check();
+    await page.locator('input[name="size"][value="L"]').check();
+    await page.locator('input[name="staticColor"][value="white"]').check();
 
     const reactRoot = fixtures.reactCanvas.locator("[data-comparison-button-props]").first();
     const solidRoot = fixtures.solidCanvas.locator("[data-comparison-button-props]").first();
@@ -401,6 +408,56 @@ test.describe("comparison Button visual parity", () => {
       "data-size",
       "L",
     );
+  });
+
+  test("Button color scheme control drives React and Solid examples", async ({ page }) => {
+    const fixtures = await buttonFixtures(page);
+
+    await page.locator('input[name="comparisonTheme"][value="light"]').check();
+    await expect(fixtures.solidCanvas.locator("[data-comparison-color-scheme]")).toHaveAttribute(
+      "data-comparison-color-scheme",
+      "light",
+    );
+    await expect
+      .poll(async () => ({
+        react: await buttonComputedContract(fixtures.reactButton),
+        solid: await buttonComputedContract(fixtures.solidButton),
+      }))
+      .toMatchObject({
+        react: {
+          backgroundColor: "rgb(41, 41, 41)",
+          color: "rgb(255, 255, 255)",
+          borderColor: "rgb(41, 41, 41)",
+        },
+        solid: {
+          backgroundColor: "rgb(41, 41, 41)",
+          color: "rgb(255, 255, 255)",
+          borderColor: "rgb(41, 41, 41)",
+        },
+      });
+
+    await page.locator('input[name="comparisonTheme"][value="dark"]').check();
+    await expect(fixtures.solidCanvas.locator("[data-comparison-color-scheme]")).toHaveAttribute(
+      "data-comparison-color-scheme",
+      "dark",
+    );
+    await expect
+      .poll(async () => ({
+        react: await buttonComputedContract(fixtures.reactButton),
+        solid: await buttonComputedContract(fixtures.solidButton),
+      }))
+      .toMatchObject({
+        react: {
+          backgroundColor: "rgb(219, 219, 219)",
+          color: "rgb(17, 17, 17)",
+          borderColor: "rgb(219, 219, 219)",
+        },
+        solid: {
+          backgroundColor: "rgb(219, 219, 219)",
+          color: "rgb(17, 17, 17)",
+          borderColor: "rgb(219, 219, 219)",
+        },
+      });
   });
 
   test("Button hover cursor and genai gradient match React Spectrum", async ({ page }) => {
