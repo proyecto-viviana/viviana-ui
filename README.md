@@ -1,6 +1,6 @@
 # Proyecto Viviana
 
-SolidJS port of Adobe's React Aria and Spectrum 2 stack. Published packages follow the same layered architecture: state, behavior, headless components, and styled design systems.
+SolidJS port of Adobe's React Aria and Spectrum 2 stack. The repo is layered as state, behavior, headless components, and styled components.
 
 ## Packages
 
@@ -9,11 +9,9 @@ SolidJS port of Adobe's React Aria and Spectrum 2 stack. Published packages foll
 | [`solid-stately`](./packages/solid-stately) | `@proyecto-viviana/solid-stately` | State hooks — port of `@react-stately/*` |
 | [`solidaria`](./packages/solidaria) | `@proyecto-viviana/solidaria` | ARIA behavior hooks — port of `@react-aria/*` |
 | [`solidaria-components`](./packages/solidaria-components) | `@proyecto-viviana/solidaria-components` | Headless/stylable components — port of `react-aria-components` |
-| `solid-spectrum` | `@proyecto-viviana/solid-spectrum` | Spectrum 2-compatible styled Solid components |
-| `viviana-ui` | `@proyecto-viviana/viviana-ui` | Proyecto Viviana's own product design system |
+| [`solid-spectrum`](./packages/solid-spectrum) | `@proyecto-viviana/solid-spectrum` | Spectrum 2-compatible styled Solid components |
 
 ```
-viviana-ui            Proyecto Viviana product design system
 solid-spectrum        Spectrum 2-compatible styled components
   ↑
 solidaria-components  headless/stylable components
@@ -23,7 +21,7 @@ solidaria             ARIA behavior
 solid-stately         state
 ```
 
-Consumers can opt into any layer; higher layers compose lower ones without pulling extras. `solid-spectrum` is the package compared pixel-for-pixel against Adobe Spectrum 2. `viviana-ui` is the Proyecto Viviana design system and may expose productized compositions or native components outside S2 parity.
+Consumers can opt into any layer; higher layers compose lower ones without pulling extras. `solid-spectrum` is the package compared pixel-for-pixel against Adobe Spectrum 2 in the comparison app. `viviana-ui` is planned as Proyecto Viviana's own design system, separate from S2 parity.
 
 ## Quick start
 
