@@ -9,7 +9,11 @@ type ElementGeometry = {
   visibleInViewport: boolean;
 };
 
-const maxImageMismatchRatio = 0.08;
+const strictPairDiff = {
+  maxMismatchRatio: 0,
+  maxDimensionDelta: 0,
+  pixelThreshold: 0,
+};
 
 async function frameworkCard(
   section: Locator,
@@ -70,11 +74,12 @@ async function compareScreenshots(
   reactPng: Buffer,
   solidPng: Buffer,
   label: string,
-  maxMismatchRatio: number = maxImageMismatchRatio,
-  maxDimensionDelta: number = 6,
+  maxMismatchRatio: number = strictPairDiff.maxMismatchRatio,
+  maxDimensionDelta: number = strictPairDiff.maxDimensionDelta,
+  pixelThreshold: number = strictPairDiff.pixelThreshold,
 ) {
   const result = await page.evaluate(
-    async ({ reactBase64, solidBase64 }) => {
+    async ({ reactBase64, solidBase64, pixelThreshold }) => {
       async function loadImage(base64: string) {
         const response = await fetch(`data:image/png;base64,${base64}`);
         return createImageBitmap(await response.blob());
@@ -108,7 +113,7 @@ async function compareScreenshots(
         const b = Math.abs(reactPixels[i + 2] - solidPixels[i + 2]);
         const a = Math.abs(reactPixels[i + 3] - solidPixels[i + 3]);
         const delta = Math.max(r, g, b, a);
-        if (delta > 8) {
+        if (delta > pixelThreshold) {
           mismatched += 1;
         }
       }
@@ -124,6 +129,7 @@ async function compareScreenshots(
     {
       reactBase64: reactPng.toString('base64'),
       solidBase64: solidPng.toString('base64'),
+      pixelThreshold,
     },
   );
 
@@ -206,7 +212,7 @@ test.describe('comparison DatePicker visual parity', () => {
       reactField.screenshot({ animations: 'disabled' }),
       solidField.screenshot({ animations: 'disabled' }),
     ]);
-    await compareScreenshots(page, reactFieldPng, solidFieldPng, 'DatePicker field', 0.7, 24);
+    await compareScreenshots(page, reactFieldPng, solidFieldPng, 'DatePicker field');
 
     await openCalendar(reactCard);
     await expect(reactRoot).toHaveAttribute('data-comparison-open', 'true');

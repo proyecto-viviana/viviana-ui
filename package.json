@@ -22,6 +22,7 @@
     "comparison:test:buttons": "vp run --filter @proyecto-viviana/comparison test:buttons",
     "comparison:test:contract": "vp run --filter @proyecto-viviana/comparison test:contract",
     "comparison:test:default": "vp run --filter @proyecto-viviana/comparison test:default",
+    "comparison:test:pair": "vp run --filter @proyecto-viviana/comparison test:pair",
     "comparison:test:datepicker": "vp run --filter @proyecto-viviana/comparison test:datepicker",
     "comparison:test:dialog": "vp run --filter @proyecto-viviana/comparison test:dialog",
     "comparison:test:select": "vp run --filter @proyecto-viviana/comparison test:select",

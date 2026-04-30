@@ -376,8 +376,7 @@ a {
   border-color: rgba(131, 241, 167, 0.38);
 }
 
-.state-pill--planned,
-.state-pill--tolerant {
+.state-pill--planned {
   color: var(--cmp-warning);
   border-color: rgba(255, 221, 135, 0.38);
 }

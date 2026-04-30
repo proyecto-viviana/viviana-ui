@@ -10,7 +10,11 @@ type DialogGeometry = {
 };
 
 const dialogText = 'Dialog focus and dismissal are compared from this island.';
-const maxImageMismatchRatio = 0.02;
+const strictPairDiff = {
+  maxMismatchRatio: 0,
+  maxDimensionDelta: 0,
+  pixelThreshold: 0,
+};
 
 async function frameworkCard(section: Locator, framework: 'React Spectrum stack' | 'Solidaria stack') {
   const card = section.locator('.framework-card').filter({ hasText: framework });
@@ -35,15 +39,16 @@ async function compareElementScreenshots(
   reactElement: Locator,
   solidElement: Locator,
   label: string,
-  maxMismatchRatio: number = maxImageMismatchRatio,
-  maxDimensionDelta: number = 8,
+  maxMismatchRatio: number = strictPairDiff.maxMismatchRatio,
+  maxDimensionDelta: number = strictPairDiff.maxDimensionDelta,
+  pixelThreshold: number = strictPairDiff.pixelThreshold,
 ) {
   const [reactPng, solidPng] = await Promise.all([
     reactElement.screenshot({ animations: 'disabled' }),
     solidElement.screenshot({ animations: 'disabled' }),
   ]);
 
-  await compareScreenshots(page, reactPng, solidPng, label, maxMismatchRatio, maxDimensionDelta);
+  await compareScreenshots(page, reactPng, solidPng, label, maxMismatchRatio, maxDimensionDelta, pixelThreshold);
 }
 
 async function compareScreenshots(
@@ -51,11 +56,12 @@ async function compareScreenshots(
   reactPng: Buffer,
   solidPng: Buffer,
   label: string,
-  maxMismatchRatio: number = maxImageMismatchRatio,
-  maxDimensionDelta: number = 8,
+  maxMismatchRatio: number = strictPairDiff.maxMismatchRatio,
+  maxDimensionDelta: number = strictPairDiff.maxDimensionDelta,
+  pixelThreshold: number = strictPairDiff.pixelThreshold,
 ) {
   const result = await page.evaluate(
-    async ({ reactBase64, solidBase64 }) => {
+    async ({ reactBase64, solidBase64, pixelThreshold }) => {
       async function loadImage(base64: string) {
         const response = await fetch(`data:image/png;base64,${base64}`);
         return createImageBitmap(await response.blob());
@@ -93,7 +99,7 @@ async function compareScreenshots(
         const delta = Math.max(r, g, b, a);
         maxChannelDelta = Math.max(maxChannelDelta, delta);
 
-        if (delta > 8) {
+        if (delta > pixelThreshold) {
           mismatched += 1;
         }
       }
@@ -110,6 +116,7 @@ async function compareScreenshots(
     {
       reactBase64: reactPng.toString('base64'),
       solidBase64: solidPng.toString('base64'),
+      pixelThreshold,
     },
   );
 
@@ -219,7 +226,7 @@ test.describe('comparison Dialog visual parity', () => {
     await expect(solidRoot).toHaveAttribute('data-comparison-open', 'false');
     await expect(reactTrigger).toHaveScreenshot('dialog-trigger-react.png', { animations: 'disabled' });
     await expect(solidTrigger).toHaveScreenshot('dialog-trigger-solid.png', { animations: 'disabled' });
-    await compareElementScreenshots(page, reactTrigger, solidTrigger, 'Dialog trigger', 0.45, 8);
+    await compareElementScreenshots(page, reactTrigger, solidTrigger, 'Dialog trigger');
 
     await reactTrigger.hover();
     const solidTriggerBorderBeforeHover = await solidTrigger.evaluate((node) => window.getComputedStyle(node as HTMLElement).borderColor);
@@ -270,7 +277,7 @@ test.describe('comparison Dialog visual parity', () => {
     expect(solidGeometry.position).not.toBe('static');
     await expect(solidDialog).toHaveScreenshot('dialog-surface-solid.png', { animations: 'disabled' });
     const solidDialogPng = await solidDialog.screenshot({ animations: 'disabled' });
-    await compareScreenshots(page, reactDialogPng, solidDialogPng, 'Dialog surface', 0.9, 80);
+    await compareScreenshots(page, reactDialogPng, solidDialogPng, 'Dialog surface');
     await expectTabFocusContained(page, solidDialog);
 
     expect(Math.abs(solidGeometry.x - reactGeometry.x)).toBeLessThanOrEqual(40);

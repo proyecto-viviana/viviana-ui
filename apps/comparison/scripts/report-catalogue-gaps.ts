@@ -49,7 +49,7 @@ console.log(`Official styled entries live on both sides: ${officialLive.length}`
 console.log(`Official entries still missing/gap: ${missingOfficialComparisonEntries.length}`);
 console.log(`Official visual states tracked: ${officialVisualStateSummary.states}`);
 console.log(`Official visual states with committed React/Solid screenshots: ${officialVisualStateSummary.snapshottedStates}`);
-console.log(`Official visual states with strict pair diff: ${officialVisualStateSummary.strictPairDiffStates}`);
+console.log(`Official visual states with strict pair-diff tests: ${officialVisualStateSummary.strictPairDiffStates}`);
 console.log(`Official visual states blocked by missing implementations: ${officialVisualStateSummary.blockedStates}`);
 console.log(`Legacy visual states with committed React/Solid screenshots: ${legacySnapshottedStates.length}`);
 console.log(`Legacy comparison routes retained: ${legacyEntries.length}`);

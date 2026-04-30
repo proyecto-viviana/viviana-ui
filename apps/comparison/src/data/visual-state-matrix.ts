@@ -13,7 +13,7 @@ export type VisualStateSideStatus =
   | "planned"
   | "missing"
   | "na";
-export type PairDiffStatus = "strict" | "tolerant" | "planned" | "blocked" | "na";
+export type PairDiffStatus = "strict" | "planned" | "blocked" | "na";
 
 export interface VisualStateTarget {
   id: string;
@@ -64,14 +64,14 @@ function snapshottedDefaultState(input: {
     kind: "static",
     react: "snapshotted",
     solid: "snapshotted",
-    pairDiff: "planned",
-    spec: "e2e/default-state-visual.spec.ts",
+    pairDiff: "strict",
+    spec: "e2e/default-state-visual.spec.ts + e2e/default-state-pair-diff.spec.ts",
     snapshots: [
       `e2e/default-state-visual.spec.ts-snapshots/${input.slug}-default-react-chromium-linux.png`,
       `e2e/default-state-visual.spec.ts-snapshots/${input.slug}-default-solid-chromium-linux.png`,
     ],
     note: input.note ??
-      "Committed default-state screenshots exist for both sides; strict pair diff remains planned.",
+      "Committed default-state screenshots exist for both sides, and React-vs-Solid pair diff is strict zero-tolerance.",
   };
 }
 
@@ -79,13 +79,13 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
   provider: [
     snapshottedDefaultState({
       slug: "provider",
-      note: "Provider nesting screenshots are committed for both sides; pair diff remains planned because the surfaces use different provider implementations.",
+      note: "Provider nesting screenshots are committed for both sides, and React-vs-Solid pair diff is strict zero-tolerance.",
     }),
   ],
   button: [
     snapshottedDefaultState({
       slug: "button",
-      note: "Button row screenshots are committed for both sides; strict variant-by-variant pair diff remains planned.",
+      note: "Button row screenshots are committed for both sides; default React-vs-Solid pair diff is strict zero-tolerance and fails until the Solid S2 skin is pixel-identical.",
     }),
   ],
   actionbutton: [
@@ -190,13 +190,13 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       kind: "static",
       react: "snapshotted",
       solid: "snapshotted",
-      pairDiff: "tolerant",
+      pairDiff: "strict",
       spec: "e2e/dialog-visual.spec.ts",
       snapshots: [
         "e2e/dialog-visual.spec.ts-snapshots/dialog-trigger-react-chromium-linux.png",
         "e2e/dialog-visual.spec.ts-snapshots/dialog-trigger-solid-chromium-linux.png",
       ],
-      note: "Committed screenshots exist for both triggers; pair diff still uses a tolerance while styling parity is tightened.",
+      note: "Committed screenshots exist for both triggers; React-vs-Solid pair diff is strict zero-tolerance.",
     },
     {
       id: "styled.dialog.open",
@@ -204,13 +204,13 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       kind: "overlay",
       react: "snapshotted",
       solid: "snapshotted",
-      pairDiff: "tolerant",
+      pairDiff: "strict",
       spec: "e2e/dialog-visual.spec.ts",
       snapshots: [
         "e2e/dialog-visual.spec.ts-snapshots/dialog-surface-react-chromium-linux.png",
         "e2e/dialog-visual.spec.ts-snapshots/dialog-surface-solid-chromium-linux.png",
       ],
-      note: "Covers visible open state, viewport placement, occlusion, and committed screenshots.",
+      note: "Covers visible open state, viewport placement, occlusion, committed screenshots, and strict zero-tolerance pair diff.",
     },
     {
       id: "styled.dialog.dismiss.outside",
@@ -240,13 +240,13 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       kind: "static",
       react: "snapshotted",
       solid: "snapshotted",
-      pairDiff: "tolerant",
+      pairDiff: "strict",
       spec: "e2e/datepicker-visual.spec.ts",
       snapshots: [
         "e2e/datepicker-visual.spec.ts-snapshots/datepicker-field-react-chromium-linux.png",
         "e2e/datepicker-visual.spec.ts-snapshots/datepicker-field-solid-chromium-linux.png",
       ],
-      note: "Committed screenshots exist for the closed field; pair diff still uses a temporary tolerance.",
+      note: "Committed screenshots exist for the closed field; React-vs-Solid pair diff is strict zero-tolerance.",
     },
     {
       id: "styled.calendar.open",
@@ -254,13 +254,13 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       kind: "overlay",
       react: "snapshotted",
       solid: "snapshotted",
-      pairDiff: "tolerant",
+      pairDiff: "strict",
       spec: "e2e/datepicker-visual.spec.ts",
       snapshots: [
         "e2e/datepicker-visual.spec.ts-snapshots/datepicker-popover-react-chromium-linux.png",
         "e2e/datepicker-visual.spec.ts-snapshots/datepicker-popover-solid-chromium-linux.png",
       ],
-      note: "Covers open calendar geometry and committed screenshots for both sides.",
+      note: "Covers open calendar geometry, committed screenshots for both sides, and strict zero-tolerance pair diff.",
     },
     {
       id: "styled.calendar.select-date",

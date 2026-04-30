@@ -77,8 +77,9 @@ The report separates route coverage from visual state coverage:
 - missing official React Spectrum entries stay non-failing roadmap gaps
 - committed screenshots are counted only when both React and Solid baselines
   exist
-- pair diff status is tracked separately, so temporary tolerant comparisons stay
-  visible until they can become strict
+- every implemented React/Solid visual state must also have a strict
+  zero-tolerance pair diff; mismatches fail the comparison test instead of being
+  accepted as visual drift
 
 The first live official comparisons include:
 

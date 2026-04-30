@@ -147,13 +147,14 @@ function styledLiveOfficialEntry(input: {
       category: input.category,
       docsUrl: `${reactSpectrumCatalogueSource.docsBase}/${input.title.replace(/\s+/g, "")}`,
     }),
-    componentStatus: "parity",
+    componentStatus: "tracked-gap",
     summary: input.summary,
     parity: "partial",
     priority: "live",
     gapSummary: [
       "Styled React Spectrum and Solid comparison islands are mounted.",
-      "Default screenshots are committed; exhaustive state coverage and strict pair diff remain open.",
+      "Default screenshots and strict zero-tolerance pair-diff tests are committed.",
+      "The entry remains a tracked gap until those pair-diff tests pass pixel-perfectly and exhaustive state coverage is complete.",
     ],
     layers: {
       styled: layerTrack(
@@ -196,13 +197,14 @@ const entryOverrides: Record<string, ComparisonEntry> = {
       category: "Components",
       docsUrl: `${reactSpectrumCatalogueSource.docsBase}/Provider`,
     }),
-    componentStatus: "parity",
+    componentStatus: "tracked-gap",
     summary:
       "Root-scoped theming, inherited props, locale, direction, and overlay containment.",
-    parity: "matched",
+    parity: "partial",
     priority: "live",
     gapSummary: [
-      "Styled provider parity is implemented in both ecosystems.",
+      "Styled provider demos are mounted in both ecosystems.",
+      "Provider is not accepted as matched until its strict pair-diff test passes pixel-perfectly.",
       "Component and headless layers are utility-level rather than end-user primitives.",
     ],
     layers: {
@@ -244,14 +246,15 @@ const entryOverrides: Record<string, ComparisonEntry> = {
       category: "Components",
       docsUrl: `${reactSpectrumCatalogueSource.docsBase}/Button`,
     }),
-    componentStatus: "parity",
+    componentStatus: "tracked-gap",
     summary:
       "Baseline parity probe across styled, component, and headless layers with inherited provider props.",
-    parity: "matched",
+    parity: "partial",
     priority: "live",
     gapSummary: [
       "Styled, component, and headless button demos are all live.",
-      "Next work is exhaustive variant/state screenshot coverage.",
+      "Styled Button is not accepted as matched until the strict S2 pair-diff test is pixel-perfect.",
+      "Next work is exhaustive variant/state screenshot coverage after default styling parity is fixed.",
     ],
     layers: {
       styled: layerTrack(
