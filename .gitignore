@@ -53,3 +53,4 @@ react-spectrum
 # Local
 .DS_Store
 .mcp.json
+.claude/
