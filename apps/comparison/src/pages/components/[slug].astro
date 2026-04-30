@@ -33,6 +33,8 @@ const layerTitles: Record<ComparisonLayerId, string> = {
   headless: "Headless Layer",
   state: "State Layer",
 };
+
+const propsHref = entry.slug === "button" ? "#props" : null;
 ---
 
 <html lang="en">
@@ -56,36 +58,35 @@ const layerTitles: Record<ComparisonLayerId, string> = {
         ) : null}
       </header>
 
-      <div class="docs-layout">
+      <div class="docs-layout docs-layout--detail">
         <aside class="docs-rail">
-          <div class="rail-status">
-            <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
-            <span class={`status-pill status-pill--${entry.componentStatus}`}>
-              {entry.componentStatus}
-            </span>
-            <span class="category-pill">{entry.category}</span>
-          </div>
-
-          <nav class="layer-nav" aria-label="Comparison layers">
-            {layerOrder.map((layer) => (
-              <a href={`#${layer}`}>{layerTitles[layer]}</a>
+          <nav class="component-nav" aria-label="Components">
+            <p>Components</p>
+            {comparisonEntries.map((componentEntry) => (
+              <a
+                href={`/components/${componentEntry.slug}`}
+                aria-current={componentEntry.slug === entry.slug ? "page" : undefined}
+              >
+                {componentEntry.title}
+              </a>
             ))}
           </nav>
-
-          <ul class="entry-notes">
-            {entry.gapSummary.map((note) => (
-              <li>{note}</li>
-            ))}
-          </ul>
         </aside>
 
         <div class="docs-content">
-          <section class="section-block detail-summary">
+          <section class="section-block detail-summary" id="overview">
+            <div class="rail-status">
+              <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
+              <span class={`status-pill status-pill--${entry.componentStatus}`}>
+                {entry.componentStatus}
+              </span>
+              <span class="category-pill">{entry.category}</span>
+            </div>
             <p class="hero-copy">{entry.summary}</p>
           </section>
 
           {entry.slug === "button" ? (
-            <section class="section-block component-controls" data-comparison-controls="button">
+            <section class="section-block component-controls" id="props" data-comparison-controls="button">
               <div class="section-heading">
                 <h2>Props</h2>
               </div>
@@ -146,7 +147,7 @@ const layerTitles: Record<ComparisonLayerId, string> = {
             </section>
           ) : null}
 
-          <section class="section-block state-matrix">
+          <section class="section-block state-matrix" id="visual-state-coverage">
             <div class="section-heading">
               <h2>Visual State Coverage</h2>
             </div>
@@ -236,6 +237,29 @@ const layerTitles: Record<ComparisonLayerId, string> = {
         );
       })}
         </div>
+
+        <aside class="docs-toc" aria-label="On this page">
+          <p>On this page</p>
+          <a href="#overview">Overview</a>
+          {propsHref ? <a href={propsHref}>Props</a> : null}
+          <a href="#visual-state-coverage">Visual State Coverage</a>
+          {layerOrder.map((layer) => (
+            <a href={`#${layer}`}>{layerTitles[layer]}</a>
+          ))}
+          <div class="toc-divider"></div>
+          <div class="rail-status">
+            <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
+            <span class={`status-pill status-pill--${entry.componentStatus}`}>
+              {entry.componentStatus}
+            </span>
+            <span class="category-pill">{entry.category}</span>
+          </div>
+          <ul class="entry-notes">
+            {entry.gapSummary.map((note) => (
+              <li>{note}</li>
+            ))}
+          </ul>
+        </aside>
       </div>
     </main>
     <script is:inline>

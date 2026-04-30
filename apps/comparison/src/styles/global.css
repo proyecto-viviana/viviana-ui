@@ -1,18 +1,18 @@
 @import "@proyecto-viviana/silapse/components.css";
 
 :root {
-  --cmp-surface: #f7f7f7;
+  --cmp-surface: #f8f8f8;
   --cmp-surface-elevated: #ffffff;
-  --cmp-surface-panel: #f0f0f0;
-  --cmp-surface-soft: #e8ecf8;
-  --cmp-border: #d5d5d5;
-  --cmp-border-muted: #e6e6e6;
-  --cmp-text: #222222;
-  --cmp-text-secondary: #575757;
-  --cmp-text-muted: #6f6f6f;
-  --cmp-blue: #345bf8;
-  --cmp-blue-strong: #294eea;
-  --cmp-blue-soft: rgba(52, 91, 248, 0.1);
+  --cmp-surface-panel: #f1f1f1;
+  --cmp-surface-soft: #f4f4f4;
+  --cmp-border: #d8d8d8;
+  --cmp-border-muted: #e9e9e9;
+  --cmp-text: #1d1d1d;
+  --cmp-text-secondary: #555555;
+  --cmp-text-muted: #767676;
+  --cmp-blue: #0265dc;
+  --cmp-blue-strong: #0054b8;
+  --cmp-blue-soft: rgba(2, 101, 220, 0.09);
   --cmp-pink: #345bf8;
   --cmp-success: #178d46;
   --cmp-warning: #8a6500;
@@ -58,9 +58,9 @@ a {
 }
 
 .docs-shell {
-  width: min(1440px, 100vw);
+  width: min(1512px, 100vw);
   margin: 0 auto;
-  padding: 0 32px 72px;
+  padding: 0 32px 88px;
 }
 
 .docs-topbar {
@@ -72,8 +72,8 @@ a {
   justify-content: space-between;
   gap: 24px;
   min-height: 72px;
-  border-bottom: 1px solid var(--cmp-border);
-  background: rgba(247, 247, 247, 0.96);
+  border-bottom: 1px solid var(--cmp-border-muted);
+  background: rgba(248, 248, 248, 0.96);
   backdrop-filter: blur(12px);
 }
 
@@ -81,7 +81,7 @@ a {
   margin: 0;
   color: var(--cmp-text);
   font-family: var(--cmp-title);
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: 0;
@@ -89,10 +89,15 @@ a {
 
 .docs-layout {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 36px;
+  grid-template-columns: 272px minmax(0, 1fr);
+  gap: 44px;
   align-items: start;
   padding-top: 28px;
+}
+
+.docs-layout--detail {
+  grid-template-columns: 216px minmax(0, 1fr) 224px;
+  gap: 40px;
 }
 
 .docs-rail {
@@ -107,8 +112,58 @@ a {
 
 .docs-content {
   display: grid;
-  gap: 20px;
+  gap: 28px;
   min-width: 0;
+}
+
+.docs-toc {
+  position: sticky;
+  top: 96px;
+  display: grid;
+  gap: 6px;
+  max-height: calc(100vh - 112px);
+  overflow: auto;
+  color: var(--cmp-text-secondary);
+  font-size: 0.88rem;
+}
+
+.docs-toc p,
+.component-nav p {
+  margin: 0 0 8px;
+  color: var(--cmp-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.docs-toc a,
+.component-nav a,
+.layer-nav a {
+  min-height: 28px;
+  padding: 4px 0;
+  color: var(--cmp-text-secondary);
+}
+
+.docs-toc a:hover,
+.component-nav a:hover,
+.layer-nav a:hover,
+.component-nav a[aria-current="page"] {
+  color: var(--cmp-blue);
+}
+
+.component-nav {
+  display: grid;
+  gap: 1px;
+  font-size: 0.9rem;
+}
+
+.component-nav a[aria-current="page"] {
+  font-weight: 700;
+}
+
+.toc-divider {
+  height: 1px;
+  margin: 12px 0;
+  background: var(--cmp-border-muted);
 }
 
 .rail-status {
@@ -169,9 +224,11 @@ a {
 
 .section-block {
   margin-top: 0;
-  padding: 24px;
-  border-radius: 6px;
-  border-top: 1px solid var(--cmp-border);
+  padding: 0 0 28px;
+  border-width: 0 0 1px;
+  border-radius: 0;
+  background: transparent;
+  border-color: var(--cmp-border-muted);
 }
 
 .hero-card h1,
@@ -202,15 +259,16 @@ a {
 .section-heading {
   display: grid;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .section-heading h2 {
   padding-left: 0;
   border-left: 0;
   color: var(--cmp-text);
-  font-size: 1.15rem;
+  font-size: 1.45rem;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .hero-copy,
@@ -224,10 +282,11 @@ a {
 }
 
 .hero-copy {
-  max-width: 84ch;
+  max-width: 72ch;
   margin: 0;
-  font-size: 0.96rem;
-  line-height: 1.6;
+  color: var(--cmp-text-secondary);
+  font-size: 1rem;
+  line-height: 1.65;
 }
 
 .eyebrow,
@@ -261,7 +320,7 @@ a {
   display: grid;
   gap: 6px;
   color: var(--cmp-text-secondary);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
 }
 
 .catalogue-controls input,
@@ -271,9 +330,9 @@ a {
 .reset-control {
   width: 100%;
   min-height: 34px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border: 1px solid var(--cmp-border);
-  border-radius: 4px;
+  border-radius: 5px;
   background: #ffffff;
   color: var(--cmp-text);
   font: inherit;
@@ -290,7 +349,11 @@ a {
 }
 
 .control-grid {
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  padding: 16px;
+  border: 1px solid var(--cmp-border-muted);
+  border-radius: 6px;
+  background: var(--cmp-surface-elevated);
 }
 
 .checkbox-control {
@@ -333,15 +396,6 @@ a {
   gap: 2px;
 }
 
-.layer-nav a {
-  padding: 7px 0;
-  color: var(--cmp-text-secondary);
-}
-
-.layer-nav a:hover {
-  color: var(--cmp-blue);
-}
-
 .stat-grid,
 .entry-grid,
 .comparison-grid {
@@ -369,7 +423,9 @@ a {
 }
 
 .entry-grid {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--cmp-border-muted);
 }
 
 .result-count {
@@ -384,22 +440,23 @@ a {
 }
 
 .entry-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 18px;
-  border-top: 1px solid var(--cmp-border);
-  border-radius: 6px;
+  display: grid;
+  grid-template-columns: minmax(160px, 0.7fr) minmax(0, 1.5fr) minmax(160px, 0.9fr);
+  gap: 20px;
+  align-items: start;
+  padding: 18px 0;
+  border-width: 0 0 1px;
+  border-color: var(--cmp-border-muted);
+  border-radius: 0;
+  background: transparent;
   transition:
     border-color 140ms ease,
-    background 140ms ease,
-    transform 140ms ease;
+    background 140ms ease;
 }
 
 .entry-card:hover {
-  background: #fbfbfb;
-  border-color: var(--cmp-blue);
-  transform: translateY(-2px);
+  background: var(--cmp-blue-soft);
+  border-color: rgba(2, 101, 220, 0.24);
 }
 
 .entry-card-top,
@@ -411,6 +468,21 @@ a {
   gap: 12px;
 }
 
+.entry-card-title,
+.entry-card-main {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.entry-card-title {
+  align-content: start;
+}
+
+.entry-card-main p {
+  margin: 0;
+}
+
 .framework-card-head {
   margin-bottom: 16px;
 }
@@ -420,11 +492,11 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 28px;
-  padding: 6px 10px;
-  border: 1px solid var(--cmp-border);
+  min-height: 24px;
+  padding: 4px 8px;
+  border: 1px solid var(--cmp-border-muted);
   border-radius: 999px;
-  background: var(--cmp-surface);
+  background: var(--cmp-surface-elevated);
   color: var(--cmp-text-secondary);
   clip-path: none;
 }
@@ -475,6 +547,7 @@ a {
 
 .entry-link {
   font-weight: 600;
+  align-self: end;
 }
 
 .back-link {
@@ -488,8 +561,8 @@ a {
 
 .state-matrix {
   margin-top: 0;
-  padding-top: 24px;
-  border-top: 1px solid var(--cmp-border);
+  padding-top: 0;
+  border-top: 0;
 }
 
 .state-matrix h2,
@@ -499,8 +572,8 @@ a {
 
 .state-matrix h2 {
   color: var(--cmp-text);
-  font-size: 0.95rem;
-  font-weight: 650;
+  font-size: 1.45rem;
+  font-weight: 700;
 }
 
 .state-matrix-grid {
@@ -514,8 +587,8 @@ a {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px;
   align-items: start;
-  padding-top: 12px;
-  border-top: 1px solid rgba(112, 112, 112, 0.24);
+  padding: 14px 0;
+  border-top: 1px solid var(--cmp-border-muted);
 }
 
 .state-row h3 {
@@ -577,9 +650,10 @@ a {
 }
 
 .framework-card {
-  padding: 18px;
-  border-top: 1px solid var(--cmp-border);
+  padding: 16px;
+  border: 1px solid var(--cmp-border-muted);
   border-radius: 6px;
+  background: var(--cmp-surface-elevated);
   min-height: 280px;
 }
 
@@ -1895,10 +1969,40 @@ body.comparison-app [class*="spectrum-Modal-wrapper"] {
     padding-top: 20px;
   }
 
+  .docs-layout--detail {
+    grid-template-columns: 1fr;
+  }
+
   .docs-rail {
     position: static;
     max-height: none;
     padding-right: 0;
+  }
+
+  .docs-layout--detail .docs-content {
+    order: 1;
+  }
+
+  .docs-layout--detail .docs-toc {
+    order: 2;
+  }
+
+  .docs-layout--detail .docs-rail {
+    order: 3;
+  }
+
+  .component-nav {
+    max-height: 220px;
+    overflow: auto;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--cmp-border-muted);
+  }
+
+  .docs-toc {
+    position: static;
+    max-height: none;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--cmp-border-muted);
   }
 
   .control-grid {
@@ -1907,6 +2011,12 @@ body.comparison-app [class*="spectrum-Modal-wrapper"] {
 
   .comparison-grid {
     grid-template-columns: 1fr;
+  }
+
+  .entry-card {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 16px 0;
   }
 
   .page-shell {

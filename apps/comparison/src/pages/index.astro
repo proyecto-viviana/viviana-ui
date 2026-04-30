@@ -114,6 +114,20 @@ const strictStateCount = officialVisualStateSummary.strictPairDiffStates;
                 data-source={entry.catalogueSource}
                 data-category={entry.category}
               >
+              <div class="entry-card-title">
+                <h3>{entry.title}</h3>
+                <span class="entry-link">
+                  Open comparison
+                </span>
+              </div>
+              <div class="entry-card-main">
+                <p>{entry.summary}</p>
+                <ul class="entry-notes">
+                  {entry.gapSummary.slice(0, 2).map((note) => (
+                    <li>{note}</li>
+                  ))}
+                </ul>
+              </div>
               <div class="entry-card-top">
                 <span class={`status-pill status-pill--${entry.parity}`}>{entry.parity}</span>
                 <span class={`status-pill status-pill--${entry.componentStatus}`}>
@@ -121,16 +135,6 @@ const strictStateCount = officialVisualStateSummary.strictPairDiffStates;
                 </span>
                 <span class="category-pill">{entry.category}</span>
               </div>
-              <h3>{entry.title}</h3>
-              <p>{entry.summary}</p>
-              <ul class="entry-notes">
-                {entry.gapSummary.slice(0, 2).map((note) => (
-                  <li>{note}</li>
-                ))}
-              </ul>
-              <span class="entry-link">
-                Open comparison
-              </span>
             </a>
             ))}
           </div>
