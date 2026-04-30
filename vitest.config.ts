@@ -16,6 +16,13 @@ export default defineConfig({
     pool: "vmThreads",
     setupFiles: ["./vitest.setup.ts"],
     include: ["packages/**/test/**/*.test.{ts,tsx}", "benchmarks/**/*.bench.{ts,tsx}"],
+    deps: {
+      optimizer: {
+        client: {
+          enabled: false,
+        },
+      },
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
