@@ -324,9 +324,8 @@ function ReactHeadlessButtonDemo() {
   ] });
 }
 const providerShellStyle = {
-  padding: 20,
-  borderRadius: 18,
-  background: "linear-gradient(180deg, rgba(7, 14, 22, 0.92), rgba(8, 22, 38, 0.78))"
+  padding: 0,
+  background: "transparent"
 };
 const nestedProviderStyle = {
   padding: 16,

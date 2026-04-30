@@ -1,11 +1,18 @@
 ---
-import { comparisonEntries } from "@comparison/data/comparison-manifest";
+import {
+  comparisonEntries,
+  missingOfficialComparisonEntries,
+  officialComparisonEntries,
+} from "@comparison/data/comparison-manifest";
+import { reactSpectrumCatalogueSource } from "@comparison/data/react-spectrum-catalogue";
 import "@comparison/styles/global.css";
 
 const matchedCount = comparisonEntries.filter((entry) => entry.parity === "matched").length;
 const partialCount = comparisonEntries.filter((entry) => entry.parity === "partial").length;
 const gapCount = comparisonEntries.filter((entry) => entry.parity === "gap").length;
 const liveCount = comparisonEntries.filter((entry) => entry.priority === "live").length;
+const officialCount = officialComparisonEntries.length;
+const missingOfficialCount = missingOfficialComparisonEntries.length;
 ---
 
 <html lang="en">
@@ -30,12 +37,21 @@ const liveCount = comparisonEntries.filter((entry) => entry.priority === "live")
           This app is the parity bench for styled, component, headless, and state
           layers. The first slice is deliberately narrow: prove the scoped-root
           architecture, surface the live gaps, and make missing parity impossible to
-          hand-wave.
+          hand-wave. The roadmap is seeded from the official
+          <a href={reactSpectrumCatalogueSource.url}>React Spectrum v3 catalogue</a>.
         </p>
         <div class="stat-grid">
           <div class="stat-card">
             <span class="stat-label">Live routes</span>
             <strong>{liveCount}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Official v3</span>
+            <strong>{officialCount}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Official gaps</span>
+            <strong>{missingOfficialCount}</strong>
           </div>
           <div class="stat-card">
             <span class="stat-label">Matched</span>
@@ -56,8 +72,9 @@ const liveCount = comparisonEntries.filter((entry) => entry.priority === "live")
         <div class="section-heading">
           <h2>Tracked Components</h2>
           <p>
-            The manifest mixes live parity pages with explicit backlog entries so
-            the app doubles as an implementation plan.
+            The manifest follows React Spectrum's documentation order. Missing
+            entries stay visible as gaps until their exact React Spectrum reference,
+            Solid implementation, state matrix, and screenshot baselines exist.
           </p>
         </div>
         <div class="entry-grid">

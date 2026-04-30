@@ -975,10 +975,8 @@ function emptyState(message: string) {
 }
 
 const providerShellStyle = {
-  padding: "20px",
-  "border-radius": "18px",
-  background:
-    "linear-gradient(180deg, rgba(7, 14, 22, 0.92), rgba(8, 22, 38, 0.78))",
+  padding: 0,
+  background: "transparent",
 };
 
 const nestedProviderStyle = {

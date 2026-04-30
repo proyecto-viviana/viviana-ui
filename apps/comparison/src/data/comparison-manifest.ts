@@ -1,32 +1,19 @@
+import {
+  reactSpectrumCatalogue,
+  reactSpectrumCatalogueSource,
+  type ReactSpectrumCatalogueCategory,
+} from "./react-spectrum-catalogue";
+
 export type ComparisonLayerId = "styled" | "components" | "headless" | "state";
 export type ComponentStatus =
   | "parity"
   | "composition"
   | "silapse-native"
   | "tracked-gap";
-export type ComparisonSlug =
-  | "provider"
-  | "button"
-  | "popover"
-  | "tabs"
-  | "table"
-  | "listbox"
-  | "tree"
-  | "accordion"
-  | "menu"
-  | "combobox"
-  | "textfield"
-  | "select"
-  | "checkbox"
-  | "dialog"
-  | "radio"
-  | "datepicker"
-  | "searchfield"
-  | "tooltip"
-  | "toolbar"
-  | "toast";
+export type ComparisonSlug = string;
 export type ParityStatus = "matched" | "partial" | "gap";
 export type DemoStatus = "live" | "tracked" | "missing" | "na";
+export type CatalogueSource = "react-spectrum-v3" | "legacy-solidaria";
 
 export interface LayerTrack {
   label: string;
@@ -39,12 +26,14 @@ export interface LayerTrack {
 export interface ComparisonEntry {
   slug: ComparisonSlug;
   title: string;
-  category: string;
+  category: ReactSpectrumCatalogueCategory | "Legacy";
   componentStatus: ComponentStatus;
   summary: string;
   parity: ParityStatus;
   priority: "live" | "tracked";
   gapSummary: string[];
+  docsUrl?: string;
+  catalogueSource: CatalogueSource;
   layers: Record<ComparisonLayerId, LayerTrack>;
 }
 
@@ -55,11 +44,102 @@ export const layerOrder: ComparisonLayerId[] = [
   "state",
 ];
 
-export const comparisonEntries: ComparisonEntry[] = [
-  {
-    slug: "provider",
-    title: "Provider",
-    category: "Foundations",
+function layerTrack(
+  label: string,
+  summary: string,
+  react: DemoStatus,
+  solid: DemoStatus,
+  note: string,
+): LayerTrack {
+  return { label, summary, react, solid, note };
+}
+
+function createGapEntry(input: {
+  slug: string;
+  title: string;
+  category: ReactSpectrumCatalogueCategory;
+  docsUrl: string;
+}): ComparisonEntry {
+  return {
+    slug: input.slug,
+    title: input.title,
+    category: input.category,
+    componentStatus: "tracked-gap",
+    summary: `${input.title} is listed in the official React Spectrum v3 catalogue and is on the comparison roadmap.`,
+    parity: "gap",
+    priority: "tracked",
+    docsUrl: input.docsUrl,
+    catalogueSource: "react-spectrum-v3",
+    gapSummary: [
+      "React Spectrum reference demo is not wired yet.",
+      "Solid styled/component parity is marked missing until implemented and tested.",
+      "State matrix and screenshot baselines are not yet captured.",
+    ],
+    layers: {
+      styled: layerTrack(
+        `Styled ${input.title}`,
+        "Official React Spectrum component vs Solid styled implementation.",
+        "tracked",
+        "missing",
+        "Roadmap entry. Wire the exact React Spectrum component first, then implement Solid parity and state screenshots.",
+      ),
+      components: layerTrack(
+        `Component ${input.title}`,
+        "Component-layer parity target where a lower-level component exists.",
+        "tracked",
+        "missing",
+        "Tracked separately from the styled surface so missing lower-layer APIs stay visible.",
+      ),
+      headless: layerTrack(
+        `Headless ${input.title}`,
+        "ARIA behavior primitives and keyboard contract.",
+        "tracked",
+        "missing",
+        "Use semantic queries and real user-like interactions before styling assertions.",
+      ),
+      state: layerTrack(
+        `${input.title} State`,
+        "State primitives and controlled/uncontrolled behavior.",
+        "tracked",
+        "missing",
+        "State coverage must be component-specific rather than blindly canonical.",
+      ),
+    },
+  };
+}
+
+function legacyEntry(input: {
+  slug: string;
+  title: string;
+  category: string;
+  summary: string;
+  parity?: ParityStatus;
+  componentStatus?: ComponentStatus;
+  gapSummary: string[];
+  layers: Record<ComparisonLayerId, LayerTrack>;
+}): ComparisonEntry {
+  return {
+    slug: input.slug,
+    title: input.title,
+    category: "Legacy",
+    componentStatus: input.componentStatus ?? "tracked-gap",
+    summary: input.summary,
+    parity: input.parity ?? "partial",
+    priority: "live",
+    catalogueSource: "legacy-solidaria",
+    gapSummary: input.gapSummary,
+    layers: input.layers,
+  };
+}
+
+const entryOverrides: Record<string, ComparisonEntry> = {
+  provider: {
+    ...createGapEntry({
+      slug: "provider",
+      title: "Provider",
+      category: "Application",
+      docsUrl: `${reactSpectrumCatalogueSource.url.replace("/index.html", "")}/Provider.html`,
+    }),
     componentStatus: "parity",
     summary:
       "Root-scoped theming, inherited props, locale, direction, and overlay containment.",
@@ -70,509 +150,390 @@ export const comparisonEntries: ComparisonEntry[] = [
       "Component and headless layers are utility-level rather than end-user primitives.",
     ],
     layers: {
-      styled: {
-        label: "Styled Provider",
-        summary: "Theme scope, inheritance, and nested overrides.",
-        react: "live",
-        solid: "live",
-        note: "This is the main parity target after the provider work.",
-      },
-      components: {
-        label: "Component Utilities",
-        summary: "Provider-like utility composition for headless components.",
-        react: "tracked",
-        solid: "tracked",
-        note:
-          "Not yet rendered as a first-class showcase because the parity target is the styled Provider surface.",
-      },
-      headless: {
-        label: "ARIA Utilities",
-        summary:
-          "Locale, direction, and modal plumbing below the styled layer.",
-        react: "na",
-        solid: "na",
-        note: "Tracked in source review rather than a visual comparison.",
-      },
-      state: {
-        label: "State Layer",
-        summary: "Provider itself is not a state primitive.",
-        react: "na",
-        solid: "na",
-        note: "No direct state-layer equivalent to render here.",
-      },
+      styled: layerTrack(
+        "Styled Provider",
+        "Theme scope, inheritance, and nested overrides.",
+        "live",
+        "live",
+        "This is the main parity target after the provider work.",
+      ),
+      components: layerTrack(
+        "Component Utilities",
+        "Provider-like utility composition for headless components.",
+        "tracked",
+        "tracked",
+        "Not yet rendered as a first-class showcase because the parity target is the styled Provider surface.",
+      ),
+      headless: layerTrack(
+        "ARIA Utilities",
+        "Locale, direction, and modal plumbing below the styled layer.",
+        "na",
+        "na",
+        "Tracked in source review rather than a visual comparison.",
+      ),
+      state: layerTrack(
+        "State Layer",
+        "Provider itself is not a state primitive.",
+        "na",
+        "na",
+        "No direct state-layer equivalent to render here.",
+      ),
     },
   },
-  {
-    slug: "button",
-    title: "Button",
-    category: "Actions",
+
+  button: {
+    ...createGapEntry({
+      slug: "button",
+      title: "Button",
+      category: "Buttons",
+      docsUrl: `${reactSpectrumCatalogueSource.url.replace("/index.html", "")}/Button.html`,
+    }),
     componentStatus: "parity",
     summary:
-      "Good parity probe because it exists across styled, component, and headless layers with inherited provider props.",
+      "Baseline parity probe across styled, component, and headless layers with inherited provider props.",
     parity: "matched",
     priority: "live",
     gapSummary: [
       "Styled, component, and headless button demos are all live.",
-      "This is the baseline sanity check for provider inheritance and press semantics.",
+      "Next work is exhaustive variant/state screenshot coverage.",
     ],
     layers: {
-      styled: {
-        label: "Styled Button",
-        summary:
-          "React Spectrum Button vs solidaria-components Button using the comparison Spectrum skin adapter.",
-        react: "live",
-        solid: "live",
-        note:
-          "Solid keeps behavior in solidaria-components and maps stable classes, data states, slots, variant attributes, and CSS variables to the comparison skin.",
-      },
-      components: {
-        label: "Component Button",
-        summary: "react-aria-components Button vs solidaria-components Button.",
-        react: "live",
-        solid: "live",
-        note: "Useful for parity below the design-system skin.",
-      },
-      headless: {
-        label: "Headless Button",
-        summary: "useButton vs createButton.",
-        react: "live",
-        solid: "live",
-        note:
-          "This layer validates the normalized press behavior API directly.",
-      },
-      state: {
-        label: "State Layer",
-        summary: "Buttons do not have an independent state primitive.",
-        react: "na",
-        solid: "na",
-        note: "No dedicated state layer for simple press actions.",
-      },
+      styled: layerTrack(
+        "Styled Button",
+        "React Spectrum Button vs solidaria-components Button using the comparison Spectrum skin adapter.",
+        "live",
+        "live",
+        "Solid keeps behavior in solidaria-components and maps stable classes, data states, slots, variant attributes, and CSS variables to the comparison skin.",
+      ),
+      components: layerTrack(
+        "Component Button",
+        "react-aria-components Button vs solidaria-components Button.",
+        "live",
+        "live",
+        "Useful for parity below the design-system skin.",
+      ),
+      headless: layerTrack(
+        "Headless Button",
+        "useButton vs createButton.",
+        "live",
+        "live",
+        "This layer validates the normalized press behavior API directly.",
+      ),
+      state: layerTrack(
+        "State Layer",
+        "Buttons do not have an independent state primitive.",
+        "na",
+        "na",
+        "No dedicated state layer for simple press actions.",
+      ),
     },
   },
-  {
-    slug: "popover",
-    title: "Popover",
-    category: "Overlays",
-    componentStatus: "tracked-gap",
-    summary:
-      "Critical parity area because dismissal, focus containment, and portal scoping must match React Spectrum behavior.",
-    parity: "partial",
-    priority: "live",
-    gapSummary: [
-      "React component-layer popover is live with scoped portal roots.",
-      "Solid component-layer popover is scaffolded but stays tracked until the comparison app moves this case onto the validated island path.",
-      "Styled-layer React Spectrum popover wiring is intentionally deferred to a dedicated dialog/popover package pass.",
-    ],
-    layers: {
-      styled: {
-        label: "Styled Popover",
-        summary:
-          "React Spectrum dialog/popover surface vs Silapse popover styling.",
-        react: "tracked",
-        solid: "tracked",
-        note:
-          "Deferred until the styled overlay package set is brought into the app.",
-      },
-      components: {
-        label: "Component Popover",
-        summary:
-          "react-aria-components Popover vs solidaria-components Popover.",
-        react: "live",
-        solid: "live",
-        note:
-          "React and Solid both render the scoped popover comparison directly in the app runtime.",
-      },
-      headless: {
-        label: "Headless Overlay",
-        summary: "Overlay hooks and positioning primitives.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Planned for a dedicated overlay-behavior page.",
-      },
-      state: {
-        label: "State Layer",
-        summary: "Overlay trigger state and dismissal mechanics.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Useful later, but not the first visual comparison priority.",
-      },
-    },
-  },
-  {
-    slug: "tabs",
-    title: "Tabs",
-    category: "Navigation",
+
+  tabs: {
+    ...createGapEntry({
+      slug: "tabs",
+      title: "Tabs",
+      category: "Navigation",
+      docsUrl: `${reactSpectrumCatalogueSource.url.replace("/index.html", "")}/Tabs.html`,
+    }),
     componentStatus: "parity",
     summary:
       "Strong parity slice because it spans styled and component layers and relies on collection semantics.",
     parity: "partial",
     priority: "live",
     gapSummary: [
-      "React styled and component layer demos are live.",
-      "Solid tabs stay tracked in this first slice until context-heavy collection demos are validated in the comparison app runtime.",
-      "Collection alias gaps still exist around the broader React Spectrum export surface.",
+      "React and Solid styled tab demos are both mounted directly in the comparison app.",
+      "State matrix and visual baselines still need expansion.",
     ],
     layers: {
-      styled: {
-        label: "Styled Tabs",
-        summary: "React Spectrum Tabs vs Silapse Tabs.",
-        react: "live",
-        solid: "live",
-        note:
-          "React and Solid styled tab demos are both mounted directly in the comparison app.",
-      },
-      components: {
-        label: "Component Tabs",
-        summary: "react-aria-components Tabs vs solidaria-components Tabs.",
-        react: "live",
-        solid: "live",
-        note:
-          "React and Solid component tab demos are both mounted and comparable in the app runtime.",
-      },
-      headless: {
-        label: "Headless Tabs",
-        summary: "Tabs behavior hooks below the component layer.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Planned after the first comparison app slice is stable.",
-      },
-      state: {
-        label: "Tabs State",
-        summary: "react-stately tabs state vs solid-stately tabs state.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Valuable, but not yet visualized.",
-      },
+      styled: layerTrack(
+        "Styled Tabs",
+        "React Spectrum Tabs vs Silapse Tabs.",
+        "live",
+        "live",
+        "React and Solid styled tab demos are both mounted directly in the comparison app.",
+      ),
+      components: layerTrack(
+        "Component Tabs",
+        "react-aria-components Tabs vs solidaria-components Tabs.",
+        "live",
+        "live",
+        "React and Solid component tab demos are both mounted and comparable in the app runtime.",
+      ),
+      headless: layerTrack(
+        "Headless Tabs",
+        "Tabs behavior hooks below the component layer.",
+        "tracked",
+        "tracked",
+        "Planned after the first comparison app slice is stable.",
+      ),
+      state: layerTrack(
+        "Tabs State",
+        "react-stately tabs state vs solid-stately tabs state.",
+        "tracked",
+        "tracked",
+        "Valuable, but not yet visualized.",
+      ),
     },
   },
-  {
+
+  ...Object.fromEntries(
+    ([
+      ["textfield", "TextField", "Forms"],
+      ["checkbox", "Checkbox", "Forms"],
+      ["dialog", "Dialog", "Overlays"],
+      ["datepicker", "DatePicker", "Date and Time"],
+      ["searchfield", "SearchField", "Forms"],
+      ["tooltip", "Tooltip", "Overlays"],
+      ["toast", "Toast", "Status"],
+    ] as const).map(([slug, title, category]) => [
+      slug,
+      {
+        ...createGapEntry({
+          slug,
+          title,
+          category: category as ReactSpectrumCatalogueCategory,
+          docsUrl: `${reactSpectrumCatalogueSource.url.replace("/index.html", "")}/${title}.html`,
+        }),
+        componentStatus: "parity",
+        summary: `${title} has an initial live comparison island. Exhaustive states remain open.`,
+        parity: "partial",
+        priority: "live",
+        gapSummary: [
+          "Initial live island added for comparison coverage.",
+          "Detailed state matrices and strict visual assertions remain incomplete.",
+        ],
+        layers: {
+          styled: layerTrack(
+            `Styled ${title}`,
+            `React Spectrum ${title} vs Solid styled implementation.`,
+            title === "Toast" ? "tracked" : "live",
+            "live",
+            title === "Toast"
+              ? "React Spectrum Toast reference remains tracked while Solid styled toast is live."
+              : "Both runtime islands are mounted for parity review.",
+          ),
+          components: layerTrack(
+            `Component ${title}`,
+            "Component-layer parity target.",
+            title === "Toast" ? "tracked" : "live",
+            "tracked",
+            "Solid component comparison is still tracked separately from the styled island.",
+          ),
+          headless: layerTrack(
+            `Headless ${title}`,
+            "ARIA behavior hooks below the component layer.",
+            "tracked",
+            "tracked",
+            "Tracked for later keyboard and screen reader parity work.",
+          ),
+          state: layerTrack(
+            `${title} State`,
+            "State-layer parity where a dedicated state primitive exists.",
+            "tracked",
+            "tracked",
+            "Tracked in source/test parity rather than this initial visual island.",
+          ),
+        },
+      } satisfies ComparisonEntry,
+    ]),
+  ),
+};
+
+const legacyEntries: ComparisonEntry[] = [
+  legacyEntry({
+    slug: "popover",
+    title: "Popover",
+    category: "Overlays",
+    summary:
+      "Legacy lower-layer overlay route retained until official DialogTrigger/ContextualHelp coverage replaces it.",
+    gapSummary: [
+      "React Spectrum v3 does not list Popover as a top-level component.",
+      "Keep this route for lower-layer overlay debugging while official overlay entries are implemented.",
+    ],
+    layers: {
+      styled: layerTrack(
+        "Styled Popover",
+        "Legacy styled popover parity target.",
+        "tracked",
+        "tracked",
+        "Use official DialogTrigger and ContextualHelp entries for React Spectrum styled parity.",
+      ),
+      components: layerTrack(
+        "Component Popover",
+        "react-aria-components Popover vs solidaria-components Popover.",
+        "live",
+        "live",
+        "React and Solid both render the scoped popover comparison directly in the app runtime.",
+      ),
+      headless: layerTrack(
+        "Headless Overlay",
+        "Overlay hooks and positioning primitives.",
+        "tracked",
+        "tracked",
+        "Planned for a dedicated overlay-behavior page.",
+      ),
+      state: layerTrack(
+        "Overlay State",
+        "Overlay trigger state and dismissal mechanics.",
+        "tracked",
+        "tracked",
+        "Useful later, but not the first visual comparison priority.",
+      ),
+    },
+  }),
+  legacyEntry({
+    slug: "select",
+    title: "Select",
+    category: "Legacy",
+    summary:
+      "Legacy Solidaria Select route retained while official React Spectrum Picker coverage is added.",
+    gapSummary: [
+      "React Spectrum v3 calls this surface Picker.",
+      "Migrate this route into the official Picker entry before treating it as complete.",
+    ],
+    layers: createLegacyLiveLayers("Select"),
+  }),
+  legacyEntry({
+    slug: "radio",
+    title: "Radio",
+    category: "Legacy",
+    summary:
+      "Legacy route retained while official React Spectrum RadioGroup coverage is added.",
+    gapSummary: [
+      "React Spectrum v3 exposes RadioGroup as the catalogue component.",
+      "Migrate the current demo into the official RadioGroup entry.",
+    ],
+    layers: createLegacyLiveLayers("Radio"),
+  }),
+  legacyEntry({
     slug: "table",
     title: "Table",
-    category: "Collections",
-    componentStatus: "tracked-gap",
+    category: "Legacy",
     summary:
-      "High-value parity target with the largest remaining styled-surface differences.",
-    parity: "gap",
-    priority: "tracked",
+      "Legacy route retained while official React Spectrum TableView coverage is added.",
     gapSummary: [
-      "One of the highest-priority implementation gaps in the styled layer.",
-      "Will require richer collection fixtures, sorting, and overlay coordination.",
+      "React Spectrum v3 exposes TableView as the catalogue component.",
+      "Migrate collection fixtures into the official TableView entry.",
     ],
-    layers: {
-      styled: {
-        label: "Styled Table",
-        summary: "React Spectrum TableView-class parity vs Silapse Table.",
-        react: "tracked",
-        solid: "tracked",
-        note:
-          "Planned for the first major expansion after the scaffold stabilizes.",
-      },
-      components: {
-        label: "Component Table",
-        summary: "Table primitives below the skin.",
-        react: "tracked",
-        solid: "tracked",
-        note:
-          "Needs a dedicated fixture harness for row actions and keyboard interaction.",
-      },
-      headless: {
-        label: "Headless Table",
-        summary: "ARIA table hooks and keyboard behavior.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Planned once the styled comparison exists.",
-      },
-      state: {
-        label: "Table State",
-        summary: "Collection, selection, and sorting state.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Important for parity, but not yet wired into the app.",
-      },
-    },
-  },
-  {
-    slug: "listbox",
-    title: "ListBox",
-    category: "Collections",
-    componentStatus: "tracked-gap",
-    summary:
-      "Another top priority because it underpins picker, menu, and combobox parity.",
-    parity: "gap",
-    priority: "tracked",
-    gapSummary: [
-      "A core backlog item from the current parity checklist.",
-      "Will anchor several other comparison routes once the fixture model is in place.",
-    ],
-    layers: {
-      styled: {
-        label: "Styled ListBox",
-        summary: "Design-system listbox and option rendering.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Planned with shared collection fixtures.",
-      },
-      components: {
-        label: "Component ListBox",
-        summary:
-          "react-aria-components ListBox vs solidaria-components ListBox.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Will expose collection alias gaps clearly.",
-      },
-      headless: {
-        label: "Headless ListBox",
-        summary: "ARIA listbox behavior.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Useful after the component comparison is in place.",
-      },
-      state: {
-        label: "List State",
-        summary: "Collection and selection primitives.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Will become the backbone for collection-layer parity screens.",
-      },
-    },
-  },
-  {
+    layers: createLegacyTrackedLayers("Table"),
+  }),
+  legacyEntry({
     slug: "tree",
     title: "Tree",
-    category: "Collections",
-    componentStatus: "tracked-gap",
+    category: "Legacy",
     summary:
-      "Parity gap with nested collections, keyboard interaction, and virtualization pressure.",
-    parity: "gap",
-    priority: "tracked",
+      "Legacy route retained while official React Spectrum TreeView coverage is added.",
     gapSummary: [
-      "Still a high-effort parity area.",
-      "Needs hierarchical fixtures and stronger behavior instrumentation than the initial app slice.",
+      "React Spectrum v3 exposes TreeView as the catalogue component.",
+      "Migrate hierarchical fixtures into the official TreeView entry.",
     ],
-    layers: {
-      styled: {
-        label: "Styled Tree",
-        summary: "Tree visuals, disclosure affordances, and selection state.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Not yet live.",
-      },
-      components: {
-        label: "Component Tree",
-        summary: "Headless component composition for hierarchical data.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Planned after table and listbox.",
-      },
-      headless: {
-        label: "Headless Tree",
-        summary: "ARIA tree primitives and keyboard navigation.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Requires richer focus-flow instrumentation.",
-      },
-      state: {
-        label: "Tree State",
-        summary: "Hierarchical collection and expansion state.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Tracked, but not yet wired into this app.",
-      },
-    },
-  },
-  {
-    slug: "accordion",
-    title: "Accordion",
-    category: "Disclosure",
-    componentStatus: "tracked-gap",
+    layers: createLegacyTrackedLayers("Tree"),
+  }),
+  legacyEntry({
+    slug: "toolbar",
+    title: "Toolbar",
+    category: "Legacy",
     summary:
-      "Maps to React Spectrum accordion patterns while Silapse currently leans on Disclosure primitives.",
-    parity: "gap",
-    priority: "tracked",
+      "Legacy route retained for lower-layer toolbar behavior while official ActionGroup coverage is expanded.",
     gapSummary: [
-      "Explicit gap from the current package-level parity review.",
-      "Will likely be represented as a named accordion surface on top of existing disclosure primitives.",
+      "React Spectrum v3 exposes ActionGroup, not Toolbar, as the styled catalogue surface.",
+      "Keep this route for lower-layer parity until ActionGroup is complete.",
     ],
-    layers: {
-      styled: {
-        label: "Styled Accordion",
-        summary:
-          "A user-facing accordion surface aligned with React Spectrum naming.",
-        react: "tracked",
-        solid: "missing",
-        note: "Silapse does not yet expose a direct styled accordion API.",
-      },
-      components: {
-        label: "Component Disclosure",
-        summary: "Disclosure primitives as the lower-level building block.",
-        react: "tracked",
-        solid: "tracked",
-        note:
-          "Can be compared later, but it does not close the styled naming gap by itself.",
-      },
-      headless: {
-        label: "Headless Disclosure",
-        summary: "ARIA disclosure mechanics.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Not a first-slice visual priority.",
-      },
-      state: {
-        label: "Disclosure State",
-        summary: "Expansion state and selection semantics.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Still backlog.",
-      },
-    },
-  },
-  {
-    slug: "menu",
-    title: "Menu",
-    category: "Overlays",
-    componentStatus: "tracked-gap",
-    summary:
-      "Important because it combines listbox-like collections, overlays, and dismissal behavior.",
-    parity: "partial",
-    priority: "tracked",
-    gapSummary: [
-      "Underlying primitives are strong, but the styled surface still needs systematic parity review.",
-      "The comparison app should eventually test submenu and overlay interaction here.",
-    ],
-    layers: {
-      styled: {
-        label: "Styled Menu",
-        summary: "React Spectrum MenuTrigger surface vs Silapse menu.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Next overlay-heavy styled target after popover and table.",
-      },
-      components: {
-        label: "Component Menu",
-        summary: "react-aria-components Menu vs solidaria-components Menu.",
-        react: "tracked",
-        solid: "tracked",
-        note: "A strong candidate for the second comparison-app wave.",
-      },
-      headless: {
-        label: "Headless Menu",
-        summary: "ARIA menu hooks and collection behavior.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Tracked.",
-      },
-      state: {
-        label: "Menu State",
-        summary: "Selection and overlay trigger state.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Tracked.",
-      },
-    },
-  },
-  {
-    slug: "combobox",
-    title: "ComboBox",
-    category: "Inputs",
-    componentStatus: "tracked-gap",
-    summary:
-      "Key parity target because it combines text input, collections, filtering, and overlays.",
-    parity: "partial",
-    priority: "tracked",
-    gapSummary: [
-      "Another major backlog item from the styled layer review.",
-      "Needs shared fixtures to compare filtering, async loading, and option rendering.",
-    ],
-    layers: {
-      styled: {
-        label: "Styled ComboBox",
-        summary: "React Spectrum ComboBox vs Silapse ComboBox.",
-        react: "tracked",
-        solid: "tracked",
-        note:
-          "Planned after listbox, because the collection harness will be shared.",
-      },
-      components: {
-        label: "Component ComboBox",
-        summary:
-          "react-aria-components ComboBox vs solidaria-components ComboBox.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Will expose listbox and input parity clearly.",
-      },
-      headless: {
-        label: "Headless ComboBox",
-        summary: "Text input and popup trigger behavior.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Tracked.",
-      },
-      state: {
-        label: "ComboBox State",
-        summary: "Filtering, selection, and open-state management.",
-        react: "tracked",
-        solid: "tracked",
-        note: "Tracked.",
-      },
-    },
-  },
-  ...([
-    ["textfield", "TextField", "Inputs"],
-    ["select", "Select", "Inputs"],
-    ["checkbox", "Checkbox", "Inputs"],
-    ["dialog", "Dialog", "Overlays"],
-    ["radio", "Radio", "Inputs"],
-    ["datepicker", "DatePicker", "Inputs"],
-    ["searchfield", "SearchField", "Inputs"],
-    ["tooltip", "Tooltip", "Overlays"],
-    ["toolbar", "Toolbar", "Actions"],
-    ["toast", "Toast", "Feedback"],
-  ] as const satisfies readonly [ComparisonSlug, string, string][]).map(([slug, title, category]) => ({
-    slug,
-    title,
-    category,
-    componentStatus: "parity" as const,
-    summary: `${title} now has a first live comparison island for the top-missing Silapse coverage pass.`,
-    parity: "partial" as const,
-    priority: "live" as const,
-    gapSummary: [
-      "Initial live island added for comparison coverage.",
-      "Detailed state matrices and visual assertions remain workstream-1 follow-up.",
-    ],
-    layers: {
-      styled: {
-        label: `Styled ${title}`,
-        summary: `Silapse ${title} rendered against the nearest React Aria Components surface where available.`,
-        react: (slug === "toast" ? "tracked" : "live") as DemoStatus,
-        solid: "live" as DemoStatus,
-        note: slug === "toast"
-          ? "React Aria Components 1.15.1 does not expose Toast; Solid styled toast is live and React remains tracked."
-          : "Both runtime islands are mounted for manual parity review.",
-      },
-      components: {
-        label: `Component ${title}`,
-        summary: "Component-layer parity target.",
-        react: (slug === "toast" ? "tracked" : "live") as DemoStatus,
-        solid: "tracked" as DemoStatus,
-        note: "Headless Solid component comparison is still tracked separately from the styled Silapse island.",
-      },
-      headless: {
-        label: `Headless ${title}`,
-        summary: "ARIA behavior hooks below the component layer.",
-        react: "tracked" as DemoStatus,
-        solid: "tracked" as DemoStatus,
-        note: "Tracked for later keyboard and screen reader parity work.",
-      },
-      state: {
-        label: `${title} State`,
-        summary: "State-layer parity where a dedicated state primitive exists.",
-        react: "tracked" as DemoStatus,
-        solid: "tracked" as DemoStatus,
-        note: "Tracked in source/test parity rather than this initial visual island.",
-      },
-    },
-  })),
+    layers: createLegacyLiveLayers("Toolbar"),
+  }),
 ];
+
+function createLegacyLiveLayers(title: string): Record<ComparisonLayerId, LayerTrack> {
+  return {
+    styled: layerTrack(
+      `Styled ${title}`,
+      `Existing ${title} comparison island.`,
+      "live",
+      "live",
+      "Legacy live route retained for continuity while official v3 catalogue routes are filled.",
+    ),
+    components: layerTrack(
+      `Component ${title}`,
+      "Component-layer parity target.",
+      "live",
+      "tracked",
+      "Tracked until the official v3 catalogue component owns this surface.",
+    ),
+    headless: layerTrack(
+      `Headless ${title}`,
+      "ARIA behavior hooks below the component layer.",
+      "tracked",
+      "tracked",
+      "Tracked.",
+    ),
+    state: layerTrack(
+      `${title} State`,
+      "State-layer parity where a dedicated state primitive exists.",
+      "tracked",
+      "tracked",
+      "Tracked.",
+    ),
+  };
+}
+
+function createLegacyTrackedLayers(title: string): Record<ComparisonLayerId, LayerTrack> {
+  return {
+    styled: layerTrack(
+      `Styled ${title}`,
+      `Legacy ${title} comparison placeholder.`,
+      "tracked",
+      "tracked",
+      "Tracked until the official v3 catalogue component owns this surface.",
+    ),
+    components: layerTrack(
+      `Component ${title}`,
+      "Component-layer parity target.",
+      "tracked",
+      "tracked",
+      "Tracked.",
+    ),
+    headless: layerTrack(
+      `Headless ${title}`,
+      "ARIA behavior hooks below the component layer.",
+      "tracked",
+      "tracked",
+      "Tracked.",
+    ),
+    state: layerTrack(
+      `${title} State`,
+      "State-layer parity where a dedicated state primitive exists.",
+      "tracked",
+      "tracked",
+      "Tracked.",
+    ),
+  };
+}
+
+const officialEntries = reactSpectrumCatalogue.map((catalogueEntry) => {
+  const baseEntry = createGapEntry({
+    slug: catalogueEntry.slug,
+    title: catalogueEntry.title,
+    category: catalogueEntry.category,
+    docsUrl: catalogueEntry.docsPath,
+  });
+
+  return entryOverrides[catalogueEntry.slug] ?? baseEntry;
+});
+
+export const comparisonEntries: ComparisonEntry[] = [
+  ...officialEntries,
+  ...legacyEntries,
+];
+
+export const officialComparisonEntries = comparisonEntries.filter(
+  (entry) => entry.catalogueSource === "react-spectrum-v3",
+);
+
+export const missingOfficialComparisonEntries = officialComparisonEntries.filter(
+  (entry) =>
+    entry.layers.styled.react !== "live" || entry.layers.styled.solid !== "live",
+);
 
 export function getComparisonEntry(
   slug: string,

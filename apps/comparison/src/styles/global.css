@@ -36,24 +36,13 @@ body {
 }
 
 body.comparison-app {
-  background:
-    linear-gradient(180deg, rgba(77, 160, 255, 0.06), transparent 220px),
-    linear-gradient(90deg, rgba(223, 92, 154, 0.05), transparent 30%),
-    var(--cmp-surface);
+  background: var(--cmp-surface);
   color: var(--cmp-text);
   font-family: var(--cmp-body);
 }
 
 body.comparison-app::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, rgba(29, 48, 58, 0.18) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(29, 48, 58, 0.12) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 78%);
+  content: none;
 }
 
 a {
@@ -129,10 +118,9 @@ a {
   border-left: 3px solid var(--cmp-pink);
   border-bottom: 1px solid rgba(223, 92, 154, 0.28);
   color: var(--cmp-text);
-  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-size: 3rem;
   line-height: 0.95;
-  letter-spacing: -0.03em;
-  filter: drop-shadow(0 0 4px var(--cmp-pink-glow));
+  letter-spacing: 0;
 }
 
 .section-heading {
@@ -342,7 +330,7 @@ a {
   padding: 14px;
   border: 1px solid rgba(112, 112, 112, 0.52);
   border-radius: 6px;
-  background: #262626;
+  background: #1f1f1f;
   color: #f5f5f5;
   font-family: adobe-clean, "Source Sans Pro", system-ui, sans-serif;
   isolation: isolate;
@@ -423,9 +411,9 @@ a {
   --skin-button-disabled-bg: transparent;
   width: fit-content;
   max-inline-size: 100%;
-  padding: 20px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(7, 14, 22, 0.92), rgba(8, 22, 38, 0.78));
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--skin-button-primary-text);
   font-family: adobe-clean, "Source Sans Pro", system-ui, sans-serif;
 }
@@ -1291,6 +1279,6 @@ body.comparison-app [class*="spectrum-Modal-wrapper"] {
   .hero-card h1,
   .detail-hero h1 {
     max-width: none;
-    font-size: clamp(1.8rem, 9vw, 2.8rem);
+    font-size: 2.4rem;
   }
 }

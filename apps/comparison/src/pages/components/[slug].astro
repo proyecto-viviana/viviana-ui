@@ -52,6 +52,11 @@ const layerTitles: Record<ComparisonLayerId, string> = {
         </div>
         <h1>{entry.title}</h1>
         <p class="hero-copy">{entry.summary}</p>
+        {entry.docsUrl ? (
+          <a class="entry-link" href={entry.docsUrl}>
+            React Spectrum documentation
+          </a>
+        ) : null}
         <ul class="entry-notes">
           {entry.gapSummary.map((note) => (
             <li>{note}</li>
@@ -87,7 +92,9 @@ const layerTitles: Record<ComparisonLayerId, string> = {
                   <div class="comparison-empty-state">
                     {track.react === "na"
                       ? "No direct React layer exists here."
-                      : "This React comparison is tracked but not wired yet."}
+                      : track.react === "missing"
+                        ? "Missing React reference implementation."
+                        : "This React comparison is tracked but not wired yet."}
                   </div>
                 )}
               </article>
@@ -108,7 +115,9 @@ const layerTitles: Record<ComparisonLayerId, string> = {
                   <div class="comparison-empty-state">
                     {track.solid === "na"
                       ? "No direct Solid layer exists here."
-                      : "This Solid comparison is tracked but not wired yet."}
+                      : track.solid === "missing"
+                        ? "Missing Solid implementation."
+                        : "This Solid comparison is tracked but not wired yet."}
                   </div>
                 )}
               </article>

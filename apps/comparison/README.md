@@ -60,15 +60,29 @@ vp run deploy
 
 ## Current Coverage
 
-The scaffold includes live comparisons for:
+The manifest starts from the official React Spectrum v3 component catalogue in
+documentation order. Every official entry gets a route; entries without a wired
+React Spectrum reference and Solid parity demo stay visible as non-failing gaps.
+
+Use the gap report to see the current roadmap shape:
+
+```bash
+vp run comparison:report:gaps
+```
+
+The first live official comparisons include:
 
 - `Provider` on the styled layer
 - `Button` on the styled, component, and headless layers
-- React `Popover` on the component layer
-- React `Tabs` on the styled and component layers
+- `Tabs` on the styled and component layers
+- `TextField`, `Checkbox`, `Dialog`, `DatePicker`, `SearchField`, and `Tooltip`
+  on the styled layer
+- `Toast` on the Solid styled layer, with the React Spectrum reference still
+  tracked
 
-The rest of the manifest is intentionally explicit about gaps so the app doubles
-as a parity backlog.
+Legacy routes such as `Select`, `Radio`, `Table`, `Tree`, `Toolbar`, and
+`Popover` are retained for continuity, but the official v3 entries remain the
+source of truth for roadmap status.
 
 ## What The App Imports
 
