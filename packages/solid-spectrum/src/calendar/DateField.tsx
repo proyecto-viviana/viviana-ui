@@ -1,9 +1,3 @@
-/**
- * DateField component for proyecto-viviana-solid-spectrum
- *
- * Styled date field component with segment-based editing.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   DateField as HeadlessDateField,
@@ -17,10 +11,6 @@ import {
   type DateValue,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type DateFieldSize = "sm" | "md" | "lg";
 
@@ -39,10 +29,6 @@ export interface DateFieldProps<T extends DateValue = DateValue> extends Omit<
   /** Error message. */
   errorMessage?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -65,33 +51,8 @@ const sizeStyles = {
   },
 };
 
-// ============================================
-// DATE FIELD COMPONENT
-// ============================================
-
 /**
  * A date field allows users to enter and edit date values using a keyboard.
- *
- * @example
- * ```tsx
- * // Basic usage
- * <DateField label="Birth date" />
- *
- * // Controlled
- * const [date, setDate] = createSignal<CalendarDate | null>(null);
- * <DateField
- *   label="Event date"
- *   value={date()}
- *   onChange={setDate}
- * />
- *
- * // With validation
- * <DateField
- *   label="Future date"
- *   minValue={today(getLocalTimeZone())}
- *   errorMessage="Date must be in the future"
- * />
- * ```
  */
 export function DateField<T extends DateValue = CalendarDate>(
   props: DateFieldProps<T>,
@@ -123,7 +84,6 @@ export function DateField<T extends DateValue = CalendarDate>(
         ${local.class ?? ""}
       `}
     >
-      {/* Label */}
       {local.label && (
         <DateFieldLabel class={`font-medium text-primary-200 ${sizeConfig().label}`}>
           {local.label}
@@ -131,7 +91,6 @@ export function DateField<T extends DateValue = CalendarDate>(
         </DateFieldLabel>
       )}
 
-      {/* Input container */}
       <DateInput
         class={({ isFocused, isDisabled }) => {
           const base = `
@@ -183,14 +142,12 @@ export function DateField<T extends DateValue = CalendarDate>(
         )}
       </DateInput>
 
-      {/* Description */}
       {local.description && !isInvalid() && (
         <DateFieldDescription class={`text-primary-400 ${sizeConfig().label}`}>
           {local.description}
         </DateFieldDescription>
       )}
 
-      {/* Error message */}
       {isInvalid() && local.errorMessage && (
         <DateFieldErrorMessage class={`text-red-500 ${sizeConfig().label}`}>
           {local.errorMessage}
@@ -200,5 +157,4 @@ export function DateField<T extends DateValue = CalendarDate>(
   );
 }
 
-// Re-export types
 export type { CalendarDate, DateValue };

@@ -1,10 +1,3 @@
-/**
- * RangeCalendar component for proyecto-viviana-solid-spectrum
- *
- * Styled range calendar component built on top of solidaria-components.
- * A range calendar displays a grid of days and allows users to select a date range.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   RangeCalendar as HeadlessRangeCalendar,
@@ -18,10 +11,6 @@ import {
 } from "@proyecto-viviana/solidaria-components";
 import type { RangeCalendarStateProps } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type RangeCalendarSize = "sm" | "md" | "lg";
 
@@ -38,10 +27,6 @@ export interface RangeCalendarProps<T extends DateValue = DateValue> extends Omi
   /** Custom aria label. */
   "aria-label"?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -64,28 +49,8 @@ const sizeStyles = {
   },
 };
 
-// ============================================
-// RANGE CALENDAR COMPONENT
-// ============================================
-
 /**
  * A range calendar displays a grid of days and allows users to select a date range.
- *
- * @example
- * ```tsx
- * // Basic usage
- * <RangeCalendar
- *   aria-label="Trip dates"
- *   onChange={(range) => console.log(range)}
- * />
- *
- * // Controlled
- * const [range, setRange] = createSignal<RangeValue<CalendarDate> | null>(null);
- * <RangeCalendar
- *   value={range()}
- *   onChange={setRange}
- * />
- * ```
  */
 export function RangeCalendar<T extends DateValue = CalendarDate>(
   props: RangeCalendarProps<T>,
@@ -106,7 +71,6 @@ export function RangeCalendar<T extends DateValue = CalendarDate>(
         ${local.class ?? ""}
       `}
     >
-      {/* Header with navigation */}
       <header class="flex items-center justify-between mb-4">
         <RangeCalendarButton
           slot="previous"
@@ -164,7 +128,6 @@ export function RangeCalendar<T extends DateValue = CalendarDate>(
         </RangeCalendarButton>
       </header>
 
-      {/* Calendar grid */}
       <RangeCalendarGrid class="w-full border-collapse [&_.solidaria-RangeCalendarHeaderCell]:text-primary-200">
         {(date) => (
           <RangeCalendarCell
@@ -193,7 +156,6 @@ export function RangeCalendar<T extends DateValue = CalendarDate>(
               if (isDisabled) {
                 stateClass = "text-primary-600 cursor-not-allowed";
               } else if (isSelectionStart && isSelectionEnd) {
-                // Single day selection
                 stateClass = "bg-accent text-bg-400 font-medium";
                 roundedClass = "rounded-md";
               } else if (isSelectionStart) {
@@ -226,5 +188,4 @@ export function RangeCalendar<T extends DateValue = CalendarDate>(
   );
 }
 
-// Re-export types
 export type { RangeValue };

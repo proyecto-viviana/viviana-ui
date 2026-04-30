@@ -1,9 +1,3 @@
-/**
- * TimeField component for proyecto-viviana-solid-spectrum
- *
- * Styled time field component with segment-based editing.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   TimeField as HeadlessTimeField,
@@ -16,10 +10,6 @@ import {
   type TimeValue,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type TimeFieldSize = "sm" | "md" | "lg";
 
@@ -38,10 +28,6 @@ export interface TimeFieldProps<T extends TimeValue = TimeValue> extends Omit<
   /** Error message. */
   errorMessage?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -64,30 +50,8 @@ const sizeStyles = {
   },
 };
 
-// ============================================
-// TIME FIELD COMPONENT
-// ============================================
-
 /**
  * A time field allows users to enter and edit time values using a keyboard.
- *
- * @example
- * ```tsx
- * // Basic usage
- * <TimeField label="Start time" />
- *
- * // With 24-hour format
- * <TimeField
- *   label="Meeting time"
- *   hourCycle={24}
- * />
- *
- * // With seconds
- * <TimeField
- *   label="Precise time"
- *   granularity="second"
- * />
- * ```
  */
 export function TimeField<T extends TimeValue = TimeValue>(props: TimeFieldProps<T>): JSX.Element {
   const mergedProps = useProviderProps(props);
@@ -117,7 +81,6 @@ export function TimeField<T extends TimeValue = TimeValue>(props: TimeFieldProps
         ${local.class ?? ""}
       `}
     >
-      {/* Label */}
       {local.label && (
         <TimeFieldLabel class={`font-medium text-primary-200 ${sizeConfig().label}`}>
           {local.label}
@@ -125,7 +88,6 @@ export function TimeField<T extends TimeValue = TimeValue>(props: TimeFieldProps
         </TimeFieldLabel>
       )}
 
-      {/* Input container */}
       <TimeInput
         class={({ isFocused, isDisabled }) => {
           const base = `
@@ -177,14 +139,12 @@ export function TimeField<T extends TimeValue = TimeValue>(props: TimeFieldProps
         )}
       </TimeInput>
 
-      {/* Description */}
       {local.description && !isInvalid() && (
         <TimeFieldDescription class={`text-primary-400 ${sizeConfig().label}`}>
           {local.description}
         </TimeFieldDescription>
       )}
 
-      {/* Error message */}
       {isInvalid() && local.errorMessage && (
         <TimeFieldErrorMessage class={`text-red-500 ${sizeConfig().label}`}>
           {local.errorMessage}
@@ -194,5 +154,4 @@ export function TimeField<T extends TimeValue = TimeValue>(props: TimeFieldProps
   );
 }
 
-// Re-export types
 export type { TimeValue };

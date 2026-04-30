@@ -1,10 +1,3 @@
-/**
- * DateRangePicker component for proyecto-viviana-solid-spectrum
- *
- * Styled date range picker with calendar popup.
- * Uses the range calendar for date selection and displays formatted dates.
- */
-
 import { type JSX, splitProps, Show, createMemo } from "solid-js";
 import {
   DateRangePicker as HeadlessDateRangePicker,
@@ -41,10 +34,6 @@ function CalendarIcon(): JSX.Element {
   );
 }
 
-// ============================================
-// TYPES
-// ============================================
-
 export type DateRangePickerSize = "sm" | "md" | "lg";
 
 export interface DateRangePickerProps<T extends DateValue = DateValue> extends Omit<
@@ -62,10 +51,6 @@ export interface DateRangePickerProps<T extends DateValue = DateValue> extends O
   /** Error message. */
   errorMessage?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -88,9 +73,6 @@ const sizeStyles = {
   },
 };
 
-/**
- * Inner component that uses the DateRangePicker context to display formatted dates.
- */
 function DateRangeDisplay(props: {
   size: DateRangePickerSize;
   isInvalid: boolean;
@@ -214,10 +196,6 @@ function DateRangeDisplay(props: {
     </>
   );
 }
-
-// ============================================
-// DATE RANGE PICKER COMPONENT
-// ============================================
 
 /**
  * A date range picker combines two date display fields with a range calendar popup.

@@ -1,10 +1,3 @@
-/**
- * Calendar component for proyecto-viviana-solid-spectrum
- *
- * Styled calendar component built on top of solidaria-components.
- * A calendar displays a grid of days and allows users to select dates.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Calendar as HeadlessCalendar,
@@ -17,10 +10,6 @@ import {
 } from "@proyecto-viviana/solidaria-components";
 import type { CalendarStateProps } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type CalendarSize = "sm" | "md" | "lg";
 
@@ -39,10 +28,6 @@ export interface CalendarProps<T extends DateValue = DateValue> extends Omit<
   /** Custom aria label. */
   "aria-label"?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -65,34 +50,8 @@ const sizeStyles = {
   },
 };
 
-// ============================================
-// CALENDAR COMPONENT
-// ============================================
-
 /**
  * A calendar displays a grid of days and allows users to select a date.
- *
- * @example
- * ```tsx
- * // Basic usage
- * <Calendar
- *   aria-label="Event date"
- *   onChange={(date) => console.log(date)}
- * />
- *
- * // Controlled
- * const [date, setDate] = createSignal<CalendarDate | null>(null);
- * <Calendar
- *   value={date()}
- *   onChange={setDate}
- * />
- *
- * // With min/max dates
- * <Calendar
- *   minValue={today(getLocalTimeZone())}
- *   maxValue={today(getLocalTimeZone()).add({ months: 3 })}
- * />
- * ```
  */
 export function Calendar<T extends DateValue = CalendarDate>(props: CalendarProps<T>): JSX.Element {
   const mergedProps = useProviderProps(props);
@@ -111,7 +70,6 @@ export function Calendar<T extends DateValue = CalendarDate>(props: CalendarProp
         ${local.class ?? ""}
       `}
     >
-      {/* Header with navigation */}
       <header class="flex items-center justify-between mb-4">
         <CalendarButton
           slot="previous"
@@ -169,7 +127,6 @@ export function Calendar<T extends DateValue = CalendarDate>(props: CalendarProp
         </CalendarButton>
       </header>
 
-      {/* Calendar grid */}
       <CalendarGrid class="w-full border-collapse">
         {(date) => (
           <CalendarCell
@@ -213,5 +170,4 @@ export function Calendar<T extends DateValue = CalendarDate>(props: CalendarProp
 export { RangeCalendar } from "./RangeCalendar";
 export type { RangeCalendarProps, RangeCalendarSize, RangeValue } from "./RangeCalendar";
 
-// Re-export types
 export type { CalendarDate, DateValue };

@@ -1,10 +1,3 @@
-/**
- * Select component for proyecto-viviana-solid-spectrum
- *
- * Styled select component built on top of solidaria-components.
- * Inspired by Spectrum 2's Picker component patterns.
- */
-
 import { type JSX, Show, splitProps, createContext, useContext, createUniqueId } from "solid-js";
 import {
   Select as HeadlessSelect,
@@ -26,17 +19,9 @@ import {
 import type { Key } from "@proyecto-viviana/solid-stately";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// SIZE CONTEXT
-// ============================================
-
 export type SelectSize = "sm" | "md" | "lg";
 
 const SelectSizeContext = createContext<SelectSize>("md");
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface SelectProps<T> extends Omit<HeadlessSelectProps<T>, "class" | "style"> {
   /** The size of the select. */
@@ -79,10 +64,6 @@ export interface SelectOptionProps<T> extends Omit<
   class?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles = {
   sm: {
     trigger: "h-8 text-sm px-3 gap-2",
@@ -104,14 +85,8 @@ const sizeStyles = {
   },
 };
 
-// ============================================
-// SELECT COMPONENT
-// ============================================
-
 /**
  * A select displays a collapsible list of options and allows a user to select one of them.
- *
- * Built on solidaria-components Select for full accessibility support.
  */
 export function Select<T>(props: SelectProps<T>): JSX.Element {
   const mergedProps = useProviderProps(props);
@@ -177,13 +152,8 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
   );
 }
 
-// ============================================
-// SELECT TRIGGER COMPONENT
-// ============================================
-
 /**
  * The trigger button for a select.
- * SSR-compatible - renders children and chevron icon directly without render props.
  */
 export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
   const mergedProps = useProviderProps(props);
@@ -218,17 +188,12 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
   return (
     <HeadlessSelectTrigger {...headlessProps} class={getClassName}>
       {props.children as JSX.Element}
-      {/* Chevron rotates via CSS based on data-open attribute from headless component */}
       <ChevronIcon
         class={`${sizeStyle.icon} transition-transform duration-200 data-open:rotate-180`}
       />
     </HeadlessSelectTrigger>
   );
 }
-
-// ============================================
-// SELECT VALUE COMPONENT
-// ============================================
 
 /**
  * Displays the selected value in a select.
@@ -245,10 +210,6 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
 
   return <HeadlessSelectValue {...headlessProps} class={getClassName} children={props.children} />;
 }
-
-// ============================================
-// SELECT LISTBOX COMPONENT
-// ============================================
 
 /**
  * The listbox popup for a select.
@@ -268,20 +229,14 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
   );
 }
 
-// ============================================
-// SELECT OPTION COMPONENT
-// ============================================
-
-// Padding classes for when no check icon is shown (to maintain alignment)
 const paddingStyles = {
-  sm: "pl-6", // h-4 (1rem) + gap-2 (0.5rem) = 1.5rem = pl-6
-  md: "pl-7", // h-5 (1.25rem) + gap-2 (0.5rem) = 1.75rem ≈ pl-7
-  lg: "pl-9", // h-6 (1.5rem) + gap-3 (0.75rem) = 2.25rem = pl-9
+  sm: "pl-6",
+  md: "pl-7",
+  lg: "pl-9",
 };
 
 /**
  * An option in a select listbox.
- * SSR-compatible - renders check icon and content directly without render props.
  */
 export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
   const [local, headlessProps] = splitProps(props, ["class"]);
@@ -314,7 +269,6 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
 
   return (
     <HeadlessSelectOption {...headlessProps} class={getClassName}>
-      {/* Check icon shows only when selected via data-selected attribute */}
       <CheckIcon class={iconClass} />
       <span class={`flex-1 data-selected:pl-0 ${paddingClass}`}>
         {props.children as JSX.Element}
@@ -322,10 +276,6 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
     </HeadlessSelectOption>
   );
 }
-
-// ============================================
-// ICONS
-// ============================================
 
 function ChevronIcon(props: { class?: string }): JSX.Element {
   return (
@@ -343,11 +293,9 @@ function CheckIcon(props: { class?: string }): JSX.Element {
   );
 }
 
-// Attach sub-components for convenience
 Select.Trigger = SelectTrigger;
 Select.Value = SelectValue;
 Select.ListBox = SelectListBox;
 Select.Option = SelectOption;
 
-// Re-export Key type for convenience
 export type { Key };

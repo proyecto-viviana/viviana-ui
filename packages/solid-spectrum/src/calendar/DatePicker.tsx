@@ -1,9 +1,3 @@
-/**
- * DatePicker component for proyecto-viviana-solid-spectrum
- *
- * Styled date picker component that combines a date field with a calendar popup.
- */
-
 import { type JSX, splitProps, Show } from "solid-js";
 import {
   DatePicker as HeadlessDatePicker,
@@ -21,7 +15,6 @@ import {
 import { Calendar } from "./index";
 import { useProviderProps } from "../provider";
 
-// Calendar icon component - use function to ensure consistent hydration
 function CalendarIcon(): JSX.Element {
   return (
     <svg
@@ -42,10 +35,6 @@ function CalendarIcon(): JSX.Element {
   );
 }
 
-// ============================================
-// TYPES
-// ============================================
-
 export type DatePickerSize = "sm" | "md" | "lg";
 
 export interface DatePickerProps<T extends DateValue = DateValue> extends Omit<
@@ -65,10 +54,6 @@ export interface DatePickerProps<T extends DateValue = DateValue> extends Omit<
   /** Placeholder text. */
   placeholder?: string;
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const sizeStyles = {
   sm: {
@@ -93,10 +78,6 @@ const sizeStyles = {
     button: "w-11 h-11",
   },
 };
-
-// ============================================
-// DATE PICKER COMPONENT
-// ============================================
 
 /**
  * A date picker combines a date field and a calendar popup.
@@ -235,10 +216,6 @@ export function DatePicker<T extends DateValue = CalendarDate>(
   );
 }
 
-// ============================================
-// POPUP COMPONENT (uses context)
-// ============================================
-
 function DatePickerPopup(props: { size: DatePickerSize }): JSX.Element {
   return (
     <DatePickerContent class="z-50 shadow-lg rounded-lg">
@@ -247,5 +224,4 @@ function DatePickerPopup(props: { size: DatePickerSize }): JSX.Element {
   );
 }
 
-// Re-export types
 export type { CalendarDate, DateValue };
