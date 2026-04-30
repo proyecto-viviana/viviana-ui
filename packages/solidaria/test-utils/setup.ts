@@ -104,6 +104,7 @@ export function installIntersectionObserverPolyfill(): void {
   class FakeIntersectionObserver {
     readonly root: Element | Document | null;
     readonly rootMargin: string;
+    readonly scrollMargin: string;
     readonly thresholds: ReadonlyArray<number>;
     private callback: IntersectionObserverCallback;
     private observedElements: Set<Element> = new Set();
@@ -112,6 +113,7 @@ export function installIntersectionObserverPolyfill(): void {
       this.callback = callback;
       this.root = options?.root ?? null;
       this.rootMargin = options?.rootMargin ?? "0px";
+      this.scrollMargin = "0px";
       this.thresholds = Array.isArray(options?.threshold)
         ? options.threshold
         : [options?.threshold ?? 0];

@@ -248,13 +248,14 @@ function parsePlacement(input: Placement): ParsedPlacement {
     return PARSED_PLACEMENT_CACHE[input];
   }
 
-  const [placement, crossPlacement = "center"] = input.split(" ") as [PlacementAxis, string];
+  const [placement, crossPlacement] = input.split(" ") as [PlacementAxis, string?];
+  const resolvedCrossPlacementInput = crossPlacement ?? "center";
   const axis: Axis = AXIS[placement] || "right";
   const crossAxis: Axis = CROSS_AXIS[axis];
 
   let resolvedCrossPlacement: PlacementAxis | "center" = "center";
-  if (AXIS[crossPlacement]) {
-    resolvedCrossPlacement = crossPlacement as PlacementAxis;
+  if (AXIS[resolvedCrossPlacementInput]) {
+    resolvedCrossPlacement = resolvedCrossPlacementInput as PlacementAxis;
   }
 
   const size = AXIS_SIZE[axis];
@@ -709,7 +710,7 @@ export function calculatePosition(opts: PositionOpts): PositionResult {
     offset,
     crossOffset,
     maxHeight,
-    arrowSize = 0,
+    arrowSize,
     arrowBoundaryOffset = 0,
   } = opts;
 

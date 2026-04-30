@@ -2372,7 +2372,7 @@ describe("createPress", () => {
       platformGetter.mockReturnValue("iPhone");
 
       const oldUserSelect = document.documentElement.style.webkitUserSelect;
-      document.documentElement.style.webkitUserSelect = "contain";
+      document.documentElement.style.webkitUserSelect = "text";
 
       render(() => <Example />);
 
@@ -2396,14 +2396,14 @@ describe("createPress", () => {
       platformGetter.mockReturnValue("Android");
 
       const oldUserSelect = document.documentElement.style.webkitUserSelect;
-      document.documentElement.style.webkitUserSelect = "contain";
+      document.documentElement.style.webkitUserSelect = "text";
 
       render(() => <Example />);
 
       const el = screen.getByTestId("test-element");
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1 }] });
 
-      expect(document.documentElement.style.webkitUserSelect).toBe("contain");
+      expect(document.documentElement.style.webkitUserSelect).toBe("text");
       expect(el).toHaveStyle({ "user-select": "none" });
 
       // Cleanup

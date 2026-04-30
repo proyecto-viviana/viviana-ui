@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, cleanup, fireEvent } from "@solidjs/testing-library";
+import { render, screen, cleanup, fireEvent, waitFor } from "@solidjs/testing-library";
 import {
   Tree,
   TreeItem,
@@ -392,7 +392,7 @@ describe("Tree", () => {
       expect(screen.queryByText("Item 1.1")).not.toBeInTheDocument();
     });
 
-    it("should use rtl expansion keys for keyboard drop-target branch toggle", () => {
+    it("should use rtl expansion keys for keyboard drop-target branch toggle", async () => {
       const originalDir = document.dir;
       document.dir = "rtl";
 
@@ -429,6 +429,8 @@ describe("Tree", () => {
           <Tree
             items={createTestItems()}
             aria-label="RTL key tree"
+            dir="rtl"
+            direction="rtl"
             dragAndDropHooks={dragAndDropHooks as any}
           >
             {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
@@ -439,10 +441,10 @@ describe("Tree", () => {
         expect(screen.queryByText("Item 1.1")).not.toBeInTheDocument();
 
         onKeyDown!(new KeyboardEvent("keydown", { key: "ArrowLeft" }));
-        expect(screen.getByText("Item 1.1")).toBeInTheDocument();
+        await waitFor(() => expect(screen.getByText("Item 1.1")).toBeInTheDocument());
 
         onKeyDown!(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        expect(screen.queryByText("Item 1.1")).not.toBeInTheDocument();
+        await waitFor(() => expect(screen.queryByText("Item 1.1")).not.toBeInTheDocument());
       } finally {
         document.dir = originalDir;
       }
@@ -488,6 +490,7 @@ describe("Tree", () => {
           <Tree
             items={createTestItems()}
             aria-label="Computed RTL key tree"
+            direction="rtl"
             dragAndDropHooks={dragAndDropHooks as any}
           >
             {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}

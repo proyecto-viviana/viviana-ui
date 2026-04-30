@@ -1021,8 +1021,9 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
           if (!target || target.type !== "item" || target.dropPosition !== "on") return;
           const item = state.collection.getItem(target.key);
           if (!item?.hasChildNodes) return;
-          const expandKey = EXPANSION_KEYS.expand[direction];
-          const collapseKey = EXPANSION_KEYS.collapse[direction];
+          const currentDirection = ariaProps.direction ?? resolveTreeDirection(ref());
+          const expandKey = EXPANSION_KEYS.expand[currentDirection];
+          const collapseKey = EXPANSION_KEYS.collapse[currentDirection];
           if (event.key === expandKey && !state.isExpanded(target.key)) {
             state.toggleKey(target.key);
           } else if (event.key === collapseKey && state.isExpanded(target.key)) {

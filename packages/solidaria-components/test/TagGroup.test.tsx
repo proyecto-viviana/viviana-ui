@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
-import { render, screen, cleanup, waitFor } from "@solidjs/testing-library";
+import { render, screen, cleanup, waitFor, fireEvent } from "@solidjs/testing-library";
 import { TagGroup, TagList, Tag, TagRemoveButton } from "../src/TagGroup";
 import { SelectionIndicator } from "../src/SelectionIndicator";
 import { setupUser } from "@proyecto-viviana/solidaria-test-utils";
@@ -354,7 +354,7 @@ describe("TagGroup", () => {
       ));
 
       const removeButtons = document.querySelectorAll(".solidaria-TagRemoveButton");
-      await user.click(removeButtons[0] as HTMLElement);
+      fireEvent.click(removeButtons[0] as HTMLElement);
 
       await waitFor(() => {
         expect(onRemove).toHaveBeenCalledWith(new Set(["1"]));

@@ -223,7 +223,7 @@ describe("createMove", () => {
   });
 
   describe("user-select: none", () => {
-    const mockUserSelect = "contain";
+    const mockUserSelect = "text";
     const oldUserSelect = document.documentElement.style.webkitUserSelect;
     let platformGetter: ReturnType<typeof vi.spyOn> | undefined;
 

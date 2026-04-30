@@ -61,6 +61,7 @@
     "@proyecto-viviana/solidaria-components": "workspace:*"
   },
   "devDependencies": {
+    "@proyecto-viviana/solid-spectrum-test-utils": "workspace:*",
     "solid-js": "^1.9.11"
   },
   "peerDependencies": {
