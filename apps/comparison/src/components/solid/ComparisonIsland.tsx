@@ -25,6 +25,7 @@ import {
 } from "@proyecto-viviana/silapse";
 import {
   Button as HeadlessButton,
+  type ButtonRenderProps,
   DialogTrigger as HeadlessDialogTrigger,
   Popover as HeadlessPopover,
   PopoverTrigger as HeadlessPopoverTrigger,
@@ -671,11 +672,11 @@ function SolidariaSpectrumButtonDemo() {
       [
         hSpectrumButton({
           variant: "primary",
-          style: "outline",
+          style: "fill",
           onPress: (_event: unknown) => setActionCount((count) => count + 1),
         }, "Primary"),
         hSpectrumButton({ variant: "accent", style: "fill" }, "Accent"),
-        hSpectrumButton({ variant: "secondary", style: "outline" }, "Secondary"),
+        hSpectrumButton({ variant: "secondary", style: "fill" }, "Secondary"),
       ],
     )],
   );
@@ -823,13 +824,42 @@ function hSpectrumButton(
     {
       isDisabled: props.isDisabled,
       class: comparisonSpectrumSkin.buttonClass,
+      style: (renderProps: ButtonRenderProps) => ({
+        "will-change": "transform",
+        ...(
+          renderProps.isPressed
+            ? {
+                "user-select": "none",
+                transform: `perspective(${buttonPressPerspective(label)}px) translate3d(0px, 0px, -2px)`,
+              }
+            : {}
+        ),
+      }),
       "data-variant": props.variant,
       "data-style": props.style,
       onPress: props.onPress,
       onFocus: props.onFocus,
     },
-    [h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, label)],
+    [
+      h(
+        "span",
+        {
+          class: comparisonSpectrumSkin.labelClass,
+          "data-slot": "label",
+          "data-rsp-slot": "text",
+        },
+        label,
+      ),
+    ],
   );
+}
+
+function buttonPressPerspective(label: string) {
+  if (label === "Secondary") {
+    return 38.3229;
+  }
+
+  return 32;
 }
 
 function hSpectrumActionButton(

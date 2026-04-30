@@ -149,6 +149,10 @@ Component state coverage lives in
 state there whenever a visual or behavioral state is covered, and commit the
 Playwright snapshots next to the spec when the state is visual.
 
+Use [`COMPONENT_PLAYBOOK.md`](./COMPONENT_PLAYBOOK.md) as the repeatable
+component-by-component process for establishing the S2 reference, matching Solid
+behavior, adding screenshots, and marking gaps.
+
 Default static screenshots for live official components are covered by:
 
 ```bash
@@ -159,6 +163,12 @@ Button-family interaction contracts are covered by:
 
 ```bash
 vp run comparison:test:buttons
+```
+
+The Button pilot has a focused visual and behavior loop:
+
+```bash
+vp run comparison:test:button
 ```
 
 ## Validation Notes

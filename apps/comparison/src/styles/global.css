@@ -474,6 +474,8 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  inline-size: fit-content;
+  max-inline-size: 100%;
 }
 
 .comparison-spectrum-skin {
@@ -611,89 +613,107 @@ a {
 .comparison-spectrum-skin .comparison-spectrum-Button {
   appearance: none;
   box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  align-items: baseline;
   justify-content: center;
   inline-size: fit-content;
-  min-block-size: var(--skin-button-height);
+  min-inline-size: 32px;
+  min-block-size: 32px;
   max-inline-size: 100%;
-  padding: 0 14px;
-  border: var(--skin-button-border-width) solid transparent;
-  border-radius: var(--skin-button-radius);
+  padding: 0 16px;
+  border: 0 solid transparent;
+  border-radius: 16px;
   background: transparent;
-  color: var(--skin-button-primary-text);
+  color: #ffffff;
+  column-gap: 5.99999px;
   cursor: pointer;
-  font: inherit;
-  font-size: var(--skin-button-font-size);
-  font-weight: var(--skin-button-font-weight);
+  font-family: adobe-clean, "Source Sans Pro", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0;
   line-height: 18px;
+  outline: none;
+  outline-offset: 2px;
   text-decoration: none;
   text-transform: none;
   user-select: none;
-  transition:
-    background-color 130ms ease,
-    border-color 130ms ease,
-    box-shadow 130ms ease,
-    color 130ms ease;
-}
-
-.comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"] {
-  background: var(--skin-button-accent-bg);
-  border-color: var(--skin-button-accent-border);
-  color: #ffffff;
+  transition: none;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="primary"] {
-  background: var(--skin-button-primary-fill-bg);
-  border-color: var(--skin-button-primary-fill-bg);
-  color: var(--skin-button-primary-fill-text);
+  background: #dbdbdb;
+  border-color: #dbdbdb;
+  color: #111111;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="accent"] {
+  background: #345bf8;
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="secondary"] {
+  background: #2c2c2c;
+  border-color: #393939;
+  color: #dbdbdb;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"] {
   background: transparent;
+  border-width: var(--skin-button-border-width);
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button[data-variant="primary"] {
+.comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="primary"] {
   border-color: var(--skin-button-primary-border);
   color: var(--skin-button-primary-text);
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button[data-variant="secondary"] {
+.comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="secondary"] {
   border-color: var(--skin-button-secondary-border);
   color: var(--skin-button-secondary-text);
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button[data-hovered][data-style="fill"] {
-  background: var(--skin-button-accent-bg-hover);
-  border-color: var(--skin-button-accent-bg-hover);
+.comparison-spectrum-skin .comparison-spectrum-Button[data-hovered][data-style="fill"][data-variant="primary"],
+.comparison-spectrum-skin .comparison-spectrum-Button:hover[data-style="fill"][data-variant="primary"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-focus-visible][data-style="fill"][data-variant="primary"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-pressed][data-style="fill"][data-variant="primary"] {
+  background: #f2f2f2;
+  border-color: #f2f2f2;
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button[data-pressed][data-style="fill"] {
-  background: var(--skin-button-accent-bg-active);
-  border-color: var(--skin-button-accent-bg-active);
+.comparison-spectrum-skin .comparison-spectrum-Button[data-hovered][data-style="fill"][data-variant="accent"],
+.comparison-spectrum-skin .comparison-spectrum-Button:hover[data-style="fill"][data-variant="accent"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-pressed][data-style="fill"][data-variant="accent"] {
+  background: #294eea;
+  border-color: #ffffff;
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button[data-hovered][data-variant="primary"],
-.comparison-spectrum-skin .comparison-spectrum-Button:hover[data-variant="primary"] {
+.comparison-spectrum-skin .comparison-spectrum-Button[data-hovered][data-style="fill"][data-variant="secondary"],
+.comparison-spectrum-skin .comparison-spectrum-Button:hover[data-style="fill"][data-variant="secondary"],
+.comparison-spectrum-skin .comparison-spectrum-Button[data-pressed][data-style="fill"][data-variant="secondary"] {
+  background: #303030;
+  border-color: #414141;
+  color: #ebebeb;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-hovered][data-style="outline"][data-variant="primary"],
+.comparison-spectrum-skin .comparison-spectrum-Button:hover[data-style="outline"][data-variant="primary"] {
   border-color: var(--skin-button-primary-hover-border);
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button[data-pressed][data-variant="primary"] {
+.comparison-spectrum-skin .comparison-spectrum-Button[data-pressed][data-style="outline"][data-variant="primary"] {
   border-color: var(--skin-button-primary-active-border);
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button[data-hovered][data-variant="secondary"],
-.comparison-spectrum-skin .comparison-spectrum-Button:hover[data-variant="secondary"] {
+.comparison-spectrum-skin .comparison-spectrum-Button[data-hovered][data-style="outline"][data-variant="secondary"],
+.comparison-spectrum-skin .comparison-spectrum-Button:hover[data-style="outline"][data-variant="secondary"] {
   border-color: var(--skin-button-secondary-hover-border);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-focus-visible],
 .comparison-spectrum-skin .comparison-spectrum-Button:focus-visible {
-  box-shadow:
-    0 0 0 2px #000000,
-    0 0 0 4px var(--skin-button-focus-ring);
-  outline: none;
+  box-shadow: none;
+  outline: 2px solid #4069fd;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-disabled],
@@ -705,9 +725,13 @@ a {
 }
 
 .comparison-spectrum-Button-label[data-slot="label"] {
-  display: inline-block;
+  display: block;
+  block-size: 32px;
   letter-spacing: 0;
+  line-height: 18px;
+  order: 1;
   overflow: hidden;
+  padding: 7px 0;
   text-overflow: ellipsis;
   text-transform: none;
   white-space: nowrap;

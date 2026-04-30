@@ -135,11 +135,7 @@ function renderStyled(componentSlug) {
         }
       );
     case "button":
-      return renderReactSpectrumReference(/* @__PURE__ */ jsxs("div", { className: "comparison-button-row", children: [
-        /* @__PURE__ */ jsx(SpectrumButton, { variant: "primary", children: "Primary" }),
-        /* @__PURE__ */ jsx(SpectrumButton, { variant: "accent", children: "Accent" }),
-        /* @__PURE__ */ jsx(SpectrumButton, { variant: "secondary", children: "Secondary" })
-      ] }));
+      return /* @__PURE__ */ jsx(ReactButtonDemo, {});
     case "actionbutton":
       return /* @__PURE__ */ jsx(ReactActionButtonDemo, {});
     case "actionbuttongroup":
@@ -176,6 +172,14 @@ function renderStyled(componentSlug) {
     default:
       return /* @__PURE__ */ jsx("div", { className: "comparison-empty-state", children: "No styled React Spectrum demo is wired for this component yet." });
   }
+}
+function ReactButtonDemo() {
+  const [actionCount, setActionCount] = useState(0);
+  return renderReactSpectrumReference(/* @__PURE__ */ jsx("div", { "data-comparison-action-count": String(actionCount), children: /* @__PURE__ */ jsxs("div", { className: "comparison-button-row", children: [
+    /* @__PURE__ */ jsx(SpectrumButton, { variant: "primary", onPress: () => setActionCount((count) => count + 1), children: "Primary" }),
+    /* @__PURE__ */ jsx(SpectrumButton, { variant: "accent", children: "Accent" }),
+    /* @__PURE__ */ jsx(SpectrumButton, { variant: "secondary", children: "Secondary" })
+  ] }) }));
 }
 function ReactActionButtonDemo() {
   const [actionCount, setActionCount] = useState(0);

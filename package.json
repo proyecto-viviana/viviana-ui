@@ -19,6 +19,7 @@
     "comparison:build": "vp run --filter @proyecto-viviana/comparison build",
     "comparison:preview": "vp run --filter @proyecto-viviana/comparison preview",
     "comparison:report:gaps": "vp run --filter @proyecto-viviana/comparison report:gaps",
+    "comparison:test:button": "vp run --filter @proyecto-viviana/comparison test:button",
     "comparison:test:buttons": "vp run --filter @proyecto-viviana/comparison test:buttons",
     "comparison:test:contract": "vp run --filter @proyecto-viviana/comparison test:contract",
     "comparison:test:default": "vp run --filter @proyecto-viviana/comparison test:default",

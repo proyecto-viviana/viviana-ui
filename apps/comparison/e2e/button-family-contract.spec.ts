@@ -30,6 +30,17 @@ async function buttonFamilyCards(page: Page, slug: string) {
 }
 
 test.describe('comparison button-family behavior contracts', () => {
+  test('Button presses update both reference roots', async ({ page }) => {
+    const cards = await buttonFamilyCards(page, 'button');
+
+    for (const card of [cards.react, cards.solid]) {
+      const root = card.locator('[data-comparison-action-count]').first();
+      await expect(root).toHaveAttribute('data-comparison-action-count', '0');
+      await card.getByRole('button', { name: 'Primary' }).click();
+      await expect(root).toHaveAttribute('data-comparison-action-count', '1');
+    }
+  });
+
   test('ActionButton presses update both reference roots', async ({ page }) => {
     const cards = await buttonFamilyCards(page, 'actionbutton');
 
