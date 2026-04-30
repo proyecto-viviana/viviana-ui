@@ -1,16 +1,6 @@
-/**
- * Overlay component for proyecto-viviana-solid-spectrum
- *
- * A generic overlay container for positioning content above the page.
- */
-
 import { type JSX, splitProps, Show } from "solid-js";
 import { Portal } from "solid-js/web";
 import { useUNSAFE_PortalContext } from "@proyecto-viviana/solidaria";
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface OverlayProps {
   /** Whether the overlay is currently open. */
@@ -22,10 +12,6 @@ export interface OverlayProps {
   /** The container element to render the overlay into. */
   container?: HTMLElement;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A generic overlay container that renders content above the page via a portal.

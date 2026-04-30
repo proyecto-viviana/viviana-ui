@@ -1,9 +1,3 @@
-/**
- * FieldButton component for proyecto-viviana-solid-spectrum
- *
- * A button embedded inside input fields (e.g., date picker trigger, combobox button).
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Button as HeadlessButton,
@@ -12,18 +6,10 @@ import {
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface FieldButtonProps extends Omit<HeadlessButtonProps, "class" | "style"> {
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A button designed to sit inside an input field.

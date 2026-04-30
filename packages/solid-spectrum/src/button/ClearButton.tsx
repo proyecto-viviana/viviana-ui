@@ -1,9 +1,3 @@
-/**
- * ClearButton component for proyecto-viviana-solid-spectrum
- *
- * An icon-only clear/dismiss button.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Button as HeadlessButton,
@@ -11,10 +5,6 @@ import {
   type ButtonRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type ClearButtonSize = "sm" | "md" | "lg";
 
@@ -28,19 +18,11 @@ export interface ClearButtonProps extends Omit<
   class?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles: Record<ClearButtonSize, { button: string; icon: string }> = {
   sm: { button: "w-5 h-5", icon: "w-3 h-3" },
   md: { button: "w-6 h-6", icon: "w-4 h-4" },
   lg: { button: "w-8 h-8", icon: "w-5 h-5" },
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * An icon-only clear/dismiss button, typically used in search fields and tags.

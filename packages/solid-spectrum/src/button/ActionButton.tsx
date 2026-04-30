@@ -1,9 +1,3 @@
-/**
- * ActionButton component for proyecto-viviana-solid-spectrum
- *
- * A quiet/subtle button variant for toolbar and secondary actions.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Button as HeadlessButton,
@@ -11,10 +5,6 @@ import {
   type ButtonRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type ActionButtonSize = "sm" | "md" | "lg";
 
@@ -27,19 +17,11 @@ export interface ActionButtonProps extends Omit<HeadlessButtonProps, "class" | "
   class?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles: Record<ActionButtonSize, string> = {
   sm: "px-2 py-1 text-xs rounded",
   md: "px-3 py-1.5 text-sm rounded-md",
   lg: "px-4 py-2 text-base rounded-lg",
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A quiet/subtle button for toolbar and secondary actions.

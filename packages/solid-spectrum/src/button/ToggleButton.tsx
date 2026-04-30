@@ -1,9 +1,3 @@
-/**
- * ToggleButton component for proyecto-viviana-solid-spectrum
- *
- * A styled toggle button wrapping headless ToggleButton.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   ToggleButton as HeadlessToggleButton,
@@ -11,10 +5,6 @@ import {
   type ToggleButtonRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type ToggleButtonSize = "sm" | "md" | "lg";
 
@@ -25,19 +15,11 @@ export interface ToggleButtonProps extends Omit<HeadlessToggleButtonProps, "clas
   class?: string;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles: Record<ToggleButtonSize, string> = {
   sm: "px-2 py-1 text-xs rounded",
   md: "px-3 py-1.5 text-sm rounded-md",
   lg: "px-4 py-2 text-base rounded-lg",
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A styled toggle button that can be selected or deselected.

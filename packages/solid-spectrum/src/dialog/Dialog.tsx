@@ -1,10 +1,3 @@
-/**
- * Dialog component for proyecto-viviana-solid-spectrum
- *
- * Styled dialog component with overlay and backdrop.
- * Follows Spectrum 2 design patterns.
- */
-
 import { type JSX, splitProps, Show, createContext, useContext } from "solid-js";
 import {
   Dialog as HeadlessDialog,
@@ -15,10 +8,6 @@ import {
   useDialogTrigger,
   type DialogProps as HeadlessDialogProps,
 } from "@proyecto-viviana/solidaria-components";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type DialogSize = "sm" | "md" | "lg" | "fullscreen";
 
@@ -52,10 +41,6 @@ export interface DialogTriggerProps {
   isKeyboardDismissDisabled?: boolean;
 }
 
-// ============================================
-// CONTEXT
-// ============================================
-
 interface DialogContextValue {
   close: () => void;
 }
@@ -66,20 +51,12 @@ export function useDialogContext(): DialogContextValue | null {
   return useContext(DialogContext);
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles: Record<DialogSize, string> = {
   sm: "max-w-sm",
   md: "max-w-md",
   lg: "max-w-2xl",
   fullscreen: "max-w-full w-full h-full",
 };
-
-// ============================================
-// DIALOG COMPONENT
-// ============================================
 
 /**
  * A dialog is an overlay shown above other content in an application.
@@ -141,10 +118,6 @@ export function Dialog(props: DialogProps): JSX.Element {
   );
 }
 
-// ============================================
-// DIALOG TRIGGER COMPONENT
-// ============================================
-
 function DialogTriggerContent(props: { content: (close: () => void) => JSX.Element }): JSX.Element {
   const triggerContext = useDialogTrigger();
   const close = () => triggerContext?.state.close();
@@ -153,7 +126,6 @@ function DialogTriggerContent(props: { content: (close: () => void) => JSX.Eleme
 
 /**
  * DialogTrigger wraps a trigger button and dialog content.
- * Handles opening/closing the dialog with overlay and backdrop.
  */
 export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
   return (
@@ -173,10 +145,6 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
     </HeadlessDialogTrigger>
   );
 }
-
-// ============================================
-// DIALOG FOOTER COMPONENT
-// ============================================
 
 export interface DialogFooterProps {
   /** Footer content, typically buttons. */

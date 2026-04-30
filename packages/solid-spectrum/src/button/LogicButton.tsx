@@ -1,9 +1,3 @@
-/**
- * LogicButton component for proyecto-viviana-solid-spectrum
- *
- * An AND/OR toggle button for logic-based UIs.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   ToggleButton as HeadlessToggleButton,
@@ -12,10 +6,6 @@ import {
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface LogicButtonProps extends Omit<
   HeadlessToggleButtonProps,
   "class" | "style" | "children"
@@ -23,10 +13,6 @@ export interface LogicButtonProps extends Omit<
   /** Additional CSS class name. */
   class?: string;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * An AND/OR logic toggle button. Displays "AND" when selected (default), "OR" when not.

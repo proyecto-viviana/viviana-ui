@@ -1,10 +1,3 @@
-/**
- * OpenTransition utility for proyecto-viviana-solid-spectrum
- *
- * CSS transition component for overlay enter/exit animations.
- * SolidJS-idiomatic: uses createEffect + classList for class toggling.
- */
-
 import {
   type JSX,
   createSignal,
@@ -14,10 +7,6 @@ import {
   Show,
   children as resolveChildren,
 } from "solid-js";
-
-// ============================================
-// TYPES
-// ============================================
 
 export interface OpenTransitionProps {
   /** Whether the content is open/visible. */
@@ -40,26 +29,8 @@ export interface OpenTransitionProps {
   class?: string;
 }
 
-// ============================================
-// COMPONENT
-// ============================================
-
 /**
  * A transition utility that applies CSS classes for enter/exit animations.
- *
- * @example
- * ```tsx
- * <OpenTransition
- *   open={isOpen()}
- *   enterFrom="opacity-0 scale-95"
- *   enterTo="opacity-100 scale-100"
- *   exitFrom="opacity-100 scale-100"
- *   exitTo="opacity-0 scale-95"
- *   duration={200}
- * >
- *   <div class="transition-all">Content</div>
- * </OpenTransition>
- * ```
  */
 export function OpenTransition(props: OpenTransitionProps): JSX.Element {
   const duration = () => props.duration ?? 200;
@@ -71,20 +42,16 @@ export function OpenTransition(props: OpenTransitionProps): JSX.Element {
       () => props.open,
       (isOpen) => {
         if (isOpen) {
-          // Enter: mount immediately, apply enterFrom, then enterTo
           setMounted(true);
-
-          // Apply enterFrom classes first
           setTransitionClasses(props.enterFrom ?? "");
 
-          // On next frame, apply enterTo classes
+          // Double RAF lets the browser commit the start class before the end class.
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               setTransitionClasses(props.enterTo ?? "");
             });
           });
         } else {
-          // Exit: apply exitFrom, then exitTo, then unmount after duration
           setTransitionClasses(props.exitFrom ?? "");
 
           requestAnimationFrame(() => {

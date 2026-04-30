@@ -44,7 +44,23 @@ comparison entry complete.
   comparison app is intentionally skinning a headless Solid component to match
   S2.
 
-## 4. Add State Coverage
+## 4. Keep Source Clean
+
+Cleanup is part of parity work. Every component pass should leave the touched
+code easier to audit against S2:
+
+- Remove comments that restate imports, JSX shape, prop names, obvious branches,
+  sub-component attachment, or re-export mechanics.
+- Keep comments only for non-obvious S2 parity choices, accessibility constraints,
+  Solid reactivity traps, browser/workaround behavior, and intentional deviations.
+- Prefer small local helpers and render-state class functions over repeated
+  string assembly when that makes state styling easier to compare.
+- Keep documentation examples in docs or tests, not long component-source
+  docblocks.
+- Do not mix behavior changes into cleanup unless the component pass explicitly
+  covers and tests that behavior.
+
+## 5. Add State Coverage
 
 For every state, add both:
 
@@ -75,7 +91,7 @@ Capture each side once per assertion and use that same buffer for both the
 committed snapshot and the React-vs-Solid pair diff, so timing-sensitive states
 cannot pass the snapshot and fail the pair diff against a different frame.
 
-## 5. Update The Matrix
+## 6. Update The Matrix
 
 Update `src/data/visual-state-matrix.ts` in the same change:
 
@@ -88,7 +104,7 @@ Update `src/data/visual-state-matrix.ts` in the same change:
 Large mismatches are failures for implemented states. They should never be
 documented as acceptable drift.
 
-## 6. Validate The Component
+## 7. Validate The Component
 
 Run the component-specific loop first, then the broader app checks:
 

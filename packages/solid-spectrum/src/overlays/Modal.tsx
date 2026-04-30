@@ -1,21 +1,9 @@
-/**
- * Modal component for proyecto-viviana-solid-spectrum
- *
- * A styled ModalOverlay + Modal combination.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   Modal as HeadlessModal,
   ModalOverlay as HeadlessModalOverlay,
-  type ModalProps as HeadlessModalProps,
   type ModalOverlayProps as HeadlessModalOverlayProps,
-  type ModalRenderProps,
 } from "@proyecto-viviana/solidaria-components";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type ModalSize = "sm" | "md" | "lg" | "fullscreen";
 
@@ -28,20 +16,12 @@ export interface StyledModalProps extends Omit<HeadlessModalOverlayProps, "class
   children?: JSX.Element;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const sizeStyles: Record<ModalSize, string> = {
   sm: "max-w-sm",
   md: "max-w-lg",
   lg: "max-w-3xl",
   fullscreen: "max-w-full h-full",
 };
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A styled modal overlay with sizing options.

@@ -1,9 +1,3 @@
-/**
- * AlertDialog component for proyecto-viviana-solid-spectrum
- *
- * A dialog variant with role="alertdialog" and confirm/cancel buttons.
- */
-
 import { type JSX, splitProps, Show } from "solid-js";
 import {
   Dialog as HeadlessDialog,
@@ -14,10 +8,6 @@ import {
   type DialogRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { Button } from "../button";
-
-// ============================================
-// TYPES
-// ============================================
 
 export type AlertDialogVariant =
   | "confirmation"
@@ -55,10 +45,6 @@ export interface AlertDialogProps {
   isDismissable?: boolean;
 }
 
-// ============================================
-// STYLES
-// ============================================
-
 const variantStyles: Record<AlertDialogVariant, { icon: string; buttonVariant: string }> = {
   confirmation: { icon: "text-accent", buttonVariant: "" },
   information: { icon: "text-blue-400", buttonVariant: "" },
@@ -67,13 +53,8 @@ const variantStyles: Record<AlertDialogVariant, { icon: string; buttonVariant: s
   warning: { icon: "text-yellow-400", buttonVariant: "" },
 };
 
-// ============================================
-// COMPONENT
-// ============================================
-
 /**
  * A dialog that requires user acknowledgement before proceeding.
- * Uses role="alertdialog" for proper accessibility.
  */
 export function AlertDialog(props: AlertDialogProps): JSX.Element {
   const [local] = splitProps(props, [

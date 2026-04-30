@@ -1,7 +1,3 @@
-/**
- * Overlays module compatibility entrypoint for proyecto-viviana-solid-spectrum.
- */
-
 export { Dialog, DialogTrigger, DialogFooter } from "../dialog";
 export type { DialogProps, DialogTriggerProps, DialogFooterProps, DialogSize } from "../dialog";
 

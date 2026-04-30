@@ -1,9 +1,3 @@
-/**
- * Tray component for proyecto-viviana-solid-spectrum
- *
- * A bottom-sheet mobile overlay.
- */
-
 import { type JSX, splitProps } from "solid-js";
 import {
   ModalOverlay as HeadlessModalOverlay,
@@ -11,20 +5,12 @@ import {
   type ModalOverlayProps as HeadlessModalOverlayProps,
 } from "@proyecto-viviana/solidaria-components";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface TrayProps extends Omit<HeadlessModalOverlayProps, "class"> {
   /** Additional CSS class name. */
   class?: string;
   /** The content of the tray. */
   children?: JSX.Element;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 /**
  * A bottom-sheet overlay for mobile contexts.
