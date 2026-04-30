@@ -66,12 +66,10 @@ function getSafeRange(min: number, max: number): number {
 export function Meter(props: MeterProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, ["children", "class", "style", "slot"]);
 
-  // Get values for calculations
   const value = () => ariaProps.value ?? 0;
   const minValue = () => ariaProps.minValue ?? 0;
   const maxValue = () => ariaProps.maxValue ?? 100;
 
-  // Create meter aria props
   const meterAria = createMeter({
     get value() {
       return ariaProps.value;
@@ -105,24 +103,20 @@ export function Meter(props: MeterProps): JSX.Element {
     },
   });
 
-  // Calculate percentage
   const percentage = createMemo(() => {
     const clampedValue = clamp(value(), minValue(), maxValue());
     return ((clampedValue - minValue()) / getSafeRange(minValue(), maxValue())) * 100;
   });
 
-  // Get value text from aria props
   const valueText = createMemo(() => {
     return meterAria.meterProps["aria-valuetext"] as string | undefined;
   });
 
-  // Render props values
   const renderValues = createMemo<MeterRenderProps>(() => ({
     percentage: percentage(),
     valueText: valueText(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -133,7 +127,6 @@ export function Meter(props: MeterProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(ariaProps, { global: true }));
 
   return (

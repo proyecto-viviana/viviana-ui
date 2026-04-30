@@ -75,7 +75,6 @@ export { DialogTriggerContext, useDialogTrigger } from "./contexts";
 export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
   const [local] = splitProps(props, ["isOpen", "defaultOpen", "onOpenChange"]);
 
-  // Create overlay trigger state
   const state = createOverlayTriggerState({
     get isOpen() {
       return local.isOpen;
@@ -86,7 +85,6 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
     onOpenChange: local.onOpenChange,
   });
 
-  // Ref for the trigger element
   let triggerRef: HTMLElement | null = null;
   const triggerId = createUniqueId();
 
@@ -109,7 +107,6 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
   }));
 
   // In SolidJS, we simply render children directly within the provider
-  // The children will have access to the context
   return (
     <DialogTriggerContext.Provider value={contextValue()}>
       {props.children}
@@ -177,12 +174,10 @@ export function Dialog(props: DialogProps): JSX.Element {
     }
   });
 
-  // Render props values
   const renderValues = createMemo<DialogRenderProps>(() => ({
     close,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -193,7 +188,6 @@ export function Dialog(props: DialogProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );

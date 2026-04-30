@@ -37,12 +37,10 @@ export function createDisclosureState(
 ): DisclosureState {
   const propsAccessor = () => access(props);
 
-  // Internal state for uncontrolled mode
   const [internalExpanded, setInternalExpanded] = createSignal(
     propsAccessor().defaultExpanded ?? false,
   );
 
-  // Determine if expanded (controlled vs uncontrolled)
   const isExpanded: Accessor<boolean> = () => {
     const p = propsAccessor();
     return p.isExpanded !== undefined ? p.isExpanded : internalExpanded();
@@ -108,12 +106,10 @@ export function createDisclosureGroupState(
 ): DisclosureGroupState {
   const propsAccessor = () => access(props);
 
-  // Internal state for uncontrolled mode
   const [internalKeys, setInternalKeys] = createSignal<Set<Key>>(
     new Set(propsAccessor().defaultExpandedKeys ?? []),
   );
 
-  // Determine expanded keys (controlled vs uncontrolled, memoized)
   const expandedKeys: Accessor<Set<Key>> = createMemo(() => {
     const p = propsAccessor();
     return p.expandedKeys !== undefined ? new Set(p.expandedKeys) : internalKeys();
@@ -159,7 +155,6 @@ export function createDisclosureGroupState(
         newKeys.add(key);
       }
     } else {
-      // Single selection: toggle off if already expanded, otherwise select only this one
       newKeys = new Set(currentKeys.has(key) ? [] : [key]);
     }
 

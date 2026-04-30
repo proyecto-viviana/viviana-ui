@@ -1,4 +1,3 @@
-// Calendar State
 export {
   createCalendarState,
   type CalendarStateProps,
@@ -6,7 +5,6 @@ export {
   type ValidationState,
 } from "./createCalendarState";
 
-// Range Calendar State
 export {
   createRangeCalendarState,
   type RangeCalendarStateProps,
@@ -15,7 +13,6 @@ export {
   type RangeValue,
 } from "./createRangeCalendarState";
 
-// Date Field State
 export {
   createDateFieldState,
   type DateFieldStateProps,
@@ -24,7 +21,6 @@ export {
   type DateSegmentType,
 } from "./createDateFieldState";
 
-// Time Field State
 export {
   createTimeFieldState,
   type TimeFieldStateProps,

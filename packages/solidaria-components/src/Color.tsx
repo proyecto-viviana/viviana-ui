@@ -158,7 +158,6 @@ export interface ColorSliderThumbProps extends SlotProps {
   style?: StyleOrFunction<ColorSliderThumbRenderProps>;
 }
 
-// Context
 interface ColorSliderContextValue {
   state: ColorSliderState;
   trackProps: JSX.HTMLAttributes<HTMLDivElement>;
@@ -192,7 +191,6 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
     isDisabled: ariaProps.isDisabled,
   }));
 
-  // Track ref
   let trackRef: HTMLDivElement | undefined;
   const setTrackRef = (el: HTMLDivElement) => {
     trackRef = el;
@@ -212,7 +210,6 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
     () => trackRef ?? null,
   );
 
-  // Render props values
   const renderValues = createMemo<ColorSliderRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging,
@@ -221,7 +218,6 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
     color: state.value,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -232,7 +228,6 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
@@ -256,7 +251,6 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
         data-dragging={state.isDragging || undefined}
         data-channel={state.channel}
       >
-        {/* Label */}
         <Show when={local.label}>
           <label {...labelProps}>{local.label}</label>
         </Show>
@@ -280,13 +274,11 @@ export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
 
   const { state, trackProps, setTrackRef } = context;
 
-  // Render props values
   const renderValues = createMemo<ColorSliderTrackRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -297,13 +289,11 @@ export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
     renderValues,
   );
 
-  // Clean props
   const cleanTrackProps = () => {
     const { ref: _ref, style: _trackStyle, ...rest } = trackProps as Record<string, unknown>;
     return rest;
   };
 
-  // Merge styles
   const mergedStyle = () => {
     const trackStyle = (trackProps as { style?: Record<string, string> }).style || {};
     const renderStyle = renderProps.style() || {};
@@ -338,17 +328,14 @@ export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
 
   const { state, thumbProps, inputProps } = context;
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return state.isDisabled;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<ColorSliderThumbRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging,
@@ -357,7 +344,6 @@ export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
     isHovered: isHovered(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -368,7 +354,6 @@ export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
     renderValues,
   );
 
-  // Clean props
   const cleanThumbProps = () => {
     const { ref: _ref, style: _thumbStyle, ...rest } = thumbProps as Record<string, unknown>;
     return rest;
@@ -388,7 +373,6 @@ export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
     ) as JSX.InputHTMLAttributes<HTMLInputElement>;
   };
 
-  // Merge styles
   const mergedStyle = () => {
     const thumbStyle = (thumbProps as { style?: Record<string, string> }).style || {};
     const renderStyle = renderProps.style() || {};
@@ -487,7 +471,6 @@ export interface ColorAreaThumbProps extends SlotProps {
   style?: StyleOrFunction<ColorAreaThumbRenderProps>;
 }
 
-// Context
 interface ColorAreaContextValue {
   state: ColorAreaState;
   colorAreaProps: JSX.HTMLAttributes<HTMLDivElement>;
@@ -542,7 +525,6 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
     () => areaRef ?? null,
   );
 
-  // Render props values
   const renderValues = createMemo<ColorAreaRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging,
@@ -551,7 +533,6 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
     color: state.value,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -562,18 +543,15 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
 
-  // Clean props
   const cleanColorAreaProps = () => {
     const { ref: _ref, style: _areaStyle, ...rest } = colorAreaProps as Record<string, unknown>;
     return rest;
   };
 
-  // Merge styles
   const mergedStyle = () => {
     const areaStyle = (colorAreaProps as { style?: Record<string, string> }).style || {};
     const renderStyle = renderProps.style() || {};
@@ -621,12 +599,10 @@ export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
 
   const { state, gradientProps } = context;
 
-  // Render props values
   const renderValues = createMemo<ColorAreaGradientRenderProps>(() => ({
     isDisabled: state.isDisabled,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -637,13 +613,11 @@ export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
     renderValues,
   );
 
-  // Clean props
   const cleanGradientProps = () => {
     const { ref: _ref, style: _gradStyle, ...rest } = gradientProps as Record<string, unknown>;
     return rest;
   };
 
-  // Merge styles
   const mergedStyle = () => {
     const gradStyle = (gradientProps as { style?: Record<string, string> }).style || {};
     const renderStyle = renderProps.style() || {};
@@ -676,17 +650,14 @@ export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
 
   const { state, thumbProps, xInputProps, yInputProps } = context;
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return state.isDisabled;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<ColorAreaThumbRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging,
@@ -695,7 +666,6 @@ export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
     isHovered: isHovered(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -706,7 +676,6 @@ export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
     renderValues,
   );
 
-  // Clean props
   const cleanThumbProps = () => {
     const { ref: _ref, style: _thumbStyle, ...rest } = thumbProps as Record<string, unknown>;
     return rest;
@@ -732,7 +701,6 @@ export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
     ) as JSX.InputHTMLAttributes<HTMLInputElement>;
   };
 
-  // Merge styles
   const mergedStyle = () => {
     const thumbStyle = (thumbProps as { style?: Record<string, string> }).style || {};
     const renderStyle = renderProps.style() || {};
@@ -828,7 +796,6 @@ export interface ColorWheelThumbProps extends SlotProps {
   style?: StyleOrFunction<ColorWheelThumbRenderProps>;
 }
 
-// Context
 interface ColorWheelContextValue {
   state: ColorWheelState;
   trackProps: JSX.HTMLAttributes<HTMLDivElement>;
@@ -861,7 +828,6 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
     isDisabled: ariaProps.isDisabled,
   }));
 
-  // Wheel ref
   let wheelRef: HTMLDivElement | undefined;
   const setWheelRef = (el: HTMLDivElement) => {
     wheelRef = el;
@@ -879,7 +845,6 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
     () => wheelRef ?? null,
   );
 
-  // Render props values
   const renderValues = createMemo<ColorWheelRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging,
@@ -887,7 +852,6 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
     color: state.value,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -898,7 +862,6 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
@@ -940,13 +903,11 @@ export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
 
   const { state, trackProps, setWheelRef } = context;
 
-  // Render props values
   const renderValues = createMemo<ColorWheelTrackRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -957,13 +918,11 @@ export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
     renderValues,
   );
 
-  // Clean props
   const cleanTrackProps = () => {
     const { ref: _ref, style: _trackStyle, ...rest } = trackProps as Record<string, unknown>;
     return rest;
   };
 
-  // Merge styles
   const mergedStyle = () => {
     const trackStyle = (trackProps as { style?: Record<string, string> }).style || {};
     const renderStyle = renderProps.style() || {};
@@ -998,17 +957,14 @@ export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
 
   const { state, thumbProps, inputProps } = context;
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return state.isDisabled;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<ColorWheelThumbRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging,
@@ -1017,7 +973,6 @@ export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
     isHovered: isHovered(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -1028,7 +983,6 @@ export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
     renderValues,
   );
 
-  // Clean props
   const cleanThumbProps = () => {
     const { ref: _ref, style: _thumbStyle, ...rest } = thumbProps as Record<string, unknown>;
     return rest;
@@ -1048,7 +1002,6 @@ export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
     ) as JSX.InputHTMLAttributes<HTMLInputElement>;
   };
 
-  // Merge styles
   const mergedStyle = () => {
     const thumbStyle = (thumbProps as { style?: Record<string, string> }).style || {};
     const renderStyle = renderProps.style() || {};
@@ -1135,7 +1088,6 @@ export interface ColorFieldInputProps extends SlotProps {
   style?: StyleOrFunction<ColorFieldInputRenderProps>;
 }
 
-// Context
 interface ColorFieldContextValue {
   state: ColorFieldState;
   inputProps: JSX.InputHTMLAttributes<HTMLInputElement>;
@@ -1190,7 +1142,6 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
     () => inputRef ?? null,
   );
 
-  // Render props values
   const renderValues = createMemo<ColorFieldRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isReadOnly: state.isReadOnly,
@@ -1199,7 +1150,6 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
     channel: state.channel,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -1210,7 +1160,6 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
@@ -1231,7 +1180,6 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
         data-readonly={state.isReadOnly || undefined}
         data-invalid={state.isInvalid || undefined}
       >
-        {/* Label */}
         <Show when={local.label}>
           <label {...labelProps}>{local.label}</label>
         </Show>
@@ -1255,17 +1203,14 @@ export function ColorFieldInput(props: ColorFieldInputProps): JSX.Element {
 
   const { state, inputProps } = context;
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return state.isDisabled;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<ColorFieldInputRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isReadOnly: state.isReadOnly,
@@ -1275,7 +1220,6 @@ export function ColorFieldInput(props: ColorFieldInputProps): JSX.Element {
     isHovered: isHovered(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -1286,7 +1230,6 @@ export function ColorFieldInput(props: ColorFieldInputProps): JSX.Element {
     renderValues,
   );
 
-  // Clean props
   const cleanInputProps = () => {
     const { ref: _ref, style: _inputStyle, ...rest } = inputProps as Record<string, unknown>;
     return rest;
@@ -1365,13 +1308,11 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
   // Normalize color
   const color = createMemo(() => normalizeColor(resolvedColor()));
 
-  // Render props values
   const renderValues = createMemo<ColorSwatchRenderProps>(() => ({
     color: color(),
     colorValue: color().toString("css"),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -1382,18 +1323,15 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
 
-  // Clean props
   const cleanSwatchProps = () => {
     const { ref: _ref, style: _swatchStyle, ...rest } = swatchProps as Record<string, unknown>;
     return rest;
   };
 
-  // Merge styles
   const mergedStyle = () => {
     const swatchStyle = (swatchProps as { style?: Record<string, string> }).style || {};
     const renderStyle = renderProps.style() || {};

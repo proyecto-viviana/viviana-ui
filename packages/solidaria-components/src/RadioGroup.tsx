@@ -253,7 +253,6 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   const fallbackErrorMessageId = createUniqueId();
   const errorMessageId = () => groupAria.errorMessageProps.id ?? fallbackErrorMessageId;
 
-  // Render props values
   const renderValues = createMemo<RadioGroupRenderProps>(() => ({
     orientation: (ariaProps.orientation as Orientation) ?? "vertical",
     isDisabled: state.isDisabled,
@@ -263,7 +262,6 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
     state,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -274,10 +272,8 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(ariaProps, { global: true }));
 
-  // Remove ref from spread props to avoid type conflicts
   const cleanGroupProps = () => {
     const { ref: _ref, ...rest } = groupAria.radioGroupProps as Record<string, unknown>;
     return rest;
@@ -506,7 +502,6 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
     onHoverChange: local.onHoverChange,
   });
 
-  // Render props values
   const renderValues = createMemo<RadioRenderProps>(() => ({
     isSelected: radioAria.isSelected(),
     isHovered: isHovered(),
@@ -519,7 +514,6 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
     isRequired: state.isRequired,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: radioProps.children,
@@ -534,7 +528,6 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
     isSelected: radioAria.isSelected,
   }));
 
-  // Filter DOM props
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps, { global: true });
     delete (filtered as Record<string, unknown>).id;
@@ -542,7 +535,6 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
     return filtered;
   });
 
-  // Remove ref from spread props to avoid type conflicts
   const cleanLabelProps = () => {
     const { ref: _ref1, ...rest } = radioAria.labelProps as Record<string, unknown>;
     return rest;

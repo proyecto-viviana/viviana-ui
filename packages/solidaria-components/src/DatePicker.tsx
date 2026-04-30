@@ -240,7 +240,6 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
     ],
   );
 
-  // Create overlay trigger state
   const [isOpen, setIsOpen] = createSignal(false);
   let triggerRef: HTMLElement | null = null;
 
@@ -253,7 +252,6 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
     toggle: () => setIsOpen((prev) => !prev),
   };
 
-  // Create date field state
   const fieldState = createDateFieldState({
     ...stateProps,
     onChange: (value) => {
@@ -292,7 +290,6 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
     calendarState as unknown as CalendarState<DateValue>,
   );
 
-  // Context value
   const contextValue: DatePickerContextValue = {
     fieldState: fieldState as unknown as DateFieldState<DateValue>,
     calendarState: calendarState as unknown as CalendarState<DateValue>,
@@ -307,7 +304,6 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
     pickerAria,
   };
 
-  // Render props values
   const isInvalid = createMemo(
     () => fieldState.isInvalid() || Boolean((rest as { isInvalid?: boolean }).isInvalid),
   );
@@ -320,7 +316,6 @@ function DatePickerInner<T extends DateValue = CalendarDate>(
     isOpen: overlayState.isOpen,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -509,13 +504,11 @@ export function DatePickerButton(props: DatePickerButtonProps): JSX.Element {
   const context = useDatePickerContext();
   let buttonRef: HTMLButtonElement | undefined;
 
-  // Render props values
   const renderValues = createMemo<DatePickerButtonRenderProps>(() => ({
     isDisabled: context.fieldState.isDisabled() || (props.isDisabled ?? false),
     isOpen: context.overlayState.isOpen,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,

@@ -2,7 +2,6 @@
  * Color state management exports.
  */
 
-// Types
 export type {
   Color,
   ColorFormat,
@@ -12,7 +11,6 @@ export type {
   ColorAxes,
 } from "./types";
 
-// Color class and utilities
 export {
   parseColor,
   normalizeColor,
@@ -21,7 +19,6 @@ export {
   createHSBColor,
 } from "./Color";
 
-// State hooks
 export {
   createColorSliderState,
   type ColorSliderStateOptions,

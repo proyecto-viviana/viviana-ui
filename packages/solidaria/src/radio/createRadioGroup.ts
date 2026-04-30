@@ -114,7 +114,6 @@ export function createRadioGroup(
     return errors.length > 0 ? errors : undefined;
   };
 
-  // Use field for label, description, error message
   const { labelProps, fieldProps, descriptionProps, errorMessageProps } = createField({
     get id() {
       return getProps().id;
@@ -154,14 +153,11 @@ export function createRadioGroup(
     onFocusWithinChange: (isFocused: boolean) => getProps().onFocusChange?.(isFocused),
   });
 
-  // Filter DOM props
   const domProps = () =>
     filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
-  // Generate group name
   const groupName = getProps().name ?? createId();
 
-  // Store data for radio items to access
   radioGroupData.set(state, {
     name: groupName,
     form: getProps().form,

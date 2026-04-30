@@ -50,7 +50,6 @@ const descriptionNodes = new Map<string, { refCount: number; element: Element }>
  * ```
  */
 export function createDescription(description: Accessor<string | undefined>): DescriptionProps {
-  // SSR: return empty object
   if (isServer) {
     return {};
   }
@@ -68,7 +67,6 @@ export function createDescription(description: Accessor<string | undefined>): De
     let node = descriptionNodes.get(desc);
 
     if (!node) {
-      // Create new description element
       const newId = `solidaria-description-${descriptionId++}`;
       setId(newId);
 
@@ -81,13 +79,11 @@ export function createDescription(description: Accessor<string | undefined>): De
       node = { refCount: 0, element };
       descriptionNodes.set(desc, node);
     } else {
-      // Reuse existing element
       setId(node.element.id);
     }
 
     node.refCount++;
 
-    // Cleanup when description changes or component unmounts
     onCleanup(() => {
       if (node && --node.refCount === 0) {
         node.element.remove();
@@ -96,7 +92,6 @@ export function createDescription(description: Accessor<string | undefined>): De
     });
   });
 
-  // Return reactive props object
   return {
     get "aria-describedby"() {
       const desc = description();

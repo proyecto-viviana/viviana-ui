@@ -30,7 +30,6 @@ export function EventCard(props: EventCardProps) {
 
   return (
     <div class={`relative bg-bg-200 rounded-3xl overflow-hidden ${props.class ?? ""}`}>
-      {/* Decoration image (fire gif, etc) */}
       <Show when={props.decorationImage}>
         <div class="absolute -top-2 -right-2 z-10 flex flex-col gap-1">
           <img src={props.decorationImage} alt="" class="w-8 h-8 object-contain" />

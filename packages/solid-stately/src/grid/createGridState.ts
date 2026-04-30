@@ -16,25 +16,21 @@ export function createGridState<T extends object, C extends GridCollection<T> = 
 ): GridState<T, C> {
   const getOptions = () => options();
 
-  // Disabled keys as a Set
   const disabledKeys = createMemo(() => {
     const keys = getOptions().disabledKeys;
     return keys ? new Set(keys) : new Set<Key>();
   });
 
-  // Focus state
   const [isFocused, setIsFocused] = createSignal(false);
   const [focusedKey, setFocusedKeyInternal] = createSignal<Key | null>(null);
   const [childFocusStrategy, setChildFocusStrategy] = createSignal<FocusStrategy | null>(null);
   const [isKeyboardNavigationDisabled, setKeyboardNavigationDisabled] = createSignal(false);
 
-  // Selection state
   const [internalSelectedKeys, setInternalSelectedKeys] = createSignal<"all" | Set<Key>>(
     getInitialSelection(getOptions().defaultSelectedKeys),
   );
   const [anchorKey, setAnchorKey] = createSignal<Key | null>(null);
 
-  // Computed selection
   const selectedKeys = createMemo(() => {
     const opts = getOptions();
     if (opts.selectedKeys !== undefined) {
@@ -47,10 +43,8 @@ export function createGridState<T extends object, C extends GridCollection<T> = 
   const selectionBehavior = createMemo(() => getOptions().selectionBehavior ?? "toggle");
   const disallowEmptySelection = createMemo(() => getOptions().disallowEmptySelection ?? false);
 
-  // Focus mode handling
   const focusMode = createMemo(() => getOptions().focusMode ?? "row");
 
-  // Set focused key with focus mode awareness
   const setFocusedKey = (key: Key | null, strategy: FocusStrategy = "first") => {
     const opts = getOptions();
     const collection = opts.collection;

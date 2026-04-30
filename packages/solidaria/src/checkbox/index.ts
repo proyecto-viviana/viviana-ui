@@ -4,7 +4,6 @@ export type { AriaCheckboxProps, CheckboxAria } from "./createCheckbox";
 export { createCheckboxGroupState } from "@proyecto-viviana/solid-stately";
 export type { CheckboxGroupProps, CheckboxGroupState } from "@proyecto-viviana/solid-stately";
 
-// ARIA hooks (solidaria-specific)
 export { createCheckboxGroup, checkboxGroupData } from "./createCheckboxGroup";
 export type { AriaCheckboxGroupProps, CheckboxGroupAria } from "./createCheckboxGroup";
 

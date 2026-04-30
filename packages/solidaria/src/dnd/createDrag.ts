@@ -29,7 +29,6 @@ import { setGlobalDraggingTypes } from "./createDraggableCollection";
 export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
   const getProps = createMemo(() => props());
 
-  // Create drag state
   const state = createDragState(() => ({
     getItems: getProps().getItems,
     getAllowedDropOperations: getProps().getAllowedDropOperations,
@@ -41,7 +40,6 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
     preview: getProps().preview,
   }));
 
-  // Track position for drag move
   let lastX = 0;
   let lastY = 0;
 
@@ -51,10 +49,8 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
 
     const p = getProps();
 
-    // Call state handler
     state.startDrag(e.clientX, e.clientY);
 
-    // Get items and write to data transfer
     const items = state.getItems();
     setGlobalDraggingTypes(getTypes(items));
     e.dataTransfer?.clearData?.();
@@ -62,7 +58,6 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
       writeToDataTransfer(e.dataTransfer, items);
     }
 
-    // Set allowed drop operations
     let allowed = DROP_OPERATION.all;
     const allowedOps = state.getAllowedDropOperations();
     if (allowedOps.length > 0) {
@@ -80,7 +75,6 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
       ) as DataTransfer["effectAllowed"];
     }
 
-    // Handle custom preview
     if (typeof p.preview?.current === "function" && e.dataTransfer) {
       p.preview.current(items, (node, userX, userY) => {
         if (!node || !e.dataTransfer) return;
@@ -185,7 +179,6 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
       onDragEnd,
     };
 
-    // Add keyboard handlers if no separate drag button
     if (!p.hasDragButton) {
       baseProps.onKeyDown = onKeyDown;
       baseProps.onKeyUp = onKeyUp;

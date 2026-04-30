@@ -87,7 +87,6 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
       {...headlessProps}
       aria-label={local["aria-label"] ?? local.title ?? "Contextual help"}
       class={[
-        // Trigger styling
         "[&_.solidaria-ContextualHelpTrigger-trigger]:flex [&_.solidaria-ContextualHelpTrigger-trigger]:items-center",
         "[&_.solidaria-ContextualHelpTrigger-trigger]:py-2 [&_.solidaria-ContextualHelpTrigger-trigger]:px-4",
         "[&_.solidaria-ContextualHelpTrigger-trigger]:cursor-pointer",
@@ -98,12 +97,9 @@ export function ContextualHelpTrigger(props: ContextualHelpTriggerProps): JSX.El
         "[&_.solidaria-ContextualHelpTrigger-trigger]:focus-visible:ring-2",
         "[&_.solidaria-ContextualHelpTrigger-trigger]:focus-visible:ring-inset",
         "[&_.solidaria-ContextualHelpTrigger-trigger]:focus-visible:ring-accent-300",
-        // Unavailable state
         "[&_.solidaria-ContextualHelpTrigger-trigger[data-unavailable]]:text-primary-500",
-        // Disabled state
         "[&_.solidaria-ContextualHelpTrigger-trigger[data-disabled]]:opacity-50",
         "[&_.solidaria-ContextualHelpTrigger-trigger[data-disabled]]:cursor-not-allowed",
-        // Content popover styling
         "[&_.solidaria-ContextualHelpTrigger-content]:bg-bg-400",
         "[&_.solidaria-ContextualHelpTrigger-content]:border [&_.solidaria-ContextualHelpTrigger-content]:border-primary-600",
         "[&_.solidaria-ContextualHelpTrigger-content]:rounded-lg [&_.solidaria-ContextualHelpTrigger-content]:shadow-lg",

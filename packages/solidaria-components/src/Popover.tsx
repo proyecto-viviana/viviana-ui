@@ -147,7 +147,6 @@ interface PopoverContextValue {
   arrowProps: () => JSX.HTMLAttributes<HTMLElement>;
 }
 
-// Internal context for placement + arrow
 export const PopoverContext = createContext<PopoverContextValue | null>(null);
 const PopoverGroupContext = createContext<(() => HTMLElement | null) | null>(null);
 
@@ -158,7 +157,6 @@ const PopoverGroupContext = createContext<(() => HTMLElement | null) | null>(nul
 export function PopoverTrigger(props: PopoverTriggerProps): JSX.Element {
   const [local] = splitProps(props, ["isOpen", "defaultOpen", "onOpenChange"]);
 
-  // Create overlay trigger state
   const state = createOverlayTriggerState({
     get isOpen() {
       return local.isOpen;
@@ -169,14 +167,11 @@ export function PopoverTrigger(props: PopoverTriggerProps): JSX.Element {
     onOpenChange: local.onOpenChange,
   });
 
-  // Ref for the trigger element
   let triggerRef: HTMLElement | null = null;
   const triggerId = createUniqueId();
 
-  // Create overlay trigger (for side effects like scroll close)
   createOverlayTrigger({ type: "dialog" }, state, () => triggerRef);
 
-  // Context value
   const contextValue = createMemo(() => ({
     state: {
       isOpen: () => state.isOpen(),
@@ -234,16 +229,13 @@ export function Popover(props: PopoverProps): JSX.Element {
   let popoverRef!: HTMLDivElement;
   const [groupRef, setGroupRef] = createSignal<HTMLDivElement | null>(null);
 
-  // Get trigger context if available
   const triggerContext = useContext(PopoverTriggerContext);
   const popoverGroupContext = useContext(PopoverGroupContext);
   const resolvedTrigger = () => local.trigger ?? triggerContext?.trigger;
   const isSubPopover = () => resolvedTrigger() === "SubmenuTrigger" && popoverGroupContext != null;
 
-  // Internal state for uncontrolled mode
   const [internalOpen, setInternalOpen] = createSignal(local.defaultOpen ?? false);
 
-  // Determine if open
   const isOpen = (): boolean => {
     if (local.isOpen !== undefined) return local.isOpen;
     if (triggerContext) {
@@ -264,7 +256,6 @@ export function Popover(props: PopoverProps): JSX.Element {
     }
   };
 
-  // Get trigger ref
   const getTriggerRef = () => {
     if (local.triggerRef) return local.triggerRef();
     if (triggerContext) return triggerContext.triggerRef();
@@ -332,7 +323,6 @@ export function Popover(props: PopoverProps): JSX.Element {
     },
   );
 
-  // Render props values
   const renderValues = createMemo<PopoverRenderProps>(() => ({
     trigger: resolvedTrigger() ?? null,
     placement: popoverAria.placement(),
@@ -340,7 +330,6 @@ export function Popover(props: PopoverProps): JSX.Element {
     isExiting: local.isExiting ?? false,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -373,12 +362,10 @@ export function Popover(props: PopoverProps): JSX.Element {
     onCleanup(() => observer.disconnect());
   });
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
 
-  // Remove style/ref from spread props to avoid collisions
   const cleanPopoverProps = () => {
     const {
       style: _style,
@@ -400,7 +387,6 @@ export function Popover(props: PopoverProps): JSX.Element {
     };
   };
 
-  // Check if we should render with dialog role
   const shouldBeDialog = () => !local.isNonModal || resolvedTrigger() === "SubmenuTrigger";
   const portalContext = useUNSAFE_PortalContext();
   const portalContainer = () => {

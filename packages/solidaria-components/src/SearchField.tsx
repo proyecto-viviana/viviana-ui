@@ -171,7 +171,6 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
     ],
   );
 
-  // Create search field state
   const state = createSearchFieldState({
     get value() {
       return stateProps.value;
@@ -184,13 +183,11 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
     },
   });
 
-  // Ref for the input
   let inputRef: HTMLInputElement | undefined;
   const setInputRef = (el: HTMLInputElement) => {
     inputRef = el;
   };
 
-  // Create search field aria props
   const searchFieldAria = createSearchField(
     {
       get isDisabled() {
@@ -309,7 +306,6 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
     () => inputRef ?? null,
   );
 
-  // Render props values
   const renderValues = createMemo<SearchFieldRenderProps>(() => ({
     isEmpty: state.value() === "",
     isDisabled: ariaProps.isDisabled ?? false,
@@ -319,7 +315,6 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
     value: state.value(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -330,7 +325,6 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
@@ -425,17 +419,14 @@ export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
     throw new Error("SearchFieldInput must be used within a SearchField");
   }
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return context.isDisabled;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<SearchFieldInputRenderProps>(() => ({
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible(),
@@ -444,7 +435,6 @@ export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
     isInvalid: context.isInvalid,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -454,7 +444,6 @@ export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanInputProps = () => {
     const { ref: _ref, ...rest } = context.inputProps as Record<string, unknown>;
     return rest;
@@ -505,7 +494,6 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
     }
   };
 
-  // Create press
   const { isPressed, pressProps } = createPress({
     get isDisabled() {
       return context.isDisabled || context.isReadOnly;
@@ -514,21 +502,18 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
     onPress: clear,
   });
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return context.isDisabled || context.isReadOnly;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<SearchFieldClearButtonRenderProps>(() => ({
     isPressed: isPressed(),
     isHovered: isHovered(),
     isDisabled: isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -539,7 +524,6 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanPressProps = () => {
     const { ref: _ref, ...rest } = pressProps as Record<string, unknown>;
     return rest;
@@ -549,7 +533,6 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
     return rest;
   };
 
-  // Only show clear button when there's a value
   return (
     <Show when={!isEmpty()}>
       <button

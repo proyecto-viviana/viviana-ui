@@ -1,8 +1,6 @@
 import type { JSX } from "solid-js";
 import { Show, For } from "solid-js";
 
-// ── Types ──────────────────────────────────────────────────────────
-
 export type SkeletonShape = "text" | "circle" | "rectangle";
 export type SkeletonSize = "sm" | "md" | "lg";
 export type SkeletonGap = "sm" | "md" | "lg";
@@ -35,8 +33,6 @@ export interface SkeletonCollectionProps {
   class?: string;
 }
 
-// ── Style maps ─────────────────────────────────────────────────────
-
 const sizeHeight: Record<SkeletonSize, string> = {
   sm: "h-4",
   md: "h-6",
@@ -54,8 +50,6 @@ const gapClasses: Record<SkeletonGap, string> = {
   md: "gap-3",
   lg: "gap-4",
 };
-
-// ── Shimmer animation ──────────────────────────────────────────────
 
 /**
  * Inline style for the shimmer gradient + animation.
@@ -93,20 +87,15 @@ function injectKeyframes() {
   document.head.appendChild(style);
 }
 
-// ── Helpers ────────────────────────────────────────────────────────
-
 function toPx(value: string | number): string {
   return typeof value === "number" ? `${value}px` : value;
 }
-
-// ── Skeleton ───────────────────────────────────────────────────────
 
 export function Skeleton(props: SkeletonProps) {
   const isLoading = () => props.isLoading ?? true;
   const shape = () => props.shape ?? "text";
   const size = () => props.size ?? "md";
 
-  // Inject keyframes on first render
   injectKeyframes();
 
   const dimensionStyle = (): JSX.CSSProperties => {
@@ -136,8 +125,6 @@ export function Skeleton(props: SkeletonProps) {
     </Show>
   );
 }
-
-// ── SkeletonCollection ─────────────────────────────────────────────
 
 export function SkeletonCollection(props: SkeletonCollectionProps) {
   const count = () => props.count ?? 3;

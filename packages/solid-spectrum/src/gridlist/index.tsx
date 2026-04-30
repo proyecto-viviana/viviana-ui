@@ -166,7 +166,6 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     const sizeClass = styles().list;
     const variantClass = variantStyle().list;
 
-    // Layout classes
     let layoutClass = "";
     if (layout() === "grid") {
       if (local.columns === "auto" || local.columns === undefined) {
@@ -280,7 +279,6 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
     <HeadlessGridListItem {...headlessProps} class={getClassName}>
       {(renderProps: GridListItemRenderProps) => (
         <>
-          {/* Image */}
           <Show when={local.image}>
             <img
               src={local.image}
@@ -289,17 +287,14 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
             />
           </Show>
 
-          {/* Icon */}
           <Show when={local.icon}>
             <span class={`shrink-0 ${sizeStyle.icon}`}>{local.icon!()}</span>
           </Show>
 
-          {/* Selection indicator */}
           <Show when={renderProps.isSelected}>
             <CheckIcon class={`shrink-0 ${sizeStyle.icon} text-accent`} />
           </Show>
 
-          {/* Content */}
           <div class="flex flex-col flex-1 min-w-0">
             <span class="truncate">
               {typeof props.children === "function" ? props.children(renderProps) : props.children}

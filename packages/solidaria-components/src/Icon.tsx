@@ -81,13 +81,11 @@ export function Icon(props: IconProps): JSX.Element {
   const isInteractive = () => !!local.onPress;
   const isDecorative = () => !hasLabel();
 
-  // Render props values
   const renderValues = createMemo<IconRenderProps>(() => ({
     isDecorative: isDecorative(),
     isInteractive: isInteractive(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: local.children,
@@ -98,7 +96,6 @@ export function Icon(props: IconProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest, { global: true }));
 
   return (

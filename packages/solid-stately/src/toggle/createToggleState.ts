@@ -37,23 +37,18 @@ export interface ToggleState {
 export function createToggleState(props: MaybeAccessor<ToggleStateOptions> = {}): ToggleState {
   const getProps = () => access(props);
 
-  // Get initial values
   const initialProps = getProps();
   const initialSelected = initialProps.isSelected ?? initialProps.defaultSelected ?? false;
 
-  // Create internal signal for uncontrolled mode
   const [internalSelected, setInternalSelected] = createSignal(initialSelected);
 
-  // Determine if controlled
   const isControlled = () => getProps().isSelected !== undefined;
 
-  // Get current selection state
   const isSelected: Accessor<boolean> = () => {
     const p = getProps();
     return isControlled() ? (p.isSelected ?? false) : internalSelected();
   };
 
-  // Update selection state
   function setSelected(value: boolean): void {
     const p = getProps();
     if (p.isReadOnly) {
@@ -67,7 +62,6 @@ export function createToggleState(props: MaybeAccessor<ToggleStateOptions> = {})
     p.onChange?.(value);
   }
 
-  // Toggle selection state
   function toggle(): void {
     const p = getProps();
     if (p.isReadOnly) {

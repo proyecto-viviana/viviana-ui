@@ -71,7 +71,6 @@ export function Icon(props: IconProps): JSX.Element {
 export { GitHubIcon } from "./icons/GitHubIcon";
 export type { GitHubIconProps } from "./icons/GitHubIcon";
 
-// Sub-component re-exports
 export { Illustration } from "./Illustration";
 export type { IllustrationProps, IllustrationSize } from "./Illustration";
 export { UIIcon } from "./UIIcon";

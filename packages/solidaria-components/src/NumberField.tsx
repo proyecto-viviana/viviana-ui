@@ -172,7 +172,6 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
     ],
   );
 
-  // Create number field state
   const state = createNumberFieldState({
     get value() {
       return stateProps.value;
@@ -206,13 +205,11 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
     },
   });
 
-  // Ref for the input
   let inputRef: HTMLInputElement | undefined;
   const setInputRef = (el: HTMLInputElement) => {
     inputRef = el;
   };
 
-  // Create number field aria props
   const numberFieldAria = createNumberField(
     {
       get label() {
@@ -286,7 +283,6 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
     () => inputRef ?? null,
   );
 
-  // Render props values
   const renderValues = createMemo<NumberFieldRenderProps>(() => ({
     isDisabled: ariaProps.isDisabled ?? false,
     isInvalid: ariaProps.isInvalid ?? false,
@@ -295,7 +291,6 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
     value: state.numberValue(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -306,7 +301,6 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
@@ -405,7 +399,6 @@ export function NumberFieldGroup(props: {
     throw new Error("NumberFieldGroup must be used within a NumberField");
   }
 
-  // Extract ref to avoid type issues
   const cleanGroupProps = () => {
     const { ref: _ref, ...rest } = context.groupProps as Record<string, unknown>;
     return rest;
@@ -433,17 +426,14 @@ export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
     throw new Error("NumberFieldInput must be used within a NumberField");
   }
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return context.isDisabled;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<NumberFieldInputRenderProps>(() => ({
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible(),
@@ -452,7 +442,6 @@ export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
     isInvalid: context.isInvalid,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -462,7 +451,6 @@ export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanInputProps = () => {
     const { ref: _ref, ...rest } = context.inputProps as Record<string, unknown>;
     return rest;
@@ -505,7 +493,6 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
     throw new Error("NumberFieldIncrementButton must be used within a NumberField");
   }
 
-  // Create press
   const { isPressed, pressProps } = createPress({
     get isDisabled() {
       return context.isDisabled || !context.state.canIncrement();
@@ -515,7 +502,6 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
     },
   });
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return context.isDisabled || !context.state.canIncrement();
@@ -524,14 +510,12 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
 
   const isDisabled = () => context.isDisabled || !context.state.canIncrement();
 
-  // Render props values
   const renderValues = createMemo<NumberFieldButtonRenderProps>(() => ({
     isPressed: isPressed(),
     isHovered: isHovered(),
     isDisabled: isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -542,7 +526,6 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanButtonProps = () => {
     const { ref: _ref, ...rest } = context.incrementButtonProps as Record<string, unknown>;
     return rest;
@@ -584,7 +567,6 @@ export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProp
     throw new Error("NumberFieldDecrementButton must be used within a NumberField");
   }
 
-  // Create press
   const { isPressed, pressProps } = createPress({
     get isDisabled() {
       return context.isDisabled || !context.state.canDecrement();
@@ -594,7 +576,6 @@ export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProp
     },
   });
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return context.isDisabled || !context.state.canDecrement();
@@ -603,14 +584,12 @@ export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProp
 
   const isDisabled = () => context.isDisabled || !context.state.canDecrement();
 
-  // Render props values
   const renderValues = createMemo<NumberFieldButtonRenderProps>(() => ({
     isPressed: isPressed(),
     isHovered: isHovered(),
     isDisabled: isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -621,7 +600,6 @@ export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProp
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanButtonProps = () => {
     const { ref: _ref, ...rest } = context.decrementButtonProps as Record<string, unknown>;
     return rest;

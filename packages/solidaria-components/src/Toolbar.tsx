@@ -73,7 +73,6 @@ export function Toolbar(props: ToolbarProps): JSX.Element {
     ["orientation", "aria-label", "aria-labelledby"],
   );
 
-  // Get slot props from context if available
   const ctx = useContext(ToolbarContext);
   const slotProps = () => {
     if (ctx?.slots && local.slot) {
@@ -82,7 +81,6 @@ export function Toolbar(props: ToolbarProps): JSX.Element {
     return {};
   };
 
-  // Create toolbar aria props
   const { toolbarProps, orientation } = createToolbar({
     get orientation() {
       return ariaProps.orientation;
@@ -98,12 +96,10 @@ export function Toolbar(props: ToolbarProps): JSX.Element {
     },
   });
 
-  // Render props values
   const renderValues = createMemo<ToolbarRenderProps>(() => ({
     orientation: orientation(),
   }));
 
-  // Resolve class
   const resolvedClass = createMemo(() => {
     const cls = local.class;
     if (typeof cls === "function") {
@@ -112,7 +108,6 @@ export function Toolbar(props: ToolbarProps): JSX.Element {
     return cls ?? "solidaria-Toolbar";
   });
 
-  // Resolve style
   const resolvedStyle = createMemo(() => {
     const style = local.style;
     if (typeof style === "function") {
@@ -121,7 +116,6 @@ export function Toolbar(props: ToolbarProps): JSX.Element {
     return style;
   });
 
-  // Resolve children (support render props)
   const resolvedChildren = createMemo(() => {
     const children = props.children;
     if (typeof children === "function") {
@@ -130,7 +124,6 @@ export function Toolbar(props: ToolbarProps): JSX.Element {
     return children;
   });
 
-  // Filter remaining DOM props
   const filteredDOMProps = createMemo(() => filterDOMProps(domProps, { global: true }));
 
   return (

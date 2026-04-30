@@ -89,7 +89,6 @@ export function createRadio(
     return selected === v;
   };
 
-  // Warn if no accessible label
   createEffect(() => {
     const p = getProps();
     const hasChildren = p.children != null;
@@ -117,22 +116,17 @@ export function createRadio(
     const inputEl = ref();
     if (!inputEl) return;
 
-    // Track syncVersion to trigger on any selection attempt
-    // This is crucial for controlled mode where isSelected() may not change
-    // syncVersion is stored in an internal WeakMap to maintain API parity with React-Aria
+    // The WeakMap accessor is outside the public API to maintain React Aria parity.
     const syncVersion = radioGroupSyncVersion.get(state);
     syncVersion?.();
 
-    // Read the reactive state to establish tracking and get current value
     const shouldBeChecked = isSelected();
 
-    // Sync the DOM checked state immediately
     if (inputEl.checked !== shouldBeChecked) {
       inputEl.checked = shouldBeChecked;
     }
   });
 
-  // Handle input change
   // SolidJS-specific: Unlike React, the input's `checked` state can get out of sync
   // with our reactive state. This happens because:
   // 1. A readonly `<input type="radio" />` is always "checkable" in the browser
@@ -189,7 +183,6 @@ export function createRadio(
     },
   });
 
-  // Handle press state on the label.
   const { pressProps: labelPressProps, isPressed: isLabelPressed } = createPress({
     get onPressStart() {
       return getProps().onPressStart;
@@ -216,7 +209,6 @@ export function createRadio(
     },
   });
 
-  // Handle focusable
   const { focusableProps } = createFocusable(
     {
       get isDisabled() {
@@ -245,14 +237,11 @@ export function createRadio(
     ref as unknown as (el: HTMLElement) => void,
   );
 
-  // Combine press and focusable props for input
   const interactions = mergeProps(pressProps, focusableProps);
 
-  // Filter DOM props
   const domProps = () =>
     filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
-  // Calculate tabIndex based on selection and focus state
   const getTabIndex = (): number | undefined => {
     if (isDisabled()) {
       return undefined;
@@ -263,13 +252,11 @@ export function createRadio(
     const currentValue = value();
 
     if (selected != null) {
-      // If there's a selection, only the selected radio is focusable
       if (selected === currentValue) {
         return 0;
       }
       return -1;
     } else {
-      // If no selection, the last focused or first radio is focusable
       if (lastFocused === currentValue || lastFocused == null) {
         return 0;
       }
@@ -277,10 +264,8 @@ export function createRadio(
     }
   };
 
-  // Get group data
   const getGroupData = () => radioGroupData.get(state);
 
-  // Combined pressed state
   const combinedIsPressed: Accessor<boolean> = () => isPressed() || isLabelPressed();
 
   return {
@@ -292,7 +277,6 @@ export function createRadio(
       const p = getProps();
       const groupData = getGroupData();
 
-      // Build aria-describedby
       const describedByIds: string[] = [];
       if (p["aria-describedby"]) {
         describedByIds.push(p["aria-describedby"]);

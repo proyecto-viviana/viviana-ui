@@ -4,7 +4,6 @@
  * Exports for DnD functionality.
  */
 
-// Types
 export type {
   DropOperation,
   DragItem,
@@ -46,20 +45,16 @@ export type {
   DraggableCollectionProps,
 } from "./types";
 
-// Drag state
 export { createDragState, type DragStateOptions, type DragState } from "./createDragState";
 
-// Drop state
 export { createDropState, type DropStateOptions, type DropState } from "./createDropState";
 
-// Draggable collection state
 export {
   createDraggableCollectionState,
   type DraggableCollectionStateOptions,
   type DraggableCollectionState,
 } from "./createDraggableCollectionState";
 
-// Droppable collection state
 export {
   createDroppableCollectionState,
   DIRECTORY_DRAG_TYPE,

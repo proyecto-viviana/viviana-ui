@@ -83,7 +83,6 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
     ariaProps.href ? router.useHref(ariaProps.href) : undefined,
   );
 
-  // Determine element type - use 'a' if href is provided and not disabled
   const elementType = () => {
     if (ariaProps.href && !ariaProps.isDisabled) {
       return "a";
@@ -91,7 +90,6 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
     return "span";
   };
 
-  // Create link aria props
   const linkAria = createLink({
     get elementType() {
       return elementType();
@@ -164,10 +162,8 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
     },
   });
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return ariaProps.isDisabled ?? false;
@@ -183,7 +179,6 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
     },
   });
 
-  // Render props values
   const renderValues = createMemo<LinkRenderProps>(() => ({
     isCurrent: !!ariaProps["aria-current"],
     isHovered: isHovered(),
@@ -193,7 +188,6 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
     isDisabled: ariaProps.isDisabled ?? false,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -204,10 +198,8 @@ export function Link(props: ParentProps<LinkProps>): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(ariaProps, { global: true }));
 
-  // Remove ref from spread props to avoid type conflicts
   const cleanLinkProps = () => {
     const { ref: _ref1, ...rest } = linkAria.linkProps as Record<string, unknown>;
     return rest;

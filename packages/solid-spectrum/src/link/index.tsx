@@ -58,10 +58,8 @@ export function Link(props: LinkProps): JSX.Element {
   const getClassName = (renderProps: LinkRenderProps): string => {
     const base = "transition-colors duration-200 cursor-pointer rounded-sm outline-none";
 
-    // Variant colors
     const variantClass = variantStyles[variant];
 
-    // Underline behavior
     let underlineClass: string;
     if (local.isStandalone && local.isQuiet) {
       // Quiet standalone: no underline by default, underline on hover/focus
@@ -72,18 +70,14 @@ export function Link(props: LinkProps): JSX.Element {
       underlineClass = "underline";
     }
 
-    // Font weight for standalone
     const weightClass = local.isStandalone ? "font-medium" : "";
 
-    // Focus ring
     const focusClass = renderProps.isFocusVisible
       ? "ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400"
       : "";
 
-    // Disabled state
     const disabledClass = renderProps.isDisabled ? "opacity-50 cursor-not-allowed" : "";
 
-    // Pressed state
     const pressedClass = renderProps.isPressed ? "opacity-80" : "";
 
     return [

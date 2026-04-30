@@ -46,7 +46,6 @@ export const SeparatorContext = createContext<SeparatorProps | null>(null);
 export function Separator(props: SeparatorProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, ["class", "style", "slot"]);
 
-  // Determine the element type
   const elementType = createMemo(() => {
     let element = ariaProps.elementType || "hr";
     // If vertical and using hr, switch to div since hr is inherently horizontal
@@ -56,7 +55,6 @@ export function Separator(props: SeparatorProps): JSX.Element {
     return element;
   });
 
-  // Create separator aria props
   const separatorAria = createSeparator({
     get orientation() {
       return ariaProps.orientation;
@@ -75,12 +73,10 @@ export function Separator(props: SeparatorProps): JSX.Element {
     },
   });
 
-  // Render props values
   const renderValues = createMemo<SeparatorRenderProps>(() => ({
     orientation: ariaProps.orientation ?? "horizontal",
   }));
 
-  // Resolve class
   const resolvedClass = createMemo(() => {
     const cls = local.class;
     if (typeof cls === "function") {
@@ -89,7 +85,6 @@ export function Separator(props: SeparatorProps): JSX.Element {
     return cls ?? "solidaria-Separator";
   });
 
-  // Resolve style
   const resolvedStyle = createMemo(() => {
     const style = local.style;
     if (typeof style === "function") {
@@ -98,7 +93,6 @@ export function Separator(props: SeparatorProps): JSX.Element {
     return style;
   });
 
-  // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(ariaProps, { global: true }));
 
   return (

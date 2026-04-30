@@ -244,13 +244,11 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
     },
   });
 
-  // Render props values
   const renderValues = createMemo<TabsRenderProps>(() => ({
     orientation: state.orientation(),
     isDisabled: state.isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -261,7 +259,6 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
@@ -289,7 +286,6 @@ export function Tabs<T>(props: TabsProps<T>): JSX.Element {
 export function TabList<T>(props: TabListProps<T>): JSX.Element {
   const [local, ariaProps] = splitProps(props, ["class", "style", "slot"]);
 
-  // Get state from context
   const context = useContext(TabsContext);
 
   return (
@@ -323,10 +319,8 @@ function TabListInner<T>(props: {
   // Create tab list aria props
   const { tabListProps } = createTabList<T>(props.ariaProps as AriaTabListProps, state);
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Render props values
   const renderValues = createMemo<TabListRenderProps>(() => ({
     orientation: state.orientation(),
     isDisabled: state.isDisabled(),
@@ -334,7 +328,6 @@ function TabListInner<T>(props: {
     isFocusVisible: isFocusVisible(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: props.local.class,
@@ -412,7 +405,6 @@ function TabListInner<T>(props: {
 export function Tab(props: TabProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, ["class", "style", "slot", "id"]);
 
-  // Get state from context
   const context = useContext(TabsStateContext);
 
   return (
@@ -453,14 +445,12 @@ function TabInner(props: {
     () => tabRef ?? null,
   );
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return tabAria.isDisabled();
     },
   });
 
-  // Render props values
   const renderValues = createMemo<TabRenderProps>(() => ({
     isSelected: tabAria.isSelected(),
     isFocused: tabAria.isFocused(),
@@ -470,7 +460,6 @@ function TabInner(props: {
     isDisabled: tabAria.isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -599,7 +588,6 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
   const isEntering = () => false;
   const isExiting = () => false;
 
-  // Render props values
   const renderValues = createMemo<TabPanelRenderProps>(() => ({
     isSelected: isSelected(),
     isFocused: isFocused(),
@@ -610,7 +598,6 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
     state,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -627,7 +614,6 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
   const shouldRender = () => {
     if (local.shouldForceMount) return true;
     if (ariaProps.id === undefined) {
-      // Shared panel pattern - render when any tab is selected
       return state ? state.selectedKey() !== null : true;
     }
     return isSelected();

@@ -23,12 +23,10 @@ export interface EventPoint {
  * Checks if two rectangles overlap.
  */
 export function areRectanglesOverlapping(a: Rect, b: Rect): boolean {
-  // Check if one rectangle is to the left of the other
   if (a.left > b.right || b.left > a.right) {
     return false;
   }
 
-  // Check if one rectangle is above the other
   if (a.top > b.bottom || b.top > a.bottom) {
     return false;
   }
@@ -44,7 +42,6 @@ export function getPointClientRect(point: EventPoint): Rect {
   let offsetX = 0;
   let offsetY = 0;
 
-  // Use width/height if available (PointerEvent)
   if (point.width !== undefined && point.width > 0) {
     offsetX = point.width / 2;
   } else if (point.radiusX !== undefined && point.radiusX > 0) {

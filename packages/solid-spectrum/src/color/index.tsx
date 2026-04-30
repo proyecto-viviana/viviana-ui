@@ -671,11 +671,9 @@ export type { Color, ColorChannel, ColorFormat };
 
 export { parseColor, getColorChannels } from "@proyecto-viviana/solid-stately";
 
-// ColorEditor
 export { ColorEditor } from "./ColorEditor";
 export type { ColorEditorProps } from "./ColorEditor";
 
-// ColorSwatchPicker
 export { ColorSwatchPicker, ColorSwatchPickerItem } from "./ColorSwatchPicker";
 export type {
   ColorSwatchPickerProps,

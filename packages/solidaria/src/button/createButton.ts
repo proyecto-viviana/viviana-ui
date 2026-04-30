@@ -67,7 +67,6 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
     (focusableProps as Record<string, unknown>).tabIndex = -1;
   }
 
-  // Build base props based on element type
   let additionalProps: Record<string, unknown> = {};
 
   if (isNativeButton) {
@@ -99,7 +98,6 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
     }
   }
 
-  // ARIA attributes
   const ariaProps: Record<string, unknown> = {};
 
   if (props["aria-pressed"] !== undefined) {

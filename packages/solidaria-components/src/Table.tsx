@@ -390,7 +390,6 @@ export const TableColumnResizeStateContext = createContext<{
   getState: () => TableColumnResizeState | null;
 } | null>(null);
 
-// Row-level context for cells
 interface TableRowContextValue {
   rowKey: Key;
   rowNode: GridNode<unknown>;
@@ -425,10 +424,8 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     ],
   );
 
-  // Create ref signal
   const [ref, setRef] = createSignal<HTMLTableElement | null>(null);
 
-  // Create collection
   const collection = createMemo(() =>
     createTableCollection<T>({
       columns: stateProps.columns,
@@ -439,7 +436,6 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     }),
   );
 
-  // Create table state
   const state = createTableState<T, TableCollection<T>>(() => ({
     collection: collection(),
     disabledKeys: stateProps.disabledKeys,
@@ -454,7 +450,6 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
   }));
   const parentCollectionRenderer = useCollectionRenderer<T>();
 
-  // Create table aria props
   const { gridProps } = createTable<T>(
     () => ({
       id: ariaProps.id,
@@ -472,10 +467,8 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     ref,
   );
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Render props values
   const renderValues = createMemo<TableRenderProps>(() => ({
     isFocused: state.isFocused || isFocused(),
     isFocusVisible: isFocusVisible(),
@@ -494,13 +487,11 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps as Record<string, unknown>, { global: true });
     return filtered;
   });
 
-  // Remove ref from spread props
   const cleanGridProps = () => {
     const { ref: _ref1, ...rest } = gridProps as Record<string, unknown>;
     return rest;
@@ -710,7 +701,6 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
     "ref",
   ]);
 
-  // Get context
   const context = useContext(TableContext);
   if (!context) {
     throw new Error("TableHeader must be used within a Table");
@@ -731,13 +721,11 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
     },
   });
 
-  // Render props values
   const renderValues = createMemo<TableHeaderRenderProps>(() => ({
     isFocused: false,
     isHovered: isHovered(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -805,21 +793,17 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     "ref",
   ]);
 
-  // Get context
   const context = useContext(TableContext);
   if (!context) {
     throw new Error("TableColumn must be used within a Table");
   }
   const { state, collection } = context;
 
-  // Create ref signal
   const [ref, setRef] = createSignal<HTMLTableCellElement | null>(null);
 
-  // Find the column node
   const columnNode = createMemo(() => {
     const node = collection.getItem(local.id);
     if (!node) {
-      // Create a simple node for the column
       return {
         type: "column" as const,
         key: local.id,
@@ -834,7 +818,6 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     return node;
   });
 
-  // Create column header aria props
   const columnHeaderAria = createTableColumnHeader<object>(
     () => ({
       node: columnNode(),
@@ -844,7 +827,6 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     ref,
   );
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return !local.allowsSorting;
@@ -860,10 +842,8 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     },
   });
 
-  // Create focus ring
   const { isFocusVisible, focusProps } = createFocusRing();
 
-  // Get sort direction
   const sortDirection = createMemo(() => {
     const sortDescriptor = state.sortDescriptor;
     if (sortDescriptor?.column === local.id) {
@@ -872,17 +852,14 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     return undefined;
   });
 
-  // Get resize state from context (if inside ResizableTableContainer)
   const resizeCtx = useContext(TableColumnResizeStateContext);
 
-  // Check if this column is currently being resized
   const isResizing = createMemo(() => {
     const rs = resizeCtx?.getState();
     if (!rs) return false;
     return rs.resizingColumn() === local.id;
   });
 
-  // Get computed width from resize state
   const resizeWidth = createMemo(() => {
     const rs = resizeCtx?.getState();
     if (!rs) return undefined;
@@ -890,7 +867,6 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     return w > 0 ? w : undefined;
   });
 
-  // Render props values
   const renderValues = createMemo<TableColumnRenderProps>(() => ({
     isFocused: state.focusedKey === local.id,
     isFocusVisible: isFocusVisible() && state.focusedKey === local.id,
@@ -911,7 +887,6 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanColumnHeaderProps = () => {
     const { ref: _ref1, ...rest } = columnHeaderAria.columnHeaderProps as Record<string, unknown>;
     return rest;
@@ -925,7 +900,6 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     return rest;
   };
 
-  // Merge resize width into style
   const columnStyle = createMemo(() => {
     const base = renderProps.style();
     const rw = resizeWidth();
@@ -1001,7 +975,6 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
     "ref",
   ]);
 
-  // Get context
   const context = useContext(TableContext);
   if (!context) {
     throw new Error("TableBody must be used within a Table");
@@ -1009,15 +982,12 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
 
   const { rowGroupProps } = createTableRowGroup(() => ({ type: "tbody" }));
 
-  // Use provided items or context items
   const items = createMemo(() => (local.items ?? context.items) as T[]);
 
-  // Render props values
   const renderValues = createMemo<TableBodyRenderProps>(() => ({
     isEmpty: items().length === 0,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -1405,7 +1375,6 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     "routerOptions",
   ]);
 
-  // Get context
   const context = useContext(TableContext);
   if (!context) {
     throw new Error("TableRow must be used within a Table");
@@ -1426,14 +1395,11 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     }),
   );
 
-  // Create ref signal
   const [ref, setRef] = createSignal<HTMLTableRowElement | null>(null);
 
-  // Find the row node
   const rowNode = createMemo(() => {
     const node = collection.getItem(rowKey());
     if (!node) {
-      // Create a simple node for the row
       return {
         type: "item" as const,
         key: rowKey(),
@@ -1448,7 +1414,6 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     return node;
   });
 
-  // Create row aria props
   const rowAria = createTableRow<object>(
     () => ({
       node: rowNode(),
@@ -1473,7 +1438,6 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     return state.selectionMode !== "none" || !!tableData?.actions.onRowAction || !!local.onAction;
   };
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return isDisabled() || !isInteractive();
@@ -1489,7 +1453,6 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     },
   });
 
-  // Create focus ring
   const { isFocusVisible, focusProps } = createFocusRing();
   const [isFocusWithin, setIsFocusWithin] = createSignal(false);
   const focusWithinProps = {
@@ -1505,7 +1468,6 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     },
   };
 
-  // Check if focused
   const isFocused = createMemo(() => state.focusedKey === rowKey());
   const draggableItem = createMemo(() => {
     if (!tableContext.dragAndDropHooks?.useDraggableItem || !tableContext.dragState)
@@ -1530,7 +1492,6 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     );
   });
 
-  // Render props values
   const renderValues = createMemo<TableRowRenderProps>(() => ({
     isSelected: isSelected(),
     isFocused: isFocused(),
@@ -1550,7 +1511,6 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanRowProps = () => {
     const { ref: _ref1, ...rest } = rowAria.rowProps as Record<string, unknown>;
     return rest;
@@ -1664,7 +1624,6 @@ export function TableCell(props: TableCellProps): JSX.Element {
     "ref",
   ]);
 
-  // Get context
   const tableContext = useContext(TableContext);
   const rowContext = useContext(TableRowContext);
 
@@ -1678,19 +1637,15 @@ export function TableCell(props: TableCellProps): JSX.Element {
   const { state, collection } = tableContext;
   const { rowKey, rowNode } = rowContext;
 
-  // Create ref signal
   const [ref, setRef] = createSignal<HTMLTableCellElement | null>(null);
 
-  // Find the cell node
   const cellNode = createMemo(() => {
-    // If id is provided, look for that specific cell
     if (local.id != null) {
       const cellKey = `${rowKey}-${local.id}`;
       const node = collection.getItem(cellKey);
       if (node) return node;
     }
 
-    // Otherwise create a simple node
     return {
       type: "cell" as const,
       key: local.id ?? `${rowKey}-cell`,
@@ -1709,7 +1664,6 @@ export function TableCell(props: TableCellProps): JSX.Element {
     return collection.getItem(cellKey) ? (cellNode().index ?? 0) : undefined;
   });
 
-  // Create cell aria props
   const cellAria = createTableCell<object>(
     () => ({
       node: cellNode(),
@@ -1719,18 +1673,14 @@ export function TableCell(props: TableCellProps): JSX.Element {
   );
   const isPressed = () => cellAria.isPressed;
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     isDisabled: false,
   });
 
-  // Create focus ring
   const { isFocusVisible, focusProps } = createFocusRing();
 
-  // Check if focused
   const isFocused = createMemo(() => state.focusedKey === cellNode().key);
 
-  // Render props values
   const renderValues = createMemo<TableCellRenderProps>(() => ({
     isFocused: isFocused(),
     isFocusVisible: isFocusVisible() && isFocused(),
@@ -1749,7 +1699,6 @@ export function TableCell(props: TableCellProps): JSX.Element {
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanCellProps = () => {
     const { ref: _ref1, ...rest } = cellAria.gridCellProps as Record<string, unknown>;
     return rest;
@@ -1845,7 +1794,6 @@ export function TableSelectAllCheckbox(): JSX.Element {
   return <input {...selectAllCheckboxAria.checkboxProps} />;
 }
 
-// Attach components as static properties
 Table.Header = TableHeader;
 Table.Column = TableColumn;
 Table.Body = TableBody;

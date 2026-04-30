@@ -65,7 +65,6 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
   const size = () => sizeStyles[props.size ?? "md"];
   const isDisabled = () => props.isDisabled ?? false;
 
-  // Internal state for uncontrolled mode
   const defaultStart = () => props.defaultValue?.start ?? minValue();
   const defaultEnd = () => props.defaultValue?.end ?? maxValue();
   const [internalStart, setInternalStart] = createSignal(
@@ -75,7 +74,6 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
     snapToStep(defaultEnd(), minValue(), maxValue(), step()),
   );
 
-  // Controlled vs uncontrolled
   const startValue = createMemo(() => {
     if (props.value !== undefined) {
       return snapToStep(props.value.start, minValue(), maxValue(), step());
@@ -90,17 +88,14 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
     return internalEnd();
   });
 
-  // Percentages for positioning
   const startPercent = createMemo(() => (startValue() - minValue()) / (maxValue() - minValue()));
   const endPercent = createMemo(() => (endValue() - minValue()) / (maxValue() - minValue()));
 
-  // Formatted values
   const formatter = createMemo(() => new Intl.NumberFormat(undefined, props.formatOptions));
   const formattedOutput = createMemo(() => {
     return `${formatter().format(startValue())} – ${formatter().format(endValue())}`;
   });
 
-  // Set range value
   const setRange = (start: number, end: number) => {
     if (isDisabled()) return;
     const s = snapToStep(start, minValue(), maxValue(), step());
@@ -116,13 +111,11 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
     props.onChange?.({ start: newStart, end: newEnd });
   };
 
-  // Dragging state
   const [draggingThumb, setDraggingThumb] = createSignal<"start" | "end" | null>(null);
   const [focusedThumb, setFocusedThumb] = createSignal<"start" | "end" | null>(null);
 
   let trackRef: HTMLDivElement | undefined;
 
-  // Get value from pointer position
   const getValueFromPointer = (clientX: number): number => {
     if (!trackRef) return minValue();
     const rect = trackRef.getBoundingClientRect();
@@ -135,7 +128,6 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
     );
   };
 
-  // Determine which thumb is closer to a value
   const closerThumb = (value: number): "start" | "end" => {
     const distToStart = Math.abs(value - startValue());
     const distToEnd = Math.abs(value - endValue());
@@ -145,7 +137,6 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
     return value < startValue() ? "start" : "end";
   };
 
-  // Pointer handlers
   const onPointerDown = (e: PointerEvent) => {
     if (isDisabled()) return;
     e.preventDefault();
@@ -180,7 +171,6 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
     }
   };
 
-  // Keyboard handler for thumbs
   const onKeyDown = (thumb: "start" | "end", e: KeyboardEvent) => {
     if (isDisabled()) return;
     const s = step();
@@ -229,7 +219,6 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
     }
   };
 
-  // Thumb style classes
   const thumbClasses = (isDragging: boolean, isFocused: boolean): string => {
     const base =
       "absolute rounded-full shadow-md transition-all top-1/2 -translate-y-1/2 -translate-x-1/2 outline-none";
@@ -275,7 +264,6 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
           onPointerUp={onPointerUp}
           style={{ "touch-action": "none" }}
         >
-          {/* Filled range between thumbs */}
           <div
             class="absolute h-full rounded-full bg-accent"
             style={{
@@ -283,7 +271,6 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
               width: `${(endPercent() - startPercent()) * 100}%`,
             }}
           />
-          {/* Start thumb */}
           <div
             class={thumbClasses(draggingThumb() === "start", focusedThumb() === "start")}
             style={{ left: `${startPercent() * 100}%` }}
@@ -298,7 +285,6 @@ export function RangeSlider(props: RangeSliderProps): JSX.Element {
             onFocus={() => setFocusedThumb("start")}
             onBlur={() => setFocusedThumb(null)}
           />
-          {/* End thumb */}
           <div
             class={thumbClasses(draggingThumb() === "end", focusedThumb() === "end")}
             style={{ left: `${endPercent() * 100}%` }}

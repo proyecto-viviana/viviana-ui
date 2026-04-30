@@ -193,7 +193,6 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
     return [base, disabledClass, custom].filter(Boolean).join(" ");
   };
 
-  // Render children function for the headless component
   const renderChildren = (renderProps: CheckboxGroupRenderProps) => (
     <>
       <Show when={local.label}>

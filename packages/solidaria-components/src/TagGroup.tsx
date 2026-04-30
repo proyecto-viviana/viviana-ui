@@ -227,7 +227,6 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
     return String(item);
   };
 
-  // Create list state
   const state = createListState({
     get items() {
       return local.items;
@@ -276,16 +275,13 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
     gridRef,
   );
 
-  // Track focus
   const [isFocused, setIsFocused] = createSignal(false);
 
-  // Render props values
   const renderValues = createMemo<TagListRenderProps>(() => ({
     isEmpty: local.items.length === 0,
     isFocused: isFocused(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -295,7 +291,6 @@ export function TagList<T extends { id?: Key; key?: Key }>(props: TagListProps<T
     renderValues,
   );
 
-  // Context value
   const contextValue: TagGroupContextValue = {
     state,
     get onRemove() {
@@ -393,7 +388,6 @@ export function Tag(props: TagProps): JSX.Element {
     };
   });
 
-  // Render props values
   const renderValues = createMemo<TagRenderProps>(() => ({
     isSelected: tagAria.isSelected,
     isDisabled: tagAria.isDisabled,
@@ -404,7 +398,6 @@ export function Tag(props: TagProps): JSX.Element {
     removeButtonProps: normalizedRemoveButtonProps(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -419,7 +412,6 @@ export function Tag(props: TagProps): JSX.Element {
     isSelected: () => tagAria.isSelected,
   }));
 
-  // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest, { global: true }));
 
   return (

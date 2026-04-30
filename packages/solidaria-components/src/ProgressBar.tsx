@@ -65,13 +65,11 @@ function getSafeRange(min: number, max: number): number {
 export function ProgressBar(props: ProgressBarProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, ["children", "class", "style", "slot"]);
 
-  // Get values for calculations
   const value = () => ariaProps.value ?? 0;
   const minValue = () => ariaProps.minValue ?? 0;
   const maxValue = () => ariaProps.maxValue ?? 100;
   const isIndeterminate = () => ariaProps.isIndeterminate ?? false;
 
-  // Create progress bar aria props
   const progressAria = createProgressBar({
     get value() {
       return ariaProps.value;
@@ -108,7 +106,6 @@ export function ProgressBar(props: ProgressBarProps): JSX.Element {
     },
   });
 
-  // Calculate percentage
   const percentage = createMemo(() => {
     if (isIndeterminate()) {
       return undefined;
@@ -117,19 +114,16 @@ export function ProgressBar(props: ProgressBarProps): JSX.Element {
     return ((clampedValue - minValue()) / getSafeRange(minValue(), maxValue())) * 100;
   });
 
-  // Get value text from aria props
   const valueText = createMemo(() => {
     return progressAria.progressBarProps["aria-valuetext"] as string | undefined;
   });
 
-  // Render props values
   const renderValues = createMemo<ProgressBarRenderProps>(() => ({
     percentage: percentage(),
     valueText: valueText(),
     isIndeterminate: isIndeterminate(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -140,7 +134,6 @@ export function ProgressBar(props: ProgressBarProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(ariaProps, { global: true }));
 
   return (

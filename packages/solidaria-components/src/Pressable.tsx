@@ -53,7 +53,6 @@ export function Pressable(props: PressableProps): JSX.Element {
     const child = resolved() as HTMLElement;
     if (child instanceof HTMLElement) {
       ref = child;
-      // Forward ref
       if (typeof local.ref === "function") {
         local.ref(child);
       }

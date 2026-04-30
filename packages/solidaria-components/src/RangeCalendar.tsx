@@ -198,20 +198,16 @@ function RangeCalendarInner<T extends DateValue = CalendarDate>(
     ],
   );
 
-  // Create range calendar state
   const state = createRangeCalendarState(stateProps);
 
-  // Create range calendar ARIA props
   const calendarAria = createRangeCalendar(rest, state as unknown as RangeCalendarState<DateValue>);
 
-  // Render props values
   const renderValues = createMemo<RangeCalendarRenderProps>(() => ({
     isDisabled: state.isDisabled(),
     isReadOnly: state.isReadOnly(),
     isDragging: state.isDragging(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -314,7 +310,6 @@ export function RangeCalendarGrid(props: RangeCalendarGridProps): JSX.Element {
     return offsetMonths ? baseStart.add({ months: offsetMonths }) : baseStart;
   });
 
-  // Create grid ARIA props
   const gridAria = createCalendarGrid(
     {
       startDate: startDate(),
@@ -325,12 +320,10 @@ export function RangeCalendarGrid(props: RangeCalendarGridProps): JSX.Element {
     gridRef,
   );
 
-  // Render props values
   const renderValues = createMemo<RangeCalendarGridRenderProps>(() => ({
     isDisabled: state.isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: props.class,
@@ -403,7 +396,6 @@ export function RangeCalendarCell(props: RangeCalendarCellProps): JSX.Element {
     () => currentMonthStart != null && !isSameMonth(currentMonthStart, props.date),
   );
 
-  // Create cell ARIA props
   const cellAria = createRangeCalendarCell(
     () => ({
       date: props.date,
@@ -413,7 +405,6 @@ export function RangeCalendarCell(props: RangeCalendarCellProps): JSX.Element {
     cellRef,
   );
 
-  // Render props values
   const renderValues = createMemo<RangeCalendarCellRenderProps>(() => ({
     isSelected: cellAria.isSelected,
     isSelectionStart: cellAria.isSelectionStart,
@@ -427,7 +418,6 @@ export function RangeCalendarCell(props: RangeCalendarCellProps): JSX.Element {
     formattedDate: cellAria.formattedDate,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,

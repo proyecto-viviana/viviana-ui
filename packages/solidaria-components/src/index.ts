@@ -8,7 +8,6 @@
  * ready-to-style components using the render props pattern and data attributes.
  */
 
-// Utilities
 export {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -27,10 +26,8 @@ export {
   dataAttr,
 } from "./utils";
 
-// VisuallyHidden
 export { VisuallyHidden, type VisuallyHiddenProps } from "./VisuallyHidden";
 
-// Button
 export { Button, ButtonContext, type ButtonProps, type ButtonRenderProps } from "./Button";
 
 // ToggleSwitch (named to avoid conflict with SolidJS's Switch)
@@ -45,7 +42,6 @@ export {
   type ToggleSwitchRenderProps as SwitchRenderProps,
 } from "./Switch";
 
-// ToggleButton
 export {
   ToggleButton,
   ToggleButtonContext,
@@ -53,7 +49,6 @@ export {
   type ToggleButtonRenderProps,
 } from "./ToggleButton";
 
-// ToggleButtonGroup
 export {
   ToggleButtonGroup,
   ToggleButtonGroupContext,
@@ -65,7 +60,6 @@ export {
   type ToggleButtonGroupStateContextValue,
 } from "./ToggleButtonGroup";
 
-// Checkbox
 export {
   Checkbox,
   CheckboxGroup,
@@ -78,7 +72,6 @@ export {
   type CheckboxGroupRenderProps,
 } from "./Checkbox";
 
-// Radio
 export {
   Radio,
   RadioGroup,
@@ -92,7 +85,6 @@ export {
   type Orientation,
 } from "./RadioGroup";
 
-// TextField
 export {
   TextField,
   TextFieldContext,
@@ -113,16 +105,12 @@ export {
 
 export { Text, TextContext, type TextProps } from "./Text";
 
-// Link
 export { Link, LinkContext, type LinkProps, type LinkRenderProps } from "./Link";
 
-// Keyboard
 export { Keyboard, KeyboardContext, type KeyboardProps } from "./Keyboard";
 
-// Form
 export { Form, FormContext, type FormProps, type FormRenderProps } from "./Form";
 
-// FieldError
 export {
   FieldError,
   FieldErrorContext,
@@ -130,10 +118,8 @@ export {
   type FieldErrorRenderProps,
 } from "./FieldError";
 
-// FileTrigger
 export { FileTrigger, type FileTriggerProps } from "./FileTrigger";
 
-// DropZone
 export {
   DropZone,
   DropZoneContext,
@@ -141,7 +127,6 @@ export {
   type DropZoneRenderProps,
 } from "./DropZone";
 
-// SharedElementTransition
 export {
   SharedElementTransition,
   SharedElement,
@@ -152,7 +137,6 @@ export {
   type SharedElementRenderProps,
 } from "./SharedElementTransition";
 
-// Layout base
 export {
   Layout,
   LayoutInfo,
@@ -162,7 +146,6 @@ export {
   type InvalidationContext,
 } from "./virtualizer/Layout";
 
-// Virtualizer
 export {
   Virtualizer,
   VirtualizerContext,
@@ -185,7 +168,6 @@ export {
   type WaterfallLayoutOptions,
 } from "./Virtualizer";
 
-// ProgressBar
 export {
   ProgressBar,
   ProgressBarContext,
@@ -193,7 +175,6 @@ export {
   type ProgressBarRenderProps,
 } from "./ProgressBar";
 
-// Separator
 export {
   Separator,
   SeparatorContext,
@@ -201,7 +182,6 @@ export {
   type SeparatorRenderProps,
 } from "./Separator";
 
-// Toolbar
 export {
   Toolbar,
   ToolbarContext,
@@ -210,7 +190,6 @@ export {
   type ToolbarContextValue,
 } from "./Toolbar";
 
-// Autocomplete
 export {
   Autocomplete,
   AutocompleteContext,
@@ -224,7 +203,6 @@ export {
   type AutocompleteCollectionContextValue,
 } from "./Autocomplete";
 
-// ListBox
 export {
   ListBox,
   ListBoxOption,
@@ -244,7 +222,6 @@ export {
   type ListBoxLoadMoreItemProps,
 } from "./ListBox";
 
-// Menu
 export {
   Menu,
   MenuItem,
@@ -267,7 +244,6 @@ export {
   type MenuButtonProps,
 } from "./Menu";
 
-// Select
 export {
   Select,
   SelectTrigger,
@@ -289,7 +265,6 @@ export {
   type SelectOptionRenderProps,
 } from "./Select";
 
-// Tabs
 export {
   Tabs,
   TabList,
@@ -310,7 +285,6 @@ export {
   type TabPanelRenderProps,
 } from "./Tabs";
 
-// SelectionIndicator
 export {
   SelectionIndicator,
   SelectionIndicatorContext,
@@ -318,7 +292,6 @@ export {
   type SelectionIndicatorRenderProps,
 } from "./SelectionIndicator";
 
-// Collection primitives
 export {
   Collection,
   CollectionBuilder,
@@ -348,7 +321,6 @@ export {
   type CollectionPrimitiveRenderProps,
 } from "./Collection";
 
-// Drag and Drop
 export {
   DragAndDropContext,
   DropIndicator,
@@ -362,7 +334,6 @@ export {
 } from "./DragAndDrop";
 export { useDragAndDrop, type DragAndDropOptions, type DragAndDropHooks } from "./useDragAndDrop";
 
-// Breadcrumbs
 export {
   Breadcrumbs,
   BreadcrumbItem,
@@ -374,7 +345,6 @@ export {
   type BreadcrumbItemRenderProps,
 } from "./Breadcrumbs";
 
-// NumberField
 export {
   NumberField,
   NumberFieldLabel,
@@ -393,7 +363,6 @@ export {
   type NumberFieldButtonRenderProps,
 } from "./NumberField";
 
-// SearchField
 export {
   SearchField,
   SearchFieldLabel,
@@ -408,7 +377,6 @@ export {
   type SearchFieldClearButtonRenderProps,
 } from "./SearchField";
 
-// Slider
 export {
   Slider,
   SliderTrack,
@@ -428,7 +396,6 @@ export {
   type SliderOutputRenderProps,
 } from "./Slider";
 
-// Tooltip
 export {
   Tooltip,
   TooltipTrigger,
@@ -440,7 +407,6 @@ export {
   type TooltipTriggerState,
 } from "./Tooltip";
 
-// ComboBox
 export {
   ComboBox,
   ComboBoxValue,
@@ -476,7 +442,6 @@ export {
   type ComboBoxTagProps,
 } from "./ComboBox";
 
-// Dialog
 export {
   Dialog,
   DialogTrigger,
@@ -491,7 +456,6 @@ export {
   type HeadingProps,
 } from "./Dialog";
 
-// Modal
 export {
   Modal,
   ModalOverlay,
@@ -504,7 +468,6 @@ export {
   type OverlayTriggerState,
 } from "./Modal";
 
-// Popover
 export {
   Popover,
   PopoverTrigger,
@@ -519,7 +482,6 @@ export {
   type OverlayArrowProps,
 } from "./Popover";
 
-// Toast
 export {
   Toast,
   Toast as UNSTABLE_Toast,
@@ -549,7 +511,6 @@ export {
   type DefaultToastProps,
 } from "./Toast";
 
-// Disclosure
 export {
   Disclosure,
   DisclosureGroup,
@@ -571,10 +532,8 @@ export {
   type DisclosureGroupState,
 } from "./Disclosure";
 
-// Meter
 export { Meter, MeterContext, type MeterProps, type MeterRenderProps } from "./Meter";
 
-// TagGroup
 export {
   TagGroup,
   TagList,
@@ -593,7 +552,6 @@ export {
   type TagRemoveButtonProps,
 } from "./TagGroup";
 
-// Calendar
 export {
   Calendar,
   CalendarHeading,
@@ -622,7 +580,6 @@ export {
   type DateValue,
 } from "./Calendar";
 
-// RangeCalendar
 export {
   RangeCalendar,
   RangeCalendarHeading,
@@ -644,7 +601,6 @@ export {
   type RangeValue,
 } from "./RangeCalendar";
 
-// DateField
 export {
   DateField,
   DateFieldLabel,
@@ -669,7 +625,6 @@ export {
   type DateSegmentType,
 } from "./DateField";
 
-// TimeField
 export {
   TimeField,
   TimeFieldLabel,
@@ -695,7 +650,6 @@ export {
   type TimeValue,
 } from "./TimeField";
 
-// DatePicker
 export {
   DatePicker,
   DateRangePicker,
@@ -734,7 +688,6 @@ export {
   type DateRangePickerContextValue,
 } from "./DatePicker";
 
-// Table
 export {
   Table,
   TableHeader,
@@ -776,7 +729,6 @@ export {
   type TableCellRenderProps,
 } from "./Table";
 
-// GridList
 export {
   GridList,
   GridListHeader,
@@ -796,7 +748,6 @@ export {
   type GridListLoadMoreItemProps,
 } from "./GridList";
 
-// Tree
 export {
   Tree,
   TreeItem,
@@ -822,9 +773,7 @@ export {
   type TreeLoadMoreItemProps,
 } from "./Tree";
 
-// Color
 export {
-  // ColorSlider
   ColorSlider,
   ColorSliderTrack,
   ColorSliderThumb,
@@ -837,7 +786,6 @@ export {
   type ColorSliderTrackRenderProps,
   type ColorSliderThumbProps,
   type ColorSliderThumbRenderProps,
-  // ColorArea
   ColorArea,
   ColorAreaGradient,
   ColorAreaThumb,
@@ -849,7 +797,6 @@ export {
   type ColorAreaGradientRenderProps,
   type ColorAreaThumbProps,
   type ColorAreaThumbRenderProps,
-  // ColorWheel
   ColorWheel,
   ColorWheelTrack,
   ColorWheelThumb,
@@ -862,7 +809,6 @@ export {
   type ColorWheelTrackRenderProps,
   type ColorWheelThumbProps,
   type ColorWheelThumbRenderProps,
-  // ColorField
   ColorField,
   ColorFieldInput,
   ColorFieldContext,
@@ -876,7 +822,6 @@ export {
   type ColorFieldInputRenderProps,
   type ColorPickerProps,
   type ColorPickerRenderProps,
-  // ColorSwatch
   ColorSwatch,
   ColorSwatchContext,
   ColorSwatchPicker,
@@ -888,14 +833,12 @@ export {
   type ColorSwatchPickerItemProps,
 } from "./Color";
 
-// ContextualHelpTrigger
 export {
   ContextualHelpTrigger,
   type ContextualHelpTriggerProps,
   type ContextualHelpTriggerRenderProps,
 } from "./ContextualHelpTrigger";
 
-// ColorEditor
 export {
   ColorEditor,
   type ColorEditorProps,
@@ -903,7 +846,6 @@ export {
   type ColorEditorColorSpace,
 } from "./ColorEditor";
 
-// StepList
 export {
   StepList,
   Step,
@@ -916,7 +858,6 @@ export {
   type StepProps,
 } from "./StepList";
 
-// Landmark
 export {
   Landmark,
   LandmarkContext,
@@ -927,7 +868,6 @@ export {
   type LandmarkController,
 } from "./Landmark";
 
-// ActionBar
 export {
   ActionBar,
   ActionBarContainer,
@@ -943,7 +883,6 @@ export {
   type ActionBarContextValue,
 } from "./ActionBar";
 
-// ActionGroup
 export {
   ActionGroup,
   ActionGroupContext,
@@ -956,7 +895,6 @@ export {
   type ActionGroupContextValue,
 } from "./ActionGroup";
 
-// Alert
 export {
   Alert,
   AlertContext,
@@ -968,16 +906,12 @@ export {
   type AlertDismissButtonProps,
 } from "./Alert";
 
-// Icon
 export { Icon, IconContext, type IconProps, type IconRenderProps } from "./Icon";
 
-// Focusable
 export { Focusable, type FocusableProps } from "./Focusable";
 
-// Pressable
 export { Pressable, type PressableProps } from "./Pressable";
 
-// RouterProvider
 export {
   RouterProvider,
   RouterContext,
@@ -987,12 +921,10 @@ export {
   type RouterOptions,
 } from "./RouterProvider";
 
-// DnD utilities
 export { DIRECTORY_DRAG_TYPE } from "@proyecto-viviana/solid-stately";
 export { isDirectoryDropItem, isFileDropItem, isTextDropItem } from "@proyecto-viviana/solidaria";
 export { createDrag as useDrag, createDrop as useDrop } from "@proyecto-viviana/solidaria";
 
-// i18n
 export {
   isRTL,
   I18nProvider,
@@ -1000,13 +932,10 @@ export {
   createFilter as useFilter,
 } from "@proyecto-viviana/solidaria";
 
-// SSR
 export { SSRProvider } from "@proyecto-viviana/solidaria";
 
-// Color + Form
 export { parseColor, FormValidationContext } from "@proyecto-viviana/solid-stately";
 
-// Toast alias
 export { ToastQueue as UNSTABLE_ToastQueue } from "@proyecto-viviana/solid-stately";
 
 // Data hooks (aliased to match RAC's useXxx naming)

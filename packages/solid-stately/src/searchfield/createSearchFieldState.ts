@@ -30,19 +30,15 @@ export function createSearchFieldState(
 ): SearchFieldState {
   const getProps = () => access(props);
 
-  // Controlled vs uncontrolled
   const isControlled = () => getProps().value !== undefined;
 
-  // Internal signal for uncontrolled mode
   const [internalValue, setInternalValue] = createSignal(getProps().defaultValue ?? "");
 
-  // Current value accessor
   const value = createMemo(() => {
     const p = getProps();
     return isControlled() ? (p.value ?? "") : internalValue();
   });
 
-  // Set value function
   const setValue = (newValue: string) => {
     const p = getProps();
 

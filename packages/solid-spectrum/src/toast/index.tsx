@@ -53,7 +53,6 @@ const toastBaseStyles = [
   "rounded-lg shadow-lg",
   "min-w-[300px] max-w-[400px]",
   "border",
-  // Animations
   "data-[animation=entering]:animate-in data-[animation=entering]:fade-in-0 data-[animation=entering]:slide-in-from-right-5",
   "data-[animation=exiting]:animate-out data-[animation=exiting]:fade-out-0 data-[animation=exiting]:slide-out-to-right-5",
 ].join(" ");
@@ -221,10 +220,8 @@ export function Toast(props: ToastProps): JSX.Element {
           .join(" ");
       }}
     >
-      {/* Icon */}
       <div class={`flex-shrink-0 ${iconStyles[variant()]}`}>{getVariantIcon(variant())}</div>
 
-      {/* Content */}
       <div class="flex-1 min-w-0">
         <Show when={content().title}>
           <HeadlessToastTitle class="font-semibold text-sm">{content().title}</HeadlessToastTitle>
@@ -245,7 +242,6 @@ export function Toast(props: ToastProps): JSX.Element {
         </Show>
       </div>
 
-      {/* Close Button */}
       <HeadlessToastCloseButton toast={local.toast} class={closeButtonStyles} aria-label="Dismiss">
         <CloseIcon />
       </HeadlessToastCloseButton>

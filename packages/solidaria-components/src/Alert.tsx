@@ -78,7 +78,6 @@ export function Alert(props: AlertProps): JSX.Element {
   const variant = () => local.variant ?? "info";
   const isDismissible = () => !!local.isDismissible;
 
-  // Render props values
   const renderValues = createMemo<AlertRenderProps>(() => ({
     variant: variant(),
     isDismissible: isDismissible(),
@@ -98,10 +97,8 @@ export function Alert(props: AlertProps): JSX.Element {
     return typeof s === "function" ? s(renderValues()) : s;
   });
 
-  // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(rest, { global: true }));
 
-  // Context value for sub-components
   const contextValue: AlertContextValue = {
     variant,
     isDismissible,

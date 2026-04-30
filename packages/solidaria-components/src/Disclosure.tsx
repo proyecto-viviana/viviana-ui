@@ -169,7 +169,6 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
   // Create group accessibility props
   const { groupProps } = createDisclosureGroup(() => ({ isDisabled: local.isDisabled }), state);
 
-  // Render props values
   const renderValues = createMemo<DisclosureGroupRenderProps>(() => ({
     isDisabled: state.isDisabled,
   }));
@@ -184,12 +183,10 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
 
-  // Context value
   const contextValue: DisclosureGroupContextValue = { state };
 
   // Extract ref from groupProps to avoid type conflicts
@@ -281,7 +278,6 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
     within: true,
   });
 
-  // Render props values
   const renderValues = createMemo<DisclosureRenderProps>(() => ({
     isExpanded: state.isExpanded(),
     isFocusVisibleWithin: isFocusVisibleWithin(),
@@ -299,7 +295,6 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
@@ -311,7 +306,6 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
     disclosureAria,
   };
 
-  // Setter for panel ref
   const setPanelRef = (el: HTMLElement | null) => {
     setPanelRefSignal(el);
   };
@@ -399,7 +393,6 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
   const isExpanded = () => context.state.isExpanded();
   const isDisabled = () => context.isDisabled();
 
-  // Render props values
   const renderValues = createMemo<DisclosureRenderProps>(() => ({
     isExpanded: isExpanded(),
     isFocusVisibleWithin: isFocusVisibleWithin(),
@@ -407,7 +400,6 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
     state: context.state,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -418,7 +410,6 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );

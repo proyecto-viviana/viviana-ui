@@ -225,7 +225,6 @@ export function TextField(props: TextFieldProps): JSX.Element {
     contextProps ? mergeProps(contextBaseProps(), contextSlotProps ?? {}, props) : props
   ) as TextFieldProps;
 
-  // Split props
   const [local, ariaProps] = splitProps(mergedProps, [
     "children",
     "class",
@@ -234,7 +233,6 @@ export function TextField(props: TextFieldProps): JSX.Element {
     "slot",
   ]);
 
-  // Create text field state
   // Use getters to ensure props are read lazily inside reactive contexts
   const state = createTextFieldState({
     get value() {
@@ -258,24 +256,20 @@ export function TextField(props: TextFieldProps): JSX.Element {
     return clean as typeof ariaProps;
   });
 
-  // Create text field aria props
   const textFieldAria = createTextField(() => ({
     ...inputAriaProps(),
     value: state.value(),
     onChange: state.setValue,
   }));
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return ariaProps.isDisabled;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<TextFieldRenderProps>(() => ({
     isDisabled: ariaProps.isDisabled || false,
     isInvalid: textFieldAria.isInvalid,
@@ -286,7 +280,6 @@ export function TextField(props: TextFieldProps): JSX.Element {
     isFocusVisible: isFocusVisible(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: local.children,
@@ -297,14 +290,12 @@ export function TextField(props: TextFieldProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps, { global: true });
     delete (filtered as Record<string, unknown>).id;
     return filtered;
   });
 
-  // Remove ref from spread props to avoid type conflicts
   const cleanHoverProps = () => {
     const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
     return rest;

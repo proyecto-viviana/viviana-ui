@@ -193,11 +193,9 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
   const portalContext = useUNSAFE_PortalContext();
   const portalContainer = () => portalContext.getContainer?.() ?? undefined;
 
-  // Get state from context if not provided
   const contextState = useContext(ToastContext);
   const state = () => local.state ?? contextState;
 
-  // Create region accessibility props
   const getRegionAria = () => {
     const s = state();
     if (!s) return null;
@@ -207,12 +205,10 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
     });
   };
 
-  // Render props values
   const renderValues = createMemo<ToastRegionRenderProps>(() => ({
     visibleToasts: () => state()?.visibleToasts() ?? [],
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -224,12 +220,10 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
   );
   const renderedChildren = createMemo(() => renderProps.renderChildren());
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
 
-  // Placement styles
   const placementStyles = createMemo<JSX.CSSProperties>(() => {
     const placement = local.placement ?? "bottom-end";
     const base: JSX.CSSProperties = {
@@ -279,7 +273,6 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
       return { ...placement, ...custom } as JSX.CSSProperties;
     };
 
-    // Extract ref from regionProps to avoid type conflicts
     const { ref: _ref, ...cleanRegionProps } = regionAria.regionProps as Record<string, unknown>;
 
     return (
@@ -295,7 +288,6 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
     );
   };
 
-  // Only render when there are toasts
   return (
     <Show when={hasToasts()}>
       <Show when={local.portal !== false} fallback={regionContent()}>
@@ -325,7 +317,6 @@ export function Toast(props: ToastProps): JSX.Element {
 
   let toastRef!: HTMLDivElement;
 
-  // Get state from context
   const state = useToastContext();
 
   createEffect(() => {
@@ -338,7 +329,6 @@ export function Toast(props: ToastProps): JSX.Element {
     });
   });
 
-  // Create toast accessibility props
   const toastAria = createToast({
     toast: local.toast,
     state,
@@ -346,7 +336,6 @@ export function Toast(props: ToastProps): JSX.Element {
     hasDescription: !!local.toast.content.description,
   });
 
-  // Render props values
   const renderValues = createMemo<ToastRenderProps>(() => ({
     isEntering: local.toast.animation === "entering",
     isExiting: local.toast.animation === "exiting",
@@ -354,7 +343,6 @@ export function Toast(props: ToastProps): JSX.Element {
     toast: local.toast,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -365,12 +353,10 @@ export function Toast(props: ToastProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
 
-  // Merge styles
   const mergedStyle = () => {
     const custom = renderProps.style();
     if (!custom) return { "pointer-events": "auto" as const };
@@ -432,7 +418,6 @@ export function Toast(props: ToastProps): JSX.Element {
     });
   });
 
-  // Extract ref from toastProps to avoid type conflicts
   const { ref: _ref, ...cleanToastProps } = toastAria.toastProps as Record<string, unknown>;
 
   // Ensure ARIA title/description IDs are present on rendered sub-components,

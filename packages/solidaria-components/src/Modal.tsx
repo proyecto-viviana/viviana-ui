@@ -166,7 +166,6 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
     }
   };
 
-  // Create overlay trigger state for context
   const state: OverlayTriggerState = {
     get isOpen() {
       return isOpen();
@@ -176,7 +175,6 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
     toggle,
   };
 
-  // Render props values
   const renderValues = createMemo<ModalRenderProps>(() => ({
     isEntering: local.isEntering ?? false,
     isExiting: local.isExiting ?? false,
@@ -192,7 +190,6 @@ export function ModalOverlay(props: ModalOverlayProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
@@ -406,7 +403,6 @@ function ModalContent(
   createEffect(() => {
     if (!isOpen()) return;
 
-    // Set overflow hidden on html element
     const html = document.documentElement;
     const prevOverflow = html.style.overflow;
     html.style.overflow = "hidden";
@@ -457,13 +453,11 @@ function ModalContent(
     onCleanup(cleanup);
   });
 
-  // Render props values
   const renderValues = createMemo<ModalRenderProps>(() => ({
     isEntering: local.isEntering ?? false,
     isExiting: local.isExiting ?? false,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -474,7 +468,6 @@ function ModalContent(
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );

@@ -81,7 +81,6 @@ export function createTabListState<T = unknown>(
 ): TabListState<T> {
   const getProps = () => access(props);
 
-  // Build collection from items
   const collection: Accessor<Collection<T>> = createMemo(() => {
     const p = getProps();
     const items = p.items ?? [];
@@ -125,7 +124,6 @@ export function createTabListState<T = unknown>(
     return result;
   });
 
-  // Check if a key is disabled
   const isKeyDisabled = (key: Key): boolean => {
     const p = getProps();
     if (p.isDisabled) return true;
@@ -143,30 +141,24 @@ export function createTabListState<T = unknown>(
     return null;
   };
 
-  // Get initial selected key
   const getInitialSelectedKey = (): Key | null => {
     const p = getProps();
 
-    // If controlled, use that value
     if (p.selectedKey !== undefined) {
       return p.selectedKey;
     }
 
-    // If default provided and not disabled, use it
     if (p.defaultSelectedKey !== undefined && !isKeyDisabled(p.defaultSelectedKey)) {
       return p.defaultSelectedKey;
     }
 
-    // Otherwise, select first non-disabled
     return findFirstNonDisabledKey();
   };
 
-  // Selection state
   const [selectedKeyInternal, setSelectedKeyInternal] = createSignal<Key | null>(
     getInitialSelectedKey(),
   );
 
-  // Compute actual selected key (controlled vs uncontrolled)
   const selectedKey: Accessor<Key | null> = () => {
     const p = getProps();
     if (p.selectedKey !== undefined) {
@@ -176,38 +168,30 @@ export function createTabListState<T = unknown>(
   };
 
   const setSelectedKey = (key: Key) => {
-    // Don't select disabled keys
     if (isKeyDisabled(key)) return;
     if (selectedKey() === key) return;
 
     const p = getProps();
-    // For uncontrolled mode, update internal state
     if (p.selectedKey === undefined) {
       setSelectedKeyInternal(key);
     }
 
-    // Always call onChange
     p.onSelectionChange?.(key);
   };
 
-  // Get selected item
   const selectedItem: Accessor<CollectionNode<T> | null> = () => {
     const key = selectedKey();
     if (key === null) return null;
     return collection().getItem(key);
   };
 
-  // Is disabled accessor
   const isDisabled: Accessor<boolean> = () => getProps().isDisabled ?? false;
 
-  // Keyboard activation accessor
   const keyboardActivation: Accessor<KeyboardActivation> = () =>
     getProps().keyboardActivation ?? "automatic";
 
-  // Orientation accessor
   const orientation: Accessor<TabOrientation> = () => getProps().orientation ?? "horizontal";
 
-  // Focus state
   const [isFocused, setIsFocused] = createSignal(false);
   const [focusedKey, setFocusedKeyInternal] = createSignal<Key | null>(null);
   const [childFocusStrategy, setChildFocusStrategy] = createSignal<FocusStrategy | null>(null);

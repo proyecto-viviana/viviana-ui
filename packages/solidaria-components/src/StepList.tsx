@@ -117,7 +117,6 @@ export function StepList<T extends { key: Key; label: string }>(
     ["aria-label", "aria-labelledby"],
   );
 
-  // Create state
   const stateProps = createMemo<StepListStateProps>(() => ({
     items: local.items,
     selectedKey: local.selectedKey,
@@ -146,7 +145,6 @@ export function StepList<T extends { key: Key; label: string }>(
     state,
   );
 
-  // Render props
   const renderValues = createMemo<StepListRenderProps>(() => ({
     isDisabled: state.isDisabled(),
   }));
@@ -178,7 +176,6 @@ export function StepList<T extends { key: Key; label: string }>(
             const stepNumber = () => index() + 1;
 
             // Build render props as a static snapshot for the initial render.
-            // The Step component handles its own reactivity via context.
             const renderProps: StepListItemRenderProps = {
               get isSelected() {
                 return state.selectedKey() === item.key;

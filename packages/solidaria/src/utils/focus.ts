@@ -12,12 +12,10 @@ import { getOwnerDocument } from "./dom";
 export function focusWithoutScrolling(element: HTMLElement | null): void {
   if (!element) return;
 
-  // Try using the modern preventScroll option
   try {
     element.focus({ preventScroll: true });
   } catch {
     // Fallback for browsers that don't support preventScroll
-    // Save scroll positions and restore after focus
     const scrollableElements = getScrollableAncestors(element);
     const scrollPositions = scrollableElements.map((el) => ({
       element: el,
@@ -27,7 +25,6 @@ export function focusWithoutScrolling(element: HTMLElement | null): void {
 
     element.focus();
 
-    // Restore scroll positions
     for (const { element: el, scrollTop, scrollLeft } of scrollPositions) {
       el.scrollTop = scrollTop;
       el.scrollLeft = scrollLeft;
@@ -66,7 +63,6 @@ function getScrollableAncestors(element: Element): Element[] {
   return ancestors;
 }
 
-// State for preventFocus
 let ignoreFocus = false;
 let preventFocusTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -75,21 +71,18 @@ let preventFocusTimeout: ReturnType<typeof setTimeout> | null = null;
  * Used when clicking on a button that shouldn't steal focus.
  */
 export function preventFocus(target: Element): void {
-  // Find the closest focusable ancestor
   const focusableAncestor = findFocusableAncestor(target);
   if (!focusableAncestor) return;
 
   const document = getOwnerDocument(target);
   const activeElement = document.activeElement;
 
-  // Set flag to ignore next focus event
   ignoreFocus = true;
 
   // Capture focus events and prevent them from changing focus
   const onFocus = (e: Event) => {
     if (ignoreFocus) {
       e.stopImmediatePropagation();
-      // Refocus the original element if focus moved
       if (activeElement && activeElement !== document.body) {
         (activeElement as HTMLElement).focus();
       }
@@ -102,15 +95,12 @@ export function preventFocus(target: Element): void {
     }
   };
 
-  // Use capturing to intercept focus before it reaches elements
-  // Cast to HTMLElement to access focus event listeners
   const el = focusableAncestor as HTMLElement;
   el.addEventListener("focus", onFocus, true);
   el.addEventListener("blur", onBlur, true);
   el.addEventListener("focusin", onFocus, true);
   el.addEventListener("focusout", onBlur, true);
 
-  // Clean up after the current event cycle
   if (preventFocusTimeout != null) {
     clearTimeout(preventFocusTimeout);
   }

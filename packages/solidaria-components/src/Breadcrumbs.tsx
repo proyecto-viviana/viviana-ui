@@ -117,7 +117,6 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
   const getItemKey = (item: T, index: number): string | number =>
     local.getKey?.(item) ?? defaultItemKey(item, index);
 
-  // Create breadcrumbs aria props
   const { navProps } = createBreadcrumbs({
     get "aria-label"() {
       return ariaProps["aria-label"];
@@ -133,12 +132,10 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
     },
   });
 
-  // Render props values
   const renderValues = createMemo<BreadcrumbsRenderProps>(() => ({
     isDisabled: isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -148,7 +145,6 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
@@ -197,7 +193,6 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
 export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, ["class", "style", "slot", "isDisabled"]);
 
-  // Get context
   const context = useContext(BreadcrumbsContext);
   const itemContext = useContext(BreadcrumbItemContext);
   const isDisabled = () => local.isDisabled ?? context?.isDisabled() ?? false;
@@ -212,7 +207,6 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     }
   };
 
-  // Create breadcrumb item aria props
   const { itemProps, isPressed } = createBreadcrumbItem({
     get id() {
       return ariaProps.id;
@@ -294,7 +288,6 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
   );
   const elementType = () => ariaProps.elementType ?? "a";
 
-  // Render props values
   const renderValues = createMemo<BreadcrumbItemRenderProps>(() => ({
     isCurrent: isCurrent(),
     isDisabled: isDisabled(),
@@ -304,7 +297,6 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     isHovered: isHovered(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -315,7 +307,6 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     renderValues,
   );
 
-  // Merge inline flex styles with user styles
   const mergedStyle = () => {
     const userStyle = renderProps.style();
     const baseStyle = { display: "inline-flex", "align-items": "center" };

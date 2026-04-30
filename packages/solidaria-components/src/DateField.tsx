@@ -185,10 +185,8 @@ function DateFieldInner<T extends DateValue = CalendarDate>(props: DateFieldProp
 
   const [fieldRef, setFieldRef] = createSignal<HTMLDivElement | null>(null);
 
-  // Create date field state
   const state = createDateFieldState(stateProps);
 
-  // Create date field ARIA props
   const fieldAria = createDateField(
     () => ({
       ...(rest as Record<string, unknown>),
@@ -199,7 +197,6 @@ function DateFieldInner<T extends DateValue = CalendarDate>(props: DateFieldProp
     fieldRef,
   );
 
-  // Render props values
   const renderValues = createMemo<DateFieldRenderProps>(() => ({
     isDisabled: state.isDisabled(),
     isReadOnly: state.isReadOnly(),
@@ -207,7 +204,6 @@ function DateFieldInner<T extends DateValue = CalendarDate>(props: DateFieldProp
     isInvalid: state.isInvalid(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -255,13 +251,11 @@ export function DateInput(props: DateInputProps): JSX.Element {
   const { state, aria } = context;
   const [isFocused, setIsFocused] = createSignal(false);
 
-  // Render props values
   const renderValues = createMemo<DateInputRenderProps>(() => ({
     isDisabled: state.isDisabled(),
     isFocused: isFocused(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: props.class,
@@ -293,10 +287,8 @@ export function DateSegment(props: DateSegmentProps): JSX.Element {
   const { state } = useDateFieldContext();
   const [segmentRef, setSegmentRef] = createSignal<HTMLElement | null>(null);
 
-  // Create segment ARIA props
   const segmentAria = createDateSegment({ segment: props.segment }, state, segmentRef);
 
-  // Render props values
   const renderValues = createMemo<DateSegmentRenderProps>(() => ({
     isFocused: segmentAria.isFocused,
     isEditable: segmentAria.isEditable,
@@ -305,7 +297,6 @@ export function DateSegment(props: DateSegmentProps): JSX.Element {
     text: segmentAria.text,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,

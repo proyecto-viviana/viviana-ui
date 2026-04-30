@@ -35,16 +35,12 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
       rowHeaderColumnKeys,
     } = options;
 
-    // Build columns
     this._columns = this.buildColumns(columns, showSelectionCheckboxes);
 
-    // Determine row header column keys
     this._rowHeaderColumnKeys = rowHeaderColumnKeys ?? this.getDefaultRowHeaderColumnKeys();
 
-    // Build header rows
     this._headerRows = this.buildHeaderRows();
 
-    // Build head node
     if (this._headerRows.length > 0) {
       this._head = {
         type: "headerrow" as GridNodeType,
@@ -59,11 +55,9 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
       this._keyMap.set("header", this._head);
     }
 
-    // Build body rows
     const bodyRows = this.buildRows(rows, getKey, getTextValue);
     this._size = bodyRows.length;
 
-    // Build body node
     this._body = {
       type: "item" as GridNodeType,
       key: "body",
@@ -76,7 +70,6 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
     };
     this._keyMap.set("body", this._body);
 
-    // Combine all rows
     this._rows = [...this._headerRows, ...bodyRows];
   }
 
@@ -87,7 +80,6 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
     const result: GridNode<T>[] = [];
     let colIndex = 0;
 
-    // Add selection column if needed
     if (showSelectionCheckboxes) {
       const selectionColumn: GridNode<T> = {
         type: "column" as GridNodeType,
@@ -105,7 +97,6 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
       colIndex++;
     }
 
-    // Build user columns
     for (const col of columns) {
       const node = this.buildColumnNode(col, colIndex);
       result.push(node);
@@ -128,7 +119,6 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
       textValue: col.textValue ?? col.name ?? String(col.key),
     };
 
-    // Build child columns if present (for column groups)
     if (col.children && col.children.length > 0) {
       let childIndex = 0;
       for (const child of col.children) {
@@ -159,7 +149,6 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
       return [];
     }
 
-    // Build a single header row containing all columns
     const headerCells: GridNode<T>[] = this._columns.map((col, index) => ({
       type: "column" as GridNodeType,
       key: `header-${col.key}`,
@@ -211,7 +200,6 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
           ? ((row as Record<string, unknown>).textValue as string)
           : undefined;
 
-      // Build cells for this row
       const cells: GridNode<T>[] = this._columns.map((col, colIndex) => {
         const cellKey = `${key}-${col.key}`;
         const cellTextValue =
@@ -263,7 +251,6 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
     return typeof row === "object" && row !== null && "key" in row && "value" in row;
   }
 
-  // Collection interface implementation
   get size(): number {
     return this._size;
   }
@@ -332,13 +319,11 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
   }
 
   getFirstKey(): Key | null {
-    // Return first body row key
     const bodyRows = this._body.childNodes;
     return bodyRows.length > 0 ? bodyRows[0].key : null;
   }
 
   getLastKey(): Key | null {
-    // Return last body row key
     const bodyRows = this._body.childNodes;
     return bodyRows.length > 0 ? bodyRows[bodyRows.length - 1].key : null;
   }
@@ -347,7 +332,6 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
     const node = this._keyMap.get(key);
     if (!node) return null;
 
-    // Find in body rows
     const bodyRows = this._body.childNodes;
     const index = bodyRows.findIndex((r) => r.key === key);
     if (index > 0) {
@@ -360,7 +344,6 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
     const node = this._keyMap.get(key);
     if (!node) return null;
 
-    // Find in body rows
     const bodyRows = this._body.childNodes;
     const index = bodyRows.findIndex((r) => r.key === key);
     if (index >= 0 && index < bodyRows.length - 1) {

@@ -1,10 +1,8 @@
 export { mergeProps } from "./mergeProps";
 export { filterDOMProps, type FilterDOMPropsOptions } from "./filterDOMProps";
 
-// Reactivity utilities
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from "./reactivity";
 
-// Platform detection
 export {
   isMac,
   isIPhone,
@@ -17,7 +15,6 @@ export {
   isFirefox,
 } from "./platform";
 
-// DOM utilities
 export {
   getOwnerDocument,
   getOwnerWindow,
@@ -35,7 +32,6 @@ export {
   willOpenKeyboard,
 } from "./dom";
 
-// Geometry utilities
 export {
   areRectanglesOverlapping,
   getPointClientRect,
@@ -46,7 +42,6 @@ export {
   type EventPoint,
 } from "./geometry";
 
-// Event utilities
 export {
   isVirtualClick,
   isVirtualPointerEvent,
@@ -55,23 +50,18 @@ export {
   setEventTarget,
 } from "./events";
 
-// Text selection management
 export { disableTextSelection, restoreTextSelection } from "./textSelection";
 
-// Focus utilities
 export { focusWithoutScrolling, focusSafely, preventFocus } from "./focus";
 
-// Global listener management
 export {
   createGlobalListeners,
   addGlobalListenerOnce,
   type GlobalListenerOptions,
 } from "./globalListeners";
 
-// Environment detection
 export { isTestEnv, isDevEnv, isProdEnv } from "./env";
 
-// Description utility for aria-describedby
 export {
   createDescription,
   type DescriptionProps,

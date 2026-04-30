@@ -3,30 +3,13 @@ import { JSX } from "solid-js";
 export type LogoSize = "sm" | "md" | "lg" | "xl";
 
 export interface LogoProps {
-  /** First word (light weight, muted color) */
   firstWord?: string;
-  /** Second word (bold, with 3D effect) */
   secondWord?: string;
-  /** Size variant of the logo */
   size?: LogoSize;
-  /** Invert the styles (first word gets 3D effect, second word is muted) */
   inverted?: boolean;
-  /** Additional CSS classes */
   class?: string;
 }
 
-/**
- * Two-word logo with retro synthwave 3D effect.
- * First word is light/muted, second word has bold styling with pink 3D shadow.
- *
- * @example
- * // Default usage
- * <Logo />
- *
- * @example
- * // Custom text
- * <Logo firstWord="My" secondWord="Brand" size="lg" />
- */
 export function Logo(props: LogoProps): JSX.Element {
   const sizeClass = () => {
     switch (props.size) {

@@ -54,10 +54,8 @@ export function createCheckboxGroupItem(
     },
   };
 
-  // Get group data
   const getGroupData = () => checkboxGroupData.get(state);
 
-  // Build checkbox props
   const checkboxProps = (): AriaCheckboxProps => {
     const p = getProps();
     const groupData = getGroupData();
@@ -73,10 +71,8 @@ export function createCheckboxGroupItem(
     };
   };
 
-  // Use the checkbox hook
   const result = createCheckbox(checkboxProps, toggleState, inputRef);
 
-  // Add group-level aria-describedby
   return {
     ...result,
     get inputProps() {
@@ -85,18 +81,15 @@ export function createCheckboxGroupItem(
 
       const describedByIds: string[] = [];
 
-      // Add props aria-describedby
       const propsDescribedBy = getProps()["aria-describedby"];
       if (propsDescribedBy) {
         describedByIds.push(propsDescribedBy);
       }
 
-      // Add error message ID if group is invalid
       if (state.isInvalid && groupData?.errorMessageId) {
         describedByIds.push(groupData.errorMessageId);
       }
 
-      // Add description ID
       if (groupData?.descriptionId) {
         describedByIds.push(groupData.descriptionId);
       }

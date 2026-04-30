@@ -95,7 +95,6 @@ export function ActionBar(props: ActionBarProps): JSX.Element {
   });
 
   let wasOpen = false;
-  // Announce only when transitioning from closed -> open.
   createEffect(() => {
     const open = isOpen();
     if (open && !wasOpen) {
@@ -104,7 +103,6 @@ export function ActionBar(props: ActionBarProps): JSX.Element {
     wasOpen = open;
   });
 
-  // Escape key to clear selection
   const handleKeyDown: JSX.EventHandlerUnion<HTMLDivElement, KeyboardEvent> = (e) => {
     const onKeyDown = local.onKeyDown as
       | JSX.EventHandler<HTMLDivElement, KeyboardEvent>

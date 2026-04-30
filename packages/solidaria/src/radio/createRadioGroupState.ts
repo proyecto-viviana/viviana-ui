@@ -95,11 +95,9 @@ export function createRadioGroupState(props: MaybeAccessor<RadioGroupProps> = {}
   // This ensures we capture the initial defaultValue without reactivity issues
   const initialProps = untrack(() => getProps());
 
-  // Generate name - preserved for backward compatibility
-  // React Aria now generates the name instead of stately
+  // Preserved for backward compatibility. React Aria now generates the name instead of stately.
   const name = initialProps.name || `radio-group-${createId()}`;
 
-  // Create internal signal for uncontrolled mode
   // Initialize with defaultValue only (not value, which is for controlled mode)
   const [internalValue, setInternalValue] = createSignal<string | null>(
     initialProps.defaultValue ?? null,
@@ -111,26 +109,20 @@ export function createRadioGroupState(props: MaybeAccessor<RadioGroupProps> = {}
   // from our reactive state (e.g., clicking a radio unchecks siblings in the DOM)
   const [syncVersion, setSyncVersion] = createSignal(0);
 
-  // Determine if controlled - must be reactive to handle dynamic props
   const isControlled = () => getProps().value !== undefined;
 
-  // Get current value - reactive for both controlled and uncontrolled modes
   const selectedValue: Accessor<string | null> = () => {
     const p = getProps();
-    // In controlled mode, always read from props.value reactively
-    // In uncontrolled mode, read from internal signal
     if (p.value !== undefined) {
       return p.value ?? null;
     }
     return internalValue();
   };
 
-  // Check if invalid
   const isInvalid = () => {
     return getProps().isInvalid ?? false;
   };
 
-  // Set value
   function setSelectedValue(value: string | null): void {
     const p = getProps();
     if (p.isReadOnly || p.isDisabled) {
@@ -153,7 +145,6 @@ export function createRadioGroupState(props: MaybeAccessor<RadioGroupProps> = {}
     }
   }
 
-  // Set last focused value
   function setLastFocusedValue(value: string | null): void {
     setLastFocusedValueInternal(value);
   }
@@ -179,7 +170,6 @@ export function createRadioGroupState(props: MaybeAccessor<RadioGroupProps> = {}
     },
   };
 
-  // Store syncVersion in internal WeakMap (not part of public API)
   // This maintains API parity with React-Aria while supporting SolidJS's reactivity needs
   radioGroupSyncVersion.set(state, syncVersion);
 

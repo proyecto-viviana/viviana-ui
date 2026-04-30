@@ -40,7 +40,6 @@ const baseStyles = [
   "border border-primary-700",
   "text-primary-200",
   "outline-none",
-  // Animation
   "animate-in fade-in-0 zoom-in-95",
   "data-[placement=top]:slide-in-from-bottom-2",
   "data-[placement=bottom]:slide-in-from-top-2",
@@ -62,10 +61,8 @@ const paddingStyles: Record<string, string> = {
   lg: "p-6",
 };
 
-// Arrow styles based on placement
 const arrowBaseStyles = ["fill-bg-300", "stroke-primary-700", "stroke-1"].join(" ");
 
-// Arrow positioning for each placement axis
 const getArrowRotation = (placement: PlacementAxis | null): string => {
   switch (placement) {
     case "top":
@@ -165,7 +162,6 @@ function PopoverArrow(props: PopoverArrowProps): JSX.Element {
     <HeadlessOverlayArrow
       class="absolute block"
       style={{
-        // Position based on placement
         ...(props.placement === "top" && {
           bottom: "100%",
           left: "50%",

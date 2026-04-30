@@ -255,7 +255,6 @@ function assignRef<T>(ref: RefLike<T>, el: T): void {
 export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
   const [local, stateProps] = splitProps(props, ["slot"]);
 
-  // Create trigger state
   const state = createMenuTriggerState({
     get isOpen() {
       return stateProps.isOpen;
@@ -268,7 +267,6 @@ export function MenuTrigger(props: MenuTriggerProps): JSX.Element {
     },
   });
 
-  // Create trigger aria props
   const { menuTriggerProps, menuProps } = createMenuTrigger(
     {
       get isDisabled() {
@@ -419,14 +417,12 @@ export interface MenuSectionProps extends SectionProps {}
 export function MenuButton(props: MenuButtonProps): JSX.Element {
   const [local, domProps] = splitProps(props, ["class", "style", "slot", "isDisabled", "children"]);
 
-  // Get trigger context
   const context = useContext(MenuTriggerContext);
   if (!context) {
     throw new Error("MenuButton must be used within a MenuTrigger");
   }
   const { state, triggerProps } = context;
 
-  // Create button aria props for proper press handling
   const buttonAria = createButton({
     get isDisabled() {
       return local.isDisabled;
@@ -436,17 +432,14 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
     },
   });
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return local.isDisabled;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<MenuTriggerRenderProps>(() => ({
     isOpen: state.isOpen(),
     isFocused: isFocused(),
@@ -456,7 +449,6 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
     isDisabled: !!local.isDisabled,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -467,7 +459,6 @@ export function MenuButton(props: MenuButtonProps): JSX.Element {
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanTriggerProps = () => {
     const { ref: _ref1, ...rest } = triggerProps as Record<string, unknown>;
     return rest;
@@ -535,10 +526,8 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     ],
   );
 
-  // Get trigger context if available
   const triggerContext = useContext(MenuTriggerContext);
 
-  // Ref for the menu element (for click outside detection)
   const [menuRef, setMenuRef] = createSignal<HTMLUListElement | null>(null);
 
   const flatItems = createMemo<T[]>(() => {
@@ -547,7 +536,6 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
 
   const hasSections = createMemo(() => stateProps.items.some((item) => isCollectionSection(item)));
 
-  // Create menu state
   const state = createMenuState<T>({
     get items() {
       return flatItems();
@@ -580,7 +568,6 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     return !!disabled;
   };
 
-  // Create menu aria props
   const { menuProps, labelProps } = createMenu(
     {
       get isDisabled() {
@@ -608,10 +595,8 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     state,
   );
 
-  // Create focus ring
   const { isFocused, focusProps } = createFocusRing();
 
-  // Handle click outside to close menu
   createInteractOutside({
     ref: () => menuRef(),
     onInteractOutside: () => {
@@ -624,14 +609,12 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     },
   });
 
-  // Render props values
   const renderValues = createMemo<MenuRenderProps>(() => ({
     isFocused: state.isFocused() || isFocused(),
     isOpen: triggerContext?.state.isOpen() ?? true,
     isEmpty: state.collection().size === 0,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -641,7 +624,6 @@ export function Menu<T>(props: MenuProps<T>): JSX.Element {
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanMenuProps = () => {
     const { ref: _ref1, ...rest } = menuProps as Record<string, unknown>;
     return rest;
@@ -1036,7 +1018,6 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     "ref",
   ]);
 
-  // Get state from context
   const context = useContext(MenuStateContext);
   if (!context) {
     throw new Error("MenuItem must be used within a Menu");
@@ -1051,7 +1032,6 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     itemContext?.onAction?.();
   };
 
-  // Create menu item aria props
   const itemAria = createMenuItem<T>(
     {
       key: local.id,
@@ -1083,7 +1063,6 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     state,
   );
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return itemAria.isDisabled();
@@ -1093,7 +1072,6 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     onHoverChange: local.onHoverChange,
   });
 
-  // Render props values
   const renderValues = createMemo<MenuItemRenderProps>(() => ({
     isSelected: false, // Menu items don't have selection state
     isFocused: itemAria.isFocused(),
@@ -1105,7 +1083,6 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     isOpen: contextProps()["aria-expanded"] === true,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -1119,7 +1096,6 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
     return typeof props.children === "string" || typeof props.children === "number";
   };
 
-  // Remove ref from spread props
   const cleanItemProps = () => {
     const {
       ref: _ref1,
@@ -1162,7 +1138,6 @@ export function MenuItem<T>(props: MenuItemProps<T>): JSX.Element {
 
   const isLink = () => !!local.href;
 
-  // Extract link-specific props from menuItemProps (href, target, rel, download)
   const cleanItemPropsForLink = () => {
     const all = cleanItemProps();
     const { href: _href, target: _target, rel: _rel, download: _download, ...rest } = all;
@@ -1305,5 +1280,4 @@ export function MenuSection(props: MenuSectionProps): JSX.Element {
   return <Section {...props} />;
 }
 
-// Attach Item as a static property
 Menu.Item = MenuItem;

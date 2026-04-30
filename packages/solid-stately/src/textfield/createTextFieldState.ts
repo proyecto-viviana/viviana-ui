@@ -35,23 +35,18 @@ export function createTextFieldState(
 ): TextFieldState {
   const getProps = () => access(props);
 
-  // Get initial value
   const initialProps = getProps();
   const initialValue = initialProps.value ?? initialProps.defaultValue ?? "";
 
-  // Create internal signal for uncontrolled mode
   const [internalValue, setInternalValue] = createSignal(initialValue);
 
-  // Determine if controlled
   const isControlled = () => getProps().value !== undefined;
 
-  // Get current value
   const value: Accessor<string> = () => {
     const p = getProps();
     return isControlled() ? (p.value ?? "") : internalValue();
   };
 
-  // Update value
   function setValue(newValue: string): void {
     const p = getProps();
 

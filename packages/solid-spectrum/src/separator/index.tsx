@@ -60,7 +60,6 @@ export function Separator(props: SeparatorProps): JSX.Element {
   const variant = () => local.variant ?? "default";
   const size = () => local.size ?? "md";
 
-  // Build class string
   const className = createMemo(() => {
     const isVertical = orientation() === "vertical";
     const sizeStyles = isVertical ? verticalSizeStyles : horizontalSizeStyles;

@@ -76,34 +76,27 @@ export function createCheckboxGroupState(
 ): CheckboxGroupState {
   const getProps = () => access(props);
 
-  // Get initial values
   const initialProps = getProps();
   const initialValue = initialProps.value ?? initialProps.defaultValue ?? [];
 
-  // Create internal signal for uncontrolled mode
   const [internalValue, setInternalValue] = createSignal<readonly string[]>(initialValue);
 
-  // Determine if controlled
   const isControlled = () => getProps().value !== undefined;
 
-  // Get current value
   const value: Accessor<readonly string[]> = () => {
     const p = getProps();
     return isControlled() ? (p.value ?? []) : internalValue();
   };
 
-  // Check if required (true if isRequired and no items selected)
   const isRequired: Accessor<boolean> = () => {
     const p = getProps();
     return !!p.isRequired && value().length === 0;
   };
 
-  // Check if invalid
   const isInvalid = () => {
     return getProps().isInvalid ?? false;
   };
 
-  // Set value
   function setValue(newValue: string[]): void {
     const p = getProps();
     if (p.isReadOnly || p.isDisabled) {
@@ -117,12 +110,10 @@ export function createCheckboxGroupState(
     p.onChange?.(newValue);
   }
 
-  // Check if value is selected
   function isSelected(checkValue: string): boolean {
     return value().includes(checkValue);
   }
 
-  // Add value
   function addValue(addVal: string): void {
     const p = getProps();
     if (p.isReadOnly || p.isDisabled) {
@@ -135,7 +126,6 @@ export function createCheckboxGroupState(
     }
   }
 
-  // Remove value
   function removeValue(removeVal: string): void {
     const p = getProps();
     if (p.isReadOnly || p.isDisabled) {
@@ -148,7 +138,6 @@ export function createCheckboxGroupState(
     }
   }
 
-  // Toggle value
   function toggleValue(toggleVal: string): void {
     const p = getProps();
     if (p.isReadOnly || p.isDisabled) {

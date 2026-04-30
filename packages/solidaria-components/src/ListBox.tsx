@@ -244,7 +244,6 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
 
   const hasSections = createMemo(() => stateProps.items.some((item) => isCollectionSection(item)));
 
-  // Create list state
   const state = createListState<T>({
     get items() {
       return flatItems();
@@ -281,7 +280,6 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     },
   });
 
-  // Helper to resolve isDisabled
   const resolveDisabled = (): boolean => {
     const disabled = ariaProps.isDisabled;
     if (typeof disabled === "function") {
@@ -290,7 +288,6 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     return !!disabled;
   };
 
-  // Create listbox aria props
   const listBoxAria = createListBox(
     {
       ...ariaProps,
@@ -301,10 +298,8 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     state,
   );
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Render props values
   const renderValues = createMemo<ListBoxRenderProps>(() => ({
     isFocused: state.isFocused() || isFocused(),
     isFocusVisible: isFocusVisible(),
@@ -312,7 +307,6 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     isEmpty: state.collection().size === 0,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -322,13 +316,11 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps as Record<string, unknown>, { global: true });
     return filtered;
   });
 
-  // Remove ref from spread props
   const cleanListBoxProps = () => {
     const { ref: _ref1, ...rest } = listBoxAria.listBoxProps as Record<string, unknown>;
     return rest;
@@ -694,7 +686,6 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     "ref",
   ]);
 
-  // Get state from context
   const context = useContext(ListBoxStateContext);
   if (!context) {
     throw new Error("ListBoxOption must be used within a ListBox");
@@ -703,7 +694,6 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   const listContext = useContext(ListBoxContext) as ListBoxContextValue<T> | null;
   const [ref, setRef] = createSignal<HTMLLIElement | null>(null);
 
-  // Create option aria props
   const optionAria = createOption<T>(
     {
       key: local.id,
@@ -720,7 +710,6 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     state,
   );
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return optionAria.isDisabled();
@@ -736,7 +725,6 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     },
   });
 
-  // Render props values
   const renderValues = createMemo<ListBoxOptionRenderProps>(() => ({
     isSelected: optionAria.isSelected(),
     isFocused: optionAria.isFocused(),
@@ -746,7 +734,6 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     isDisabled: optionAria.isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -785,7 +772,6 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
     );
   });
 
-  // Remove ref from spread props
   const cleanOptionProps = () => {
     const {
       ref: _ref1,
@@ -915,6 +901,5 @@ export function ListBoxSection(props: ListBoxSectionProps): JSX.Element {
   return <Section {...props} />;
 }
 
-// Attach Option as a static property
 ListBox.Option = ListBoxOption;
 ListBox.LoadMoreItem = ListBoxLoadMoreItem;

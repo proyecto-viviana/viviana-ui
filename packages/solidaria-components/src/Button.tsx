@@ -97,7 +97,6 @@ export function Button(props: ButtonProps): JSX.Element {
     contextProps ? mergeProps(contextBaseProps(), contextSlotProps ?? {}, props) : props
   ) as ButtonProps;
 
-  // Split props
   const [local, ariaProps] = splitProps(mergedProps, [
     "children",
     "class",
@@ -138,12 +137,10 @@ export function Button(props: ButtonProps): JSX.Element {
   const isPopoverTrigger = () =>
     !!popoverTriggerContext && !!buttonEl && popoverTriggerContext.triggerRef() === buttonEl;
 
-  // Wrap onPress to also toggle dialog/popover if this is a trigger button
   const handlePress = (e: PressEvent) => {
     if (resolvePending()) {
       return;
     }
-    // Call original onPress if provided
     if (typeof ariaProps.onPress === "function") {
       ariaProps.onPress(e);
     }
@@ -156,7 +153,6 @@ export function Button(props: ButtonProps): JSX.Element {
     }
   };
 
-  // Create button aria props
   const buttonAria = createButton({
     ...ariaProps,
     onPress: handlePress,
@@ -180,10 +176,8 @@ export function Button(props: ButtonProps): JSX.Element {
     },
   });
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return resolveDisabled() || resolvePending();
@@ -193,7 +187,6 @@ export function Button(props: ButtonProps): JSX.Element {
     onHoverChange: local.onHoverChange,
   });
 
-  // Render props values
   const renderValues = createMemo<ButtonRenderProps>(() => ({
     isHovered: isHovered(),
     isPressed: buttonAria.isPressed() && !resolvePending(),
@@ -203,7 +196,6 @@ export function Button(props: ButtonProps): JSX.Element {
     isPending: resolvePending(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       // Use merged children so ButtonContext can supply slot/default content.
@@ -215,7 +207,6 @@ export function Button(props: ButtonProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   // Remove onClick from DOM props - it's already handled by createPress
   // This matches React Aria Components behavior (Button.tsx line 144: delete DOMProps.onClick)
   const domProps = createMemo(() => {
@@ -225,7 +216,6 @@ export function Button(props: ButtonProps): JSX.Element {
     return filtered;
   });
 
-  // Extract refs from props to combine them manually
   const buttonPropsRef = (buttonAria.buttonProps as Record<string, unknown>).ref as
     | ((el: HTMLElement) => void)
     | undefined;
@@ -236,7 +226,6 @@ export function Button(props: ButtonProps): JSX.Element {
     | ((el: HTMLElement) => void)
     | undefined;
 
-  // Remove ref from spread props to avoid type conflicts
   const cleanButtonProps = () => {
     const { ref: _ref1, ...rest } = buttonAria.buttonProps as Record<string, unknown>;
     return rest;
@@ -250,11 +239,9 @@ export function Button(props: ButtonProps): JSX.Element {
     return rest;
   };
 
-  // Ref callback that combines all refs
   const handleRef = (el: HTMLButtonElement) => {
     buttonEl = el;
 
-    // Call the focusable ref for autoFocus support
     buttonPropsRef?.(el);
     focusPropsRef?.(el);
     hoverPropsRef?.(el);

@@ -86,7 +86,6 @@ export const ToggleSwitchContext = createContext<ToggleSwitchProps | null>(null)
 export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   let inputRef: HTMLInputElement | null = null;
 
-  // Split props
   const [local, ariaProps] = splitProps(props, [
     "class",
     "style",
@@ -97,7 +96,6 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   const descriptionId = createUniqueId();
   const errorMessageId = createUniqueId();
 
-  // Create toggle state
   // Use getters to ensure props are read lazily inside reactive contexts
   const state = createToggleState({
     get isSelected() {
@@ -114,7 +112,6 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
     },
   });
 
-  // Create switch aria props
   const switchAria = createSwitch(
     () => ({
       ...ariaProps,
@@ -132,17 +129,14 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
     return ids.length ? ids.join(" ") : undefined;
   };
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return ariaProps.isDisabled || ariaProps.isReadOnly;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<ToggleSwitchRenderProps>(() => ({
     isSelected: switchAria.isSelected(),
     isHovered: isHovered(),
@@ -155,7 +149,6 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
     state,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -166,7 +159,6 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps, { global: true });
     delete (filtered as Record<string, unknown>).id;
@@ -174,7 +166,6 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
     return filtered;
   });
 
-  // Remove ref from spread props to avoid type conflicts
   const cleanLabelProps = () => {
     const { ref: _ref1, ...rest } = switchAria.labelProps as Record<string, unknown>;
     return rest;

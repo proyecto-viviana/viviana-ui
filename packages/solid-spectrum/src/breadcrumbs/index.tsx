@@ -143,7 +143,6 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     const children = local.children;
     return (
       <>
-        {/* Separator shows before items except first and current. */}
         {ctx.showSeparator && !renderProps.isCurrent && <ChevronIcon class={separatorClass} />}
         {typeof children === "function" ? children(renderProps) : children}
       </>

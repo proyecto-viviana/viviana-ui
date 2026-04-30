@@ -183,13 +183,10 @@ function TimeFieldInner<T extends TimeValue = TimeValue>(props: TimeFieldProps<T
 
   const [fieldRef, setFieldRef] = createSignal<HTMLDivElement | null>(null);
 
-  // Create time field state
   const state = createTimeFieldState(stateProps);
 
-  // Create time field ARIA props
   const fieldAria = createTimeField(rest, state as unknown as TimeFieldState<TimeValue>, fieldRef);
 
-  // Render props values
   const renderValues = createMemo<TimeFieldRenderProps>(() => ({
     isDisabled: state.isDisabled(),
     isReadOnly: state.isReadOnly(),
@@ -197,7 +194,6 @@ function TimeFieldInner<T extends TimeValue = TimeValue>(props: TimeFieldProps<T
     isInvalid: state.isInvalid(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -244,13 +240,11 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
   const { state, aria } = useTimeFieldContextValue();
   const [isFocused, setIsFocused] = createSignal(false);
 
-  // Render props values
   const renderValues = createMemo<TimeInputRenderProps>(() => ({
     isDisabled: state.isDisabled(),
     isFocused: isFocused(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: props.class,
@@ -288,7 +282,6 @@ export function TimeSegment(props: TimeSegmentProps): JSX.Element {
     segmentRef,
   );
 
-  // Render props values
   const renderValues = createMemo<TimeSegmentRenderProps>(() => ({
     isFocused: segmentAria.isFocused,
     isEditable: segmentAria.isEditable,
@@ -297,7 +290,6 @@ export function TimeSegment(props: TimeSegmentProps): JSX.Element {
     text: segmentAria.text,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,

@@ -91,7 +91,6 @@ export function ColorEditor(props: ColorEditorProps): JSX.Element {
     return local.class ?? "";
   };
 
-  // If children are provided, render them instead of the default layout
   if (local.children) {
     return (
       <div class={resolvedClass()} style={local.style}>
@@ -106,7 +105,6 @@ export function ColorEditor(props: ColorEditorProps): JSX.Element {
     );
   }
 
-  // Determine ColorArea channels based on active color space
   const areaChannels = createMemo(() => {
     const space = activeSpace();
     if (space === "hsb" || space === "hex") {
@@ -123,7 +121,6 @@ export function ColorEditor(props: ColorEditorProps): JSX.Element {
         colorSpace: "hsl" as ColorSpace,
       };
     }
-    // rgb: use green and blue on area
     return {
       x: "green" as ColorChannel,
       y: "blue" as ColorChannel,
@@ -140,7 +137,6 @@ export function ColorEditor(props: ColorEditorProps): JSX.Element {
       <ColorPicker value={local.value} defaultValue={local.defaultValue} onChange={local.onChange}>
         {() => (
           <>
-            {/* Top row: ColorArea + vertical sliders */}
             <div class="solidaria-ColorEditor-top">
               <ColorArea
                 xChannel={areaChannels().x}
@@ -166,7 +162,6 @@ export function ColorEditor(props: ColorEditorProps): JSX.Element {
               </Show>
             </div>
 
-            {/* Bottom row: color space selector + channel fields */}
             <div class="solidaria-ColorEditor-bottom">
               <select
                 value={activeSpace()}

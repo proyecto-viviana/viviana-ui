@@ -25,17 +25,14 @@ export function mergeProps<R extends object = Record<string, unknown>, T extends
         key.startsWith("on") &&
         key[2] === key[2]?.toUpperCase()
       ) {
-        // Chain event handlers
         result[key] = chainHandlers(existingValue as Function, value as Function);
       } else if (key === "class" || key === "className") {
-        // Merge class names
         result[key] = mergeClassNames(existingValue, value);
       } else if (
         key === "style" &&
         typeof existingValue === "object" &&
         typeof value === "object"
       ) {
-        // Merge style objects
         result[key] = { ...(existingValue as object), ...(value as object) };
       } else if (value !== undefined) {
         result[key] = value;

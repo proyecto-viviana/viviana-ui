@@ -1,4 +1,3 @@
-// Button
 export {
   createButton,
   createToggleButton,
@@ -13,7 +12,6 @@ export {
   type AriaToggleButtonGroupItemProps,
 } from "./button";
 
-// ActionGroup
 export {
   createActionGroup,
   createActionGroupItem,
@@ -23,7 +21,6 @@ export {
   type ActionGroupItemAria,
 } from "./actiongroup";
 
-// Collections
 export {
   CollectionBuilder,
   Collection,
@@ -44,7 +41,6 @@ export {
   type HeaderNode,
 } from "./collections";
 
-// Checkbox
 export {
   createCheckbox,
   createCheckboxGroup,
@@ -60,7 +56,6 @@ export {
   type CheckboxGroupState,
 } from "./checkbox";
 
-// Radio
 export {
   createRadio,
   createRadioGroup,
@@ -74,7 +69,6 @@ export {
   type RadioGroupState,
 } from "./radio";
 
-// Interactions
 export {
   createPress,
   createLongPress,
@@ -110,7 +104,6 @@ export {
   type HoverEvents,
 } from "./interactions";
 
-// Label
 export {
   createLabel,
   createField,
@@ -127,7 +120,6 @@ export {
   type Validation,
 } from "./label";
 
-// SSR
 export {
   // Basic utilities
   createIsSSR,
@@ -151,7 +143,6 @@ export {
   getPortalContainer,
 } from "./ssr";
 
-// Toggle
 export {
   createToggle,
   createToggleState,
@@ -161,19 +152,14 @@ export {
   type ToggleState,
 } from "./toggle";
 
-// Switch
 export { createSwitch, type AriaSwitchProps, type SwitchAria } from "./switch";
 
-// Link
 export { createLink, type AriaLinkProps, type LinkAria } from "./link";
 
-// TextField
 export { createTextField, type AriaTextFieldProps, type TextFieldAria } from "./textfield";
 
-// ProgressBar
 export { createProgressBar, type AriaProgressBarProps, type ProgressBarAria } from "./progress";
 
-// Separator
 export {
   createSeparator,
   type AriaSeparatorProps,
@@ -181,10 +167,8 @@ export {
   type Orientation,
 } from "./separator";
 
-// Toolbar
 export { createToolbar, type AriaToolbarProps, type ToolbarAria } from "./toolbar";
 
-// Autocomplete
 export {
   createAutocomplete,
   AUTOCOMPLETE_FOCUS_EVENT,
@@ -195,7 +179,6 @@ export {
   type CollectionOptions,
 } from "./autocomplete";
 
-// Overlays
 export {
   // Scroll prevention
   createPreventScroll,
@@ -233,7 +216,6 @@ export {
   type ModalAria,
 } from "./overlays";
 
-// ListBox
 export {
   createListBox,
   createOption,
@@ -244,7 +226,6 @@ export {
   type OptionAria,
 } from "./listbox";
 
-// Menu
 export {
   createMenu,
   createMenuItem,
@@ -258,7 +239,6 @@ export {
   type MenuTriggerAria,
 } from "./menu";
 
-// Select
 export {
   createSelect,
   createHiddenSelect,
@@ -271,7 +251,6 @@ export {
   type HiddenSelectProps,
 } from "./select";
 
-// Tabs
 export {
   createTabList,
   createTab,
@@ -287,7 +266,6 @@ export {
   type TabPanelAria,
 } from "./tabs";
 
-// Breadcrumbs
 export {
   createBreadcrumbs,
   createBreadcrumbItem,
@@ -297,16 +275,12 @@ export {
   type BreadcrumbItemAria,
 } from "./breadcrumbs";
 
-// NumberField
 export { createNumberField, type AriaNumberFieldProps, type NumberFieldAria } from "./numberfield";
 
-// SearchField
 export { createSearchField, type AriaSearchFieldProps, type SearchFieldAria } from "./searchfield";
 
-// Slider
 export { createSlider, type AriaSliderProps, type SliderAria } from "./slider";
 
-// Tooltip
 export {
   createTooltip,
   createTooltipTrigger,
@@ -316,7 +290,6 @@ export {
   type TooltipTriggerAria,
 } from "./tooltip";
 
-// ComboBox
 export {
   createComboBox,
   getComboBoxData,
@@ -324,10 +297,8 @@ export {
   type ComboBoxAria,
 } from "./combobox";
 
-// Dialog
 export { createDialog, type AriaDialogProps, type DialogAria } from "./dialog";
 
-// Toast
 export {
   createToast,
   createToastRegion,
@@ -337,7 +308,6 @@ export {
   type ToastRegionAria,
 } from "./toast";
 
-// Popover
 export {
   createPopover,
   createOverlayPosition,
@@ -353,15 +323,12 @@ export {
   type PositionResult,
 } from "./popover";
 
-// Focus
 export {
-  // FocusScope
   FocusScope,
   useFocusManager,
   type FocusScopeProps,
   type FocusManager,
   type FocusManagerOptions,
-  // Focus Restoration
   createFocusRestore,
   pushFocusStack,
   popFocusStack,
@@ -369,11 +336,9 @@ export {
   clearFocusStack,
   type FocusRestoreOptions,
   type FocusRestoreResult,
-  // Virtual Focus
   createVirtualFocus,
   type VirtualFocusOptions,
   type VirtualFocusResult,
-  // Auto Focus
   createAutoFocus,
   clearAutoFocusQueue,
   getAutoFocusQueueLength,
@@ -381,7 +346,6 @@ export {
   type AutoFocusResult,
 } from "./focus";
 
-// Disclosure
 export {
   createDisclosure,
   createDisclosureGroup,
@@ -391,10 +355,8 @@ export {
   type DisclosureGroupAria,
 } from "./disclosure";
 
-// Meter
 export { createMeter, type AriaMeterProps, type MeterAria } from "./meter";
 
-// Tag
 export {
   createTagGroup,
   createTag,
@@ -405,49 +367,37 @@ export {
   type TagAria,
 } from "./tag";
 
-// Calendar
 export {
-  // Calendar
   createCalendar,
   type AriaCalendarProps,
   type CalendarAria,
-  // Calendar Grid
   createCalendarGrid,
   type AriaCalendarGridProps,
   type CalendarGridAria,
-  // Calendar Cell
   createCalendarCell,
   type AriaCalendarCellProps,
   type CalendarCellAria,
-  // Range Calendar
   createRangeCalendar,
   type AriaRangeCalendarProps,
   type RangeCalendarAria,
-  // Range Calendar Cell
   createRangeCalendarCell,
   type AriaRangeCalendarCellProps,
   type RangeCalendarCellAria,
 } from "./calendar";
 
-// DatePicker
 export {
-  // Date Field
   createDateField,
   type AriaDateFieldProps,
   type DateFieldAria,
-  // Date Segment
   createDateSegment,
   type AriaDateSegmentProps,
   type DateSegmentAria,
-  // Time Field
   createTimeField,
   type AriaTimeFieldProps,
   type TimeFieldAria,
-  // Time Segment
   createTimeSegment,
   type AriaTimeSegmentProps,
   type TimeSegmentAria,
-  // Date Picker
   createDatePicker,
   createDateRangePicker,
   type AriaDatePickerProps,
@@ -457,7 +407,6 @@ export {
   type DateRangePickerAria,
 } from "./datepicker";
 
-// Grid
 export {
   createGrid,
   createGridRow,
@@ -473,7 +422,6 @@ export {
   type GridCellAria,
 } from "./grid";
 
-// Table
 export {
   createTable,
   createTableHeaderRow,
@@ -504,7 +452,6 @@ export {
   type TableColumnResizeResult,
 } from "./table";
 
-// GridList
 export {
   createGridList,
   createGridListItem,
@@ -518,7 +465,6 @@ export {
   type GridListSelectionCheckboxAria,
 } from "./gridlist";
 
-// Tree
 export {
   createTree,
   createTreeItem,
@@ -532,7 +478,6 @@ export {
   type TreeSelectionCheckboxAria,
 } from "./tree";
 
-// Color
 export {
   createColorSlider,
   createColorArea,
@@ -551,18 +496,13 @@ export {
   type ColorSwatchAria,
 } from "./color";
 
-// Drag & Drop
 export {
-  // Basic hooks
   createDrag,
   createDrop,
-  // Collection hooks
   createDraggableCollection,
   createDroppableCollection,
-  // Item hooks
   createDraggableItem,
   createDroppableItem,
-  // Global state
   setGlobalDraggingCollectionRef,
   getGlobalDraggingCollectionRef,
   setGlobalDraggingKeys,
@@ -571,7 +511,6 @@ export {
   getGlobalDraggingTypes,
   setGlobalDropCollectionRef,
   getGlobalDropCollectionRef,
-  // Types
   type AriaDragOptions,
   type DragAria,
   type AriaDropOptions,
@@ -585,7 +524,6 @@ export {
   type DraggableItemAria,
   type DroppableItemOptions,
   type DroppableItemAria,
-  // Utilities
   CUSTOM_DRAG_TYPE,
   NATIVE_DRAG_TYPES,
   GENERIC_TYPE,
@@ -607,7 +545,6 @@ export {
   getGlobalAllowedDropOperations,
 } from "./dnd";
 
-// Landmark
 export {
   createLandmark,
   getLandmarkController,
@@ -617,7 +554,6 @@ export {
   type LandmarkController,
 } from "./landmark";
 
-// Visually Hidden
 export {
   createVisuallyHidden,
   visuallyHiddenStyles,
@@ -625,7 +561,6 @@ export {
   type VisuallyHiddenAria,
 } from "./visually-hidden";
 
-// Live Announcer
 export {
   announce,
   clearAnnouncer,
@@ -636,7 +571,6 @@ export {
   type UseAnnouncerResult,
 } from "./live-announcer";
 
-// Form
 export {
   createFormValidation,
   createFormReset,
@@ -646,9 +580,7 @@ export {
   type ValidationBehavior,
 } from "./form";
 
-// i18n
 export {
-  // Locale
   I18nProvider,
   useLocale,
   createDefaultLocale,
@@ -656,22 +588,16 @@ export {
   type Direction,
   type Locale,
   type I18nProviderProps,
-  // RTL
   isRTL,
-  // Number formatting
   NumberFormatter,
   createNumberFormatter,
   type NumberFormatOptions,
-  // Date formatting
   createDateFormatter,
-  // String collation
   createCollator,
-  // String filtering
   createFilter,
   type Filter,
 } from "./i18n";
 
-// StepList
 export {
   createStepList,
   createStep,
@@ -681,10 +607,8 @@ export {
   type StepAria,
 } from "./steplist";
 
-// Selection
 export { createTypeSelect, type TypeSelectOptions, type TypeSelectAria } from "./selection";
 
-// Utils
 export { mergeProps, filterDOMProps, type FilterDOMPropsOptions } from "./utils";
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from "./utils";
 export { createDescription, type DescriptionProps } from "./utils";

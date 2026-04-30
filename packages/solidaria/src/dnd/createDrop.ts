@@ -31,7 +31,6 @@ const DROP_ACTIVATE_TIMEOUT = 800;
 export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
   const getProps = createMemo(() => props());
 
-  // Create drop state
   const state = createDropState(() => ({
     getDropOperation: getProps().getDropOperation,
     onDropEnter: getProps().onDropEnter,
@@ -43,7 +42,6 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
     isDisabled: getProps().isDisabled,
   }));
 
-  // Track internal state
   let x = 0;
   let y = 0;
   let dragOverElements = new Set<Element>();
@@ -71,7 +69,6 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
       allowed &= globalAllowed;
     }
 
-    // Handle modifier keys for operation switching
     let modifierAllowed = DROP_OPERATION.none;
 
     // macOS: Alt=copy, Ctrl=link, Cmd=move
@@ -170,7 +167,6 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
     const prevDropEffect = dropEffect;
     const p = getProps();
 
-    // Update drop effect if allowed operations changed
     if (allowedOpsBits !== allowedOperations) {
       const allowedOps = allowedOperationsToArray(allowedOpsBits);
       let dropOp: DropOperation = allowedOps[0] ?? "cancel";
@@ -182,7 +178,6 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
       dropEffect = (DROP_OPERATION_TO_DROP_EFFECT[dropOp] || "none") as DataTransfer["dropEffect"];
     }
 
-    // Check point-specific operation
     if (typeof p.getDropOperationForPoint === "function" && e.dataTransfer) {
       const types = new DragTypesImpl(e.dataTransfer);
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -204,20 +199,17 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
       e.dataTransfer.dropEffect = dropEffect;
     }
 
-    // Fire enter/exit events on drop effect change
     if (dropEffect === "none" && prevDropEffect !== "none") {
       fireDropExit(e);
     } else if (dropEffect !== "none" && prevDropEffect === "none") {
       fireDropEnter(e);
     }
 
-    // Fire move event
     if (dropEffect !== "none") {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
       state.moveInTarget(x - rect.x, y - rect.y);
     }
 
-    // Handle drop activate timer
     clearTimeout(dropActivateTimer);
 
     if (typeof p.onDropActivate === "function" && dropEffect !== "none") {
@@ -237,7 +229,6 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
     // Track drag over elements (WebKit workaround for relatedTarget being null)
     dragOverElements.delete(e.target as Element);
 
-    // Remove elements no longer in DOM
     for (const element of dragOverElements) {
       if (!e.currentTarget || !(e.currentTarget as Element).contains(element)) {
         dragOverElements.delete(element);

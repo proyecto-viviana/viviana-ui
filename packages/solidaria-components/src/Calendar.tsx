@@ -274,13 +274,11 @@ function CalendarInner<T extends DateValue = CalendarDate>(props: CalendarProps<
   // Create calendar ARIA props
   const calendarAria = createCalendar(rest, state as unknown as CalendarState<DateValue>);
 
-  // Render props values
   const renderValues = createMemo<CalendarRenderProps>(() => ({
     isDisabled: state.isDisabled(),
     isReadOnly: state.isReadOnly(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -376,7 +374,6 @@ export function CalendarGrid(props: CalendarGridProps): JSX.Element {
     return offsetMonths ? baseStart.add({ months: offsetMonths }) : baseStart;
   });
 
-  // Create grid ARIA props
   const gridAria = createCalendarGrid(
     {
       startDate: startDate(),
@@ -387,12 +384,10 @@ export function CalendarGrid(props: CalendarGridProps): JSX.Element {
     gridRef,
   );
 
-  // Render props values
   const renderValues = createMemo<CalendarGridRenderProps>(() => ({
     isDisabled: state.isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: props.class,
@@ -491,7 +486,6 @@ export function CalendarCell(props: CalendarCellProps): JSX.Element {
     () => currentMonthStart != null && !isSameMonth(currentMonthStart, props.date),
   );
 
-  // Create cell ARIA props
   const cellAria = createCalendarCell(
     () => ({
       date: props.date,
@@ -501,7 +495,6 @@ export function CalendarCell(props: CalendarCellProps): JSX.Element {
     cellRef,
   );
 
-  // Render props values
   const renderValues = createMemo<CalendarCellRenderProps>(() => ({
     isSelected: cellAria.isSelected,
     isFocused: cellAria.isFocused,
@@ -513,7 +506,6 @@ export function CalendarCell(props: CalendarCellProps): JSX.Element {
     formattedDate: cellAria.formattedDate,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,

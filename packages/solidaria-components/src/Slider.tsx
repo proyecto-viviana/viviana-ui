@@ -174,7 +174,6 @@ export function Slider(props: SliderProps): JSX.Element {
     ["label", "aria-label", "aria-labelledby", "aria-describedby", "isDisabled", "id"],
   );
 
-  // Create slider state
   const state = createSliderState({
     get value() {
       return stateProps.value;
@@ -211,20 +210,17 @@ export function Slider(props: SliderProps): JSX.Element {
     },
   });
 
-  // Track ref for pointer handling
   let trackRef: HTMLElement | undefined;
   const setTrackRef = (el: HTMLElement) => {
     trackRef = el;
   };
 
-  // Create slider aria props
   const { labelProps, groupProps, trackProps, thumbProps, inputProps, outputProps } = createSlider(
     ariaProps,
     state,
     () => trackRef ?? null,
   );
 
-  // Render props values
   const renderValues = createMemo<SliderRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging(),
@@ -234,7 +230,6 @@ export function Slider(props: SliderProps): JSX.Element {
     orientation: state.orientation,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -245,12 +240,10 @@ export function Slider(props: SliderProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() =>
     filterDOMProps(rest as Record<string, unknown>, { global: true }),
   );
 
-  // Clean props helpers
   const cleanGroupProps = () => {
     const { ref: _ref, ...rest } = groupProps as Record<string, unknown>;
     return rest;
@@ -277,7 +270,6 @@ export function Slider(props: SliderProps): JSX.Element {
         data-orientation={state.orientation}
         data-dragging={state.isDragging() || undefined}
       >
-        {/* Label */}
         <Show when={ariaProps.label}>
           <span {...labelProps}>{ariaProps.label}</span>
         </Show>
@@ -304,7 +296,6 @@ export function SliderTrack(props: SliderTrackProps): JSX.Element {
 
   const { state, trackProps, setTrackRef } = context;
 
-  // Render props values
   const renderValues = createMemo<SliderTrackRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging(),
@@ -312,7 +303,6 @@ export function SliderTrack(props: SliderTrackProps): JSX.Element {
     orientation: state.orientation,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -323,13 +313,11 @@ export function SliderTrack(props: SliderTrackProps): JSX.Element {
     renderValues,
   );
 
-  // Clean props
   const cleanTrackProps = () => {
     const { ref: _ref, style: trackStyle, ...rest } = trackProps as Record<string, unknown>;
     return rest;
   };
 
-  // Merge styles
   const mergedStyle = () => {
     const trackStyle = (trackProps as { style?: Record<string, string> }).style || {};
     const renderStyle = renderProps.style() || {};
@@ -365,17 +353,14 @@ export function SliderThumb(props: SliderThumbProps): JSX.Element {
 
   const { state, thumbProps } = context;
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return state.isDisabled;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<SliderThumbRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isDragging: state.isDragging(),
@@ -386,7 +371,6 @@ export function SliderThumb(props: SliderThumbProps): JSX.Element {
     valuePercent: state.getValuePercent(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -397,7 +381,6 @@ export function SliderThumb(props: SliderThumbProps): JSX.Element {
     renderValues,
   );
 
-  // Clean props
   const cleanThumbProps = () => {
     const { ref: _ref, style: thumbStyle, ...rest } = thumbProps as Record<string, unknown>;
     return rest;
@@ -411,7 +394,6 @@ export function SliderThumb(props: SliderThumbProps): JSX.Element {
     return rest;
   };
 
-  // Merge styles
   const mergedStyle = () => {
     const thumbStyle = (thumbProps as { style?: Record<string, string> }).style || {};
     const renderStyle = renderProps.style() || {};
@@ -450,13 +432,11 @@ export function SliderOutput(props: SliderOutputProps): JSX.Element {
 
   const { state, outputProps } = context;
 
-  // Render props values
   const renderValues = createMemo<SliderOutputRenderProps>(() => ({
     value: state.value(),
     formattedValue: state.getFormattedValue(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -467,7 +447,6 @@ export function SliderOutput(props: SliderOutputProps): JSX.Element {
     renderValues,
   );
 
-  // Clean props
   const cleanDomProps = () => {
     const { ref: _ref, ...rest } = domProps as Record<string, unknown>;
     return rest;
@@ -477,7 +456,6 @@ export function SliderOutput(props: SliderOutputProps): JSX.Element {
     return rest;
   };
 
-  // Default children shows formatted value
   const renderedChildren = () => {
     // Check if raw children prop exists before calling renderChildren
     if (renderProps.children === undefined || renderProps.children === null) {

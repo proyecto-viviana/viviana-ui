@@ -261,7 +261,6 @@ export const Section = MenuSection;
 
 export type { Key };
 
-// Sub-component re-exports
 export { ActionMenu } from "./ActionMenu";
 export type { ActionMenuProps } from "./ActionMenu";
 export { SubmenuTrigger } from "./SubmenuTrigger";

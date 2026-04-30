@@ -56,10 +56,8 @@ export function createOption<T>(
 ): OptionAria {
   const getProps = () => access(props);
 
-  // Get shared data from listbox
   const getData = () => getListBoxData(state);
 
-  // Computed states
   const isDisabled: Accessor<boolean> = () => {
     return Boolean(
       getData()?.isDisabled || getProps().isDisabled || state.isDisabled(getProps().key),
@@ -87,7 +85,6 @@ export function createOption<T>(
     getData()?.onAction?.(key);
   };
 
-  // Handle press
   const { pressProps, isPressed } = createPress({
     get isDisabled() {
       return isDisabled();
@@ -104,7 +101,6 @@ export function createOption<T>(
     },
   });
 
-  // Handle hover
   const { hoverProps, isHovered } = createHover({
     get isDisabled() {
       return isDisabled();
@@ -117,10 +113,8 @@ export function createOption<T>(
     },
   });
 
-  // Handle focus ring
   const { isFocusVisible, focusProps } = createFocusRing();
 
-  // Generate unique IDs for label and description
   const labelId = `${getProps().key}-label`;
   const descriptionId = `${getProps().key}-desc`;
 

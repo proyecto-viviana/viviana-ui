@@ -76,7 +76,6 @@ export function StepList<T extends { key: Key; label: string }>(
       return local.children(item, renderProps);
     }
 
-    // Default rendering with indicator + label + connector
     return (
       <DefaultStep item={item} stepNumber={renderProps.stepNumber} renderProps={renderProps} />
     );
@@ -206,7 +205,6 @@ function CheckIcon(): JSX.Element {
   );
 }
 
-// Sub-component attachment
 StepList.Step = Step;
 
 export const Item = Step;

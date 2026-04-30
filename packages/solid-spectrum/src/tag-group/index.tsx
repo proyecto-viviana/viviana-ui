@@ -139,7 +139,6 @@ export function TagGroup<T extends { id?: Key; key?: Key }>(props: TagGroupProps
   const sizeConfig = () => sizeStyles[size()];
   const variantConfig = () => variantStyles[variant()];
 
-  // Default getKey function
   const getKey = (item: T): Key => {
     if (local.getKey) return local.getKey(item);
     if (item.id !== undefined) return item.id;

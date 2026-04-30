@@ -13,7 +13,6 @@ export function View(props: ViewProps): JSX.Element {
   );
 }
 
-// Sub-component re-exports
 export {
   Content,
   ViewHeader,

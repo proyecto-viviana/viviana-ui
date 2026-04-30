@@ -38,7 +38,6 @@ export function Text(props: TextProps): JSX.Element {
   );
 }
 
-// Sub-component re-exports
 export { Heading } from "./Heading";
 export type { HeadingProps, HeadingLevel } from "./Heading";
 export { StyledKeyboard } from "./Keyboard";

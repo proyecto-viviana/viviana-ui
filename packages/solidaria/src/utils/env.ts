@@ -4,19 +4,17 @@
  * Compatible with Node.js and Vite environments.
  */
 
-// Type-safe access to import.meta.env (Vite) and process.env
 type ImportMetaWithEnv = ImportMeta & {
   env?: Record<string, unknown> & { DEV?: boolean; PROD?: boolean };
 };
 type ProcessLike = { env?: Record<string, string | undefined> };
 
 function getEnvVar(key: string): string | undefined {
-  // Check Vite's import.meta.env
   const importMetaEnv = (import.meta as ImportMetaWithEnv).env;
   if (importMetaEnv && typeof importMetaEnv[key] === "string") {
     return importMetaEnv[key] as string;
   }
-  // Check Node.js process.env via globalThis
+
   const processEnv = (globalThis as typeof globalThis & { process?: ProcessLike }).process?.env;
   if (processEnv) {
     return processEnv[key];
@@ -35,7 +33,6 @@ export function isTestEnv(): boolean {
  * Check if we're running in a development environment (not production).
  */
 export function isDevEnv(): boolean {
-  // Check Vite's DEV flag
   const importMetaEnv = (import.meta as ImportMetaWithEnv).env;
   if (importMetaEnv?.DEV === true) {
     return true;
@@ -48,7 +45,6 @@ export function isDevEnv(): boolean {
  * Check if we're running in production.
  */
 export function isProdEnv(): boolean {
-  // Check Vite's PROD flag
   const importMetaEnv = (import.meta as ImportMetaWithEnv).env;
   if (importMetaEnv?.PROD === true) {
     return true;

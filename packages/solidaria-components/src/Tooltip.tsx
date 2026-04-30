@@ -134,11 +134,9 @@ export const TooltipTrigger: ParentComponent<TooltipTriggerComponentProps> = (pr
     triggerRef: () => triggerRef,
   };
 
-  // Clone children and inject trigger props into the first child
   const processChildren = () => {
     const children = props.children;
     if (Array.isArray(children)) {
-      // First child is the trigger, rest are tooltip(s)
       const [trigger, ...rest] = children;
       return (
         <>
@@ -173,7 +171,6 @@ const TriggerWrapper: ParentComponent<{
   triggerProps: JSX.HTMLAttributes<HTMLElement>;
   ref: (el: HTMLElement) => void;
 }> = (props) => {
-  // Get the child element and clone it with trigger props
   const child = () => props.children as JSX.Element;
 
   // We wrap in a span with display:contents to not affect layout.
@@ -187,7 +184,6 @@ const TriggerWrapper: ParentComponent<{
         if (rect.width > 0 && rect.height > 0) {
           return el;
         }
-        // Check children
         for (const child of el.children) {
           const found = findVisibleChild(child);
           if (found) return found;
@@ -203,17 +199,14 @@ const TriggerWrapper: ParentComponent<{
       if (visibleChild) {
         props.ref(visibleChild);
       } else {
-        // Fallback to span itself
         props.ref(span);
       }
     };
 
-    // Try immediately first (in case layout is already computed)
     const immediateChild = findVisibleChild(span);
     if (immediateChild) {
       props.ref(immediateChild);
     } else {
-      // Defer to next frame when layout should be computed
       requestAnimationFrame(resolveRef);
     }
   };
@@ -239,7 +232,6 @@ const TriggerWrapper: ParentComponent<{
 export function Tooltip(props: TooltipProps): JSX.Element {
   const context = useContext(TooltipTriggerContext);
 
-  // Support standalone usage
   const localState = createTooltipTriggerState({
     get isOpen() {
       return props.isOpen;
@@ -337,7 +329,6 @@ function TooltipContent(
   let tooltipRef!: HTMLDivElement;
   const { tooltipProps: ariaTooltipProps } = createTooltip({}, props.state);
 
-  // Signal to track position styles
   // Start visible at 0,0 and update position asynchronously
   // This ensures the tooltip is immediately accessible (for screen readers and tests)
   // while the visual position gets calculated
@@ -398,7 +389,6 @@ function TooltipContent(
     values,
   );
 
-  // Calculate position based on trigger element
   // Using position: fixed so we use viewport coordinates directly from getBoundingClientRect
   // Returns true if position was successfully updated, false if we need to retry
   const updatePosition = (): boolean => {
@@ -421,7 +411,6 @@ function TooltipContent(
     let top = 0;
     let left = 0;
 
-    // Using viewport coordinates for position: fixed
     switch (props.placement) {
       case "top":
         top = triggerRect.top - tooltipHeight - offset;
@@ -473,7 +462,6 @@ function TooltipContent(
 
     pendingRaf = requestAnimationFrame(tryUpdatePosition);
 
-    // Update on scroll/resize
     window.addEventListener("scroll", updatePosition, true);
     window.addEventListener("resize", updatePosition);
 
@@ -485,7 +473,6 @@ function TooltipContent(
     });
   });
 
-  // Filter to only valid DOM props (aria-*, data-*, events)
   const domProps = filterDOMProps(props);
 
   // Extract ref from ariaTooltipProps to avoid type conflicts (SolidJS ref types are element-specific)
@@ -496,7 +483,6 @@ function TooltipContent(
     props.onTooltipRef(el);
   };
 
-  // Clean up ref on unmount
   onCleanup(() => {
     props.onTooltipRef(null);
   });

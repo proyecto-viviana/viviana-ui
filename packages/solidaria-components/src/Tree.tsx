@@ -613,7 +613,6 @@ function createTreeDropTargetDelegate<T extends object>(
                 tryValid({ type: "item", key: nextKey, dropPosition: "on" })
               );
             }
-            // Wrap to root
             return tryValid({ type: "root" });
           }
         }
@@ -621,7 +620,6 @@ function createTreeDropTargetDelegate<T extends object>(
       return null;
     }
 
-    // dir === 'previous'
     // From null or root → last root-level item 'after'
     if (!target || target.type === "root") {
       const lastKey = collection.getLastKey();
@@ -768,14 +766,12 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     ],
   );
 
-  // Create ref signal
   const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
   const flatItems = createMemo<TreeItemData<T>[]>(() => flattenCollectionEntries(stateProps.items));
   const hasSections = createMemo(() =>
     stateProps.items.some((entry) => isCollectionSection(entry)),
   );
 
-  // Create tree state
   const state = createTreeState<T, TreeCollection<T>>(() => ({
     collectionFactory: (expandedKeys) =>
       createTreeCollection(flatItems(), expandedKeys) as TreeCollection<T>,
@@ -807,7 +803,6 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   // Resolve writing direction for keyboard expand/collapse parity
   const treeDirection = createMemo(() => ariaProps.direction ?? resolveTreeDirection(ref()));
 
-  // Create tree aria props
   const { treeProps } = createTree<T, TreeCollection<T>>(
     () => ({
       id: ariaProps.id,
@@ -823,10 +818,8 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     ref,
   );
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Render props values
   const renderValues = createMemo<TreeRenderProps>(() => ({
     isFocused: state.isFocused || isFocused(),
     isFocusVisible: isFocusVisible(),
@@ -834,7 +827,6 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     isEmpty: flatItems().length === 0,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -844,13 +836,11 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps as Record<string, unknown>, { global: true });
     return filtered;
   });
 
-  // Remove ref from spread props
   const cleanTreeProps = () => {
     const { ref: _ref1, ...rest } = treeProps as Record<string, unknown>;
     return rest;
@@ -862,7 +852,6 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
 
   const isEmpty = () => flatItems().length === 0;
 
-  // Render visible rows (flat list based on expansion state)
   const visibleRows = createMemo(() => {
     collectionVersion();
     return state.collection.rows;
@@ -1232,7 +1221,6 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex, "before");
     const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex, "on");
     const afterIndicatorIndexes = () => getAfterIndicatorIndexes(itemIndex, renderRange());
-    // Find the original item data to pass to render function
     const itemData: TreeItemData<T> = {
       key: node.key,
       value: node.value as T,
@@ -1373,7 +1361,6 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
     "children",
   ]);
 
-  // Get state from context
   const context = useContext(TreeStateContext);
   if (!context) {
     throw new Error("TreeItem must be used within a Tree");
@@ -1381,14 +1368,11 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
   const state = context as TreeState<T, TreeCollection<T>>;
   const treeContext = useContext(TreeContext) as TreeContextValue<T> | null;
 
-  // Create ref signal
   const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
 
-  // Find the item node
   const itemNode = createMemo(() => {
     const node = state.collection.getItem(local.id);
     if (!node) {
-      // Create a simple node for the item
       return {
         type: "item" as const,
         key: local.id,
@@ -1405,7 +1389,6 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
     return node;
   });
 
-  // Create item aria props
   const treeItemAria = createTreeItem<T, TreeCollection<T>>(
     () => ({
       node: itemNode(),
@@ -1422,17 +1405,14 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
   const isExpandable = () => treeItemAria.isExpandable;
   const level = () => treeItemAria.level;
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return isDisabled();
     },
   });
 
-  // Create focus ring
   const { isFocusVisible, focusProps } = createFocusRing();
 
-  // Check if focused
   const isFocused = createMemo(() => state.focusedKey === local.id);
   const draggableItem = createMemo(() => {
     if (!treeContext?.dragAndDropHooks?.useDraggableItem || !treeContext.dragState)
@@ -1456,7 +1436,6 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
     );
   });
 
-  // Render props values
   const renderValues = createMemo<TreeItemRenderProps>(() => ({
     isSelected: isSelected(),
     isFocused: isFocused(),
@@ -1469,7 +1448,6 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
     level: level(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -1480,7 +1458,6 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanRowProps = () => {
     const { ref: _ref1, ...rest } = treeItemAria.rowProps as Record<string, unknown>;
     return rest;
@@ -1494,7 +1471,6 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
     return rest;
   };
 
-  // Item context for nested components
   const itemContextValue = createMemo<TreeItemContextValue<T>>(() => ({
     node: itemNode(),
     isExpanded: isExpanded(),
@@ -1552,13 +1528,11 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
  * A button to expand/collapse a tree item.
  */
 export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
-  // Get item context
   const itemContext = useContext(TreeItemContext);
   if (!itemContext) {
     throw new Error("TreeExpandButton must be used within a Tree");
   }
 
-  // Get state context
   const stateContext = useContext(TreeStateContext);
   if (!stateContext) {
     throw new Error("TreeExpandButton must be used within a Tree");
@@ -1566,14 +1540,12 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
 
   const state = stateContext as TreeState<object, TreeCollection<object>>;
 
-  // Create expand button props
   const treeItemAria = createTreeItem(
     () => ({ node: itemContext.node }),
     () => state,
     () => null,
   );
 
-  // Remove ref and add custom handling
   const cleanExpandProps = () => {
     const { ref: _ref, ...rest } = treeItemAria.expandButtonProps as Record<string, unknown>;
     return rest;
@@ -1581,7 +1553,6 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
 
   const isExpanded = createMemo(() => state.isExpanded(itemContext.node.key));
 
-  // Render children
   const renderChildren = () => {
     if (typeof props.children === "function") {
       return props.children({ isExpanded: isExpanded() });
@@ -1714,7 +1685,6 @@ export function TreeHeader(props: TreeHeaderProps): JSX.Element {
   return <Header {...props} />;
 }
 
-// Attach static properties
 Tree.Item = TreeItem;
 Tree.ExpandButton = TreeExpandButton;
 Tree.SelectionCheckbox = TreeSelectionCheckbox;

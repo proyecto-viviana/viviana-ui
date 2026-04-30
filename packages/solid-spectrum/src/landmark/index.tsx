@@ -118,11 +118,8 @@ export function SkipLink(props: SkipLinkProps): JSX.Element {
   const customClass = props.class ?? "";
 
   const className = [
-    // Visually hidden by default
     "absolute left-0 top-0 -translate-y-full",
-    // Show when focused
     "focus:translate-y-0",
-    // Styling
     "z-50 px-4 py-2 bg-accent text-bg-400 font-medium rounded-br-lg",
     "transition-transform duration-200",
     "focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2",
@@ -197,5 +194,4 @@ export function LandmarkNavigator(props: LandmarkNavigatorProps): JSX.Element {
   );
 }
 
-// Export controller hook for convenience
 export { useLandmarkController };

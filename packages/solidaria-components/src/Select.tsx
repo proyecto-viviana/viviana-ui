@@ -311,7 +311,6 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     return !!disabled;
   };
 
-  // Create select state
   const state = createSelectState<T>({
     get items() {
       return stateProps.items;
@@ -376,18 +375,15 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     return clean as typeof ariaProps;
   });
 
-  // Create select aria props
   const { labelProps, triggerProps, valueProps, menuProps, isFocused, isFocusVisible, isOpen } =
     createSelect<T>(selectAriaProps, state);
 
-  // Create hover for wrapper
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return resolveDisabled();
     },
   });
 
-  // Render props values
   const renderValues = createMemo<SelectRenderProps>(() => ({
     isOpen: isOpen(),
     isFocused: isFocused(),
@@ -400,7 +396,6 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
         : state.selectedKey() != null,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -410,13 +405,11 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps as Record<string, unknown>, { global: true });
     return filtered;
   });
 
-  // Remove ref from hover props
   const cleanHoverProps = () => {
     const { ref: _ref, ...rest } = hoverProps as Record<string, unknown>;
     return rest;
@@ -484,7 +477,6 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
     return getNativeSelectValidation(select);
   };
 
-  // Create hidden select for form submission
   const { containerProps, selectProps: hiddenSelectProps } = createHiddenSelect({
     state,
     name: stateProps.name,
@@ -518,7 +510,6 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
 
   const rootChildren = () => (
     <>
-      {/* Hidden select for form submission */}
       <div {...containerProps}>
         <select
           {...hiddenSelectProps}
@@ -678,7 +669,6 @@ export function Select<T>(props: SelectProps<T>): JSX.Element {
 export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
   const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
-  // Get context
   const context = useContext(SelectContext);
   if (!context) {
     throw new Error("SelectTrigger must be used within a Select");
@@ -692,14 +682,12 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
     }
   });
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return state.isDisabled;
     },
   });
 
-  // Render props values
   const renderValues = createMemo<SelectTriggerRenderProps>(() => ({
     isOpen: isOpen(),
     isFocused: isFocused(),
@@ -708,7 +696,6 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
     isDisabled: state.isDisabled,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -719,7 +706,6 @@ export function SelectTrigger(props: SelectTriggerProps): JSX.Element {
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanTriggerProps = () => {
     const { ref: _ref1, ...rest } = context.triggerProps as Record<string, unknown>;
     return rest;
@@ -765,7 +751,6 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
     "children",
   ]);
 
-  // Get context
   const context = useContext(SelectContext);
   if (!context) {
     throw new Error("SelectValue must be used within a Select");
@@ -773,10 +758,8 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
   const { valueProps, placeholder: contextPlaceholder } = context;
   const state = context.state as SelectState<T>;
 
-  // Use local placeholder if provided, otherwise fall back to context
   const placeholder = () => local.placeholder ?? contextPlaceholder;
 
-  // Render props values
   const renderValues = createMemo<SelectValueRenderProps<T>>(() => {
     const collection = state.collection();
     const selectedItem =
@@ -806,7 +789,6 @@ export function SelectValue<T>(props: SelectValueProps<T>): JSX.Element {
     };
   });
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children ?? defaultSelectValueChildren,
@@ -844,7 +826,6 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
     "renderEmptyState",
   ]);
 
-  // Get context
   const context = useContext(SelectContext);
   if (!context) {
     throw new Error("SelectListBox must be used within a Select");
@@ -865,10 +846,8 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
     }
   });
 
-  // Ref for the listbox element (for click outside detection)
   let listBoxRef: HTMLUListElement | undefined;
 
-  // Handle click outside to close select
   createInteractOutside({
     ref: () => listBoxRef ?? null,
     onInteractOutside: () => {
@@ -881,7 +860,6 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
     },
   });
 
-  // Create listbox aria props - reuse select's internal list state via collection
   const { listBoxProps } = createListBox(
     {
       ...(menuProps as unknown as AriaListBoxProps),
@@ -892,12 +870,10 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
     createSelectListStateAdapter(state),
   );
 
-  // Render props values
   const renderValues = createMemo<SelectListBoxRenderProps>(() => ({
     isFocused: state.isFocused(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -907,7 +883,6 @@ export function SelectListBox<T>(props: SelectListBoxProps<T>): JSX.Element {
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanMenuProps = () => {
     const { ref: _ref1, ...rest } = menuProps as Record<string, unknown>;
     return rest;
@@ -969,7 +944,6 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
     "textValue",
   ]);
 
-  // Get state from context
   const context = useContext(SelectStateContext);
   if (!context) {
     throw new Error("SelectOption must be used within a Select");
@@ -977,7 +951,6 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
   const state = context as SelectState<T>;
   const selectContext = useContext(SelectContext) as SelectContextValue<T> | null;
 
-  // Create option aria props - adapt select state to list state interface
   const optionAria = createOption<T>(
     {
       key: local.id,
@@ -1022,14 +995,12 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
     },
   );
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return optionAria.isDisabled();
     },
   });
 
-  // Render props values
   const renderValues = createMemo<SelectOptionRenderProps>(() => ({
     isSelected: optionAria.isSelected(),
     isFocused: optionAria.isFocused(),
@@ -1039,7 +1010,6 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
     isDisabled: optionAria.isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -1057,7 +1027,6 @@ export function SelectOption<T>(props: SelectOptionProps<T>): JSX.Element {
     isSelected: optionAria.isSelected,
   }));
 
-  // Remove ref from spread props
   const cleanOptionProps = () => {
     const {
       ref: _ref1,

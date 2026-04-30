@@ -124,12 +124,10 @@ export function Landmark(props: LandmarkProps): JSX.Element {
     ref,
   );
 
-  // Render props values
   const renderValues = createMemo<LandmarkRenderProps>(() => ({
     role: ariaProps.role,
   }));
 
-  // Resolve class
   const resolvedClass = createMemo(() => {
     const cls = local.class;
     if (typeof cls === "function") {
@@ -138,7 +136,6 @@ export function Landmark(props: LandmarkProps): JSX.Element {
     return cls ?? `solidaria-Landmark solidaria-Landmark--${ariaProps.role}`;
   });
 
-  // Resolve style
   const resolvedStyle = createMemo(() => {
     const style = local.style;
     if (typeof style === "function") {
@@ -147,7 +144,6 @@ export function Landmark(props: LandmarkProps): JSX.Element {
     return style;
   });
 
-  // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(ariaProps, { global: true }));
 
   return (

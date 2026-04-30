@@ -287,10 +287,8 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     ],
   );
 
-  // Create ref signal
   const [ref, setRef] = createSignal<HTMLUListElement | null>(null);
 
-  // Build collection
   const collection = createMemo(() =>
     buildGridCollection(
       stateProps.items,
@@ -300,18 +298,15 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     ),
   );
 
-  // Get disabled keys from items + explicit disabledKeys
   const allDisabledKeys = createMemo(() => {
     const keys = new Set<Key>();
 
-    // Add explicitly disabled keys
     if (stateProps.disabledKeys) {
       for (const key of stateProps.disabledKeys) {
         keys.add(key);
       }
     }
 
-    // Add keys from items marked as disabled
     for (const node of collection().rows) {
       if (node.isDisabled) {
         keys.add(node.key);
@@ -321,7 +316,6 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     return keys;
   });
 
-  // Create grid state
   const state = createGridState<T, GridCollection<T>>(() => ({
     collection: collection(),
     disabledKeys: allDisabledKeys(),
@@ -331,7 +325,6 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     onSelectionChange: stateProps.onSelectionChange,
   }));
 
-  // Create grid list aria props
   const { gridProps } = createGridList<T, GridCollection<T>>(
     () => ({
       id: ariaProps.id,
@@ -346,10 +339,8 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     ref,
   );
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Render props values
   const renderValues = createMemo<GridListRenderProps>(() => ({
     isFocused: state.isFocused || isFocused(),
     isFocusVisible: isFocusVisible(),
@@ -357,7 +348,6 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     isEmpty: stateProps.items.length === 0,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       class: local.class,
@@ -367,13 +357,11 @@ export function GridList<T extends object>(props: GridListProps<T>): JSX.Element
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps as Record<string, unknown>, { global: true });
     return filtered;
   });
 
-  // Remove ref from spread props
   const cleanGridProps = () => {
     const { ref: _ref1, ...rest } = gridProps as Record<string, unknown>;
     return rest;
@@ -658,7 +646,6 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
     "children",
   ]);
 
-  // Get state from context
   const context = useContext(GridListStateContext);
   if (!context) {
     throw new Error("GridListItem must be used within a GridList");
@@ -666,14 +653,11 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
   const state = context as GridState<T, GridCollection<T>>;
   const listContext = useContext(GridListContext) as GridListContextValue<T> | null;
 
-  // Create ref signal
   const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
 
-  // Find or create the item node
   const itemNode = createMemo(() => {
     const node = state.collection.getItem(local.id);
     if (!node) {
-      // Create a simple node for the item
       return {
         type: "item" as const,
         key: local.id,
@@ -688,7 +672,6 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
     return node as GridNode<T>;
   });
 
-  // Create item aria props
   const itemAria = createGridListItem<T, GridCollection<T>>(
     () => ({
       node: itemNode(),
@@ -701,17 +684,14 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
   const isDisabled = () => itemAria.isDisabled;
   const isPressed = () => itemAria.isPressed;
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return isDisabled();
     },
   });
 
-  // Create focus ring
   const { isFocusVisible, focusProps } = createFocusRing();
 
-  // Check if focused
   const isFocused = createMemo(() => state.focusedKey === local.id);
   const draggableItem = createMemo(() => {
     if (!listContext?.dragAndDropHooks?.useDraggableItem || !listContext.dragState)
@@ -735,7 +715,6 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
     );
   });
 
-  // Render props values
   const renderValues = createMemo<GridListItemRenderProps>(() => ({
     isSelected: isSelected(),
     isFocused: isFocused(),
@@ -745,7 +724,6 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
     isDisabled: isDisabled(),
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -756,7 +734,6 @@ export function GridListItem<T extends object>(props: GridListItemProps<T>): JSX
     renderValues,
   );
 
-  // Remove ref from spread props
   const cleanRowProps = () => {
     const { ref: _ref1, ...rest } = itemAria.rowProps as Record<string, unknown>;
     return rest;
@@ -893,7 +870,6 @@ export function GridListSection(props: GridListSectionProps): JSX.Element {
   return <Section {...props} />;
 }
 
-// Attach Item and SelectionCheckbox as static properties
 GridList.Item = GridListItem;
 GridList.SelectionCheckbox = GridListSelectionCheckbox;
 GridList.LoadMoreItem = GridListLoadMoreItem;

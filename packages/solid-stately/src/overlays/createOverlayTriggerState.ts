@@ -37,7 +37,6 @@ export function createOverlayTriggerState(
 ): OverlayTriggerState {
   const propsAccessor = () => access(props);
 
-  // Use controlled state if isOpen is provided, otherwise use internal state
   const [internalOpen, setInternalOpen] = createSignal(propsAccessor().defaultOpen ?? false);
 
   const isOpen: Accessor<boolean> = () => {

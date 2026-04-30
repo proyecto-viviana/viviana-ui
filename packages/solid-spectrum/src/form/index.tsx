@@ -26,7 +26,6 @@ export function FieldError(props: FieldErrorProps): JSX.Element {
   );
 }
 
-// Sub-component re-exports
 export { Field } from "./Field";
 export type { FieldProps, FieldSize } from "./Field";
 export { HelpText } from "./HelpText";

@@ -154,7 +154,6 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
     "errorMessage",
   ]);
 
-  // Create checkbox group state
   // Use getters to ensure props are read lazily inside reactive contexts
   const state = createCheckboxGroupState({
     get value() {
@@ -180,7 +179,6 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
     },
   });
 
-  // Create checkbox group aria props
   const groupAria = createCheckboxGroup(
     () => ({
       ...ariaProps,
@@ -190,7 +188,6 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
     state,
   );
 
-  // Render props values
   const renderValues = createMemo<CheckboxGroupRenderProps>(() => ({
     isDisabled: state.isDisabled,
     isReadOnly: state.isReadOnly,
@@ -199,7 +196,6 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
     state,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: props.children,
@@ -210,10 +206,8 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => filterDOMProps(ariaProps, { global: true }));
 
-  // Remove ref from spread props to avoid type conflicts
   const cleanGroupProps = () => {
     const { ref: _ref, ...rest } = groupAria.groupProps as Record<string, unknown>;
     return rest;
@@ -335,10 +329,8 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     return clean as typeof ariaProps;
   });
 
-  // Check if we're inside a CheckboxGroup
   const groupState = useContext(CheckboxGroupStateContext);
 
-  // Create appropriate state/aria hooks based on context
   let isSelected: Accessor<boolean>;
   let isPressed: Accessor<boolean>;
   let isDisabled: boolean;
@@ -348,7 +340,6 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
   let inputProps: JSX.InputHTMLAttributes<HTMLInputElement>;
 
   if (groupState) {
-    // Inside a CheckboxGroup - use group item
     const itemAria = createCheckboxGroupItem(
       () => ({
         ...inputAriaProps(),
@@ -366,7 +357,6 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     labelProps = itemAria.labelProps;
     inputProps = itemAria.inputProps;
   } else {
-    // Standalone checkbox
     // Use getters to ensure props are read lazily inside reactive contexts
     const state = createToggleState({
       get isSelected() {
@@ -409,10 +399,8 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     return ids.length ? ids.join(" ") : undefined;
   };
 
-  // Create focus ring
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
 
-  // Create hover
   const { isHovered, hoverProps } = createHover({
     get isDisabled() {
       return isDisabled || isReadOnly;
@@ -422,7 +410,6 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     onHoverChange: local.onHoverChange,
   });
 
-  // Render props values
   const renderValues = createMemo<CheckboxRenderProps>(() => ({
     isSelected: isSelected(),
     isIndeterminate: local.isIndeterminate ?? false,
@@ -436,7 +423,6 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     isRequired: ariaProps.isRequired ?? false,
   }));
 
-  // Resolve render props
   const renderProps = useRenderProps(
     {
       children: mergedProps.children,
@@ -447,7 +433,6 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     renderValues,
   );
 
-  // Filter DOM props
   const domProps = createMemo(() => {
     const filtered = filterDOMProps(ariaProps, { global: true });
     delete (filtered as Record<string, unknown>).id;
@@ -455,7 +440,6 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     return filtered;
   });
 
-  // Remove ref from spread props to avoid type conflicts
   const cleanLabelProps = () => {
     const { ref: _ref1, ...rest } = labelProps as Record<string, unknown>;
     return rest;

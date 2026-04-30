@@ -1,4 +1,3 @@
-// Toggle
 export {
   createToggleState,
   createToggleGroupState,
@@ -8,24 +7,20 @@ export {
   type ToggleGroupState,
 } from "./toggle";
 
-// Autocomplete
 export {
   createAutocompleteState,
   type AutocompleteState,
   type AutocompleteStateOptions,
 } from "./autocomplete";
 
-// TextField
 export { createTextFieldState, type TextFieldStateOptions, type TextFieldState } from "./textfield";
 
-// Checkbox
 export {
   createCheckboxGroupState,
   type CheckboxGroupProps,
   type CheckboxGroupState,
 } from "./checkbox";
 
-// Radio
 export {
   createRadioGroupState,
   radioGroupSyncVersion,
@@ -33,16 +28,13 @@ export {
   type RadioGroupState,
 } from "./radio";
 
-// Overlays
 export {
   createOverlayTriggerState,
   type OverlayTriggerProps,
   type OverlayTriggerState,
 } from "./overlays";
 
-// Collections
 export {
-  // Types
   type Key,
   type SelectionMode,
   type SelectionBehavior,
@@ -56,21 +48,17 @@ export {
   type CollectionBase,
   type SingleSelection,
   type MultipleSelection,
-  // ListCollection
   ListCollection,
   createListCollection,
-  // Selection State
   createSelectionState,
   type SelectionStateProps,
   type SelectionState,
-  // List State
   createListState,
   createSingleSelectListState,
   type ListStateProps,
   type ListState,
   type SingleSelectListStateProps,
   type SingleSelectListState,
-  // Menu State
   createMenuState,
   createMenuTriggerState,
   type MenuStateProps,
@@ -102,10 +90,8 @@ export {
   type SegmentType,
 } from "./datepicker";
 
-// Select
 export { createSelectState, type SelectStateProps, type SelectState } from "./select";
 
-// ComboBox
 export {
   createComboBoxState,
   defaultContainsFilter,
@@ -115,7 +101,6 @@ export {
   type MenuTriggerAction,
 } from "./combobox";
 
-// Tabs
 export {
   createTabListState,
   type TabListStateProps,
@@ -124,21 +109,18 @@ export {
   type TabOrientation,
 } from "./tabs";
 
-// NumberField
 export {
   createNumberFieldState,
   type NumberFieldStateProps,
   type NumberFieldState,
 } from "./numberfield";
 
-// SearchField
 export {
   createSearchFieldState,
   type SearchFieldStateProps,
   type SearchFieldState,
 } from "./searchfield";
 
-// Slider
 export {
   createSliderState,
   type SliderStateProps,
@@ -146,7 +128,6 @@ export {
   type SliderOrientation,
 } from "./slider";
 
-// Tooltip
 export {
   createTooltipTriggerState,
   resetTooltipState,
@@ -154,7 +135,6 @@ export {
   type TooltipTriggerState,
 } from "./tooltip";
 
-// Toast
 export {
   createToastState,
   createToastQueue,
@@ -167,7 +147,6 @@ export {
   type ToastState,
 } from "./toast";
 
-// Disclosure
 export {
   createDisclosureState,
   createDisclosureGroupState,
@@ -178,39 +157,32 @@ export {
   type Key as DisclosureKey,
 } from "./disclosure";
 
-// Calendar
 export {
-  // Calendar State
   createCalendarState,
   type CalendarStateProps,
   type CalendarState,
   type ValidationState,
-  // Range Calendar State
   createRangeCalendarState,
   type RangeCalendarStateProps,
   type RangeCalendarState,
   type DateRange,
   type RangeValue,
-  // Date Field State
   createDateFieldState,
   type DateFieldStateProps,
   type DateFieldState,
   type DateSegment,
   type DateSegmentType,
-  // Time Field State
   createTimeFieldState,
   type TimeFieldStateProps,
   type TimeFieldState,
   type TimeSegment,
   type TimeSegmentType,
   type TimeValue,
-  // Date types
   type CalendarDate,
   type CalendarDateTime,
   type ZonedDateTime,
   type DateValue,
   type Time,
-  // Date utilities
   today,
   now,
   getLocalTimeZone,
@@ -246,7 +218,6 @@ export {
   maxDate,
 } from "./calendar";
 
-// Grid
 export {
   createGridState,
   type GridState,
@@ -256,7 +227,6 @@ export {
   type GridNodeType,
 } from "./grid";
 
-// Table
 export {
   createTableState,
   createTableColumnResizeState,
@@ -277,7 +247,6 @@ export {
   type TableColumnResizeState,
 } from "./table";
 
-// Tree
 export {
   createTreeState,
   TreeCollection,
@@ -289,42 +258,33 @@ export {
   type TreeItemData,
 } from "./tree";
 
-// Color
 export {
-  // Types
   type Color,
   type ColorFormat,
   type ColorSpace,
   type ColorChannel,
   type ColorChannelRange,
   type ColorAxes,
-  // Color utilities
   parseColor,
   normalizeColor,
   createRGBColor,
   createHSLColor,
   createHSBColor,
-  // Color Slider State
   createColorSliderState,
   type ColorSliderStateOptions,
   type ColorSliderState,
-  // Color Area State
   createColorAreaState,
   type ColorAreaStateOptions,
   type ColorAreaState,
-  // Color Wheel State
   createColorWheelState,
   type ColorWheelStateOptions,
   type ColorWheelState,
-  // Color Field State
   createColorFieldState,
   type ColorFieldStateOptions,
   type ColorFieldState,
 } from "./color";
 
-// Drag and Drop
 export {
-  // Types
   type DropOperation,
   type DragItem,
   type DragDropEvent,
@@ -363,26 +323,21 @@ export {
   type DroppableCollectionBaseProps,
   type DroppableCollectionProps,
   type DraggableCollectionProps,
-  // Drag State
   createDragState,
   type DragStateOptions,
   type DragState,
-  // Drop State
   createDropState,
   type DropStateOptions,
   type DropState,
-  // Draggable Collection State
   createDraggableCollectionState,
   type DraggableCollectionStateOptions,
   type DraggableCollectionState,
-  // Droppable Collection State
   createDroppableCollectionState,
   DIRECTORY_DRAG_TYPE,
   type DroppableCollectionStateOptions,
   type DroppableCollectionState,
 } from "./dnd";
 
-// Form
 export {
   createFormValidationState,
   mergeValidation,
@@ -399,10 +354,8 @@ export {
   type ValidityState,
 } from "./form";
 
-// SSR
 export { createIsSSR, createId, canUseDOM, isServer } from "./ssr";
 
-// Data Hooks
 export {
   createListData,
   type ListOptions,
@@ -420,11 +373,8 @@ export {
   type LoadingState,
 } from "./data";
 
-// getColorChannels
 export { getColorChannels } from "./color/getColorChannels";
 
-// StepList
 export { createStepListState, type StepListStateProps, type StepListState } from "./steplist";
 
-// Utils
 export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from "./utils";

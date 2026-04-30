@@ -1,4 +1,3 @@
-// Types
 export type {
   Key,
   SelectionMode,
@@ -15,17 +14,14 @@ export type {
   MultipleSelection,
 } from "./types";
 
-// List Collection
 export { ListCollection, createListCollection } from "./ListCollection";
 
-// Selection State
 export {
   createSelectionState,
   type SelectionStateProps,
   type SelectionState,
 } from "./createSelectionState";
 
-// List State
 export {
   createListState,
   createSingleSelectListState,
@@ -35,7 +31,6 @@ export {
   type SingleSelectListState,
 } from "./createListState";
 
-// Menu State
 export {
   createMenuState,
   createMenuTriggerState,

@@ -124,7 +124,6 @@ export function Autocomplete<T = unknown>(props: AutocompleteProps<T>): JSX.Elem
     ],
   );
 
-  // Create state
   const state = createAutocompleteState(stateProps);
 
   // Create refs
