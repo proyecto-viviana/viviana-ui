@@ -104,20 +104,20 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       note: "Press behavior updates the comparison action counter on both React Spectrum and Solid.",
     },
   ],
-  actiongroup: [
+  actionbuttongroup: [
     snapshottedDefaultState({
-      slug: "actiongroup",
-      note: "ActionGroup default single-selection screenshots are committed for both sides; density, quiet, overflow, wrapping, disabled item, keyboard, and action states remain planned.",
+      slug: "actionbuttongroup",
+      note: "ActionButtonGroup default screenshots are committed for both sides; density, quiet, orientation, disabled group, keyboard, and action states remain planned.",
     }),
     {
       id: "styled.selection.single-action",
-      label: "Single selection and action",
+      label: "Single action selection",
       kind: "interaction",
       react: "asserted",
       solid: "asserted",
       pairDiff: "na",
       spec: "e2e/button-family-contract.spec.ts",
-      note: "Selecting an action updates both the selected key and action callback data on both stacks.",
+      note: "Pressing an action updates both the selected key and action callback data on both stacks.",
     },
   ],
   buttongroup: [
@@ -135,28 +135,6 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       spec: "e2e/button-family-contract.spec.ts",
       note: "Grouped Save and Cancel actions update state on both stacks.",
     },
-  ],
-  filetrigger: [
-    snapshottedDefaultState({
-      slug: "filetrigger",
-      note: "FileTrigger default trigger screenshots are committed for both sides; file selection behavior and disabled trigger states remain planned.",
-    }),
-    {
-      id: "styled.file.select",
-      label: "File selection callback",
-      kind: "interaction",
-      react: "asserted",
-      solid: "asserted",
-      pairDiff: "na",
-      spec: "e2e/button-family-contract.spec.ts",
-      note: "Programmatic file selection updates the selected file count on both stacks.",
-    },
-  ],
-  logicbutton: [
-    snapshottedDefaultState({
-      slug: "logicbutton",
-      note: "LogicButton AND/OR screenshots are committed for both sides; hover, pressed, focus-visible, and disabled states remain planned.",
-    }),
   ],
   togglebutton: [
     snapshottedDefaultState({
@@ -351,7 +329,7 @@ const legacyStateOverrides: Record<string, readonly VisualStateTarget[]> = {
 };
 
 function stateTargetsFor(entry: ComparisonEntry): readonly VisualStateTarget[] {
-  const overrides = entry.catalogueSource === "react-spectrum-v3"
+  const overrides = entry.catalogueSource === "react-spectrum-s2"
     ? officialStateOverrides[entry.slug]
     : legacyStateOverrides[entry.slug];
 

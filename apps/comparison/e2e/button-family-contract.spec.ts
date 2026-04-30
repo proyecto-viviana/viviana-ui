@@ -41,13 +41,13 @@ test.describe('comparison button-family behavior contracts', () => {
     }
   });
 
-  test('ActionGroup selection and action callbacks update both stacks', async ({ page }) => {
-    const cards = await buttonFamilyCards(page, 'actiongroup');
+  test('ActionButtonGroup action callbacks update both stacks', async ({ page }) => {
+    const cards = await buttonFamilyCards(page, 'actionbuttongroup');
 
     for (const card of [cards.react, cards.solid]) {
       const root = card.locator('[data-comparison-selected-keys]').first();
       await expect(root).toHaveAttribute('data-comparison-selected-keys', 'bold');
-      await card.getByRole('radio', { name: 'Italic' }).click();
+      await card.getByRole('button', { name: 'Italic' }).click();
       await expect(root).toHaveAttribute('data-comparison-selected-keys', 'italic');
       await expect(root).toHaveAttribute('data-comparison-action-key', 'italic');
     }
@@ -63,31 +63,6 @@ test.describe('comparison button-family behavior contracts', () => {
       await expect(root).toHaveAttribute('data-comparison-action-key', 'save');
       await card.getByRole('button', { name: 'Cancel' }).click();
       await expect(root).toHaveAttribute('data-comparison-action-key', 'cancel');
-    }
-  });
-
-  test('FileTrigger file selection reports selected file count on both stacks', async ({ page }) => {
-    const cards = await buttonFamilyCards(page, 'filetrigger');
-
-    for (const card of [cards.react, cards.solid]) {
-      const root = card.locator('[data-comparison-selected-count]').first();
-      const input = card.locator('input[type="file"]').first();
-      await expect(root).toHaveAttribute('data-comparison-selected-count', '0');
-      await input.setInputFiles({
-        name: 'comparison-fixture.txt',
-        mimeType: 'text/plain',
-        buffer: Buffer.from('comparison fixture'),
-      });
-      await expect(root).toHaveAttribute('data-comparison-selected-count', '1');
-    }
-  });
-
-  test('LogicButton exposes the documented operator buttons on both stacks', async ({ page }) => {
-    const cards = await buttonFamilyCards(page, 'logicbutton');
-
-    for (const card of [cards.react, cards.solid]) {
-      await expect(card.getByRole('button', { name: 'And' })).toBeVisible();
-      await expect(card.getByRole('button', { name: 'Or' })).toBeVisible();
     }
   });
 

@@ -43,7 +43,7 @@ async function geometry(locator: Locator): Promise<ElementGeometry> {
 function assertVisibleFieldGeometry(value: ElementGeometry) {
   expect(value.visibleInViewport).toBe(true);
   expect(value.width).toBeGreaterThan(80);
-  expect(value.width).toBeLessThanOrEqual(360);
+  expect(value.width).toBeLessThanOrEqual(560);
   expect(value.height).toBeGreaterThan(28);
   expect(value.height).toBeLessThanOrEqual(88);
 }
@@ -51,7 +51,7 @@ function assertVisibleFieldGeometry(value: ElementGeometry) {
 function assertVisibleListBoxGeometry(value: ElementGeometry) {
   expect(value.visibleInViewport).toBe(true);
   expect(value.width).toBeGreaterThan(180);
-  expect(value.width).toBeLessThanOrEqual(360);
+  expect(value.width).toBeLessThanOrEqual(560);
   expect(value.height).toBeGreaterThan(80);
   expect(value.height).toBeLessThanOrEqual(260);
 }

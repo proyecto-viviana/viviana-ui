@@ -56,9 +56,8 @@ export const comparisonSpectrumSkin = {
   rootClass: "comparison-spectrum-skin",
   buttonClass: "solidaria-Button comparison-spectrum-Button",
   actionButtonClass: "solidaria-Button comparison-spectrum-ActionButton",
-  actionGroupClass: "solidaria-ActionGroup comparison-spectrum-ActionGroup",
+  actionButtonGroupClass: "solidaria-ActionButtonGroup comparison-spectrum-ActionButtonGroup",
   buttonGroupClass: "solidaria-ButtonGroup comparison-spectrum-ButtonGroup",
-  logicButtonClass: "solidaria-Button comparison-spectrum-LogicButton",
   toggleButtonClass:
     "solidaria-ToggleButton comparison-spectrum-ActionButton comparison-spectrum-ToggleButton",
   labelClass: "comparison-spectrum-Button-label",

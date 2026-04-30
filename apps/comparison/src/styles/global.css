@@ -486,6 +486,8 @@ a {
   --skin-button-focus-ring: #7cc5ff;
   --skin-button-primary-border: #c7c7c7;
   --skin-button-primary-text: #f5f5f5;
+  --skin-button-primary-fill-bg: #dbdbdb;
+  --skin-button-primary-fill-text: #111111;
   --skin-button-primary-hover-border: #ffffff;
   --skin-button-primary-active-border: #d6d6d6;
   --skin-button-accent-bg: #1473e6;
@@ -626,7 +628,7 @@ a {
   font-size: var(--skin-button-font-size);
   font-weight: var(--skin-button-font-weight);
   letter-spacing: 0;
-  line-height: 1;
+  line-height: 18px;
   text-decoration: none;
   text-transform: none;
   user-select: none;
@@ -637,18 +639,16 @@ a {
     color 130ms ease;
 }
 
-.comparison-spectrum-skin .comparison-spectrum-Button--trigger {
-  padding-inline: 6px;
-}
-
-.comparison-reference-frame[data-comparison-reference="spectrum-skin"] .comparison-spectrum-Button--trigger {
-  padding-inline: 6px;
-}
-
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"] {
   background: var(--skin-button-accent-bg);
   border-color: var(--skin-button-accent-border);
   color: #ffffff;
+}
+
+.comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="primary"] {
+  background: var(--skin-button-primary-fill-bg);
+  border-color: var(--skin-button-primary-fill-bg);
+  color: var(--skin-button-primary-fill-text);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"] {
@@ -715,7 +715,7 @@ a {
 }
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton,
-.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button {
+.comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup > button {
   appearance: none;
   box-sizing: border-box;
   display: inline-flex;
@@ -747,19 +747,19 @@ a {
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton[data-hovered],
 .comparison-spectrum-skin .comparison-spectrum-ActionButton:hover,
-.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button:hover {
+.comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup > button:hover {
   background: var(--skin-action-button-bg-hover);
   border-color: var(--skin-action-button-border-hover);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton[data-pressed],
-.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button:active {
+.comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup > button:active {
   background: var(--skin-action-button-bg-active);
   border-color: var(--skin-action-button-border-active);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton[data-selected],
-.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button[data-selected] {
+.comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup > button[data-selected] {
   background: var(--skin-action-button-bg-selected);
   border-color: var(--skin-action-button-border-active);
   color: #ffffff;
@@ -767,7 +767,7 @@ a {
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton[data-focus-visible],
 .comparison-spectrum-skin .comparison-spectrum-ActionButton:focus-visible,
-.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button:focus-visible {
+.comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup > button:focus-visible {
   box-shadow:
     0 0 0 2px #000000,
     0 0 0 4px var(--skin-button-focus-ring);
@@ -775,13 +775,13 @@ a {
 }
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton[data-disabled],
-.comparison-spectrum-skin .comparison-spectrum-ActionGroup > button[data-disabled] {
+.comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup > button[data-disabled] {
   border-color: var(--skin-button-disabled-border);
   color: var(--skin-action-button-text-disabled);
   cursor: default;
 }
 
-.comparison-spectrum-skin .comparison-spectrum-ActionGroup {
+.comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 4px;
@@ -789,7 +789,7 @@ a {
   width: fit-content;
 }
 
-.comparison-spectrum-skin .comparison-spectrum-ActionGroup[data-orientation="vertical"] {
+.comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup[data-orientation="vertical"] {
   flex-direction: column;
   align-items: stretch;
 }
@@ -799,22 +799,6 @@ a {
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
-}
-
-.comparison-spectrum-skin .comparison-spectrum-LogicButton {
-  min-block-size: 24px;
-  min-inline-size: 20px;
-  inline-size: 20px;
-  padding: 0;
-  border: 0;
-  border-radius: 4px;
-  background: #1473e6;
-  color: transparent;
-  font-size: 0;
-}
-
-.comparison-spectrum-skin .comparison-spectrum-LogicButton[data-variant="or"] {
-  background: #d83790;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Field,
@@ -838,6 +822,8 @@ a {
 
 .comparison-spectrum-skin .comparison-spectrum-Select {
   position: relative;
+  inline-size: 521px;
+  max-inline-size: 521px;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Select [data-a11y-ignore="aria-hidden-focus"] {
@@ -937,7 +923,9 @@ a {
   inset-inline-start: 0;
   display: grid;
   gap: 2px;
-  min-inline-size: 220px;
+  inline-size: 521px;
+  min-inline-size: 521px;
+  max-inline-size: 521px;
   max-block-size: 240px;
   margin-block-start: 6px;
   padding: 4px;
@@ -1053,8 +1041,8 @@ a {
 }
 
 .comparison-reference-frame[data-comparison-reference="spectrum-skin"] .comparison-datepicker-root {
-  inline-size: 181px;
-  max-inline-size: 181px;
+  inline-size: 521px;
+  max-inline-size: 521px;
   gap: 6px;
 }
 
@@ -1067,16 +1055,16 @@ a {
   display: inline-flex;
   align-items: stretch;
   gap: 0;
-  inline-size: 181px;
+  inline-size: 521px;
 }
 
 .comparison-reference-frame[data-comparison-reference="spectrum-skin"] .comparison-datepicker-group .comparison-date-input {
   display: inline-flex;
   align-items: center;
-  flex: 0 0 149px;
-  inline-size: 149px;
-  min-inline-size: 149px;
-  max-inline-size: 149px;
+  flex: 0 0 489px;
+  inline-size: 489px;
+  min-inline-size: 489px;
+  max-inline-size: 489px;
   min-block-size: 32px;
   padding: 4px 8px;
   border-inline-end: 0;
@@ -1359,7 +1347,7 @@ body.comparison-app [class*="spectrum-Modal-wrapper"] {
   position: fixed;
   top: 50%;
   left: 50%;
-  width: min(640px, calc(100vw - 64px));
+  width: min(480px, calc(100vw - 64px));
   transform: translate(-50%, -50%);
   pointer-events: auto;
 }
@@ -1379,7 +1367,7 @@ body.comparison-app [class*="spectrum-Modal-wrapper"] {
   width: 100%;
   padding: 24px;
   border: 1px solid #505050;
-  border-radius: 4px;
+  border-radius: 16px;
   background: #1f1f1f;
   color: #f5f5f5;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.36);

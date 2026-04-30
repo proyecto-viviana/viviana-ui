@@ -62,7 +62,7 @@ vp run deploy
 
 ## Current Coverage
 
-The manifest starts from the official React Spectrum v3 component catalogue in
+The manifest starts from the official React Spectrum S2 component catalogue in
 documentation order. Every official entry gets a route; entries without a wired
 React Spectrum reference and Solid parity demo stay visible as non-failing gaps.
 
@@ -83,8 +83,8 @@ The report separates route coverage from visual state coverage:
 The first live official comparisons include:
 
 - `Provider` on the styled layer
-- `ActionButton`, `ActionGroup`, `ButtonGroup`, `FileTrigger`, `LogicButton`,
-  and `ToggleButton` on the styled layer
+- `ActionButton`, `ActionButtonGroup`, `ButtonGroup`, and `ToggleButton` on the
+  styled layer
 - `Button` on the styled, component, and headless layers
 - `Tabs` on the styled and component layers
 - `TextField`, `Checkbox`, `Dialog`, `DatePicker`, `SearchField`, and `Tooltip`
@@ -92,9 +92,9 @@ The first live official comparisons include:
 - `Toast` on the Solid styled layer, with the React Spectrum reference still
   tracked
 
-Legacy routes such as `Select`, `Radio`, `Table`, `Tree`, `Toolbar`, and
-`Popover` are retained for continuity, but the official v3 entries remain the
-source of truth for roadmap status.
+Legacy routes such as `Select`, `Radio`, `Table`, `Tree`, and `Toolbar` are
+retained for continuity, but the official S2 entries remain the source of truth
+for roadmap status.
 
 ## What The App Imports
 

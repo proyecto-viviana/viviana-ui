@@ -43,7 +43,7 @@ const legacySnapshottedStates = visualStateCoverage
   );
 
 console.log(`React Spectrum catalogue source: ${reactSpectrumCatalogueSource.url}`);
-console.log(`Official v3 catalogue entries: ${reactSpectrumCatalogue.length}`);
+console.log(`Official S2 catalogue entries: ${reactSpectrumCatalogue.length}`);
 console.log(`Official entries in comparison app: ${officialComparisonEntries.length}`);
 console.log(`Official styled entries live on both sides: ${officialLive.length}`);
 console.log(`Official entries still missing/gap: ${missingOfficialComparisonEntries.length}`);

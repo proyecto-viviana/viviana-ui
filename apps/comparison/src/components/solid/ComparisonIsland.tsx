@@ -7,7 +7,6 @@ import {
   Button as SilapseButton,
   Checkbox,
   Dialog,
-  FileTrigger as SilapseFileTrigger,
   Radio,
   RadioGroup,
   SearchField,
@@ -25,7 +24,6 @@ import {
   globalToastQueue,
 } from "@proyecto-viviana/silapse";
 import {
-  ActionGroup as HeadlessActionGroup,
   Button as HeadlessButton,
   DialogTrigger as HeadlessDialogTrigger,
   Popover as HeadlessPopover,
@@ -175,14 +173,10 @@ function renderStyled(componentSlug: ComparisonSlug) {
       return h(SolidariaSpectrumButtonDemo, {});
     case "actionbutton":
       return h(SolidariaSpectrumActionButtonDemo, {});
-    case "actiongroup":
-      return h(SolidariaSpectrumActionGroupDemo, {});
+    case "actionbuttongroup":
+      return h(SolidariaSpectrumActionButtonGroupDemo, {});
     case "buttongroup":
       return h(SolidariaSpectrumButtonGroupDemo, {});
-    case "filetrigger":
-      return h(SolidariaSpectrumFileTriggerDemo, {});
-    case "logicbutton":
-      return h(SolidariaSpectrumLogicButtonDemo, {});
     case "togglebutton":
       return h(SolidariaSpectrumToggleButtonDemo, {});
     case "tabs":
@@ -261,10 +255,10 @@ function SolidDialogDemo() {
             SilapseButton,
             {
               variant: "primary",
-              buttonStyle: "outline",
+              buttonStyle: "fill",
               class: `${comparisonSpectrumSkin.buttonClass} comparison-spectrum-Button--trigger`,
               "data-variant": "primary",
-              "data-style": "outline",
+              "data-style": "fill",
               onFocus: () => {
                 if (!isOpen()) {
                   setFocusReturned(true);
@@ -706,10 +700,14 @@ function SolidariaSpectrumActionButtonDemo() {
   );
 }
 
-function SolidariaSpectrumActionGroupDemo() {
+function SolidariaSpectrumActionButtonGroupDemo() {
   const [selectedKeys, setSelectedKeys] = createSignal<Set<string>>(new Set(["bold"]));
   const [actionKey, setActionKey] = createSignal("");
   const selectedKeyText = createMemo(() => Array.from(selectedKeys()).join(","));
+  const toggleKey = (key: string) => {
+    setActionKey(key);
+    setSelectedKeys(new Set([key]));
+  };
 
   return hc(
     "div",
@@ -724,26 +722,27 @@ function SolidariaSpectrumActionGroupDemo() {
     },
     [
       hc(
-        HeadlessActionGroup,
+        "div",
         {
-          class: comparisonSpectrumSkin.actionGroupClass,
-          items: actionItems,
-          selectionMode: "single",
+          class: comparisonSpectrumSkin.actionButtonGroupClass,
           "aria-label": "Formatting actions",
-          get selectedKeys() {
-            return selectedKeys();
-          },
-          onAction: (key: unknown) => setActionKey(String(key)),
-          onSelectionChange: (keys: "all" | Set<unknown>) => {
-            if (keys === "all") {
-              setSelectedKeys(new Set(actionItems.map((item) => item.id)));
-              return;
-            }
-            setSelectedKeys(new Set(Array.from(keys, String)));
-          },
         },
-        renderProp((item: ActionItem) =>
-          h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, item.label)),
+        actionItems.map((item: ActionItem) =>
+          hc(
+            HeadlessButton,
+            {
+              class: comparisonSpectrumSkin.actionButtonClass,
+              get "aria-pressed"() {
+                return selectedKeys().has(item.id);
+              },
+              get "data-selected"() {
+                return selectedKeys().has(item.id) ? "" : undefined;
+              },
+              onPress: (_event: unknown) => toggleKey(item.id),
+            },
+            [h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, item.label)],
+          ),
+        ),
       ),
     ],
   );
@@ -777,40 +776,6 @@ function SolidariaSpectrumButtonGroupDemo() {
           }, "Cancel"),
         ],
       ),
-    ],
-  );
-}
-
-function SolidariaSpectrumFileTriggerDemo() {
-  const [selectedCount, setSelectedCount] = createSignal(0);
-
-  return hc(
-    "div",
-    {
-      class: comparisonSpectrumSkin.rootClass,
-      get "data-comparison-selected-count"() {
-        return String(selectedCount());
-      },
-    },
-    [
-      hc(
-        SilapseFileTrigger,
-        {
-          onSelect: (files: FileList | null) => setSelectedCount(files == null ? 0 : files.length),
-        },
-        [hSpectrumActionButton({}, "Upload")],
-      ),
-    ],
-  );
-}
-
-function SolidariaSpectrumLogicButtonDemo() {
-  return hc(
-    "div",
-    { class: `${comparisonSpectrumSkin.rootClass} comparison-button-row` },
-    [
-      hSpectrumLogicButton("and"),
-      hSpectrumLogicButton("or"),
     ],
   );
 }
@@ -882,18 +847,6 @@ function hSpectrumActionButton(
       onPress: props.onPress,
     },
     [h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, label)],
-  );
-}
-
-function hSpectrumLogicButton(variant: "and" | "or") {
-  return hc(
-    HeadlessButton,
-    {
-      class: comparisonSpectrumSkin.logicButtonClass,
-      "aria-label": variant === "and" ? "And" : "Or",
-      "data-variant": variant,
-    },
-    [],
   );
 }
 
