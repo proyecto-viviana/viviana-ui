@@ -10,13 +10,19 @@
  * - ARIA attributes
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
-import { DatePicker, DatePickerButton, DatePickerContent } from '../src/DatePicker';
-import { DateInput, DateSegment } from '../src/DateField';
-import { Calendar, CalendarGrid, CalendarCell, CalendarButton, CalendarHeading } from '../src/Calendar';
-import { CalendarDate } from '@internationalized/date';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { render, screen, cleanup, fireEvent, waitFor } from "@solidjs/testing-library";
+import { DatePicker, DatePickerButton, DatePickerContent } from "../src/DatePicker";
+import { DateInput, DateSegment } from "../src/DateField";
+import {
+  Calendar,
+  CalendarGrid,
+  CalendarCell,
+  CalendarButton,
+  CalendarHeading,
+} from "../src/Calendar";
+import { CalendarDate } from "@internationalized/date";
+import { setupUser } from "@proyecto-viviana/solidaria-test-utils";
 
 // User event instance - created per test
 let user: ReturnType<typeof setupUser>;
@@ -24,20 +30,18 @@ let user: ReturnType<typeof setupUser>;
 // Helper to wait for DatePicker to hydrate (it uses client-only rendering)
 async function waitForDatePickerHydration() {
   await waitFor(() => {
-    const picker = document.querySelector('.solidaria-DatePicker:not(.solidaria-DatePicker--placeholder)');
+    const picker = document.querySelector(
+      ".solidaria-DatePicker:not(.solidaria-DatePicker--placeholder)",
+    );
     expect(picker).toBeInTheDocument();
   });
 }
 
 // Helper component for testing DatePicker
-function TestDatePicker(props: {
-  pickerProps?: Partial<Parameters<typeof DatePicker>[0]>;
-}) {
+function TestDatePicker(props: { pickerProps?: Partial<Parameters<typeof DatePicker>[0]> }) {
   return (
     <DatePicker aria-label="Test Date Picker" {...props.pickerProps}>
-      <DateInput>
-        {(segment) => <DateSegment segment={segment} />}
-      </DateInput>
+      <DateInput>{(segment) => <DateSegment segment={segment} />}</DateInput>
       <DatePickerButton>📅</DatePickerButton>
       <DatePickerContent>
         <Calendar>
@@ -46,16 +50,14 @@ function TestDatePicker(props: {
             <CalendarHeading />
             <CalendarButton slot="next">▶</CalendarButton>
           </header>
-          <CalendarGrid>
-            {(date) => <CalendarCell date={date} />}
-          </CalendarGrid>
+          <CalendarGrid>{(date) => <CalendarCell date={date} />}</CalendarGrid>
         </Calendar>
       </DatePickerContent>
     </DatePicker>
   );
 }
 
-describe('DatePicker', () => {
+describe("DatePicker", () => {
   beforeEach(() => {
     user = setupUser();
   });
@@ -68,66 +70,66 @@ describe('DatePicker', () => {
   // RENDERING
   // ============================================
 
-  describe('rendering', () => {
-    it('should render with default class', async () => {
+  describe("rendering", () => {
+    it("should render with default class", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const picker = document.querySelector('.solidaria-DatePicker');
+      const picker = document.querySelector(".solidaria-DatePicker");
       expect(picker).toBeInTheDocument();
     });
 
-    it('should render date segments', async () => {
+    it("should render date segments", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
+      const segments = screen.getAllByRole("spinbutton");
       expect(segments.length).toBe(3); // month, day, year
     });
 
-    it('should not apply popup trigger ARIA attrs to DateInput container', async () => {
+    it("should not apply popup trigger ARIA attrs to DateInput container", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const input = document.querySelector('.solidaria-DateInput');
+      const input = document.querySelector(".solidaria-DateInput");
       expect(input).toBeInTheDocument();
-      expect(input).not.toHaveAttribute('aria-haspopup');
-      expect(input).not.toHaveAttribute('aria-expanded');
+      expect(input).not.toHaveAttribute("aria-haspopup");
+      expect(input).not.toHaveAttribute("aria-expanded");
     });
 
-    it('should apply popup trigger ARIA attrs to DatePickerButton', async () => {
+    it("should apply popup trigger ARIA attrs to DatePickerButton", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const button = document.querySelector('.solidaria-DatePickerButton');
+      const button = document.querySelector(".solidaria-DatePickerButton");
       expect(button).toBeInTheDocument();
-      expect(button).toHaveAttribute('aria-haspopup', 'dialog');
-      expect(button).toHaveAttribute('aria-expanded', 'false');
+      expect(button).toHaveAttribute("aria-haspopup", "dialog");
+      expect(button).toHaveAttribute("aria-expanded", "false");
     });
 
-    it('should render picker button', async () => {
+    it("should render picker button", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const button = document.querySelector('.solidaria-DatePickerButton');
+      const button = document.querySelector(".solidaria-DatePickerButton");
       expect(button).toBeInTheDocument();
     });
 
-    it('should render with custom class', async () => {
-      render(() => <TestDatePicker pickerProps={{ class: 'my-date-picker' }} />);
+    it("should render with custom class", async () => {
+      render(() => <TestDatePicker pickerProps={{ class: "my-date-picker" }} />);
 
       // Custom class replaces default, so wait for the custom class
       await waitFor(() => {
-        const picker = document.querySelector('.my-date-picker');
+        const picker = document.querySelector(".my-date-picker");
         expect(picker).toBeInTheDocument();
       });
     });
 
-    it('should not render calendar content by default', async () => {
+    it("should not render calendar content by default", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const content = document.querySelector('.solidaria-DatePickerContent');
+      const content = document.querySelector(".solidaria-DatePickerContent");
       expect(content).not.toBeInTheDocument();
     });
   });
@@ -136,38 +138,38 @@ describe('DatePicker', () => {
   // OPENING/CLOSING CALENDAR
   // ============================================
 
-  describe('opening/closing calendar', () => {
-    it('should open calendar on button click', async () => {
+  describe("opening/closing calendar", () => {
+    it("should open calendar on button click", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      const button = document.querySelector(".solidaria-DatePickerButton") as HTMLElement;
       await user.click(button);
 
       await waitFor(() => {
-        const content = document.querySelector('.solidaria-DatePickerContent');
+        const content = document.querySelector(".solidaria-DatePickerContent");
         expect(content).toBeInTheDocument();
       });
     });
 
-    it('should set data-open attribute when open', async () => {
+    it("should set data-open attribute when open", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      const button = document.querySelector(".solidaria-DatePickerButton") as HTMLElement;
       await user.click(button);
 
       await waitFor(() => {
-        const picker = document.querySelector('.solidaria-DatePicker');
-        expect(picker).toHaveAttribute('data-open');
+        const picker = document.querySelector(".solidaria-DatePicker");
+        expect(picker).toHaveAttribute("data-open");
       });
     });
 
-    it('should show calendar grid when open', async () => {
+    it("should show calendar grid when open", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      const button = document.querySelector(".solidaria-DatePickerButton") as HTMLElement;
       await user.click(button);
 
       await waitFor(() => {
@@ -176,43 +178,43 @@ describe('DatePicker', () => {
       });
     });
 
-    it('should render content outside picker container (portal)', async () => {
+    it("should render content outside picker container (portal)", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      const button = document.querySelector(".solidaria-DatePickerButton") as HTMLElement;
       await user.click(button);
 
       await waitFor(() => {
-        const picker = document.querySelector('.solidaria-DatePicker');
-        const content = document.querySelector('.solidaria-DatePickerContent');
+        const picker = document.querySelector(".solidaria-DatePicker");
+        const content = document.querySelector(".solidaria-DatePickerContent");
         expect(content).toBeInTheDocument();
         expect(picker?.contains(content as Node)).toBe(false);
       });
     });
 
-    it('should close calendar on Escape', async () => {
+    it("should close calendar on Escape", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      const button = document.querySelector(".solidaria-DatePickerButton") as HTMLElement;
       await user.click(button);
 
       await waitFor(() => {
-        const content = document.querySelector('.solidaria-DatePickerContent');
+        const content = document.querySelector(".solidaria-DatePickerContent");
         expect(content).toBeInTheDocument();
       });
 
-      const content = document.querySelector('.solidaria-DatePickerContent') as HTMLElement;
-      fireEvent.keyDown(content, { key: 'Escape' });
+      const content = document.querySelector(".solidaria-DatePickerContent") as HTMLElement;
+      fireEvent.keyDown(content, { key: "Escape" });
 
       await waitFor(() => {
-        const popup = document.querySelector('.solidaria-DatePickerContent');
+        const popup = document.querySelector(".solidaria-DatePickerContent");
         expect(popup).not.toBeInTheDocument();
       });
     });
 
-    it('should close calendar on outside click', async () => {
+    it("should close calendar on outside click", async () => {
       render(() => (
         <div>
           <TestDatePicker />
@@ -221,18 +223,18 @@ describe('DatePicker', () => {
       ));
       await waitForDatePickerHydration();
 
-      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      const button = document.querySelector(".solidaria-DatePickerButton") as HTMLElement;
       await user.click(button);
 
       await waitFor(() => {
-        const content = document.querySelector('.solidaria-DatePickerContent');
+        const content = document.querySelector(".solidaria-DatePickerContent");
         expect(content).toBeInTheDocument();
       });
 
-      await user.click(screen.getByTestId('outside'));
+      await user.click(screen.getByTestId("outside"));
 
       await waitFor(() => {
-        const popup = document.querySelector('.solidaria-DatePickerContent');
+        const popup = document.querySelector(".solidaria-DatePickerContent");
         expect(popup).not.toBeInTheDocument();
       });
     });
@@ -242,8 +244,8 @@ describe('DatePicker', () => {
   // DATE SELECTION
   // ============================================
 
-  describe('date selection', () => {
-    it('should have interactive calendar cells when opened', async () => {
+  describe("date selection", () => {
+    it("should have interactive calendar cells when opened", async () => {
       // Note: Full date selection involves complex pointer events that
       // don't work reliably in jsdom. This test verifies the calendar
       // renders with interactive cells.
@@ -257,7 +259,7 @@ describe('DatePicker', () => {
       await waitForDatePickerHydration();
 
       // Open calendar
-      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      const button = document.querySelector(".solidaria-DatePickerButton") as HTMLElement;
       await user.click(button);
 
       await waitFor(() => {
@@ -266,7 +268,7 @@ describe('DatePicker', () => {
       });
 
       // Verify calendar cells are rendered
-      const cells = document.querySelectorAll('.solidaria-CalendarCell');
+      const cells = document.querySelectorAll(".solidaria-CalendarCell");
       expect(cells.length).toBeGreaterThan(0);
 
       // Each cell should have gridcell role
@@ -274,34 +276,28 @@ describe('DatePicker', () => {
       expect(gridcells.length).toBeGreaterThan(0);
     });
 
-    it('should display value when provided', async () => {
-      render(() => (
-        <TestDatePicker
-          pickerProps={{ value: new CalendarDate(2024, 6, 15) }}
-        />
-      ));
+    it("should display value when provided", async () => {
+      render(() => <TestDatePicker pickerProps={{ value: new CalendarDate(2024, 6, 15) }} />);
       await waitForDatePickerHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
-      const segmentTexts = segments.map(s => s.textContent);
+      const segments = screen.getAllByRole("spinbutton");
+      const segmentTexts = segments.map((s) => s.textContent);
 
-      expect(segmentTexts.join(' ')).toContain('15');
-      expect(segmentTexts.join(' ')).toContain('2024');
+      expect(segmentTexts.join(" ")).toContain("15");
+      expect(segmentTexts.join(" ")).toContain("2024");
     });
 
-    it('should display defaultValue', async () => {
+    it("should display defaultValue", async () => {
       render(() => (
-        <TestDatePicker
-          pickerProps={{ defaultValue: new CalendarDate(2024, 3, 20) }}
-        />
+        <TestDatePicker pickerProps={{ defaultValue: new CalendarDate(2024, 3, 20) }} />
       ));
       await waitForDatePickerHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
-      const segmentTexts = segments.map(s => s.textContent);
+      const segments = screen.getAllByRole("spinbutton");
+      const segmentTexts = segments.map((s) => s.textContent);
 
-      expect(segmentTexts.join(' ')).toContain('20');
-      expect(segmentTexts.join(' ')).toContain('2024');
+      expect(segmentTexts.join(" ")).toContain("20");
+      expect(segmentTexts.join(" ")).toContain("2024");
     });
   });
 
@@ -309,38 +305,38 @@ describe('DatePicker', () => {
   // VALIDATION
   // ============================================
 
-  describe('validation', () => {
-    it('should mark picker as invalid when isInvalid prop is true', async () => {
+  describe("validation", () => {
+    it("should mark picker as invalid when isInvalid prop is true", async () => {
       render(() => (
         <TestDatePicker
           pickerProps={{
             isInvalid: true,
-            errorMessage: 'Invalid date',
+            errorMessage: "Invalid date",
           }}
         />
       ));
       await waitForDatePickerHydration();
 
-      const picker = document.querySelector('.solidaria-DatePicker');
-      expect(picker).toHaveAttribute('data-invalid');
+      const picker = document.querySelector(".solidaria-DatePicker");
+      expect(picker).toHaveAttribute("data-invalid");
     });
 
-    it('should support isInvalid state', async () => {
+    it("should support isInvalid state", async () => {
       render(() => (
         <TestDatePicker
           pickerProps={{
             value: new CalendarDate(2024, 6, 15),
-            validationState: 'invalid',
+            validationState: "invalid",
           }}
         />
       ));
       await waitForDatePickerHydration();
 
-      const picker = document.querySelector('.solidaria-DatePicker');
-      expect(picker).toHaveAttribute('data-invalid');
+      const picker = document.querySelector(".solidaria-DatePicker");
+      expect(picker).toHaveAttribute("data-invalid");
     });
 
-    it('should mark picker as invalid when value is below minValue', async () => {
+    it("should mark picker as invalid when value is below minValue", async () => {
       render(() => (
         <TestDatePicker
           pickerProps={{
@@ -351,8 +347,8 @@ describe('DatePicker', () => {
       ));
       await waitForDatePickerHydration();
 
-      const picker = document.querySelector('.solidaria-DatePicker');
-      expect(picker).toHaveAttribute('data-invalid');
+      const picker = document.querySelector(".solidaria-DatePicker");
+      expect(picker).toHaveAttribute("data-invalid");
     });
   });
 
@@ -360,32 +356,32 @@ describe('DatePicker', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('should support isDisabled on DatePicker', async () => {
+  describe("disabled state", () => {
+    it("should support isDisabled on DatePicker", async () => {
       render(() => <TestDatePicker pickerProps={{ isDisabled: true }} />);
       await waitForDatePickerHydration();
 
-      const picker = document.querySelector('.solidaria-DatePicker');
-      expect(picker).toHaveAttribute('data-disabled');
+      const picker = document.querySelector(".solidaria-DatePicker");
+      expect(picker).toHaveAttribute("data-disabled");
     });
 
-    it('should disable button when picker is disabled', async () => {
+    it("should disable button when picker is disabled", async () => {
       render(() => <TestDatePicker pickerProps={{ isDisabled: true }} />);
       await waitForDatePickerHydration();
 
-      const button = document.querySelector('.solidaria-DatePickerButton');
+      const button = document.querySelector(".solidaria-DatePickerButton");
       expect(button).toBeDisabled();
     });
 
-    it('should not open calendar when disabled', async () => {
+    it("should not open calendar when disabled", async () => {
       render(() => <TestDatePicker pickerProps={{ isDisabled: true }} />);
       await waitForDatePickerHydration();
 
-      const button = document.querySelector('.solidaria-DatePickerButton') as HTMLElement;
+      const button = document.querySelector(".solidaria-DatePickerButton") as HTMLElement;
       await user.click(button);
 
       // Calendar should not open
-      const content = document.querySelector('.solidaria-DatePickerContent');
+      const content = document.querySelector(".solidaria-DatePickerContent");
       expect(content).not.toBeInTheDocument();
     });
   });
@@ -394,13 +390,13 @@ describe('DatePicker', () => {
   // READ ONLY STATE
   // ============================================
 
-  describe('read only state', () => {
-    it('should support isReadOnly on DatePicker', async () => {
+  describe("read only state", () => {
+    it("should support isReadOnly on DatePicker", async () => {
       render(() => <TestDatePicker pickerProps={{ isReadOnly: true }} />);
       await waitForDatePickerHydration();
 
-      const picker = document.querySelector('.solidaria-DatePicker');
-      expect(picker).toHaveAttribute('data-readonly');
+      const picker = document.querySelector(".solidaria-DatePicker");
+      expect(picker).toHaveAttribute("data-readonly");
     });
   });
 
@@ -408,13 +404,13 @@ describe('DatePicker', () => {
   // REQUIRED STATE
   // ============================================
 
-  describe('required state', () => {
-    it('should support isRequired on DatePicker', async () => {
+  describe("required state", () => {
+    it("should support isRequired on DatePicker", async () => {
       render(() => <TestDatePicker pickerProps={{ isRequired: true }} />);
       await waitForDatePickerHydration();
 
-      const picker = document.querySelector('.solidaria-DatePicker');
-      expect(picker).toHaveAttribute('data-required');
+      const picker = document.querySelector(".solidaria-DatePicker");
+      expect(picker).toHaveAttribute("data-required");
     });
   });
 
@@ -422,21 +418,21 @@ describe('DatePicker', () => {
   // ARIA ATTRIBUTES
   // ============================================
 
-  describe('aria attributes', () => {
-    it('should have spinbutton role on editable segments', async () => {
+  describe("aria attributes", () => {
+    it("should have spinbutton role on editable segments", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const spinbuttons = screen.getAllByRole('spinbutton');
+      const spinbuttons = screen.getAllByRole("spinbutton");
       expect(spinbuttons.length).toBe(3);
     });
 
-    it('should have aria-label on picker', async () => {
+    it("should have aria-label on picker", async () => {
       render(() => <TestDatePicker />);
       await waitForDatePickerHydration();
 
-      const picker = document.querySelector('.solidaria-DatePicker');
-      expect(picker).toHaveAttribute('aria-label', 'Test Date Picker');
+      const picker = document.querySelector(".solidaria-DatePicker");
+      expect(picker).toHaveAttribute("aria-label", "Test Date Picker");
     });
   });
 });

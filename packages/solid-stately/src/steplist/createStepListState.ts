@@ -3,8 +3,8 @@
  * Tracks selected step, completion status, and selectability.
  */
 
-import { createMemo, createSignal, type Accessor } from 'solid-js';
-import type { Key } from '../collections/types';
+import { createMemo, createSignal, type Accessor } from "solid-js";
+import type { Key } from "../collections/types";
 
 export interface StepListStateProps {
   /** The currently selected step key (controlled). */
@@ -65,7 +65,7 @@ export function createStepListState(props: StepListStateProps): StepListState {
 
   // Last completed step signal (uncontrolled)
   const [lastCompletedStepInternal, setLastCompletedStepInternal] = createSignal<Key | null>(
-    props.defaultLastCompletedStep ?? null
+    props.defaultLastCompletedStep ?? null,
   );
 
   const lastCompletedStep: Accessor<Key | null> = () => {
@@ -80,7 +80,10 @@ export function createStepListState(props: StepListStateProps): StepListState {
     const prevIndex = lastCompletedStep() !== null ? indexMap().get(lastCompletedStep()!) : -1;
 
     // Only advance completion, never go back
-    if (currentIndex !== undefined && (prevIndex === undefined || currentIndex > (prevIndex ?? -1))) {
+    if (
+      currentIndex !== undefined &&
+      (prevIndex === undefined || currentIndex > (prevIndex ?? -1))
+    ) {
       if (props.lastCompletedStep === undefined) {
         setLastCompletedStepInternal(key);
       }
@@ -139,7 +142,7 @@ export function createStepListState(props: StepListStateProps): StepListState {
 
   // Selected key signal (uncontrolled)
   const [selectedKeyInternal, setSelectedKeyInternal] = createSignal<Key | null>(
-    props.defaultSelectedKey ?? findDefaultSelectedKey()
+    props.defaultSelectedKey ?? findDefaultSelectedKey(),
   );
 
   const selectedKey: Accessor<Key | null> = () => {

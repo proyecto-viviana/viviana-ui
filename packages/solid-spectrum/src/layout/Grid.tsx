@@ -4,7 +4,7 @@
  * A styled CSS grid container with columns, rows, gap, and areas props.
  */
 
-import { type JSX, splitProps } from 'solid-js';
+import { type JSX, splitProps } from "solid-js";
 
 // ============================================
 // TYPES
@@ -24,9 +24,9 @@ export interface GridProps {
   /** Named grid areas (grid-template-areas). */
   areas?: string[];
   /** The alignment of items. */
-  alignItems?: 'start' | 'center' | 'end' | 'stretch';
+  alignItems?: "start" | "center" | "end" | "stretch";
   /** The justification of items. */
-  justifyItems?: 'start' | 'center' | 'end' | 'stretch';
+  justifyItems?: "start" | "center" | "end" | "stretch";
   /** Whether the grid is inline. */
   inline?: boolean;
   /** Additional CSS class name. */
@@ -46,48 +46,66 @@ export interface GridProps {
  */
 export function Grid(props: GridProps): JSX.Element {
   const [local, rest] = splitProps(props, [
-    'columns', 'rows', 'gap', 'columnGap', 'rowGap', 'areas',
-    'alignItems', 'justifyItems', 'inline', 'class', 'style', 'children',
+    "columns",
+    "rows",
+    "gap",
+    "columnGap",
+    "rowGap",
+    "areas",
+    "alignItems",
+    "justifyItems",
+    "inline",
+    "class",
+    "style",
+    "children",
   ]);
 
   const gridStyle = (): JSX.CSSProperties => {
-    const s: JSX.CSSProperties = { ...(local.style ?? {}) };
+    const s: JSX.CSSProperties = { ...local.style };
 
     if (local.columns !== undefined) {
-      s['grid-template-columns'] = typeof local.columns === 'number'
-        ? `repeat(${local.columns}, 1fr)`
-        : local.columns;
+      s["grid-template-columns"] =
+        typeof local.columns === "number" ? `repeat(${local.columns}, 1fr)` : local.columns;
     }
     if (local.rows !== undefined) {
-      s['grid-template-rows'] = typeof local.rows === 'number'
-        ? `repeat(${local.rows}, 1fr)`
-        : local.rows;
+      s["grid-template-rows"] =
+        typeof local.rows === "number" ? `repeat(${local.rows}, 1fr)` : local.rows;
     }
     if (local.areas) {
-      s['grid-template-areas'] = local.areas.map(a => `"${a}"`).join(' ');
+      s["grid-template-areas"] = local.areas.map((a) => `"${a}"`).join(" ");
     }
 
     return s;
   };
 
   const classes = (): string => {
-    const parts: string[] = [local.inline ? 'inline-grid' : 'grid'];
+    const parts: string[] = [local.inline ? "inline-grid" : "grid"];
 
     if (local.gap !== undefined) parts.push(`gap-${local.gap}`);
     if (local.columnGap !== undefined) parts.push(`gap-x-${local.columnGap}`);
     if (local.rowGap !== undefined) parts.push(`gap-y-${local.rowGap}`);
 
     if (local.alignItems) {
-      const map: Record<string, string> = { start: 'items-start', center: 'items-center', end: 'items-end', stretch: 'items-stretch' };
-      parts.push(map[local.alignItems] ?? '');
+      const map: Record<string, string> = {
+        start: "items-start",
+        center: "items-center",
+        end: "items-end",
+        stretch: "items-stretch",
+      };
+      parts.push(map[local.alignItems] ?? "");
     }
     if (local.justifyItems) {
-      const map: Record<string, string> = { start: 'justify-items-start', center: 'justify-items-center', end: 'justify-items-end', stretch: 'justify-items-stretch' };
-      parts.push(map[local.justifyItems] ?? '');
+      const map: Record<string, string> = {
+        start: "justify-items-start",
+        center: "justify-items-center",
+        end: "justify-items-end",
+        stretch: "justify-items-stretch",
+      };
+      parts.push(map[local.justifyItems] ?? "");
     }
     if (local.class) parts.push(local.class);
 
-    return parts.filter(Boolean).join(' ');
+    return parts.filter(Boolean).join(" ");
   };
 
   return (

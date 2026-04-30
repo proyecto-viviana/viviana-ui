@@ -4,10 +4,10 @@
  * This is a 1-1 port of React-Aria's useFocusable hook adapted for SolidJS.
  */
 
-import { JSX, Accessor, createContext, useContext, onMount } from 'solid-js';
-import { createFocus, type FocusEvents } from './createFocus';
-import { createKeyboard, type KeyboardEvents } from './createKeyboard';
-import { mergeProps, focusSafely } from '../utils';
+import { JSX, Accessor, createContext, useContext, onMount } from "solid-js";
+import { createFocus, type FocusEvents } from "./createFocus";
+import { createKeyboard, type KeyboardEvents } from "./createKeyboard";
+import { mergeProps, focusSafely } from "../utils";
 
 export interface FocusableDOMProps {
   /** Whether to exclude the element from the sequential tab order. */
@@ -46,8 +46,8 @@ export const FocusableContext = createContext<FocusableContextValue | null>(null
  * Hook to consume the FocusableContext and sync the ref.
  */
 function useFocusableContext(
-  setRef: (el: HTMLElement) => void
-): Omit<FocusableContextValue, 'ref'> {
+  setRef: (el: HTMLElement) => void,
+): Omit<FocusableContextValue, "ref"> {
   const context = useContext(FocusableContext) || {};
 
   // If context has a ref, sync our ref to it
@@ -72,7 +72,7 @@ export interface FocusableProviderProps {
 }
 
 function isDisabledValue(isDisabled: Accessor<boolean> | boolean | undefined): boolean {
-  if (typeof isDisabled === 'function') {
+  if (typeof isDisabled === "function") {
     return isDisabled();
   }
   return isDisabled ?? false;
@@ -106,7 +106,7 @@ function isDisabledValue(isDisabled: Accessor<boolean> | boolean | undefined): b
  */
 export function createFocusable(
   props: CreateFocusableProps = {},
-  ref?: (el: HTMLElement) => void
+  ref?: (el: HTMLElement) => void,
 ): FocusableResult {
   let elementRef: HTMLElement | null = null;
   let autoFocusDone = false;
@@ -159,7 +159,7 @@ export function createFocusable(
       tabIndex,
       ref: setRef,
     },
-    interactionProps
+    interactionProps,
   ) as JSX.HTMLAttributes<HTMLElement>;
 
   return {

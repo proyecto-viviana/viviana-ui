@@ -3,6 +3,5 @@
  */
 
 export function s1(...classes: Array<string | false | null | undefined>): string {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
-

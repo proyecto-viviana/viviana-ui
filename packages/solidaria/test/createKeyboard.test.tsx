@@ -5,10 +5,10 @@
  * Verifies event handling, propagation control, and disabled state.
  */
 
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { createKeyboard, type KeyboardEvent } from '../src/interactions/createKeyboard';
-import type { Component } from 'solid-js';
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { render, screen, cleanup, fireEvent } from "@solidjs/testing-library";
+import { createKeyboard, type KeyboardEvent } from "../src/interactions/createKeyboard";
+import type { Component } from "solid-js";
 
 // Test component that uses createKeyboard
 interface ExampleProps {
@@ -32,7 +32,7 @@ const Example: Component<ExampleProps> = (props) => {
   );
 };
 
-describe('createKeyboard', () => {
+describe("createKeyboard", () => {
   afterEach(() => {
     cleanup();
   });
@@ -41,68 +41,68 @@ describe('createKeyboard', () => {
   // BASIC FUNCTIONALITY
   // ============================================
 
-  describe('basic functionality', () => {
-    it('should handle keyboard events', () => {
+  describe("basic functionality", () => {
+    it("should handle keyboard events", () => {
       const events: { type: string; target: EventTarget | null }[] = [];
       const addEvent = (e: KeyboardEvent) => events.push({ type: e.type, target: e.target });
 
       render(() => <Example onKeyDown={addEvent} onKeyUp={addEvent} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
-      fireEvent.keyDown(el, { key: 'A' });
-      fireEvent.keyUp(el, { key: 'A' });
+      fireEvent.keyDown(el, { key: "A" });
+      fireEvent.keyUp(el, { key: "A" });
 
       expect(events).toEqual([
-        { type: 'keydown', target: el },
-        { type: 'keyup', target: el },
+        { type: "keydown", target: el },
+        { type: "keyup", target: el },
       ]);
     });
 
-    it('should pass key information in events', () => {
+    it("should pass key information in events", () => {
       const events: { type: string; key: string }[] = [];
       const addEvent = (e: KeyboardEvent) => events.push({ type: e.type, key: e.key });
 
       render(() => <Example onKeyDown={addEvent} onKeyUp={addEvent} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
-      fireEvent.keyDown(el, { key: 'Enter' });
-      fireEvent.keyUp(el, { key: 'Enter' });
+      fireEvent.keyDown(el, { key: "Enter" });
+      fireEvent.keyUp(el, { key: "Enter" });
 
       expect(events).toEqual([
-        { type: 'keydown', key: 'Enter' },
-        { type: 'keyup', key: 'Enter' },
+        { type: "keydown", key: "Enter" },
+        { type: "keyup", key: "Enter" },
       ]);
     });
 
-    it('should only call onKeyDown for keydown events', () => {
+    it("should only call onKeyDown for keydown events", () => {
       const onKeyDown = vi.fn();
       const onKeyUp = vi.fn();
 
       render(() => <Example onKeyDown={onKeyDown} onKeyUp={onKeyUp} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
-      fireEvent.keyDown(el, { key: 'A' });
+      fireEvent.keyDown(el, { key: "A" });
 
       expect(onKeyDown).toHaveBeenCalledTimes(1);
       expect(onKeyUp).not.toHaveBeenCalled();
     });
 
-    it('should only call onKeyUp for keyup events', () => {
+    it("should only call onKeyUp for keyup events", () => {
       const onKeyDown = vi.fn();
       const onKeyUp = vi.fn();
 
       render(() => <Example onKeyDown={onKeyDown} onKeyUp={onKeyUp} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
-      fireEvent.keyUp(el, { key: 'A' });
+      fireEvent.keyUp(el, { key: "A" });
 
       expect(onKeyDown).not.toHaveBeenCalled();
       expect(onKeyUp).toHaveBeenCalledTimes(1);
@@ -113,23 +113,23 @@ describe('createKeyboard', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('should not handle events when disabled', () => {
+  describe("disabled state", () => {
+    it("should not handle events when disabled", () => {
       const events: { type: string }[] = [];
       const addEvent = (e: KeyboardEvent) => events.push({ type: e.type });
 
       render(() => <Example isDisabled onKeyDown={addEvent} onKeyUp={addEvent} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
-      fireEvent.keyDown(el, { key: 'A' });
-      fireEvent.keyUp(el, { key: 'A' });
+      fireEvent.keyDown(el, { key: "A" });
+      fireEvent.keyUp(el, { key: "A" });
 
       expect(events).toEqual([]);
     });
 
-    it('should return empty keyboardProps when disabled', () => {
+    it("should return empty keyboardProps when disabled", () => {
       const result = createKeyboard({ isDisabled: true, onKeyDown: vi.fn() });
       expect(result.keyboardProps).toEqual({});
     });
@@ -139,8 +139,8 @@ describe('createKeyboard', () => {
   // EVENT PROPAGATION
   // ============================================
 
-  describe('event propagation', () => {
-    it('events do not bubble by default', () => {
+  describe("event propagation", () => {
+    it("events do not bubble by default", () => {
       const onWrapperKeyDown = vi.fn();
       const onWrapperKeyUp = vi.fn();
       const onInnerKeyDown = vi.fn();
@@ -152,11 +152,11 @@ describe('createKeyboard', () => {
         </button>
       ));
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
-      fireEvent.keyDown(el, { key: 'A' });
-      fireEvent.keyUp(el, { key: 'A' });
+      fireEvent.keyDown(el, { key: "A" });
+      fireEvent.keyUp(el, { key: "A" });
 
       expect(onInnerKeyDown).toHaveBeenCalledTimes(1);
       expect(onInnerKeyUp).toHaveBeenCalledTimes(1);
@@ -164,7 +164,7 @@ describe('createKeyboard', () => {
       expect(onWrapperKeyUp).not.toHaveBeenCalled();
     });
 
-    it('events bubble when continuePropagation is called', () => {
+    it("events bubble when continuePropagation is called", () => {
       const onWrapperKeyDown = vi.fn();
       const onWrapperKeyUp = vi.fn();
       const onInnerKeyDown = vi.fn((e: KeyboardEvent) => e.continuePropagation());
@@ -176,11 +176,11 @@ describe('createKeyboard', () => {
         </button>
       ));
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
-      fireEvent.keyDown(el, { key: 'A' });
-      fireEvent.keyUp(el, { key: 'A' });
+      fireEvent.keyDown(el, { key: "A" });
+      fireEvent.keyUp(el, { key: "A" });
 
       expect(onInnerKeyDown).toHaveBeenCalledTimes(1);
       expect(onInnerKeyUp).toHaveBeenCalledTimes(1);
@@ -188,7 +188,7 @@ describe('createKeyboard', () => {
       expect(onWrapperKeyUp).toHaveBeenCalledTimes(1);
     });
 
-    it('only keydown propagates when continuePropagation called in keydown', () => {
+    it("only keydown propagates when continuePropagation called in keydown", () => {
       const onWrapperKeyDown = vi.fn();
       const onWrapperKeyUp = vi.fn();
       const onInnerKeyDown = vi.fn((e: KeyboardEvent) => e.continuePropagation());
@@ -200,11 +200,11 @@ describe('createKeyboard', () => {
         </button>
       ));
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
-      fireEvent.keyDown(el, { key: 'A' });
-      fireEvent.keyUp(el, { key: 'A' });
+      fireEvent.keyDown(el, { key: "A" });
+      fireEvent.keyUp(el, { key: "A" });
 
       expect(onWrapperKeyDown).toHaveBeenCalledTimes(1);
       expect(onWrapperKeyUp).not.toHaveBeenCalled();
@@ -215,80 +215,80 @@ describe('createKeyboard', () => {
   // SPECIAL KEYS
   // ============================================
 
-  describe('special keys', () => {
-    it('should handle Enter key', () => {
+  describe("special keys", () => {
+    it("should handle Enter key", () => {
       const onKeyDown = vi.fn();
 
       render(() => <Example onKeyDown={onKeyDown} />);
 
-      const el = screen.getByTestId('example');
-      fireEvent.keyDown(el, { key: 'Enter' });
+      const el = screen.getByTestId("example");
+      fireEvent.keyDown(el, { key: "Enter" });
 
       expect(onKeyDown).toHaveBeenCalledWith(
         expect.objectContaining({
-          key: 'Enter',
-        })
+          key: "Enter",
+        }),
       );
     });
 
-    it('should handle Space key', () => {
+    it("should handle Space key", () => {
       const onKeyDown = vi.fn();
 
       render(() => <Example onKeyDown={onKeyDown} />);
 
-      const el = screen.getByTestId('example');
-      fireEvent.keyDown(el, { key: ' ' });
+      const el = screen.getByTestId("example");
+      fireEvent.keyDown(el, { key: " " });
 
       expect(onKeyDown).toHaveBeenCalledWith(
         expect.objectContaining({
-          key: ' ',
-        })
+          key: " ",
+        }),
       );
     });
 
-    it('should handle Escape key', () => {
+    it("should handle Escape key", () => {
       const onKeyDown = vi.fn();
 
       render(() => <Example onKeyDown={onKeyDown} />);
 
-      const el = screen.getByTestId('example');
-      fireEvent.keyDown(el, { key: 'Escape' });
+      const el = screen.getByTestId("example");
+      fireEvent.keyDown(el, { key: "Escape" });
 
       expect(onKeyDown).toHaveBeenCalledWith(
         expect.objectContaining({
-          key: 'Escape',
-        })
+          key: "Escape",
+        }),
       );
     });
 
-    it('should handle Tab key', () => {
+    it("should handle Tab key", () => {
       const onKeyDown = vi.fn();
 
       render(() => <Example onKeyDown={onKeyDown} />);
 
-      const el = screen.getByTestId('example');
-      fireEvent.keyDown(el, { key: 'Tab' });
+      const el = screen.getByTestId("example");
+      fireEvent.keyDown(el, { key: "Tab" });
 
       expect(onKeyDown).toHaveBeenCalledWith(
         expect.objectContaining({
-          key: 'Tab',
-        })
+          key: "Tab",
+        }),
       );
     });
 
-    it('should handle arrow keys', () => {
+    it("should handle arrow keys", () => {
       const keys: string[] = [];
       const onKeyDown = vi.fn((e: KeyboardEvent) => keys.push(e.key));
 
       render(() => <Example onKeyDown={onKeyDown} />);
 
-      const el = screen.getByTestId('example');
-      fireEvent.keyDown(el, { key: 'ArrowUp' });
-      fireEvent.keyDown(el, { key: 'ArrowDown' });
-      fireEvent.keyDown(el, { key: 'ArrowLeft' });
-      fireEvent.keyDown(el, { key: 'ArrowRight' });
+      const el = screen.getByTestId("example");
+      fireEvent.keyDown(el, { key: "ArrowUp" });
+      fireEvent.keyDown(el, { key: "ArrowDown" });
+      fireEvent.keyDown(el, { key: "ArrowLeft" });
+      fireEvent.keyDown(el, { key: "ArrowRight" });
 
-      expect(keys).toEqual(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
+      expect(keys).toEqual(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"]);
     });
   });
 
@@ -296,14 +296,20 @@ describe('createKeyboard', () => {
   // MODIFIER KEYS
   // ============================================
 
-  describe('modifier keys', () => {
-    it('should include modifier key states', () => {
+  describe("modifier keys", () => {
+    it("should include modifier key states", () => {
       const onKeyDown = vi.fn();
 
       render(() => <Example onKeyDown={onKeyDown} />);
 
-      const el = screen.getByTestId('example');
-      fireEvent.keyDown(el, { key: 'a', ctrlKey: true, shiftKey: true, altKey: false, metaKey: false });
+      const el = screen.getByTestId("example");
+      fireEvent.keyDown(el, {
+        key: "a",
+        ctrlKey: true,
+        shiftKey: true,
+        altKey: false,
+        metaKey: false,
+      });
 
       expect(onKeyDown).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -311,39 +317,39 @@ describe('createKeyboard', () => {
           shiftKey: true,
           altKey: false,
           metaKey: false,
-        })
+        }),
       );
     });
 
-    it('should handle Ctrl+key combinations', () => {
+    it("should handle Ctrl+key combinations", () => {
       const onKeyDown = vi.fn();
 
       render(() => <Example onKeyDown={onKeyDown} />);
 
-      const el = screen.getByTestId('example');
-      fireEvent.keyDown(el, { key: 'c', ctrlKey: true });
+      const el = screen.getByTestId("example");
+      fireEvent.keyDown(el, { key: "c", ctrlKey: true });
 
       expect(onKeyDown).toHaveBeenCalledWith(
         expect.objectContaining({
-          key: 'c',
+          key: "c",
           ctrlKey: true,
-        })
+        }),
       );
     });
 
-    it('should handle Meta+key combinations (Cmd on Mac)', () => {
+    it("should handle Meta+key combinations (Cmd on Mac)", () => {
       const onKeyDown = vi.fn();
 
       render(() => <Example onKeyDown={onKeyDown} />);
 
-      const el = screen.getByTestId('example');
-      fireEvent.keyDown(el, { key: 'v', metaKey: true });
+      const el = screen.getByTestId("example");
+      fireEvent.keyDown(el, { key: "v", metaKey: true });
 
       expect(onKeyDown).toHaveBeenCalledWith(
         expect.objectContaining({
-          key: 'v',
+          key: "v",
           metaKey: true,
-        })
+        }),
       );
     });
   });
@@ -352,31 +358,31 @@ describe('createKeyboard', () => {
   // RETURN VALUE
   // ============================================
 
-  describe('return value', () => {
-    it('should return keyboardProps object', () => {
+  describe("return value", () => {
+    it("should return keyboardProps object", () => {
       const result = createKeyboard({
         onKeyDown: vi.fn(),
         onKeyUp: vi.fn(),
       });
 
-      expect(result).toHaveProperty('keyboardProps');
-      expect(typeof result.keyboardProps.onKeyDown).toBe('function');
-      expect(typeof result.keyboardProps.onKeyUp).toBe('function');
+      expect(result).toHaveProperty("keyboardProps");
+      expect(typeof result.keyboardProps.onKeyDown).toBe("function");
+      expect(typeof result.keyboardProps.onKeyUp).toBe("function");
     });
 
-    it('should return undefined handlers when not provided', () => {
+    it("should return undefined handlers when not provided", () => {
       const result = createKeyboard({});
 
       expect(result.keyboardProps.onKeyDown).toBeUndefined();
       expect(result.keyboardProps.onKeyUp).toBeUndefined();
     });
 
-    it('should return only onKeyDown when only that is provided', () => {
+    it("should return only onKeyDown when only that is provided", () => {
       const result = createKeyboard({
         onKeyDown: vi.fn(),
       });
 
-      expect(typeof result.keyboardProps.onKeyDown).toBe('function');
+      expect(typeof result.keyboardProps.onKeyDown).toBe("function");
       expect(result.keyboardProps.onKeyUp).toBeUndefined();
     });
   });

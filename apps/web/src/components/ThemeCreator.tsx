@@ -1,5 +1,5 @@
-import { createSignal, createEffect, For } from 'solid-js'
-import { TabSwitch } from '@proyecto-viviana/solid-spectrum'
+import { createSignal, createEffect, For } from "solid-js";
+import { TabSwitch } from "@proyecto-viviana/solid-spectrum";
 import {
   type ThemeMode,
   generatePalette,
@@ -8,74 +8,74 @@ import {
   defaultColors,
   hexToOklch,
   oklchToHex,
-} from '@/utils/color'
+} from "@/utils/color";
 
 export interface ThemeCreatorProps {
-  onThemeChange?: (cssVars: Record<string, string>) => void
+  onThemeChange?: (cssVars: Record<string, string>) => void;
 }
 
 export function ThemeCreator(props: ThemeCreatorProps) {
-  const [mode, setMode] = createSignal<ThemeMode>('dark')
-  const [primaryColor, setPrimaryColor] = createSignal(defaultColors.primary)
-  const [bgColor, setBgColor] = createSignal(defaultColors.bg)
-  const [accentColor, setAccentColor] = createSignal(defaultColors.accent)
+  const [mode, setMode] = createSignal<ThemeMode>("dark");
+  const [primaryColor, setPrimaryColor] = createSignal(defaultColors.primary);
+  const [bgColor, setBgColor] = createSignal(defaultColors.bg);
+  const [accentColor, setAccentColor] = createSignal(defaultColors.accent);
 
   // Generate CSS variables whenever colors change
   createEffect(() => {
-    const currentMode = mode()
-    const primary = primaryColor()
-    const bg = bgColor()
-    const accent = accentColor()
+    const currentMode = mode();
+    const primary = primaryColor();
+    const bg = bgColor();
+    const accent = accentColor();
 
-    const primaryPalette = generatePalette(primary, currentMode)
-    const bgPalette = generateBgPalette(bg, currentMode)
-    const accentPalette = generateAccentPalette(accent)
+    const primaryPalette = generatePalette(primary, currentMode);
+    const bgPalette = generateBgPalette(bg, currentMode);
+    const accentPalette = generateAccentPalette(accent);
 
     const cssVars: Record<string, string> = {
       // Background
-      '--color-bg-100': bgPalette['100'],
-      '--color-bg-200': bgPalette['200'],
-      '--color-bg-300': bgPalette['300'],
-      '--color-bg-400': bgPalette['400'],
+      "--color-bg-100": bgPalette["100"],
+      "--color-bg-200": bgPalette["200"],
+      "--color-bg-300": bgPalette["300"],
+      "--color-bg-400": bgPalette["400"],
 
       // Primary
-      '--color-primary-100': primaryPalette['100'],
-      '--color-primary-200': primaryPalette['200'],
-      '--color-primary-300': primaryPalette['300'],
-      '--color-primary-400': primaryPalette['400'],
-      '--color-primary-500': primaryPalette['500'],
-      '--color-primary-600': primaryPalette['600'],
-      '--color-primary-700': primaryPalette['700'],
-      '--color-primary-800': primaryPalette['800'],
+      "--color-primary-100": primaryPalette["100"],
+      "--color-primary-200": primaryPalette["200"],
+      "--color-primary-300": primaryPalette["300"],
+      "--color-primary-400": primaryPalette["400"],
+      "--color-primary-500": primaryPalette["500"],
+      "--color-primary-600": primaryPalette["600"],
+      "--color-primary-700": primaryPalette["700"],
+      "--color-primary-800": primaryPalette["800"],
 
       // Accent
-      '--color-accent': accentPalette['500'],
-      '--color-accent-200': accentPalette['200'],
-      '--color-accent-300': accentPalette['300'],
-      '--color-accent-500': accentPalette['500'],
-      '--color-accent-highlight': accentPalette['highlight'],
-    }
+      "--color-accent": accentPalette["500"],
+      "--color-accent-200": accentPalette["200"],
+      "--color-accent-300": accentPalette["300"],
+      "--color-accent-500": accentPalette["500"],
+      "--color-accent-highlight": accentPalette["highlight"],
+    };
 
-    props.onThemeChange?.(cssVars)
-  })
+    props.onThemeChange?.(cssVars);
+  });
 
-  const [appearance, setAppearance] = createSignal<'dark' | 'light'>('dark')
+  const [appearance, setAppearance] = createSignal<"dark" | "light">("dark");
 
   // Sync appearance with data-theme attribute
   createEffect(() => {
-    document.documentElement.setAttribute('data-theme', appearance())
-  })
+    document.documentElement.setAttribute("data-theme", appearance());
+  });
 
   const modeOptions = [
-    { value: 'light', label: 'Light' },
-    { value: 'dim', label: 'Dim' },
-    { value: 'dark', label: 'Dark' },
-  ]
+    { value: "light", label: "Light" },
+    { value: "dim", label: "Dim" },
+    { value: "dark", label: "Dark" },
+  ];
 
   const appearanceOptions = [
-    { value: 'dark', label: 'Dark' },
-    { value: 'light', label: 'Light' },
-  ]
+    { value: "dark", label: "Dark" },
+    { value: "light", label: "Light" },
+  ];
 
   return (
     <div class="vui-theme-creator">
@@ -88,7 +88,7 @@ export function ThemeCreator(props: ThemeCreatorProps) {
           <TabSwitch
             options={appearanceOptions}
             value={appearance()}
-            onChange={(v) => setAppearance(v as 'dark' | 'light')}
+            onChange={(v) => setAppearance(v as "dark" | "light")}
           />
         </div>
 
@@ -119,17 +119,17 @@ export function ThemeCreator(props: ThemeCreatorProps) {
                 aria-label="Primary color hex value"
                 value={primaryColor()}
                 onInput={(e) => {
-                  const val = e.currentTarget.value
+                  const val = e.currentTarget.value;
                   if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-                    setPrimaryColor(val)
+                    setPrimaryColor(val);
                   }
                 }}
                 class="w-24 px-2 py-0.5 text-xs bg-bg-300 border border-primary-600 rounded text-primary-200 font-mono"
               />
               <span class="text-[10px] text-primary-400 font-mono">
                 {(() => {
-                  const o = hexToOklch(primaryColor())
-                  return `L:${o.l.toFixed(2)} C:${o.c.toFixed(2)} H:${o.h.toFixed(0)}`
+                  const o = hexToOklch(primaryColor());
+                  return `L:${o.l.toFixed(2)} C:${o.c.toFixed(2)} H:${o.h.toFixed(0)}`;
                 })()}
               </span>
             </div>
@@ -153,17 +153,17 @@ export function ThemeCreator(props: ThemeCreatorProps) {
                 aria-label="Background color hex value"
                 value={bgColor()}
                 onInput={(e) => {
-                  const val = e.currentTarget.value
+                  const val = e.currentTarget.value;
                   if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-                    setBgColor(val)
+                    setBgColor(val);
                   }
                 }}
                 class="w-24 px-2 py-0.5 text-xs bg-bg-300 border border-primary-600 rounded text-primary-200 font-mono"
               />
               <span class="text-[10px] text-primary-400 font-mono">
                 {(() => {
-                  const o = hexToOklch(bgColor())
-                  return `L:${o.l.toFixed(2)} C:${o.c.toFixed(2)} H:${o.h.toFixed(0)}`
+                  const o = hexToOklch(bgColor());
+                  return `L:${o.l.toFixed(2)} C:${o.c.toFixed(2)} H:${o.h.toFixed(0)}`;
                 })()}
               </span>
             </div>
@@ -187,17 +187,17 @@ export function ThemeCreator(props: ThemeCreatorProps) {
                 aria-label="Accent color hex value"
                 value={accentColor()}
                 onInput={(e) => {
-                  const val = e.currentTarget.value
+                  const val = e.currentTarget.value;
                   if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-                    setAccentColor(val)
+                    setAccentColor(val);
                   }
                 }}
                 class="w-24 px-2 py-0.5 text-xs bg-bg-300 border border-primary-600 rounded text-primary-200 font-mono"
               />
               <span class="text-[10px] text-primary-400 font-mono">
                 {(() => {
-                  const o = hexToOklch(accentColor())
-                  return `L:${o.l.toFixed(2)} C:${o.c.toFixed(2)} H:${o.h.toFixed(0)}`
+                  const o = hexToOklch(accentColor());
+                  return `L:${o.l.toFixed(2)} C:${o.c.toFixed(2)} H:${o.h.toFixed(0)}`;
                 })()}
               </span>
             </div>
@@ -208,11 +208,11 @@ export function ThemeCreator(props: ThemeCreatorProps) {
         <div class="flex flex-col gap-2 justify-end">
           <button
             onClick={() => {
-              setPrimaryColor(defaultColors.primary)
-              setBgColor(defaultColors.bg)
-              setAccentColor(defaultColors.accent)
-              setMode('dark')
-              setAppearance('dark')
+              setPrimaryColor(defaultColors.primary);
+              setBgColor(defaultColors.bg);
+              setAccentColor(defaultColors.accent);
+              setMode("dark");
+              setAppearance("dark");
             }}
             class="px-3 py-2 text-sm bg-primary-700 text-primary-200 rounded hover:bg-primary-600 transition-colors"
           >
@@ -223,9 +223,9 @@ export function ThemeCreator(props: ThemeCreatorProps) {
 
       {/* Color Preview */}
       <div class="mt-4 flex gap-1">
-        <For each={['100', '200', '300', '400', '500', '600', '700', '800']}>
+        <For each={["100", "200", "300", "400", "500", "600", "700", "800"]}>
           {(shade) => {
-            const palette = () => generatePalette(primaryColor(), mode())
+            const palette = () => generatePalette(primaryColor(), mode());
             return (
               <div
                 class="w-8 h-8 rounded text-[10px] flex items-center justify-center font-mono"
@@ -234,15 +234,15 @@ export function ThemeCreator(props: ThemeCreatorProps) {
               >
                 <span
                   class="rounded-[2px] px-0.5 leading-none font-bold"
-                  style={{ background: '#06131d', color: '#f4f8fa' }}
+                  style={{ background: "#06131d", color: "#f4f8fa" }}
                 >
                   {shade}
                 </span>
               </div>
-            )
+            );
           }}
         </For>
       </div>
     </div>
-  )
+  );
 }

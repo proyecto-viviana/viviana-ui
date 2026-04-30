@@ -1,9 +1,16 @@
-import { onCleanup, type JSX, type Accessor } from 'solid-js';
-import { createButton } from '../button';
-import { filterDOMProps, getEventTarget, mergeProps, nodeContains, isFocusable, focusSafely } from '../utils';
-import { useLocale } from '../i18n';
-import type { Orientation } from '../toolbar';
-import type { Key, ListState } from '@proyecto-viviana/solid-stately';
+import { onCleanup, type JSX, type Accessor } from "solid-js";
+import { createButton } from "../button";
+import {
+  filterDOMProps,
+  getEventTarget,
+  mergeProps,
+  nodeContains,
+  isFocusable,
+  focusSafely,
+} from "../utils";
+import { useLocale } from "../i18n";
+import type { Orientation } from "../toolbar";
+import type { Key, ListState } from "@proyecto-viviana/solid-stately";
 
 export interface AriaActionGroupProps<T = unknown> {
   /** List items (optional, parity with React Aria prop shape). */
@@ -13,9 +20,9 @@ export interface AriaActionGroupProps<T = unknown> {
   /** Group orientation. */
   orientation?: Orientation;
   /** Accessible label. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Labelled-by id. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Handler called when an item action is triggered. */
   onAction?: (key: Key) => void;
 }
@@ -39,15 +46,15 @@ interface ActionGroupData {
 const actionGroupData = new WeakMap<object, ActionGroupData>();
 
 const GROUP_ROLE_BY_MODE = {
-  none: 'toolbar',
-  single: 'radiogroup',
-  multiple: 'toolbar',
+  none: "toolbar",
+  single: "radiogroup",
+  multiple: "toolbar",
 } as const;
 
 const ITEM_ROLE_BY_MODE = {
   none: undefined,
-  single: 'radio',
-  multiple: 'checkbox',
+  single: "radio",
+  multiple: "checkbox",
 } as const;
 
 function isActionGroupDisabled<T>(props: AriaActionGroupProps<T>, state: ListState<T>): boolean {
@@ -60,7 +67,7 @@ function isActionGroupDisabled<T>(props: AriaActionGroupProps<T>, state: ListSta
 export function createActionGroup<T>(
   props: AriaActionGroupProps<T>,
   state: ListState<T>,
-  _ref?: Accessor<HTMLElement | null>
+  _ref?: Accessor<HTMLElement | null>,
 ): ActionGroupAria {
   const locale = useLocale();
   let groupRef: HTMLElement | undefined;
@@ -69,12 +76,12 @@ export function createActionGroup<T>(
     const selectionMode = state.selectionMode();
     const mappedRole = GROUP_ROLE_BY_MODE[selectionMode];
     const nestedToolbar = Boolean(groupRef.parentElement?.closest('[role="toolbar"]'));
-    const role = mappedRole === 'toolbar' && nestedToolbar ? 'group' : mappedRole;
-    groupRef.setAttribute('role', role);
-    if (mappedRole === 'toolbar' && !nestedToolbar) {
-      groupRef.setAttribute('aria-orientation', props.orientation ?? 'horizontal');
+    const role = mappedRole === "toolbar" && nestedToolbar ? "group" : mappedRole;
+    groupRef.setAttribute("role", role);
+    if (mappedRole === "toolbar" && !nestedToolbar) {
+      groupRef.setAttribute("aria-orientation", props.orientation ?? "horizontal");
     } else {
-      groupRef.removeAttribute('aria-orientation');
+      groupRef.removeAttribute("aria-orientation");
     }
   };
 
@@ -82,29 +89,32 @@ export function createActionGroup<T>(
     const out: HTMLElement[] = [];
     const pushIfFocusable = (el: Element | null | undefined): void => {
       if (!el || !(el instanceof HTMLElement)) return;
-      if (isFocusable(el) && el.getAttribute('aria-disabled') !== 'true') {
+      if (isFocusable(el) && el.getAttribute("aria-disabled") !== "true") {
         out.push(el);
       }
     };
 
     pushIfFocusable(root);
-    for (const node of root.querySelectorAll('*')) {
+    for (const node of root.querySelectorAll("*")) {
       pushIfFocusable(node);
     }
     return out;
   };
 
-  const focusRelative = (root: HTMLElement, direction: 'next' | 'previous' | 'first' | 'last'): HTMLElement | null => {
+  const focusRelative = (
+    root: HTMLElement,
+    direction: "next" | "previous" | "first" | "last",
+  ): HTMLElement | null => {
     const focusables = getFocusableItems(root);
     if (focusables.length === 0) return null;
 
-    if (direction === 'first') {
+    if (direction === "first") {
       const first = focusables[0];
       focusSafely(first);
       return first;
     }
 
-    if (direction === 'last') {
+    if (direction === "last") {
       const last = focusables[focusables.length - 1];
       focusSafely(last);
       return last;
@@ -112,10 +122,13 @@ export function createActionGroup<T>(
 
     const active = root.ownerDocument.activeElement as HTMLElement | null;
     const currentIndex = active ? focusables.indexOf(active) : -1;
-    const delta = direction === 'next' ? 1 : -1;
-    const nextIndex = currentIndex === -1
-      ? (direction === 'next' ? 0 : focusables.length - 1)
-      : (currentIndex + delta + focusables.length) % focusables.length;
+    const delta = direction === "next" ? 1 : -1;
+    const nextIndex =
+      currentIndex === -1
+        ? direction === "next"
+          ? 0
+          : focusables.length - 1
+        : (currentIndex + delta + focusables.length) % focusables.length;
     const next = focusables[nextIndex];
     focusSafely(next);
     return next;
@@ -123,9 +136,9 @@ export function createActionGroup<T>(
 
   const resolveKeyFromElement = (element: HTMLElement | null): Key | null => {
     if (!element) return null;
-    const keyedElement = element.closest('[data-key]');
+    const keyedElement = element.closest("[data-key]");
     if (!(keyedElement instanceof HTMLElement)) return null;
-    const rawKey = keyedElement.getAttribute('data-key');
+    const rawKey = keyedElement.getAttribute("data-key");
     if (!rawKey) return null;
     for (const item of state.collection()) {
       if (String(item.key) === rawKey) {
@@ -139,7 +152,7 @@ export function createActionGroup<T>(
     const key = resolveKeyFromElement(movedTo);
     if (key == null) return;
     state.setFocusedKey(key);
-    if (state.selectionMode() === 'single') {
+    if (state.selectionMode() === "single") {
       state.replaceSelection(key);
     }
   };
@@ -149,51 +162,51 @@ export function createActionGroup<T>(
     if (!root || isActionGroupDisabled(props, state)) return;
     if (!nodeContains(e.currentTarget, getEventTarget(e))) return;
 
-    const orientation = props.orientation ?? 'horizontal';
-    const isHorizontal = orientation === 'horizontal';
-    const isRTL = locale().direction === 'rtl' && isHorizontal;
+    const orientation = props.orientation ?? "horizontal";
+    const isHorizontal = orientation === "horizontal";
+    const isRTL = locale().direction === "rtl" && isHorizontal;
 
     switch (e.key) {
-      case 'ArrowRight':
-      case 'ArrowDown': {
-        if (e.key === 'ArrowRight' && isHorizontal && isRTL) {
+      case "ArrowRight":
+      case "ArrowDown": {
+        if (e.key === "ArrowRight" && isHorizontal && isRTL) {
           e.preventDefault();
           e.stopPropagation();
-          handleFocusMove(focusRelative(root, 'previous'));
+          handleFocusMove(focusRelative(root, "previous"));
           return;
         }
-        if ((e.key === 'ArrowRight' && isHorizontal) || (e.key === 'ArrowDown' && !isHorizontal)) {
+        if ((e.key === "ArrowRight" && isHorizontal) || (e.key === "ArrowDown" && !isHorizontal)) {
           e.preventDefault();
           e.stopPropagation();
-          handleFocusMove(focusRelative(root, 'next'));
+          handleFocusMove(focusRelative(root, "next"));
         }
         return;
       }
-      case 'ArrowLeft':
-      case 'ArrowUp': {
-        if (e.key === 'ArrowLeft' && isHorizontal && isRTL) {
+      case "ArrowLeft":
+      case "ArrowUp": {
+        if (e.key === "ArrowLeft" && isHorizontal && isRTL) {
           e.preventDefault();
           e.stopPropagation();
-          handleFocusMove(focusRelative(root, 'next'));
+          handleFocusMove(focusRelative(root, "next"));
           return;
         }
-        if ((e.key === 'ArrowLeft' && isHorizontal) || (e.key === 'ArrowUp' && !isHorizontal)) {
+        if ((e.key === "ArrowLeft" && isHorizontal) || (e.key === "ArrowUp" && !isHorizontal)) {
           e.preventDefault();
           e.stopPropagation();
-          handleFocusMove(focusRelative(root, 'previous'));
+          handleFocusMove(focusRelative(root, "previous"));
         }
         return;
       }
-      case 'Home': {
+      case "Home": {
         e.preventDefault();
         e.stopPropagation();
-        handleFocusMove(focusRelative(root, 'first'));
+        handleFocusMove(focusRelative(root, "first"));
         return;
       }
-      case 'End': {
+      case "End": {
         e.preventDefault();
         e.stopPropagation();
-        handleFocusMove(focusRelative(root, 'last'));
+        handleFocusMove(focusRelative(root, "last"));
         return;
       }
     }
@@ -211,16 +224,16 @@ export function createActionGroup<T>(
         });
       },
       onKeyDown,
-      get 'aria-label'() {
-        return props['aria-label'];
+      get "aria-label"() {
+        return props["aria-label"];
       },
-      get 'aria-labelledby'() {
-        return props['aria-label'] ? undefined : props['aria-labelledby'];
+      get "aria-labelledby"() {
+        return props["aria-label"] ? undefined : props["aria-labelledby"];
       },
-      get 'aria-disabled'() {
+      get "aria-disabled"() {
         return isActionGroupDisabled(props, state) || undefined;
       },
-    }
+    },
   );
 
   actionGroupData.set(state, {
@@ -238,15 +251,15 @@ export function createActionGroup<T>(
 
 export function createActionGroupItem<T>(
   props: AriaActionGroupItemProps,
-  state: ListState<T>
+  state: ListState<T>,
 ): ActionGroupItemAria {
   const button = createButton({
-    elementType: 'button',
+    elementType: "button",
     isDisabled: state.isDisabled(props.key),
     onPress: () => {
       state.setFocusedKey(props.key);
       actionGroupData.get(state)?.onAction?.(props.key);
-      if (state.selectionMode() !== 'none') {
+      if (state.selectionMode() !== "none") {
         state.select(props.key);
       }
     },
@@ -264,9 +277,9 @@ export function createActionGroupItem<T>(
 
   const getDefaultTabStopKey = (): Key | null => {
     const selectionMode = state.selectionMode();
-    if (selectionMode !== 'none') {
+    if (selectionMode !== "none") {
       const selectedKeys = state.selectedKeys();
-      if (selectedKeys === 'all') {
+      if (selectedKeys === "all") {
         return getFirstEnabledKey();
       }
 
@@ -286,39 +299,36 @@ export function createActionGroupItem<T>(
     }
   });
 
-  const buttonProps: JSX.HTMLAttributes<HTMLElement> = mergeProps(
-    button.buttonProps,
-    {
-      get role() {
-        return ITEM_ROLE_BY_MODE[state.selectionMode()];
-      },
-      get 'aria-checked'() {
-        const mode = state.selectionMode();
-        if (mode === 'none') return undefined;
-        return state.isSelected(props.key);
-      },
-      get tabIndex() {
-        if (state.isDisabled(props.key)) {
-          return -1;
-        }
+  const buttonProps: JSX.HTMLAttributes<HTMLElement> = mergeProps(button.buttonProps, {
+    get role() {
+      return ITEM_ROLE_BY_MODE[state.selectionMode()];
+    },
+    get "aria-checked"() {
+      const mode = state.selectionMode();
+      if (mode === "none") return undefined;
+      return state.isSelected(props.key);
+    },
+    get tabIndex() {
+      if (state.isDisabled(props.key)) {
+        return -1;
+      }
 
-        if (isFocused()) {
-          return 0;
-        }
+      if (isFocused()) {
+        return 0;
+      }
 
-        if (state.focusedKey() != null) {
-          return -1;
-        }
+      if (state.focusedKey() != null) {
+        return -1;
+      }
 
-        const defaultTabStopKey = getDefaultTabStopKey();
-        return defaultTabStopKey === props.key ? 0 : -1;
-      },
-      'data-key': String(props.key),
-      onFocus: () => {
-        state.setFocusedKey(props.key);
-      },
-    }
-  );
+      const defaultTabStopKey = getDefaultTabStopKey();
+      return defaultTabStopKey === props.key ? 0 : -1;
+    },
+    "data-key": String(props.key),
+    onFocus: () => {
+      state.setFocusedKey(props.key);
+    },
+  });
 
   return { buttonProps };
 }

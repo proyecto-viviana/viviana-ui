@@ -4,13 +4,13 @@
  * A compound field layout with label, input slot, help text, and error message.
  */
 
-import { type JSX, splitProps, Show } from 'solid-js';
+import { type JSX, splitProps, Show } from "solid-js";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type FieldSize = 'sm' | 'md' | 'lg';
+export type FieldSize = "sm" | "md" | "lg";
 
 export interface FieldProps {
   /** The label for the field. */
@@ -40,9 +40,9 @@ export interface FieldProps {
 // ============================================
 
 const sizeStyles: Record<FieldSize, { label: string; text: string; gap: string }> = {
-  sm: { label: 'text-xs', text: 'text-xs', gap: 'gap-1' },
-  md: { label: 'text-sm', text: 'text-sm', gap: 'gap-1.5' },
-  lg: { label: 'text-base', text: 'text-sm', gap: 'gap-2' },
+  sm: { label: "text-xs", text: "text-xs", gap: "gap-1" },
+  md: { label: "text-sm", text: "text-sm", gap: "gap-1.5" },
+  lg: { label: "text-base", text: "text-sm", gap: "gap-2" },
 };
 
 // ============================================
@@ -55,20 +55,27 @@ const sizeStyles: Record<FieldSize, { label: string; text: string; gap: string }
  */
 export function Field(props: FieldProps): JSX.Element {
   const [local] = splitProps(props, [
-    'label', 'description', 'errorMessage', 'isRequired', 'isDisabled',
-    'isInvalid', 'size', 'class', 'children', 'htmlFor',
+    "label",
+    "description",
+    "errorMessage",
+    "isRequired",
+    "isDisabled",
+    "isInvalid",
+    "size",
+    "class",
+    "children",
+    "htmlFor",
   ]);
 
-  const size = () => sizeStyles[local.size ?? 'md'];
+  const size = () => sizeStyles[local.size ?? "md"];
   const showError = () => local.isInvalid && local.errorMessage;
 
   return (
-    <div class={`flex flex-col ${size().gap} ${local.isDisabled ? 'opacity-60' : ''} ${local.class ?? ''}`}>
+    <div
+      class={`flex flex-col ${size().gap} ${local.isDisabled ? "opacity-60" : ""} ${local.class ?? ""}`}
+    >
       <Show when={local.label}>
-        <label
-          for={local.htmlFor}
-          class={`font-medium text-primary-200 ${size().label}`}
-        >
+        <label for={local.htmlFor} class={`font-medium text-primary-200 ${size().label}`}>
           {local.label}
           <Show when={local.isRequired}>
             <span class="text-red-400 ml-0.5">*</span>
@@ -85,9 +92,7 @@ export function Field(props: FieldProps): JSX.Element {
       </Show>
 
       <Show when={!showError() && local.description}>
-        <p class={`text-primary-400 ${size().text}`}>
-          {local.description}
-        </p>
+        <p class={`text-primary-400 ${size().text}`}>{local.description}</p>
       </Show>
     </div>
   );

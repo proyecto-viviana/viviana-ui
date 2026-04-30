@@ -5,7 +5,7 @@
  * Follows Spectrum 2 design patterns.
  */
 
-import { type JSX, splitProps, Show, createContext, useContext } from 'solid-js'
+import { type JSX, splitProps, Show, createContext, useContext } from "solid-js";
 import {
   Dialog as HeadlessDialog,
   DialogTrigger as HeadlessDialogTrigger,
@@ -14,42 +14,42 @@ import {
   ModalOverlay as HeadlessModalOverlay,
   useDialogTrigger,
   type DialogProps as HeadlessDialogProps,
-} from '@proyecto-viviana/solidaria-components'
+} from "@proyecto-viviana/solidaria-components";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type DialogSize = 'sm' | 'md' | 'lg' | 'fullscreen'
+export type DialogSize = "sm" | "md" | "lg" | "fullscreen";
 
-export interface DialogProps extends Omit<HeadlessDialogProps, 'class' | 'style' | 'children'> {
+export interface DialogProps extends Omit<HeadlessDialogProps, "class" | "style" | "children"> {
   /** The size of the dialog. */
-  size?: DialogSize
+  size?: DialogSize;
   /** Whether the dialog can be dismissed by clicking the X button. */
-  isDismissable?: boolean
+  isDismissable?: boolean;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** The title of the dialog. */
-  title?: string
+  title?: string;
   /** The children content. */
-  children: JSX.Element
+  children: JSX.Element;
   /** Callback when dialog should close */
-  onClose?: () => void
+  onClose?: () => void;
 }
 
 export interface DialogTriggerProps {
   /** Button to trigger the dialog. */
-  trigger: JSX.Element
+  trigger: JSX.Element;
   /** The dialog content - receives close function. */
-  content: (close: () => void) => JSX.Element
+  content: (close: () => void) => JSX.Element;
   /** Whether the dialog is controlled. */
-  isOpen?: boolean
+  isOpen?: boolean;
   /** Callback when open state changes. */
-  onOpenChange?: (isOpen: boolean) => void
+  onOpenChange?: (isOpen: boolean) => void;
   /** Whether clicking outside the dialog closes it. Defaults to true. */
-  isDismissable?: boolean
+  isDismissable?: boolean;
   /** Whether pressing Escape closes the dialog. Defaults to false. */
-  isKeyboardDismissDisabled?: boolean
+  isKeyboardDismissDisabled?: boolean;
 }
 
 // ============================================
@@ -57,13 +57,13 @@ export interface DialogTriggerProps {
 // ============================================
 
 interface DialogContextValue {
-  close: () => void
+  close: () => void;
 }
 
-const DialogContext = createContext<DialogContextValue | null>(null)
+const DialogContext = createContext<DialogContextValue | null>(null);
 
 export function useDialogContext(): DialogContextValue | null {
-  return useContext(DialogContext)
+  return useContext(DialogContext);
 }
 
 // ============================================
@@ -71,11 +71,11 @@ export function useDialogContext(): DialogContextValue | null {
 // ============================================
 
 const sizeStyles: Record<DialogSize, string> = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-2xl',
-  fullscreen: 'max-w-full w-full h-full',
-}
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-2xl",
+  fullscreen: "max-w-full w-full h-full",
+};
 
 // ============================================
 // DIALOG COMPONENT
@@ -86,22 +86,22 @@ const sizeStyles: Record<DialogSize, string> = {
  */
 export function Dialog(props: DialogProps): JSX.Element {
   const [local, rest] = splitProps(props, [
-    'size',
-    'isDismissable',
-    'class',
-    'title',
-    'children',
-    'onClose',
-  ])
+    "size",
+    "isDismissable",
+    "class",
+    "title",
+    "children",
+    "onClose",
+  ]);
 
-  const size = () => local.size ?? 'md'
+  const size = () => local.size ?? "md";
 
   const className = () => {
-    const base = 'bg-bg-300 rounded-lg shadow-xl border border-primary-700 p-6'
-    const sizeClass = sizeStyles[size()]
-    const custom = local.class ?? ''
-    return [base, sizeClass, custom].filter(Boolean).join(' ')
-  }
+    const base = "bg-bg-300 rounded-lg shadow-xl border border-primary-700 p-6";
+    const sizeClass = sizeStyles[size()];
+    const custom = local.class ?? "";
+    return [base, sizeClass, custom].filter(Boolean).join(" ");
+  };
 
   return (
     <HeadlessDialog
@@ -123,7 +123,12 @@ export function Dialog(props: DialogProps): JSX.Element {
                   aria-label="Close dialog"
                 >
                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </Show>
@@ -133,7 +138,7 @@ export function Dialog(props: DialogProps): JSX.Element {
         </DialogContext.Provider>
       )}
     />
-  )
+  );
 }
 
 // ============================================
@@ -141,9 +146,9 @@ export function Dialog(props: DialogProps): JSX.Element {
 // ============================================
 
 function DialogTriggerContent(props: { content: (close: () => void) => JSX.Element }): JSX.Element {
-  const triggerContext = useDialogTrigger()
-  const close = () => triggerContext?.state.close()
-  return props.content(close)
+  const triggerContext = useDialogTrigger();
+  const close = () => triggerContext?.state.close();
+  return props.content(close);
 }
 
 /**
@@ -152,10 +157,7 @@ function DialogTriggerContent(props: { content: (close: () => void) => JSX.Eleme
  */
 export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
   return (
-    <HeadlessDialogTrigger
-      isOpen={props.isOpen}
-      onOpenChange={props.onOpenChange}
-    >
+    <HeadlessDialogTrigger isOpen={props.isOpen} onOpenChange={props.onOpenChange}>
       {props.trigger}
       <HeadlessModalOverlay
         isDismissable={props.isDismissable ?? true}
@@ -169,7 +171,7 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
         </div>
       </HeadlessModalOverlay>
     </HeadlessDialogTrigger>
-  )
+  );
 }
 
 // ============================================
@@ -178,9 +180,9 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
 
 export interface DialogFooterProps {
   /** Footer content, typically buttons. */
-  children: JSX.Element
+  children: JSX.Element;
   /** Additional CSS class. */
-  class?: string
+  class?: string;
 }
 
 /**
@@ -188,8 +190,10 @@ export interface DialogFooterProps {
  */
 export function DialogFooter(props: DialogFooterProps): JSX.Element {
   return (
-    <div class={`flex gap-3 justify-end mt-6 pt-4 border-t border-primary-700 ${props.class ?? ''}`}>
+    <div
+      class={`flex gap-3 justify-end mt-6 pt-4 border-t border-primary-700 ${props.class ?? ""}`}
+    >
       {props.children}
     </div>
-  )
+  );
 }

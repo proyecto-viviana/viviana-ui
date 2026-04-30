@@ -7,11 +7,11 @@
  * Port of @react-aria/tooltip useTooltipTrigger.
  */
 
-import { type JSX, createEffect, onCleanup } from 'solid-js';
-import { type TooltipTriggerState } from '@proyecto-viviana/solid-stately';
-import { createHover } from '../interactions/createHover';
-import { createFocusable } from '../interactions/createFocusable';
-import { createId } from '../ssr';
+import { type JSX, createEffect, onCleanup } from "solid-js";
+import { type TooltipTriggerState } from "@proyecto-viviana/solid-stately";
+import { createHover } from "../interactions/createHover";
+import { createFocusable } from "../interactions/createFocusable";
+import { createId } from "../ssr";
 
 // ============================================
 // TYPES
@@ -24,7 +24,7 @@ export interface TooltipTriggerProps {
    * The trigger mechanism for the tooltip.
    * @default 'focus'
    */
-  trigger?: 'focus';
+  trigger?: "focus";
   /**
    * Whether the tooltip should close when the trigger is pressed.
    * @default true
@@ -43,24 +43,36 @@ export interface TooltipTriggerAria {
 // GLOBAL STATE
 // ============================================
 
-type Modality = 'keyboard' | 'pointer' | 'virtual';
+type Modality = "keyboard" | "pointer" | "virtual";
 let currentModality: Modality | null = null;
 
 // Track interaction modality (pointer vs keyboard)
-if (typeof document !== 'undefined') {
-  document.addEventListener('keydown', () => {
-    currentModality = 'keyboard';
-  }, true);
-  document.addEventListener('pointerdown', () => {
-    currentModality = 'pointer';
-  }, true);
-  document.addEventListener('pointermove', () => {
-    currentModality = 'pointer';
-  }, true);
+if (typeof document !== "undefined") {
+  document.addEventListener(
+    "keydown",
+    () => {
+      currentModality = "keyboard";
+    },
+    true,
+  );
+  document.addEventListener(
+    "pointerdown",
+    () => {
+      currentModality = "pointer";
+    },
+    true,
+  );
+  document.addEventListener(
+    "pointermove",
+    () => {
+      currentModality = "pointer";
+    },
+    true,
+  );
 }
 
 function isFocusVisible(): boolean {
-  return currentModality === 'keyboard';
+  return currentModality === "keyboard";
 }
 
 // ============================================
@@ -100,7 +112,7 @@ function isFocusVisible(): boolean {
 export function createTooltipTrigger(
   props: TooltipTriggerProps,
   state: TooltipTriggerState,
-  ref: () => HTMLElement | null | undefined
+  ref: () => HTMLElement | null | undefined,
 ): TooltipTriggerAria {
   const isDisabled = () => props.isDisabled ?? false;
   const trigger = () => props.trigger;
@@ -131,21 +143,21 @@ export function createTooltipTrigger(
     const onKeyDown = (e: KeyboardEvent) => {
       const element = ref();
       if (element) {
-        if (e.key === 'Escape') {
+        if (e.key === "Escape") {
           e.stopPropagation();
           state.close(true);
         }
       }
     };
 
-    document.addEventListener('keydown', onKeyDown, true);
+    document.addEventListener("keydown", onKeyDown, true);
     onCleanup(() => {
-      document.removeEventListener('keydown', onKeyDown, true);
+      document.removeEventListener("keydown", onKeyDown, true);
     });
   });
 
   const onHoverStart = () => {
-    if (trigger() === 'focus') {
+    if (trigger() === "focus") {
       return;
     }
     // Hover events (onPointerEnter) only fire from pointer interactions,
@@ -155,7 +167,7 @@ export function createTooltipTrigger(
   };
 
   const onHoverEnd = () => {
-    if (trigger() === 'focus') {
+    if (trigger() === "focus") {
       return;
     }
     isFocused = false;
@@ -173,7 +185,7 @@ export function createTooltipTrigger(
   };
 
   const onKeyDownPress = (event: KeyboardEvent) => {
-    if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar') {
+    if (event.key !== "Enter" && event.key !== " " && event.key !== "Spacebar") {
       return;
     }
     closeOnPress();
@@ -208,7 +220,7 @@ export function createTooltipTrigger(
   const triggerProps = {
     ...focusableProps,
     ...hoverProps,
-    get 'aria-describedby'() {
+    get "aria-describedby"() {
       return state.isOpen() ? tooltipId : undefined;
     },
     onPointerDown: closeOnPress,

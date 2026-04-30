@@ -1,9 +1,9 @@
 {
   "name": "@proyecto-viviana/comparison",
-  "private": true,
   "version": "0.0.1",
-  "type": "module",
+  "private": true,
   "description": "Astro comparison app for React Spectrum and Proyecto Viviana parity review",
+  "type": "module",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -23,9 +23,6 @@
     "types": "XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler types src/worker-configuration.d.ts --config wrangler.jsonc",
     "deploy": "vp run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --config wrangler.jsonc",
     "deploy:dry-run": "vp run build && XDG_CONFIG_HOME=/tmp/proyecto-viviana-wrangler ../../node_modules/.bin/wrangler deploy --dry-run --config wrangler.jsonc"
-  },
-  "overrides": {
-    "lodash": "^4.17.23"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.2",
@@ -48,5 +45,8 @@
     "@playwright/test": "^1.58.2",
     "playwright": "^1.58.2",
     "typescript": "^5.8.2"
+  },
+  "overrides": {
+    "lodash": "^4.17.23"
   }
 }

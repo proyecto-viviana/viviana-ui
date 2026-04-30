@@ -1,36 +1,36 @@
-import type { JSX } from 'solid-js'
-import { Show } from 'solid-js'
+import type { JSX } from "solid-js";
+import { Show } from "solid-js";
 import {
   Alert as HeadlessAlert,
   AlertDismissButton,
   type AlertRenderProps,
   type AlertVariant,
-} from '@proyecto-viviana/solidaria-components'
+} from "@proyecto-viviana/solidaria-components";
 
-export type { AlertVariant }
+export type { AlertVariant };
 
 export interface AlertProps {
-  children: JSX.Element
-  variant?: AlertVariant
-  title?: string
-  dismissible?: boolean
-  onDismiss?: () => void
-  class?: string
+  children: JSX.Element;
+  variant?: AlertVariant;
+  title?: string;
+  dismissible?: boolean;
+  onDismiss?: () => void;
+  class?: string;
 }
 
 const variantStyles: Record<AlertVariant, string> = {
-  info: 'bg-primary-700 text-primary-200 border border-primary-500',
-  success: 'bg-success-600 text-on-color border border-success-400',
-  warning: 'bg-warning-600 text-warning-100 border border-warning-400',
-  error: 'bg-danger-600 text-on-color border border-danger-400',
-}
+  info: "bg-primary-700 text-primary-200 border border-primary-500",
+  success: "bg-success-600 text-on-color border border-success-400",
+  warning: "bg-warning-600 text-warning-100 border border-warning-400",
+  error: "bg-danger-600 text-on-color border border-danger-400",
+};
 
 export function Alert(props: AlertProps) {
-  const variant = () => props.variant ?? 'info'
+  const variant = () => props.variant ?? "info";
 
   const getClassName = (_renderProps: AlertRenderProps): string => {
-    return `flex items-center min-h-[50px] font-normal rounded-lg px-4 py-2 ${variantStyles[variant()]} ${props.class ?? ''}`
-  }
+    return `flex items-center min-h-[50px] font-normal rounded-lg px-4 py-2 ${variantStyles[variant()]} ${props.class ?? ""}`;
+  };
 
   return (
     <HeadlessAlert
@@ -46,14 +46,11 @@ export function Alert(props: AlertProps) {
         </Show>
         <div class="flex-1">{props.children}</div>
         <Show when={props.dismissible}>
-          <AlertDismissButton
-            class="hover:opacity-70 transition-opacity ml-2"
-            aria-label="Dismiss"
-          >
+          <AlertDismissButton class="hover:opacity-70 transition-opacity ml-2" aria-label="Dismiss">
             ✕
           </AlertDismissButton>
         </Show>
       </div>
     </HeadlessAlert>
-  )
+  );
 }

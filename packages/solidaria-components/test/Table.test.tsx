@@ -2,14 +2,14 @@
  * Tests for Table component.
  */
 
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent, within } from '@solidjs/testing-library';
-import { createSignal, For } from 'solid-js';
-import { Button } from '../src/Button';
-import { Checkbox } from '../src/Checkbox';
-import { RouterProvider } from '../src/RouterProvider';
-import { useDragAndDrop } from '../src/useDragAndDrop';
-import { TableLayout, Virtualizer } from '../src/Virtualizer';
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { render, screen, cleanup, fireEvent, within } from "@solidjs/testing-library";
+import { createSignal, For } from "solid-js";
+import { Button } from "../src/Button";
+import { Checkbox } from "../src/Checkbox";
+import { RouterProvider } from "../src/RouterProvider";
+import { useDragAndDrop } from "../src/useDragAndDrop";
+import { TableLayout, Virtualizer } from "../src/Virtualizer";
 import {
   Table,
   TableHeader,
@@ -22,19 +22,19 @@ import {
   TableSelectAllCheckbox,
   ColumnResizer,
   ResizableTableContainer,
-} from '../src/Table';
+} from "../src/Table";
 
 // Test data
 const testColumns = [
-  { key: 'name', name: 'Name' },
-  { key: 'type', name: 'Type' },
-  { key: 'level', name: 'Level' },
+  { key: "name", name: "Name" },
+  { key: "type", name: "Type" },
+  { key: "level", name: "Level" },
 ];
 
 const testData = [
-  { id: 1, name: 'Pikachu', type: 'Electric', level: 25 },
-  { id: 2, name: 'Charizard', type: 'Fire', level: 45 },
-  { id: 3, name: 'Blastoise', type: 'Water', level: 42 },
+  { id: 1, name: "Pikachu", type: "Electric", level: 25 },
+  { id: 2, name: "Charizard", type: "Fire", level: 45 },
+  { id: 3, name: "Blastoise", type: "Water", level: 42 },
 ];
 
 function setupIntersectionObserverMock() {
@@ -45,7 +45,7 @@ function setupIntersectionObserverMock() {
 
   class MockIntersectionObserver implements IntersectionObserver {
     readonly root = null;
-    readonly rootMargin = '';
+    readonly rootMargin = "";
     readonly thresholds = [];
     constructor(callback: IntersectionObserverCallback) {
       triggerIntersection = callback as (entries: IntersectionObserverEntry[]) => void;
@@ -56,7 +56,8 @@ function setupIntersectionObserverMock() {
     takeRecords = vi.fn(() => []);
   }
 
-  globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
+  globalThis.IntersectionObserver =
+    MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
   return {
     observe,
@@ -103,7 +104,7 @@ function TestTable(props: Partial<Parameters<typeof Table>[0]> = {}) {
   );
 }
 
-describe('Table', () => {
+describe("Table", () => {
   afterEach(() => {
     cleanup();
   });
@@ -112,34 +113,34 @@ describe('Table', () => {
   // BASIC RENDERING
   // ============================================
 
-  describe('rendering', () => {
-    it('should render with default class', () => {
+  describe("rendering", () => {
+    it("should render with default class", () => {
       render(() => <TestTable />);
 
-      const table = document.querySelector('.solidaria-Table');
+      const table = document.querySelector(".solidaria-Table");
       expect(table).toBeTruthy();
-      expect(table?.tagName).toBe('TABLE');
+      expect(table?.tagName).toBe("TABLE");
     });
 
-    it('should render with default classes', () => {
+    it("should render with default classes", () => {
       render(() => <TestTable />);
 
-      expect(document.querySelector('.solidaria-Table')).toBeTruthy();
-      expect(document.querySelector('.solidaria-Table-header')).toBeTruthy();
-      expect(document.querySelector('.solidaria-Table-body')).toBeTruthy();
-      expect(document.querySelectorAll('.solidaria-Table-column')).toHaveLength(3);
-      expect(document.querySelectorAll('.solidaria-Table-row')).toHaveLength(3);
-      expect(document.querySelectorAll('.solidaria-Table-cell')).toHaveLength(9);
+      expect(document.querySelector(".solidaria-Table")).toBeTruthy();
+      expect(document.querySelector(".solidaria-Table-header")).toBeTruthy();
+      expect(document.querySelector(".solidaria-Table-body")).toBeTruthy();
+      expect(document.querySelectorAll(".solidaria-Table-column")).toHaveLength(3);
+      expect(document.querySelectorAll(".solidaria-Table-row")).toHaveLength(3);
+      expect(document.querySelectorAll(".solidaria-Table-cell")).toHaveLength(9);
     });
 
-    it('should render with custom class', () => {
+    it("should render with custom class", () => {
       render(() => <TestTable class="custom-table" />);
 
-      const table = document.querySelector('.custom-table');
+      const table = document.querySelector(".custom-table");
       expect(table).toBeTruthy();
     });
 
-    it('should support custom render function', () => {
+    it("should support custom render function", () => {
       render(() => (
         <Table
           items={testData}
@@ -149,32 +150,52 @@ describe('Table', () => {
           render={(props) => <table {...props} data-custom="true" />}
         >
           <TableHeader render={(props) => <thead {...props} data-custom="true" />}>
-            <TableColumn id="name" render={(props) => <th {...props} data-custom="true" />}>Name</TableColumn>
-            <TableColumn id="type" render={(props) => <th {...props} data-custom="true" />}>Type</TableColumn>
-            <TableColumn id="level" render={(props) => <th {...props} data-custom="true" />}>Level</TableColumn>
+            <TableColumn id="name" render={(props) => <th {...props} data-custom="true" />}>
+              Name
+            </TableColumn>
+            <TableColumn id="type" render={(props) => <th {...props} data-custom="true" />}>
+              Type
+            </TableColumn>
+            <TableColumn id="level" render={(props) => <th {...props} data-custom="true" />}>
+              Level
+            </TableColumn>
           </TableHeader>
           <TableBody render={(props) => <tbody {...props} data-custom="true" />}>
             {(item: any) => (
-              <TableRow id={item.id} item={item} render={(props) => <tr {...props} data-custom="true" />}>
-                <TableCell render={(props) => <td {...props} data-custom="true" />}>{item.name}</TableCell>
-                <TableCell render={(props) => <td {...props} data-custom="true" />}>{item.type}</TableCell>
-                <TableCell render={(props) => <td {...props} data-custom="true" />}>{item.level}</TableCell>
+              <TableRow
+                id={item.id}
+                item={item}
+                render={(props) => <tr {...props} data-custom="true" />}
+              >
+                <TableCell render={(props) => <td {...props} data-custom="true" />}>
+                  {item.name}
+                </TableCell>
+                <TableCell render={(props) => <td {...props} data-custom="true" />}>
+                  {item.type}
+                </TableCell>
+                <TableCell render={(props) => <td {...props} data-custom="true" />}>
+                  {item.level}
+                </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       ));
 
-      expect(screen.getByRole('grid')).toHaveAttribute('data-custom', 'true');
-      for (const row of screen.getAllByRole('row').slice(1)) {
-        expect(row).toHaveAttribute('data-custom', 'true');
+      expect(screen.getByRole("grid")).toHaveAttribute("data-custom", "true");
+      for (const row of screen.getAllByRole("row").slice(1)) {
+        expect(row).toHaveAttribute("data-custom", "true");
       }
-      for (const cell of [...screen.getAllByRole('columnheader'), ...screen.queryAllByRole('rowheader'), ...screen.getAllByRole('gridcell')]) {
-        expect(cell).toHaveAttribute('data-custom', 'true');
+      for (const cell of [
+        ...screen.getAllByRole("columnheader"),
+        ...screen.queryAllByRole("rowheader"),
+        ...screen.getAllByRole("gridcell"),
+      ]) {
+        expect(cell).toHaveAttribute("data-custom", "true");
       }
     });
 
-    it('should render with custom classes', () => {
+    it("should render with custom classes", () => {
       render(() => (
         <Table
           items={testData}
@@ -186,7 +207,9 @@ describe('Table', () => {
           {() => (
             <>
               <TableHeader class="header">
-                <TableColumn id="name" class="column">{() => <>Name</>}</TableColumn>
+                <TableColumn id="name" class="column">
+                  {() => <>Name</>}
+                </TableColumn>
               </TableHeader>
               <TableBody class="body">
                 {(item: any) => (
@@ -200,29 +223,29 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(document.querySelector('.table')).toBeTruthy();
-      expect(document.querySelector('.header')).toBeTruthy();
-      expect(document.querySelector('.body')).toBeTruthy();
-      expect(document.querySelector('.column')).toBeTruthy();
-      expect(document.querySelectorAll('.row')).toHaveLength(3);
-      expect(document.querySelectorAll('.cell')).toHaveLength(3);
+      expect(document.querySelector(".table")).toBeTruthy();
+      expect(document.querySelector(".header")).toBeTruthy();
+      expect(document.querySelector(".body")).toBeTruthy();
+      expect(document.querySelector(".column")).toBeTruthy();
+      expect(document.querySelectorAll(".row")).toHaveLength(3);
+      expect(document.querySelectorAll(".cell")).toHaveLength(3);
     });
 
-    it('should support DOM props', () => {
+    it("should support DOM props", () => {
       render(() => <TestTable data-testid="pokemon-table" slot="table-slot" />);
 
-      const table = screen.getByTestId('pokemon-table');
-      expect(table).toHaveAttribute('role', 'grid');
-      expect(table).toHaveAttribute('slot', 'table-slot');
+      const table = screen.getByTestId("pokemon-table");
+      expect(table).toHaveAttribute("role", "grid");
+      expect(table).toHaveAttribute("slot", "table-slot");
     });
 
-    it('should support overriding table style', () => {
-      render(() => <TestTable style={{ width: '200px' }} />);
+    it("should support overriding table style", () => {
+      render(() => <TestTable style={{ width: "200px" }} />);
 
-      expect(screen.getByRole('grid')).toHaveStyle({ width: '200px' });
+      expect(screen.getByRole("grid")).toHaveStyle({ width: "200px" });
     });
 
-    it('should support refs', () => {
+    it("should support refs", () => {
       let tableRef: HTMLTableElement | null = null;
       let headerRef: HTMLTableSectionElement | null = null;
       let columnRef: HTMLTableCellElement | null = null;
@@ -298,15 +321,15 @@ describe('Table', () => {
       expect(cellRef).toBeInstanceOf(HTMLTableCellElement);
     });
 
-    it('should support onScroll', () => {
+    it("should support onScroll", () => {
       const onScroll = vi.fn();
       render(() => <TestTable onScroll={onScroll} />);
 
-      fireEvent.scroll(screen.getByRole('grid'));
+      fireEvent.scroll(screen.getByRole("grid"));
       expect(onScroll).toHaveBeenCalledTimes(1);
     });
 
-    it('should support dynamic collections', () => {
+    it("should support dynamic collections", () => {
       function DynamicTable() {
         const [rows, setRows] = createSignal(testData.slice(0, 2));
         return (
@@ -348,16 +371,16 @@ describe('Table', () => {
       }
 
       render(() => <DynamicTable />);
-      expect(screen.getByText('Pikachu')).toBeTruthy();
-      expect(screen.getByText('Charizard')).toBeTruthy();
+      expect(screen.getByText("Pikachu")).toBeTruthy();
+      expect(screen.getByText("Charizard")).toBeTruthy();
 
-      fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+      fireEvent.click(screen.getByRole("button", { name: "Update" }));
 
-      expect(screen.getByText('Blastoise')).toBeTruthy();
-      expect(screen.queryByText('Pikachu')).toBeNull();
+      expect(screen.getByText("Blastoise")).toBeTruthy();
+      expect(screen.queryByText("Pikachu")).toBeNull();
     });
 
-    it('supports removing rows', () => {
+    it("supports removing rows", () => {
       function RemovableRowsTable() {
         const [rows, setRows] = createSignal(testData);
         return (
@@ -399,17 +422,17 @@ describe('Table', () => {
       }
 
       render(() => <RemovableRowsTable />);
-      expect(screen.getAllByRole('row')).toHaveLength(4);
-      expect(screen.getByText('Charizard')).toBeTruthy();
+      expect(screen.getAllByRole("row")).toHaveLength(4);
+      expect(screen.getByText("Charizard")).toBeTruthy();
 
-      fireEvent.click(screen.getByRole('button', { name: 'Remove' }));
+      fireEvent.click(screen.getByRole("button", { name: "Remove" }));
 
-      expect(screen.getAllByRole('row')).toHaveLength(3);
-      expect(screen.queryByText('Charizard')).toBeNull();
-      expect(screen.getByText('Blastoise')).toBeTruthy();
+      expect(screen.getAllByRole("row")).toHaveLength(3);
+      expect(screen.queryByText("Charizard")).toBeNull();
+      expect(screen.getByText("Blastoise")).toBeTruthy();
     });
 
-    it('should support updating columns', () => {
+    it("should support updating columns", () => {
       function DynamicColumnsTable() {
         const [columns, setColumns] = createSignal(testColumns);
         return (
@@ -427,7 +450,9 @@ describe('Table', () => {
                 <>
                   <TableHeader>
                     <For each={columns()}>
-                      {(column) => <TableColumn id={column.key}>{() => <>{column.name}</>}</TableColumn>}
+                      {(column) => (
+                        <TableColumn id={column.key}>{() => <>{column.name}</>}</TableColumn>
+                      )}
                     </For>
                   </TableHeader>
                   <TableBody>
@@ -449,23 +474,25 @@ describe('Table', () => {
       }
 
       render(() => <DynamicColumnsTable />);
-      expect(screen.getAllByRole('columnheader')).toHaveLength(3);
+      expect(screen.getAllByRole("columnheader")).toHaveLength(3);
 
-      fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+      fireEvent.click(screen.getByRole("button", { name: "Update" }));
 
-      expect(screen.getAllByRole('columnheader')).toHaveLength(2);
-      expect(screen.queryByRole('columnheader', { name: 'Type' })).toBeNull();
-      expect(screen.getByRole('columnheader', { name: 'Level' })).toBeTruthy();
+      expect(screen.getAllByRole("columnheader")).toHaveLength(2);
+      expect(screen.queryByRole("columnheader", { name: "Type" })).toBeNull();
+      expect(screen.getByRole("columnheader", { name: "Level" })).toBeTruthy();
     });
 
-    it('should support updating and reordering a row at the same time', () => {
+    it("should support updating and reordering a row at the same time", () => {
       function ReorderedRowsTable() {
         const [rows, setRows] = createSignal(testData);
         return (
           <>
             <button
               type="button"
-              onClick={() => setRows([testData[1], { ...testData[0], name: 'Raichu' }, testData[2]])}
+              onClick={() =>
+                setRows([testData[1], { ...testData[0], name: "Raichu" }, testData[2]])
+              }
             >
               Update
             </button>
@@ -503,25 +530,27 @@ describe('Table', () => {
       }
 
       render(() => <ReorderedRowsTable />);
-      expect(screen.getAllByRole('row').slice(1).map((row) => row.textContent)).toEqual([
-        'PikachuElectric25',
-        'CharizardFire45',
-        'BlastoiseWater42',
-      ]);
+      expect(
+        screen
+          .getAllByRole("row")
+          .slice(1)
+          .map((row) => row.textContent),
+      ).toEqual(["PikachuElectric25", "CharizardFire45", "BlastoiseWater42"]);
 
-      fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+      fireEvent.click(screen.getByRole("button", { name: "Update" }));
 
-      expect(screen.getAllByRole('row').slice(1).map((row) => row.textContent)).toEqual([
-        'CharizardFire45',
-        'RaichuElectric25',
-        'BlastoiseWater42',
-      ]);
+      expect(
+        screen
+          .getAllByRole("row")
+          .slice(1)
+          .map((row) => row.textContent),
+      ).toEqual(["CharizardFire45", "RaichuElectric25", "BlastoiseWater42"]);
     });
 
-    it('supports removing a column and adding it back static', () => {
+    it("supports removing a column and adding it back static", () => {
       function HidingColumnsTable() {
         const [hideColumns, setHideColumns] = createSignal(false);
-        const columns = () => hideColumns() ? [testColumns[0], testColumns[2]] : testColumns;
+        const columns = () => (hideColumns() ? [testColumns[0], testColumns[2]] : testColumns);
         return (
           <>
             <ResizableTableContainer>
@@ -556,29 +585,29 @@ describe('Table', () => {
               </Table>
             </ResizableTableContainer>
             <button type="button" onClick={() => setHideColumns((value) => !value)}>
-              {hideColumns() ? 'Show Columns' : 'Hide Columns'}
+              {hideColumns() ? "Show Columns" : "Hide Columns"}
             </button>
           </>
         );
       }
 
       render(() => <HidingColumnsTable />);
-      expect(screen.getByRole('button')).toHaveTextContent('Hide Columns');
-      expect(screen.getAllByRole('columnheader')).toHaveLength(3);
+      expect(screen.getByRole("button")).toHaveTextContent("Hide Columns");
+      expect(screen.getAllByRole("columnheader")).toHaveLength(3);
 
-      fireEvent.click(screen.getByRole('button'));
-      expect(screen.getByRole('button')).toHaveTextContent('Show Columns');
-      expect(screen.getAllByRole('columnheader')).toHaveLength(2);
+      fireEvent.click(screen.getByRole("button"));
+      expect(screen.getByRole("button")).toHaveTextContent("Show Columns");
+      expect(screen.getAllByRole("columnheader")).toHaveLength(2);
 
-      fireEvent.click(screen.getByRole('button'));
-      expect(screen.getByRole('button')).toHaveTextContent('Hide Columns');
-      expect(screen.getAllByRole('columnheader')).toHaveLength(3);
+      fireEvent.click(screen.getByRole("button"));
+      expect(screen.getByRole("button")).toHaveTextContent("Hide Columns");
+      expect(screen.getAllByRole("columnheader")).toHaveLength(3);
     });
 
-    it('supports removing a column and adding it back dynamic', () => {
+    it("supports removing a column and adding it back dynamic", () => {
       function HidingDynamicColumnsTable() {
         const [hideColumns, setHideColumns] = createSignal(false);
-        const columns = () => hideColumns() ? [testColumns[0], testColumns[2]] : testColumns;
+        const columns = () => (hideColumns() ? [testColumns[0], testColumns[2]] : testColumns);
         return (
           <>
             <ResizableTableContainer>
@@ -592,7 +621,9 @@ describe('Table', () => {
                   <>
                     <TableHeader>
                       <For each={columns()}>
-                        {(column) => <TableColumn id={column.key}>{() => <>{column.name}</>}</TableColumn>}
+                        {(column) => (
+                          <TableColumn id={column.key}>{() => <>{column.name}</>}</TableColumn>
+                        )}
                       </For>
                     </TableHeader>
                     <TableBody>
@@ -611,26 +642,26 @@ describe('Table', () => {
               </Table>
             </ResizableTableContainer>
             <button type="button" onClick={() => setHideColumns((value) => !value)}>
-              {hideColumns() ? 'Show Columns' : 'Hide Columns'}
+              {hideColumns() ? "Show Columns" : "Hide Columns"}
             </button>
           </>
         );
       }
 
       render(() => <HidingDynamicColumnsTable />);
-      expect(screen.getByRole('button')).toHaveTextContent('Hide Columns');
-      expect(screen.getAllByRole('columnheader')).toHaveLength(3);
+      expect(screen.getByRole("button")).toHaveTextContent("Hide Columns");
+      expect(screen.getAllByRole("columnheader")).toHaveLength(3);
 
-      fireEvent.click(screen.getByRole('button'));
-      expect(screen.getByRole('button')).toHaveTextContent('Show Columns');
-      expect(screen.getAllByRole('columnheader')).toHaveLength(2);
+      fireEvent.click(screen.getByRole("button"));
+      expect(screen.getByRole("button")).toHaveTextContent("Show Columns");
+      expect(screen.getAllByRole("columnheader")).toHaveLength(2);
 
-      fireEvent.click(screen.getByRole('button'));
-      expect(screen.getByRole('button')).toHaveTextContent('Hide Columns');
-      expect(screen.getAllByRole('columnheader')).toHaveLength(3);
+      fireEvent.click(screen.getByRole("button"));
+      expect(screen.getByRole("button")).toHaveTextContent("Hide Columns");
+      expect(screen.getAllByRole("columnheader")).toHaveLength(3);
     });
 
-    it('should support data-focus-visible-within', () => {
+    it("should support data-focus-visible-within", () => {
       render(() => (
         <Table
           items={[testData[0]]}
@@ -664,49 +695,60 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row = screen.getAllByRole('row')[1];
-      const button = screen.getByRole('button', { name: 'Pikachu' });
-      expect(row).not.toHaveAttribute('data-focus-visible-within');
+      const row = screen.getAllByRole("row")[1];
+      const button = screen.getByRole("button", { name: "Pikachu" });
+      expect(row).not.toHaveAttribute("data-focus-visible-within");
 
-      fireEvent.keyDown(document, { key: 'Tab' });
+      fireEvent.keyDown(document, { key: "Tab" });
       row.focus();
       fireEvent.focus(row);
-      expect(row).toHaveAttribute('data-focus-visible-within');
+      expect(row).toHaveAttribute("data-focus-visible-within");
 
       fireEvent.blur(row, { relatedTarget: button });
       button.focus();
       fireEvent.focus(button);
-      expect(row).toHaveAttribute('data-focus-visible-within');
+      expect(row).toHaveAttribute("data-focus-visible-within");
 
       fireEvent.focusOut(row);
-      expect(row).not.toHaveAttribute('data-focus-visible-within');
+      expect(row).not.toHaveAttribute("data-focus-visible-within");
     });
 
-    it('should render header', () => {
+    it("should render header", () => {
       render(() => <TestTable />);
 
-      const header = document.querySelector('.solidaria-Table-header');
+      const header = document.querySelector(".solidaria-Table-header");
       expect(header).toBeTruthy();
-      expect(header?.tagName).toBe('THEAD');
+      expect(header?.tagName).toBe("THEAD");
     });
 
-    it('should render column headers', () => {
+    it("should render column headers", () => {
       render(() => <TestTable />);
 
-      const columns = document.querySelectorAll('.solidaria-Table-column');
+      const columns = document.querySelectorAll(".solidaria-Table-column");
       expect(columns.length).toBe(3);
-      expect(screen.getByText('Name')).toBeTruthy();
-      expect(screen.getByText('Type')).toBeTruthy();
-      expect(screen.getByText('Level')).toBeTruthy();
+      expect(screen.getByText("Name")).toBeTruthy();
+      expect(screen.getByText("Type")).toBeTruthy();
+      expect(screen.getByText("Level")).toBeTruthy();
     });
 
-    it('should support column hover when sorting is allowed', () => {
+    it("should support column hover when sorting is allowed", () => {
       render(() => (
-        <Table items={testData} columns={testColumns} getKey={(item: any) => item.id} aria-label="Pokemon">
+        <Table
+          items={testData}
+          columns={testColumns}
+          getKey={(item: any) => item.id}
+          aria-label="Pokemon"
+        >
           {() => (
             <>
               <TableHeader>
-                <TableColumn id="name" allowsSorting class={(props) => props.isHovered ? 'hover' : ''}>{() => <>Name</>}</TableColumn>
+                <TableColumn
+                  id="name"
+                  allowsSorting
+                  class={(props) => (props.isHovered ? "hover" : "")}
+                >
+                  {() => <>Name</>}
+                </TableColumn>
               </TableHeader>
               <TableBody>
                 {(item: any) => (
@@ -720,26 +762,33 @@ describe('Table', () => {
         </Table>
       ));
 
-      const column = screen.getByRole('columnheader', { name: 'Name' });
-      expect(column).not.toHaveAttribute('data-hovered');
-      expect(column).not.toHaveClass('hover');
+      const column = screen.getByRole("columnheader", { name: "Name" });
+      expect(column).not.toHaveAttribute("data-hovered");
+      expect(column).not.toHaveClass("hover");
 
-      fireEvent.pointerOver(column, { pointerType: 'mouse' });
-      expect(column).toHaveAttribute('data-hovered');
-      expect(column).toHaveClass('hover');
+      fireEvent.pointerOver(column, { pointerType: "mouse" });
+      expect(column).toHaveAttribute("data-hovered");
+      expect(column).toHaveClass("hover");
 
-      fireEvent.pointerOut(column, { pointerType: 'mouse' });
-      expect(column).not.toHaveAttribute('data-hovered');
-      expect(column).not.toHaveClass('hover');
+      fireEvent.pointerOut(column, { pointerType: "mouse" });
+      expect(column).not.toHaveAttribute("data-hovered");
+      expect(column).not.toHaveClass("hover");
     });
 
-    it('should not show column hover state when column is not sortable', () => {
+    it("should not show column hover state when column is not sortable", () => {
       render(() => (
-        <Table items={testData} columns={testColumns} getKey={(item: any) => item.id} aria-label="Pokemon">
+        <Table
+          items={testData}
+          columns={testColumns}
+          getKey={(item: any) => item.id}
+          aria-label="Pokemon"
+        >
           {() => (
             <>
               <TableHeader>
-                <TableColumn id="name" class={(props) => props.isHovered ? 'hover' : ''}>{() => <>Name</>}</TableColumn>
+                <TableColumn id="name" class={(props) => (props.isHovered ? "hover" : "")}>
+                  {() => <>Name</>}
+                </TableColumn>
               </TableHeader>
               <TableBody>
                 {(item: any) => (
@@ -753,22 +802,27 @@ describe('Table', () => {
         </Table>
       ));
 
-      const column = screen.getByRole('columnheader', { name: 'Name' });
-      fireEvent.pointerOver(column, { pointerType: 'mouse' });
-      expect(column).not.toHaveAttribute('data-hovered');
-      expect(column).not.toHaveClass('hover');
+      const column = screen.getByRole("columnheader", { name: "Name" });
+      fireEvent.pointerOver(column, { pointerType: "mouse" });
+      expect(column).not.toHaveAttribute("data-hovered");
+      expect(column).not.toHaveClass("hover");
     });
 
-    it('should support hover events on the TableHeader', () => {
+    it("should support hover events on the TableHeader", () => {
       const onHoverStart = vi.fn();
       const onHoverEnd = vi.fn();
       const onHoverChange = vi.fn();
       render(() => (
-        <Table items={testData} columns={testColumns} getKey={(item: any) => item.id} aria-label="Pokemon">
+        <Table
+          items={testData}
+          columns={testColumns}
+          getKey={(item: any) => item.id}
+          aria-label="Pokemon"
+        >
           {() => (
             <>
               <TableHeader
-                class={(props) => props.isHovered ? 'hover' : ''}
+                class={(props) => (props.isHovered ? "hover" : "")}
                 onHoverStart={onHoverStart as never}
                 onHoverEnd={onHoverEnd as never}
                 onHoverChange={onHoverChange as never}
@@ -787,32 +841,32 @@ describe('Table', () => {
         </Table>
       ));
 
-      const header = screen.getAllByRole('rowgroup')[0];
-      expect(header).not.toHaveAttribute('data-hovered');
-      expect(header).not.toHaveClass('hover');
+      const header = screen.getAllByRole("rowgroup")[0];
+      expect(header).not.toHaveAttribute("data-hovered");
+      expect(header).not.toHaveClass("hover");
 
-      fireEvent.pointerOver(header, { pointerType: 'mouse' });
-      expect(header).toHaveAttribute('data-hovered');
-      expect(header).toHaveClass('hover');
+      fireEvent.pointerOver(header, { pointerType: "mouse" });
+      expect(header).toHaveAttribute("data-hovered");
+      expect(header).toHaveClass("hover");
       expect(onHoverStart).toHaveBeenCalledTimes(1);
       expect(onHoverChange).toHaveBeenCalledWith(true);
 
-      fireEvent.pointerOut(header, { pointerType: 'mouse' });
-      expect(header).not.toHaveAttribute('data-hovered');
-      expect(header).not.toHaveClass('hover');
+      fireEvent.pointerOut(header, { pointerType: "mouse" });
+      expect(header).not.toHaveAttribute("data-hovered");
+      expect(header).not.toHaveClass("hover");
       expect(onHoverEnd).toHaveBeenCalledTimes(1);
       expect(onHoverChange).toHaveBeenCalledWith(false);
     });
 
-    it('should render body', () => {
+    it("should render body", () => {
       render(() => <TestTable />);
 
-      const body = document.querySelector('.solidaria-Table-body');
+      const body = document.querySelector(".solidaria-Table-body");
       expect(body).toBeTruthy();
-      expect(body?.tagName).toBe('TBODY');
+      expect(body?.tagName).toBe("TBODY");
     });
 
-    it('should render footer rows', () => {
+    it("should render footer rows", () => {
       render(() => (
         <Table
           items={testData}
@@ -852,37 +906,37 @@ describe('Table', () => {
         </Table>
       ));
 
-      const footer = document.querySelector('.solidaria-Table-footer');
+      const footer = document.querySelector(".solidaria-Table-footer");
       expect(footer).toBeTruthy();
-      expect(footer?.tagName).toBe('TFOOT');
-      expect(screen.getByText('Total')).toHaveAttribute('colspan', '2');
-      expect(screen.getByText('112')).toBeTruthy();
+      expect(footer?.tagName).toBe("TFOOT");
+      expect(screen.getByText("Total")).toHaveAttribute("colspan", "2");
+      expect(screen.getByText("112")).toBeTruthy();
     });
 
-    it('should render rows', () => {
+    it("should render rows", () => {
       render(() => <TestTable />);
 
-      const rows = document.querySelectorAll('.solidaria-Table-row');
+      const rows = document.querySelectorAll(".solidaria-Table-row");
       expect(rows.length).toBe(3);
     });
 
-    it('should render cells with data', () => {
+    it("should render cells with data", () => {
       render(() => <TestTable />);
 
-      expect(screen.getByText('Pikachu')).toBeTruthy();
-      expect(screen.getByText('Electric')).toBeTruthy();
-      expect(screen.getByText('Charizard')).toBeTruthy();
-      expect(screen.getByText('Fire')).toBeTruthy();
+      expect(screen.getByText("Pikachu")).toBeTruthy();
+      expect(screen.getByText("Electric")).toBeTruthy();
+      expect(screen.getByText("Charizard")).toBeTruthy();
+      expect(screen.getByText("Fire")).toBeTruthy();
     });
 
-    it('should render cells with default class', () => {
+    it("should render cells with default class", () => {
       render(() => <TestTable />);
 
-      const cells = document.querySelectorAll('.solidaria-Table-cell');
+      const cells = document.querySelectorAll(".solidaria-Table-cell");
       expect(cells.length).toBe(9);
     });
 
-    it('should trigger onLoadMore from table body sentinel', () => {
+    it("should trigger onLoadMore from table body sentinel", () => {
       const onLoadMore = vi.fn();
       render(() => (
         <Table
@@ -917,13 +971,13 @@ describe('Table', () => {
         </Table>
       ));
 
-      const loadMoreRow = document.querySelector('.solidaria-Table-loadMore');
+      const loadMoreRow = document.querySelector(".solidaria-Table-loadMore");
       expect(loadMoreRow).toBeTruthy();
       fireEvent.focus(loadMoreRow!);
       expect(onLoadMore).toHaveBeenCalled();
     });
 
-    it('should render the load more element with the expected attributes', () => {
+    it("should render the load more element with the expected attributes", () => {
       render(() => (
         <Table
           items={testData}
@@ -954,14 +1008,14 @@ describe('Table', () => {
         </Table>
       ));
 
-      const loader = document.querySelector('.solidaria-Table-loadMore')!;
-      expect(loader).toHaveAttribute('role', 'row');
-      expect(screen.getByRole('progressbar', { name: 'loading' })).toBeInTheDocument();
-      expect(loader.querySelector('[role="rowheader"]')).toHaveAttribute('colspan', '3');
-      expect(screen.getByTestId('loadMoreSentinel').closest('tr')).toHaveAttribute('inert');
+      const loader = document.querySelector(".solidaria-Table-loadMore")!;
+      expect(loader).toHaveAttribute("role", "row");
+      expect(screen.getByRole("progressbar", { name: "loading" })).toBeInTheDocument();
+      expect(loader.querySelector('[role="rowheader"]')).toHaveAttribute("colspan", "3");
+      expect(screen.getByTestId("loadMoreSentinel").closest("tr")).toHaveAttribute("inert");
     });
 
-    it('should still render the sentinel, but not render the spinner if it isnt loading', () => {
+    it("should still render the sentinel, but not render the spinner if it isnt loading", () => {
       render(() => (
         <Table
           items={testData}
@@ -986,12 +1040,12 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(screen.queryByRole('progressbar')).toBeNull();
-      expect(screen.getByTestId('loadMoreSentinel')).toBeInTheDocument();
-      expect(document.querySelector('.solidaria-Table-loadMore')).toBeNull();
+      expect(screen.queryByRole("progressbar")).toBeNull();
+      expect(screen.getByTestId("loadMoreSentinel")).toBeInTheDocument();
+      expect(document.querySelector(".solidaria-Table-loadMore")).toBeNull();
     });
 
-    it('should render the loading element when loading', () => {
+    it("should render the loading element when loading", () => {
       render(() => (
         <Table
           items={testData}
@@ -1016,11 +1070,11 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(screen.getByRole('progressbar', { name: 'loading' })).toBeInTheDocument();
-      expect(screen.getByTestId('loadMoreSentinel').closest('tr')).toHaveAttribute('inert');
+      expect(screen.getByRole("progressbar", { name: "loading" })).toBeInTheDocument();
+      expect(screen.getByTestId("loadMoreSentinel").closest("tr")).toHaveAttribute("inert");
     });
 
-    it('should render the sentinel but not the loading indicator when not loading', () => {
+    it("should render the sentinel but not the loading indicator when not loading", () => {
       render(() => (
         <Table
           items={testData}
@@ -1045,11 +1099,11 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(screen.queryByRole('progressbar')).toBeNull();
-      expect(screen.getByTestId('loadMoreSentinel')).toBeInTheDocument();
+      expect(screen.queryByRole("progressbar")).toBeNull();
+      expect(screen.getByTestId("loadMoreSentinel")).toBeInTheDocument();
     });
 
-    it('should not reserve room for the loader if isLoading is false', () => {
+    it("should not reserve room for the loader if isLoading is false", () => {
       render(() => (
         <Table
           items={testData}
@@ -1074,12 +1128,12 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(screen.queryByRole('progressbar')).toBeNull();
-      expect(screen.getByTestId('loadMoreSentinel')).toBeInTheDocument();
-      expect(document.querySelector('.solidaria-Table-loadMore')).toBeNull();
+      expect(screen.queryByRole("progressbar")).toBeNull();
+      expect(screen.getByTestId("loadMoreSentinel")).toBeInTheDocument();
+      expect(document.querySelector(".solidaria-Table-loadMore")).toBeNull();
     });
 
-    it('should not focus the load more row when using ArrowDown', async () => {
+    it("should not focus the load more row when using ArrowDown", async () => {
       render(() => (
         <Table
           items={testData}
@@ -1104,25 +1158,25 @@ describe('Table', () => {
         </Table>
       ));
 
-      const table = screen.getByRole('grid', { name: 'Pokemon' });
-      const rows = screen.getAllByRole('row');
+      const table = screen.getByRole("grid", { name: "Pokemon" });
+      const rows = screen.getAllByRole("row");
       rows[1].focus();
       fireEvent.focus(rows[1]);
-      fireEvent.keyDown(table, { key: 'ArrowDown' });
-      fireEvent.keyDown(table, { key: 'ArrowDown' });
+      fireEvent.keyDown(table, { key: "ArrowDown" });
+      fireEvent.keyDown(table, { key: "ArrowDown" });
       await Promise.resolve();
       expect(document.activeElement).toBe(rows[3]);
 
-      fireEvent.keyDown(table, { key: 'ArrowDown' });
+      fireEvent.keyDown(table, { key: "ArrowDown" });
       await Promise.resolve();
       expect(document.activeElement).toBe(rows[3]);
 
-      fireEvent.keyDown(table, { key: 'ArrowUp' });
+      fireEvent.keyDown(table, { key: "ArrowUp" });
       await Promise.resolve();
       expect(document.activeElement).toBe(rows[2]);
     });
 
-    it('should not focus the load more row when using End', async () => {
+    it("should not focus the load more row when using End", async () => {
       render(() => (
         <Table
           items={testData}
@@ -1147,20 +1201,20 @@ describe('Table', () => {
         </Table>
       ));
 
-      const table = screen.getByRole('grid', { name: 'Pokemon' });
-      const rows = screen.getAllByRole('row');
+      const table = screen.getByRole("grid", { name: "Pokemon" });
+      const rows = screen.getAllByRole("row");
       rows[1].focus();
       fireEvent.focus(rows[1]);
-      fireEvent.keyDown(table, { key: 'End' });
+      fireEvent.keyDown(table, { key: "End" });
       await Promise.resolve();
       expect(document.activeElement).toBe(rows[3]);
 
-      fireEvent.keyDown(table, { key: 'ArrowUp' });
+      fireEvent.keyDown(table, { key: "ArrowUp" });
       await Promise.resolve();
       expect(document.activeElement).toBe(rows[2]);
     });
 
-    it('should not focus the load more row when using PageDown', async () => {
+    it("should not focus the load more row when using PageDown", async () => {
       render(() => (
         <Table
           items={testData}
@@ -1185,28 +1239,22 @@ describe('Table', () => {
         </Table>
       ));
 
-      const table = screen.getByRole('grid', { name: 'Pokemon' });
-      const rows = screen.getAllByRole('row');
+      const table = screen.getByRole("grid", { name: "Pokemon" });
+      const rows = screen.getAllByRole("row");
       rows[1].focus();
       fireEvent.focus(rows[1]);
-      fireEvent.keyDown(table, { key: 'PageDown' });
+      fireEvent.keyDown(table, { key: "PageDown" });
       await Promise.resolve();
       expect(document.activeElement).toBe(rows[3]);
 
-      fireEvent.keyDown(table, { key: 'ArrowUp' });
+      fireEvent.keyDown(table, { key: "ArrowUp" });
       await Promise.resolve();
       expect(document.activeElement).toBe(rows[2]);
-
     });
 
-    it('should properly render the renderEmptyState if table is empty', () => {
+    it("should properly render the renderEmptyState if table is empty", () => {
       render(() => (
-        <Table
-          items={[]}
-          columns={testColumns}
-          aria-label="Pokemon"
-          selectionMode="multiple"
-        >
+        <Table items={[]} columns={testColumns} aria-label="Pokemon" selectionMode="multiple">
           {() => (
             <>
               <TableHeader>
@@ -1229,23 +1277,18 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(screen.getByText('No results')).toBeInTheDocument();
-      expect(screen.queryByRole('progressbar')).toBeNull();
-      expect(screen.getByTestId('loadMoreSentinel')).toBeInTheDocument();
-      expect(screen.getByRole('checkbox', { name: 'Select All' })).toBeDisabled();
-      expect(document.querySelector('.solidaria-Table-body')).toHaveAttribute('data-empty');
+      expect(screen.getByText("No results")).toBeInTheDocument();
+      expect(screen.queryByRole("progressbar")).toBeNull();
+      expect(screen.getByTestId("loadMoreSentinel")).toBeInTheDocument();
+      expect(screen.getByRole("checkbox", { name: "Select All" })).toBeDisabled();
+      expect(document.querySelector(".solidaria-Table-body")).toHaveAttribute("data-empty");
     });
 
-    it('should not render no results state and the loader at the same time', () => {
+    it("should not render no results state and the loader at the same time", () => {
       const [isLoading, setIsLoading] = createSignal(true);
 
       render(() => (
-        <Table
-          items={[]}
-          columns={testColumns}
-          aria-label="Pokemon"
-          selectionMode="multiple"
-        >
+        <Table items={[]} columns={testColumns} aria-label="Pokemon" selectionMode="multiple">
           {() => (
             <>
               <TableHeader>
@@ -1269,24 +1312,19 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(document.querySelector('.solidaria-Table-body')).toHaveAttribute('data-empty');
-      expect(screen.getByRole('progressbar', { name: 'loading' })).toBeInTheDocument();
-      expect(screen.queryByText('No results')).toBeNull();
+      expect(document.querySelector(".solidaria-Table-body")).toHaveAttribute("data-empty");
+      expect(screen.getByRole("progressbar", { name: "loading" })).toBeInTheDocument();
+      expect(screen.queryByText("No results")).toBeNull();
 
       setIsLoading(false);
-      expect(document.querySelector('.solidaria-Table-body')).toHaveAttribute('data-empty');
-      expect(screen.queryByRole('progressbar')).toBeNull();
-      expect(screen.getByText('No results')).toBeInTheDocument();
+      expect(document.querySelector(".solidaria-Table-body")).toHaveAttribute("data-empty");
+      expect(screen.queryByRole("progressbar")).toBeNull();
+      expect(screen.getByText("No results")).toBeInTheDocument();
     });
 
-    it('should disable the select all checkbox and column focusablity when the table is empty and loading', () => {
+    it("should disable the select all checkbox and column focusablity when the table is empty and loading", () => {
       render(() => (
-        <Table
-          items={[]}
-          columns={testColumns}
-          aria-label="Pokemon"
-          selectionMode="multiple"
-        >
+        <Table items={[]} columns={testColumns} aria-label="Pokemon" selectionMode="multiple">
           {() => (
             <>
               <TableHeader>
@@ -1310,11 +1348,11 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(screen.getByRole('checkbox', { name: 'Select All' })).toBeDisabled();
-      expect(screen.getAllByRole('columnheader')[0]).not.toHaveAttribute('tabindex', '0');
+      expect(screen.getByRole("checkbox", { name: "Select All" })).toBeDisabled();
+      expect(screen.getAllByRole("columnheader")[0]).not.toHaveAttribute("tabindex", "0");
     });
 
-    it('should fire onLoadMore when intersecting with the sentinel', () => {
+    it("should fire onLoadMore when intersecting with the sentinel", () => {
       const onLoadMore = vi.fn();
       const observer = setupIntersectionObserverMock();
 
@@ -1343,7 +1381,7 @@ describe('Table', () => {
           </Table>
         ));
 
-        expect(observer.observe).toHaveBeenCalledWith(screen.getByTestId('loadMoreSentinel'));
+        expect(observer.observe).toHaveBeenCalledWith(screen.getByTestId("loadMoreSentinel"));
         expect(onLoadMore).not.toHaveBeenCalled();
 
         observer.triggerIntersection([{ isIntersecting: true } as IntersectionObserverEntry]);
@@ -1354,7 +1392,7 @@ describe('Table', () => {
       }
     });
 
-    it('should only fire loadMore when intersection is detected regardless of loading state', async () => {
+    it("should only fire loadMore when intersection is detected regardless of loading state", async () => {
       const onLoadMore = vi.fn();
       const [isLoading, setIsLoading] = createSignal(true);
       const observer = setupIntersectionObserverMock();
@@ -1384,7 +1422,7 @@ describe('Table', () => {
           </Table>
         ));
 
-        expect(observer.observe).toHaveBeenCalledWith(screen.getByTestId('loadMoreSentinel'));
+        expect(observer.observe).toHaveBeenCalledWith(screen.getByTestId("loadMoreSentinel"));
         expect(onLoadMore).not.toHaveBeenCalled();
 
         observer.triggerIntersection([{ isIntersecting: false } as IntersectionObserverEntry]);
@@ -1402,13 +1440,11 @@ describe('Table', () => {
       }
     });
 
-    it('should not crash when dragging over the loader', () => {
+    it("should not crash when dragging over the loader", () => {
       const { dragAndDropHooks } = useDragAndDrop<(typeof testData)[number]>({
         items: testData,
         getItems: (keys, items) =>
-          items
-            .filter((item) => keys.has(item.id))
-            .map((item) => ({ 'text/plain': item.name })),
+          items.filter((item) => keys.has(item.id)).map((item) => ({ "text/plain": item.name })),
       });
 
       render(() => (
@@ -1437,8 +1473,8 @@ describe('Table', () => {
         </Table>
       ));
 
-      const loader = document.querySelector('.solidaria-Table-loadMore')!;
-      expect(screen.getByRole('progressbar', { name: 'loading' })).toBeInTheDocument();
+      const loader = document.querySelector(".solidaria-Table-loadMore")!;
+      expect(screen.getByRole("progressbar", { name: "loading" })).toBeInTheDocument();
       expect(() => fireEvent.dragEnter(loader)).not.toThrow();
       expect(() => fireEvent.dragOver(loader)).not.toThrow();
     });
@@ -1483,17 +1519,20 @@ describe('Table', () => {
       }
     });
 
-    it('should always render the sentinel even when virtualized', () => {
+    it("should always render the sentinel even when virtualized", () => {
       const rows = Array.from({ length: 25 }, (_, index) => ({
         id: index + 1,
         name: `Pokemon ${index + 1}`,
       }));
 
       render(() => (
-        <Virtualizer layout={TableLayout} layoutOptions={{ itemSize: 36, viewportSize: 72, overscan: 0 }}>
+        <Virtualizer
+          layout={TableLayout}
+          layoutOptions={{ itemSize: 36, viewportSize: 72, overscan: 0 }}
+        >
           <Table
             items={rows}
-            columns={[{ key: 'name', name: 'Name' }]}
+            columns={[{ key: "name", name: "Name" }]}
             getKey={(item: any) => item.id}
             aria-label="Pokemon"
           >
@@ -1515,25 +1554,28 @@ describe('Table', () => {
         </Virtualizer>
       ));
 
-      expect(screen.getByTestId('loadMoreSentinel')).toBeInTheDocument();
-      expect(screen.queryByText('Pokemon 25')).toBeNull();
+      expect(screen.getByTestId("loadMoreSentinel")).toBeInTheDocument();
+      expect(screen.queryByText("Pokemon 25")).toBeNull();
     });
 
-    it.skip('accepts a user defined scrollRef', () => {
+    it.skip("accepts a user defined scrollRef", () => {
       // Upstream currently skips this title; keep it mirrored so the parity script does not track it as a Solid gap.
     });
 
-    it('should support virtualizer', () => {
+    it("should support virtualizer", () => {
       const rows = Array.from({ length: 25 }, (_, index) => ({
         id: index + 1,
         name: `Pokemon ${index + 1}`,
       }));
 
       render(() => (
-        <Virtualizer layout={TableLayout} layoutOptions={{ itemSize: 36, viewportSize: 72, overscan: 0 }}>
+        <Virtualizer
+          layout={TableLayout}
+          layoutOptions={{ itemSize: 36, viewportSize: 72, overscan: 0 }}
+        >
           <Table
             items={rows}
-            columns={[{ key: 'name', name: 'Name' }]}
+            columns={[{ key: "name", name: "Name" }]}
             getKey={(item: any) => item.id}
             aria-label="Pokemon"
           >
@@ -1555,23 +1597,26 @@ describe('Table', () => {
         </Virtualizer>
       ));
 
-      const table = screen.getByRole('grid', { name: 'Pokemon' });
-      expect(table).toHaveAttribute('aria-rowcount', '26');
-      expect(table).toHaveAttribute('aria-colcount', '1');
-      expect(screen.getByText('Pokemon 1')).toBeInTheDocument();
-      expect(screen.getByText('Pokemon 2')).toBeInTheDocument();
-      expect(screen.queryByText('Pokemon 25')).toBeNull();
+      const table = screen.getByRole("grid", { name: "Pokemon" });
+      expect(table).toHaveAttribute("aria-rowcount", "26");
+      expect(table).toHaveAttribute("aria-colcount", "1");
+      expect(screen.getByText("Pokemon 1")).toBeInTheDocument();
+      expect(screen.getByText("Pokemon 2")).toBeInTheDocument();
+      expect(screen.queryByText("Pokemon 25")).toBeNull();
     });
 
-    it('should have the correct row indicies after loading more items', () => {
+    it("should have the correct row indicies after loading more items", () => {
       const [items, setItems] = createSignal<typeof testData>([]);
       const [isLoading, setIsLoading] = createSignal(true);
 
       render(() => (
-        <Virtualizer layout={TableLayout} layoutOptions={{ itemSize: 36, viewportSize: 180, overscan: 0 }}>
+        <Virtualizer
+          layout={TableLayout}
+          layoutOptions={{ itemSize: 36, viewportSize: 180, overscan: 0 }}
+        >
           <Table
             items={items()}
-            columns={[{ key: 'name', name: 'Name' }]}
+            columns={[{ key: "name", name: "Name" }]}
             getKey={(item: any) => item.id}
             aria-label="Pokemon"
           >
@@ -1593,61 +1638,61 @@ describe('Table', () => {
         </Virtualizer>
       ));
 
-      expect(document.querySelector('.solidaria-Table-loadMore')).not.toHaveAttribute('aria-rowindex');
+      expect(document.querySelector(".solidaria-Table-loadMore")).not.toHaveAttribute(
+        "aria-rowindex",
+      );
 
       setItems(testData);
       setIsLoading(false);
-      const rows = document.querySelectorAll('.solidaria-Table-row');
+      const rows = document.querySelectorAll(".solidaria-Table-row");
       expect(rows).toHaveLength(3);
-      expect(rows[0]).toHaveAttribute('aria-rowindex', '2');
-      expect(rows[1]).toHaveAttribute('aria-rowindex', '3');
-      expect(rows[2]).toHaveAttribute('aria-rowindex', '4');
+      expect(rows[0]).toHaveAttribute("aria-rowindex", "2");
+      expect(rows[1]).toHaveAttribute("aria-rowindex", "3");
+      expect(rows[2]).toHaveAttribute("aria-rowindex", "4");
 
       setIsLoading(true);
-      const loader = document.querySelector('.solidaria-Table-loadMore');
-      expect(loader).not.toHaveAttribute('aria-rowindex');
-      for (const [index, row] of Array.from(document.querySelectorAll('.solidaria-Table-row')).entries()) {
-        expect(row).toHaveAttribute('aria-rowindex', `${index + 2}`);
+      const loader = document.querySelector(".solidaria-Table-loadMore");
+      expect(loader).not.toHaveAttribute("aria-rowindex");
+      for (const [index, row] of Array.from(
+        document.querySelectorAll(".solidaria-Table-row"),
+      ).entries()) {
+        expect(row).toHaveAttribute("aria-rowindex", `${index + 2}`);
       }
     });
 
-    it('should apply draggable row semantics when drag hooks are provided', () => {
+    it("should apply draggable row semantics when drag hooks are provided", () => {
       const { dragAndDropHooks } = useDragAndDrop<(typeof testData)[number]>({
         items: testData,
         getItems: (keys, items) =>
-          items
-            .filter((item) => keys.has(item.id))
-            .map((item) => ({ 'text/plain': item.name })),
+          items.filter((item) => keys.has(item.id)).map((item) => ({ "text/plain": item.name })),
       });
 
       render(() => <TestTable dragAndDropHooks={dragAndDropHooks} />);
 
-      const rows = document.querySelectorAll('.solidaria-Table-row');
-      expect(rows[0]).toHaveAttribute('draggable', 'true');
+      const rows = document.querySelectorAll(".solidaria-Table-row");
+      expect(rows[0]).toHaveAttribute("draggable", "true");
     });
 
-    it('should support drag button slot', () => {
+    it("should support drag button slot", () => {
       const rows = [
-        { id: 1, name: 'Games', type: 'File folder' },
-        { id: 2, name: 'Program Files', type: 'File folder' },
+        { id: 1, name: "Games", type: "File folder" },
+        { id: 2, name: "Program Files", type: "File folder" },
       ];
       const { dragAndDropHooks } = useDragAndDrop<(typeof rows)[number]>({
         items: rows,
         getItems: (keys, items) =>
-          items
-            .filter((item) => keys.has(item.id))
-            .map((item) => ({ 'text/plain': item.name })),
+          items.filter((item) => keys.has(item.id)).map((item) => ({ "text/plain": item.name })),
       });
 
       render(() => (
         <Table
           items={rows}
           columns={[
-            { key: 'drag', name: 'Drag' },
-            { key: 'name', name: 'Name' },
+            { key: "drag", name: "Drag" },
+            { key: "name", name: "Name" },
           ]}
           getKey={(item: any) => item.id}
-          getTextValue={(item: any, column: any) => column.key === 'name' ? item.name : ''}
+          getTextValue={(item: any, column: any) => (column.key === "name" ? item.name : "")}
           aria-label="Files"
           dragAndDropHooks={dragAndDropHooks}
         >
@@ -1674,40 +1719,36 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(screen.getAllByRole('button')[0]).toHaveAttribute('aria-label', 'Drag Games');
+      expect(screen.getAllByRole("button")[0]).toHaveAttribute("aria-label", "Drag Games");
     });
 
-    it('should support disabled drag and drop', () => {
+    it("should support disabled drag and drop", () => {
       const { dragAndDropHooks } = useDragAndDrop<(typeof testData)[number]>({
         items: testData,
         isDisabled: true,
         getItems: (keys, items) =>
-          items
-            .filter((item) => keys.has(item.id))
-            .map((item) => ({ 'text/plain': item.name })),
+          items.filter((item) => keys.has(item.id)).map((item) => ({ "text/plain": item.name })),
         onReorder: () => {},
       });
 
       render(() => <TestTable dragAndDropHooks={dragAndDropHooks} />);
 
-      const table = screen.getByRole('grid', { name: 'Pokemon' });
-      expect(table).not.toHaveAttribute('data-allows-dragging', 'true');
-      expect(table).not.toHaveAttribute('draggable', 'true');
+      const table = screen.getByRole("grid", { name: "Pokemon" });
+      expect(table).not.toHaveAttribute("data-allows-dragging", "true");
+      expect(table).not.toHaveAttribute("draggable", "true");
 
-      const rows = document.querySelectorAll('.solidaria-Table-row');
+      const rows = document.querySelectorAll(".solidaria-Table-row");
       for (const row of rows) {
-        expect(row).not.toHaveAttribute('draggable', 'true');
+        expect(row).not.toHaveAttribute("draggable", "true");
       }
     });
 
-    it('should allow selection even when drag and drop is disabled', () => {
+    it("should allow selection even when drag and drop is disabled", () => {
       const { dragAndDropHooks } = useDragAndDrop<(typeof testData)[number]>({
         items: testData,
         isDisabled: true,
         getItems: (keys, items) =>
-          items
-            .filter((item) => keys.has(item.id))
-            .map((item) => ({ 'text/plain': item.name })),
+          items.filter((item) => keys.has(item.id)).map((item) => ({ "text/plain": item.name })),
         onReorder: () => {},
       });
 
@@ -1715,8 +1756,8 @@ describe('Table', () => {
         <Table
           items={testData}
           columns={[
-            { key: 'select', name: 'Select' },
-            { key: 'name', name: 'Name' },
+            { key: "select", name: "Select" },
+            { key: "name", name: "Name" },
           ]}
           getKey={(item: any) => item.id}
           aria-label="Pokemon"
@@ -1746,23 +1787,23 @@ describe('Table', () => {
         </Table>
       ));
 
-      const checkboxes = screen.getAllByRole('checkbox');
+      const checkboxes = screen.getAllByRole("checkbox");
       for (const checkbox of checkboxes) {
         expect(checkbox).not.toBeChecked();
       }
 
-      expect(checkboxes[0]).toHaveAttribute('aria-label', 'Select All');
+      expect(checkboxes[0]).toHaveAttribute("aria-label", "Select All");
       fireEvent.click(checkboxes[1]);
 
       expect(checkboxes[1]).toBeChecked();
     });
 
-    it('wires horizontal droppable keyboard delegate methods in ltr', () => {
+    it("wires horizontal droppable keyboard delegate methods in ltr", () => {
       let keyboardDelegate:
         | {
-          getKeyLeftOf?: (key: string | number) => string | number | null;
-          getKeyRightOf?: (key: string | number) => string | number | null;
-        }
+            getKeyLeftOf?: (key: string | number) => string | number | null;
+            getKeyRightOf?: (key: string | number) => string | number | null;
+          }
         | undefined;
       const dragAndDropHooks = {
         useDroppableCollectionState: () => ({
@@ -1777,7 +1818,7 @@ describe('Table', () => {
           activateTarget: () => {},
           drop: () => {},
           shouldAcceptItemDrop: () => true,
-          getDropOperation: () => 'move' as const,
+          getDropOperation: () => "move" as const,
         }),
         useDroppableCollection: (props: {
           keyboardDelegate?: {
@@ -1798,20 +1839,20 @@ describe('Table', () => {
 
       render(() => <TestTable dragAndDropHooks={dragAndDropHooks as any} />);
 
-      expect(keyboardDelegate?.getKeyLeftOf).toBeTypeOf('function');
-      expect(keyboardDelegate?.getKeyRightOf).toBeTypeOf('function');
+      expect(keyboardDelegate?.getKeyLeftOf).toBeTypeOf("function");
+      expect(keyboardDelegate?.getKeyRightOf).toBeTypeOf("function");
       expect(keyboardDelegate?.getKeyLeftOf?.(2)).toBe(1);
       expect(keyboardDelegate?.getKeyRightOf?.(2)).toBe(3);
     });
 
-    it('wires horizontal droppable keyboard delegate methods in rtl', () => {
+    it("wires horizontal droppable keyboard delegate methods in rtl", () => {
       const originalDir = document.dir;
-      document.dir = 'rtl';
+      document.dir = "rtl";
       let keyboardDelegate:
         | {
-          getKeyLeftOf?: (key: string | number) => string | number | null;
-          getKeyRightOf?: (key: string | number) => string | number | null;
-        }
+            getKeyLeftOf?: (key: string | number) => string | number | null;
+            getKeyRightOf?: (key: string | number) => string | number | null;
+          }
         | undefined;
       const dragAndDropHooks = {
         useDroppableCollectionState: () => ({
@@ -1826,7 +1867,7 @@ describe('Table', () => {
           activateTarget: () => {},
           drop: () => {},
           shouldAcceptItemDrop: () => true,
-          getDropOperation: () => 'move' as const,
+          getDropOperation: () => "move" as const,
         }),
         useDroppableCollection: (props: {
           keyboardDelegate?: {
@@ -1848,8 +1889,8 @@ describe('Table', () => {
       try {
         render(() => <TestTable dragAndDropHooks={dragAndDropHooks as any} />);
 
-        expect(keyboardDelegate?.getKeyLeftOf).toBeTypeOf('function');
-        expect(keyboardDelegate?.getKeyRightOf).toBeTypeOf('function');
+        expect(keyboardDelegate?.getKeyLeftOf).toBeTypeOf("function");
+        expect(keyboardDelegate?.getKeyRightOf).toBeTypeOf("function");
         expect(keyboardDelegate?.getKeyLeftOf?.(2)).toBe(3);
         expect(keyboardDelegate?.getKeyRightOf?.(2)).toBe(1);
       } finally {
@@ -1857,11 +1898,11 @@ describe('Table', () => {
       }
     });
 
-    it('falls back to document direction when getComputedStyle is unavailable', () => {
+    it("falls back to document direction when getComputedStyle is unavailable", () => {
       const originalDir = document.dir;
-      document.dir = 'rtl';
+      document.dir = "rtl";
       const originalGetComputedStyle = window.getComputedStyle;
-      Object.defineProperty(window, 'getComputedStyle', {
+      Object.defineProperty(window, "getComputedStyle", {
         configurable: true,
         writable: true,
         value: undefined,
@@ -1869,9 +1910,9 @@ describe('Table', () => {
 
       let keyboardDelegate:
         | {
-          getKeyLeftOf?: (key: string | number) => string | number | null;
-          getKeyRightOf?: (key: string | number) => string | number | null;
-        }
+            getKeyLeftOf?: (key: string | number) => string | number | null;
+            getKeyRightOf?: (key: string | number) => string | number | null;
+          }
         | undefined;
       const dragAndDropHooks = {
         useDroppableCollectionState: () => ({
@@ -1886,7 +1927,7 @@ describe('Table', () => {
           activateTarget: () => {},
           drop: () => {},
           shouldAcceptItemDrop: () => true,
-          getDropOperation: () => 'move' as const,
+          getDropOperation: () => "move" as const,
         }),
         useDroppableCollection: (props: {
           keyboardDelegate?: {
@@ -1910,7 +1951,7 @@ describe('Table', () => {
         expect(keyboardDelegate?.getKeyLeftOf?.(2)).toBe(3);
         expect(keyboardDelegate?.getKeyRightOf?.(2)).toBe(1);
       } finally {
-        Object.defineProperty(window, 'getComputedStyle', {
+        Object.defineProperty(window, "getComputedStyle", {
           configurable: true,
           writable: true,
           value: originalGetComputedStyle,
@@ -1924,8 +1965,8 @@ describe('Table', () => {
   // DATA ATTRIBUTES
   // ============================================
 
-  describe('data attributes', () => {
-    it('should have data-empty when table is empty', () => {
+  describe("data attributes", () => {
+    it("should have data-empty when table is empty", () => {
       render(() => (
         <Table items={[]} columns={testColumns} aria-label="Empty table">
           {() => (
@@ -1934,19 +1975,15 @@ describe('Table', () => {
                 <TableColumn id="name">{() => <>Name</>}</TableColumn>
               </TableHeader>
               <TableBody>
-                {() => (
-                  <TableRow id="x">
-                    {() => <TableCell>{() => <>x</>}</TableCell>}
-                  </TableRow>
-                )}
+                {() => <TableRow id="x">{() => <TableCell>{() => <>x</>}</TableCell>}</TableRow>}
               </TableBody>
             </>
           )}
         </Table>
       ));
 
-      const table = document.querySelector('.solidaria-Table');
-      expect(table?.getAttribute('data-empty')).toBeTruthy();
+      const table = document.querySelector(".solidaria-Table");
+      expect(table?.getAttribute("data-empty")).toBeTruthy();
     });
   });
 
@@ -1954,20 +1991,22 @@ describe('Table', () => {
   // SELECTION
   // ============================================
 
-  describe('selection', () => {
-    function LinkTable(props: {
-      selectionMode?: 'none' | 'single' | 'multiple';
-      selectionBehavior?: 'toggle' | 'replace';
-      navigate?: (href: string, options?: any) => void;
-    } = {}) {
+  describe("selection", () => {
+    function LinkTable(
+      props: {
+        selectionMode?: "none" | "single" | "multiple";
+        selectionBehavior?: "toggle" | "replace";
+        navigate?: (href: string, options?: any) => void;
+      } = {},
+    ) {
       const navigate = props.navigate ?? vi.fn();
       return (
         <RouterProvider navigate={navigate}>
           <Table
             items={testData.slice(0, 2)}
             columns={[
-              { key: 'select', name: 'Select' },
-              { key: 'name', name: 'Name' },
+              { key: "select", name: "Select" },
+              { key: "name", name: "Name" },
             ]}
             getKey={(item: any) => item.id}
             aria-label="Links"
@@ -2003,133 +2042,129 @@ describe('Table', () => {
       const navigate = vi.fn();
       render(() => <LinkTable selectionMode="none" navigate={navigate} />);
 
-      const items = screen.getAllByRole('row').slice(1);
+      const items = screen.getAllByRole("row").slice(1);
       for (const item of items) {
-        expect(item.tagName).not.toBe('A');
-        expect(item).toHaveAttribute('data-href');
+        expect(item.tagName).not.toBe("A");
+        expect(item).toHaveAttribute("data-href");
       }
 
       fireEvent.click(items[0]);
-      expect(navigate).toHaveBeenCalledWith('/pikachu', undefined);
+      expect(navigate).toHaveBeenCalledWith("/pikachu", undefined);
     });
 
-    it.each(['single', 'multiple'] as const)('should support links with selectionBehavior="toggle" selectionMode="%s"', (selectionMode) => {
-      const navigate = vi.fn();
-      render(() => <LinkTable selectionMode={selectionMode} navigate={navigate} />);
+    it.each(["single", "multiple"] as const)(
+      'should support links with selectionBehavior="toggle" selectionMode="%s"',
+      (selectionMode) => {
+        const navigate = vi.fn();
+        render(() => <LinkTable selectionMode={selectionMode} navigate={navigate} />);
 
-      const items = screen.getAllByRole('row').slice(1);
-      for (const item of items) {
-        expect(item.tagName).not.toBe('A');
-        expect(item).toHaveAttribute('data-href');
-      }
+        const items = screen.getAllByRole("row").slice(1);
+        for (const item of items) {
+          expect(item.tagName).not.toBe("A");
+          expect(item).toHaveAttribute("data-href");
+        }
 
-      fireEvent.click(items[0]);
-      expect(navigate).toHaveBeenCalledWith('/pikachu', undefined);
-      expect(items[0]).toHaveAttribute('aria-selected', 'false');
+        fireEvent.click(items[0]);
+        expect(navigate).toHaveBeenCalledWith("/pikachu", undefined);
+        expect(items[0]).toHaveAttribute("aria-selected", "false");
 
-      fireEvent.click(within(items[0]).getByRole('checkbox'));
-      expect(items[0]).toHaveAttribute('aria-selected', 'true');
+        fireEvent.click(within(items[0]).getByRole("checkbox"));
+        expect(items[0]).toHaveAttribute("aria-selected", "true");
 
-      fireEvent.keyDown(items[1], { key: ' ' });
-      fireEvent.keyUp(items[1], { key: ' ' });
-      expect(navigate).toHaveBeenCalledTimes(1);
-      expect(items[1]).toHaveAttribute('aria-selected', 'true');
-    });
+        fireEvent.keyDown(items[1], { key: " " });
+        fireEvent.keyUp(items[1], { key: " " });
+        expect(navigate).toHaveBeenCalledTimes(1);
+        expect(items[1]).toHaveAttribute("aria-selected", "true");
+      },
+    );
 
-    it.each(['single', 'multiple'] as const)('should support links with selectionBehavior="replace" selectionMode="%s"', (selectionMode) => {
-      const navigate = vi.fn();
-      render(() => (
-        <LinkTable
-          selectionMode={selectionMode}
-          selectionBehavior="replace"
-          navigate={navigate}
-        />
-      ));
+    it.each(["single", "multiple"] as const)(
+      'should support links with selectionBehavior="replace" selectionMode="%s"',
+      (selectionMode) => {
+        const navigate = vi.fn();
+        render(() => (
+          <LinkTable
+            selectionMode={selectionMode}
+            selectionBehavior="replace"
+            navigate={navigate}
+          />
+        ));
 
-      const items = screen.getAllByRole('row').slice(1);
-      for (const item of items) {
-        expect(item.tagName).not.toBe('A');
-        expect(item).toHaveAttribute('data-href');
-      }
+        const items = screen.getAllByRole("row").slice(1);
+        for (const item of items) {
+          expect(item.tagName).not.toBe("A");
+          expect(item).toHaveAttribute("data-href");
+        }
 
-      fireEvent.click(items[0]);
-      expect(navigate).not.toHaveBeenCalled();
-      expect(items[0]).toHaveAttribute('aria-selected', 'true');
+        fireEvent.click(items[0]);
+        expect(navigate).not.toHaveBeenCalled();
+        expect(items[0]).toHaveAttribute("aria-selected", "true");
 
-      fireEvent.doubleClick(items[0]);
-      expect(navigate).toHaveBeenCalledWith('/pikachu', undefined);
+        fireEvent.doubleClick(items[0]);
+        expect(navigate).toHaveBeenCalledWith("/pikachu", undefined);
 
-      fireEvent.keyDown(items[1], { key: ' ' });
-      fireEvent.keyUp(items[1], { key: ' ' });
-      expect(items[1]).toHaveAttribute('aria-selected', 'true');
-      expect(navigate).toHaveBeenCalledTimes(1);
+        fireEvent.keyDown(items[1], { key: " " });
+        fireEvent.keyUp(items[1], { key: " " });
+        expect(items[1]).toHaveAttribute("aria-selected", "true");
+        expect(navigate).toHaveBeenCalledTimes(1);
 
-      fireEvent.keyDown(items[1], { key: 'Enter' });
-      fireEvent.keyUp(items[1], { key: 'Enter' });
-      expect(navigate).toHaveBeenCalledTimes(2);
-      expect(navigate).toHaveBeenLastCalledWith('/charizard', undefined);
-    });
+        fireEvent.keyDown(items[1], { key: "Enter" });
+        fireEvent.keyUp(items[1], { key: "Enter" });
+        expect(navigate).toHaveBeenCalledTimes(2);
+        expect(navigate).toHaveBeenLastCalledWith("/charizard", undefined);
+      },
+    );
 
-    it('should support single selection mode', () => {
+    it("should support single selection mode", () => {
       render(() => <TestTable selectionMode="single" />);
 
-      const table = document.querySelector('.solidaria-Table');
+      const table = document.querySelector(".solidaria-Table");
       expect(table).toBeTruthy();
     });
 
-    it('should support multiple selection mode', () => {
+    it("should support multiple selection mode", () => {
       render(() => <TestTable selectionMode="multiple" />);
 
-      const table = document.querySelector('.solidaria-Table');
+      const table = document.querySelector(".solidaria-Table");
       expect(table).toBeTruthy();
     });
 
-    it('should support default selected keys', () => {
-      render(() => (
-        <TestTable
-          selectionMode="multiple"
-          defaultSelectedKeys={new Set([1, 2])}
-        />
-      ));
+    it("should support default selected keys", () => {
+      render(() => <TestTable selectionMode="multiple" defaultSelectedKeys={new Set([1, 2])} />);
 
-      const selectedRows = document.querySelectorAll('[data-selected]');
+      const selectedRows = document.querySelectorAll("[data-selected]");
       expect(selectedRows.length).toBe(2);
     });
 
-    it('should call onSelectionChange', () => {
+    it("should call onSelectionChange", () => {
       const onSelectionChange = vi.fn();
 
-      render(() => (
-        <TestTable
-          selectionMode="single"
-          onSelectionChange={onSelectionChange}
-        />
-      ));
+      render(() => <TestTable selectionMode="single" onSelectionChange={onSelectionChange} />);
 
-      const table = document.querySelector('.solidaria-Table');
+      const table = document.querySelector(".solidaria-Table");
       expect(table).toBeTruthy();
     });
 
-    it('updates row aria-selected when selecting from focused grid with keyboard', () => {
+    it("updates row aria-selected when selecting from focused grid with keyboard", () => {
       render(() => <TestTable selectionMode="multiple" />);
 
-      const grid = screen.getByRole('grid', { name: 'Pokemon' });
-      const getFirstDataRow = () => screen.getByText('Pikachu').closest('[role="row"]');
+      const grid = screen.getByRole("grid", { name: "Pokemon" });
+      const getFirstDataRow = () => screen.getByText("Pikachu").closest('[role="row"]');
       expect(getFirstDataRow()).toBeTruthy();
-      expect(getFirstDataRow()).toHaveAttribute('aria-selected', 'false');
+      expect(getFirstDataRow()).toHaveAttribute("aria-selected", "false");
 
       fireEvent.focus(grid);
-      fireEvent.keyDown(grid, { key: ' ' });
+      fireEvent.keyDown(grid, { key: " " });
 
-      expect(getFirstDataRow()).toHaveAttribute('aria-selected', 'true');
+      expect(getFirstDataRow()).toHaveAttribute("aria-selected", "true");
     });
 
-    it('updates TableSelectionCheckbox checked state when row selection changes', () => {
+    it("updates TableSelectionCheckbox checked state when row selection changes", () => {
       const singleRow = [testData[0]];
       render(() => (
         <Table
           items={singleRow}
-          columns={[{ key: 'select', name: 'Select' }]}
+          columns={[{ key: "select", name: "Select" }]}
           getKey={(item: any) => item.id}
           aria-label="Pokemon single row"
           selectionMode="single"
@@ -2153,16 +2188,16 @@ describe('Table', () => {
         </Table>
       ));
 
-      const getCheckbox = () => screen.getByRole('checkbox');
+      const getCheckbox = () => screen.getByRole("checkbox");
       expect(getCheckbox()).not.toBeChecked();
 
-      const rows = screen.getAllByRole('row');
+      const rows = screen.getAllByRole("row");
       fireEvent.click(rows[1]);
 
       expect(getCheckbox()).toBeChecked();
     });
 
-    it('should render checkboxes for selection', () => {
+    it("should render checkboxes for selection", () => {
       render(() => (
         <Table
           items={testData}
@@ -2194,15 +2229,15 @@ describe('Table', () => {
         </Table>
       ));
 
-      const checkboxes = screen.getAllByRole('checkbox');
-      expect(checkboxes[0]).toHaveAttribute('aria-label', 'Select All');
+      const checkboxes = screen.getAllByRole("checkbox");
+      expect(checkboxes[0]).toHaveAttribute("aria-label", "Select All");
       for (const checkbox of checkboxes) {
         expect(checkbox).not.toBeChecked();
       }
 
       fireEvent.click(checkboxes[0]);
 
-      for (const checkbox of screen.getAllByRole('checkbox')) {
+      for (const checkbox of screen.getAllByRole("checkbox")) {
         expect(checkbox).toBeChecked();
       }
     });
@@ -2242,20 +2277,20 @@ describe('Table', () => {
         </Table>
       ));
 
-      const checkboxes = screen.getAllByRole('checkbox');
+      const checkboxes = screen.getAllByRole("checkbox");
       fireEvent.click(checkboxes[1]);
       fireEvent.click(checkboxes[2]);
       expect(checkboxes[1]).toBeChecked();
       expect(checkboxes[2]).toBeChecked();
 
-      fireEvent.keyDown(screen.getByRole('grid', { name: 'Pokemon' }), { key: 'Escape' });
+      fireEvent.keyDown(screen.getByRole("grid", { name: "Pokemon" }), { key: "Escape" });
 
       expect(onSelectionChange).toHaveBeenCalledTimes(2);
       expect(checkboxes[1]).toBeChecked();
       expect(checkboxes[2]).toBeChecked();
     });
 
-    it('should not include the loader in the selection when selecting all/deselecting all', () => {
+    it("should not include the loader in the selection when selecting all/deselecting all", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <Table
@@ -2289,18 +2324,18 @@ describe('Table', () => {
         </Table>
       ));
 
-      const checkboxes = screen.getAllByRole('checkbox');
+      const checkboxes = screen.getAllByRole("checkbox");
       expect(checkboxes).toHaveLength(3);
-      expect(screen.getByRole('progressbar', { name: 'loading' })).toBeInTheDocument();
+      expect(screen.getByRole("progressbar", { name: "loading" })).toBeInTheDocument();
 
       fireEvent.click(checkboxes[0]);
-      expect(onSelectionChange).toHaveBeenLastCalledWith('all');
+      expect(onSelectionChange).toHaveBeenLastCalledWith("all");
 
       fireEvent.click(checkboxes[0]);
       expect(onSelectionChange).toHaveBeenLastCalledWith(new Set());
     });
 
-    it('should not propagate the checkbox context from selection into other cells', () => {
+    it("should not propagate the checkbox context from selection into other cells", () => {
       render(() => (
         <Table
           items={[testData[0]]}
@@ -2334,10 +2369,10 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(screen.getByRole('checkbox', { name: 'Agree' })).toBeInTheDocument();
+      expect(screen.getByRole("checkbox", { name: "Agree" })).toBeInTheDocument();
     });
 
-    it('should not render checkboxes for selection with selectionBehavior=replace', () => {
+    it("should not render checkboxes for selection with selectionBehavior=replace", () => {
       render(() => (
         <Table
           items={testData}
@@ -2364,14 +2399,14 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(screen.queryByRole('checkbox')).toBeNull();
-      const row = screen.getByText('Pikachu').closest('[role="row"]')!;
-      expect(row).toHaveAttribute('aria-selected', 'false');
+      expect(screen.queryByRole("checkbox")).toBeNull();
+      const row = screen.getByText("Pikachu").closest('[role="row"]')!;
+      expect(row).toHaveAttribute("aria-selected", "false");
       fireEvent.click(row);
-      expect(row).toHaveAttribute('aria-selected', 'true');
+      expect(row).toHaveAttribute("aria-selected", "true");
     });
 
-    it('should support disabled state', () => {
+    it("should support disabled state", () => {
       render(() => (
         <Table
           items={testData}
@@ -2393,7 +2428,7 @@ describe('Table', () => {
                   <TableRow
                     id={item.id}
                     item={item}
-                    class={(props) => props.isDisabled ? 'disabled' : ''}
+                    class={(props) => (props.isDisabled ? "disabled" : "")}
                   >
                     {() => (
                       <>
@@ -2409,16 +2444,16 @@ describe('Table', () => {
         </Table>
       ));
 
-      const disabledRow = screen.getByText('Charizard').closest('[role="row"]')!;
-      expect(disabledRow).toHaveAttribute('aria-disabled', 'true');
-      expect(disabledRow).toHaveClass('disabled');
+      const disabledRow = screen.getByText("Charizard").closest('[role="row"]')!;
+      expect(disabledRow).toHaveAttribute("aria-disabled", "true");
+      expect(disabledRow).toHaveClass("disabled");
       expect(disabledRow.querySelector('input[type="checkbox"]')).toBeDisabled();
 
       fireEvent.click(disabledRow);
-      expect(disabledRow).toHaveAttribute('aria-selected', 'false');
+      expect(disabledRow).toHaveAttribute("aria-selected", "false");
     });
 
-    it('should support isDisabled prop on rows', () => {
+    it("should support isDisabled prop on rows", () => {
       render(() => (
         <Table
           items={testData}
@@ -2445,11 +2480,11 @@ describe('Table', () => {
         </Table>
       ));
 
-      const disabledRow = screen.getByText('Charizard').closest('[role="row"]')!;
-      expect(disabledRow).toHaveAttribute('aria-disabled', 'true');
+      const disabledRow = screen.getByText("Charizard").closest('[role="row"]')!;
+      expect(disabledRow).toHaveAttribute("aria-disabled", "true");
 
       fireEvent.click(disabledRow);
-      expect(disabledRow).toHaveAttribute('aria-selected', 'false');
+      expect(disabledRow).toHaveAttribute("aria-selected", "false");
     });
   });
 
@@ -2457,29 +2492,29 @@ describe('Table', () => {
   // SORTING
   // ============================================
 
-  describe('sorting', () => {
-    it('should support sortDescriptor prop', () => {
-      render(() => (
-        <TestTable sortDescriptor={{ column: 'name', direction: 'ascending' }} />
-      ));
+  describe("sorting", () => {
+    it("should support sortDescriptor prop", () => {
+      render(() => <TestTable sortDescriptor={{ column: "name", direction: "ascending" }} />);
 
-      const table = document.querySelector('.solidaria-Table');
+      const table = document.querySelector(".solidaria-Table");
       expect(table).toBeTruthy();
     });
 
-    it('should support sortable columns', () => {
+    it("should support sortable columns", () => {
       render(() => (
         <Table
           items={testData}
           columns={testColumns}
           getKey={(item: any) => item.id}
           aria-label="Pokemon"
-          sortDescriptor={{ column: 'name', direction: 'ascending' }}
+          sortDescriptor={{ column: "name", direction: "ascending" }}
         >
           {() => (
             <>
               <TableHeader>
-                <TableColumn id="name" allowsSorting>{() => <>Name</>}</TableColumn>
+                <TableColumn id="name" allowsSorting>
+                  {() => <>Name</>}
+                </TableColumn>
                 <TableColumn id="type">{() => <>Type</>}</TableColumn>
               </TableHeader>
               <TableBody>
@@ -2499,23 +2534,25 @@ describe('Table', () => {
         </Table>
       ));
 
-      const sortableColumn = document.querySelector('[data-sortable]');
+      const sortableColumn = document.querySelector("[data-sortable]");
       expect(sortableColumn).toBeTruthy();
     });
 
-    it('should show sort direction on sorted column', () => {
+    it("should show sort direction on sorted column", () => {
       render(() => (
         <Table
           items={testData}
           columns={testColumns}
           getKey={(item: any) => item.id}
           aria-label="Pokemon"
-          sortDescriptor={{ column: 'name', direction: 'ascending' }}
+          sortDescriptor={{ column: "name", direction: "ascending" }}
         >
           {() => (
             <>
               <TableHeader>
-                <TableColumn id="name" allowsSorting>{() => <>Name</>}</TableColumn>
+                <TableColumn id="name" allowsSorting>
+                  {() => <>Name</>}
+                </TableColumn>
                 <TableColumn id="type">{() => <>Type</>}</TableColumn>
               </TableHeader>
               <TableBody>
@@ -2539,9 +2576,11 @@ describe('Table', () => {
       expect(sortedColumn).toBeTruthy();
     });
 
-    it('updates aria-sort when sortable column is activated', () => {
+    it("updates aria-sort when sortable column is activated", () => {
       render(() => {
-        const [sortDescriptor, setSortDescriptor] = createSignal<{ column: string | number; direction: 'ascending' | 'descending' } | undefined>(undefined);
+        const [sortDescriptor, setSortDescriptor] = createSignal<
+          { column: string | number; direction: "ascending" | "descending" } | undefined
+        >(undefined);
 
         return (
           <Table
@@ -2550,12 +2589,18 @@ describe('Table', () => {
             getKey={(item: any) => item.id}
             aria-label="Pokemon"
             sortDescriptor={sortDescriptor() as any}
-            onSortChange={(descriptor) => setSortDescriptor(descriptor as { column: string | number; direction: 'ascending' | 'descending' })}
+            onSortChange={(descriptor) =>
+              setSortDescriptor(
+                descriptor as { column: string | number; direction: "ascending" | "descending" },
+              )
+            }
           >
             {() => (
               <>
                 <TableHeader>
-                  <TableColumn id="name" allowsSorting>{() => <>Name</>}</TableColumn>
+                  <TableColumn id="name" allowsSorting>
+                    {() => <>Name</>}
+                  </TableColumn>
                 </TableHeader>
                 <TableBody>
                   {(item: any) => (
@@ -2570,14 +2615,17 @@ describe('Table', () => {
         );
       });
 
-      const nameColumn = screen.getByRole('columnheader', { name: 'Name' });
-      expect(nameColumn).toHaveAttribute('aria-sort', 'none');
+      const nameColumn = screen.getByRole("columnheader", { name: "Name" });
+      expect(nameColumn).toHaveAttribute("aria-sort", "none");
 
       fireEvent.click(nameColumn);
-      expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveAttribute('aria-sort', 'ascending');
+      expect(screen.getByRole("columnheader", { name: "Name" })).toHaveAttribute(
+        "aria-sort",
+        "ascending",
+      );
     });
 
-    it('should support sorting', () => {
+    it("should support sorting", () => {
       const onSortChange = vi.fn();
       render(() => (
         <Table
@@ -2585,14 +2633,18 @@ describe('Table', () => {
           columns={testColumns}
           getKey={(item: any) => item.id}
           aria-label="Pokemon"
-          sortDescriptor={{ column: 'name', direction: 'ascending' }}
+          sortDescriptor={{ column: "name", direction: "ascending" }}
           onSortChange={onSortChange}
         >
           {() => (
             <>
               <TableHeader>
-                <TableColumn id="name" allowsSorting>{() => <>Name</>}</TableColumn>
-                <TableColumn id="type" allowsSorting>{() => <>Type</>}</TableColumn>
+                <TableColumn id="name" allowsSorting>
+                  {() => <>Name</>}
+                </TableColumn>
+                <TableColumn id="type" allowsSorting>
+                  {() => <>Type</>}
+                </TableColumn>
               </TableHeader>
               <TableBody>
                 {(item: any) => (
@@ -2611,25 +2663,25 @@ describe('Table', () => {
         </Table>
       ));
 
-      const nameColumn = screen.getByRole('columnheader', { name: 'Name' });
-      const typeColumn = screen.getByRole('columnheader', { name: 'Type' });
-      expect(nameColumn).toHaveAttribute('aria-sort', 'ascending');
+      const nameColumn = screen.getByRole("columnheader", { name: "Name" });
+      const typeColumn = screen.getByRole("columnheader", { name: "Type" });
+      expect(nameColumn).toHaveAttribute("aria-sort", "ascending");
 
       fireEvent.click(typeColumn);
-      expect(onSortChange).toHaveBeenCalledWith({ column: 'type', direction: 'ascending' });
+      expect(onSortChange).toHaveBeenCalledWith({ column: "type", direction: "ascending" });
     });
   });
 
-  describe('Suspense', () => {
-    it.skip('should support React Suspense without transitions', () => {
+  describe("Suspense", () => {
+    it.skip("should support React Suspense without transitions", () => {
       // React-specific upstream coverage; Solid resources/transitions are covered outside this RAC-title parity slice.
     });
 
-    it.skip('should support React Suspense with transitions', () => {
+    it.skip("should support React Suspense with transitions", () => {
       // React-specific upstream coverage; Solid resources/transitions are covered outside this RAC-title parity slice.
     });
 
-    it.skip('should not render excessively in React Suspense with transitions', () => {
+    it.skip("should not render excessively in React Suspense with transitions", () => {
       // React-specific upstream coverage; Solid resources/transitions are covered outside this RAC-title parity slice.
     });
   });
@@ -2638,27 +2690,27 @@ describe('Table', () => {
   // ACCESSIBILITY
   // ============================================
 
-  describe('accessibility', () => {
-    it('should have aria-label', () => {
+  describe("accessibility", () => {
+    it("should have aria-label", () => {
       render(() => <TestTable />);
 
       const table = document.querySelector('[aria-label="Pokemon"]');
       expect(table).toBeTruthy();
     });
 
-    it('should render as grid role', () => {
+    it("should render as grid role", () => {
       render(() => <TestTable />);
 
       const grid = document.querySelector('[role="grid"]');
       expect(grid).toBeTruthy();
     });
 
-    it('keeps the grid tabbable when rows are present', () => {
+    it("keeps the grid tabbable when rows are present", () => {
       render(() => <TestTable />);
 
       const grid = document.querySelector('[role="grid"]');
       expect(grid).toBeTruthy();
-      expect(grid).toHaveAttribute('tabindex', '0');
+      expect(grid).toHaveAttribute("tabindex", "0");
     });
   });
 
@@ -2666,17 +2718,17 @@ describe('Table', () => {
   // RENDER PROPS
   // ============================================
 
-  describe('render props', () => {
-    it('should support class as a function', () => {
+  describe("render props", () => {
+    it("should support class as a function", () => {
       render(() => (
-        <TestTable class={(props) => `table ${props.isEmpty ? 'empty' : 'has-data'}`} />
+        <TestTable class={(props) => `table ${props.isEmpty ? "empty" : "has-data"}`} />
       ));
 
-      const table = document.querySelector('.has-data');
+      const table = document.querySelector(".has-data");
       expect(table).toBeTruthy();
     });
 
-    it('should support row class as a function', () => {
+    it("should support row class as a function", () => {
       render(() => (
         <Table
           items={testData}
@@ -2695,7 +2747,7 @@ describe('Table', () => {
                 {(item: any) => (
                   <TableRow
                     id={item.id}
-                    class={(props) => `row ${props.isSelected ? 'selected' : ''}`}
+                    class={(props) => `row ${props.isSelected ? "selected" : ""}`}
                   >
                     {() => <TableCell>{() => <>{item.name}</>}</TableCell>}
                   </TableRow>
@@ -2706,11 +2758,11 @@ describe('Table', () => {
         </Table>
       ));
 
-      const selectedRow = document.querySelector('.row.selected');
+      const selectedRow = document.querySelector(".row.selected");
       expect(selectedRow).toBeTruthy();
     });
 
-    it('should support focus ring', () => {
+    it("should support focus ring", () => {
       render(() => (
         <Table
           items={[testData[0]]}
@@ -2722,7 +2774,13 @@ describe('Table', () => {
           {() => (
             <>
               <TableHeader>
-                <TableColumn id="name" allowsSorting class={(props) => props.isFocusVisible ? 'focus' : ''}>{() => <>Name</>}</TableColumn>
+                <TableColumn
+                  id="name"
+                  allowsSorting
+                  class={(props) => (props.isFocusVisible ? "focus" : "")}
+                >
+                  {() => <>Name</>}
+                </TableColumn>
                 <TableColumn id="type">{() => <>Type</>}</TableColumn>
               </TableHeader>
               <TableBody>
@@ -2730,11 +2788,16 @@ describe('Table', () => {
                   <TableRow
                     id={item.id}
                     item={item}
-                    class={(props) => props.isFocusVisible ? 'focus' : ''}
+                    class={(props) => (props.isFocusVisible ? "focus" : "")}
                   >
                     {() => (
                       <>
-                        <TableCell id="name" class={(props) => props.isFocusVisible ? 'focus' : ''}>{() => <>{item.name}</>}</TableCell>
+                        <TableCell
+                          id="name"
+                          class={(props) => (props.isFocusVisible ? "focus" : "")}
+                        >
+                          {() => <>{item.name}</>}
+                        </TableCell>
                         <TableCell id="type">{() => <>{item.type}</>}</TableCell>
                       </>
                     )}
@@ -2746,20 +2809,20 @@ describe('Table', () => {
         </Table>
       ));
 
-      fireEvent.keyDown(document, { key: 'Tab' });
+      fireEvent.keyDown(document, { key: "Tab" });
 
-      const row = screen.getByText('Pikachu').closest('[role="row"]') as HTMLElement;
+      const row = screen.getByText("Pikachu").closest('[role="row"]') as HTMLElement;
       row.focus();
       fireEvent.focus(row);
-      expect(row).toHaveAttribute('data-focus-visible');
-      expect(row).toHaveClass('focus');
+      expect(row).toHaveAttribute("data-focus-visible");
+      expect(row).toHaveClass("focus");
 
       fireEvent.blur(row);
-      expect(row).not.toHaveAttribute('data-focus-visible');
-      expect(row).not.toHaveClass('focus');
+      expect(row).not.toHaveAttribute("data-focus-visible");
+      expect(row).not.toHaveClass("focus");
     });
 
-    it('should support column index in render props', () => {
+    it("should support column index in render props", () => {
       render(() => (
         <Table
           items={[testData[0]]}
@@ -2779,9 +2842,15 @@ describe('Table', () => {
                   <TableRow id={item.id} item={item}>
                     {() => (
                       <>
-                        <TableCell id="name">{(props) => <>cell index: {props.columnIndex}</>}</TableCell>
-                        <TableCell id="type">{(props) => <>cell index: {props.columnIndex}</>}</TableCell>
-                        <TableCell id="level">{(props) => <>cell index: {props.columnIndex}</>}</TableCell>
+                        <TableCell id="name">
+                          {(props) => <>cell index: {props.columnIndex}</>}
+                        </TableCell>
+                        <TableCell id="type">
+                          {(props) => <>cell index: {props.columnIndex}</>}
+                        </TableCell>
+                        <TableCell id="level">
+                          {(props) => <>cell index: {props.columnIndex}</>}
+                        </TableCell>
                       </>
                     )}
                   </TableRow>
@@ -2792,22 +2861,23 @@ describe('Table', () => {
         </Table>
       ));
 
-      const cells = [
-        ...screen.queryAllByRole('rowheader'),
-        ...screen.queryAllByRole('gridcell'),
-      ];
-      expect(cells[0]).toHaveTextContent('cell index: 0');
-      expect(cells[1]).toHaveTextContent('cell index: 1');
-      expect(cells[2]).toHaveTextContent('cell index: 2');
-      expect(cells[0]).toHaveAttribute('data-column-index', '0');
-      expect(cells[1]).toHaveAttribute('data-column-index', '1');
-      expect(cells[2]).toHaveAttribute('data-column-index', '2');
+      const cells = [...screen.queryAllByRole("rowheader"), ...screen.queryAllByRole("gridcell")];
+      expect(cells[0]).toHaveTextContent("cell index: 0");
+      expect(cells[1]).toHaveTextContent("cell index: 1");
+      expect(cells[2]).toHaveTextContent("cell index: 2");
+      expect(cells[0]).toHaveAttribute("data-column-index", "0");
+      expect(cells[1]).toHaveAttribute("data-column-index", "1");
+      expect(cells[2]).toHaveAttribute("data-column-index", "2");
     });
 
-    it('should support row render function and not call it with state', () => {
-      const renderRow = vi.fn((column: (typeof testColumns)[number], item: (typeof testData)[number]) => (
-        <TableCell id={column.key}>{() => <>{item[column.key as keyof typeof item]}</>}</TableCell>
-      ));
+    it("should support row render function and not call it with state", () => {
+      const renderRow = vi.fn(
+        (column: (typeof testColumns)[number], item: (typeof testData)[number]) => (
+          <TableCell id={column.key}>
+            {() => <>{item[column.key as keyof typeof item]}</>}
+          </TableCell>
+        ),
+      );
 
       render(() => (
         <Table
@@ -2833,13 +2903,13 @@ describe('Table', () => {
         </Table>
       ));
 
-      expect(screen.getByRole('rowheader')).toHaveTextContent('Pikachu');
+      expect(screen.getByRole("rowheader")).toHaveTextContent("Pikachu");
       expect(renderRow).toHaveBeenCalledTimes(1);
       expect(renderRow.mock.calls[0][0]).toBe(testColumns[0]);
-      expect(renderRow.mock.calls[0][0]).not.toHaveProperty('isSelected');
+      expect(renderRow.mock.calls[0][0]).not.toHaveProperty("isSelected");
     });
 
-    it('should support cell render props', () => {
+    it("should support cell render props", () => {
       render(() => (
         <Table
           items={[testData[0]]}
@@ -2850,7 +2920,9 @@ describe('Table', () => {
           {() => (
             <>
               <TableHeader>
-                <TableColumn id="name">{({ isFocused }) => <>Name{isFocused ? ' (focused)' : ''}</>}</TableColumn>
+                <TableColumn id="name">
+                  {({ isFocused }) => <>Name{isFocused ? " (focused)" : ""}</>}
+                </TableColumn>
                 <TableColumn id="type">{() => <>Type</>}</TableColumn>
               </TableHeader>
               <TableBody>
@@ -2858,7 +2930,9 @@ describe('Table', () => {
                   <TableRow id={item.id} item={item}>
                     {() => (
                       <>
-                        <TableCell id="name">{({ isFocused }) => <>Foo{isFocused ? ' (focused)' : ''}</>}</TableCell>
+                        <TableCell id="name">
+                          {({ isFocused }) => <>Foo{isFocused ? " (focused)" : ""}</>}
+                        </TableCell>
                         <TableCell id="type">{() => <>Bar</>}</TableCell>
                       </>
                     )}
@@ -2870,25 +2944,25 @@ describe('Table', () => {
         </Table>
       ));
 
-      const header = screen.getByRole('columnheader', { name: 'Name' });
-      expect(header).toHaveTextContent('Name');
+      const header = screen.getByRole("columnheader", { name: "Name" });
+      expect(header).toHaveTextContent("Name");
       fireEvent.focus(header);
-      expect(header).toHaveTextContent('Name (focused)');
+      expect(header).toHaveTextContent("Name (focused)");
 
-      const cell = screen.getByRole('rowheader', { name: 'Foo' });
-      expect(cell).toHaveTextContent('Foo');
+      const cell = screen.getByRole("rowheader", { name: "Foo" });
+      expect(cell).toHaveTextContent("Foo");
       fireEvent.focus(cell);
-      expect(cell).toHaveTextContent('Foo (focused)');
+      expect(cell).toHaveTextContent("Foo (focused)");
     });
 
-    it('should support columnHeader typeahead', async () => {
+    it("should support columnHeader typeahead", async () => {
       render(() => (
         <Table
           items={[
-            { id: 1, name: 'Games', type: 'File folder' },
-            { id: 2, name: 'Program Files', type: 'File folder' },
-            { id: 3, name: 'bootmgr', type: 'System file' },
-            { id: 4, name: 'log.txt', type: 'Text Document' },
+            { id: 1, name: "Games", type: "File folder" },
+            { id: 2, name: "Program Files", type: "File folder" },
+            { id: 3, name: "bootmgr", type: "System file" },
+            { id: 4, name: "log.txt", type: "Text Document" },
           ]}
           columns={testColumns.slice(0, 2)}
           getKey={(item: any) => item.id}
@@ -2917,25 +2991,25 @@ describe('Table', () => {
         </Table>
       ));
 
-      const table = screen.getByRole('grid', { name: 'Files' });
+      const table = screen.getByRole("grid", { name: "Files" });
       table.focus();
       fireEvent.focus(table);
-      fireEvent.keyDown(table, { key: 'b' });
-      fireEvent.keyDown(table, { key: 'o' });
-      fireEvent.keyDown(table, { key: 'o' });
+      fireEvent.keyDown(table, { key: "b" });
+      fireEvent.keyDown(table, { key: "o" });
+      fireEvent.keyDown(table, { key: "o" });
       await Promise.resolve();
 
-      expect(document.activeElement).toBe(screen.getByText('bootmgr').closest('[role="row"]'));
+      expect(document.activeElement).toBe(screen.getByText("bootmgr").closest('[role="row"]'));
     });
 
-    it('should support textValue overriding typeahead', async () => {
+    it("should support textValue overriding typeahead", async () => {
       render(() => (
         <Table
           items={[
-            { id: 1, name: '1. Games', type: 'File folder', textValue: 'Games' },
-            { id: 2, name: '2. Program Files', type: 'File folder', textValue: 'Program Files' },
-            { id: 3, name: '3. bootmgr', type: 'System file', textValue: 'bootmgr' },
-            { id: 4, name: '4. log.txt', type: 'Text Document', textValue: 'log.txt' },
+            { id: 1, name: "1. Games", type: "File folder", textValue: "Games" },
+            { id: 2, name: "2. Program Files", type: "File folder", textValue: "Program Files" },
+            { id: 3, name: "3. bootmgr", type: "System file", textValue: "bootmgr" },
+            { id: 4, name: "4. log.txt", type: "Text Document", textValue: "log.txt" },
           ]}
           columns={testColumns.slice(0, 2)}
           getKey={(item: any) => item.id}
@@ -2964,18 +3038,18 @@ describe('Table', () => {
         </Table>
       ));
 
-      const table = screen.getByRole('grid', { name: 'Files' });
+      const table = screen.getByRole("grid", { name: "Files" });
       table.focus();
       fireEvent.focus(table);
-      fireEvent.keyDown(table, { key: 'b' });
-      fireEvent.keyDown(table, { key: 'o' });
-      fireEvent.keyDown(table, { key: 'o' });
+      fireEvent.keyDown(table, { key: "b" });
+      fireEvent.keyDown(table, { key: "o" });
+      fireEvent.keyDown(table, { key: "o" });
       await Promise.resolve();
 
-      expect(document.activeElement).toBe(screen.getByText('3. bootmgr').closest('[role="row"]'));
+      expect(document.activeElement).toBe(screen.getByText("3. bootmgr").closest('[role="row"]'));
     });
 
-    it('should support hover', () => {
+    it("should support hover", () => {
       const onHoverStart = vi.fn();
       const onHoverEnd = vi.fn();
       const onHoverChange = vi.fn();
@@ -2997,7 +3071,7 @@ describe('Table', () => {
                   <TableRow
                     id={item.id}
                     item={item}
-                    class={(props) => props.isHovered ? 'hover' : ''}
+                    class={(props) => (props.isHovered ? "hover" : "")}
                     onHoverStart={onHoverStart as never}
                     onHoverEnd={onHoverEnd as never}
                     onHoverChange={onHoverChange as never}
@@ -3011,19 +3085,19 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row = screen.getByText('Pikachu').closest('[role="row"]')!;
-      fireEvent.pointerOver(row, { pointerType: 'mouse' });
-      expect(row).toHaveAttribute('data-hovered');
-      expect(row).toHaveClass('hover');
+      const row = screen.getByText("Pikachu").closest('[role="row"]')!;
+      fireEvent.pointerOver(row, { pointerType: "mouse" });
+      expect(row).toHaveAttribute("data-hovered");
+      expect(row).toHaveClass("hover");
       expect(onHoverStart).toHaveBeenCalledTimes(1);
       expect(onHoverChange).toHaveBeenCalledWith(true);
 
-      fireEvent.pointerOut(row, { pointerType: 'mouse' });
+      fireEvent.pointerOut(row, { pointerType: "mouse" });
       expect(onHoverEnd).toHaveBeenCalledTimes(1);
       expect(onHoverChange).toHaveBeenCalledWith(false);
     });
 
-    it('should not show hover state when item is not interactive', () => {
+    it("should not show hover state when item is not interactive", () => {
       const onHoverStart = vi.fn();
       const onHoverEnd = vi.fn();
       const onHoverChange = vi.fn();
@@ -3044,7 +3118,7 @@ describe('Table', () => {
                   <TableRow
                     id={item.id}
                     item={item}
-                    class={(props) => props.isHovered ? 'hover' : ''}
+                    class={(props) => (props.isHovered ? "hover" : "")}
                     onHoverStart={onHoverStart as never}
                     onHoverEnd={onHoverEnd as never}
                     onHoverChange={onHoverChange as never}
@@ -3058,16 +3132,16 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row = screen.getByText('Pikachu').closest('[role="row"]')!;
-      fireEvent.pointerOver(row, { pointerType: 'mouse' });
-      expect(row).not.toHaveAttribute('data-hovered');
-      expect(row).not.toHaveClass('hover');
+      const row = screen.getByText("Pikachu").closest('[role="row"]')!;
+      fireEvent.pointerOver(row, { pointerType: "mouse" });
+      expect(row).not.toHaveAttribute("data-hovered");
+      expect(row).not.toHaveClass("hover");
       expect(onHoverStart).not.toHaveBeenCalled();
       expect(onHoverChange).not.toHaveBeenCalled();
       expect(onHoverEnd).not.toHaveBeenCalled();
     });
 
-    it('should support press state', () => {
+    it("should support press state", () => {
       render(() => (
         <Table
           items={testData}
@@ -3086,7 +3160,7 @@ describe('Table', () => {
                   <TableRow
                     id={item.id}
                     item={item}
-                    class={(props) => props.isPressed ? 'pressed' : ''}
+                    class={(props) => (props.isPressed ? "pressed" : "")}
                   >
                     {() => <TableCell>{() => <>{item.name}</>}</TableCell>}
                   </TableRow>
@@ -3097,14 +3171,14 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row = screen.getByText('Pikachu').closest('[role="row"]')!;
-      fireEvent.pointerDown(row, { pointerType: 'mouse' });
-      expect(row).toHaveAttribute('data-pressed');
-      expect(row).toHaveClass('pressed');
-      fireEvent.pointerUp(row, { pointerType: 'mouse' });
+      const row = screen.getByText("Pikachu").closest('[role="row"]')!;
+      fireEvent.pointerDown(row, { pointerType: "mouse" });
+      expect(row).toHaveAttribute("data-pressed");
+      expect(row).toHaveClass("pressed");
+      fireEvent.pointerUp(row, { pointerType: "mouse" });
     });
 
-    it('should not show press state when not interactive', () => {
+    it("should not show press state when not interactive", () => {
       render(() => (
         <Table
           items={testData}
@@ -3122,7 +3196,7 @@ describe('Table', () => {
                   <TableRow
                     id={item.id}
                     item={item}
-                    class={(props) => props.isPressed ? 'pressed' : ''}
+                    class={(props) => (props.isPressed ? "pressed" : "")}
                   >
                     {() => <TableCell>{() => <>{item.name}</>}</TableCell>}
                   </TableRow>
@@ -3133,17 +3207,17 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row = screen.getByText('Pikachu').closest('[role="row"]')!;
-      fireEvent.pointerDown(row, { pointerType: 'mouse' });
-      expect(row).not.toHaveAttribute('data-pressed');
-      expect(row).not.toHaveClass('pressed');
+      const row = screen.getByText("Pikachu").closest('[role="row"]')!;
+      fireEvent.pointerDown(row, { pointerType: "mouse" });
+      expect(row).not.toHaveAttribute("data-pressed");
+      expect(row).not.toHaveClass("pressed");
 
-      fireEvent.pointerUp(row, { pointerType: 'mouse' });
-      expect(row).not.toHaveAttribute('data-pressed');
-      expect(row).not.toHaveClass('pressed');
+      fireEvent.pointerUp(row, { pointerType: "mouse" });
+      expect(row).not.toHaveAttribute("data-pressed");
+      expect(row).not.toHaveClass("pressed");
     });
 
-    it('should support row actions', () => {
+    it("should support row actions", () => {
       const onRowAction = vi.fn();
       render(() => (
         <Table
@@ -3163,7 +3237,7 @@ describe('Table', () => {
                   <TableRow
                     id={item.id}
                     item={item}
-                    class={(props) => props.isPressed ? 'pressed' : ''}
+                    class={(props) => (props.isPressed ? "pressed" : "")}
                   >
                     {() => <TableCell>{() => <>{item.name}</>}</TableCell>}
                   </TableRow>
@@ -3174,22 +3248,22 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row = screen.getByText('Charizard').closest('[role="row"]')!;
-      expect(row).not.toHaveAttribute('data-pressed');
-      expect(row).not.toHaveClass('pressed');
+      const row = screen.getByText("Charizard").closest('[role="row"]')!;
+      expect(row).not.toHaveAttribute("data-pressed");
+      expect(row).not.toHaveClass("pressed");
 
-      fireEvent.pointerDown(row, { pointerType: 'mouse' });
-      expect(row).toHaveAttribute('data-pressed');
-      expect(row).toHaveClass('pressed');
+      fireEvent.pointerDown(row, { pointerType: "mouse" });
+      expect(row).toHaveAttribute("data-pressed");
+      expect(row).toHaveClass("pressed");
 
-      fireEvent.pointerUp(row, { pointerType: 'mouse' });
+      fireEvent.pointerUp(row, { pointerType: "mouse" });
       fireEvent.click(row);
-      expect(row).not.toHaveAttribute('data-pressed');
-      expect(row).not.toHaveClass('pressed');
+      expect(row).not.toHaveAttribute("data-pressed");
+      expect(row).not.toHaveClass("pressed");
       expect(onRowAction).toHaveBeenCalledWith(2);
     });
 
-    it('should select an item on pressing down when shouldSelectOnPressUp is not provided', () => {
+    it("should select an item on pressing down when shouldSelectOnPressUp is not provided", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <Table
@@ -3217,14 +3291,14 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row = screen.getByText('Pikachu').closest('[role="row"]')!;
-      fireEvent.pointerDown(row, { pointerType: 'mouse' });
+      const row = screen.getByText("Pikachu").closest('[role="row"]')!;
+      fireEvent.pointerDown(row, { pointerType: "mouse" });
       expect(onSelectionChange).toHaveBeenCalledTimes(1);
-      fireEvent.pointerUp(row, { pointerType: 'mouse' });
+      fireEvent.pointerUp(row, { pointerType: "mouse" });
       expect(onSelectionChange).toHaveBeenCalledTimes(1);
     });
 
-    it('should select an item on pressing down when shouldSelectOnPressUp is false', () => {
+    it("should select an item on pressing down when shouldSelectOnPressUp is false", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <Table
@@ -3253,14 +3327,14 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row = screen.getByText('Pikachu').closest('[role="row"]')!;
-      fireEvent.pointerDown(row, { pointerType: 'mouse' });
+      const row = screen.getByText("Pikachu").closest('[role="row"]')!;
+      fireEvent.pointerDown(row, { pointerType: "mouse" });
       expect(onSelectionChange).toHaveBeenCalledTimes(1);
-      fireEvent.pointerUp(row, { pointerType: 'mouse' });
+      fireEvent.pointerUp(row, { pointerType: "mouse" });
       expect(onSelectionChange).toHaveBeenCalledTimes(1);
     });
 
-    it('should select an item on pressing up when shouldSelectOnPressUp is true', () => {
+    it("should select an item on pressing up when shouldSelectOnPressUp is true", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <Table
@@ -3289,14 +3363,14 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row = screen.getByText('Pikachu').closest('[role="row"]')!;
-      fireEvent.pointerDown(row, { pointerType: 'mouse' });
+      const row = screen.getByText("Pikachu").closest('[role="row"]')!;
+      fireEvent.pointerDown(row, { pointerType: "mouse" });
       expect(onSelectionChange).not.toHaveBeenCalled();
-      fireEvent.pointerUp(row, { pointerType: 'mouse' });
+      fireEvent.pointerUp(row, { pointerType: "mouse" });
       expect(onSelectionChange).toHaveBeenCalledTimes(1);
     });
 
-    it('should perform selection with single selection', () => {
+    it("should perform selection with single selection", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <Table
@@ -3325,21 +3399,21 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row = screen.getByText('Charizard').closest('[role="row"]')!;
-      expect(row).toHaveAttribute('aria-selected', 'false');
+      const row = screen.getByText("Charizard").closest('[role="row"]')!;
+      expect(row).toHaveAttribute("aria-selected", "false");
 
-      fireEvent.pointerDown(row, { pointerType: 'mouse' });
-      expect(row).toHaveAttribute('aria-selected', 'true');
-      expect(row).toHaveAttribute('data-selected');
+      fireEvent.pointerDown(row, { pointerType: "mouse" });
+      expect(row).toHaveAttribute("aria-selected", "true");
+      expect(row).toHaveAttribute("data-selected");
       expect(onSelectionChange).toHaveBeenLastCalledWith(new Set([2]));
 
-      fireEvent.pointerDown(row, { pointerType: 'mouse' });
-      expect(row).toHaveAttribute('aria-selected', 'false');
-      expect(row).not.toHaveAttribute('data-selected');
+      fireEvent.pointerDown(row, { pointerType: "mouse" });
+      expect(row).toHaveAttribute("aria-selected", "false");
+      expect(row).not.toHaveAttribute("data-selected");
       expect(onSelectionChange).toHaveBeenLastCalledWith(new Set());
     });
 
-    it('should perform toggle selection in highlight mode when using modifier keys', () => {
+    it("should perform toggle selection in highlight mode when using modifier keys", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <Table
@@ -3368,25 +3442,25 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row1 = screen.getByText('Pikachu').closest('[role="row"]')!;
-      const row2 = screen.getByText('Charizard').closest('[role="row"]')!;
+      const row1 = screen.getByText("Pikachu").closest('[role="row"]')!;
+      const row2 = screen.getByText("Charizard").closest('[role="row"]')!;
 
-      fireEvent.pointerDown(row2, { pointerType: 'mouse', ctrlKey: true });
-      expect(row2).toHaveAttribute('aria-selected', 'true');
+      fireEvent.pointerDown(row2, { pointerType: "mouse", ctrlKey: true });
+      expect(row2).toHaveAttribute("aria-selected", "true");
       expect(onSelectionChange).toHaveBeenLastCalledWith(new Set([2]));
 
-      fireEvent.pointerDown(row1, { pointerType: 'mouse', ctrlKey: true });
-      expect(row1).toHaveAttribute('aria-selected', 'true');
-      expect(row2).toHaveAttribute('aria-selected', 'true');
+      fireEvent.pointerDown(row1, { pointerType: "mouse", ctrlKey: true });
+      expect(row1).toHaveAttribute("aria-selected", "true");
+      expect(row2).toHaveAttribute("aria-selected", "true");
       expect(onSelectionChange).toHaveBeenLastCalledWith(new Set([1, 2]));
 
-      fireEvent.pointerDown(row1, { pointerType: 'mouse', ctrlKey: true });
-      expect(row1).toHaveAttribute('aria-selected', 'false');
-      expect(row2).toHaveAttribute('aria-selected', 'true');
+      fireEvent.pointerDown(row1, { pointerType: "mouse", ctrlKey: true });
+      expect(row1).toHaveAttribute("aria-selected", "false");
+      expect(row2).toHaveAttribute("aria-selected", "true");
       expect(onSelectionChange).toHaveBeenLastCalledWith(new Set([2]));
     });
 
-    it('should perform replace selection in highlight mode when not using modifier keys', () => {
+    it("should perform replace selection in highlight mode when not using modifier keys", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <Table
@@ -3415,24 +3489,24 @@ describe('Table', () => {
         </Table>
       ));
 
-      const row1 = screen.getByText('Pikachu').closest('[role="row"]')!;
-      const row2 = screen.getByText('Charizard').closest('[role="row"]')!;
+      const row1 = screen.getByText("Pikachu").closest('[role="row"]')!;
+      const row2 = screen.getByText("Charizard").closest('[role="row"]')!;
 
-      fireEvent.pointerDown(row2, { pointerType: 'mouse' });
-      expect(row2).toHaveAttribute('aria-selected', 'true');
+      fireEvent.pointerDown(row2, { pointerType: "mouse" });
+      expect(row2).toHaveAttribute("aria-selected", "true");
       expect(onSelectionChange).toHaveBeenLastCalledWith(new Set([2]));
 
-      fireEvent.pointerDown(row1, { pointerType: 'mouse' });
-      expect(row1).toHaveAttribute('aria-selected', 'true');
-      expect(row2).toHaveAttribute('aria-selected', 'false');
+      fireEvent.pointerDown(row1, { pointerType: "mouse" });
+      expect(row1).toHaveAttribute("aria-selected", "true");
+      expect(row2).toHaveAttribute("aria-selected", "false");
       expect(onSelectionChange).toHaveBeenLastCalledWith(new Set([1]));
 
-      fireEvent.pointerDown(row1, { pointerType: 'mouse' });
-      expect(row1).toHaveAttribute('aria-selected', 'true');
+      fireEvent.pointerDown(row1, { pointerType: "mouse" });
+      expect(row1).toHaveAttribute("aria-selected", "true");
       expect(onSelectionChange).toHaveBeenCalledTimes(2);
     });
 
-    it('should support onAction on items', () => {
+    it("should support onAction on items", () => {
       const onAction = vi.fn();
       render(() => (
         <Table
@@ -3462,7 +3536,7 @@ describe('Table', () => {
         </Table>
       ));
 
-      fireEvent.click(screen.getByText('Pikachu').closest('[role="row"]')!);
+      fireEvent.click(screen.getByText("Pikachu").closest('[role="row"]')!);
       expect(onAction).toHaveBeenCalledTimes(1);
     });
   });
@@ -3471,8 +3545,8 @@ describe('Table', () => {
   // EMPTY STATE
   // ============================================
 
-  describe('empty state', () => {
-    it('should support empty state', () => {
+  describe("empty state", () => {
+    it("should support empty state", () => {
       render(() => (
         <Table items={[]} columns={testColumns} aria-label="Empty table">
           {() => (
@@ -3480,23 +3554,19 @@ describe('Table', () => {
               <TableHeader>
                 <TableColumn id="name">{() => <>Name</>}</TableColumn>
               </TableHeader>
-              <TableBody renderEmptyState={() => 'No results'}>
-                {() => (
-                  <TableRow id="x">
-                    {() => <TableCell>{() => <>x</>}</TableCell>}
-                  </TableRow>
-                )}
+              <TableBody renderEmptyState={() => "No results"}>
+                {() => <TableRow id="x">{() => <TableCell>{() => <>x</>}</TableCell>}</TableRow>}
               </TableBody>
             </>
           )}
         </Table>
       ));
 
-      expect(screen.getByRole('grid')).toHaveAttribute('data-empty');
-      expect(screen.getByRole('rowheader')).toHaveTextContent('No results');
+      expect(screen.getByRole("grid")).toHaveAttribute("data-empty");
+      expect(screen.getByRole("rowheader")).toHaveTextContent("No results");
     });
 
-    it('should render empty state in body', () => {
+    it("should render empty state in body", () => {
       render(() => (
         <Table items={[]} columns={testColumns} aria-label="Empty table">
           {() => (
@@ -3505,19 +3575,15 @@ describe('Table', () => {
                 <TableColumn id="name">{() => <>Name</>}</TableColumn>
               </TableHeader>
               <TableBody renderEmptyState={() => <div>No data available</div>}>
-                {() => (
-                  <TableRow id="x">
-                    {() => <TableCell>{() => <>x</>}</TableCell>}
-                  </TableRow>
-                )}
+                {() => <TableRow id="x">{() => <TableCell>{() => <>x</>}</TableCell>}</TableRow>}
               </TableBody>
             </>
           )}
         </Table>
       ));
 
-      expect(screen.getByText('No data available')).toBeTruthy();
-      expect(screen.getByRole('rowheader')).toHaveTextContent('No data available');
+      expect(screen.getByText("No data available")).toBeTruthy();
+      expect(screen.getByRole("rowheader")).toHaveTextContent("No data available");
     });
   });
 
@@ -3525,47 +3591,51 @@ describe('Table', () => {
   // CONTEXT ERRORS
   // ============================================
 
-  describe('context errors', () => {
-    it('should throw when TableHeader is used outside Table', () => {
+  describe("context errors", () => {
+    it("should throw when TableHeader is used outside Table", () => {
       expect(() => {
-        render(() => <TableHeader><th>Test</th></TableHeader>);
-      }).toThrow('TableHeader must be used within a Table');
+        render(() => (
+          <TableHeader>
+            <th>Test</th>
+          </TableHeader>
+        ));
+      }).toThrow("TableHeader must be used within a Table");
     });
 
-    it('should throw when TableColumn is used outside Table', () => {
+    it("should throw when TableColumn is used outside Table", () => {
       expect(() => {
         render(() => <TableColumn id="test">{() => <>Test</>}</TableColumn>);
-      }).toThrow('TableColumn must be used within a Table');
+      }).toThrow("TableColumn must be used within a Table");
     });
 
-    it('should throw when TableBody is used outside Table', () => {
+    it("should throw when TableBody is used outside Table", () => {
       expect(() => {
         render(() => <TableBody>{() => <tr />}</TableBody>);
-      }).toThrow('TableBody must be used within a Table');
+      }).toThrow("TableBody must be used within a Table");
     });
 
-    it('should throw when TableRow is used outside Table', () => {
+    it("should throw when TableRow is used outside Table", () => {
       expect(() => {
         render(() => <TableRow id="test">{() => <td>Test</td>}</TableRow>);
-      }).toThrow('TableRow must be used within a Table');
+      }).toThrow("TableRow must be used within a Table");
     });
 
-    it('should throw when TableCell is used outside Table', () => {
+    it("should throw when TableCell is used outside Table", () => {
       expect(() => {
         render(() => <TableCell>{() => <>Test</>}</TableCell>);
-      }).toThrow('TableCell must be used within a Table');
+      }).toThrow("TableCell must be used within a Table");
     });
 
-    it('should throw when TableSelectionCheckbox is used outside Table', () => {
+    it("should throw when TableSelectionCheckbox is used outside Table", () => {
       expect(() => {
         render(() => <TableSelectionCheckbox rowKey="test" />);
-      }).toThrow('TableSelectionCheckbox must be used within a Table');
+      }).toThrow("TableSelectionCheckbox must be used within a Table");
     });
 
-    it('should throw when TableSelectAllCheckbox is used outside Table', () => {
+    it("should throw when TableSelectAllCheckbox is used outside Table", () => {
       expect(() => {
         render(() => <TableSelectAllCheckbox />);
-      }).toThrow('TableSelectAllCheckbox must be used within a Table');
+      }).toThrow("TableSelectAllCheckbox must be used within a Table");
     });
   });
 
@@ -3573,32 +3643,32 @@ describe('Table', () => {
   // STATIC PROPERTIES
   // ============================================
 
-  describe('static properties', () => {
-    it('should have Header as static property', () => {
+  describe("static properties", () => {
+    it("should have Header as static property", () => {
       expect(Table.Header).toBe(TableHeader);
     });
 
-    it('should have Column as static property', () => {
+    it("should have Column as static property", () => {
       expect(Table.Column).toBe(TableColumn);
     });
 
-    it('should have Body as static property', () => {
+    it("should have Body as static property", () => {
       expect(Table.Body).toBe(TableBody);
     });
 
-    it('should have Row as static property', () => {
+    it("should have Row as static property", () => {
       expect(Table.Row).toBe(TableRow);
     });
 
-    it('should have Cell as static property', () => {
+    it("should have Cell as static property", () => {
       expect(Table.Cell).toBe(TableCell);
     });
 
-    it('should have SelectionCheckbox as static property', () => {
+    it("should have SelectionCheckbox as static property", () => {
       expect(Table.SelectionCheckbox).toBe(TableSelectionCheckbox);
     });
 
-    it('should have SelectAllCheckbox as static property', () => {
+    it("should have SelectAllCheckbox as static property", () => {
       expect(Table.SelectAllCheckbox).toBe(TableSelectAllCheckbox);
     });
   });
@@ -3607,14 +3677,17 @@ describe('Table', () => {
   // COLUMN RESIZE
   // ============================================
 
-  describe('column resize', () => {
+  describe("column resize", () => {
     const resizableColumns = [
-      { key: 'name', name: 'Name' },
-      { key: 'type', name: 'Type' },
-      { key: 'level', name: 'Level' },
+      { key: "name", name: "Name" },
+      { key: "type", name: "Type" },
+      { key: "level", name: "Level" },
     ];
 
-    function ResizableTestTable(props: { onResize?: (widths: Map<any, number>) => void; onResizeEnd?: (widths: Map<any, number>) => void }) {
+    function ResizableTestTable(props: {
+      onResize?: (widths: Map<any, number>) => void;
+      onResizeEnd?: (widths: Map<any, number>) => void;
+    }) {
       return (
         <ResizableTableContainer>
           <Table
@@ -3628,10 +3701,10 @@ describe('Table', () => {
                 <TableHeader>
                   <TableColumn id="name" allowsResizing>
                     {() => (
-                      <div style={{ display: 'flex', 'align-items': 'center' }}>
+                      <div style={{ display: "flex", "align-items": "center" }}>
                         <span>Name</span>
                         <ColumnResizer
-                          column={{ key: 'name' }}
+                          column={{ key: "name" }}
                           aria-label="Resize Name"
                           onResize={props.onResize}
                           onResizeEnd={props.onResizeEnd}
@@ -3641,10 +3714,10 @@ describe('Table', () => {
                   </TableColumn>
                   <TableColumn id="type" allowsResizing>
                     {() => (
-                      <div style={{ display: 'flex', 'align-items': 'center' }}>
+                      <div style={{ display: "flex", "align-items": "center" }}>
                         <span>Type</span>
                         <ColumnResizer
-                          column={{ key: 'type' }}
+                          column={{ key: "type" }}
                           aria-label="Resize Type"
                           onResize={props.onResize}
                           onResizeEnd={props.onResizeEnd}
@@ -3674,33 +3747,33 @@ describe('Table', () => {
       );
     }
 
-    it('ResizableTableContainer provides resize context and renders children', () => {
+    it("ResizableTableContainer provides resize context and renders children", () => {
       render(() => <ResizableTestTable />);
-      const table = screen.getByRole('grid');
+      const table = screen.getByRole("grid");
       expect(table).toBeInTheDocument();
     });
 
-    it('ColumnResizer renders with correct ARIA attributes', () => {
+    it("ColumnResizer renders with correct ARIA attributes", () => {
       render(() => <ResizableTestTable />);
-      const resizers = screen.getAllByRole('separator');
+      const resizers = screen.getAllByRole("separator");
       expect(resizers.length).toBeGreaterThanOrEqual(2);
       // Each separator should have vertical orientation
       for (const resizer of resizers) {
-        expect(resizer.getAttribute('aria-orientation')).toBe('vertical');
+        expect(resizer.getAttribute("aria-orientation")).toBe("vertical");
       }
     });
 
-    it('ColumnResizer has a hidden range input for screen readers', () => {
+    it("ColumnResizer has a hidden range input for screen readers", () => {
       render(() => <ResizableTestTable />);
       const inputs = document.querySelectorAll('input[type="range"]');
       expect(inputs.length).toBeGreaterThanOrEqual(2);
       // Check aria-labels
-      const labels = Array.from(inputs).map((i) => i.getAttribute('aria-label'));
-      expect(labels).toContain('Resize Name');
-      expect(labels).toContain('Resize Type');
+      const labels = Array.from(inputs).map((i) => i.getAttribute("aria-label"));
+      expect(labels).toContain("Resize Name");
+      expect(labels).toContain("Resize Type");
     });
 
-    it('Column resizer accepts data attributes', () => {
+    it("Column resizer accepts data attributes", () => {
       render(() => (
         <ResizableTableContainer>
           <Table
@@ -3716,7 +3789,7 @@ describe('Table', () => {
                     {() => (
                       <>
                         Name
-                        <ColumnResizer column={{ key: 'name' }} data-testid="resizer" />
+                        <ColumnResizer column={{ key: "name" }} data-testid="resizer" />
                       </>
                     )}
                   </TableColumn>
@@ -3724,7 +3797,7 @@ describe('Table', () => {
                     {() => (
                       <>
                         Type
-                        <ColumnResizer column={{ key: 'type' }} data-testid="resizer" />
+                        <ColumnResizer column={{ key: "type" }} data-testid="resizer" />
                       </>
                     )}
                   </TableColumn>
@@ -3747,10 +3820,10 @@ describe('Table', () => {
         </ResizableTableContainer>
       ));
 
-      expect(screen.getAllByTestId('resizer')).toHaveLength(2);
+      expect(screen.getAllByTestId("resizer")).toHaveLength(2);
     });
 
-    it('column resize via keyboard (arrow keys) adjusts width', () => {
+    it("column resize via keyboard (arrow keys) adjusts width", () => {
       const onResize = vi.fn();
       const onResizeEnd = vi.fn();
       render(() => <ResizableTestTable onResize={onResize} onResizeEnd={onResizeEnd} />);
@@ -3758,19 +3831,19 @@ describe('Table', () => {
       // Find the hidden range input for "Name" column
       const input = document.querySelector('input[aria-label="Resize Name"]') as HTMLInputElement;
       expect(input).toBeTruthy();
-      expect(input.type).toBe('range');
+      expect(input.type).toBe("range");
 
       // Simulate resize via the input's change event (range slider)
       // This is the screen-reader path which is always available
-      fireEvent.change(input, { target: { value: '200' } });
+      fireEvent.change(input, { target: { value: "200" } });
       expect(onResize).toHaveBeenCalled();
     });
 
-    it('column resize respects min/max constraints', () => {
+    it("column resize respects min/max constraints", () => {
       // Use columns with explicit min/max
       const constrainedColumns = [
-        { key: 'name', name: 'Name', minWidth: 100, maxWidth: 200 },
-        { key: 'type', name: 'Type' },
+        { key: "name", name: "Name", minWidth: 100, maxWidth: 200 },
+        { key: "type", name: "Type" },
       ];
 
       const onResize = vi.fn();
@@ -3791,7 +3864,7 @@ describe('Table', () => {
                       <div>
                         <span>Name</span>
                         <ColumnResizer
-                          column={{ key: 'name' }}
+                          column={{ key: "name" }}
                           aria-label="Resize Name"
                           onResize={onResize}
                         />
@@ -3826,7 +3899,7 @@ describe('Table', () => {
       expect(min).toBeGreaterThanOrEqual(75);
     });
 
-    it('ColumnResizer falls back to static separator without ResizableTableContainer', () => {
+    it("ColumnResizer falls back to static separator without ResizableTableContainer", () => {
       render(() => (
         <Table
           items={testData}
@@ -3841,7 +3914,7 @@ describe('Table', () => {
                   {() => (
                     <div>
                       <span>Name</span>
-                      <ColumnResizer column={{ key: 'name' }} />
+                      <ColumnResizer column={{ key: "name" }} />
                     </div>
                   )}
                 </TableColumn>
@@ -3867,7 +3940,7 @@ describe('Table', () => {
       ));
 
       // Should still render a separator element
-      const separators = screen.getAllByRole('separator');
+      const separators = screen.getAllByRole("separator");
       expect(separators.length).toBeGreaterThanOrEqual(1);
     });
   });

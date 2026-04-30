@@ -16,7 +16,7 @@ import {
   useContext,
   For,
   Show,
-} from 'solid-js';
+} from "solid-js";
 import {
   createListBox,
   createOption,
@@ -25,13 +25,13 @@ import {
   mergeProps,
   type AriaListBoxProps,
   type AriaOptionProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createListState,
   type ListState,
   type Key,
   type DropTarget,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -39,20 +39,20 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
-import { SharedElementTransition } from './SharedElementTransition';
+} from "./utils";
+import { SharedElementTransition } from "./SharedElementTransition";
 import {
   SelectionIndicatorContext,
   type SelectionIndicatorContextValue,
-} from './SelectionIndicator';
-import { useVirtualizerContext } from './Virtualizer';
-import { type DragAndDropHooks } from './useDragAndDrop';
+} from "./SelectionIndicator";
+import { useVirtualizerContext } from "./Virtualizer";
+import { type DragAndDropHooks } from "./useDragAndDrop";
 import {
   getNormalizedDropTargetKey,
   mergePersistedKeysIntoVirtualRange,
   useDndPersistedKeys,
   useRenderDropIndicator,
-} from './DragAndDrop';
+} from "./DragAndDrop";
 import {
   CollectionRendererContext,
   Section,
@@ -64,7 +64,7 @@ import {
   useCollectionRenderer,
   isCollectionSection,
   flattenCollectionEntries,
-} from './Collection';
+} from "./Collection";
 
 // ============================================
 // TYPES
@@ -85,13 +85,11 @@ type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
 
 function assignRef<T>(ref: RefLike<T>, el: T): void {
   if (!ref) return;
-  if (typeof ref === 'function') ref(el);
+  if (typeof ref === "function") ref(el);
   else ref.current = el;
 }
 
-export interface ListBoxProps<T>
-  extends Omit<AriaListBoxProps, 'children'>,
-    SlotProps {
+export interface ListBoxProps<T> extends Omit<AriaListBoxProps, "children">, SlotProps {
   /** The items to render in the listbox. */
   items: CollectionEntry<T>[];
   /** Function to get the key from an item. */
@@ -101,19 +99,19 @@ export interface ListBoxProps<T>
   /** Function to check if an item is disabled. */
   getDisabled?: (item: T) => boolean;
   /** The selection mode. */
-  selectionMode?: 'none' | 'single' | 'multiple';
+  selectionMode?: "none" | "single" | "multiple";
   /** The selection behavior (toggle vs replace). */
-  selectionBehavior?: 'toggle' | 'replace';
+  selectionBehavior?: "toggle" | "replace";
   /** Whether disabled items can still receive focus. */
-  disabledBehavior?: 'selection' | 'all';
+  disabledBehavior?: "selection" | "all";
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
   /** Currently selected keys (controlled). */
-  selectedKeys?: 'all' | Iterable<Key>;
+  selectedKeys?: "all" | Iterable<Key>;
   /** Default selected keys (uncontrolled). */
-  defaultSelectedKeys?: 'all' | Iterable<Key>;
+  defaultSelectedKeys?: "all" | Iterable<Key>;
   /** Handler called when selection changes. */
-  onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  onSelectionChange?: (keys: "all" | Set<Key>) => void;
   /** The children of the component. A function may be provided to render each item. */
   children: (item: T) => JSX.Element;
   /** The CSS className for the element. */
@@ -133,9 +131,9 @@ export interface ListBoxProps<T>
   /** Drag and drop hooks from `useDragAndDrop`. */
   dragAndDropHooks?: DragAndDropHooks<T>;
   /** Layout hint for styling parity. */
-  layout?: 'stack' | 'grid';
+  layout?: "stack" | "grid";
   /** Orientation hint for styling parity. */
-  orientation?: 'vertical' | 'horizontal';
+  orientation?: "vertical" | "horizontal";
   /** Slot definitions provided through ListBoxContext. */
   slots?: Record<string, Partial<ListBoxProps<T>>>;
 }
@@ -156,8 +154,7 @@ export interface ListBoxOptionRenderProps {
 }
 
 export interface ListBoxOptionProps<T>
-  extends Omit<AriaOptionProps, 'children' | 'key'>,
-    SlotProps {
+  extends Omit<AriaOptionProps, "children" | "key">, SlotProps {
   /** The unique key for the option. */
   id: Key;
   /** The item value. */
@@ -217,12 +214,40 @@ export const ListStateContext = ListBoxStateContext;
  */
 export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   const parentContext = useContext(ListBoxContext) as ListBoxContextValue<T> | null;
-  const contextSlotProps = parentContext?.slots?.[props.slot ?? 'default'];
-  const mergedListBoxProps = contextSlotProps ? mergeProps(contextSlotProps, props) as ListBoxProps<T> : props;
+  const contextSlotProps = parentContext?.slots?.[props.slot ?? "default"];
+  const mergedListBoxProps = contextSlotProps
+    ? (mergeProps(contextSlotProps, props) as ListBoxProps<T>)
+    : props;
   const [local, stateProps, ariaProps] = splitProps(
     mergedListBoxProps,
-    ['children', 'class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore', 'dragAndDropHooks', 'slots', 'ref'],
-    ['items', 'getKey', 'getTextValue', 'getDisabled', 'disabledKeys', 'disabledBehavior', 'selectionMode', 'selectionBehavior', 'selectedKeys', 'defaultSelectedKeys', 'onSelectionChange', 'layout', 'orientation']
+    [
+      "children",
+      "class",
+      "style",
+      "slot",
+      "renderEmptyState",
+      "hasMore",
+      "isLoading",
+      "onLoadMore",
+      "dragAndDropHooks",
+      "slots",
+      "ref",
+    ],
+    [
+      "items",
+      "getKey",
+      "getTextValue",
+      "getDisabled",
+      "disabledKeys",
+      "disabledBehavior",
+      "selectionMode",
+      "selectionBehavior",
+      "selectedKeys",
+      "defaultSelectedKeys",
+      "onSelectionChange",
+      "layout",
+      "orientation",
+    ],
   );
 
   const flatItems = createMemo<T[]>(() => {
@@ -271,7 +296,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
   // Helper to resolve isDisabled
   const resolveDisabled = (): boolean => {
     const disabled = ariaProps.isDisabled;
-    if (typeof disabled === 'function') {
+    if (typeof disabled === "function") {
       return (disabled as () => boolean)();
     }
     return !!disabled;
@@ -285,7 +310,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
         return resolveDisabled();
       },
     },
-    state
+    state,
   );
 
   // Create focus ring
@@ -304,9 +329,9 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ListBox',
+      defaultClassName: "solidaria-ListBox",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
@@ -332,18 +357,25 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
 
   const isEmpty = () => stateProps.items.length === 0;
   const parentCollectionRenderer = useCollectionRenderer<unknown>();
-  const getItemNodes = createMemo(() => Array.from(state.collection()).filter((node) => node.type === 'item'));
-  const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
+  const getItemNodes = createMemo(() =>
+    Array.from(state.collection()).filter((node) => node.type === "item"),
+  );
+  const getDropTargetByIndex = (
+    index: number,
+    position: "before" | "after" | "on",
+  ): DropTarget | null => {
     const node = getItemNodes()[index];
     if (!node) return null;
-    return { type: 'item', key: node.key, dropPosition: position };
+    return { type: "item", key: node.key, dropPosition: position };
   };
   const hasDroppableDnd = createMemo(() => {
     const hooks = local.dragAndDropHooks;
     return Boolean(
       hooks?.useDroppableCollectionState &&
       hooks.useDroppableCollection &&
-      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate || hooks.ListDropTargetDelegate)
+      (hooks.dropTargetDelegate ||
+        parentCollectionRenderer?.dropTargetDelegate ||
+        hooks.ListDropTargetDelegate),
     );
   });
   const dropState = createMemo(() => {
@@ -372,22 +404,23 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     const hooks = local.dragAndDropHooks;
     const activeDropState = dropState();
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
-    const resolveDirection = (): 'ltr' | 'rtl' => {
+    const resolveDirection = (): "ltr" | "rtl" => {
       const el = listRef();
-      if (el && typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
+      if (el && typeof window !== "undefined" && typeof window.getComputedStyle === "function") {
         const dir = window.getComputedStyle(el).direction;
-        if (dir === 'rtl') return 'rtl';
+        if (dir === "rtl") return "rtl";
       }
-      return typeof document !== 'undefined' && document.dir === 'rtl' ? 'rtl' : 'ltr';
+      return typeof document !== "undefined" && document.dir === "rtl" ? "rtl" : "ltr";
     };
-    const dropTargetDelegate = hooks.dropTargetDelegate
-      ?? parentCollectionRenderer?.dropTargetDelegate
-      ?? (hooks.ListDropTargetDelegate
+    const dropTargetDelegate =
+      hooks.dropTargetDelegate ??
+      parentCollectionRenderer?.dropTargetDelegate ??
+      (hooks.ListDropTargetDelegate
         ? new hooks.ListDropTargetDelegate(
-          () => state.collection(),
-          () => listRef(),
-          { layout: 'stack', orientation: 'vertical', direction: resolveDirection() }
-        )
+            () => state.collection(),
+            () => listRef(),
+            { layout: "stack", orientation: "vertical", direction: resolveDirection() },
+          )
         : undefined);
     if (!dropTargetDelegate) return undefined;
     return hooks.useDroppableCollection(
@@ -403,16 +436,18 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
         },
       },
       activeDropState,
-      () => listRef()
+      () => listRef(),
     );
   });
   const isRootDropTarget = createMemo(() => {
-    return Boolean(dropState()?.target?.type === 'root');
+    return Boolean(dropState()?.target?.type === "root");
   });
-  const dndRenderDropIndicator = createMemo(() => useRenderDropIndicator(local.dragAndDropHooks, dropState()));
-  const dndDropIndicator = (index: number, position: 'before' | 'after' | 'on') => {
+  const dndRenderDropIndicator = createMemo(() =>
+    useRenderDropIndicator(local.dragAndDropHooks, dropState()),
+  );
+  const dndDropIndicator = (index: number, position: "before" | "after" | "on") => {
     const target = getDropTargetByIndex(index, position);
-    if (!target || target.type !== 'item') return undefined;
+    if (!target || target.type !== "item") return undefined;
     return dndRenderDropIndicator()?.(target);
   };
   const virtualizer = useVirtualizerContext();
@@ -420,7 +455,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     { focusedKey: state.focusedKey },
     local.dragAndDropHooks,
     dropState(),
-    state.collection()
+    state.collection(),
   );
   const virtualRange = createMemo(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized || hasSections()) return null;
@@ -432,20 +467,31 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     const dropTarget = dropState()?.target;
     const normalizedDropKey = getNormalizedDropTargetKey(dropTarget, state.collection());
     const focusedKey = state.focusedKey();
-    const focusedIndex = focusedKey != null ? itemNodes.findIndex((node) => node.key === focusedKey) : -1;
+    const focusedIndex =
+      focusedKey != null ? itemNodes.findIndex((node) => node.key === focusedKey) : -1;
     const forceIncludeIndexes = [
-      dropTarget?.type === 'item' ? itemNodes.findIndex((node) => node.key === dropTarget.key) : -1,
-      normalizedDropKey != null ? itemNodes.findIndex((node) => node.key === normalizedDropKey) : -1,
-      dropTarget?.type === 'item' ? -1 : focusedIndex,
+      dropTarget?.type === "item" ? itemNodes.findIndex((node) => node.key === dropTarget.key) : -1,
+      normalizedDropKey != null
+        ? itemNodes.findIndex((node) => node.key === normalizedDropKey)
+        : -1,
+      dropTarget?.type === "item" ? -1 : focusedIndex,
     ].filter((index) => index >= 0);
-    return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, stateProps.items.length, virtualizer, 80, {
-      forceIncludeIndexes,
-      forceIncludeMaxSpan: 320,
-    });
+    return mergePersistedKeysIntoVirtualRange(
+      baseRange,
+      persistedIndexes,
+      stateProps.items.length,
+      virtualizer,
+      80,
+      {
+        forceIncludeIndexes,
+        forceIncludeMaxSpan: 320,
+      },
+    );
   });
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
-    const getItemNodes = () => Array.from(state.collection()).filter((node) => node.type === 'item');
+    const getItemNodes = () =>
+      Array.from(state.collection()).filter((node) => node.type === "item");
     virtualizer.setDropTargetItemCountResolver(() => getItemNodes().length);
     virtualizer.setDropTargetIndexResolver((key) => {
       const index = getItemNodes().findIndex((node) => node.key === key);
@@ -456,7 +502,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
       if (!node) return target;
       return {
         ...target,
-        key: typeof node.key === 'string' || typeof node.key === 'number' ? node.key : undefined,
+        key: typeof node.key === "string" || typeof node.key === "number" ? node.key : undefined,
       };
     });
     onCleanup(() => {
@@ -479,7 +525,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
           index: globalIndex++,
         }));
         return {
-          type: 'section' as const,
+          type: "section" as const,
           section: entry,
           items: sectionItems,
         };
@@ -489,7 +535,7 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
         index: globalIndex++,
       };
       return {
-        type: 'item' as const,
+        type: "item" as const,
         item: indexedItem,
       };
     });
@@ -498,19 +544,22 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
     ...parentCollectionRenderer,
     renderItem: (item) => local.children(item as T),
     renderDropIndicator: (index, position) =>
-      dndDropIndicator(index, position) ?? parentCollectionRenderer?.renderDropIndicator?.(index, position),
+      dndDropIndicator(index, position) ??
+      parentCollectionRenderer?.renderDropIndicator?.(index, position),
   }));
 
   return (
     <ListBoxContext.Provider
-      value={{
-        state,
-        isDisabled: resolveDisabled,
-        dragAndDropHooks: local.dragAndDropHooks as DragAndDropHooks<unknown> | undefined,
-        dragState: dragState(),
-        dropState: dropState(),
-        slots: local.slots,
-      } as ListBoxContextValue<unknown>}
+      value={
+        {
+          state,
+          isDisabled: resolveDisabled,
+          dragAndDropHooks: local.dragAndDropHooks as DragAndDropHooks<unknown> | undefined,
+          dragState: dragState(),
+          dropState: dropState(),
+          slots: local.slots,
+        } as ListBoxContextValue<unknown>
+      }
     >
       <ListBoxStateContext.Provider value={state}>
         <CollectionRendererContext.Provider value={collectionRenderer()}>
@@ -523,7 +572,8 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
                 domProps(),
                 cleanListBoxProps(),
                 cleanFocusProps(),
-                (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
+                (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ??
+                  {},
               )}
               ref={(el) => {
                 setListRef(el);
@@ -541,84 +591,98 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
               slot={local.slot}
             >
               <SharedElementTransition>
-              {isEmpty() && local.renderEmptyState
-                ? (
-                  <li role="option" style={{ display: 'contents' }} data-empty-state>
+                {isEmpty() && local.renderEmptyState ? (
+                  <li role="option" style={{ display: "contents" }} data-empty-state>
                     {local.renderEmptyState()}
                   </li>
-                )
-                : hasSections()
-                  ? (
-                    <For each={sectionedRenderEntries()}>
-                      {(entry) =>
-                        entry.type === 'section'
-                          ? (
-                            <li role="presentation" data-section-wrapper>
-                              <Section class="solidaria-ListBox-section">
-                                {entry.section.title != null && (
-                                  <Header class="solidaria-ListBox-sectionHeader">{entry.section.title}</Header>
-                                )}
-                                <Group class="solidaria-ListBox-sectionGroup">
-                                  <ul role="group" aria-label={entry.section['aria-label']}>
-                                    <For each={entry.items}>
-                                      {(indexedItem) => (
-                                        <>
-                                          {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'before')}
-                                          {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'on')}
-                                          {local.children(indexedItem.item)}
-                                          {collectionRenderer().renderDropIndicator?.(indexedItem.index, 'after')}
-                                        </>
+                ) : hasSections() ? (
+                  <For each={sectionedRenderEntries()}>
+                    {(entry) =>
+                      entry.type === "section" ? (
+                        <li role="presentation" data-section-wrapper>
+                          <Section class="solidaria-ListBox-section">
+                            {entry.section.title != null && (
+                              <Header class="solidaria-ListBox-sectionHeader">
+                                {entry.section.title}
+                              </Header>
+                            )}
+                            <Group class="solidaria-ListBox-sectionGroup">
+                              <ul role="group" aria-label={entry.section["aria-label"]}>
+                                <For each={entry.items}>
+                                  {(indexedItem) => (
+                                    <>
+                                      {collectionRenderer().renderDropIndicator?.(
+                                        indexedItem.index,
+                                        "before",
                                       )}
-                                    </For>
-                                  </ul>
-                                </Group>
-                              </Section>
-                            </li>
-                          )
-                          : (
-                            <>
-                              {collectionRenderer().renderDropIndicator?.(entry.item.index, 'before')}
-                              {collectionRenderer().renderDropIndicator?.(entry.item.index, 'on')}
-                              {local.children(entry.item.item)}
-                              {collectionRenderer().renderDropIndicator?.(entry.item.index, 'after')}
-                            </>
-                          )
-                      }
+                                      {collectionRenderer().renderDropIndicator?.(
+                                        indexedItem.index,
+                                        "on",
+                                      )}
+                                      {local.children(indexedItem.item)}
+                                      {collectionRenderer().renderDropIndicator?.(
+                                        indexedItem.index,
+                                        "after",
+                                      )}
+                                    </>
+                                  )}
+                                </For>
+                              </ul>
+                            </Group>
+                          </Section>
+                        </li>
+                      ) : (
+                        <>
+                          {collectionRenderer().renderDropIndicator?.(entry.item.index, "before")}
+                          {collectionRenderer().renderDropIndicator?.(entry.item.index, "on")}
+                          {local.children(entry.item.item)}
+                          {collectionRenderer().renderDropIndicator?.(entry.item.index, "after")}
+                        </>
+                      )
+                    }
+                  </For>
+                ) : (
+                  <>
+                    {virtualRange()?.offsetTop ? (
+                      <li
+                        role="presentation"
+                        aria-hidden="true"
+                        style={{ height: `${virtualRange()!.offsetTop}px` }}
+                        data-virtualizer-spacer="top"
+                      />
+                    ) : null}
+                    <For each={visibleItems()}>
+                      {(item, index) => {
+                        const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                        const beforeIndicator = () =>
+                          collectionRenderer().renderDropIndicator?.(itemIndex(), "before");
+                        const onIndicator = () =>
+                          collectionRenderer().renderDropIndicator?.(itemIndex(), "on");
+                        const afterIndicator = () =>
+                          collectionRenderer().renderDropIndicator?.(itemIndex(), "after");
+                        return (
+                          <>
+                            {beforeIndicator()}
+                            {onIndicator()}
+                            {local.children(item as T)}
+                            {afterIndicator()}
+                          </>
+                        );
+                      }}
                     </For>
-                  )
-                  : (
-                    <>
-                      {virtualRange()?.offsetTop
-                        ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
-                        : null}
-                      <For each={visibleItems()}>
-                        {(item, index) => {
-                          const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-                          const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'before');
-                          const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'on');
-                          const afterIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex(), 'after');
-                          return (
-                            <>
-                              {beforeIndicator()}
-                              {onIndicator()}
-                              {local.children(item as T)}
-                              {afterIndicator()}
-                            </>
-                          );
-                        }}
-                      </For>
-                      {virtualRange()?.offsetBottom
-                        ? <li role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
-                        : null}
-                    </>
-                  )
-              }
+                    {virtualRange()?.offsetBottom ? (
+                      <li
+                        role="presentation"
+                        aria-hidden="true"
+                        style={{ height: `${virtualRange()!.offsetBottom}px` }}
+                        data-virtualizer-spacer="bottom"
+                      />
+                    ) : null}
+                  </>
+                )}
               </SharedElementTransition>
               {local.hasMore && local.onLoadMore && (
-                <ListBoxLoadMoreItem
-                  onLoadMore={local.onLoadMore}
-                  isLoading={local.isLoading}
-                />
+                <ListBoxLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
               )}
             </ul>
           </>
@@ -633,19 +697,19 @@ export function ListBox<T>(props: ListBoxProps<T>): JSX.Element {
  */
 export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'class',
-    'style',
-    'slot',
-    'id',
-    'item',
-    'textValue',
-    'ref',
+    "class",
+    "style",
+    "slot",
+    "id",
+    "item",
+    "textValue",
+    "ref",
   ]);
 
   // Get state from context
   const context = useContext(ListBoxStateContext);
   if (!context) {
-    throw new Error('ListBoxOption must be used within a ListBox');
+    throw new Error("ListBoxOption must be used within a ListBox");
   }
   const state = context as ListState<T>;
   const listContext = useContext(ListBoxContext) as ListBoxContextValue<T> | null;
@@ -658,14 +722,14 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
       get isDisabled() {
         return Boolean(ariaProps.isDisabled || listContext?.isDisabled());
       },
-      get 'aria-label'() {
-        return ariaProps['aria-label'] ?? local.textValue;
+      get "aria-label"() {
+        return ariaProps["aria-label"] ?? local.textValue;
       },
       get shouldSelectOnPressUp() {
         return ariaProps.shouldSelectOnPressUp;
       },
     },
-    state
+    state,
   );
 
   // Create hover
@@ -700,34 +764,36 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ListBox-option',
+      defaultClassName: "solidaria-ListBox-option",
     },
-    renderValues
+    renderValues,
   );
   const hasPrimitiveLabel = () => {
-    return typeof props.children === 'string' || typeof props.children === 'number';
+    return typeof props.children === "string" || typeof props.children === "number";
   };
 
   const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
     isSelected: optionAria.isSelected,
   }));
   const draggableItem = createMemo(() => {
-    if (!listContext?.dragAndDropHooks?.useDraggableItem || !listContext.dragState) return undefined;
+    if (!listContext?.dragAndDropHooks?.useDraggableItem || !listContext.dragState)
+      return undefined;
     return listContext.dragAndDropHooks.useDraggableItem(
       {
         key: local.id as string | number,
       },
-      listContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>['useDraggableItem']>>[1]
+      listContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>["useDraggableItem"]>>[1],
     );
   });
   const droppableItem = createMemo(() => {
-    if (!listContext?.dragAndDropHooks?.useDroppableItem || !listContext.dropState) return undefined;
+    if (!listContext?.dragAndDropHooks?.useDroppableItem || !listContext.dropState)
+      return undefined;
     return listContext.dragAndDropHooks.useDroppableItem(
       {
         key: local.id as string | number,
       },
-      listContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>['useDroppableItem']>>[1],
-      () => ref()
+      listContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>["useDroppableItem"]>>[1],
+      () => ref(),
     );
   });
 
@@ -735,11 +801,11 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
   const cleanOptionProps = () => {
     const {
       ref: _ref1,
-      'aria-describedby': _ariaDescribedby,
+      "aria-describedby": _ariaDescribedby,
       ...rest
     } = optionAria.optionProps as Record<string, unknown>;
-    if (!hasPrimitiveLabel() && rest['aria-label'] == null) {
-      delete rest['aria-labelledby'];
+    if (!hasPrimitiveLabel() && rest["aria-label"] == null) {
+      delete rest["aria-labelledby"];
     }
     return rest;
   };
@@ -761,7 +827,7 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
           cleanOptionProps(),
           cleanHoverProps(),
           (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
-          (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
+          (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {},
         )}
         class={renderProps.class()}
         style={renderProps.style()}
@@ -775,9 +841,11 @@ export function ListBoxOption<T>(props: ListBoxOptionProps<T>): JSX.Element {
         data-drop-target={droppableItem()?.isDropTarget || undefined}
         slot={local.slot}
       >
-        {hasPrimitiveLabel()
-          ? <span {...optionAria.labelProps}>{renderProps.renderChildren()}</span>
-          : renderProps.renderChildren()}
+        {hasPrimitiveLabel() ? (
+          <span {...optionAria.labelProps}>{renderProps.renderChildren()}</span>
+        ) : (
+          renderProps.renderChildren()
+        )}
       </li>
     </SelectionIndicatorContext.Provider>
   );
@@ -803,7 +871,7 @@ export function ListBoxLoadMoreItem(props: ListBoxLoadMoreItemProps): JSX.Elemen
   };
 
   createEffect(() => {
-    if (!sentinelRef || typeof IntersectionObserver !== 'function') return;
+    if (!sentinelRef || typeof IntersectionObserver !== "function") return;
 
     const offset = props.scrollOffset ?? 1;
     const margin = `0px 0px ${100 * offset}% 0px`;
@@ -813,7 +881,7 @@ export function ListBoxLoadMoreItem(props: ListBoxLoadMoreItemProps): JSX.Elemen
           void triggerLoadMore();
         }
       },
-      { rootMargin: margin }
+      { rootMargin: margin },
     );
 
     observer.observe(sentinelRef);
@@ -822,18 +890,18 @@ export function ListBoxLoadMoreItem(props: ListBoxLoadMoreItemProps): JSX.Elemen
 
   const renderProps = useRenderProps(
     {
-      children: props.children ?? (() => (isLoading() ? 'Loading more...' : 'Load more')),
+      children: props.children ?? (() => (isLoading() ? "Loading more..." : "Load more")),
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-ListBox-loadMore',
+      defaultClassName: "solidaria-ListBox-loadMore",
     },
-    () => ({ isLoading: isLoading() })
+    () => ({ isLoading: isLoading() }),
   );
 
   return (
     <>
-      <li style={{ position: 'relative', width: 0, height: 0, overflow: 'hidden' }} inert>
-        <div ref={sentinelRef} style={{ position: 'absolute', height: '1px', width: '1px' }} />
+      <li style={{ position: "relative", width: 0, height: 0, overflow: "hidden" }} inert>
+        <div ref={sentinelRef} style={{ position: "absolute", height: "1px", width: "1px" }} />
       </li>
       <li
         role="option"

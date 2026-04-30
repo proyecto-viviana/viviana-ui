@@ -5,8 +5,8 @@
  * Focus events on child elements will be ignored.
  */
 
-import { JSX, onCleanup } from 'solid-js';
-import { getOwnerDocument, getEventTarget } from '../utils';
+import { JSX, onCleanup } from "solid-js";
+import { getOwnerDocument, getEventTarget } from "../utils";
 function getActiveElement(doc: Document): Element | null {
   let activeElement = doc.activeElement;
   while (activeElement && (activeElement as Element).shadowRoot?.activeElement) {
@@ -40,7 +40,10 @@ export interface FocusResult {
  * Most browsers fire a native focusout event in this case, except for Firefox.
  * We use a MutationObserver to watch for the disabled attribute.
  */
-function createSyntheticBlurHandler(): (_e: FocusEvent, target: Element) => (() => void) | undefined {
+function createSyntheticBlurHandler(): (
+  _e: FocusEvent,
+  target: Element,
+) => (() => void) | undefined {
   let isFocused = false;
   let observer: MutationObserver | null = null;
 
@@ -62,7 +65,7 @@ function createSyntheticBlurHandler(): (_e: FocusEvent, target: Element) => (() 
         }
       };
 
-      target.addEventListener('focusout', onBlurHandler, { once: true });
+      target.addEventListener("focusout", onBlurHandler, { once: true });
 
       observer = new MutationObserver(() => {
         if (isFocused && (target as HTMLButtonElement).disabled) {
@@ -70,13 +73,14 @@ function createSyntheticBlurHandler(): (_e: FocusEvent, target: Element) => (() 
           observer?.disconnect();
           observer = null;
           const ownerDocument = target.ownerDocument;
-          const relatedTarget = target === ownerDocument.activeElement ? null : ownerDocument.activeElement;
-          target.dispatchEvent(new FocusEvent('blur', { relatedTarget }));
-          target.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget }));
+          const relatedTarget =
+            target === ownerDocument.activeElement ? null : ownerDocument.activeElement;
+          target.dispatchEvent(new FocusEvent("blur", { relatedTarget }));
+          target.dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget }));
         }
       });
 
-      observer.observe(target, { attributes: true, attributeFilter: ['disabled'] });
+      observer.observe(target, { attributes: true, attributeFilter: ["disabled"] });
 
       // Return cleanup function
       return () => {

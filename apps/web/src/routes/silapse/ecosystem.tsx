@@ -1,10 +1,10 @@
-import { createFileRoute } from '@tanstack/solid-router'
-import { Header } from '@/components'
-import { ProjectCard, PageLayout } from '@proyecto-viviana/solid-spectrum'
+import { createFileRoute } from "@tanstack/solid-router";
+import { Header } from "@/components";
+import { ProjectCard, PageLayout } from "@proyecto-viviana/solid-spectrum";
 
-export const Route = createFileRoute('/silapse/ecosystem')({
+export const Route = createFileRoute("/silapse/ecosystem")({
   component: Ecosystem,
-})
+});
 
 function Ecosystem() {
   return (
@@ -12,11 +12,10 @@ function Ecosystem() {
       <Header />
 
       <main id="main-content" class="mx-auto max-w-6xl px-6 py-12">
-        <h1 class="text-4xl font-semibold text-primary-100 drop-shadow-title-card">
-          Ecosystem.
-        </h1>
+        <h1 class="text-4xl font-semibold text-primary-100 drop-shadow-title-card">Ecosystem.</h1>
         <p class="font-sen text-lg text-primary-300 pb-8">
-          The proyecto-viviana ecosystem: packages, tools, and applications built with our component library.
+          The proyecto-viviana ecosystem: packages, tools, and applications built with our component
+          library.
         </p>
 
         {/* Core Packages */}
@@ -83,5 +82,5 @@ function Ecosystem() {
         </section>
       </main>
     </PageLayout>
-  )
+  );
 }

@@ -6,9 +6,9 @@
  * Ensures only one tooltip is open at a time and controls the delay for showing a tooltip.
  */
 
-import { createSignal, onCleanup, type Accessor } from 'solid-js';
-import { createOverlayTriggerState, type OverlayTriggerProps } from '../overlays';
-import { isServer } from '../ssr';
+import { createSignal, onCleanup, type Accessor } from "solid-js";
+import { createOverlayTriggerState, type OverlayTriggerProps } from "../overlays";
+import { isServer } from "../ssr";
 
 // Default delays (in ms)
 const TOOLTIP_DELAY = 1500;
@@ -64,9 +64,7 @@ export function resetTooltipState(): void {
  * methods to toggle this state. Ensures only one tooltip is open at a time and controls
  * the delay for showing a tooltip.
  */
-export function createTooltipTriggerState(
-  props: TooltipTriggerProps = {}
-): TooltipTriggerState {
+export function createTooltipTriggerState(props: TooltipTriggerProps = {}): TooltipTriggerState {
   const delay = () => props.delay ?? TOOLTIP_DELAY;
   const closeDelay = () => props.closeDelay ?? TOOLTIP_COOLDOWN;
 
@@ -132,11 +130,14 @@ export function createTooltipTriggerState(
       if (globalCooldownTimeout) {
         clearTimeout(globalCooldownTimeout);
       }
-      globalCooldownTimeout = setTimeout(() => {
-        delete tooltips[id];
-        globalCooldownTimeout = null;
-        globalWarmedUp = false;
-      }, Math.max(TOOLTIP_COOLDOWN, closeDelay()));
+      globalCooldownTimeout = setTimeout(
+        () => {
+          delete tooltips[id];
+          globalCooldownTimeout = null;
+          globalWarmedUp = false;
+        },
+        Math.max(TOOLTIP_COOLDOWN, closeDelay()),
+      );
     }
   };
 

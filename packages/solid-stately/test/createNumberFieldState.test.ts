@@ -3,73 +3,73 @@
  *
  * Ported from @react-stately/numberfield useNumberFieldState.
  */
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
-import { createNumberFieldState } from '../src/numberfield/createNumberFieldState';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot, createSignal } from "solid-js";
+import { createNumberFieldState } from "../src/numberfield/createNumberFieldState";
 
-describe('createNumberFieldState', () => {
-  describe('basic state management', () => {
-    it('should return NaN by default', () => {
+describe("createNumberFieldState", () => {
+  describe("basic state management", () => {
+    it("should return NaN by default", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({});
 
         expect(state.numberValue()).toBeNaN();
-        expect(state.inputValue()).toBe('');
+        expect(state.inputValue()).toBe("");
 
         dispose();
       });
     });
 
-    it('should use defaultValue for initial value', () => {
+    it("should use defaultValue for initial value", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          defaultValue: 50
+          defaultValue: 50,
         });
 
         expect(state.numberValue()).toBe(50);
-        expect(state.inputValue()).toBe('50');
+        expect(state.inputValue()).toBe("50");
 
         dispose();
       });
     });
 
-    it('should use value for controlled mode', () => {
+    it("should use value for controlled mode", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          value: 75
+          value: 75,
         });
 
         expect(state.numberValue()).toBe(75);
-        expect(state.inputValue()).toBe('75');
+        expect(state.inputValue()).toBe("75");
 
         dispose();
       });
     });
 
-    it('should constrain defaultValue when custom step and bounds are provided', () => {
+    it("should constrain defaultValue when custom step and bounds are provided", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 9.6,
           minValue: 0,
           maxValue: 10,
-          step: 2
+          step: 2,
         });
 
         expect(state.numberValue()).toBe(10);
-        expect(state.inputValue()).toBe('10');
+        expect(state.inputValue()).toBe("10");
 
         dispose();
       });
     });
   });
 
-  describe('increment and decrement', () => {
-    it('should increment by default step (1)', () => {
+  describe("increment and decrement", () => {
+    it("should increment by default step (1)", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createNumberFieldState({
           defaultValue: 50,
-          onChange
+          onChange,
         });
 
         state.increment();
@@ -81,12 +81,12 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should decrement by default step (1)', () => {
+    it("should decrement by default step (1)", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createNumberFieldState({
           defaultValue: 50,
-          onChange
+          onChange,
         });
 
         state.decrement();
@@ -98,11 +98,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should increment by custom step', () => {
+    it("should increment by custom step", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 50,
-          step: 5
+          step: 5,
         });
 
         state.increment();
@@ -113,11 +113,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should decrement by custom step', () => {
+    it("should decrement by custom step", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 50,
-          step: 5
+          step: 5,
         });
 
         state.decrement();
@@ -128,11 +128,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should not increment past maxValue', () => {
+    it("should not increment past maxValue", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 98,
-          maxValue: 100
+          maxValue: 100,
         });
 
         state.increment();
@@ -148,11 +148,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should not decrement past minValue', () => {
+    it("should not decrement past minValue", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 2,
-          minValue: 0
+          minValue: 0,
         });
 
         state.decrement();
@@ -168,10 +168,10 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should start from minValue when incrementing from NaN', () => {
+    it("should start from minValue when incrementing from NaN", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          minValue: 10
+          minValue: 10,
         });
 
         state.increment();
@@ -182,10 +182,10 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should start from maxValue when decrementing from NaN', () => {
+    it("should start from maxValue when decrementing from NaN", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          maxValue: 100
+          maxValue: 100,
         });
 
         state.decrement();
@@ -196,7 +196,7 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should start from 0 when incrementing from NaN with no min', () => {
+    it("should start from 0 when incrementing from NaN with no min", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({});
 
@@ -208,7 +208,7 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should start from 0 when decrementing from NaN with no max', () => {
+    it("should start from 0 when decrementing from NaN with no max", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({});
 
@@ -220,11 +220,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should not increment when disabled', () => {
+    it("should not increment when disabled", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 50,
-          isDisabled: true
+          isDisabled: true,
         });
 
         state.increment();
@@ -235,11 +235,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should not decrement when disabled', () => {
+    it("should not decrement when disabled", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 50,
-          isDisabled: true
+          isDisabled: true,
         });
 
         state.decrement();
@@ -250,11 +250,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should not increment when readOnly', () => {
+    it("should not increment when readOnly", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 50,
-          isReadOnly: true
+          isReadOnly: true,
         });
 
         state.increment();
@@ -265,11 +265,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should not decrement when readOnly', () => {
+    it("should not decrement when readOnly", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 50,
-          isReadOnly: true
+          isReadOnly: true,
         });
 
         state.decrement();
@@ -281,14 +281,14 @@ describe('createNumberFieldState', () => {
     });
   });
 
-  describe('incrementToMax and decrementToMin', () => {
-    it('should increment to max', () => {
+  describe("incrementToMax and decrementToMin", () => {
+    it("should increment to max", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createNumberFieldState({
           defaultValue: 50,
           maxValue: 100,
-          onChange
+          onChange,
         });
 
         state.incrementToMax();
@@ -300,13 +300,13 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should decrement to min', () => {
+    it("should decrement to min", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createNumberFieldState({
           defaultValue: 50,
           minValue: 0,
-          onChange
+          onChange,
         });
 
         state.decrementToMin();
@@ -318,10 +318,10 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should not incrementToMax when no maxValue set', () => {
+    it("should not incrementToMax when no maxValue set", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          defaultValue: 50
+          defaultValue: 50,
         });
 
         state.incrementToMax();
@@ -332,10 +332,10 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should not decrementToMin when no minValue set', () => {
+    it("should not decrementToMin when no minValue set", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          defaultValue: 50
+          defaultValue: 50,
         });
 
         state.decrementToMin();
@@ -347,12 +347,12 @@ describe('createNumberFieldState', () => {
     });
   });
 
-  describe('canIncrement and canDecrement', () => {
-    it('should return true when can increment', () => {
+  describe("canIncrement and canDecrement", () => {
+    it("should return true when can increment", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 50,
-          maxValue: 100
+          maxValue: 100,
         });
 
         expect(state.canIncrement()).toBe(true);
@@ -361,11 +361,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should return false when at max', () => {
+    it("should return false when at max", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 100,
-          maxValue: 100
+          maxValue: 100,
         });
 
         expect(state.canIncrement()).toBe(false);
@@ -374,11 +374,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should return true when can decrement', () => {
+    it("should return true when can decrement", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 50,
-          minValue: 0
+          minValue: 0,
         });
 
         expect(state.canDecrement()).toBe(true);
@@ -387,11 +387,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should return false when at min', () => {
+    it("should return false when at min", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 0,
-          minValue: 0
+          minValue: 0,
         });
 
         expect(state.canDecrement()).toBe(false);
@@ -400,11 +400,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should return false when disabled', () => {
+    it("should return false when disabled", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 50,
-          isDisabled: true
+          isDisabled: true,
         });
 
         expect(state.canIncrement()).toBe(false);
@@ -414,11 +414,11 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should return false when readOnly', () => {
+    it("should return false when readOnly", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 50,
-          isReadOnly: true
+          isReadOnly: true,
         });
 
         expect(state.canIncrement()).toBe(false);
@@ -428,7 +428,7 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should return true when value is NaN', () => {
+    it("should return true when value is NaN", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({});
 
@@ -440,24 +440,24 @@ describe('createNumberFieldState', () => {
     });
   });
 
-  describe('input value handling', () => {
-    it('should set input value', () => {
+  describe("input value handling", () => {
+    it("should set input value", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({});
 
-        state.setInputValue('42');
-        expect(state.inputValue()).toBe('42');
+        state.setInputValue("42");
+        expect(state.inputValue()).toBe("42");
 
         dispose();
       });
     });
 
-    it('should commit valid input value', () => {
+    it("should commit valid input value", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createNumberFieldState({ onChange });
 
-        state.setInputValue('42');
+        state.setInputValue("42");
         state.commit();
 
         expect(state.numberValue()).toBe(42);
@@ -467,14 +467,14 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should clamp value on commit', () => {
+    it("should clamp value on commit", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           minValue: 0,
-          maxValue: 100
+          maxValue: 100,
         });
 
-        state.setInputValue('150');
+        state.setInputValue("150");
         state.commit();
 
         expect(state.numberValue()).toBe(100);
@@ -483,13 +483,13 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should snap to step on commit', () => {
+    it("should snap to step on commit", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          step: 5
+          step: 5,
         });
 
-        state.setInputValue('42');
+        state.setInputValue("42");
         state.commit();
 
         expect(state.numberValue()).toBe(40);
@@ -498,121 +498,121 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should clear value when input is empty', () => {
+    it("should clear value when input is empty", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          defaultValue: 50
+          defaultValue: 50,
         });
 
-        state.setInputValue('');
+        state.setInputValue("");
         state.commit();
 
         expect(state.numberValue()).toBeNaN();
-        expect(state.inputValue()).toBe('');
+        expect(state.inputValue()).toBe("");
 
         dispose();
       });
     });
 
-    it('should preserve decimals on commit when no custom step is provided', () => {
+    it("should preserve decimals on commit when no custom step is provided", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({});
 
-        state.setInputValue('42.5');
+        state.setInputValue("42.5");
         state.commit();
 
         expect(state.numberValue()).toBe(42.5);
-        expect(state.inputValue()).toBe('42.5');
+        expect(state.inputValue()).toBe("42.5");
 
         dispose();
       });
     });
 
-    it('should clear controlled value via onChange but keep rendered value until prop updates', () => {
+    it("should clear controlled value via onChange but keep rendered value until prop updates", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createNumberFieldState({
           value: 12,
-          onChange
+          onChange,
         });
 
-        state.setInputValue('');
+        state.setInputValue("");
         state.commit();
 
         expect(onChange).toHaveBeenCalledWith(NaN);
-        expect(state.inputValue()).toBe('12');
+        expect(state.inputValue()).toBe("12");
         expect(state.numberValue()).toBe(12);
 
         dispose();
       });
     });
 
-    it('should revert to current value on invalid input', () => {
+    it("should revert to current value on invalid input", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          defaultValue: 50
+          defaultValue: 50,
         });
 
-        state.setInputValue('abc');
+        state.setInputValue("abc");
         state.commit();
 
         expect(state.numberValue()).toBe(50);
-        expect(state.inputValue()).toBe('50');
+        expect(state.inputValue()).toBe("50");
 
         dispose();
       });
     });
   });
 
-  describe('validation', () => {
-    it('should validate empty string', () => {
+  describe("validation", () => {
+    it("should validate empty string", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({});
 
-        expect(state.validate('')).toBe(true);
+        expect(state.validate("")).toBe(true);
 
         dispose();
       });
     });
 
-    it('should validate minus sign', () => {
+    it("should validate minus sign", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({});
 
-        expect(state.validate('-')).toBe(true);
+        expect(state.validate("-")).toBe(true);
 
         dispose();
       });
     });
 
-    it('should validate partial decimal', () => {
+    it("should validate partial decimal", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({});
 
-        expect(state.validate('1.')).toBe(true);
+        expect(state.validate("1.")).toBe(true);
 
         dispose();
       });
     });
 
-    it('should validate full number', () => {
+    it("should validate full number", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({});
 
-        expect(state.validate('42')).toBe(true);
-        expect(state.validate('3.14')).toBe(true);
-        expect(state.validate('-5')).toBe(true);
+        expect(state.validate("42")).toBe(true);
+        expect(state.validate("3.14")).toBe(true);
+        expect(state.validate("-5")).toBe(true);
 
         dispose();
       });
     });
   });
 
-  describe('disabled and readOnly states', () => {
-    it('should expose isDisabled', () => {
+  describe("disabled and readOnly states", () => {
+    it("should expose isDisabled", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          isDisabled: true
+          isDisabled: true,
         });
 
         expect(state.isDisabled()).toBe(true);
@@ -621,10 +621,10 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should expose isReadOnly', () => {
+    it("should expose isReadOnly", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          isReadOnly: true
+          isReadOnly: true,
         });
 
         expect(state.isReadOnly()).toBe(true);
@@ -634,11 +634,11 @@ describe('createNumberFieldState', () => {
     });
   });
 
-  describe('min and max value accessors', () => {
-    it('should expose minValue', () => {
+  describe("min and max value accessors", () => {
+    it("should expose minValue", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          minValue: 10
+          minValue: 10,
         });
 
         expect(state.minValue()).toBe(10);
@@ -647,10 +647,10 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should expose maxValue', () => {
+    it("should expose maxValue", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
-          maxValue: 100
+          maxValue: 100,
         });
 
         expect(state.maxValue()).toBe(100);
@@ -660,12 +660,12 @@ describe('createNumberFieldState', () => {
     });
   });
 
-  describe('decimal precision', () => {
-    it('should handle decimal operations correctly', () => {
+  describe("decimal precision", () => {
+    it("should handle decimal operations correctly", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 0,
-          step: 0.1
+          step: 0.1,
         });
 
         state.increment();
@@ -683,12 +683,12 @@ describe('createNumberFieldState', () => {
     });
   });
 
-  describe('percent format', () => {
-    it('should use step of 0.01 for percent format', () => {
+  describe("percent format", () => {
+    it("should use step of 0.01 for percent format", () => {
       createRoot((dispose) => {
         const state = createNumberFieldState({
           defaultValue: 0.5,
-          formatOptions: { style: 'percent' }
+          formatOptions: { style: "percent" },
         });
 
         state.increment();
@@ -699,13 +699,13 @@ describe('createNumberFieldState', () => {
     });
   });
 
-  describe('controlled mode', () => {
-    it('should not update internal state in controlled mode', () => {
+  describe("controlled mode", () => {
+    it("should not update internal state in controlled mode", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createNumberFieldState({
           value: 50,
-          onChange
+          onChange,
         });
 
         state.increment();
@@ -717,18 +717,20 @@ describe('createNumberFieldState', () => {
       });
     });
 
-    it('should be possible to control the value', () => {
+    it("should be possible to control the value", () => {
       createRoot((dispose) => {
         const [value, setValue] = createSignal(50);
         const state = createNumberFieldState({
-          get value() { return value(); }
+          get value() {
+            return value();
+          },
         });
 
         expect(state.numberValue()).toBe(50);
 
         setValue(75);
         expect(state.numberValue()).toBe(75);
-        expect(state.inputValue()).toBe('75');
+        expect(state.inputValue()).toBe("75");
 
         dispose();
       });

@@ -5,7 +5,7 @@
  * Based on @react-stately/calendar useCalendarState
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from "solid-js";
 import {
   type CalendarDate,
   type DateValue,
@@ -20,14 +20,14 @@ import {
   getDayOfWeek,
   DateFormatter,
   toCalendarDate as intlToCalendarDate,
-} from '@internationalized/date';
-import { access, type MaybeAccessor } from '../utils';
+} from "@internationalized/date";
+import { access, type MaybeAccessor } from "../utils";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type ValidationState = 'valid' | 'invalid';
+export type ValidationState = "valid" | "invalid";
 
 export interface CalendarStateProps<T extends DateValue = DateValue> {
   /** The current value (controlled). */
@@ -151,10 +151,10 @@ export interface CalendarState<T extends DateValue = DateValue> {
  * Provides state management for a calendar component.
  */
 export function createCalendarState<T extends DateValue = CalendarDate>(
-  props: CalendarStateProps<T> = {}
+  props: CalendarStateProps<T> = {},
 ): CalendarState<T> {
   const timeZone = getLocalTimeZone();
-  const locale = props.locale ?? 'en-US';
+  const locale = props.locale ?? "en-US";
   const visibleMonths = props.visibleMonths ?? 1;
 
   // Determine the initially focused date
@@ -177,12 +177,8 @@ export function createCalendarState<T extends DateValue = CalendarDate>(
   };
 
   // State signals
-  const [internalValue, setInternalValue] = createSignal<T | null>(
-    props.defaultValue ?? null
-  );
-  const [focusedDate, setFocusedDateInternal] = createSignal<CalendarDate>(
-    getInitialFocusedDate()
-  );
+  const [internalValue, setInternalValue] = createSignal<T | null>(props.defaultValue ?? null);
+  const [focusedDate, setFocusedDateInternal] = createSignal<CalendarDate>(getInitialFocusedDate());
   const [isFocused, setFocused] = createSignal(false);
   const [isPaginating, setIsPaginating] = createSignal(false);
 
@@ -213,7 +209,7 @@ export function createCalendarState<T extends DateValue = CalendarDate>(
 
   // Format week days for headers
   const weekDays = createMemo(() => {
-    const formatter = new DateFormatter(locale, { weekday: 'short' });
+    const formatter = new DateFormatter(locale, { weekday: "short" });
     const startDay = props.firstDayOfWeek ?? 0;
     const days: string[] = [];
     const base = today(timeZone);
@@ -233,8 +229,8 @@ export function createCalendarState<T extends DateValue = CalendarDate>(
   // Title (formatted month/year)
   const title = createMemo(() => {
     const formatter = new DateFormatter(locale, {
-      month: 'long',
-      year: 'numeric',
+      month: "long",
+      year: "numeric",
     });
     return formatter.format(focusedDate().toDate(timeZone));
   });
@@ -380,7 +376,7 @@ export function createCalendarState<T extends DateValue = CalendarDate>(
   // Get dates in a specific week
   const getDatesInWeek = (
     weekIndex: number,
-    monthStartDate?: CalendarDate
+    monthStartDate?: CalendarDate,
   ): (CalendarDate | null)[] => {
     const startDate = monthStartDate ?? visibleRange().start;
 

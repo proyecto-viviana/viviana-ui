@@ -3,17 +3,20 @@
  * Based on @react-aria/gridlist/useGridListSelectionCheckbox.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import type { TreeState, TreeCollection } from '@proyecto-viviana/solid-stately';
-import type { AriaTreeSelectionCheckboxProps, TreeSelectionCheckboxAria } from './types';
+import { createMemo, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import type { TreeState, TreeCollection } from "@proyecto-viviana/solid-stately";
+import type { AriaTreeSelectionCheckboxProps, TreeSelectionCheckboxAria } from "./types";
 
 /**
  * Creates accessibility props for a tree selection checkbox.
  */
-export function createTreeSelectionCheckbox<T extends object, C extends TreeCollection<T> = TreeCollection<T>>(
+export function createTreeSelectionCheckbox<
+  T extends object,
+  C extends TreeCollection<T> = TreeCollection<T>,
+>(
   props: Accessor<AriaTreeSelectionCheckboxProps>,
-  state: Accessor<TreeState<T, C>>
+  state: Accessor<TreeState<T, C>>,
 ): TreeSelectionCheckboxAria {
   const isSelected = createMemo(() => {
     const s = state();
@@ -48,8 +51,8 @@ export function createTreeSelectionCheckbox<T extends object, C extends TreeColl
 
   const checkboxProps = createMemo(() => {
     const baseProps: Record<string, unknown> = {
-      type: 'checkbox',
-      'aria-label': 'Select',
+      type: "checkbox",
+      "aria-label": "Select",
       checked: isSelected(),
       disabled: isDisabled(),
       onChange,

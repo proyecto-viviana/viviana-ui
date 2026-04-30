@@ -1,14 +1,14 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { createRoot } from 'solid-js';
-import { createDroppableItem } from '../src/dnd/createDroppableItem';
-import type { DroppableCollectionState } from '@proyecto-viviana/solid-stately';
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { createRoot } from "solid-js";
+import { createDroppableItem } from "../src/dnd/createDroppableItem";
+import type { DroppableCollectionState } from "@proyecto-viviana/solid-stately";
 
 afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('createDroppableItem', () => {
-  it('activates on-target after hover timeout', () => {
+describe("createDroppableItem", () => {
+  it("activates on-target after hover timeout", () => {
     vi.useFakeTimers();
     const activateTarget = vi.fn();
     const setTarget = vi.fn();
@@ -35,7 +35,7 @@ describe('createDroppableItem', () => {
         return true;
       },
       getDropOperation() {
-        return 'move' as const;
+        return "move" as const;
       },
     } satisfies Partial<DroppableCollectionState> as DroppableCollectionState;
 
@@ -48,7 +48,7 @@ describe('createDroppableItem', () => {
           key: 1,
           ref: () => element,
         }),
-        state
+        state,
       );
 
       const event = {
@@ -58,15 +58,15 @@ describe('createDroppableItem', () => {
         clientY: 50,
         currentTarget: element,
         dataTransfer: {
-          effectAllowed: 'all',
-          dropEffect: 'none',
+          effectAllowed: "all",
+          dropEffect: "none",
           types: [],
-          items: [{ kind: 'string', type: 'text/plain' }],
+          items: [{ kind: "string", type: "text/plain" }],
         },
       } as unknown as DragEvent;
 
       dropProps.onDragOver?.(event);
-      expect(setTarget).toHaveBeenCalledWith({ type: 'item', key: 1, dropPosition: 'on' });
+      expect(setTarget).toHaveBeenCalledWith({ type: "item", key: 1, dropPosition: "on" });
       expect(activateTarget).not.toHaveBeenCalled();
 
       vi.advanceTimersByTime(800);

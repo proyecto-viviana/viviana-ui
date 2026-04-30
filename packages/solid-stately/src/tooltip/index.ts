@@ -3,4 +3,4 @@ export {
   resetTooltipState,
   type TooltipTriggerProps,
   type TooltipTriggerState,
-} from './createTooltipTriggerState';
+} from "./createTooltipTriggerState";

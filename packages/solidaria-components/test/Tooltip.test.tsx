@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, fireEvent, screen, waitFor } from '@solidjs/testing-library';
-import { createSignal } from 'solid-js';
-import { resetTooltipState } from '@proyecto-viviana/solid-stately';
-import { Tooltip, TooltipTrigger } from '../src/Tooltip';
-import { Button } from '../src/Button';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, fireEvent, screen, waitFor } from "@solidjs/testing-library";
+import { createSignal } from "solid-js";
+import { resetTooltipState } from "@proyecto-viviana/solid-stately";
+import { Tooltip, TooltipTrigger } from "../src/Tooltip";
+import { Button } from "../src/Button";
 
-describe('TooltipTrigger', () => {
+describe("TooltipTrigger", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     resetTooltipState();
@@ -16,7 +16,7 @@ describe('TooltipTrigger', () => {
     resetTooltipState();
   });
 
-  it('should render trigger and tooltip', () => {
+  it("should render trigger and tooltip", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button data-testid="trigger">Hover me</Button>
@@ -24,11 +24,11 @@ describe('TooltipTrigger', () => {
       </TooltipTrigger>
     ));
 
-    expect(screen.getByTestId('trigger')).toBeInTheDocument();
-    expect(screen.getByTestId('tooltip')).toBeInTheDocument();
+    expect(screen.getByTestId("trigger")).toBeInTheDocument();
+    expect(screen.getByTestId("tooltip")).toBeInTheDocument();
   });
 
-  it('should show tooltip when isOpen is true', () => {
+  it("should show tooltip when isOpen is true", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
@@ -36,11 +36,11 @@ describe('TooltipTrigger', () => {
       </TooltipTrigger>
     ));
 
-    expect(screen.getByTestId('tooltip')).toBeInTheDocument();
-    expect(screen.getByText('Tooltip content')).toBeInTheDocument();
+    expect(screen.getByTestId("tooltip")).toBeInTheDocument();
+    expect(screen.getByText("Tooltip content")).toBeInTheDocument();
   });
 
-  it('should hide tooltip when isOpen is false', () => {
+  it("should hide tooltip when isOpen is false", () => {
     render(() => (
       <TooltipTrigger isOpen={false}>
         <Button>Hover me</Button>
@@ -48,10 +48,10 @@ describe('TooltipTrigger', () => {
       </TooltipTrigger>
     ));
 
-    expect(screen.queryByTestId('tooltip')).not.toBeInTheDocument();
+    expect(screen.queryByTestId("tooltip")).not.toBeInTheDocument();
   });
 
-  it('should call onOpenChange when tooltip opens via hover', async () => {
+  it("should call onOpenChange when tooltip opens via hover", async () => {
     vi.useRealTimers(); // Need real timers for this test
     const onOpenChange = vi.fn();
 
@@ -63,11 +63,11 @@ describe('TooltipTrigger', () => {
     ));
 
     // Get the wrapper span that has the trigger props (not the button itself)
-    const trigger = screen.getByTestId('trigger');
-    const wrapper = trigger.closest('span')!;
+    const trigger = screen.getByTestId("trigger");
+    const wrapper = trigger.closest("span")!;
 
     // Fire pointerEnter on the wrapper which has the hover handlers
-    fireEvent.pointerEnter(wrapper, { pointerType: 'mouse' });
+    fireEvent.pointerEnter(wrapper, { pointerType: "mouse" });
 
     await waitFor(() => {
       expect(onOpenChange).toHaveBeenCalledWith(true);
@@ -76,7 +76,7 @@ describe('TooltipTrigger', () => {
     vi.useFakeTimers(); // Restore for other tests
   });
 
-  it('should support controlled open state with signals', () => {
+  it("should support controlled open state with signals", () => {
     const [isOpen, setIsOpen] = createSignal(true);
 
     render(() => (
@@ -86,7 +86,7 @@ describe('TooltipTrigger', () => {
       </TooltipTrigger>
     ));
 
-    expect(screen.getByTestId('tooltip')).toBeInTheDocument();
+    expect(screen.getByTestId("tooltip")).toBeInTheDocument();
 
     // Close tooltip
     setIsOpen(false);
@@ -97,7 +97,7 @@ describe('TooltipTrigger', () => {
   });
 });
 
-describe('Tooltip', () => {
+describe("Tooltip", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     resetTooltipState();
@@ -121,31 +121,31 @@ describe('Tooltip', () => {
 
     // Wait for requestAnimationFrame and retry logic to complete (positioning sets visibility)
     // Longer timeout needed because retries use setTimeout(16ms) x 5 times + initial rAF
-    await waitFor(() => {
-      expect(screen.getByRole('tooltip')).toBeInTheDocument();
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        expect(screen.getByRole("tooltip")).toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
 
     // Restore fake timers for subsequent tests
     vi.useFakeTimers();
   });
 
-  it('should apply custom class via render prop', () => {
+  it("should apply custom class via render prop", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
-        <Tooltip
-          data-testid="tooltip"
-          class={({ placement }) => `tooltip-${placement}`}
-        >
+        <Tooltip data-testid="tooltip" class={({ placement }) => `tooltip-${placement}`}>
           Content
         </Tooltip>
       </TooltipTrigger>
     ));
 
-    expect(screen.getByTestId('tooltip')).toHaveClass('tooltip-top');
+    expect(screen.getByTestId("tooltip")).toHaveClass("tooltip-top");
   });
 
-  it('should support children as render prop', () => {
+  it("should support children as render prop", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
@@ -155,10 +155,10 @@ describe('Tooltip', () => {
       </TooltipTrigger>
     ));
 
-    expect(screen.getByText('Placement: top')).toBeInTheDocument();
+    expect(screen.getByText("Placement: top")).toBeInTheDocument();
   });
 
-  it('should render with data-placement attribute', () => {
+  it("should render with data-placement attribute", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
@@ -168,31 +168,31 @@ describe('Tooltip', () => {
       </TooltipTrigger>
     ));
 
-    expect(screen.getByTestId('tooltip')).toHaveAttribute('data-placement', 'bottom');
+    expect(screen.getByTestId("tooltip")).toHaveAttribute("data-placement", "bottom");
   });
 
-  it('should work standalone with controlled state', () => {
+  it("should work standalone with controlled state", () => {
     render(() => (
       <Tooltip isOpen data-testid="tooltip">
         Standalone tooltip
       </Tooltip>
     ));
 
-    expect(screen.getByTestId('tooltip')).toBeInTheDocument();
-    expect(screen.getByText('Standalone tooltip')).toBeInTheDocument();
+    expect(screen.getByTestId("tooltip")).toBeInTheDocument();
+    expect(screen.getByText("Standalone tooltip")).toBeInTheDocument();
   });
 
-  it('should not render standalone tooltip when isOpen is false', () => {
+  it("should not render standalone tooltip when isOpen is false", () => {
     render(() => (
       <Tooltip isOpen={false} data-testid="tooltip">
         Hidden tooltip
       </Tooltip>
     ));
 
-    expect(screen.queryByTestId('tooltip')).not.toBeInTheDocument();
+    expect(screen.queryByTestId("tooltip")).not.toBeInTheDocument();
   });
 
-  it('should default placement to top', () => {
+  it("should default placement to top", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
@@ -200,32 +200,36 @@ describe('Tooltip', () => {
       </TooltipTrigger>
     ));
 
-    expect(screen.getByTestId('tooltip')).toHaveAttribute('data-placement', 'top');
+    expect(screen.getByTestId("tooltip")).toHaveAttribute("data-placement", "top");
   });
 
-  it('should support left placement', () => {
+  it("should support left placement", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
-        <Tooltip data-testid="tooltip" placement="left">Content</Tooltip>
+        <Tooltip data-testid="tooltip" placement="left">
+          Content
+        </Tooltip>
       </TooltipTrigger>
     ));
 
-    expect(screen.getByTestId('tooltip')).toHaveAttribute('data-placement', 'left');
+    expect(screen.getByTestId("tooltip")).toHaveAttribute("data-placement", "left");
   });
 
-  it('should support right placement', () => {
+  it("should support right placement", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
-        <Tooltip data-testid="tooltip" placement="right">Content</Tooltip>
+        <Tooltip data-testid="tooltip" placement="right">
+          Content
+        </Tooltip>
       </TooltipTrigger>
     ));
 
-    expect(screen.getByTestId('tooltip')).toHaveAttribute('data-placement', 'right');
+    expect(screen.getByTestId("tooltip")).toHaveAttribute("data-placement", "right");
   });
 
-  it('should render with default class', () => {
+  it("should render with default class", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
@@ -233,17 +237,17 @@ describe('Tooltip', () => {
       </TooltipTrigger>
     ));
 
-    expect(screen.getByTestId('tooltip')).toHaveClass('solidaria-Tooltip');
+    expect(screen.getByTestId("tooltip")).toHaveClass("solidaria-Tooltip");
   });
 
-  it('should support style as a function', () => {
+  it("should support style as a function", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
         <Tooltip
           data-testid="tooltip"
           style={({ placement }) => ({
-            'background-color': placement === 'top' ? 'black' : 'gray',
+            "background-color": placement === "top" ? "black" : "gray",
           })}
         >
           Content
@@ -251,18 +255,18 @@ describe('Tooltip', () => {
       </TooltipTrigger>
     ));
 
-    const tooltip = screen.getByTestId('tooltip') as HTMLElement;
-    expect(tooltip.style.backgroundColor).toBe('black');
+    const tooltip = screen.getByTestId("tooltip") as HTMLElement;
+    expect(tooltip.style.backgroundColor).toBe("black");
   });
 
-  it('should expose isEntering and isExiting via render props', () => {
+  it("should expose isEntering and isExiting via render props", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
         <Tooltip data-testid="tooltip">
           {({ isEntering, isExiting }) => (
             <span data-testid="content">
-              {isEntering ? 'entering' : isExiting ? 'exiting' : 'idle'}
+              {isEntering ? "entering" : isExiting ? "exiting" : "idle"}
             </span>
           )}
         </Tooltip>
@@ -270,20 +274,22 @@ describe('Tooltip', () => {
     ));
 
     // In JSDOM (no getAnimations), isEntering should resolve to false immediately
-    const content = screen.getByTestId('content');
-    expect(content.textContent).toBe('idle');
+    const content = screen.getByTestId("content");
+    expect(content.textContent).toBe("idle");
   });
 
-  it('should set data-placement but not data-exiting when open', () => {
+  it("should set data-placement but not data-exiting when open", () => {
     render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
-        <Tooltip data-testid="tooltip" placement="bottom">Content</Tooltip>
+        <Tooltip data-testid="tooltip" placement="bottom">
+          Content
+        </Tooltip>
       </TooltipTrigger>
     ));
 
-    const tooltip = screen.getByTestId('tooltip');
-    expect(tooltip).toHaveAttribute('data-placement', 'bottom');
-    expect(tooltip).not.toHaveAttribute('data-exiting');
+    const tooltip = screen.getByTestId("tooltip");
+    expect(tooltip).toHaveAttribute("data-placement", "bottom");
+    expect(tooltip).not.toHaveAttribute("data-exiting");
   });
 });

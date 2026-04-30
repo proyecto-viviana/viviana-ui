@@ -2,8 +2,8 @@
  * Tests for createFormValidationState
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot, createSignal } from "solid-js";
 import {
   createFormValidationState,
   DEFAULT_VALIDATION_RESULT,
@@ -11,14 +11,14 @@ import {
   mergeValidation,
   FormValidationContext,
   type ValidationResult,
-} from '../src/form/createFormValidationState';
+} from "../src/form/createFormValidationState";
 
-describe('createFormValidationState', () => {
-  describe('initial state', () => {
-    it('should return valid state by default', () => {
+describe("createFormValidationState", () => {
+  describe("initial state", () => {
+    it("should return valid state by default", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'test',
+          value: "test",
         });
 
         expect(state.realtimeValidation().isInvalid).toBe(false);
@@ -30,10 +30,10 @@ describe('createFormValidationState', () => {
       });
     });
 
-    it('should reflect controlled isInvalid prop', () => {
+    it("should reflect controlled isInvalid prop", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'test',
+          value: "test",
           isInvalid: true,
         });
 
@@ -44,11 +44,11 @@ describe('createFormValidationState', () => {
       });
     });
 
-    it('should support deprecated validationState prop', () => {
+    it("should support deprecated validationState prop", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'test',
-          validationState: 'invalid',
+          value: "test",
+          validationState: "invalid",
         });
 
         expect(state.realtimeValidation().isInvalid).toBe(true);
@@ -59,32 +59,30 @@ describe('createFormValidationState', () => {
     });
   });
 
-  describe('client-side validation', () => {
-    it('should run custom validate function', () => {
+  describe("client-side validation", () => {
+    it("should run custom validate function", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: '',
+          value: "",
           validate: (value) => {
-            if (!value) return 'Value is required';
+            if (!value) return "Value is required";
             return null;
           },
         });
 
         expect(state.realtimeValidation().isInvalid).toBe(true);
-        expect(state.realtimeValidation().validationErrors).toEqual([
-          'Value is required',
-        ]);
+        expect(state.realtimeValidation().validationErrors).toEqual(["Value is required"]);
 
         dispose();
       });
     });
 
-    it('should return valid when validate returns null', () => {
+    it("should return valid when validate returns null", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'valid',
+          value: "valid",
           validate: (value) => {
-            if (!value) return 'Value is required';
+            if (!value) return "Value is required";
             return null;
           },
         });
@@ -96,32 +94,32 @@ describe('createFormValidationState', () => {
       });
     });
 
-    it('should handle validate returning array of errors', () => {
+    it("should handle validate returning array of errors", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'ab',
+          value: "ab",
           validate: (value) => {
             const errors = [];
-            if (value.length < 3) errors.push('Too short');
-            if (!/[0-9]/.test(value)) errors.push('Must contain number');
+            if (value.length < 3) errors.push("Too short");
+            if (!/[0-9]/.test(value)) errors.push("Must contain number");
             return errors.length ? errors : null;
           },
         });
 
         expect(state.realtimeValidation().isInvalid).toBe(true);
         expect(state.realtimeValidation().validationErrors).toEqual([
-          'Too short',
-          'Must contain number',
+          "Too short",
+          "Must contain number",
         ]);
 
         dispose();
       });
     });
 
-    it('should handle validate returning boolean true', () => {
+    it("should handle validate returning boolean true", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'test',
+          value: "test",
           validate: () => true,
         });
 
@@ -133,9 +131,9 @@ describe('createFormValidationState', () => {
       });
     });
 
-    it('should skip validation when value is null', () => {
+    it("should skip validation when value is null", () => {
       createRoot((dispose) => {
-        const validate = vi.fn(() => 'Error');
+        const validate = vi.fn(() => "Error");
         const state = createFormValidationState({
           value: null,
           validate,
@@ -149,12 +147,12 @@ describe('createFormValidationState', () => {
     });
   });
 
-  describe('builtin validation', () => {
-    it('should use builtin validation when provided', () => {
+  describe("builtin validation", () => {
+    it("should use builtin validation when provided", () => {
       createRoot((dispose) => {
         const builtinValidation: ValidationResult = {
           isInvalid: true,
-          validationErrors: ['This field is required'],
+          validationErrors: ["This field is required"],
           validationDetails: {
             ...VALID_VALIDITY_STATE,
             valueMissing: true,
@@ -163,26 +161,22 @@ describe('createFormValidationState', () => {
         };
 
         const state = createFormValidationState({
-          value: '',
+          value: "",
           builtinValidation,
         });
 
         expect(state.realtimeValidation().isInvalid).toBe(true);
-        expect(state.realtimeValidation().validationErrors).toEqual([
-          'This field is required',
-        ]);
-        expect(
-          state.realtimeValidation().validationDetails.valueMissing
-        ).toBe(true);
+        expect(state.realtimeValidation().validationErrors).toEqual(["This field is required"]);
+        expect(state.realtimeValidation().validationDetails.valueMissing).toBe(true);
 
         dispose();
       });
     });
 
-    it('should ignore valid builtin validation', () => {
+    it("should ignore valid builtin validation", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'test',
+          value: "test",
           builtinValidation: {
             isInvalid: false,
             validationErrors: [],
@@ -197,34 +191,32 @@ describe('createFormValidationState', () => {
     });
   });
 
-  describe('validation behavior', () => {
-    it('should show errors in realtime for aria behavior', () => {
+  describe("validation behavior", () => {
+    it("should show errors in realtime for aria behavior", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: '',
-          validationBehavior: 'aria',
-          validate: (v) => (v ? null : 'Required'),
+          value: "",
+          validationBehavior: "aria",
+          validate: (v) => (v ? null : "Required"),
         });
 
         expect(state.displayValidation().isInvalid).toBe(true);
-        expect(state.displayValidation().validationErrors).toEqual([
-          'Required',
-        ]);
+        expect(state.displayValidation().validationErrors).toEqual(["Required"]);
 
         dispose();
       });
     });
 
-    it('should not show errors until commit for native behavior', () => {
+    it("should not show errors until commit for native behavior", () => {
       createRoot((dispose) => {
-        const [value, setValue] = createSignal('');
+        const [value, setValue] = createSignal("");
 
         const state = createFormValidationState({
           get value() {
             return value();
           },
-          validationBehavior: 'native',
-          validate: (v) => (v ? null : 'Required'),
+          validationBehavior: "native",
+          validate: (v) => (v ? null : "Required"),
         });
 
         // Realtime shows the error
@@ -237,41 +229,39 @@ describe('createFormValidationState', () => {
     });
   });
 
-  describe('updateValidation', () => {
-    it('should update current validity in aria mode', () => {
+  describe("updateValidation", () => {
+    it("should update current validity in aria mode", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'test',
-          validationBehavior: 'aria',
+          value: "test",
+          validationBehavior: "aria",
         });
 
         expect(state.displayValidation().isInvalid).toBe(false);
 
         state.updateValidation({
           isInvalid: true,
-          validationErrors: ['Custom error'],
+          validationErrors: ["Custom error"],
           validationDetails: VALID_VALIDITY_STATE,
         });
 
         expect(state.displayValidation().isInvalid).toBe(true);
-        expect(state.displayValidation().validationErrors).toEqual([
-          'Custom error',
-        ]);
+        expect(state.displayValidation().validationErrors).toEqual(["Custom error"]);
 
         dispose();
       });
     });
 
-    it('should queue validation for native mode', () => {
+    it("should queue validation for native mode", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'test',
-          validationBehavior: 'native',
+          value: "test",
+          validationBehavior: "native",
         });
 
         state.updateValidation({
           isInvalid: true,
-          validationErrors: ['Custom error'],
+          validationErrors: ["Custom error"],
           validationDetails: VALID_VALIDITY_STATE,
         });
 
@@ -283,13 +273,13 @@ describe('createFormValidationState', () => {
     });
   });
 
-  describe('commitValidation', () => {
-    it('should commit pending validation in native mode', async () => {
+  describe("commitValidation", () => {
+    it("should commit pending validation in native mode", async () => {
       await createRoot(async (dispose) => {
         const state = createFormValidationState({
-          value: '',
-          validationBehavior: 'native',
-          validate: (v) => (v ? null : 'Required'),
+          value: "",
+          validationBehavior: "native",
+          validate: (v) => (v ? null : "Required"),
         });
 
         expect(state.displayValidation().isInvalid).toBe(false);
@@ -300,27 +290,25 @@ describe('createFormValidationState', () => {
         await Promise.resolve();
 
         expect(state.displayValidation().isInvalid).toBe(true);
-        expect(state.displayValidation().validationErrors).toEqual([
-          'Required',
-        ]);
+        expect(state.displayValidation().validationErrors).toEqual(["Required"]);
 
         dispose();
       });
     });
   });
 
-  describe('resetValidation', () => {
-    it('should reset manually updated validation to valid', () => {
+  describe("resetValidation", () => {
+    it("should reset manually updated validation to valid", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'test', // valid value, no validate function
-          validationBehavior: 'native',
+          value: "test", // valid value, no validate function
+          validationBehavior: "native",
         });
 
         // Manually update validation
         state.updateValidation({
           isInvalid: true,
-          validationErrors: ['Manual error'],
+          validationErrors: ["Manual error"],
           validationDetails: VALID_VALIDITY_STATE,
         });
 
@@ -334,10 +322,10 @@ describe('createFormValidationState', () => {
       });
     });
 
-    it('should clear server error cleared flag', () => {
+    it("should clear server error cleared flag", () => {
       createRoot((dispose) => {
         const state = createFormValidationState({
-          value: 'test',
+          value: "test",
         });
 
         state.resetValidation();
@@ -351,61 +339,58 @@ describe('createFormValidationState', () => {
   });
 });
 
-describe('mergeValidation', () => {
-  it('should merge multiple validation results', () => {
+describe("mergeValidation", () => {
+  it("should merge multiple validation results", () => {
     const result1: ValidationResult = {
       isInvalid: true,
-      validationErrors: ['Error 1'],
+      validationErrors: ["Error 1"],
       validationDetails: { ...VALID_VALIDITY_STATE, valueMissing: true, valid: false },
     };
 
     const result2: ValidationResult = {
       isInvalid: true,
-      validationErrors: ['Error 2'],
+      validationErrors: ["Error 2"],
       validationDetails: { ...VALID_VALIDITY_STATE, patternMismatch: true, valid: false },
     };
 
     const merged = mergeValidation(result1, result2);
 
     expect(merged.isInvalid).toBe(true);
-    expect(merged.validationErrors).toContain('Error 1');
-    expect(merged.validationErrors).toContain('Error 2');
+    expect(merged.validationErrors).toContain("Error 1");
+    expect(merged.validationErrors).toContain("Error 2");
     expect(merged.validationDetails.valueMissing).toBe(true);
     expect(merged.validationDetails.patternMismatch).toBe(true);
     expect(merged.validationDetails.valid).toBe(false);
   });
 
-  it('should dedupe duplicate errors', () => {
+  it("should dedupe duplicate errors", () => {
     const result1: ValidationResult = {
       isInvalid: true,
-      validationErrors: ['Same error'],
+      validationErrors: ["Same error"],
       validationDetails: VALID_VALIDITY_STATE,
     };
 
     const result2: ValidationResult = {
       isInvalid: true,
-      validationErrors: ['Same error'],
+      validationErrors: ["Same error"],
       validationDetails: VALID_VALIDITY_STATE,
     };
 
     const merged = mergeValidation(result1, result2);
 
-    expect(merged.validationErrors).toEqual(['Same error']);
+    expect(merged.validationErrors).toEqual(["Same error"]);
   });
 
-  it('should return valid when all results are valid', () => {
-    const merged = mergeValidation(
-      DEFAULT_VALIDATION_RESULT,
-      DEFAULT_VALIDATION_RESULT
-    );
+  it("should return valid when all results are valid", () => {
+    const merged = mergeValidation(DEFAULT_VALIDATION_RESULT, DEFAULT_VALIDATION_RESULT);
 
     expect(merged.isInvalid).toBe(false);
     expect(merged.validationDetails.valid).toBe(true);
   });
 });
 
-describe('constants', () => {
-  it('VALID_VALIDITY_STATE should have all false except valid', () => {
+describe("constants", () => {
+  it("VALID_VALIDITY_STATE should have all false except valid", () => {
     expect(VALID_VALIDITY_STATE.valid).toBe(true);
     expect(VALID_VALIDITY_STATE.badInput).toBe(false);
     expect(VALID_VALIDITY_STATE.customError).toBe(false);
@@ -419,7 +404,7 @@ describe('constants', () => {
     expect(VALID_VALIDITY_STATE.valueMissing).toBe(false);
   });
 
-  it('DEFAULT_VALIDATION_RESULT should be valid', () => {
+  it("DEFAULT_VALIDATION_RESULT should be valid", () => {
     expect(DEFAULT_VALIDATION_RESULT.isInvalid).toBe(false);
     expect(DEFAULT_VALIDATION_RESULT.validationErrors).toEqual([]);
     expect(DEFAULT_VALIDATION_RESULT.validationDetails.valid).toBe(true);

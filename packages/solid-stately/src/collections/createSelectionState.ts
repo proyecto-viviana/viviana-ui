@@ -3,8 +3,8 @@
  * Based on @react-stately/selection.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
+import { createSignal, createMemo, type Accessor } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
 import type {
   Collection,
   DisabledBehavior,
@@ -13,7 +13,7 @@ import type {
   Selection,
   SelectionBehavior,
   SelectionMode,
-} from './types';
+} from "./types";
 
 export interface SelectionStateProps {
   /** The selection mode. */
@@ -23,9 +23,9 @@ export interface SelectionStateProps {
   /** Whether empty selection is disallowed. */
   disallowEmptySelection?: boolean;
   /** Currently selected keys (controlled). */
-  selectedKeys?: 'all' | Iterable<Key>;
+  selectedKeys?: "all" | Iterable<Key>;
   /** Default selected keys (uncontrolled). */
-  defaultSelectedKeys?: 'all' | Iterable<Key>;
+  defaultSelectedKeys?: "all" | Iterable<Key>;
   /** Handler for selection changes. */
   onSelectionChange?: (keys: Selection) => void;
   /** Keys of disabled items. */
@@ -74,30 +74,34 @@ export interface SelectionState {
   /** Extend selection to a key (for shift-click). */
   extendSelection(toKey: Key, collection: Collection): void;
   /** Select a key based on interaction. */
-  select(key: Key, e?: { shiftKey?: boolean; ctrlKey?: boolean; metaKey?: boolean }, collection?: Collection): void;
+  select(
+    key: Key,
+    e?: { shiftKey?: boolean; ctrlKey?: boolean; metaKey?: boolean },
+    collection?: Collection,
+  ): void;
 }
 
 /**
  * Creates selection state for a collection.
  */
 export function createSelectionState(
-  props: MaybeAccessor<SelectionStateProps> = {}
+  props: MaybeAccessor<SelectionStateProps> = {},
 ): SelectionState {
   const getProps = () => access(props);
 
   // Selection behavior state
-  const [internalBehavior, setInternalBehavior] = createSignal<SelectionBehavior>('toggle');
+  const [internalBehavior, setInternalBehavior] = createSignal<SelectionBehavior>("toggle");
 
   // Internal selection state
   const [internalSelectedKeys, setInternalSelectedKeys] = createSignal<Selection>(
-    getInitialSelection(getProps().defaultSelectedKeys)
+    getInitialSelection(getProps().defaultSelectedKeys),
   );
 
   // Track anchor for range selection
   const [anchorKey, setAnchorKey] = createSignal<Key | null>(null);
 
   // Computed values
-  const selectionMode: Accessor<SelectionMode> = () => getProps().selectionMode ?? 'none';
+  const selectionMode: Accessor<SelectionMode> = () => getProps().selectionMode ?? "none";
 
   const selectionBehavior: Accessor<SelectionBehavior> = () => {
     return getProps().selectionBehavior ?? internalBehavior();
@@ -121,22 +125,22 @@ export function createSelectionState(
   });
 
   const disabledBehavior: Accessor<DisabledBehavior> = () => {
-    return getProps().disabledBehavior ?? 'all';
+    return getProps().disabledBehavior ?? "all";
   };
 
   const isEmpty: Accessor<boolean> = () => {
     const keys = selectedKeys();
-    return keys !== 'all' && keys.size === 0;
+    return keys !== "all" && keys.size === 0;
   };
 
   const isSelectAll: Accessor<boolean> = () => {
-    return selectedKeys() === 'all';
+    return selectedKeys() === "all";
   };
 
   // Methods
   const isSelected = (key: Key): boolean => {
     const keys = selectedKeys();
-    if (keys === 'all') return true;
+    if (keys === "all") return true;
     return keys.has(key);
   };
 
@@ -156,8 +160,8 @@ export function createSelectionState(
     // Uncontrolled mode
     const current = internalSelectedKeys();
     const isDifferent =
-      current === 'all' ||
-      newSelection === 'all' ||
+      current === "all" ||
+      newSelection === "all" ||
       current.size !== (newSelection as Set<Key>).size ||
       ![...current].every((k) => (newSelection as Set<Key>).has(k));
 
@@ -169,11 +173,11 @@ export function createSelectionState(
 
   const toggleSelection = (key: Key) => {
     if (isDisabled(key)) return;
-    if (selectionMode() === 'none') return;
+    if (selectionMode() === "none") return;
 
     const current = selectedKeys();
 
-    if (selectionMode() === 'single') {
+    if (selectionMode() === "single") {
       if (isSelected(key) && !disallowEmptySelection()) {
         updateSelection(new Set());
       } else {
@@ -183,7 +187,7 @@ export function createSelectionState(
     }
 
     // Multiple selection
-    if (current === 'all') {
+    if (current === "all") {
       // Can't toggle when all selected without collection
       return;
     }
@@ -203,7 +207,7 @@ export function createSelectionState(
 
   const replaceSelection = (key: Key) => {
     if (isDisabled(key)) return;
-    if (selectionMode() === 'none') return;
+    if (selectionMode() === "none") return;
 
     updateSelection(new Set([key]));
     setAnchorKey(key);
@@ -215,8 +219,8 @@ export function createSelectionState(
   };
 
   const selectAll = () => {
-    if (selectionMode() !== 'multiple') return;
-    updateSelection('all');
+    if (selectionMode() !== "multiple") return;
+    updateSelection("all");
   };
 
   const clearSelection = () => {
@@ -225,7 +229,7 @@ export function createSelectionState(
   };
 
   const toggleSelectAll = () => {
-    if (selectionMode() !== 'multiple') return;
+    if (selectionMode() !== "multiple") return;
 
     if (isSelectAll()) {
       clearSelection();
@@ -236,7 +240,7 @@ export function createSelectionState(
 
   const extendSelection = (toKey: Key, collection: Collection) => {
     if (isDisabled(toKey)) return;
-    if (selectionMode() !== 'multiple') {
+    if (selectionMode() !== "multiple") {
       replaceSelection(toKey);
       return;
     }
@@ -267,16 +271,16 @@ export function createSelectionState(
   const select = (
     key: Key,
     e?: { shiftKey?: boolean; ctrlKey?: boolean; metaKey?: boolean },
-    collection?: Collection
+    collection?: Collection,
   ) => {
     if (isDisabled(key)) return;
-    if (selectionMode() === 'none') return;
+    if (selectionMode() === "none") return;
 
     const mode = selectionMode();
     const behavior = selectionBehavior();
 
-    if (mode === 'single') {
-      if (behavior === 'replace' || !isSelected(key)) {
+    if (mode === "single") {
+      if (behavior === "replace" || !isSelected(key)) {
         replaceSelection(key);
       } else if (!disallowEmptySelection()) {
         clearSelection();
@@ -290,7 +294,7 @@ export function createSelectionState(
       return;
     }
 
-    if (e?.ctrlKey || e?.metaKey || behavior === 'toggle') {
+    if (e?.ctrlKey || e?.metaKey || behavior === "toggle") {
       toggleSelection(key);
     } else {
       replaceSelection(key);
@@ -325,12 +329,12 @@ export function createSelectionState(
 }
 
 // Helper functions
-function getInitialSelection(defaultKeys?: 'all' | Iterable<Key>): Selection {
+function getInitialSelection(defaultKeys?: "all" | Iterable<Key>): Selection {
   if (defaultKeys === undefined) return new Set();
   return normalizeSelection(defaultKeys);
 }
 
-function normalizeSelection(keys: 'all' | Iterable<Key>): Selection {
-  if (keys === 'all') return 'all';
+function normalizeSelection(keys: "all" | Iterable<Key>): Selection {
+  if (keys === "all") return "all";
   return new Set(keys);
 }

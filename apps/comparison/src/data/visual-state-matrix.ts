@@ -7,12 +7,7 @@ import {
 } from "./comparison-manifest";
 
 export type VisualStateKind = "static" | "overlay" | "interaction" | "keyboard";
-export type VisualStateSideStatus =
-  | "snapshotted"
-  | "asserted"
-  | "planned"
-  | "missing"
-  | "na";
+export type VisualStateSideStatus = "snapshotted" | "asserted" | "planned" | "missing" | "na";
 export type PairDiffStatus = "strict" | "planned" | "blocked" | "na";
 
 export interface VisualStateTarget {
@@ -45,9 +40,10 @@ function plannedState(entry: ComparisonEntry): VisualStateTarget {
     react: reactLive ? "planned" : "missing",
     solid: solidLive ? "planned" : "missing",
     pairDiff: reactLive && solidLive ? "planned" : "blocked",
-    note: reactLive && solidLive
-      ? "Route is live, but committed screenshots and strict pair diff are still missing."
-      : "Blocked until both the exact React Spectrum reference and Solid styled implementation are live.",
+    note:
+      reactLive && solidLive
+        ? "Route is live, but committed screenshots and strict pair diff are still missing."
+        : "Blocked until both the exact React Spectrum reference and Solid styled implementation are live.",
   };
 }
 
@@ -70,7 +66,8 @@ function snapshottedDefaultState(input: {
       `e2e/default-state-visual.spec.ts-snapshots/${input.slug}-default-react-chromium-linux.png`,
       `e2e/default-state-visual.spec.ts-snapshots/${input.slug}-default-solid-chromium-linux.png`,
     ],
-    note: input.note ??
+    note:
+      input.note ??
       "Committed default-state screenshots exist for both sides, and React-vs-Solid pair diff is strict zero-tolerance.",
   };
 }
@@ -439,26 +436,26 @@ const legacyStateOverrides: Record<string, readonly VisualStateTarget[]> = {
 };
 
 function stateTargetsFor(entry: ComparisonEntry): readonly VisualStateTarget[] {
-  const overrides = entry.catalogueSource === "react-spectrum-s2"
-    ? officialStateOverrides[entry.slug]
-    : legacyStateOverrides[entry.slug];
+  const overrides =
+    entry.catalogueSource === "react-spectrum-s2"
+      ? officialStateOverrides[entry.slug]
+      : legacyStateOverrides[entry.slug];
 
   return overrides ?? [plannedState(entry)];
 }
 
-export function getVisualStateTargets(
-  entry: ComparisonEntry,
-): readonly VisualStateTarget[] {
+export function getVisualStateTargets(entry: ComparisonEntry): readonly VisualStateTarget[] {
   return stateTargetsFor(entry);
 }
 
-export const visualStateCoverage: readonly VisualStateCoverage[] =
-  comparisonEntries.map((entry) => ({
+export const visualStateCoverage: readonly VisualStateCoverage[] = comparisonEntries.map(
+  (entry) => ({
     slug: entry.slug,
     title: entry.title,
     source: entry.catalogueSource,
     states: stateTargetsFor(entry),
-  }));
+  }),
+);
 
 export const officialVisualStateCoverage: readonly VisualStateCoverage[] =
   officialComparisonEntries.map((entry) => ({
@@ -470,27 +467,20 @@ export const officialVisualStateCoverage: readonly VisualStateCoverage[] =
 
 export const officialVisualStateSummary = {
   components: officialVisualStateCoverage.length,
-  states: officialVisualStateCoverage.reduce(
-    (count, entry) => count + entry.states.length,
-    0,
-  ),
+  states: officialVisualStateCoverage.reduce((count, entry) => count + entry.states.length, 0),
   snapshottedStates: officialVisualStateCoverage.reduce(
     (count, entry) =>
       count +
-      entry.states.filter(
-        (state) =>
-          state.react === "snapshotted" && state.solid === "snapshotted",
-      ).length,
+      entry.states.filter((state) => state.react === "snapshotted" && state.solid === "snapshotted")
+        .length,
     0,
   ),
   strictPairDiffStates: officialVisualStateCoverage.reduce(
-    (count, entry) =>
-      count + entry.states.filter((state) => state.pairDiff === "strict").length,
+    (count, entry) => count + entry.states.filter((state) => state.pairDiff === "strict").length,
     0,
   ),
   blockedStates: officialVisualStateCoverage.reduce(
-    (count, entry) =>
-      count + entry.states.filter((state) => state.pairDiff === "blocked").length,
+    (count, entry) => count + entry.states.filter((state) => state.pairDiff === "blocked").length,
     0,
   ),
 } as const;

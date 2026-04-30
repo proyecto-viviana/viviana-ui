@@ -1,7 +1,13 @@
 /**
  * Tree state management exports.
  */
-export { createTreeState } from './createTreeState';
-export { TreeCollection, createTreeCollection } from './TreeCollection';
-export type { TreeState, TreeStateOptions, TreeCollection as TreeCollectionInterface, TreeNode, TreeItemData, } from './types';
+export { createTreeState } from "./createTreeState";
+export { TreeCollection, createTreeCollection } from "./TreeCollection";
+export type {
+  TreeState,
+  TreeStateOptions,
+  TreeCollection as TreeCollectionInterface,
+  TreeNode,
+  TreeItemData,
+} from "./types";
 //# sourceMappingURL=index.d.ts.map

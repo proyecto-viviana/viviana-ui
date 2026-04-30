@@ -5,21 +5,21 @@
  * One describe block per component, each rendering with realistic props,
  * making multiple assertions, and capturing an innerHTML snapshot.
  */
-import { describe, it, expect, afterEach, vi } from 'vitest';
-import { render, screen, cleanup, waitFor } from '@solidjs/testing-library';
-import { setupUser } from '@proyecto-viviana/solid-spectrum-test-utils';
-import { parseDate, type TreeItemData } from '@proyecto-viviana/solid-stately';
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { render, screen, cleanup, waitFor } from "@solidjs/testing-library";
+import { setupUser } from "@proyecto-viviana/solid-spectrum-test-utils";
+import { parseDate, type TreeItemData } from "@proyecto-viviana/solid-stately";
 
 // ── Forms & Inputs ──────────────────────────────────────────────
-import { Button } from '../src/button';
-import { Checkbox } from '../src/checkbox';
-import { TextField } from '../src/textfield';
-import { TextArea } from '../src/textfield';
-import { NumberField } from '../src/numberfield';
-import { SearchField } from '../src/searchfield';
-import { Slider, RangeSlider } from '../src/slider';
-import { ToggleSwitch } from '../src/switch';
-import { RadioGroup, Radio } from '../src/radio';
+import { Button } from "../src/button";
+import { Checkbox } from "../src/checkbox";
+import { TextField } from "../src/textfield";
+import { TextArea } from "../src/textfield";
+import { NumberField } from "../src/numberfield";
+import { SearchField } from "../src/searchfield";
+import { Slider, RangeSlider } from "../src/slider";
+import { ToggleSwitch } from "../src/switch";
+import { RadioGroup, Radio } from "../src/radio";
 
 // ── Selection & Collections ─────────────────────────────────────
 import {
@@ -29,69 +29,40 @@ import {
   ComboBoxButton,
   ComboBoxListBox,
   ComboBoxOption,
-} from '../src/combobox';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectListBox,
-  SelectOption,
-} from '../src/select';
-import { ListBox, ListBoxOption } from '../src/listbox';
-import {
-  MenuTrigger,
-  MenuButton,
-  Menu,
-  MenuItem,
-  ActionMenu,
-} from '../src/menu';
-import { GridList, GridListItem } from '../src/gridlist';
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-} from '../src/table';
-import { Tree, TreeItem } from '../src/tree';
-import { Tabs, TabList, Tab, TabPanel } from '../src/tabs';
+} from "../src/combobox";
+import { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from "../src/select";
+import { ListBox, ListBoxOption } from "../src/listbox";
+import { MenuTrigger, MenuButton, Menu, MenuItem, ActionMenu } from "../src/menu";
+import { GridList, GridListItem } from "../src/gridlist";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "../src/table";
+import { Tree, TreeItem } from "../src/tree";
+import { Tabs, TabList, Tab, TabPanel } from "../src/tabs";
 
 // ── Overlays & Dialogs ──────────────────────────────────────────
-import { DialogTrigger, Dialog, AlertDialog } from '../src/dialog';
-import { PopoverTrigger, Popover } from '../src/popover';
-import { TooltipTrigger, Tooltip } from '../src/tooltip';
-import {
-  ToastProvider,
-  ToastRegion,
-  addToast,
-  globalToastQueue,
-} from '../src/toast';
-import type { QueuedToast, ToastContent } from '../src/toast';
+import { DialogTrigger, Dialog, AlertDialog } from "../src/dialog";
+import { PopoverTrigger, Popover } from "../src/popover";
+import { TooltipTrigger, Tooltip } from "../src/tooltip";
+import { ToastProvider, ToastRegion, addToast, globalToastQueue } from "../src/toast";
+import type { QueuedToast, ToastContent } from "../src/toast";
 
 // ── Navigation & Layout ─────────────────────────────────────────
-import { Breadcrumbs, BreadcrumbItem } from '../src/breadcrumbs';
-import { Link } from '../src/link';
-import { Toolbar } from '../src/toolbar';
-import {
-  Disclosure,
-  DisclosureGroup,
-  DisclosureTrigger,
-  DisclosurePanel,
-} from '../src/disclosure';
+import { Breadcrumbs, BreadcrumbItem } from "../src/breadcrumbs";
+import { Link } from "../src/link";
+import { Toolbar } from "../src/toolbar";
+import { Disclosure, DisclosureGroup, DisclosureTrigger, DisclosurePanel } from "../src/disclosure";
 
 // ── Date & Time ─────────────────────────────────────────────────
-import { Calendar } from '../src/calendar';
-import { DatePicker } from '../src/calendar/DatePicker';
-import { DateField } from '../src/calendar/DateField';
+import { Calendar } from "../src/calendar";
+import { DatePicker } from "../src/calendar/DatePicker";
+import { DateField } from "../src/calendar/DateField";
 
 // ── Data Display ────────────────────────────────────────────────
-import { ProgressBar } from '../src/progress-bar';
-import { Meter } from '../src/meter';
-import { Badge } from '../src/badge';
-import { Alert } from '../src/alert';
-import { StatusLight } from '../src/statuslight';
-import { Separator } from '../src/separator';
+import { ProgressBar } from "../src/progress-bar";
+import { Meter } from "../src/meter";
+import { Badge } from "../src/badge";
+import { Alert } from "../src/alert";
+import { StatusLight } from "../src/statuslight";
+import { Separator } from "../src/separator";
 
 // ── Color ───────────────────────────────────────────────────────
 import {
@@ -104,14 +75,14 @@ import {
   ColorWheel,
   ColorWheelTrack,
   ColorWheelThumb,
-} from '../src/color';
+} from "../src/color";
 
 // ── Other ───────────────────────────────────────────────────────
-import { Avatar } from '../src/avatar';
-import { Landmark } from '../src/landmark';
-import { Well } from '../src/well';
-import { Label } from '../src/label';
-import { Form } from '../src/form';
+import { Avatar } from "../src/avatar";
+import { Landmark } from "../src/landmark";
+import { Well } from "../src/well";
+import { Label } from "../src/label";
+import { Form } from "../src/form";
 
 // ═══════════════════════════════════════════════════════════════
 // Shared helpers
@@ -119,10 +90,8 @@ import { Form } from '../src/form';
 
 function clearGlobalToasts() {
   const toasts = globalToastQueue.visibleToasts;
-  if (typeof toasts === 'function') {
-    (toasts() as QueuedToast<ToastContent>[]).forEach((t) =>
-      globalToastQueue.close(t.key)
-    );
+  if (typeof toasts === "function") {
+    (toasts() as QueuedToast<ToastContent>[]).forEach((t) => globalToastQueue.close(t.key));
   }
 }
 
@@ -130,20 +99,29 @@ function clearGlobalToasts() {
 function normalizeIds(html: string): string {
   const idMap = new Map<string, string>();
   let counter = 0;
-  return html.replace(/id="([^"]+)"/g, (_match, id) => {
-    if (!idMap.has(id)) {
-      idMap.set(id, `id-${counter++}`);
-    }
-    return `id="${idMap.get(id)}"`;
-  }).replace(/(aria-labelledby|aria-describedby|aria-controls|aria-owns|for|aria-activedescendant)="([^"]+)"/g, (_match, attr, ids) => {
-    const normalized = ids.split(/\s+/).map((id: string) => {
+  return html
+    .replace(/id="([^"]+)"/g, (_match, id) => {
       if (!idMap.has(id)) {
         idMap.set(id, `id-${counter++}`);
       }
-      return idMap.get(id);
-    }).join(' ');
-    return `${attr}="${normalized}"`;
-  }).replace(/name="solidaria-cl-\d+"/g, 'name="solidaria-cl-0"');
+      return `id="${idMap.get(id)}"`;
+    })
+    .replace(
+      /(aria-labelledby|aria-describedby|aria-controls|aria-owns|for|aria-activedescendant)="([^"]+)"/g,
+      (_match, attr, ids) => {
+        const normalized = ids
+          .split(/\s+/)
+          .map((id: string) => {
+            if (!idMap.has(id)) {
+              idMap.set(id, `id-${counter++}`);
+            }
+            return idMap.get(id);
+          })
+          .join(" ");
+        return `${attr}="${normalized}"`;
+      },
+    )
+    .replace(/name="solidaria-cl-\d+"/g, 'name="solidaria-cl-0"');
 }
 
 afterEach(() => cleanup());
@@ -152,26 +130,26 @@ afterEach(() => cleanup());
 // FORMS & INPUTS
 // ═══════════════════════════════════════════════════════════════
 
-describe('Regression: Button', () => {
-  it('renders with role, text, type=button, and snapshot', () => {
+describe("Regression: Button", () => {
+  it("renders with role, text, type=button, and snapshot", () => {
     const { container } = render(() => <Button>Save</Button>);
-    const btn = screen.getByRole('button');
+    const btn = screen.getByRole("button");
     expect(btn).toBeInTheDocument();
-    expect(btn.textContent).toContain('Save');
+    expect(btn.textContent).toContain("Save");
     expect(btn).not.toBeDisabled();
-    expect(btn).toHaveAttribute('type', 'button');
+    expect(btn).toHaveAttribute("type", "button");
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Checkbox', () => {
-  it('renders with role, unchecked default, toggle, label, and snapshot', async () => {
+describe("Regression: Checkbox", () => {
+  it("renders with role, unchecked default, toggle, label, and snapshot", async () => {
     const user = setupUser();
     const { container } = render(() => <Checkbox>Accept terms</Checkbox>);
-    const cb = screen.getByRole('checkbox');
+    const cb = screen.getByRole("checkbox");
     expect(cb).toBeInTheDocument();
     expect(cb).not.toBeChecked();
-    expect(screen.getByText('Accept terms')).toBeInTheDocument();
+    expect(screen.getByText("Accept terms")).toBeInTheDocument();
 
     await user.click(cb);
     await Promise.resolve();
@@ -181,85 +159,77 @@ describe('Regression: Checkbox', () => {
   });
 });
 
-describe('Regression: TextField', () => {
-  it('renders with role, placeholder, label, and snapshot', () => {
-    const { container } = render(() => (
-      <TextField label="Email" placeholder="you@example.com" />
-    ));
-    const input = screen.getByRole('textbox');
+describe("Regression: TextField", () => {
+  it("renders with role, placeholder, label, and snapshot", () => {
+    const { container } = render(() => <TextField label="Email" placeholder="you@example.com" />);
+    const input = screen.getByRole("textbox");
     expect(input).toBeInTheDocument();
-    expect(input).toHaveAttribute('placeholder', 'you@example.com');
-    expect(screen.getByText('Email')).toBeInTheDocument();
+    expect(input).toHaveAttribute("placeholder", "you@example.com");
+    expect(screen.getByText("Email")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: TextArea', () => {
-  it('renders textarea element with placeholder and snapshot', () => {
-    const { container } = render(() => (
-      <TextArea label="Notes" placeholder="Write here..." />
-    ));
-    const textarea = container.querySelector('textarea');
+describe("Regression: TextArea", () => {
+  it("renders textarea element with placeholder and snapshot", () => {
+    const { container } = render(() => <TextArea label="Notes" placeholder="Write here..." />);
+    const textarea = container.querySelector("textarea");
     expect(textarea).toBeInTheDocument();
-    expect(textarea).toHaveAttribute('placeholder', 'Write here...');
-    expect(screen.getByText('Notes')).toBeInTheDocument();
+    expect(textarea).toHaveAttribute("placeholder", "Write here...");
+    expect(screen.getByText("Notes")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: NumberField', () => {
-  it('renders spinbutton with increment/decrement and snapshot', () => {
+describe("Regression: NumberField", () => {
+  it("renders spinbutton with increment/decrement and snapshot", () => {
     const { container } = render(() => (
       <NumberField label="Quantity" defaultValue={5} minValue={0} maxValue={100} />
     ));
-    const spin = screen.getByRole('spinbutton') as HTMLInputElement;
+    const spin = screen.getByRole("spinbutton") as HTMLInputElement;
     expect(spin).toBeInTheDocument();
-    expect(spin.value).toBe('5');
-    expect(screen.getByText('Quantity')).toBeInTheDocument();
+    expect(spin.value).toBe("5");
+    expect(screen.getByText("Quantity")).toBeInTheDocument();
     // Increment/decrement buttons present
-    const buttons = screen.getAllByRole('button');
+    const buttons = screen.getAllByRole("button");
     expect(buttons.length).toBeGreaterThanOrEqual(2);
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: SearchField', () => {
-  it('renders searchbox with clear button after typing and snapshot', async () => {
+describe("Regression: SearchField", () => {
+  it("renders searchbox with clear button after typing and snapshot", async () => {
     const user = setupUser();
-    const { container } = render(() => (
-      <SearchField label="Search" />
-    ));
-    const input = screen.getByRole('searchbox');
+    const { container } = render(() => <SearchField label="Search" />);
+    const input = screen.getByRole("searchbox");
     expect(input).toBeInTheDocument();
 
-    await user.type(input, 'hello');
-    expect((input as HTMLInputElement).value).toBe('hello');
+    await user.type(input, "hello");
+    expect((input as HTMLInputElement).value).toBe("hello");
 
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Slider', () => {
-  it('renders with role, aria-value attrs, and snapshot', () => {
+describe("Regression: Slider", () => {
+  it("renders with role, aria-value attrs, and snapshot", () => {
     const { container } = render(() => (
       <Slider label="Volume" value={40} minValue={0} maxValue={100} />
     ));
-    const slider = screen.getByRole('slider');
-    expect(slider).toHaveAttribute('aria-valuenow', '40');
-    expect(slider).toHaveAttribute('aria-valuemin', '0');
-    expect(slider).toHaveAttribute('aria-valuemax', '100');
-    expect(screen.getByText('Volume')).toBeInTheDocument();
+    const slider = screen.getByRole("slider");
+    expect(slider).toHaveAttribute("aria-valuenow", "40");
+    expect(slider).toHaveAttribute("aria-valuemin", "0");
+    expect(slider).toHaveAttribute("aria-valuemax", "100");
+    expect(screen.getByText("Volume")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Switch', () => {
-  it('renders with role, unchecked default, click → checked, and snapshot', async () => {
+describe("Regression: Switch", () => {
+  it("renders with role, unchecked default, click → checked, and snapshot", async () => {
     const user = setupUser();
-    const { container } = render(() => (
-      <ToggleSwitch aria-label="Dark mode" />
-    ));
-    const sw = screen.getByRole('switch');
+    const { container } = render(() => <ToggleSwitch aria-label="Dark mode" />);
+    const sw = screen.getByRole("switch");
     expect(sw).toBeInTheDocument();
     expect(sw).not.toBeChecked();
 
@@ -271,8 +241,8 @@ describe('Regression: Switch', () => {
   });
 });
 
-describe('Regression: RadioGroup', () => {
-  it('renders radiogroup with radio roles and selection, and snapshot', async () => {
+describe("Regression: RadioGroup", () => {
+  it("renders radiogroup with radio roles and selection, and snapshot", async () => {
     const user = setupUser();
     const { container } = render(() => (
       <RadioGroup aria-label="Color">
@@ -281,8 +251,8 @@ describe('Regression: RadioGroup', () => {
         <Radio value="green">Green</Radio>
       </RadioGroup>
     ));
-    expect(screen.getByRole('radiogroup')).toBeInTheDocument();
-    const radios = screen.getAllByRole('radio');
+    expect(screen.getByRole("radiogroup")).toBeInTheDocument();
+    const radios = screen.getAllByRole("radio");
     expect(radios).toHaveLength(3);
 
     await user.click(radios[1]);
@@ -297,14 +267,14 @@ describe('Regression: RadioGroup', () => {
 // SELECTION & COLLECTIONS
 // ═══════════════════════════════════════════════════════════════
 
-describe('Regression: ComboBox', () => {
+describe("Regression: ComboBox", () => {
   const items = [
-    { id: '1', name: 'Apple' },
-    { id: '2', name: 'Banana' },
-    { id: '3', name: 'Cherry' },
+    { id: "1", name: "Apple" },
+    { id: "2", name: "Banana" },
+    { id: "3", name: "Cherry" },
   ];
 
-  it('renders combobox input and snapshot', () => {
+  it("renders combobox input and snapshot", () => {
     const { container } = render(() => (
       <ComboBox
         label="Fruit"
@@ -322,27 +292,22 @@ describe('Regression: ComboBox', () => {
       </ComboBox>
     ));
 
-    expect(screen.getByRole('combobox', { name: 'Fruit' })).toBeInTheDocument();
-    expect(screen.getByText('Fruit')).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Fruit" })).toBeInTheDocument();
+    expect(screen.getByText("Fruit")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Select', () => {
+describe("Regression: Select", () => {
   const items = [
-    { id: 'sm', label: 'Small' },
-    { id: 'md', label: 'Medium' },
-    { id: 'lg', label: 'Large' },
+    { id: "sm", label: "Small" },
+    { id: "md", label: "Medium" },
+    { id: "lg", label: "Large" },
   ];
 
-  it('renders trigger and snapshot', () => {
+  it("renders trigger and snapshot", () => {
     const { container } = render(() => (
-      <Select
-        label="Size"
-        items={items}
-        getKey={(i) => i.id}
-        getTextValue={(i) => i.label}
-      >
+      <Select label="Size" items={items} getKey={(i) => i.id} getTextValue={(i) => i.label}>
         <SelectTrigger>
           <SelectValue />
         </SelectTrigger>
@@ -352,20 +317,20 @@ describe('Regression: Select', () => {
       </Select>
     ));
 
-    expect(screen.getByText('Size')).toBeInTheDocument();
-    expect(screen.getByRole('combobox', { name: 'Size' })).toBeInTheDocument();
+    expect(screen.getByText("Size")).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Size" })).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: ListBox', () => {
+describe("Regression: ListBox", () => {
   const items = [
-    { id: 'a', label: 'Alpha' },
-    { id: 'b', label: 'Bravo' },
-    { id: 'c', label: 'Charlie' },
+    { id: "a", label: "Alpha" },
+    { id: "b", label: "Bravo" },
+    { id: "c", label: "Charlie" },
   ];
 
-  it('renders listbox with options and snapshot', () => {
+  it("renders listbox with options and snapshot", () => {
     const { container } = render(() => (
       <ListBox
         items={items}
@@ -378,22 +343,22 @@ describe('Regression: ListBox', () => {
       </ListBox>
     ));
 
-    expect(screen.getByRole('listbox')).toBeInTheDocument();
-    const options = screen.getAllByRole('option');
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+    const options = screen.getAllByRole("option");
     expect(options).toHaveLength(3);
-    expect(options[0].textContent).toContain('Alpha');
+    expect(options[0].textContent).toContain("Alpha");
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Menu', () => {
+describe("Regression: Menu", () => {
   const items = [
-    { id: 'edit', label: 'Edit' },
-    { id: 'duplicate', label: 'Duplicate' },
-    { id: 'delete', label: 'Delete' },
+    { id: "edit", label: "Edit" },
+    { id: "duplicate", label: "Duplicate" },
+    { id: "delete", label: "Delete" },
   ];
 
-  it('renders trigger, click → menu with items, and snapshot', async () => {
+  it("renders trigger, click → menu with items, and snapshot", async () => {
     const user = setupUser();
     const { container } = render(() => (
       <MenuTrigger>
@@ -404,52 +369,50 @@ describe('Regression: Menu', () => {
       </MenuTrigger>
     ));
 
-    const trigger = screen.getByRole('button', { name: /Actions/ });
+    const trigger = screen.getByRole("button", { name: /Actions/ });
     expect(trigger).toBeInTheDocument();
 
     await user.click(trigger);
-    expect(screen.getByRole('menu')).toBeInTheDocument();
-    const menuItems = screen.getAllByRole('menuitem');
+    expect(screen.getByRole("menu")).toBeInTheDocument();
+    const menuItems = screen.getAllByRole("menuitem");
     expect(menuItems.length).toBe(3);
-    expect(menuItems[0].textContent).toContain('Edit');
+    expect(menuItems[0].textContent).toContain("Edit");
 
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: ActionMenu', () => {
+describe("Regression: ActionMenu", () => {
   const items = [
-    { id: 'cut', label: 'Cut' },
-    { id: 'copy', label: 'Copy' },
-    { id: 'paste', label: 'Paste' },
+    { id: "cut", label: "Cut" },
+    { id: "copy", label: "Copy" },
+    { id: "paste", label: "Paste" },
   ];
 
-  it('renders button with aria-label, click → menu, and snapshot', async () => {
+  it("renders button with aria-label, click → menu, and snapshot", async () => {
     const user = setupUser();
-    const { container } = render(() => (
-      <ActionMenu items={items} getKey={(i) => i.id} />
-    ));
+    const { container } = render(() => <ActionMenu items={items} getKey={(i) => i.id} />);
 
-    const trigger = screen.getByRole('button', { name: 'Actions' });
+    const trigger = screen.getByRole("button", { name: "Actions" });
     expect(trigger).toBeInTheDocument();
-    expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
-    expect(trigger).toHaveAttribute('aria-label', 'Actions');
+    expect(trigger).toHaveAttribute("aria-haspopup", "menu");
+    expect(trigger).toHaveAttribute("aria-label", "Actions");
 
     await user.click(trigger);
-    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(screen.getByRole("menu")).toBeInTheDocument();
 
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: GridList', () => {
+describe("Regression: GridList", () => {
   const items = [
-    { id: '1', name: 'Item One' },
-    { id: '2', name: 'Item Two' },
-    { id: '3', name: 'Item Three' },
+    { id: "1", name: "Item One" },
+    { id: "2", name: "Item Two" },
+    { id: "3", name: "Item Three" },
   ];
 
-  it('renders grid with rows/gridcells and snapshot', () => {
+  it("renders grid with rows/gridcells and snapshot", () => {
     const { container } = render(() => (
       <GridList
         items={items}
@@ -462,33 +425,28 @@ describe('Regression: GridList', () => {
       </GridList>
     ));
 
-    expect(screen.getByRole('grid')).toBeInTheDocument();
-    const rows = screen.getAllByRole('row');
+    expect(screen.getByRole("grid")).toBeInTheDocument();
+    const rows = screen.getAllByRole("row");
     expect(rows.length).toBe(3);
-    expect(rows[0].textContent).toContain('Item One');
+    expect(rows[0].textContent).toContain("Item One");
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Table', () => {
+describe("Regression: Table", () => {
   const columns = [
-    { key: 'name', name: 'Name' },
-    { key: 'role', name: 'Role' },
+    { key: "name", name: "Name" },
+    { key: "role", name: "Role" },
   ];
   const rows = [
-    { id: 1, name: 'Alice', role: 'Engineer' },
-    { id: 2, name: 'Bob', role: 'Designer' },
-    { id: 3, name: 'Carol', role: 'Manager' },
+    { id: 1, name: "Alice", role: "Engineer" },
+    { id: 2, name: "Bob", role: "Designer" },
+    { id: 3, name: "Carol", role: "Manager" },
   ];
 
-  it('renders grid with header + data rows and snapshot', () => {
+  it("renders grid with header + data rows and snapshot", () => {
     const { container } = render(() => (
-      <Table
-        items={rows}
-        columns={columns}
-        getKey={(r: any) => r.id}
-        aria-label="Team"
-      >
+      <Table items={rows} columns={columns} getKey={(r: any) => r.id} aria-label="Team">
         {() => (
           <>
             <TableHeader>
@@ -512,79 +470,77 @@ describe('Regression: Table', () => {
       </Table>
     ));
 
-    const grid = screen.getByRole('grid');
+    const grid = screen.getByRole("grid");
     expect(grid).toBeInTheDocument();
-    expect(grid.tagName).toBe('TABLE');
-    const allRows = screen.getAllByRole('row');
+    expect(grid.tagName).toBe("TABLE");
+    const allRows = screen.getAllByRole("row");
     expect(allRows.length).toBeGreaterThanOrEqual(4); // header + 3 data
-    expect(screen.getByText('Alice')).toBeInTheDocument();
-    expect(screen.getByText('Designer')).toBeInTheDocument();
+    expect(screen.getByText("Alice")).toBeInTheDocument();
+    expect(screen.getByText("Designer")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Tree', () => {
-  interface TestItem { name: string }
+describe("Regression: Tree", () => {
+  interface TestItem {
+    name: string;
+  }
 
   const treeItems: TreeItemData<TestItem>[] = [
     {
-      key: 'docs',
-      value: { name: 'Documents' },
-      textValue: 'Documents',
-      children: [
-        { key: 'report', value: { name: 'Report.pdf' }, textValue: 'Report.pdf' },
-      ],
+      key: "docs",
+      value: { name: "Documents" },
+      textValue: "Documents",
+      children: [{ key: "report", value: { name: "Report.pdf" }, textValue: "Report.pdf" }],
     },
     {
-      key: 'readme',
-      value: { name: 'readme.md' },
-      textValue: 'readme.md',
+      key: "readme",
+      value: { name: "readme.md" },
+      textValue: "readme.md",
     },
   ];
 
-  it('renders treegrid, expanded children visible, and snapshot', () => {
+  it("renders treegrid, expanded children visible, and snapshot", () => {
     const { container } = render(() => (
-      <Tree items={treeItems} aria-label="Files" defaultExpandedKeys={['docs']}>
+      <Tree items={treeItems} aria-label="Files" defaultExpandedKeys={["docs"]}>
         {(item) => <TreeItem id={item.key}>{item.textValue}</TreeItem>}
       </Tree>
     ));
 
-    expect(screen.getByRole('treegrid')).toBeInTheDocument();
-    expect(screen.getByText('Documents')).toBeInTheDocument();
-    expect(screen.getByText('Report.pdf')).toBeInTheDocument();
-    expect(screen.getByText('readme.md')).toBeInTheDocument();
+    expect(screen.getByRole("treegrid")).toBeInTheDocument();
+    expect(screen.getByText("Documents")).toBeInTheDocument();
+    expect(screen.getByText("Report.pdf")).toBeInTheDocument();
+    expect(screen.getByText("readme.md")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Tabs', () => {
+describe("Regression: Tabs", () => {
   const tabItems = [
-    { id: 'tab1', label: 'First' },
-    { id: 'tab2', label: 'Second' },
-    { id: 'tab3', label: 'Third' },
+    { id: "tab1", label: "First" },
+    { id: "tab2", label: "Second" },
+    { id: "tab3", label: "Third" },
   ];
 
-  it('renders tablist, tabs, click → panel changes, and snapshot', async () => {
+  it("renders tablist, tabs, click → panel changes, and snapshot", async () => {
     const user = setupUser();
     const { container } = render(() => (
       <Tabs items={tabItems} getKey={(i) => i.id} defaultSelectedKey="tab1">
-        <TabList items={tabItems}>
-          {(item) => <Tab id={item.id}>{item.label}</Tab>}
-        </TabList>
+        <TabList items={tabItems}>{(item) => <Tab id={item.id}>{item.label}</Tab>}</TabList>
         <TabPanel id="tab1">Content One</TabPanel>
         <TabPanel id="tab2">Content Two</TabPanel>
         <TabPanel id="tab3">Content Three</TabPanel>
       </Tabs>
     ));
 
-    expect(screen.getByRole('tablist')).toBeInTheDocument();
-    const tabs = screen.getAllByRole('tab');
+    expect(screen.getByRole("tablist")).toBeInTheDocument();
+    const tabs = screen.getAllByRole("tab");
     expect(tabs).toHaveLength(3);
-    expect(screen.getByRole('tabpanel')).toBeInTheDocument();
-    expect(screen.getByText('Content One')).toBeInTheDocument();
+    expect(screen.getByRole("tabpanel")).toBeInTheDocument();
+    expect(screen.getByText("Content One")).toBeInTheDocument();
 
     await user.click(tabs[1]);
-    expect(screen.getByText('Content Two')).toBeInTheDocument();
+    expect(screen.getByText("Content Two")).toBeInTheDocument();
 
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
@@ -594,8 +550,8 @@ describe('Regression: Tabs', () => {
 // OVERLAYS & DIALOGS
 // ═══════════════════════════════════════════════════════════════
 
-describe('Regression: Dialog', () => {
-  it('trigger → role=dialog with title and close, and snapshot', async () => {
+describe("Regression: Dialog", () => {
+  it("trigger → role=dialog with title and close, and snapshot", async () => {
     const user = setupUser();
     const { container } = render(() => (
       <DialogTrigger
@@ -609,17 +565,17 @@ describe('Regression: Dialog', () => {
       />
     ));
 
-    await user.click(screen.getByRole('button', { name: 'Open' }));
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText('Settings')).toBeInTheDocument();
-    expect(screen.getByText('Dialog body content')).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Open" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Settings")).toBeInTheDocument();
+    expect(screen.getByText("Dialog body content")).toBeInTheDocument();
 
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: AlertDialog', () => {
-  it('renders alertdialog with confirm/cancel buttons and snapshot', () => {
+describe("Regression: AlertDialog", () => {
+  it("renders alertdialog with confirm/cancel buttons and snapshot", () => {
     const { container } = render(() => (
       <AlertDialog
         title="Delete item?"
@@ -632,17 +588,17 @@ describe('Regression: AlertDialog', () => {
       </AlertDialog>
     ));
 
-    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
-    expect(screen.getByText('Delete item?')).toBeInTheDocument();
-    expect(screen.getByText('This action cannot be undone.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+    expect(screen.getByText("Delete item?")).toBeInTheDocument();
+    expect(screen.getByText("This action cannot be undone.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Popover', () => {
-  it('trigger click → dialog content, and snapshot', async () => {
+describe("Regression: Popover", () => {
+  it("trigger click → dialog content, and snapshot", async () => {
     const user = setupUser();
     const { container } = render(() => (
       <PopoverTrigger>
@@ -653,16 +609,16 @@ describe('Regression: Popover', () => {
       </PopoverTrigger>
     ));
 
-    await user.click(screen.getByRole('button', { name: 'Info' }));
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText('Popover content here')).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Info" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Popover content here")).toBeInTheDocument();
 
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Tooltip', () => {
-  it('renders tooltip with role=tooltip when open, and snapshot', () => {
+describe("Regression: Tooltip", () => {
+  it("renders tooltip with role=tooltip when open, and snapshot", () => {
     const { container } = render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
@@ -670,27 +626,27 @@ describe('Regression: Tooltip', () => {
       </TooltipTrigger>
     ));
 
-    expect(screen.getByRole('tooltip')).toBeInTheDocument();
-    expect(screen.getByText('Helpful tip')).toBeInTheDocument();
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    expect(screen.getByText("Helpful tip")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Toast', () => {
+describe("Regression: Toast", () => {
   afterEach(() => clearGlobalToasts());
 
-  it('addToast → toast appears with text, and snapshot', () => {
+  it("addToast → toast appears with text, and snapshot", () => {
     const { container } = render(() => (
       <ToastProvider useGlobalQueue>
         <ToastRegion portal={false} />
       </ToastProvider>
     ));
 
-    addToast({ title: 'Saved successfully', type: 'success' });
+    addToast({ title: "Saved successfully", type: "success" });
 
-    const region = screen.getByRole('region');
+    const region = screen.getByRole("region");
     expect(region).toBeInTheDocument();
-    expect(screen.getByText('Saved successfully')).toBeInTheDocument();
+    expect(screen.getByText("Saved successfully")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
@@ -699,45 +655,43 @@ describe('Regression: Toast', () => {
 // NAVIGATION & LAYOUT
 // ═══════════════════════════════════════════════════════════════
 
-describe('Regression: Breadcrumbs', () => {
+describe("Regression: Breadcrumbs", () => {
   const crumbs = [
-    { id: 'home', label: 'Home' },
-    { id: 'products', label: 'Products' },
-    { id: 'widget', label: 'Widget' },
+    { id: "home", label: "Home" },
+    { id: "products", label: "Products" },
+    { id: "widget", label: "Widget" },
   ];
 
-  it('renders nav, list structure, last=current, and snapshot', () => {
+  it("renders nav, list structure, last=current, and snapshot", () => {
     const { container } = render(() => (
       <Breadcrumbs items={crumbs} getKey={(i) => i.id}>
         {(item) => <BreadcrumbItem>{item.label}</BreadcrumbItem>}
       </Breadcrumbs>
     ));
 
-    expect(screen.getByRole('navigation')).toBeInTheDocument();
-    expect(container.querySelector('ol')).toBeInTheDocument();
-    expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('Products')).toBeInTheDocument();
-    expect(screen.getByText('Widget')).toBeInTheDocument();
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(container.querySelector("ol")).toBeInTheDocument();
+    expect(screen.getByText("Home")).toBeInTheDocument();
+    expect(screen.getByText("Products")).toBeInTheDocument();
+    expect(screen.getByText("Widget")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Link', () => {
-  it('renders with role=link, href, text, and snapshot', () => {
-    const { container } = render(() => (
-      <Link href="https://example.com">Visit Example</Link>
-    ));
+describe("Regression: Link", () => {
+  it("renders with role=link, href, text, and snapshot", () => {
+    const { container } = render(() => <Link href="https://example.com">Visit Example</Link>);
 
-    const link = screen.getByRole('link');
+    const link = screen.getByRole("link");
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute('href', 'https://example.com');
-    expect(link.textContent).toContain('Visit Example');
+    expect(link).toHaveAttribute("href", "https://example.com");
+    expect(link.textContent).toContain("Visit Example");
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Toolbar', () => {
-  it('renders with role=toolbar containing buttons, and snapshot', () => {
+describe("Regression: Toolbar", () => {
+  it("renders with role=toolbar containing buttons, and snapshot", () => {
     const { container } = render(() => (
       <Toolbar aria-label="Text formatting">
         <Button>Bold</Button>
@@ -746,15 +700,15 @@ describe('Regression: Toolbar', () => {
       </Toolbar>
     ));
 
-    expect(screen.getByRole('toolbar')).toBeInTheDocument();
-    const buttons = screen.getAllByRole('button');
+    expect(screen.getByRole("toolbar")).toBeInTheDocument();
+    const buttons = screen.getAllByRole("button");
     expect(buttons.length).toBe(3);
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Disclosure', () => {
-  it('trigger click → panel visible, aria-expanded, and snapshot', async () => {
+describe("Regression: Disclosure", () => {
+  it("trigger click → panel visible, aria-expanded, and snapshot", async () => {
     const user = setupUser();
     const { container } = render(() => (
       <Disclosure>
@@ -763,18 +717,18 @@ describe('Regression: Disclosure', () => {
       </Disclosure>
     ));
 
-    const trigger = screen.getByRole('button', { name: /Show details/ });
+    const trigger = screen.getByRole("button", { name: /Show details/ });
     expect(trigger).toBeInTheDocument();
 
     await user.click(trigger);
-    expect(screen.getByText('Hidden content revealed')).toBeInTheDocument();
+    expect(screen.getByText("Hidden content revealed")).toBeInTheDocument();
 
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Accordion (DisclosureGroup)', () => {
-  it('renders multiple sections, click expands, and snapshot', async () => {
+describe("Regression: Accordion (DisclosureGroup)", () => {
+  it("renders multiple sections, click expands, and snapshot", async () => {
     const user = setupUser();
     const { container } = render(() => (
       <DisclosureGroup>
@@ -789,11 +743,11 @@ describe('Regression: Accordion (DisclosureGroup)', () => {
       </DisclosureGroup>
     ));
 
-    const triggers = screen.getAllByRole('button');
+    const triggers = screen.getAllByRole("button");
     expect(triggers.length).toBe(2);
 
     await user.click(triggers[0]);
-    expect(screen.getByText('Content 1')).toBeInTheDocument();
+    expect(screen.getByText("Content 1")).toBeInTheDocument();
 
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
@@ -803,27 +757,24 @@ describe('Regression: Accordion (DisclosureGroup)', () => {
 // DATE & TIME
 // ═══════════════════════════════════════════════════════════════
 
-describe('Regression: Calendar', () => {
-  it('renders grid with day cells, nav buttons, and snapshot', async () => {
+describe("Regression: Calendar", () => {
+  it("renders grid with day cells, nav buttons, and snapshot", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    vi.setSystemTime(new Date('2026-02-26T12:00:00.000Z'));
+    vi.setSystemTime(new Date("2026-02-26T12:00:00.000Z"));
 
     try {
       const { container } = render(() => (
-        <Calendar
-          aria-label="Event date"
-          defaultFocusedValue={parseDate('2026-02-26')}
-        />
+        <Calendar aria-label="Event date" defaultFocusedValue={parseDate("2026-02-26")} />
       ));
 
       await waitFor(() => {
-        expect(screen.getByRole('grid')).toBeInTheDocument();
+        expect(screen.getByRole("grid")).toBeInTheDocument();
       });
 
-      const grid = screen.getByRole('grid');
+      const grid = screen.getByRole("grid");
       expect(grid).toBeInTheDocument();
       // Navigation buttons (previous/next month)
-      const buttons = screen.getAllByRole('button');
+      const buttons = screen.getAllByRole("button");
       expect(buttons.length).toBeGreaterThanOrEqual(2);
       expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
     } finally {
@@ -832,10 +783,10 @@ describe('Regression: Calendar', () => {
   });
 });
 
-describe('Regression: DatePicker', () => {
-  it('renders date segments and open button, and snapshot', async () => {
+describe("Regression: DatePicker", () => {
+  it("renders date segments and open button, and snapshot", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    vi.setSystemTime(new Date('2026-02-26T12:00:00.000Z'));
+    vi.setSystemTime(new Date("2026-02-26T12:00:00.000Z"));
 
     try {
       const { container } = render(() => (
@@ -843,12 +794,12 @@ describe('Regression: DatePicker', () => {
       ));
 
       await waitFor(() => {
-        expect(screen.getAllByRole('spinbutton').length).toBeGreaterThan(0);
+        expect(screen.getAllByRole("spinbutton").length).toBeGreaterThan(0);
       });
 
-      const segments = screen.getAllByRole('spinbutton');
+      const segments = screen.getAllByRole("spinbutton");
       expect(segments.length).toBeGreaterThanOrEqual(3); // month/day/year
-      expect(screen.getByRole('button', { name: 'Choose date' })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Choose date" })).toBeInTheDocument();
       expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
     } finally {
       vi.useRealTimers();
@@ -856,22 +807,20 @@ describe('Regression: DatePicker', () => {
   });
 });
 
-describe('Regression: DateField', () => {
-  it('renders label and date segments, and snapshot', async () => {
+describe("Regression: DateField", () => {
+  it("renders label and date segments, and snapshot", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    vi.setSystemTime(new Date('2026-02-26T12:00:00.000Z'));
+    vi.setSystemTime(new Date("2026-02-26T12:00:00.000Z"));
 
     try {
-      const { container } = render(() => (
-        <DateField label="Birth date" />
-      ));
+      const { container } = render(() => <DateField label="Birth date" />);
 
       await waitFor(() => {
-        expect(screen.getAllByRole('spinbutton').length).toBeGreaterThan(0);
+        expect(screen.getAllByRole("spinbutton").length).toBeGreaterThan(0);
       });
 
-      expect(screen.getByText('Birth date')).toBeInTheDocument();
-      const segments = screen.getAllByRole('spinbutton');
+      expect(screen.getByText("Birth date")).toBeInTheDocument();
+      const segments = screen.getAllByRole("spinbutton");
       expect(segments.length).toBeGreaterThanOrEqual(3); // month/day/year
       expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
     } finally {
@@ -884,85 +833,81 @@ describe('Regression: DateField', () => {
 // DATA DISPLAY
 // ═══════════════════════════════════════════════════════════════
 
-describe('Regression: ProgressBar', () => {
-  it('renders progressbar with aria-value attrs and label, and snapshot', () => {
+describe("Regression: ProgressBar", () => {
+  it("renders progressbar with aria-value attrs and label, and snapshot", () => {
     const { container } = render(() => (
       <ProgressBar label="Loading" value={60} minValue={0} maxValue={100} />
     ));
 
-    const bar = screen.getByRole('progressbar');
+    const bar = screen.getByRole("progressbar");
     expect(bar).toBeInTheDocument();
-    expect(bar).toHaveAttribute('aria-valuenow', '60');
-    expect(bar).toHaveAttribute('aria-valuemin', '0');
-    expect(bar).toHaveAttribute('aria-valuemax', '100');
-    expect(screen.getByText('Loading')).toBeInTheDocument();
+    expect(bar).toHaveAttribute("aria-valuenow", "60");
+    expect(bar).toHaveAttribute("aria-valuemin", "0");
+    expect(bar).toHaveAttribute("aria-valuemax", "100");
+    expect(screen.getByText("Loading")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Meter', () => {
-  it('renders meter with aria-value attrs and label, and snapshot', () => {
+describe("Regression: Meter", () => {
+  it("renders meter with aria-value attrs and label, and snapshot", () => {
     const { container } = render(() => (
       <Meter label="Storage" value={75} minValue={0} maxValue={100} />
     ));
 
-    const meter = screen.getByRole('meter');
+    const meter = screen.getByRole("meter");
     expect(meter).toBeInTheDocument();
-    expect(meter).toHaveAttribute('aria-valuenow', '75');
-    expect(meter).toHaveAttribute('aria-valuemin', '0');
-    expect(meter).toHaveAttribute('aria-valuemax', '100');
-    expect(screen.getByText('Storage')).toBeInTheDocument();
+    expect(meter).toHaveAttribute("aria-valuenow", "75");
+    expect(meter).toHaveAttribute("aria-valuemin", "0");
+    expect(meter).toHaveAttribute("aria-valuemax", "100");
+    expect(screen.getByText("Storage")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Badge', () => {
-  it('renders count text and variant class, and snapshot', () => {
-    const { container } = render(() => (
-      <Badge count={42} variant="accent" />
-    ));
+describe("Regression: Badge", () => {
+  it("renders count text and variant class, and snapshot", () => {
+    const { container } = render(() => <Badge count={42} variant="accent" />);
 
-    expect(screen.getByText('42')).toBeInTheDocument();
-    expect(container.firstElementChild!.className).toContain('bg-accent');
+    expect(screen.getByText("42")).toBeInTheDocument();
+    expect(container.firstElementChild!.className).toContain("bg-accent");
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Alert', () => {
-  it('renders role=alert with title, children, variant, and snapshot', () => {
+describe("Regression: Alert", () => {
+  it("renders role=alert with title, children, variant, and snapshot", () => {
     const { container } = render(() => (
       <Alert title="Warning" variant="warning">
         Check your settings.
       </Alert>
     ));
 
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText('Warning')).toBeInTheDocument();
-    expect(screen.getByText('Check your settings.')).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.getByText("Warning")).toBeInTheDocument();
+    expect(screen.getByText("Check your settings.")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: StatusLight', () => {
-  it('renders indicator dot and label text, and snapshot', () => {
-    const { container } = render(() => (
-      <StatusLight variant="positive">Online</StatusLight>
-    ));
+describe("Regression: StatusLight", () => {
+  it("renders indicator dot and label text, and snapshot", () => {
+    const { container } = render(() => <StatusLight variant="positive">Online</StatusLight>);
 
-    expect(screen.getByText('Online')).toBeInTheDocument();
+    expect(screen.getByText("Online")).toBeInTheDocument();
     // Indicator dot present (aria-hidden span)
     const dot = container.querySelector('[aria-hidden="true"]');
     expect(dot).toBeInTheDocument();
-    expect(dot!.className).toContain('bg-green');
+    expect(dot!.className).toContain("bg-green");
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Separator', () => {
-  it('renders separator with role=separator, and snapshot', () => {
+describe("Regression: Separator", () => {
+  it("renders separator with role=separator, and snapshot", () => {
     const { container } = render(() => <Separator />);
 
-    expect(screen.getByRole('separator')).toBeInTheDocument();
+    expect(screen.getByRole("separator")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
@@ -971,8 +916,8 @@ describe('Regression: Separator', () => {
 // COLOR
 // ═══════════════════════════════════════════════════════════════
 
-describe('Regression: ColorArea', () => {
-  it('renders gradient container with 2D area, and snapshot', () => {
+describe("Regression: ColorArea", () => {
+  it("renders gradient container with 2D area, and snapshot", () => {
     const { container } = render(() => (
       <ColorArea aria-label="Color" defaultValue="hsba(0, 100%, 100%, 1)">
         <ColorAreaGradient />
@@ -986,8 +931,8 @@ describe('Regression: ColorArea', () => {
   });
 });
 
-describe('Regression: ColorSlider', () => {
-  it('renders slider with track and thumb, and snapshot', () => {
+describe("Regression: ColorSlider", () => {
+  it("renders slider with track and thumb, and snapshot", () => {
     const { container } = render(() => (
       <ColorSlider channel="hue" aria-label="Hue" defaultValue="hsl(0, 100%, 50%)">
         <ColorSliderTrack>
@@ -996,14 +941,14 @@ describe('Regression: ColorSlider', () => {
       </ColorSlider>
     ));
 
-    const slider = screen.getByRole('slider');
+    const slider = screen.getByRole("slider");
     expect(slider).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: ColorWheel', () => {
-  it('renders wheel container with circular track, and snapshot', () => {
+describe("Regression: ColorWheel", () => {
+  it("renders wheel container with circular track, and snapshot", () => {
     const { container } = render(() => (
       <ColorWheel aria-label="Hue wheel" defaultValue="hsl(0, 100%, 50%)">
         <ColorWheelTrack />
@@ -1020,8 +965,8 @@ describe('Regression: ColorWheel', () => {
 // OTHER
 // ═══════════════════════════════════════════════════════════════
 
-describe('Regression: RangeSlider', () => {
-  it('renders 2 sliders with start/end labels and aria-values, and snapshot', () => {
+describe("Regression: RangeSlider", () => {
+  it("renders 2 sliders with start/end labels and aria-values, and snapshot", () => {
     const { container } = render(() => (
       <RangeSlider
         label="Price"
@@ -1031,80 +976,76 @@ describe('Regression: RangeSlider', () => {
       />
     ));
 
-    const sliders = screen.getAllByRole('slider');
+    const sliders = screen.getAllByRole("slider");
     expect(sliders).toHaveLength(2);
 
     const startSlider = sliders[0];
     const endSlider = sliders[1];
-    expect(startSlider).toHaveAttribute('aria-label', 'Price start');
-    expect(endSlider).toHaveAttribute('aria-label', 'Price end');
-    expect(startSlider).toHaveAttribute('aria-valuenow', '20');
-    expect(endSlider).toHaveAttribute('aria-valuenow', '80');
+    expect(startSlider).toHaveAttribute("aria-label", "Price start");
+    expect(endSlider).toHaveAttribute("aria-label", "Price end");
+    expect(startSlider).toHaveAttribute("aria-valuenow", "20");
+    expect(endSlider).toHaveAttribute("aria-valuenow", "80");
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Avatar', () => {
-  it('renders fallback initials when no src, and snapshot', () => {
-    const { container } = render(() => (
-      <Avatar alt="John Doe" size="md" />
-    ));
+describe("Regression: Avatar", () => {
+  it("renders fallback initials when no src, and snapshot", () => {
+    const { container } = render(() => <Avatar alt="John Doe" size="md" />);
 
-    expect(screen.getByText('JO')).toBeInTheDocument();
+    expect(screen.getByText("JO")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 
-  it('renders img when src is provided', () => {
-    const { container } = render(() => (
-      <Avatar src="/avatar.png" alt="Jane" size="lg" />
-    ));
+  it("renders img when src is provided", () => {
+    const { container } = render(() => <Avatar src="/avatar.png" alt="Jane" size="lg" />);
 
-    const img = container.querySelector('img');
+    const img = container.querySelector("img");
     expect(img).toBeInTheDocument();
-    expect(img).toHaveAttribute('src', '/avatar.png');
-    expect(img).toHaveAttribute('alt', 'Jane');
+    expect(img).toHaveAttribute("src", "/avatar.png");
+    expect(img).toHaveAttribute("alt", "Jane");
   });
 });
 
-describe('Regression: Landmark', () => {
-  it('renders correct landmark role, and snapshot', () => {
+describe("Regression: Landmark", () => {
+  it("renders correct landmark role, and snapshot", () => {
     const { container } = render(() => (
       <Landmark role="navigation" aria-label="Main nav">
         <a href="/">Home</a>
       </Landmark>
     ));
 
-    expect(screen.getByRole('navigation')).toBeInTheDocument();
-    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByText("Home")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Well', () => {
-  it('renders container div with children, and snapshot', () => {
+describe("Regression: Well", () => {
+  it("renders container div with children, and snapshot", () => {
     const { container } = render(() => (
       <Well>
         <p>Emphasized content</p>
       </Well>
     ));
 
-    expect(screen.getByText('Emphasized content')).toBeInTheDocument();
-    expect(container.firstElementChild!.className).toContain('rounded-lg');
+    expect(screen.getByText("Emphasized content")).toBeInTheDocument();
+    expect(container.firstElementChild!.className).toContain("rounded-lg");
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Label', () => {
-  it('renders label element with text, and snapshot', () => {
+describe("Regression: Label", () => {
+  it("renders label element with text, and snapshot", () => {
     const { container } = render(() => <Label>Field label</Label>);
 
-    expect(screen.getByText('Field label')).toBeInTheDocument();
+    expect(screen.getByText("Field label")).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
-describe('Regression: Form', () => {
-  it('renders form element with children, and snapshot', () => {
+describe("Regression: Form", () => {
+  it("renders form element with children, and snapshot", () => {
     const { container } = render(() => (
       <Form>
         <TextField label="Name" />
@@ -1112,10 +1053,10 @@ describe('Regression: Form', () => {
       </Form>
     ));
 
-    const form = container.querySelector('form');
+    const form = container.querySelector("form");
     expect(form).toBeInTheDocument();
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
     expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
@@ -1124,26 +1065,21 @@ describe('Regression: Form', () => {
 // DOM PROP FORWARDING — verifies aria-label / data-testid pass through
 // ═══════════════════════════════════════════════════════════════
 
-describe('DOM prop forwarding: ActionMenu (MenuButton)', () => {
-  it('forwards aria-label to trigger button', async () => {
+describe("DOM prop forwarding: ActionMenu (MenuButton)", () => {
+  it("forwards aria-label to trigger button", async () => {
     const user = setupUser();
-    render(() => (
-      <ActionMenu
-        items={[{ id: 'a', label: 'A' }]}
-        getKey={(i) => i.id}
-      />
-    ));
+    render(() => <ActionMenu items={[{ id: "a", label: "A" }]} getKey={(i) => i.id} />);
 
-    const trigger = screen.getByRole('button', { name: 'Actions' });
-    expect(trigger).toHaveAttribute('aria-label', 'Actions');
+    const trigger = screen.getByRole("button", { name: "Actions" });
+    expect(trigger).toHaveAttribute("aria-label", "Actions");
   });
 });
 
-describe('DOM prop forwarding: GridListItem', () => {
-  it('forwards data-testid to li element', () => {
+describe("DOM prop forwarding: GridListItem", () => {
+  it("forwards data-testid to li element", () => {
     render(() => (
       <GridList
-        items={[{ id: '1', name: 'Item' }]}
+        items={[{ id: "1", name: "Item" }]}
         getKey={(i) => i.id}
         getTextValue={(i) => i.name}
         aria-label="Test"
@@ -1156,14 +1092,14 @@ describe('DOM prop forwarding: GridListItem', () => {
       </GridList>
     ));
 
-    expect(screen.getByTestId('my-item')).toBeInTheDocument();
+    expect(screen.getByTestId("my-item")).toBeInTheDocument();
   });
 });
 
-describe('DOM prop forwarding: TreeItem', () => {
-  it('forwards data-testid to tree item element', () => {
+describe("DOM prop forwarding: TreeItem", () => {
+  it("forwards data-testid to tree item element", () => {
     const treeItems: TreeItemData<{ name: string }>[] = [
-      { key: 'a', value: { name: 'Node A' }, textValue: 'Node A' },
+      { key: "a", value: { name: "Node A" }, textValue: "Node A" },
     ];
 
     render(() => (
@@ -1176,6 +1112,6 @@ describe('DOM prop forwarding: TreeItem', () => {
       </Tree>
     ));
 
-    expect(screen.getByTestId('tree-node')).toBeInTheDocument();
+    expect(screen.getByTestId("tree-node")).toBeInTheDocument();
   });
 });

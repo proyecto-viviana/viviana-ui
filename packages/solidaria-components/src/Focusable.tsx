@@ -5,8 +5,14 @@
  * focusable and capable of auto focus. Port of React Aria's Focusable.
  */
 
-import { type JSX, children as resolveChildren, createEffect, onCleanup, splitProps } from 'solid-js';
-import { createFocusable, type CreateFocusableProps } from '@proyecto-viviana/solidaria';
+import {
+  type JSX,
+  children as resolveChildren,
+  createEffect,
+  onCleanup,
+  splitProps,
+} from "solid-js";
+import { createFocusable, type CreateFocusableProps } from "@proyecto-viviana/solidaria";
 
 // ============================================
 // TYPES
@@ -35,7 +41,7 @@ export interface FocusableProps extends CreateFocusableProps {
  * ```
  */
 export function Focusable(props: FocusableProps): JSX.Element {
-  const [local, focusableProps] = splitProps(props, ['children', 'ref']);
+  const [local, focusableProps] = splitProps(props, ["children", "ref"]);
 
   let ref!: HTMLElement;
   const { focusableProps: domProps } = createFocusable(focusableProps, () => ref);
@@ -47,7 +53,7 @@ export function Focusable(props: FocusableProps): JSX.Element {
     if (child instanceof HTMLElement) {
       ref = child;
       // Forward ref
-      if (typeof local.ref === 'function') {
+      if (typeof local.ref === "function") {
         local.ref(child);
       }
 
@@ -55,39 +61,39 @@ export function Focusable(props: FocusableProps): JSX.Element {
       const props = domProps;
       const listeners: Array<[string, EventListener]> = [];
       const addListener = (eventName: string, handler: unknown) => {
-        if (typeof handler === 'function') {
+        if (typeof handler === "function") {
           const listener = handler as EventListener;
           child.addEventListener(eventName, listener);
           listeners.push([eventName, listener]);
         }
       };
 
-      addListener('focus', props.onFocus);
-      addListener('blur', props.onBlur);
-      addListener('keydown', props.onKeyDown);
-      addListener('keyup', props.onKeyUp);
+      addListener("focus", props.onFocus);
+      addListener("blur", props.onBlur);
+      addListener("keydown", props.onKeyDown);
+      addListener("keyup", props.onKeyUp);
 
       // Apply non-event focusable props (e.g. tabIndex/aria/data attrs).
       // Keep explicit child tabIndex to mirror mergeProps(child.props precedence).
       for (const [key, value] of Object.entries(props)) {
-        if (key === 'ref' || (key.startsWith('on') && typeof value === 'function')) continue;
+        if (key === "ref" || (key.startsWith("on") && typeof value === "function")) continue;
 
-        if (key === 'tabIndex') {
-          if (child.hasAttribute('tabindex')) continue;
+        if (key === "tabIndex") {
+          if (child.hasAttribute("tabindex")) continue;
           if (value == null || value === false) {
-            child.removeAttribute('tabindex');
+            child.removeAttribute("tabindex");
           } else {
             child.tabIndex = Number(value);
           }
           continue;
         }
 
-        if (key.startsWith('aria-') || key.startsWith('data-') || key === 'id' || key === 'role') {
+        if (key.startsWith("aria-") || key.startsWith("data-") || key === "id" || key === "role") {
           if (child.hasAttribute(key)) continue;
           if (value == null || value === false) {
             child.removeAttribute(key);
           } else if (value === true) {
-            child.setAttribute(key, '');
+            child.setAttribute(key, "");
           } else {
             child.setAttribute(key, String(value));
           }

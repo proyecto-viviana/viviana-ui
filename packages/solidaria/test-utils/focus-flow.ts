@@ -28,16 +28,16 @@ export interface FocusFlowRecorder {
 }
 
 function getAccessibleLabel(element: Element): string | null {
-  const ariaLabel = element.getAttribute('aria-label');
+  const ariaLabel = element.getAttribute("aria-label");
   if (ariaLabel) return ariaLabel;
 
-  const labelledBy = element.getAttribute('aria-labelledby');
+  const labelledBy = element.getAttribute("aria-labelledby");
   if (labelledBy) {
     const labels = labelledBy
       .split(/\s+/)
       .map((id) => document.getElementById(id)?.textContent)
       .filter(Boolean);
-    if (labels.length > 0) return labels.join(' ');
+    if (labels.length > 0) return labels.join(" ");
   }
 
   if (element instanceof HTMLButtonElement || element instanceof HTMLAnchorElement) {
@@ -59,9 +59,7 @@ function getAccessibleLabel(element: Element): string | null {
  * recorder.stop();
  * ```
  */
-export function createFocusFlowRecorder(
-  target: EventTarget = document,
-): FocusFlowRecorder {
+export function createFocusFlowRecorder(target: EventTarget = document): FocusFlowRecorder {
   const records: FocusRecord[] = [];
 
   function handleFocusIn(event: Event) {
@@ -71,19 +69,19 @@ export function createFocusFlowRecorder(
     records.push({
       element,
       tagName: element.tagName,
-      role: element.getAttribute('role'),
+      role: element.getAttribute("role"),
       label: getAccessibleLabel(element),
       timestamp: Date.now(),
     });
   }
 
-  target.addEventListener('focusin', handleFocusIn);
+  target.addEventListener("focusin", handleFocusIn);
 
   return {
     records,
 
     stop() {
-      target.removeEventListener('focusin', handleFocusIn);
+      target.removeEventListener("focusin", handleFocusIn);
     },
 
     clear() {
@@ -95,9 +93,7 @@ export function createFocusFlowRecorder(
     },
 
     getRoleSequence() {
-      return records
-        .map((r) => r.role)
-        .filter((role): role is string => role !== null);
+      return records.map((r) => r.role).filter((role): role is string => role !== null);
     },
   };
 }
@@ -137,9 +133,7 @@ export function expectFocusOrder(
       );
     }
     if (exp.role !== undefined && actual.role !== exp.role) {
-      throw new Error(
-        `Focus transition ${i}: expected role "${exp.role}", got "${actual.role}"`,
-      );
+      throw new Error(`Focus transition ${i}: expected role "${exp.role}", got "${actual.role}"`);
     }
     if (exp.label !== undefined && actual.label !== exp.label) {
       throw new Error(
@@ -182,8 +176,8 @@ export async function expectFocusRestore(
   if (document.activeElement !== trigger) {
     const actual = document.activeElement;
     const actualDesc = actual
-      ? `${actual.tagName}${actual.id ? '#' + actual.id : ''}${actual.getAttribute('role') ? '[role="' + actual.getAttribute('role') + '"]' : ''}`
-      : 'null';
+      ? `${actual.tagName}${actual.id ? "#" + actual.id : ""}${actual.getAttribute("role") ? '[role="' + actual.getAttribute("role") + '"]' : ""}`
+      : "null";
     throw new Error(
       `Expected focus to return to trigger (${trigger.tagName}), ` +
         `but focus is on ${actualDesc}`,

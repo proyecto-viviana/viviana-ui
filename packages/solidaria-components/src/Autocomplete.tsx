@@ -15,27 +15,28 @@ import {
   createMemo,
   splitProps,
   createSignal,
-} from 'solid-js'
+} from "solid-js";
 import {
   createAutocomplete,
   type AriaAutocompleteOptions,
   type AutocompleteInputProps,
   type CollectionOptions,
-} from '@proyecto-viviana/solidaria'
+} from "@proyecto-viviana/solidaria";
 import {
   createAutocompleteState,
   type AutocompleteState,
   type AutocompleteStateOptions,
-} from '@proyecto-viviana/solid-stately'
-import { type SlotProps } from './utils'
+} from "@proyecto-viviana/solid-stately";
+import { type SlotProps } from "./utils";
 
 // ============================================
 // TYPES
 // ============================================
 
 export interface AutocompleteProps<T = unknown>
-  extends Omit<AutocompleteStateOptions, 'children'>,
-    Omit<AriaAutocompleteOptions<T>, 'inputRef' | 'collectionRef'>,
+  extends
+    Omit<AutocompleteStateOptions, "children">,
+    Omit<AriaAutocompleteOptions<T>, "inputRef" | "collectionRef">,
     ParentProps,
     SlotProps {}
 
@@ -44,33 +45,34 @@ export interface AutocompleteProps<T = unknown>
 // ============================================
 
 export interface AutocompleteContextValue {
-  inputProps: AutocompleteInputProps
-  inputRef: (el: HTMLInputElement) => void
+  inputProps: AutocompleteInputProps;
+  inputRef: (el: HTMLInputElement) => void;
 }
 
 export interface AutocompleteCollectionContextValue {
-  collectionProps: CollectionOptions
-  collectionRef: (el: HTMLElement) => void
-  filter?: (textValue: string) => boolean
+  collectionProps: CollectionOptions;
+  collectionRef: (el: HTMLElement) => void;
+  filter?: (textValue: string) => boolean;
 }
 
-export const AutocompleteContext = createContext<AutocompleteContextValue | null>(null)
-export const AutocompleteStateContext = createContext<AutocompleteState | null>(null)
-export const AutocompleteCollectionContext = createContext<AutocompleteCollectionContextValue | null>(null)
+export const AutocompleteContext = createContext<AutocompleteContextValue | null>(null);
+export const AutocompleteStateContext = createContext<AutocompleteState | null>(null);
+export const AutocompleteCollectionContext =
+  createContext<AutocompleteCollectionContextValue | null>(null);
 
 /**
  * Hook to consume autocomplete input context.
  * Use this in your input component (TextField/SearchField) to get the autocomplete props.
  */
 export function useAutocompleteInput() {
-  return useContext(AutocompleteContext)
+  return useContext(AutocompleteContext);
 }
 
 /**
  * Hook to consume autocomplete state context.
  */
 export function useAutocompleteState() {
-  return useContext(AutocompleteStateContext)
+  return useContext(AutocompleteStateContext);
 }
 
 /**
@@ -78,7 +80,7 @@ export function useAutocompleteState() {
  * Use this in your collection component (ListBox/Menu) to get the autocomplete props.
  */
 export function useAutocompleteCollection() {
-  return useContext(AutocompleteCollectionContext)
+  return useContext(AutocompleteCollectionContext);
 }
 
 // ============================================
@@ -124,16 +126,22 @@ export function useAutocompleteCollection() {
 export function Autocomplete<T = unknown>(props: AutocompleteProps<T>): JSX.Element {
   const [stateProps, ariaProps, local] = splitProps(
     props,
-    ['inputValue', 'defaultInputValue', 'onInputChange'],
-    ['filter', 'disableAutoFocusFirst', 'disableVirtualFocus', 'collectionId', 'collectionAriaLabel']
-  )
+    ["inputValue", "defaultInputValue", "onInputChange"],
+    [
+      "filter",
+      "disableAutoFocusFirst",
+      "disableVirtualFocus",
+      "collectionId",
+      "collectionAriaLabel",
+    ],
+  );
 
   // Create state
-  const state = createAutocompleteState(stateProps)
+  const state = createAutocompleteState(stateProps);
 
   // Create refs
-  let inputRef: HTMLInputElement | undefined
-  let collectionRef: HTMLElement | undefined
+  let inputRef: HTMLInputElement | undefined;
+  let collectionRef: HTMLElement | undefined;
 
   // Create autocomplete aria
   const autocomplete = createAutocomplete<T>(
@@ -142,25 +150,25 @@ export function Autocomplete<T = unknown>(props: AutocompleteProps<T>): JSX.Elem
       inputRef: () => inputRef,
       collectionRef: () => collectionRef,
     },
-    state
-  )
+    state,
+  );
 
   // Input context value
   const inputContextValue = createMemo<AutocompleteContextValue>(() => ({
     inputProps: autocomplete.inputProps,
     inputRef: (el: HTMLInputElement) => {
-      inputRef = el
+      inputRef = el;
     },
-  }))
+  }));
 
   // Collection context value
   const collectionContextValue = createMemo<AutocompleteCollectionContextValue>(() => ({
     collectionProps: autocomplete.collectionProps,
     collectionRef: (el: HTMLElement) => {
-      collectionRef = el
+      collectionRef = el;
     },
     filter: autocomplete.filter,
-  }))
+  }));
 
   return (
     <AutocompleteStateContext.Provider value={state}>
@@ -170,5 +178,5 @@ export function Autocomplete<T = unknown>(props: AutocompleteProps<T>): JSX.Elem
         </AutocompleteCollectionContext.Provider>
       </AutocompleteContext.Provider>
     </AutocompleteStateContext.Provider>
-  )
+  );
 }

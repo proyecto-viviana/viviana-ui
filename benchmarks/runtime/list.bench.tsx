@@ -4,16 +4,16 @@
  * Measures rendering and updating large lists
  */
 
-import { describe, it, expect } from 'vitest';
-import { render, cleanup } from '@solidjs/testing-library';
-import { createSignal } from 'solid-js';
-import { ListBox, ListBoxOption } from '@proyecto-viviana/silapse';
+import { describe, it, expect } from "vitest";
+import { render, cleanup } from "@solidjs/testing-library";
+import { createSignal } from "solid-js";
+import { ListBox, ListBoxOption } from "@proyecto-viviana/silapse";
 
-describe('List Performance (PV)', () => {
+describe("List Performance (PV)", () => {
   const ITERATIONS = 5; // Fewer iterations for large lists
   const ITEM_COUNT = 1000;
 
-  it('render list with 1000 items', () => {
+  it("render list with 1000 items", () => {
     const timings: number[] = [];
     const items = Array.from({ length: ITEM_COUNT }, (_, i) => ({
       id: `item-${i}`,
@@ -30,9 +30,7 @@ describe('List Performance (PV)', () => {
           getKey={(item) => item.id}
           getTextValue={(item) => item.label}
         >
-          {(item) => (
-            <ListBoxOption id={item.id}>{item.label}</ListBoxOption>
-          )}
+          {(item) => <ListBoxOption id={item.id}>{item.label}</ListBoxOption>}
         </ListBox>
       ));
 
@@ -51,7 +49,7 @@ describe('List Performance (PV)', () => {
     expect(median).toBeLessThan(2000);
   }, 20_000);
 
-  it('filter list from 1000 to 100 items', () => {
+  it("filter list from 1000 to 100 items", () => {
     const timings: number[] = [];
     const allItems = Array.from({ length: ITEM_COUNT }, (_, i) => ({
       id: `item-${i}`,
@@ -68,9 +66,7 @@ describe('List Performance (PV)', () => {
           getKey={(item) => item.id}
           getTextValue={(item) => item.label}
         >
-          {(item) => (
-            <ListBoxOption id={item.id}>{item.label}</ListBoxOption>
-          )}
+          {(item) => <ListBoxOption id={item.id}>{item.label}</ListBoxOption>}
         </ListBox>
       ));
 

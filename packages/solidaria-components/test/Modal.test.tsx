@@ -10,14 +10,14 @@
  * - ModalOverlay
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, waitFor } from '@solidjs/testing-library';
-import { Modal, ModalOverlay } from '../src/Modal';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { render, screen, cleanup, waitFor } from "@solidjs/testing-library";
+import { Modal, ModalOverlay } from "../src/Modal";
+import { setupUser } from "@proyecto-viviana/solidaria-test-utils";
 
 // setupUser is consolidated in solidaria-test-utils.
 
-describe('Modal', () => {
+describe("Modal", () => {
   let user: ReturnType<typeof setupUser>;
 
   beforeEach(() => {
@@ -32,47 +32,47 @@ describe('Modal', () => {
   // RENDERING
   // ============================================
 
-  describe('rendering', () => {
-    it('should render with default class when open', () => {
+  describe("rendering", () => {
+    it("should render with default class when open", () => {
       render(() => (
         <Modal isOpen>
           <div>Modal Content</div>
         </Modal>
       ));
 
-      const modal = document.querySelector('.solidaria-Modal');
+      const modal = document.querySelector(".solidaria-Modal");
       expect(modal).toBeInTheDocument();
     });
 
-    it('should not render when closed', () => {
+    it("should not render when closed", () => {
       render(() => (
         <Modal isOpen={false}>
           <div>Modal Content</div>
         </Modal>
       ));
 
-      const modal = document.querySelector('.solidaria-Modal');
+      const modal = document.querySelector(".solidaria-Modal");
       expect(modal).not.toBeInTheDocument();
     });
 
-    it('should render children when open', () => {
+    it("should render children when open", () => {
       render(() => (
         <Modal isOpen>
           <div>Modal Content</div>
         </Modal>
       ));
 
-      expect(screen.getByText('Modal Content')).toBeInTheDocument();
+      expect(screen.getByText("Modal Content")).toBeInTheDocument();
     });
 
-    it('should render with custom class', () => {
+    it("should render with custom class", () => {
       render(() => (
         <Modal isOpen class="my-modal">
           <div>Modal Content</div>
         </Modal>
       ));
 
-      const modal = document.querySelector('.my-modal');
+      const modal = document.querySelector(".my-modal");
       expect(modal).toBeInTheDocument();
     });
   });
@@ -81,8 +81,8 @@ describe('Modal', () => {
   // OPEN/CLOSE
   // ============================================
 
-  describe('open/close', () => {
-    it('should support controlled isOpen', () => {
+  describe("open/close", () => {
+    it("should support controlled isOpen", () => {
       // Test that modal shows when isOpen is true
       render(() => (
         <Modal isOpen>
@@ -90,30 +90,30 @@ describe('Modal', () => {
         </Modal>
       ));
 
-      expect(screen.getByText('Modal Content')).toBeInTheDocument();
+      expect(screen.getByText("Modal Content")).toBeInTheDocument();
     });
 
-    it('should not show when isOpen is false', () => {
+    it("should not show when isOpen is false", () => {
       render(() => (
         <Modal isOpen={false}>
           <div>Modal Content</div>
         </Modal>
       ));
 
-      expect(screen.queryByText('Modal Content')).not.toBeInTheDocument();
+      expect(screen.queryByText("Modal Content")).not.toBeInTheDocument();
     });
 
-    it('should support defaultOpen', () => {
+    it("should support defaultOpen", () => {
       render(() => (
         <Modal defaultOpen>
           <div>Modal Content</div>
         </Modal>
       ));
 
-      expect(screen.getByText('Modal Content')).toBeInTheDocument();
+      expect(screen.getByText("Modal Content")).toBeInTheDocument();
     });
 
-    it('should call onOpenChange when closing', async () => {
+    it("should call onOpenChange when closing", async () => {
       const onOpenChange = vi.fn();
       render(() => (
         <Modal isOpen onOpenChange={onOpenChange} isDismissable>
@@ -122,7 +122,7 @@ describe('Modal', () => {
       ));
 
       // Press Escape to close
-      await user.keyboard('{Escape}');
+      await user.keyboard("{Escape}");
 
       expect(onOpenChange).toHaveBeenCalledWith(false);
     });
@@ -132,8 +132,8 @@ describe('Modal', () => {
   // DISMISSAL
   // ============================================
 
-  describe('dismissal', () => {
-    it('should close on Escape by default', async () => {
+  describe("dismissal", () => {
+    it("should close on Escape by default", async () => {
       const onOpenChange = vi.fn();
       render(() => (
         <Modal isOpen onOpenChange={onOpenChange}>
@@ -141,12 +141,12 @@ describe('Modal', () => {
         </Modal>
       ));
 
-      await user.keyboard('{Escape}');
+      await user.keyboard("{Escape}");
 
       expect(onOpenChange).toHaveBeenCalledWith(false);
     });
 
-    it('should not close on Escape when isKeyboardDismissDisabled', async () => {
+    it("should not close on Escape when isKeyboardDismissDisabled", async () => {
       const onOpenChange = vi.fn();
       render(() => (
         <Modal isOpen onOpenChange={onOpenChange} isKeyboardDismissDisabled>
@@ -154,12 +154,12 @@ describe('Modal', () => {
         </Modal>
       ));
 
-      await user.keyboard('{Escape}');
+      await user.keyboard("{Escape}");
 
       expect(onOpenChange).not.toHaveBeenCalled();
     });
 
-    it('should close on click outside when isDismissable', async () => {
+    it("should close on click outside when isDismissable", async () => {
       const onOpenChange = vi.fn();
       render(() => (
         <div>
@@ -171,7 +171,7 @@ describe('Modal', () => {
       ));
 
       // Click outside the modal
-      const outsideButton = screen.getByText('Outside Button');
+      const outsideButton = screen.getByText("Outside Button");
       await user.click(outsideButton);
 
       await waitFor(() => {
@@ -179,7 +179,7 @@ describe('Modal', () => {
       });
     });
 
-    it('should not close on click outside when not isDismissable', async () => {
+    it("should not close on click outside when not isDismissable", async () => {
       const onOpenChange = vi.fn();
       render(() => (
         <div>
@@ -190,14 +190,14 @@ describe('Modal', () => {
         </div>
       ));
 
-      const outsideButton = screen.getByText('Outside Button');
+      const outsideButton = screen.getByText("Outside Button");
       await user.click(outsideButton);
 
       // Should not call onOpenChange since isDismissable is false
       expect(onOpenChange).not.toHaveBeenCalledWith(false);
     });
 
-    it('should close only the top-most modal on Escape when nested', async () => {
+    it("should close only the top-most modal on Escape when nested", async () => {
       const onOuterOpenChange = vi.fn();
       const onInnerOpenChange = vi.fn();
 
@@ -212,13 +212,13 @@ describe('Modal', () => {
         </>
       ));
 
-      await user.keyboard('{Escape}');
+      await user.keyboard("{Escape}");
 
       expect(onInnerOpenChange).toHaveBeenCalledWith(false);
       expect(onOuterOpenChange).not.toHaveBeenCalledWith(false);
     });
 
-    it('should close only the top-most dismissable modal on outside click', async () => {
+    it("should close only the top-most dismissable modal on outside click", async () => {
       const onOuterOpenChange = vi.fn();
       const onInnerOpenChange = vi.fn();
 
@@ -234,7 +234,7 @@ describe('Modal', () => {
         </div>
       ));
 
-      await user.click(screen.getByText('Outside Button'));
+      await user.click(screen.getByText("Outside Button"));
 
       await waitFor(() => {
         expect(onInnerOpenChange).toHaveBeenCalledWith(false);
@@ -247,8 +247,8 @@ describe('Modal', () => {
   // MODAL OVERLAY
   // ============================================
 
-  describe('ModalOverlay', () => {
-    it('should render ModalOverlay with default class', () => {
+  describe("ModalOverlay", () => {
+    it("should render ModalOverlay with default class", () => {
       render(() => (
         <ModalOverlay isOpen>
           <Modal>
@@ -257,11 +257,11 @@ describe('Modal', () => {
         </ModalOverlay>
       ));
 
-      const overlay = document.querySelector('.solidaria-ModalOverlay');
+      const overlay = document.querySelector(".solidaria-ModalOverlay");
       expect(overlay).toBeInTheDocument();
     });
 
-    it('should render both overlay and modal', () => {
+    it("should render both overlay and modal", () => {
       render(() => (
         <ModalOverlay isOpen>
           <Modal>
@@ -270,14 +270,14 @@ describe('Modal', () => {
         </ModalOverlay>
       ));
 
-      const overlay = document.querySelector('.solidaria-ModalOverlay');
-      const modal = document.querySelector('.solidaria-Modal');
+      const overlay = document.querySelector(".solidaria-ModalOverlay");
+      const modal = document.querySelector(".solidaria-Modal");
 
       expect(overlay).toBeInTheDocument();
       expect(modal).toBeInTheDocument();
     });
 
-    it('should not render when closed', () => {
+    it("should not render when closed", () => {
       render(() => (
         <ModalOverlay isOpen={false}>
           <Modal>
@@ -286,11 +286,11 @@ describe('Modal', () => {
         </ModalOverlay>
       ));
 
-      const overlay = document.querySelector('.solidaria-ModalOverlay');
+      const overlay = document.querySelector(".solidaria-ModalOverlay");
       expect(overlay).not.toBeInTheDocument();
     });
 
-    it('should render with custom overlay class', () => {
+    it("should render with custom overlay class", () => {
       render(() => (
         <ModalOverlay isOpen class="my-overlay">
           <Modal>
@@ -299,7 +299,7 @@ describe('Modal', () => {
         </ModalOverlay>
       ));
 
-      const overlay = document.querySelector('.my-overlay');
+      const overlay = document.querySelector(".my-overlay");
       expect(overlay).toBeInTheDocument();
     });
   });
@@ -308,8 +308,8 @@ describe('Modal', () => {
   // DATA ATTRIBUTES
   // ============================================
 
-  describe('data attributes', () => {
-    it('should have data-entering on overlay when isEntering', () => {
+  describe("data attributes", () => {
+    it("should have data-entering on overlay when isEntering", () => {
       render(() => (
         <ModalOverlay isOpen isEntering>
           <Modal>
@@ -318,11 +318,11 @@ describe('Modal', () => {
         </ModalOverlay>
       ));
 
-      const overlay = document.querySelector('.solidaria-ModalOverlay');
-      expect(overlay).toHaveAttribute('data-entering');
+      const overlay = document.querySelector(".solidaria-ModalOverlay");
+      expect(overlay).toHaveAttribute("data-entering");
     });
 
-    it('should have data-exiting on overlay when isExiting', () => {
+    it("should have data-exiting on overlay when isExiting", () => {
       render(() => (
         <ModalOverlay isOpen isExiting>
           <Modal>
@@ -331,11 +331,11 @@ describe('Modal', () => {
         </ModalOverlay>
       ));
 
-      const overlay = document.querySelector('.solidaria-ModalOverlay');
-      expect(overlay).toHaveAttribute('data-exiting');
+      const overlay = document.querySelector(".solidaria-ModalOverlay");
+      expect(overlay).toHaveAttribute("data-exiting");
     });
 
-    it('should not have data-entering when not entering', () => {
+    it("should not have data-entering when not entering", () => {
       render(() => (
         <ModalOverlay isOpen>
           <Modal>
@@ -344,8 +344,8 @@ describe('Modal', () => {
         </ModalOverlay>
       ));
 
-      const overlay = document.querySelector('.solidaria-ModalOverlay');
-      expect(overlay).not.toHaveAttribute('data-entering');
+      const overlay = document.querySelector(".solidaria-ModalOverlay");
+      expect(overlay).not.toHaveAttribute("data-entering");
     });
   });
 
@@ -353,8 +353,8 @@ describe('Modal', () => {
   // RENDER PROPS
   // ============================================
 
-  describe('render props', () => {
-    it('should provide isEntering to ModalOverlay render function', () => {
+  describe("render props", () => {
+    it("should provide isEntering to ModalOverlay render function", () => {
       let receivedProps: { isEntering: boolean } | undefined;
       render(() => (
         <ModalOverlay isOpen isEntering>
@@ -372,7 +372,7 @@ describe('Modal', () => {
       expect(receivedProps?.isEntering).toBe(true);
     });
 
-    it('should provide isExiting to ModalOverlay render function', () => {
+    it("should provide isExiting to ModalOverlay render function", () => {
       let receivedProps: { isExiting: boolean } | undefined;
       render(() => (
         <ModalOverlay isOpen isExiting>

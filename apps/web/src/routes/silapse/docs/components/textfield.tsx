@@ -128,11 +128,7 @@ function TextFieldPage() {
 />`}
       >
         <div class="max-w-xs">
-          <TextField
-            label="Display name"
-            variant="filled"
-            placeholder="Enter your display name"
-          />
+          <TextField label="Display name" variant="filled" placeholder="Enter your display name" />
         </div>
       </Example>
 
@@ -224,11 +220,21 @@ function TextFieldPage() {
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Label is properly associated with input via <code>id</code> and <code>for</code></li>
-          <li>Description linked via <code>aria-describedby</code></li>
-          <li>Error message linked via <code>aria-describedby</code></li>
-          <li>Required state indicated via <code>aria-required</code></li>
-          <li>Invalid state indicated via <code>aria-invalid</code></li>
+          <li>
+            Label is properly associated with input via <code>id</code> and <code>for</code>
+          </li>
+          <li>
+            Description linked via <code>aria-describedby</code>
+          </li>
+          <li>
+            Error message linked via <code>aria-describedby</code>
+          </li>
+          <li>
+            Required state indicated via <code>aria-required</code>
+          </li>
+          <li>
+            Invalid state indicated via <code>aria-invalid</code>
+          </li>
           <li>Focus ring visible on keyboard navigation</li>
         </ul>
       </AccessibilitySection>

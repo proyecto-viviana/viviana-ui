@@ -4,13 +4,13 @@
  * Ported from @react-stately/toggle's useToggleState.
  * Tests follow the same patterns as @react-stately tests.
  */
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
-import { createToggleState } from '../src/toggle/createToggleState';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot, createSignal } from "solid-js";
+import { createToggleState } from "../src/toggle/createToggleState";
 
-describe('createToggleState', () => {
-  describe('basic state management', () => {
-    it('should return false by default', () => {
+describe("createToggleState", () => {
+  describe("basic state management", () => {
+    it("should return false by default", () => {
       createRoot((dispose) => {
         const state = createToggleState();
 
@@ -21,10 +21,10 @@ describe('createToggleState', () => {
       });
     });
 
-    it('should use defaultSelected for initial uncontrolled value', () => {
+    it("should use defaultSelected for initial uncontrolled value", () => {
       createRoot((dispose) => {
         const state = createToggleState({
-          defaultSelected: true
+          defaultSelected: true,
         });
 
         expect(state.isSelected()).toBe(true);
@@ -34,10 +34,10 @@ describe('createToggleState', () => {
       });
     });
 
-    it('should use isSelected for controlled mode', () => {
+    it("should use isSelected for controlled mode", () => {
       createRoot((dispose) => {
         const state = createToggleState({
-          isSelected: true
+          isSelected: true,
         });
 
         expect(state.isSelected()).toBe(true);
@@ -48,10 +48,10 @@ describe('createToggleState', () => {
       });
     });
 
-    it('should handle controlled false state', () => {
+    it("should handle controlled false state", () => {
       createRoot((dispose) => {
         const state = createToggleState({
-          isSelected: false
+          isSelected: false,
         });
 
         expect(state.isSelected()).toBe(false);
@@ -62,8 +62,8 @@ describe('createToggleState', () => {
     });
   });
 
-  describe('selection methods', () => {
-    it('should set selected state', () => {
+  describe("selection methods", () => {
+    it("should set selected state", () => {
       createRoot((dispose) => {
         const state = createToggleState();
 
@@ -77,7 +77,7 @@ describe('createToggleState', () => {
       });
     });
 
-    it('should toggle state', () => {
+    it("should toggle state", () => {
       createRoot((dispose) => {
         const state = createToggleState();
 
@@ -99,12 +99,12 @@ describe('createToggleState', () => {
     });
   });
 
-  describe('readonly behavior', () => {
-    it('should ignore changes when readonly', () => {
+  describe("readonly behavior", () => {
+    it("should ignore changes when readonly", () => {
       createRoot((dispose) => {
         const state = createToggleState({
           defaultSelected: false,
-          isReadOnly: true
+          isReadOnly: true,
         });
 
         expect(state.isSelected()).toBe(false);
@@ -120,13 +120,13 @@ describe('createToggleState', () => {
     });
   });
 
-  describe('controlled vs uncontrolled modes', () => {
-    it('should call onChange in uncontrolled mode', () => {
+  describe("controlled vs uncontrolled modes", () => {
+    it("should call onChange in uncontrolled mode", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createToggleState({
           defaultSelected: false,
-          onChange
+          onChange,
         });
 
         state.setSelected(true);
@@ -145,12 +145,12 @@ describe('createToggleState', () => {
       });
     });
 
-    it('should not change internal state in controlled mode', () => {
+    it("should not change internal state in controlled mode", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createToggleState({
           isSelected: false,
-          onChange
+          onChange,
         });
 
         expect(state.isSelected()).toBe(false);
@@ -168,10 +168,14 @@ describe('createToggleState', () => {
       });
     });
 
-    it('should be possible to control the value', () => {
+    it("should be possible to control the value", () => {
       createRoot((dispose) => {
         const [isSelected, setIsSelected] = createSignal(false);
-        const state = createToggleState({ get isSelected() { return isSelected(); } });
+        const state = createToggleState({
+          get isSelected() {
+            return isSelected();
+          },
+        });
 
         expect(state.isSelected()).toBe(false);
 
@@ -185,7 +189,7 @@ describe('createToggleState', () => {
       });
     });
 
-    it('should be possible to have the value uncontrolled', () => {
+    it("should be possible to have the value uncontrolled", () => {
       createRoot((dispose) => {
         const state = createToggleState({ defaultSelected: true });
 
@@ -199,8 +203,8 @@ describe('createToggleState', () => {
     });
   });
 
-  describe('defaultSelected preservation', () => {
-    it('should preserve defaultSelected after state changes', () => {
+  describe("defaultSelected preservation", () => {
+    it("should preserve defaultSelected after state changes", () => {
       createRoot((dispose) => {
         const state = createToggleState({ defaultSelected: true });
 
@@ -213,7 +217,7 @@ describe('createToggleState', () => {
       });
     });
 
-    it('should use false when no defaultSelected provided', () => {
+    it("should use false when no defaultSelected provided", () => {
       createRoot((dispose) => {
         const state = createToggleState({});
 
@@ -224,11 +228,15 @@ describe('createToggleState', () => {
     });
   });
 
-  describe('reactivity with signal props', () => {
-    it('should handle dynamic isSelected changes via getter', () => {
+  describe("reactivity with signal props", () => {
+    it("should handle dynamic isSelected changes via getter", () => {
       createRoot((dispose) => {
         const [isSelected, setIsSelected] = createSignal(false);
-        const state = createToggleState({ get isSelected() { return isSelected(); } });
+        const state = createToggleState({
+          get isSelected() {
+            return isSelected();
+          },
+        });
 
         expect(state.isSelected()).toBe(false);
 
@@ -242,9 +250,11 @@ describe('createToggleState', () => {
       });
     });
 
-    it('should react to prop object changes', () => {
+    it("should react to prop object changes", () => {
       createRoot((dispose) => {
-        const [props, setProps] = createSignal<{ isSelected?: boolean; defaultSelected?: boolean }>({});
+        const [props, setProps] = createSignal<{ isSelected?: boolean; defaultSelected?: boolean }>(
+          {},
+        );
         const state = createToggleState(props);
 
         expect(state.isSelected()).toBe(false);

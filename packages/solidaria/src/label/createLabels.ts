@@ -6,8 +6,8 @@
  * This is a 1:1 port of @react-aria/utils's useLabels hook.
  */
 
-import { createId } from '../ssr';
-import type { AriaLabelingProps, DOMProps } from './createLabel';
+import { createId } from "../ssr";
+import type { AriaLabelingProps, DOMProps } from "./createLabel";
 
 /**
  * Merges aria-label and aria-labelledby into aria-labelledby when both exist.
@@ -17,13 +17,9 @@ import type { AriaLabelingProps, DOMProps } from './createLabel';
  */
 export function createLabels(
   props: DOMProps & AriaLabelingProps,
-  defaultLabel?: string
+  defaultLabel?: string,
 ): DOMProps & AriaLabelingProps {
-  let {
-    id,
-    'aria-label': label,
-    'aria-labelledby': labelledBy,
-  } = props;
+  let { id, "aria-label": label, "aria-labelledby": labelledBy } = props;
 
   // Generate an ID if not provided
   id = createId(id);
@@ -32,9 +28,9 @@ export function createLabels(
   // combine them by pointing to the element itself.
   if (labelledBy && label) {
     const ids = new Set([id, ...labelledBy.trim().split(/\s+/)]);
-    labelledBy = [...ids].join(' ');
+    labelledBy = [...ids].join(" ");
   } else if (labelledBy) {
-    labelledBy = labelledBy.trim().split(/\s+/).join(' ');
+    labelledBy = labelledBy.trim().split(/\s+/).join(" ");
   }
 
   // If no labels are provided, use the default
@@ -44,7 +40,7 @@ export function createLabels(
 
   return {
     id,
-    'aria-label': label,
-    'aria-labelledby': labelledBy,
+    "aria-label": label,
+    "aria-labelledby": labelledBy,
   };
 }

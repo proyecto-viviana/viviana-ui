@@ -1,5 +1,1 @@
-export {
-  createSelectState,
-  type SelectStateProps,
-  type SelectState,
-} from './createSelectState';
+export { createSelectState, type SelectStateProps, type SelectState } from "./createSelectState";

@@ -75,19 +75,40 @@ function SwitchPage() {
         props={[
           { name: "isSelected", type: "boolean", description: "Controlled on/off state" },
           { name: "defaultSelected", type: "boolean", description: "Uncontrolled initial state" },
-          { name: "onChange", type: "(isSelected: boolean) => void", description: "Called when the switch is toggled" },
-          { name: "isDisabled", type: "boolean", default: "false", description: "Prevents toggling" },
-          { name: "aria-label", type: "string", description: "Accessible label (required if no visible label)" },
-          { name: "children", type: "JSX.Element", description: "Optional label content rendered alongside the switch" },
+          {
+            name: "onChange",
+            type: "(isSelected: boolean) => void",
+            description: "Called when the switch is toggled",
+          },
+          {
+            name: "isDisabled",
+            type: "boolean",
+            default: "false",
+            description: "Prevents toggling",
+          },
+          {
+            name: "aria-label",
+            type: "string",
+            description: "Accessible label (required if no visible label)",
+          },
+          {
+            name: "children",
+            type: "JSX.Element",
+            description: "Optional label content rendered alongside the switch",
+          },
         ]}
       />
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Uses <code>role="switch"</code> with <code>aria-checked</code></li>
+          <li>
+            Uses <code>role="switch"</code> with <code>aria-checked</code>
+          </li>
           <li>Space key toggles the switch when focused</li>
           <li>Communicates state to screen readers as "on" or "off"</li>
-          <li>Always provide a visible or <code>aria-label</code> label</li>
+          <li>
+            Always provide a visible or <code>aria-label</code> label
+          </li>
         </ul>
       </AccessibilitySection>
     </DocPage>

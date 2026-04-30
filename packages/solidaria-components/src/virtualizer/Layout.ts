@@ -1,4 +1,4 @@
-import type { Key } from '@proyecto-viviana/solid-stately';
+import type { Key } from "@proyecto-viviana/solid-stately";
 
 export interface InvalidationContext<O = unknown> {
   contentChanged?: boolean;
@@ -10,7 +10,10 @@ export interface InvalidationContext<O = unknown> {
 }
 
 export class Point {
-  constructor(public x = 0, public y = 0) {}
+  constructor(
+    public x = 0,
+    public y = 0,
+  ) {}
   copy(): Point {
     return new Point(this.x, this.y);
   }
@@ -49,7 +52,7 @@ export class Rect {
     public x = 0,
     public y = 0,
     public width = 0,
-    public height = 0
+    public height = 0,
   ) {}
 
   get maxX(): number {
@@ -81,30 +84,15 @@ export class Rect {
   }
 
   intersects(rect: Rect): boolean {
-    return (
-      this.x <= rect.maxX &&
-      rect.x <= this.maxX &&
-      this.y <= rect.maxY &&
-      rect.y <= this.maxY
-    );
+    return this.x <= rect.maxX && rect.x <= this.maxX && this.y <= rect.maxY && rect.y <= this.maxY;
   }
 
   containsRect(rect: Rect): boolean {
-    return (
-      this.x <= rect.x &&
-      this.y <= rect.y &&
-      this.maxX >= rect.maxX &&
-      this.maxY >= rect.maxY
-    );
+    return this.x <= rect.x && this.y <= rect.y && this.maxX >= rect.maxX && this.maxY >= rect.maxY;
   }
 
   containsPoint(point: Point): boolean {
-    return (
-      this.x <= point.x &&
-      this.y <= point.y &&
-      this.maxX >= point.x &&
-      this.maxY >= point.y
-    );
+    return this.x <= point.x && this.y <= point.y && this.maxX >= point.x && this.maxY >= point.y;
   }
 
   union(other: Rect): Rect {
@@ -150,7 +138,11 @@ export class LayoutInfo {
   zIndex = 0;
   allowOverflow = false;
 
-  constructor(public type: string, public key: Key, public rect: Rect) {}
+  constructor(
+    public type: string,
+    public key: Key,
+    public rect: Rect,
+  ) {}
 
   copy(): LayoutInfo {
     const copy = new LayoutInfo(this.type, this.key, this.rect.copy());

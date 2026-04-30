@@ -5,8 +5,8 @@
  * Port direction: react-aria-components/src/FieldError.tsx
  */
 
-import { type JSX, Show, createContext, createMemo, splitProps, useContext } from 'solid-js';
-import { DEFAULT_VALIDATION_RESULT, type ValidationResult } from '@proyecto-viviana/solid-stately';
+import { type JSX, Show, createContext, createMemo, splitProps, useContext } from "solid-js";
+import { DEFAULT_VALIDATION_RESULT, type ValidationResult } from "@proyecto-viviana/solid-stately";
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -14,7 +14,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 export type FieldErrorRenderProps = ValidationResult;
 
@@ -24,8 +24,7 @@ export interface FieldErrorContextValue {
 }
 
 export interface FieldErrorProps
-  extends Omit<JSX.HTMLAttributes<HTMLElement>, 'children' | 'class' | 'style'>,
-    SlotProps {
+  extends Omit<JSX.HTMLAttributes<HTMLElement>, "children" | "class" | "style">, SlotProps {
   /** Validation result. Falls back to context when omitted. */
   validation?: ValidationResult | null;
   /** The children of the component. */
@@ -36,34 +35,39 @@ export interface FieldErrorProps
   style?: StyleOrFunction<FieldErrorRenderProps>;
 }
 
-export const FieldErrorContext = createContext<ValidationResult | FieldErrorContextValue | null>(null);
+export const FieldErrorContext = createContext<ValidationResult | FieldErrorContextValue | null>(
+  null,
+);
 
 export function FieldError(props: FieldErrorProps): JSX.Element | null {
   const contextValue = useContext(FieldErrorContext);
   const contextValidation = () => {
-    if (contextValue && 'validation' in contextValue) {
+    if (contextValue && "validation" in contextValue) {
       return contextValue.validation;
     }
     return contextValue;
   };
   const contextErrorMessageProps = () => {
-    if (contextValue && 'validation' in contextValue) {
+    if (contextValue && "validation" in contextValue) {
       return contextValue.errorMessageProps ?? {};
     }
     return {};
   };
-  const [local, domProps] = splitProps(props, ['validation', 'children', 'class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ["validation", "children", "class", "style", "slot"]);
 
-  const validation = createMemo<ValidationResult | null>(() => local.validation ?? contextValidation());
+  const validation = createMemo<ValidationResult | null>(
+    () => local.validation ?? contextValidation(),
+  );
 
   const renderProps = useRenderProps(
     {
-      children: local.children ?? ((currentValidation) => currentValidation.validationErrors.join(' ')),
+      children:
+        local.children ?? ((currentValidation) => currentValidation.validationErrors.join(" ")),
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-FieldError',
+      defaultClassName: "solidaria-FieldError",
     },
-    () => validation() ?? DEFAULT_VALIDATION_RESULT
+    () => validation() ?? DEFAULT_VALIDATION_RESULT,
   );
 
   const filteredDomProps = filterDOMProps(domProps, { global: true });
@@ -72,9 +76,9 @@ export function FieldError(props: FieldErrorProps): JSX.Element | null {
   return (
     <Show when={validation()?.isInvalid && children()}>
       <div
-        {...contextErrorMessageProps() as unknown as JSX.HTMLAttributes<HTMLDivElement>}
-        {...filteredDomProps as JSX.HTMLAttributes<HTMLDivElement>}
-        slot={local.slot ?? 'errorMessage'}
+        {...(contextErrorMessageProps() as unknown as JSX.HTMLAttributes<HTMLDivElement>)}
+        {...(filteredDomProps as JSX.HTMLAttributes<HTMLDivElement>)}
+        slot={local.slot ?? "errorMessage"}
         class={renderProps.class()}
         style={renderProps.style()}
       >

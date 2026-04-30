@@ -4,12 +4,12 @@
  * Returns the three channels for a given color space.
  */
 
-import type { ColorChannel, ColorSpace } from './types';
+import type { ColorChannel, ColorSpace } from "./types";
 
 const COLOR_SPACE_CHANNELS: Record<ColorSpace, [ColorChannel, ColorChannel, ColorChannel]> = {
-  rgb: ['red', 'green', 'blue'],
-  hsl: ['hue', 'saturation', 'lightness'],
-  hsb: ['hue', 'saturation', 'brightness'],
+  rgb: ["red", "green", "blue"],
+  hsl: ["hue", "saturation", "lightness"],
+  hsb: ["hue", "saturation", "brightness"],
 };
 
 /**
@@ -25,7 +25,9 @@ const COLOR_SPACE_CHANNELS: Record<ColorSpace, [ColorChannel, ColorChannel, Colo
  * getColorChannels('hsb') // ['hue', 'saturation', 'brightness']
  * ```
  */
-export function getColorChannels(colorSpace: ColorSpace): [ColorChannel, ColorChannel, ColorChannel] {
+export function getColorChannels(
+  colorSpace: ColorSpace,
+): [ColorChannel, ColorChannel, ColorChannel] {
   const channels = COLOR_SPACE_CHANNELS[colorSpace];
   if (!channels) {
     throw new Error(`Unknown color space: ${colorSpace}`);

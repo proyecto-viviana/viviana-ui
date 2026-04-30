@@ -7,17 +7,20 @@
  * This is a 1:1 port of @react-aria/checkbox's useCheckboxGroupItem hook.
  */
 
-import { JSX } from 'solid-js';
-import { createCheckbox, type AriaCheckboxProps, type CheckboxAria } from './createCheckbox';
-import { type ToggleState, type CheckboxGroupState } from '@proyecto-viviana/solid-stately';
-import { checkboxGroupData } from './createCheckboxGroup';
-import { type MaybeAccessor, access } from '../utils/reactivity';
+import { JSX } from "solid-js";
+import { createCheckbox, type AriaCheckboxProps, type CheckboxAria } from "./createCheckbox";
+import { type ToggleState, type CheckboxGroupState } from "@proyecto-viviana/solid-stately";
+import { checkboxGroupData } from "./createCheckboxGroup";
+import { type MaybeAccessor, access } from "../utils/reactivity";
 
 // ============================================
 // TYPES
 // ============================================
 
-export interface AriaCheckboxGroupItemProps extends Omit<AriaCheckboxProps, 'isSelected' | 'defaultSelected'> {
+export interface AriaCheckboxGroupItemProps extends Omit<
+  AriaCheckboxProps,
+  "isSelected" | "defaultSelected"
+> {
   /** The value of the checkbox. */
   value: string;
 }
@@ -37,7 +40,7 @@ export interface AriaCheckboxGroupItemProps extends Omit<AriaCheckboxProps, 'isS
 export function createCheckboxGroupItem(
   props: MaybeAccessor<AriaCheckboxGroupItemProps>,
   state: CheckboxGroupState,
-  inputRef: () => HTMLInputElement | null
+  inputRef: () => HTMLInputElement | null,
 ): CheckboxAria {
   const getProps = () => access(props);
 
@@ -74,7 +77,7 @@ export function createCheckboxGroupItem(
       name: p.name ?? groupData?.name,
       form: p.form ?? groupData?.form,
       isRequired: p.isRequired ?? state.isRequired(),
-      validationBehavior: p.validationBehavior ?? groupData?.validationBehavior ?? 'aria',
+      validationBehavior: p.validationBehavior ?? groupData?.validationBehavior ?? "aria",
     };
   };
 
@@ -91,7 +94,7 @@ export function createCheckboxGroupItem(
       const describedByIds: string[] = [];
 
       // Add props aria-describedby
-      const propsDescribedBy = getProps()['aria-describedby'];
+      const propsDescribedBy = getProps()["aria-describedby"];
       if (propsDescribedBy) {
         describedByIds.push(propsDescribedBy);
       }
@@ -106,11 +109,11 @@ export function createCheckboxGroupItem(
         describedByIds.push(groupData.descriptionId);
       }
 
-      const ariaDescribedBy = describedByIds.length > 0 ? describedByIds.join(' ') : undefined;
+      const ariaDescribedBy = describedByIds.length > 0 ? describedByIds.join(" ") : undefined;
 
       return {
         ...baseInputProps,
-        'aria-describedby': ariaDescribedBy,
+        "aria-describedby": ariaDescribedBy,
       } as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
   };

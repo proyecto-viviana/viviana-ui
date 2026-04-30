@@ -2,7 +2,28 @@
   "name": "@proyecto-viviana/solid-spectrum",
   "version": "0.4.2",
   "description": "Spectrum 2-compatible styled components for SolidJS",
+  "keywords": [
+    "components",
+    "design-system",
+    "solid",
+    "solid-spectrum",
+    "solidjs",
+    "spectrum-2"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/proyecto-viviana/proyecto-viviana.git",
+    "directory": "packages/solid-spectrum"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
   "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,13 +47,9 @@
       "default": "./src/components.css"
     }
   },
-  "files": [
-    "dist",
-    "src"
-  ],
-  "sideEffects": [
-    "*.css"
-  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup && rm -f tsconfig.build.tsbuildinfo && tsc -p tsconfig.build.json",
     "dev": "tsup --watch",
@@ -43,27 +60,10 @@
     "@proyecto-viviana/solidaria": "workspace:*",
     "@proyecto-viviana/solidaria-components": "workspace:*"
   },
-  "peerDependencies": {
-    "solid-js": "^1.9.0"
-  },
   "devDependencies": {
     "solid-js": "^1.9.11"
   },
-  "keywords": [
-    "solid",
-    "solidjs",
-    "solid-spectrum",
-    "spectrum-2",
-    "components",
-    "design-system"
-  ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/proyecto-viviana/proyecto-viviana.git",
-    "directory": "packages/solid-spectrum"
-  },
-  "publishConfig": {
-    "access": "public"
+  "peerDependencies": {
+    "solid-js": "^1.9.0"
   }
 }

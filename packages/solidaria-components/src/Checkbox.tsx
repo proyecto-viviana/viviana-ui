@@ -14,7 +14,7 @@ import {
   createUniqueId,
   splitProps,
   Show,
-} from 'solid-js';
+} from "solid-js";
 import {
   createCheckbox,
   createCheckboxGroup,
@@ -24,13 +24,13 @@ import {
   mergeProps,
   type AriaCheckboxProps,
   type AriaCheckboxGroupProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createToggleState,
   createCheckboxGroupState,
   type CheckboxGroupState,
-} from '@proyecto-viviana/solid-stately';
-import { VisuallyHidden } from './VisuallyHidden';
+} from "@proyecto-viviana/solid-stately";
+import { VisuallyHidden } from "./VisuallyHidden";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -38,7 +38,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -48,7 +48,7 @@ type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
 
 function assignRef<T>(ref: RefLike<T>, el: T): void {
   if (!ref) return;
-  if (typeof ref === 'function') {
+  if (typeof ref === "function") {
     ref(el);
   } else {
     ref.current = el;
@@ -92,8 +92,7 @@ export interface CheckboxRenderProps {
 }
 
 export interface CheckboxGroupProps
-  extends Omit<AriaCheckboxGroupProps, 'children' | 'label'>,
-    SlotProps {
+  extends Omit<AriaCheckboxGroupProps, "children" | "label">, SlotProps {
   /** The children of the component. A function may be provided to receive render props. */
   children?: RenderChildren<CheckboxGroupRenderProps>;
   /** The CSS className for the element. */
@@ -102,9 +101,7 @@ export interface CheckboxGroupProps
   style?: StyleOrFunction<CheckboxGroupRenderProps>;
 }
 
-export interface CheckboxProps
-  extends Omit<AriaCheckboxProps, 'children'>,
-    SlotProps {
+export interface CheckboxProps extends Omit<AriaCheckboxProps, "children">, SlotProps {
   /** The children of the component. A function may be provided to receive render props. */
   children?: RenderChildren<CheckboxRenderProps>;
   /** The CSS className for the element. */
@@ -114,7 +111,7 @@ export interface CheckboxProps
   /** Custom renderer for the outer label element. */
   render?: (
     props: JSX.LabelHTMLAttributes<HTMLLabelElement>,
-    renderProps: CheckboxRenderProps
+    renderProps: CheckboxRenderProps,
   ) => JSX.Element;
   /** Ref for the outer label element. */
   ref?: RefLike<HTMLLabelElement>;
@@ -162,31 +159,48 @@ export const CheckboxContext = createContext<CheckboxContextValue | null>(null);
  */
 export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'class',
-    'style',
-    'slot',
-    'description',
-    'errorMessage',
+    "class",
+    "style",
+    "slot",
+    "description",
+    "errorMessage",
   ]);
 
   // Create checkbox group state
   // Use getters to ensure props are read lazily inside reactive contexts
   const state = createCheckboxGroupState({
-    get value() { return ariaProps.value; },
-    get defaultValue() { return ariaProps.defaultValue; },
-    get onChange() { return ariaProps.onChange; },
-    get isDisabled() { return ariaProps.isDisabled; },
-    get isReadOnly() { return ariaProps.isReadOnly; },
-    get isRequired() { return ariaProps.isRequired; },
-    get isInvalid() { return ariaProps.isInvalid; },
+    get value() {
+      return ariaProps.value;
+    },
+    get defaultValue() {
+      return ariaProps.defaultValue;
+    },
+    get onChange() {
+      return ariaProps.onChange;
+    },
+    get isDisabled() {
+      return ariaProps.isDisabled;
+    },
+    get isReadOnly() {
+      return ariaProps.isReadOnly;
+    },
+    get isRequired() {
+      return ariaProps.isRequired;
+    },
+    get isInvalid() {
+      return ariaProps.isInvalid;
+    },
   });
 
   // Create checkbox group aria props
-  const groupAria = createCheckboxGroup(() => ({
-    ...ariaProps,
-    description: props.description,
-    errorMessage: props.errorMessage,
-  }), state);
+  const groupAria = createCheckboxGroup(
+    () => ({
+      ...ariaProps,
+      description: props.description,
+      errorMessage: props.errorMessage,
+    }),
+    state,
+  );
 
   // Render props values
   const renderValues = createMemo<CheckboxGroupRenderProps>(() => ({
@@ -203,9 +217,9 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-CheckboxGroup',
+      defaultClassName: "solidaria-CheckboxGroup",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
@@ -218,11 +232,15 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
   };
   const groupDescribedBy = () => {
     const ids = [
-      (cleanGroupProps() as { 'aria-describedby'?: string })['aria-describedby'],
+      (cleanGroupProps() as { "aria-describedby"?: string })["aria-describedby"],
       props.description ? groupAria.descriptionProps.id : undefined,
       groupAria.isInvalid && props.errorMessage ? groupAria.errorMessageProps.id : undefined,
-    ].filter(Boolean).join(' ').split(' ').filter(Boolean);
-    return ids.length ? Array.from(new Set(ids)).join(' ') : undefined;
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .split(" ")
+      .filter(Boolean);
+    return ids.length ? Array.from(new Set(ids)).join(" ") : undefined;
   };
 
   // Resolve children - we need to pass render props if children is a function
@@ -230,7 +248,7 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
   // to preserve SolidJS context propagation for nested components like Checkbox
   const resolvedChildren = () => {
     const children = props.children;
-    if (typeof children === 'function') {
+    if (typeof children === "function") {
       return children(renderValues());
     }
     return children;
@@ -251,10 +269,14 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
       >
         {resolvedChildren()}
         <Show when={props.description}>
-          <div {...groupAria.descriptionProps as unknown as JSX.HTMLAttributes<HTMLDivElement>}>{props.description}</div>
+          <div {...(groupAria.descriptionProps as unknown as JSX.HTMLAttributes<HTMLDivElement>)}>
+            {props.description}
+          </div>
         </Show>
         <Show when={groupAria.isInvalid && props.errorMessage}>
-          <div {...groupAria.errorMessageProps as unknown as JSX.HTMLAttributes<HTMLDivElement>}>{props.errorMessage}</div>
+          <div {...(groupAria.errorMessageProps as unknown as JSX.HTMLAttributes<HTMLDivElement>)}>
+            {props.errorMessage}
+          </div>
         </Show>
       </div>
     </CheckboxGroupStateContext.Provider>
@@ -286,32 +308,35 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
 export function Checkbox(props: CheckboxProps): JSX.Element {
   let inputRef: HTMLInputElement | null = null;
   const contextProps = useContext(CheckboxContext);
-  const contextSlotProps = contextProps?.slots?.[props.slot ?? 'default'];
+  const contextSlotProps = contextProps?.slots?.[props.slot ?? "default"];
   const contextBaseProps = createMemo<CheckboxProps>(() => {
     if (!contextProps) return {};
     const { slots: _slots, ...rest } = contextProps;
     return rest;
   });
-  const mergedProps = contextProps ? mergeProps(contextBaseProps(), contextSlotProps ?? {}, props) as CheckboxProps : props;
-  const inputRefs = createMemo(() => [
-    contextBaseProps().inputRef,
-    contextSlotProps?.inputRef,
-    props.inputRef,
-  ].filter(Boolean) as RefLike<HTMLInputElement>[]);
+  const mergedProps = contextProps
+    ? (mergeProps(contextBaseProps(), contextSlotProps ?? {}, props) as CheckboxProps)
+    : props;
+  const inputRefs = createMemo(
+    () =>
+      [contextBaseProps().inputRef, contextSlotProps?.inputRef, props.inputRef].filter(
+        Boolean,
+      ) as RefLike<HTMLInputElement>[],
+  );
 
   const [local, ariaProps] = splitProps(mergedProps, [
-    'class',
-    'style',
-    'render',
-    'ref',
-    'inputRef',
-    'slot',
-    'isIndeterminate',
-    'description',
-    'errorMessage',
-    'onHoverStart',
-    'onHoverEnd',
-    'onHoverChange',
+    "class",
+    "style",
+    "render",
+    "ref",
+    "inputRef",
+    "slot",
+    "isIndeterminate",
+    "description",
+    "errorMessage",
+    "onHoverStart",
+    "onHoverEnd",
+    "onHoverChange",
   ]);
   const descriptionId = createUniqueId();
   const errorMessageId = createUniqueId();
@@ -319,7 +344,7 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
   const inputAriaProps = createMemo(() => {
     const clean: Record<string, unknown> = {};
     for (const key in ariaProps as Record<string, unknown>) {
-      if (!key.startsWith('data-')) {
+      if (!key.startsWith("data-")) {
         clean[key] = (ariaProps as Record<string, unknown>)[key];
       }
     }
@@ -343,11 +368,11 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     const itemAria = createCheckboxGroupItem(
       () => ({
         ...inputAriaProps(),
-        value: inputAriaProps().value ?? '',
-        children: typeof mergedProps.children === 'function' ? true : mergedProps.children,
+        value: inputAriaProps().value ?? "",
+        children: typeof mergedProps.children === "function" ? true : mergedProps.children,
       }),
       groupState,
-      () => inputRef
+      () => inputRef,
     );
     isSelected = itemAria.isSelected;
     isPressed = itemAria.isPressed;
@@ -360,20 +385,28 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     // Standalone checkbox
     // Use getters to ensure props are read lazily inside reactive contexts
     const state = createToggleState({
-      get isSelected() { return ariaProps.isSelected; },
-      get defaultSelected() { return ariaProps.defaultSelected; },
-      get onChange() { return ariaProps.onChange; },
-      get isReadOnly() { return ariaProps.isReadOnly; },
+      get isSelected() {
+        return ariaProps.isSelected;
+      },
+      get defaultSelected() {
+        return ariaProps.defaultSelected;
+      },
+      get onChange() {
+        return ariaProps.onChange;
+      },
+      get isReadOnly() {
+        return ariaProps.isReadOnly;
+      },
     });
 
     const checkboxAria = createCheckbox(
       () => ({
         ...inputAriaProps(),
         isIndeterminate: local.isIndeterminate,
-        children: typeof mergedProps.children === 'function' ? true : mergedProps.children,
+        children: typeof mergedProps.children === "function" ? true : mergedProps.children,
       }),
       state,
-      () => inputRef
+      () => inputRef,
     );
     isSelected = checkboxAria.isSelected;
     isPressed = checkboxAria.isPressed;
@@ -385,11 +418,11 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
   }
   const describedBy = () => {
     const ids = [
-      ariaProps['aria-describedby'],
+      ariaProps["aria-describedby"],
       local.description ? descriptionId : undefined,
       isInvalid && local.errorMessage ? errorMessageId : undefined,
     ].filter(Boolean);
-    return ids.length ? ids.join(' ') : undefined;
+    return ids.length ? ids.join(" ") : undefined;
   };
 
   // Create focus ring
@@ -425,9 +458,9 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
       children: mergedProps.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Checkbox',
+      defaultClassName: "solidaria-Checkbox",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
@@ -448,20 +481,38 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
     return rest;
   };
   const cleanInputProps = () => {
-    const { ref: _ref3, onFocus: _onFocus, onBlur: _onBlur, ...rest } = inputProps as Record<string, unknown>;
+    const {
+      ref: _ref3,
+      onFocus: _onFocus,
+      onBlur: _onBlur,
+      ...rest
+    } = inputProps as Record<string, unknown>;
     return rest;
   };
   const cleanFocusProps = () => {
-    const { ref: _ref4, onFocus: _onFocus, onBlur: _onBlur, ...rest } = focusProps as Record<string, unknown>;
+    const {
+      ref: _ref4,
+      onFocus: _onFocus,
+      onBlur: _onBlur,
+      ...rest
+    } = focusProps as Record<string, unknown>;
     return rest;
   };
   const handleInputFocus: JSX.EventHandler<HTMLInputElement, FocusEvent> = (event) => {
-    (inputProps as unknown as { onFocus?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onFocus?.(event);
-    (focusProps as unknown as { onFocus?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onFocus?.(event);
+    (
+      inputProps as unknown as { onFocus?: JSX.EventHandler<HTMLInputElement, FocusEvent> }
+    ).onFocus?.(event);
+    (
+      focusProps as unknown as { onFocus?: JSX.EventHandler<HTMLInputElement, FocusEvent> }
+    ).onFocus?.(event);
   };
   const handleInputBlur: JSX.EventHandler<HTMLInputElement, FocusEvent> = (event) => {
-    (inputProps as unknown as { onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onBlur?.(event);
-    (focusProps as unknown as { onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onBlur?.(event);
+    (inputProps as unknown as { onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onBlur?.(
+      event,
+    );
+    (focusProps as unknown as { onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onBlur?.(
+      event,
+    );
   };
   const setLabelRef = (el: HTMLLabelElement) => {
     assignRef(local.ref, el);
@@ -497,31 +548,37 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
       </Show>
     </>
   );
-  const rootProps = createMemo(() => ({
-    ...domProps(),
-    ...cleanLabelProps(),
-    ...cleanHoverProps(),
-    class: renderProps.class(),
-    style: renderProps.style(),
-    slot: local.slot,
-    'data-selected': isSelected() || undefined,
-    'data-indeterminate': local.isIndeterminate || undefined,
-    'data-pressed': isPressed() || undefined,
-    'data-hovered': isHovered() || undefined,
-    'data-focused': isFocused() || undefined,
-    'data-focus-visible': isFocusVisible() || undefined,
-    'data-disabled': isDisabled || undefined,
-    'data-readonly': isReadOnly || undefined,
-    'data-invalid': isInvalid || undefined,
-    'data-required': ariaProps.isRequired || undefined,
-  }) as JSX.LabelHTMLAttributes<HTMLLabelElement>);
-  const customRootProps = () => ({
-    ...rootProps(),
-    ref: setLabelRef,
-    children: labelChildren(),
-  }) as JSX.LabelHTMLAttributes<HTMLLabelElement>;
+  const rootProps = createMemo(
+    () =>
+      ({
+        ...domProps(),
+        ...cleanLabelProps(),
+        ...cleanHoverProps(),
+        class: renderProps.class(),
+        style: renderProps.style(),
+        slot: local.slot,
+        "data-selected": isSelected() || undefined,
+        "data-indeterminate": local.isIndeterminate || undefined,
+        "data-pressed": isPressed() || undefined,
+        "data-hovered": isHovered() || undefined,
+        "data-focused": isFocused() || undefined,
+        "data-focus-visible": isFocusVisible() || undefined,
+        "data-disabled": isDisabled || undefined,
+        "data-readonly": isReadOnly || undefined,
+        "data-invalid": isInvalid || undefined,
+        "data-required": ariaProps.isRequired || undefined,
+      }) as JSX.LabelHTMLAttributes<HTMLLabelElement>,
+  );
+  const customRootProps = () =>
+    ({
+      ...rootProps(),
+      ref: setLabelRef,
+      children: labelChildren(),
+    }) as JSX.LabelHTMLAttributes<HTMLLabelElement>;
 
-  return local.render ? local.render(customRootProps(), renderValues()) : (
+  return local.render ? (
+    local.render(customRootProps(), renderValues())
+  ) : (
     <label
       {...domProps()}
       {...cleanLabelProps()}

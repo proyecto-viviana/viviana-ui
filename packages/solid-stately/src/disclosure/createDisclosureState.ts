@@ -3,8 +3,8 @@
  * Based on @react-stately/disclosure useDisclosureState and useDisclosureGroupState
  */
 
-import { createSignal, createEffect, createMemo, type Accessor } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
+import { createSignal, createEffect, createMemo, type Accessor } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
 
 // ============================================
 // SINGLE DISCLOSURE STATE
@@ -37,13 +37,13 @@ export interface DisclosureState {
  * and provides methods to toggle this state.
  */
 export function createDisclosureState(
-  props: MaybeAccessor<DisclosureStateProps> = {}
+  props: MaybeAccessor<DisclosureStateProps> = {},
 ): DisclosureState {
   const propsAccessor = () => access(props);
 
   // Internal state for uncontrolled mode
   const [internalExpanded, setInternalExpanded] = createSignal(
-    propsAccessor().defaultExpanded ?? false
+    propsAccessor().defaultExpanded ?? false,
   );
 
   // Determine if expanded (controlled vs uncontrolled)
@@ -112,13 +112,13 @@ export interface DisclosureGroupState {
  * It supports both single and multiple expanded items.
  */
 export function createDisclosureGroupState(
-  props: MaybeAccessor<DisclosureGroupStateProps> = {}
+  props: MaybeAccessor<DisclosureGroupStateProps> = {},
 ): DisclosureGroupState {
   const propsAccessor = () => access(props);
 
   // Internal state for uncontrolled mode
   const [internalKeys, setInternalKeys] = createSignal<Set<Key>>(
-    new Set(propsAccessor().defaultExpandedKeys ?? [])
+    new Set(propsAccessor().defaultExpandedKeys ?? []),
   );
 
   // Determine expanded keys (controlled vs uncontrolled, memoized)

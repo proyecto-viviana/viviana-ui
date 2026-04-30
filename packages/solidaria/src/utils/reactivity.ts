@@ -4,7 +4,7 @@
  * Provides type-safe utilities for working with SolidJS reactivity patterns.
  */
 
-import { Accessor } from 'solid-js';
+import { Accessor } from "solid-js";
 
 /**
  * A value that may be either a raw value or an accessor function.
@@ -20,7 +20,7 @@ export type MaybeAccessor<T> = T | Accessor<T>;
  * @param value - The value or accessor to unwrap.
  */
 export function access<T>(value: MaybeAccessor<T>): T {
-  return typeof value === 'function' ? (value as Accessor<T>)() : value;
+  return typeof value === "function" ? (value as Accessor<T>)() : value;
 }
 
 /**
@@ -32,5 +32,5 @@ export type MaybeAccessorValue<T> = T | undefined | Accessor<T | undefined>;
  * Checks if a value is an accessor function.
  */
 export function isAccessor<T>(value: MaybeAccessor<T>): value is Accessor<T> {
-  return typeof value === 'function';
+  return typeof value === "function";
 }

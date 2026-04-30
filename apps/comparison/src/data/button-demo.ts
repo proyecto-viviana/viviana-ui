@@ -58,18 +58,12 @@ export function buttonDemoPropsFromSearch(search: string): ButtonDemoProps {
 
   return {
     children: params.get("children") || buttonDemoDefaults.children,
-    variant: isOneOf(variant, buttonVariantOptions)
-      ? variant
-      : buttonDemoDefaults.variant,
+    variant: isOneOf(variant, buttonVariantOptions) ? variant : buttonDemoDefaults.variant,
     fillStyle: isOneOf(fillStyle, buttonFillStyleOptions)
       ? fillStyle
       : buttonDemoDefaults.fillStyle,
-    size: isOneOf(size, buttonSizeOptions)
-      ? size
-      : buttonDemoDefaults.size,
-    staticColor: isOneOf(staticColor, buttonStaticColorOptions)
-      ? staticColor
-      : undefined,
+    size: isOneOf(size, buttonSizeOptions) ? size : buttonDemoDefaults.size,
+    staticColor: isOneOf(staticColor, buttonStaticColorOptions) ? staticColor : undefined,
     isDisabled: booleanParam(params.get("isDisabled")),
     isPending: booleanParam(params.get("isPending")),
   };

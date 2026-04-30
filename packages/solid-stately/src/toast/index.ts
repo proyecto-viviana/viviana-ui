@@ -8,4 +8,4 @@ export {
   type ToastQueueOptions,
   type ToastStateProps,
   type ToastState,
-} from './createToastState';
+} from "./createToastState";

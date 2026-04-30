@@ -15,7 +15,7 @@ import type {
   RGBColor,
   HSLColor,
   HSBColor,
-} from './types';
+} from "./types";
 
 // Channel ranges
 const RGB_CHANNEL_RANGE: ColorChannelRange = {
@@ -48,28 +48,28 @@ const PERCENT_CHANNEL_RANGE: ColorChannelRange = {
 
 // Channel names (English only for now)
 const CHANNEL_NAMES: Record<ColorChannel, string> = {
-  hue: 'Hue',
-  saturation: 'Saturation',
-  brightness: 'Brightness',
-  lightness: 'Lightness',
-  red: 'Red',
-  green: 'Green',
-  blue: 'Blue',
-  alpha: 'Alpha',
+  hue: "Hue",
+  saturation: "Saturation",
+  brightness: "Brightness",
+  lightness: "Lightness",
+  red: "Red",
+  green: "Green",
+  blue: "Blue",
+  alpha: "Alpha",
 };
 
 // Hue names for color naming
 const HUE_NAMES: Array<{ max: number; name: string }> = [
-  { max: 15, name: 'pink' },
-  { max: 48, name: 'red' },
-  { max: 94, name: 'orange' },
-  { max: 135, name: 'yellow' },
-  { max: 175, name: 'green' },
-  { max: 264, name: 'cyan' },
-  { max: 284, name: 'blue' },
-  { max: 320, name: 'purple' },
-  { max: 349, name: 'magenta' },
-  { max: 360, name: 'pink' },
+  { max: 15, name: "pink" },
+  { max: 48, name: "red" },
+  { max: 94, name: "orange" },
+  { max: 135, name: "yellow" },
+  { max: 175, name: "green" },
+  { max: 264, name: "cyan" },
+  { max: 284, name: "blue" },
+  { max: 320, name: "purple" },
+  { max: 349, name: "magenta" },
+  { max: 360, name: "pink" },
 ];
 
 /**
@@ -261,7 +261,7 @@ function getHueNameFromAngle(hue: number): string {
       return name;
     }
   }
-  return 'pink';
+  return "pink";
 }
 
 /**
@@ -273,10 +273,10 @@ function getColorNameFromRgb(r: number, g: number, b: number, alpha: number): st
 
   // Handle edge cases
   if (l >= 100) {
-    return alpha < 1 ? `white ${Math.round(alpha * 100)}% transparent` : 'white';
+    return alpha < 1 ? `white ${Math.round(alpha * 100)}% transparent` : "white";
   }
   if (l <= 0) {
-    return alpha < 1 ? `black ${Math.round(alpha * 100)}% transparent` : 'black';
+    return alpha < 1 ? `black ${Math.round(alpha * 100)}% transparent` : "black";
   }
 
   // Build color name
@@ -284,22 +284,22 @@ function getColorNameFromRgb(r: number, g: number, b: number, alpha: number): st
 
   // Lightness descriptor
   if (l < 30) {
-    parts.push('very dark');
+    parts.push("very dark");
   } else if (l < 55) {
-    parts.push('dark');
+    parts.push("dark");
   } else if (l > 85) {
-    parts.push('very light');
+    parts.push("very light");
   } else if (l > 70) {
-    parts.push('light');
+    parts.push("light");
   }
 
   // Saturation/chroma descriptor
   if (s < 10) {
-    parts.push('gray');
+    parts.push("gray");
   } else if (s < 30) {
-    parts.push('grayish');
+    parts.push("grayish");
   } else if (s > 80) {
-    parts.push('vibrant');
+    parts.push("vibrant");
   }
 
   // Hue name (skip if gray)
@@ -307,24 +307,24 @@ function getColorNameFromRgb(r: number, g: number, b: number, alpha: number): st
     let hueName = getHueNameFromAngle(h);
 
     // Special cases
-    if (hueName === 'orange' && l < 68) {
-      hueName = 'brown';
+    if (hueName === "orange" && l < 68) {
+      hueName = "brown";
     }
-    if (hueName === 'yellow' && l < 85 && s > 50) {
-      hueName = 'yellow green';
+    if (hueName === "yellow" && l < 85 && s > 50) {
+      hueName = "yellow green";
     }
 
     parts.push(hueName);
   }
 
-  let name = parts.join(' ');
+  let name = parts.join(" ");
 
   // Add transparency
   if (alpha < 1) {
     name += ` ${Math.round(alpha * 100)}% transparent`;
   }
 
-  return name || 'color';
+  return name || "color";
 }
 
 /**
@@ -345,18 +345,18 @@ class RGBColorImpl implements Color {
 
   toFormat(format: ColorFormat): Color {
     switch (format) {
-      case 'hex':
-      case 'hexa':
-      case 'rgb':
-      case 'rgba':
+      case "hex":
+      case "hexa":
+      case "rgb":
+      case "rgba":
         return this.clone();
-      case 'hsl':
-      case 'hsla': {
+      case "hsl":
+      case "hsla": {
         const { h, s, l } = rgbToHsl(this.red, this.green, this.blue);
         return new HSLColorImpl(h, s, l, this.alpha);
       }
-      case 'hsb':
-      case 'hsba': {
+      case "hsb":
+      case "hsba": {
         const { h, s, b } = rgbToHsb(this.red, this.green, this.blue);
         return new HSBColorImpl(h, s, b, this.alpha);
       }
@@ -365,18 +365,22 @@ class RGBColorImpl implements Color {
     }
   }
 
-  toString(format?: ColorFormat | 'css'): string {
-    const f = format ?? 'css';
+  toString(format?: ColorFormat | "css"): string {
+    const f = format ?? "css";
 
     switch (f) {
-      case 'hex':
-        return `#${this.red.toString(16).padStart(2, '0')}${this.green.toString(16).padStart(2, '0')}${this.blue.toString(16).padStart(2, '0')}`;
-      case 'hexa':
-        return `#${this.red.toString(16).padStart(2, '0')}${this.green.toString(16).padStart(2, '0')}${this.blue.toString(16).padStart(2, '0')}${Math.round(this.alpha * 255).toString(16).padStart(2, '0')}`;
-      case 'rgb':
+      case "hex":
+        return `#${this.red.toString(16).padStart(2, "0")}${this.green.toString(16).padStart(2, "0")}${this.blue.toString(16).padStart(2, "0")}`;
+      case "hexa":
+        return `#${this.red.toString(16).padStart(2, "0")}${this.green.toString(16).padStart(2, "0")}${this.blue.toString(16).padStart(2, "0")}${Math.round(
+          this.alpha * 255,
+        )
+          .toString(16)
+          .padStart(2, "0")}`;
+      case "rgb":
         return `rgb(${this.red}, ${this.green}, ${this.blue})`;
-      case 'rgba':
-      case 'css':
+      case "rgba":
+      case "css":
         return this.alpha === 1
           ? `rgb(${this.red}, ${this.green}, ${this.blue})`
           : `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha})`;
@@ -395,21 +399,21 @@ class RGBColorImpl implements Color {
 
   getChannelValue(channel: ColorChannel): number {
     switch (channel) {
-      case 'red':
+      case "red":
         return this.red;
-      case 'green':
+      case "green":
         return this.green;
-      case 'blue':
+      case "blue":
         return this.blue;
-      case 'alpha':
+      case "alpha":
         return this.alpha;
       // Cross-color-space channels - convert to HSB
-      case 'hue':
-      case 'saturation':
-      case 'brightness':
-        return this.toFormat('hsb').getChannelValue(channel);
-      case 'lightness':
-        return this.toFormat('hsl').getChannelValue(channel);
+      case "hue":
+      case "saturation":
+      case "brightness":
+        return this.toFormat("hsb").getChannelValue(channel);
+      case "lightness":
+        return this.toFormat("hsl").getChannelValue(channel);
       default:
         throw new Error(`Invalid channel: ${channel}`);
     }
@@ -417,21 +421,21 @@ class RGBColorImpl implements Color {
 
   withChannelValue(channel: ColorChannel, value: number): Color {
     switch (channel) {
-      case 'red':
+      case "red":
         return new RGBColorImpl(value, this.green, this.blue, this.alpha);
-      case 'green':
+      case "green":
         return new RGBColorImpl(this.red, value, this.blue, this.alpha);
-      case 'blue':
+      case "blue":
         return new RGBColorImpl(this.red, this.green, value, this.alpha);
-      case 'alpha':
+      case "alpha":
         return new RGBColorImpl(this.red, this.green, this.blue, value);
       // Cross-color-space channels - convert, update, convert back
-      case 'hue':
-      case 'saturation':
-      case 'brightness':
-        return this.toFormat('hsb').withChannelValue(channel, value).toFormat('rgb');
-      case 'lightness':
-        return this.toFormat('hsl').withChannelValue(channel, value).toFormat('rgb');
+      case "hue":
+      case "saturation":
+      case "brightness":
+        return this.toFormat("hsb").withChannelValue(channel, value).toFormat("rgb");
+      case "lightness":
+        return this.toFormat("hsl").withChannelValue(channel, value).toFormat("rgb");
       default:
         throw new Error(`Invalid channel: ${channel}`);
     }
@@ -439,17 +443,17 @@ class RGBColorImpl implements Color {
 
   getChannelRange(channel: ColorChannel): ColorChannelRange {
     switch (channel) {
-      case 'red':
-      case 'green':
-      case 'blue':
+      case "red":
+      case "green":
+      case "blue":
         return RGB_CHANNEL_RANGE;
-      case 'alpha':
+      case "alpha":
         return ALPHA_CHANNEL_RANGE;
-      case 'hue':
+      case "hue":
         return HUE_CHANNEL_RANGE;
-      case 'saturation':
-      case 'brightness':
-      case 'lightness':
+      case "saturation":
+      case "brightness":
+      case "lightness":
         return PERCENT_CHANNEL_RANGE;
       default:
         throw new Error(`Invalid channel: ${channel}`);
@@ -461,8 +465,8 @@ class RGBColorImpl implements Color {
   }
 
   getChannelFormatOptions(channel: ColorChannel): Intl.NumberFormatOptions {
-    if (channel === 'alpha') {
-      return { style: 'percent' };
+    if (channel === "alpha") {
+      return { style: "percent" };
     }
     return { maximumFractionDigits: 0 };
   }
@@ -474,19 +478,19 @@ class RGBColorImpl implements Color {
   }
 
   getColorSpace(): ColorSpace {
-    return 'rgb';
+    return "rgb";
   }
 
   getColorSpaceAxes(xyChannels?: { xChannel?: ColorChannel; yChannel?: ColorChannel }): ColorAxes {
-    const xChannel = xyChannels?.xChannel ?? 'red';
-    const yChannel = xyChannels?.yChannel ?? 'green';
-    const channels: ColorChannel[] = ['red', 'green', 'blue'];
-    const zChannel = channels.find((c) => c !== xChannel && c !== yChannel) ?? 'blue';
+    const xChannel = xyChannels?.xChannel ?? "red";
+    const yChannel = xyChannels?.yChannel ?? "green";
+    const channels: ColorChannel[] = ["red", "green", "blue"];
+    const zChannel = channels.find((c) => c !== xChannel && c !== yChannel) ?? "blue";
     return { xChannel, yChannel, zChannel };
   }
 
   getColorChannels(): [ColorChannel, ColorChannel, ColorChannel] {
-    return ['red', 'green', 'blue'];
+    return ["red", "green", "blue"];
   }
 
   getColorName(locale: string): string {
@@ -517,18 +521,18 @@ class HSLColorImpl implements Color {
 
   toFormat(format: ColorFormat): Color {
     switch (format) {
-      case 'hsl':
-      case 'hsla':
+      case "hsl":
+      case "hsla":
         return this.clone();
-      case 'hex':
-      case 'hexa':
-      case 'rgb':
-      case 'rgba': {
+      case "hex":
+      case "hexa":
+      case "rgb":
+      case "rgba": {
         const { r, g, b } = hslToRgb(this.hue, this.saturation, this.lightness);
         return new RGBColorImpl(r, g, b, this.alpha);
       }
-      case 'hsb':
-      case 'hsba': {
+      case "hsb":
+      case "hsba": {
         const { r, g, b } = hslToRgb(this.hue, this.saturation, this.lightness);
         const hsb = rgbToHsb(r, g, b);
         return new HSBColorImpl(hsb.h, hsb.s, hsb.b, this.alpha);
@@ -538,14 +542,14 @@ class HSLColorImpl implements Color {
     }
   }
 
-  toString(format?: ColorFormat | 'css'): string {
-    const f = format ?? 'css';
+  toString(format?: ColorFormat | "css"): string {
+    const f = format ?? "css";
 
     switch (f) {
-      case 'hsl':
+      case "hsl":
         return `hsl(${this.hue}, ${this.saturation}%, ${this.lightness}%)`;
-      case 'hsla':
-      case 'css':
+      case "hsla":
+      case "css":
         return this.alpha === 1
           ? `hsl(${this.hue}, ${this.saturation}%, ${this.lightness}%)`
           : `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, ${this.alpha})`;
@@ -559,26 +563,26 @@ class HSLColorImpl implements Color {
   }
 
   toHexInt(): number {
-    return this.toFormat('rgb').toHexInt();
+    return this.toFormat("rgb").toHexInt();
   }
 
   getChannelValue(channel: ColorChannel): number {
     switch (channel) {
-      case 'hue':
+      case "hue":
         return this.hue;
-      case 'saturation':
+      case "saturation":
         return this.saturation;
-      case 'lightness':
+      case "lightness":
         return this.lightness;
-      case 'alpha':
+      case "alpha":
         return this.alpha;
       // Cross-color-space channels
-      case 'red':
-      case 'green':
-      case 'blue':
-        return this.toFormat('rgb').getChannelValue(channel);
-      case 'brightness':
-        return this.toFormat('hsb').getChannelValue(channel);
+      case "red":
+      case "green":
+      case "blue":
+        return this.toFormat("rgb").getChannelValue(channel);
+      case "brightness":
+        return this.toFormat("hsb").getChannelValue(channel);
       default:
         throw new Error(`Invalid channel: ${channel}`);
     }
@@ -586,21 +590,21 @@ class HSLColorImpl implements Color {
 
   withChannelValue(channel: ColorChannel, value: number): Color {
     switch (channel) {
-      case 'hue':
+      case "hue":
         return new HSLColorImpl(value, this.saturation, this.lightness, this.alpha);
-      case 'saturation':
+      case "saturation":
         return new HSLColorImpl(this.hue, value, this.lightness, this.alpha);
-      case 'lightness':
+      case "lightness":
         return new HSLColorImpl(this.hue, this.saturation, value, this.alpha);
-      case 'alpha':
+      case "alpha":
         return new HSLColorImpl(this.hue, this.saturation, this.lightness, value);
       // Cross-color-space channels
-      case 'red':
-      case 'green':
-      case 'blue':
-        return this.toFormat('rgb').withChannelValue(channel, value).toFormat('hsl');
-      case 'brightness':
-        return this.toFormat('hsb').withChannelValue(channel, value).toFormat('hsl');
+      case "red":
+      case "green":
+      case "blue":
+        return this.toFormat("rgb").withChannelValue(channel, value).toFormat("hsl");
+      case "brightness":
+        return this.toFormat("hsb").withChannelValue(channel, value).toFormat("hsl");
       default:
         throw new Error(`Invalid channel: ${channel}`);
     }
@@ -608,17 +612,17 @@ class HSLColorImpl implements Color {
 
   getChannelRange(channel: ColorChannel): ColorChannelRange {
     switch (channel) {
-      case 'hue':
+      case "hue":
         return HUE_CHANNEL_RANGE;
-      case 'saturation':
-      case 'lightness':
-      case 'brightness':
+      case "saturation":
+      case "lightness":
+      case "brightness":
         return PERCENT_CHANNEL_RANGE;
-      case 'alpha':
+      case "alpha":
         return ALPHA_CHANNEL_RANGE;
-      case 'red':
-      case 'green':
-      case 'blue':
+      case "red":
+      case "green":
+      case "blue":
         return RGB_CHANNEL_RANGE;
       default:
         throw new Error(`Invalid channel: ${channel}`);
@@ -630,38 +634,38 @@ class HSLColorImpl implements Color {
   }
 
   getChannelFormatOptions(channel: ColorChannel): Intl.NumberFormatOptions {
-    if (channel === 'alpha') {
-      return { style: 'percent' };
+    if (channel === "alpha") {
+      return { style: "percent" };
     }
-    if (channel === 'hue') {
+    if (channel === "hue") {
       return { maximumFractionDigits: 0 };
     }
-    return { style: 'percent', maximumFractionDigits: 0 };
+    return { style: "percent", maximumFractionDigits: 0 };
   }
 
   formatChannelValue(channel: ColorChannel, locale: string): string {
     const value = this.getChannelValue(channel);
     const options = this.getChannelFormatOptions(channel);
-    if (channel === 'saturation' || channel === 'lightness') {
+    if (channel === "saturation" || channel === "lightness") {
       return new Intl.NumberFormat(locale, options).format(value / 100);
     }
     return new Intl.NumberFormat(locale, options).format(value);
   }
 
   getColorSpace(): ColorSpace {
-    return 'hsl';
+    return "hsl";
   }
 
   getColorSpaceAxes(xyChannels?: { xChannel?: ColorChannel; yChannel?: ColorChannel }): ColorAxes {
-    const xChannel = xyChannels?.xChannel ?? 'saturation';
-    const yChannel = xyChannels?.yChannel ?? 'lightness';
-    const channels: ColorChannel[] = ['hue', 'saturation', 'lightness'];
-    const zChannel = channels.find((c) => c !== xChannel && c !== yChannel) ?? 'hue';
+    const xChannel = xyChannels?.xChannel ?? "saturation";
+    const yChannel = xyChannels?.yChannel ?? "lightness";
+    const channels: ColorChannel[] = ["hue", "saturation", "lightness"];
+    const zChannel = channels.find((c) => c !== xChannel && c !== yChannel) ?? "hue";
     return { xChannel, yChannel, zChannel };
   }
 
   getColorChannels(): [ColorChannel, ColorChannel, ColorChannel] {
-    return ['hue', 'saturation', 'lightness'];
+    return ["hue", "saturation", "lightness"];
   }
 
   getColorName(_locale: string): string {
@@ -692,18 +696,18 @@ class HSBColorImpl implements Color {
 
   toFormat(format: ColorFormat): Color {
     switch (format) {
-      case 'hsb':
-      case 'hsba':
+      case "hsb":
+      case "hsba":
         return this.clone();
-      case 'hex':
-      case 'hexa':
-      case 'rgb':
-      case 'rgba': {
+      case "hex":
+      case "hexa":
+      case "rgb":
+      case "rgba": {
         const { r, g, b } = hsbToRgb(this.hue, this.saturation, this.brightness);
         return new RGBColorImpl(r, g, b, this.alpha);
       }
-      case 'hsl':
-      case 'hsla': {
+      case "hsl":
+      case "hsla": {
         const { r, g, b } = hsbToRgb(this.hue, this.saturation, this.brightness);
         const hsl = rgbToHsl(r, g, b);
         return new HSLColorImpl(hsl.h, hsl.s, hsl.l, this.alpha);
@@ -713,16 +717,16 @@ class HSBColorImpl implements Color {
     }
   }
 
-  toString(format?: ColorFormat | 'css'): string {
-    const f = format ?? 'css';
+  toString(format?: ColorFormat | "css"): string {
+    const f = format ?? "css";
 
     switch (f) {
-      case 'hsb':
+      case "hsb":
         return `hsb(${this.hue}, ${this.saturation}%, ${this.brightness}%)`;
-      case 'hsba':
-      case 'css':
+      case "hsba":
+      case "css":
         // HSB is not a standard CSS format, convert to RGB
-        return this.toFormat('rgba').toString('css');
+        return this.toFormat("rgba").toString("css");
       default:
         return this.toFormat(f as ColorFormat).toString(f);
     }
@@ -733,26 +737,26 @@ class HSBColorImpl implements Color {
   }
 
   toHexInt(): number {
-    return this.toFormat('rgb').toHexInt();
+    return this.toFormat("rgb").toHexInt();
   }
 
   getChannelValue(channel: ColorChannel): number {
     switch (channel) {
-      case 'hue':
+      case "hue":
         return this.hue;
-      case 'saturation':
+      case "saturation":
         return this.saturation;
-      case 'brightness':
+      case "brightness":
         return this.brightness;
-      case 'alpha':
+      case "alpha":
         return this.alpha;
       // Cross-color-space channels
-      case 'red':
-      case 'green':
-      case 'blue':
-        return this.toFormat('rgb').getChannelValue(channel);
-      case 'lightness':
-        return this.toFormat('hsl').getChannelValue(channel);
+      case "red":
+      case "green":
+      case "blue":
+        return this.toFormat("rgb").getChannelValue(channel);
+      case "lightness":
+        return this.toFormat("hsl").getChannelValue(channel);
       default:
         throw new Error(`Invalid channel: ${channel}`);
     }
@@ -760,21 +764,21 @@ class HSBColorImpl implements Color {
 
   withChannelValue(channel: ColorChannel, value: number): Color {
     switch (channel) {
-      case 'hue':
+      case "hue":
         return new HSBColorImpl(value, this.saturation, this.brightness, this.alpha);
-      case 'saturation':
+      case "saturation":
         return new HSBColorImpl(this.hue, value, this.brightness, this.alpha);
-      case 'brightness':
+      case "brightness":
         return new HSBColorImpl(this.hue, this.saturation, value, this.alpha);
-      case 'alpha':
+      case "alpha":
         return new HSBColorImpl(this.hue, this.saturation, this.brightness, value);
       // Cross-color-space channels
-      case 'red':
-      case 'green':
-      case 'blue':
-        return this.toFormat('rgb').withChannelValue(channel, value).toFormat('hsb');
-      case 'lightness':
-        return this.toFormat('hsl').withChannelValue(channel, value).toFormat('hsb');
+      case "red":
+      case "green":
+      case "blue":
+        return this.toFormat("rgb").withChannelValue(channel, value).toFormat("hsb");
+      case "lightness":
+        return this.toFormat("hsl").withChannelValue(channel, value).toFormat("hsb");
       default:
         throw new Error(`Invalid channel: ${channel}`);
     }
@@ -782,17 +786,17 @@ class HSBColorImpl implements Color {
 
   getChannelRange(channel: ColorChannel): ColorChannelRange {
     switch (channel) {
-      case 'hue':
+      case "hue":
         return HUE_CHANNEL_RANGE;
-      case 'saturation':
-      case 'brightness':
-      case 'lightness':
+      case "saturation":
+      case "brightness":
+      case "lightness":
         return PERCENT_CHANNEL_RANGE;
-      case 'alpha':
+      case "alpha":
         return ALPHA_CHANNEL_RANGE;
-      case 'red':
-      case 'green':
-      case 'blue':
+      case "red":
+      case "green":
+      case "blue":
         return RGB_CHANNEL_RANGE;
       default:
         throw new Error(`Invalid channel: ${channel}`);
@@ -804,38 +808,38 @@ class HSBColorImpl implements Color {
   }
 
   getChannelFormatOptions(channel: ColorChannel): Intl.NumberFormatOptions {
-    if (channel === 'alpha') {
-      return { style: 'percent' };
+    if (channel === "alpha") {
+      return { style: "percent" };
     }
-    if (channel === 'hue') {
+    if (channel === "hue") {
       return { maximumFractionDigits: 0 };
     }
-    return { style: 'percent', maximumFractionDigits: 0 };
+    return { style: "percent", maximumFractionDigits: 0 };
   }
 
   formatChannelValue(channel: ColorChannel, locale: string): string {
     const value = this.getChannelValue(channel);
     const options = this.getChannelFormatOptions(channel);
-    if (channel === 'saturation' || channel === 'brightness') {
+    if (channel === "saturation" || channel === "brightness") {
       return new Intl.NumberFormat(locale, options).format(value / 100);
     }
     return new Intl.NumberFormat(locale, options).format(value);
   }
 
   getColorSpace(): ColorSpace {
-    return 'hsb';
+    return "hsb";
   }
 
   getColorSpaceAxes(xyChannels?: { xChannel?: ColorChannel; yChannel?: ColorChannel }): ColorAxes {
-    const xChannel = xyChannels?.xChannel ?? 'saturation';
-    const yChannel = xyChannels?.yChannel ?? 'brightness';
-    const channels: ColorChannel[] = ['hue', 'saturation', 'brightness'];
-    const zChannel = channels.find((c) => c !== xChannel && c !== yChannel) ?? 'hue';
+    const xChannel = xyChannels?.xChannel ?? "saturation";
+    const yChannel = xyChannels?.yChannel ?? "brightness";
+    const channels: ColorChannel[] = ["hue", "saturation", "brightness"];
+    const zChannel = channels.find((c) => c !== xChannel && c !== yChannel) ?? "hue";
     return { xChannel, yChannel, zChannel };
   }
 
   getColorChannels(): [ColorChannel, ColorChannel, ColorChannel] {
-    return ['hue', 'saturation', 'brightness'];
+    return ["hue", "saturation", "brightness"];
   }
 
   getColorName(_locale: string): string {
@@ -855,7 +859,7 @@ export function parseColor(value: string): Color {
   const trimmed = value.trim().toLowerCase();
 
   // Hex format
-  if (trimmed.startsWith('#')) {
+  if (trimmed.startsWith("#")) {
     const hex = trimmed.slice(1);
     if (hex.length === 3) {
       const r = parseInt(hex[0] + hex[0], 16);
@@ -887,7 +891,9 @@ export function parseColor(value: string): Color {
   }
 
   // RGB/RGBA format
-  const rgbMatch = trimmed.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/);
+  const rgbMatch = trimmed.match(
+    /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/,
+  );
   if (rgbMatch) {
     const r = parseInt(rgbMatch[1], 10);
     const g = parseInt(rgbMatch[2], 10);
@@ -897,7 +903,9 @@ export function parseColor(value: string): Color {
   }
 
   // HSL/HSLA format
-  const hslMatch = trimmed.match(/^hsla?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:,\s*([\d.]+))?\s*\)$/);
+  const hslMatch = trimmed.match(
+    /^hsla?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:,\s*([\d.]+))?\s*\)$/,
+  );
   if (hslMatch) {
     const h = parseInt(hslMatch[1], 10);
     const s = parseInt(hslMatch[2], 10);
@@ -907,7 +915,9 @@ export function parseColor(value: string): Color {
   }
 
   // HSB/HSBA format
-  const hsbMatch = trimmed.match(/^hsba?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:,\s*([\d.]+))?\s*\)$/);
+  const hsbMatch = trimmed.match(
+    /^hsba?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:,\s*([\d.]+))?\s*\)$/,
+  );
   if (hsbMatch) {
     const h = parseInt(hsbMatch[1], 10);
     const s = parseInt(hsbMatch[2], 10);
@@ -929,14 +939,24 @@ export function createRGBColor(red: number, green: number, blue: number, alpha: 
 /**
  * Create an HSL color.
  */
-export function createHSLColor(hue: number, saturation: number, lightness: number, alpha: number = 1): Color {
+export function createHSLColor(
+  hue: number,
+  saturation: number,
+  lightness: number,
+  alpha: number = 1,
+): Color {
   return new HSLColorImpl(hue, saturation, lightness, alpha);
 }
 
 /**
  * Create an HSB color.
  */
-export function createHSBColor(hue: number, saturation: number, brightness: number, alpha: number = 1): Color {
+export function createHSBColor(
+  hue: number,
+  saturation: number,
+  brightness: number,
+  alpha: number = 1,
+): Color {
   return new HSBColorImpl(hue, saturation, brightness, alpha);
 }
 
@@ -944,7 +964,7 @@ export function createHSBColor(hue: number, saturation: number, brightness: numb
  * Normalize a color value (string or Color) to a Color object.
  */
 export function normalizeColor(value: string | Color): Color {
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     return parseColor(value);
   }
   return value;

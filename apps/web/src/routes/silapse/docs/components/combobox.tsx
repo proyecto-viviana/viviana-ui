@@ -204,17 +204,56 @@ function ComboBoxPage() {
       <PropsTable
         props={[
           { name: "items", type: "T[]", description: "Array of items to display" },
-          { name: "getKey", type: "(item: T) => string | number", description: "Extracts the unique key from an item" },
-          { name: "getTextValue", type: "(item: T) => string", description: "Extracts the display text for filtering" },
-          { name: "selectedKey", type: "string | number | null", description: "Controlled selected key" },
-          { name: "defaultSelectedKey", type: "string | number", description: "Uncontrolled default selection" },
-          { name: "onSelectionChange", type: "(key: string | number | null) => void", description: "Called when selection changes" },
-          { name: "defaultFilter", type: "(item: T, inputValue: string) => boolean", description: "Filter function for typing (use defaultContainsFilter)" },
+          {
+            name: "getKey",
+            type: "(item: T) => string | number",
+            description: "Extracts the unique key from an item",
+          },
+          {
+            name: "getTextValue",
+            type: "(item: T) => string",
+            description: "Extracts the display text for filtering",
+          },
+          {
+            name: "selectedKey",
+            type: "string | number | null",
+            description: "Controlled selected key",
+          },
+          {
+            name: "defaultSelectedKey",
+            type: "string | number",
+            description: "Uncontrolled default selection",
+          },
+          {
+            name: "onSelectionChange",
+            type: "(key: string | number | null) => void",
+            description: "Called when selection changes",
+          },
+          {
+            name: "defaultFilter",
+            type: "(item: T, inputValue: string) => boolean",
+            description: "Filter function for typing (use defaultContainsFilter)",
+          },
           { name: "label", type: "string", description: "Visible label" },
           { name: "placeholder", type: "string", description: "Input placeholder" },
-          { name: "size", type: "'sm' | 'md' | 'lg'", default: "'md'", description: "Size variant" },
-          { name: "isDisabled", type: "boolean", default: "false", description: "Prevents interaction" },
-          { name: "isInvalid", type: "boolean", default: "false", description: "Shows error styling" },
+          {
+            name: "size",
+            type: "'sm' | 'md' | 'lg'",
+            default: "'md'",
+            description: "Size variant",
+          },
+          {
+            name: "isDisabled",
+            type: "boolean",
+            default: "false",
+            description: "Prevents interaction",
+          },
+          {
+            name: "isInvalid",
+            type: "boolean",
+            default: "false",
+            description: "Shows error styling",
+          },
           { name: "errorMessage", type: "string", description: "Validation error message" },
           { name: "description", type: "string", description: "Helper text" },
         ]}
@@ -222,10 +261,17 @@ function ComboBoxPage() {
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Uses <code>combobox</code> ARIA role with <code>aria-expanded</code> and <code>aria-haspopup</code></li>
+          <li>
+            Uses <code>combobox</code> ARIA role with <code>aria-expanded</code> and{" "}
+            <code>aria-haspopup</code>
+          </li>
           <li>Arrow keys navigate the list; Enter/Space select; Escape closes</li>
-          <li>Active option communicated via <code>aria-activedescendant</code></li>
-          <li>Supports type-ahead filtering natively via <code>defaultFilter</code></li>
+          <li>
+            Active option communicated via <code>aria-activedescendant</code>
+          </li>
+          <li>
+            Supports type-ahead filtering natively via <code>defaultFilter</code>
+          </li>
         </ul>
       </AccessibilitySection>
     </DocPage>

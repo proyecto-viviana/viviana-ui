@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest';
-import { createRoot } from 'solid-js';
-import { CalendarDate } from '@internationalized/date';
-import { createDateFieldState } from '../src/calendar/createDateFieldState';
+import { describe, it, expect } from "vitest";
+import { createRoot } from "solid-js";
+import { CalendarDate } from "@internationalized/date";
+import { createDateFieldState } from "../src/calendar/createDateFieldState";
 
-describe('createDateFieldState', () => {
-  it('constrains placeholder commit to minValue on confirm', () => {
+describe("createDateFieldState", () => {
+  it("constrains placeholder commit to minValue on confirm", () => {
     createRoot((dispose) => {
       const minValue = new CalendarDate(2024, 6, 10);
       const state = createDateFieldState({
@@ -12,9 +12,9 @@ describe('createDateFieldState', () => {
         minValue,
       });
 
-      state.setSegment('year', 2024);
-      state.setSegment('month', 6);
-      state.setSegment('day', 5);
+      state.setSegment("year", 2024);
+      state.setSegment("month", 6);
+      state.setSegment("day", 5);
       state.confirmPlaceholder();
 
       const value = state.value();
@@ -25,7 +25,7 @@ describe('createDateFieldState', () => {
     });
   });
 
-  it('constrains placeholder commit to maxValue on confirm', () => {
+  it("constrains placeholder commit to maxValue on confirm", () => {
     createRoot((dispose) => {
       const maxValue = new CalendarDate(2024, 6, 20);
       const state = createDateFieldState({
@@ -33,9 +33,9 @@ describe('createDateFieldState', () => {
         maxValue,
       });
 
-      state.setSegment('year', 2024);
-      state.setSegment('month', 6);
-      state.setSegment('day', 25);
+      state.setSegment("year", 2024);
+      state.setSegment("month", 6);
+      state.setSegment("day", 25);
       state.confirmPlaceholder();
 
       const value = state.value();
@@ -46,7 +46,7 @@ describe('createDateFieldState', () => {
     });
   });
 
-  it('constrains existing edited value to minValue on confirm', () => {
+  it("constrains existing edited value to minValue on confirm", () => {
     createRoot((dispose) => {
       const minValue = new CalendarDate(2024, 6, 10);
       const state = createDateFieldState({
@@ -54,7 +54,7 @@ describe('createDateFieldState', () => {
         minValue,
       });
 
-      state.setSegment('day', 1);
+      state.setSegment("day", 1);
       expect(state.value()?.day).toBe(1);
 
       state.confirmPlaceholder();
@@ -64,7 +64,7 @@ describe('createDateFieldState', () => {
     });
   });
 
-  it('does not modify value on confirm when already in range', () => {
+  it("does not modify value on confirm when already in range", () => {
     createRoot((dispose) => {
       const minValue = new CalendarDate(2024, 6, 10);
       const maxValue = new CalendarDate(2024, 6, 20);

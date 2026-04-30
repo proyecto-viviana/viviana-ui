@@ -8,13 +8,20 @@
  * Port of @react-aria/focus useFocusRing.
  */
 
-import { type JSX, type Accessor, createSignal, createEffect, onCleanup, createMemo } from 'solid-js';
-import { createFocus } from './createFocus';
-import { createFocusWithin } from './createFocusWithin';
+import {
+  type JSX,
+  type Accessor,
+  createSignal,
+  createEffect,
+  onCleanup,
+  createMemo,
+} from "solid-js";
+import { createFocus } from "./createFocus";
+import { createFocusWithin } from "./createFocusWithin";
 import {
   createFocusVisibleListener,
   isFocusVisible as isGlobalFocusVisible,
-} from './createInteractionModality';
+} from "./createInteractionModality";
 
 // ============================================
 // TYPES
@@ -55,15 +62,16 @@ export function createFocusRing(props: FocusRingProps = {}): FocusRingResult {
   const { isTextInput = false, autoFocus = false, within = false } = props;
 
   const [isFocused, setIsFocused] = createSignal(false);
-  const [focusVisibleFlag, setFocusVisibleFlag] = createSignal(
-    autoFocus || isGlobalFocusVisible()
-  );
+  const [focusVisibleFlag, setFocusVisibleFlag] = createSignal(autoFocus || isGlobalFocusVisible());
   const isFocusVisible = createMemo(() => isFocused() && focusVisibleFlag());
 
   createEffect(() => {
-    const cleanup = createFocusVisibleListener((visible) => {
-      setFocusVisibleFlag(visible);
-    }, { isTextInput });
+    const cleanup = createFocusVisibleListener(
+      (visible) => {
+        setFocusVisibleFlag(visible);
+      },
+      { isTextInput },
+    );
     onCleanup(cleanup);
   });
 
@@ -84,6 +92,8 @@ export function createFocusRing(props: FocusRingProps = {}): FocusRingResult {
   return {
     isFocused,
     isFocusVisible,
-    focusProps: (within ? focusWithinResult.focusWithinProps : focusResult.focusProps) as JSX.HTMLAttributes<HTMLElement>,
+    focusProps: (within
+      ? focusWithinResult.focusWithinProps
+      : focusResult.focusProps) as JSX.HTMLAttributes<HTMLElement>,
   };
 }

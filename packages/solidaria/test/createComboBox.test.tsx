@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
-import { createComboBox } from '../src/combobox';
-import { createComboBoxState } from '@proyecto-viviana/solid-stately';
-import * as liveAnnouncer from '../src/live-announcer';
-import * as platform from '../src/utils/platform';
-import * as domUtils from '../src/utils/dom';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { createRoot, createSignal } from "solid-js";
+import { createComboBox } from "../src/combobox";
+import { createComboBoxState } from "@proyecto-viviana/solid-stately";
+import * as liveAnnouncer from "../src/live-announcer";
+import * as platform from "../src/utils/platform";
+import * as domUtils from "../src/utils/dom";
 
 interface TestItem {
   id: string;
@@ -13,16 +13,16 @@ interface TestItem {
 }
 
 const items: TestItem[] = [
-  { id: '1', name: 'Apple' },
-  { id: '2', name: 'Banana' },
-  { id: '3', name: 'Cherry' },
-  { id: '4', name: 'Date' },
-  { id: '5', name: 'Elderberry' },
+  { id: "1", name: "Apple" },
+  { id: "2", name: "Banana" },
+  { id: "3", name: "Cherry" },
+  { id: "4", name: "Date" },
+  { id: "5", name: "Elderberry" },
 ];
 
-describe('createComboBox', () => {
-  describe('input props', () => {
-    it('should provide correct ARIA attributes for input', () => {
+describe("createComboBox", () => {
+  describe("input props", () => {
+    it("should provide correct ARIA attributes for input", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -32,23 +32,19 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          { label: 'Fruit' },
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({ label: "Fruit" }, state, () => inputRef);
 
-        expect(comboBox.inputProps.role).toBe('combobox');
-        expect(comboBox.inputProps.type).toBe('text');
-        expect(comboBox.inputProps['aria-haspopup']).toBe('listbox');
-        expect(comboBox.inputProps['aria-expanded']).toBe(false);
-        expect(comboBox.inputProps['aria-autocomplete']).toBe('list');
-        expect(comboBox.inputProps.autoComplete).toBe('off');
+        expect(comboBox.inputProps.role).toBe("combobox");
+        expect(comboBox.inputProps.type).toBe("text");
+        expect(comboBox.inputProps["aria-haspopup"]).toBe("listbox");
+        expect(comboBox.inputProps["aria-expanded"]).toBe(false);
+        expect(comboBox.inputProps["aria-autocomplete"]).toBe("list");
+        expect(comboBox.inputProps.autoComplete).toBe("off");
         dispose();
       });
     });
 
-    it('should update aria-expanded when open', () => {
+    it("should update aria-expanded when open", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -58,24 +54,20 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.inputProps['aria-expanded']).toBe(false);
+        expect(comboBox.inputProps["aria-expanded"]).toBe(false);
 
         state.open();
-        expect(comboBox.inputProps['aria-expanded']).toBe(true);
+        expect(comboBox.inputProps["aria-expanded"]).toBe(true);
 
         state.close();
-        expect(comboBox.inputProps['aria-expanded']).toBe(false);
+        expect(comboBox.inputProps["aria-expanded"]).toBe(false);
         dispose();
       });
     });
 
-    it('should provide aria-controls when open', () => {
+    it("should provide aria-controls when open", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -85,21 +77,17 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.inputProps['aria-controls']).toBeUndefined();
+        expect(comboBox.inputProps["aria-controls"]).toBeUndefined();
 
         state.open();
-        expect(comboBox.inputProps['aria-controls']).toBe(comboBox.listBoxProps.id);
+        expect(comboBox.inputProps["aria-controls"]).toBe(comboBox.listBoxProps.id);
         dispose();
       });
     });
 
-    it('should compose aria-describedby from description and invalid error', () => {
+    it("should compose aria-describedby from description and invalid error", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -111,24 +99,24 @@ describe('createComboBox', () => {
 
         const comboBox = createComboBox(
           {
-            description: 'Pick a fruit',
-            errorMessage: 'Required',
+            description: "Pick a fruit",
+            errorMessage: "Required",
             isInvalid: true,
           },
           state,
-          () => inputRef
+          () => inputRef,
         );
 
-        const describedBy = comboBox.inputProps['aria-describedby'];
-        expect(typeof describedBy).toBe('string');
+        const describedBy = comboBox.inputProps["aria-describedby"];
+        expect(typeof describedBy).toBe("string");
         expect(describedBy).toContain(comboBox.descriptionProps.id as string);
         expect(describedBy).toContain(comboBox.errorMessageProps.id as string);
-        expect(comboBox.inputProps['aria-invalid']).toBe(true);
+        expect(comboBox.inputProps["aria-invalid"]).toBe(true);
         dispose();
       });
     });
 
-    it('should set aria-disabled when disabled', () => {
+    it("should set aria-disabled when disabled", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -139,19 +127,15 @@ describe('createComboBox', () => {
           isDisabled: true,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.inputProps['aria-disabled']).toBe(true);
+        expect(comboBox.inputProps["aria-disabled"]).toBe(true);
         expect(comboBox.inputProps.disabled).toBe(true);
         dispose();
       });
     });
 
-    it('should set readOnly when read-only', () => {
+    it("should set readOnly when read-only", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -162,18 +146,14 @@ describe('createComboBox', () => {
           isReadOnly: true,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
         expect(comboBox.inputProps.readOnly).toBe(true);
         dispose();
       });
     });
 
-    it('should bind input value to state', () => {
+    it("should bind input value to state", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -183,21 +163,17 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.inputProps.value).toBe('');
+        expect(comboBox.inputProps.value).toBe("");
 
-        state.setInputValue('App');
-        expect(comboBox.inputProps.value).toBe('App');
+        state.setInputValue("App");
+        expect(comboBox.inputProps.value).toBe("App");
         dispose();
       });
     });
 
-    it('should provide aria-activedescendant when focused key exists', () => {
+    it("should provide aria-activedescendant when focused key exists", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -207,26 +183,24 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.inputProps['aria-activedescendant']).toBeUndefined();
+        expect(comboBox.inputProps["aria-activedescendant"]).toBeUndefined();
 
         state.open();
-        expect(comboBox.inputProps['aria-activedescendant']).toBeUndefined();
+        expect(comboBox.inputProps["aria-activedescendant"]).toBeUndefined();
 
-        state.setFocusedKey('2');
-        expect(comboBox.inputProps['aria-activedescendant']).toBe(`${comboBox.listBoxProps.id}-option-2`);
+        state.setFocusedKey("2");
+        expect(comboBox.inputProps["aria-activedescendant"]).toBe(
+          `${comboBox.listBoxProps.id}-option-2`,
+        );
         dispose();
       });
     });
   });
 
-  describe('button props', () => {
-    it('should provide correct attributes for button', () => {
+  describe("button props", () => {
+    it("should provide correct attributes for button", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -236,21 +210,17 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.buttonProps.type).toBe('button');
+        expect(comboBox.buttonProps.type).toBe("button");
         expect(comboBox.buttonProps.tabIndex).toBe(-1);
-        expect(comboBox.buttonProps['aria-haspopup']).toBe('listbox');
-        expect(comboBox.buttonProps['aria-label']).toBe('Show suggestions');
+        expect(comboBox.buttonProps["aria-haspopup"]).toBe("listbox");
+        expect(comboBox.buttonProps["aria-label"]).toBe("Show suggestions");
         dispose();
       });
     });
 
-    it('should update aria-expanded when open', () => {
+    it("should update aria-expanded when open", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -260,23 +230,19 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.buttonProps['aria-expanded']).toBe(false);
+        expect(comboBox.buttonProps["aria-expanded"]).toBe(false);
 
         state.open();
-        expect(comboBox.buttonProps['aria-expanded']).toBe(true);
+        expect(comboBox.buttonProps["aria-expanded"]).toBe(true);
         dispose();
       });
     });
   });
 
-  describe('listbox props', () => {
-    it('should provide correct attributes for listbox', () => {
+  describe("listbox props", () => {
+    it("should provide correct attributes for listbox", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -286,22 +252,18 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.listBoxProps.role).toBe('listbox');
-        expect(comboBox.listBoxProps['aria-labelledby']).toBe(comboBox.inputProps.id);
+        expect(comboBox.listBoxProps.role).toBe("listbox");
+        expect(comboBox.listBoxProps["aria-labelledby"]).toBe(comboBox.inputProps.id);
         expect(comboBox.listBoxProps.tabIndex).toBe(-1);
         dispose();
       });
     });
   });
 
-  describe('label props', () => {
-    it('should provide label props', () => {
+  describe("label props", () => {
+    it("should provide label props", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -311,11 +273,7 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          { label: 'Fruit' },
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({ label: "Fruit" }, state, () => inputRef);
 
         expect(comboBox.labelProps.id).toBeDefined();
         expect(comboBox.inputProps.id).toBeDefined();
@@ -324,8 +282,8 @@ describe('createComboBox', () => {
     });
   });
 
-  describe('state accessors', () => {
-    it('should expose isFocused', () => {
+  describe("state accessors", () => {
+    it("should expose isFocused", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -335,11 +293,7 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
         expect(comboBox.isFocused()).toBe(false);
 
@@ -349,7 +303,7 @@ describe('createComboBox', () => {
       });
     });
 
-    it('should expose isOpen', () => {
+    it("should expose isOpen", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -359,11 +313,7 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
         expect(comboBox.isOpen()).toBe(false);
 
@@ -373,7 +323,7 @@ describe('createComboBox', () => {
       });
     });
 
-    it('should expose selectedItem', () => {
+    it("should expose selectedItem", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -381,23 +331,19 @@ describe('createComboBox', () => {
           items,
           getKey: (item) => item.id,
           getTextValue: (item) => item.name,
-          defaultSelectedKey: '2',
+          defaultSelectedKey: "2",
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.selectedItem()?.textValue).toBe('Banana');
+        expect(comboBox.selectedItem()?.textValue).toBe("Banana");
         dispose();
       });
     });
   });
 
-  describe('data attributes', () => {
-    it('should set data-open when open', () => {
+  describe("data attributes", () => {
+    it("should set data-open when open", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -407,21 +353,17 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.inputProps['data-open']).toBeUndefined();
+        expect(comboBox.inputProps["data-open"]).toBeUndefined();
 
         state.open();
-        expect(comboBox.inputProps['data-open']).toBe(true);
+        expect(comboBox.inputProps["data-open"]).toBe(true);
         dispose();
       });
     });
 
-    it('should set data-disabled when disabled', () => {
+    it("should set data-disabled when disabled", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -432,18 +374,14 @@ describe('createComboBox', () => {
           isDisabled: true,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.inputProps['data-disabled']).toBe(true);
+        expect(comboBox.inputProps["data-disabled"]).toBe(true);
         dispose();
       });
     });
 
-    it('should set data-readonly when read-only', () => {
+    it("should set data-readonly when read-only", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -454,20 +392,16 @@ describe('createComboBox', () => {
           isReadOnly: true,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.inputProps['data-readonly']).toBe(true);
+        expect(comboBox.inputProps["data-readonly"]).toBe(true);
         dispose();
       });
     });
   });
 
-  describe('description and error props', () => {
-    it('should provide description and error message props', () => {
+  describe("description and error props", () => {
+    it("should provide description and error message props", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -477,11 +411,7 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
         expect(comboBox.descriptionProps.id).toBeDefined();
         expect(comboBox.errorMessageProps.id).toBeDefined();
@@ -490,8 +420,8 @@ describe('createComboBox', () => {
     });
   });
 
-  describe('placeholder', () => {
-    it('should pass placeholder to input props', () => {
+  describe("placeholder", () => {
+    it("should pass placeholder to input props", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -502,19 +432,19 @@ describe('createComboBox', () => {
         });
 
         const comboBox = createComboBox(
-          { placeholder: 'Select a fruit...' },
+          { placeholder: "Select a fruit..." },
           state,
-          () => inputRef
+          () => inputRef,
         );
 
-        expect(comboBox.inputProps.placeholder).toBe('Select a fruit...');
+        expect(comboBox.inputProps.placeholder).toBe("Select a fruit...");
         dispose();
       });
     });
   });
 
-  describe('name', () => {
-    it('should pass name to input props', () => {
+  describe("name", () => {
+    it("should pass name to input props", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -524,20 +454,16 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          { name: 'fruit-select' },
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({ name: "fruit-select" }, state, () => inputRef);
 
-        expect(comboBox.inputProps.name).toBe('fruit-select');
+        expect(comboBox.inputProps.name).toBe("fruit-select");
         dispose();
       });
     });
   });
 
-  describe('autoComplete option', () => {
-    it('should default aria-autocomplete to list', () => {
+  describe("autoComplete option", () => {
+    it("should default aria-autocomplete to list", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -547,18 +473,14 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({}, state, () => inputRef);
 
-        expect(comboBox.inputProps['aria-autocomplete']).toBe('list');
+        expect(comboBox.inputProps["aria-autocomplete"]).toBe("list");
         dispose();
       });
     });
 
-    it('should allow custom aria-autocomplete', () => {
+    it("should allow custom aria-autocomplete", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -568,20 +490,16 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          { autoComplete: 'both' },
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({ autoComplete: "both" }, state, () => inputRef);
 
-        expect(comboBox.inputProps['aria-autocomplete']).toBe('both');
+        expect(comboBox.inputProps["aria-autocomplete"]).toBe("both");
         dispose();
       });
     });
   });
 
-  describe('required', () => {
-    it('should set aria-required when required', () => {
+  describe("required", () => {
+    it("should set aria-required when required", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -591,22 +509,18 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          { isRequired: true },
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({ isRequired: true }, state, () => inputRef);
 
-        expect(comboBox.inputProps['aria-required']).toBe(true);
+        expect(comboBox.inputProps["aria-required"]).toBe(true);
         dispose();
       });
     });
   });
 
-  describe('accessibility warnings', () => {
-    it('should warn when no label is provided in development', () => {
+  describe("accessibility warnings", () => {
+    it("should warn when no label is provided in development", () => {
       // Mock console.warn
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
@@ -618,23 +532,17 @@ describe('createComboBox', () => {
         });
 
         // Create combobox without label, aria-label, or aria-labelledby
-        createComboBox(
-          {},
-          state,
-          () => inputRef
-        );
+        createComboBox({}, state, () => inputRef);
 
-        expect(warnSpy).toHaveBeenCalledWith(
-          expect.stringContaining('ComboBox requires a label')
-        );
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("ComboBox requires a label"));
         dispose();
       });
 
       warnSpy.mockRestore();
     });
 
-    it('should not warn when aria-label is provided', () => {
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    it("should not warn when aria-label is provided", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
@@ -645,11 +553,7 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        createComboBox(
-          { 'aria-label': 'Select fruit' },
-          state,
-          () => inputRef
-        );
+        createComboBox({ "aria-label": "Select fruit" }, state, () => inputRef);
 
         expect(warnSpy).not.toHaveBeenCalled();
         dispose();
@@ -658,8 +562,8 @@ describe('createComboBox', () => {
       warnSpy.mockRestore();
     });
 
-    it('should not warn when aria-labelledby is provided', () => {
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    it("should not warn when aria-labelledby is provided", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
@@ -670,11 +574,7 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        createComboBox(
-          { 'aria-labelledby': 'my-label-id' },
-          state,
-          () => inputRef
-        );
+        createComboBox({ "aria-labelledby": "my-label-id" }, state, () => inputRef);
 
         expect(warnSpy).not.toHaveBeenCalled();
         dispose();
@@ -683,8 +583,8 @@ describe('createComboBox', () => {
       warnSpy.mockRestore();
     });
 
-    it('should not warn when label prop is provided', () => {
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    it("should not warn when label prop is provided", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
@@ -695,11 +595,7 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        createComboBox(
-          { label: 'Fruit' },
-          state,
-          () => inputRef
-        );
+        createComboBox({ label: "Fruit" }, state, () => inputRef);
 
         expect(warnSpy).not.toHaveBeenCalled();
         dispose();
@@ -709,7 +605,7 @@ describe('createComboBox', () => {
     });
   });
 
-  describe('VoiceOver announcements', () => {
+  describe("VoiceOver announcements", () => {
     let announceSpy: ReturnType<typeof vi.spyOn>;
     let isAppleDeviceSpy: ReturnType<typeof vi.spyOn>;
 
@@ -717,8 +613,8 @@ describe('createComboBox', () => {
       // Mark as test environment
       (globalThis as Record<string, unknown>).IS_SOLIDARIA_TEST = true;
 
-      announceSpy = vi.spyOn(liveAnnouncer, 'announce').mockImplementation(() => {});
-      isAppleDeviceSpy = vi.spyOn(platform, 'isAppleDevice');
+      announceSpy = vi.spyOn(liveAnnouncer, "announce").mockImplementation(() => {});
+      isAppleDeviceSpy = vi.spyOn(platform, "isAppleDevice");
     });
 
     afterEach(() => {
@@ -727,7 +623,7 @@ describe('createComboBox', () => {
       delete (globalThis as Record<string, unknown>).IS_SOLIDARIA_TEST;
     });
 
-    it('should not announce on non-Apple devices', () => {
+    it("should not announce on non-Apple devices", () => {
       isAppleDeviceSpy.mockReturnValue(false);
 
       createRoot((dispose) => {
@@ -739,15 +635,11 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        createComboBox(
-          { label: 'Fruit' },
-          state,
-          () => inputRef
-        );
+        createComboBox({ label: "Fruit" }, state, () => inputRef);
 
         // Open the combobox and set focused key
         state.open();
-        state.setFocusedKey('1');
+        state.setFocusedKey("1");
 
         // announcements should not happen on non-Apple (checked synchronously)
         expect(announceSpy).not.toHaveBeenCalled();
@@ -756,8 +648,8 @@ describe('createComboBox', () => {
     });
   });
 
-  describe('blur handling (P1.1)', () => {
-    it('should not blur when focus moves to button', () => {
+  describe("blur handling (P1.1)", () => {
+    it("should not blur when focus moves to button", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
         let buttonRef: HTMLElement | null = null;
@@ -769,10 +661,10 @@ describe('createComboBox', () => {
         });
 
         const comboBox = createComboBox(
-          { label: 'Fruit' },
+          { label: "Fruit" },
           state,
           () => inputRef,
-          () => buttonRef
+          () => buttonRef,
         );
 
         // Set initial focused state
@@ -780,11 +672,11 @@ describe('createComboBox', () => {
         expect(state.isFocused()).toBe(true);
 
         // Create a mock button element
-        buttonRef = document.createElement('button');
+        buttonRef = document.createElement("button");
 
         // Simulate blur with relatedTarget as button
         const onBlur = comboBox.inputProps.onBlur as (e: FocusEvent) => void;
-        const blurEvent = new FocusEvent('blur', {
+        const blurEvent = new FocusEvent("blur", {
           relatedTarget: buttonRef,
         });
 
@@ -796,7 +688,7 @@ describe('createComboBox', () => {
       });
     });
 
-    it('should not blur when focus moves into listbox', () => {
+    it("should not blur when focus moves into listbox", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
         let buttonRef: HTMLElement | null = null;
@@ -809,11 +701,11 @@ describe('createComboBox', () => {
         });
 
         const comboBox = createComboBox(
-          { label: 'Fruit' },
+          { label: "Fruit" },
           state,
           () => inputRef,
           () => buttonRef,
-          () => listBoxRef
+          () => listBoxRef,
         );
 
         // Set initial focused state
@@ -821,13 +713,13 @@ describe('createComboBox', () => {
         expect(state.isFocused()).toBe(true);
 
         // Create mock listbox with a child option
-        listBoxRef = document.createElement('ul');
-        const option = document.createElement('li');
+        listBoxRef = document.createElement("ul");
+        const option = document.createElement("li");
         listBoxRef.appendChild(option);
 
         // Simulate blur with relatedTarget inside listbox
         const onBlur = comboBox.inputProps.onBlur as (e: FocusEvent) => void;
-        const blurEvent = new FocusEvent('blur', {
+        const blurEvent = new FocusEvent("blur", {
           relatedTarget: option,
         });
 
@@ -839,7 +731,7 @@ describe('createComboBox', () => {
       });
     });
 
-    it('should blur when focus moves outside', () => {
+    it("should blur when focus moves outside", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
         let buttonRef: HTMLElement | null = null;
@@ -852,11 +744,11 @@ describe('createComboBox', () => {
         });
 
         const comboBox = createComboBox(
-          { label: 'Fruit' },
+          { label: "Fruit" },
           state,
           () => inputRef,
           () => buttonRef,
-          () => listBoxRef
+          () => listBoxRef,
         );
 
         // Set initial focused state
@@ -864,13 +756,13 @@ describe('createComboBox', () => {
         expect(state.isFocused()).toBe(true);
 
         // Create mock elements
-        buttonRef = document.createElement('button');
-        listBoxRef = document.createElement('ul');
-        const outsideElement = document.createElement('div');
+        buttonRef = document.createElement("button");
+        listBoxRef = document.createElement("ul");
+        const outsideElement = document.createElement("div");
 
         // Simulate blur with relatedTarget outside
         const onBlur = comboBox.inputProps.onBlur as (e: FocusEvent) => void;
-        const blurEvent = new FocusEvent('blur', {
+        const blurEvent = new FocusEvent("blur", {
           relatedTarget: outsideElement,
         });
 
@@ -882,7 +774,7 @@ describe('createComboBox', () => {
       });
     });
 
-    it('should call onBlur callback when blurring outside', () => {
+    it("should call onBlur callback when blurring outside", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
         const onBlurCallback = vi.fn();
@@ -894,16 +786,16 @@ describe('createComboBox', () => {
         });
 
         const comboBox = createComboBox(
-          { label: 'Fruit', onBlur: onBlurCallback },
+          { label: "Fruit", onBlur: onBlurCallback },
           state,
-          () => inputRef
+          () => inputRef,
         );
 
         state.setFocused(true);
 
-        const outsideElement = document.createElement('div');
+        const outsideElement = document.createElement("div");
         const onBlur = comboBox.inputProps.onBlur as (e: FocusEvent) => void;
-        const blurEvent = new FocusEvent('blur', {
+        const blurEvent = new FocusEvent("blur", {
           relatedTarget: outsideElement,
         });
 
@@ -915,8 +807,8 @@ describe('createComboBox', () => {
     });
   });
 
-  describe('touch event handling for iPad VoiceOver (P1.2)', () => {
-    it('should provide onTouchEnd handler in inputProps', () => {
+  describe("touch event handling for iPad VoiceOver (P1.2)", () => {
+    it("should provide onTouchEnd handler in inputProps", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -926,19 +818,15 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          { label: 'Fruit' },
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({ label: "Fruit" }, state, () => inputRef);
 
         expect(comboBox.inputProps.onTouchEnd).toBeDefined();
-        expect(typeof comboBox.inputProps.onTouchEnd).toBe('function');
+        expect(typeof comboBox.inputProps.onTouchEnd).toBe("function");
         dispose();
       });
     });
 
-    it('should not handle touch when disabled', () => {
+    it("should not handle touch when disabled", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -949,17 +837,13 @@ describe('createComboBox', () => {
           isDisabled: true,
         });
 
-        const comboBox = createComboBox(
-          { label: 'Fruit' },
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({ label: "Fruit" }, state, () => inputRef);
 
         // Initially closed
         expect(state.isOpen()).toBe(false);
 
         // Create mock element for center-tap simulation
-        const mockElement = document.createElement('input');
+        const mockElement = document.createElement("input");
         mockElement.getBoundingClientRect = () => ({
           left: 0,
           top: 0,
@@ -977,10 +861,12 @@ describe('createComboBox', () => {
         const touchEvent = {
           target: mockElement,
           timeStamp: 1000,
-          changedTouches: [{
-            clientX: Math.ceil(0 + 0.5 * 100), // centerX
-            clientY: Math.ceil(0 + 0.5 * 50),  // centerY
-          }],
+          changedTouches: [
+            {
+              clientX: Math.ceil(0 + 0.5 * 100), // centerX
+              clientY: Math.ceil(0 + 0.5 * 50), // centerY
+            },
+          ],
           preventDefault: vi.fn(),
         } as unknown as TouchEvent;
 
@@ -992,7 +878,7 @@ describe('createComboBox', () => {
       });
     });
 
-    it('should not handle touch when readOnly', () => {
+    it("should not handle touch when readOnly", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
 
@@ -1003,15 +889,11 @@ describe('createComboBox', () => {
           isReadOnly: true,
         });
 
-        const comboBox = createComboBox(
-          { label: 'Fruit' },
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({ label: "Fruit" }, state, () => inputRef);
 
         expect(state.isOpen()).toBe(false);
 
-        const mockElement = document.createElement('input');
+        const mockElement = document.createElement("input");
         mockElement.getBoundingClientRect = () => ({
           left: 0,
           top: 0,
@@ -1028,10 +910,12 @@ describe('createComboBox', () => {
         const touchEvent = {
           target: mockElement,
           timeStamp: 1000,
-          changedTouches: [{
-            clientX: Math.ceil(0 + 0.5 * 100),
-            clientY: Math.ceil(0 + 0.5 * 50),
-          }],
+          changedTouches: [
+            {
+              clientX: Math.ceil(0 + 0.5 * 100),
+              clientY: Math.ceil(0 + 0.5 * 50),
+            },
+          ],
           preventDefault: vi.fn(),
         } as unknown as TouchEvent;
 
@@ -1043,9 +927,9 @@ describe('createComboBox', () => {
       });
     });
 
-    it('should toggle when touch is at center (VoiceOver virtual click)', () => {
+    it("should toggle when touch is at center (VoiceOver virtual click)", () => {
       createRoot((dispose) => {
-        let inputRef: HTMLInputElement | null = document.createElement('input');
+        let inputRef: HTMLInputElement | null = document.createElement("input");
 
         const state = createComboBoxState({
           items,
@@ -1053,16 +937,12 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          { label: 'Fruit' },
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({ label: "Fruit" }, state, () => inputRef);
 
         expect(state.isOpen()).toBe(false);
 
         // Create mock element for center-tap simulation
-        const mockElement = document.createElement('input');
+        const mockElement = document.createElement("input");
         mockElement.getBoundingClientRect = () => ({
           left: 0,
           top: 0,
@@ -1082,10 +962,12 @@ describe('createComboBox', () => {
         const touchEvent = {
           target: mockElement,
           timeStamp: 1000,
-          changedTouches: [{
-            clientX: Math.ceil(0 + 0.5 * 100), // 50
-            clientY: Math.ceil(0 + 0.5 * 50),  // 25
-          }],
+          changedTouches: [
+            {
+              clientX: Math.ceil(0 + 0.5 * 100), // 50
+              clientY: Math.ceil(0 + 0.5 * 50), // 25
+            },
+          ],
           preventDefault,
         } as unknown as TouchEvent;
 
@@ -1098,9 +980,9 @@ describe('createComboBox', () => {
       });
     });
 
-    it('should debounce rapid consecutive touch events', () => {
+    it("should debounce rapid consecutive touch events", () => {
       createRoot((dispose) => {
-        let inputRef: HTMLInputElement | null = document.createElement('input');
+        let inputRef: HTMLInputElement | null = document.createElement("input");
 
         const state = createComboBoxState({
           items,
@@ -1108,13 +990,9 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const comboBox = createComboBox(
-          { label: 'Fruit' },
-          state,
-          () => inputRef
-        );
+        const comboBox = createComboBox({ label: "Fruit" }, state, () => inputRef);
 
-        const mockElement = document.createElement('input');
+        const mockElement = document.createElement("input");
         mockElement.getBoundingClientRect = () => ({
           left: 0,
           top: 0,
@@ -1133,10 +1011,12 @@ describe('createComboBox', () => {
         const firstTouchEvent = {
           target: mockElement,
           timeStamp: 1000,
-          changedTouches: [{
-            clientX: Math.ceil(0 + 0.5 * 100),
-            clientY: Math.ceil(0 + 0.5 * 50),
-          }],
+          changedTouches: [
+            {
+              clientX: Math.ceil(0 + 0.5 * 100),
+              clientY: Math.ceil(0 + 0.5 * 50),
+            },
+          ],
           preventDefault: vi.fn(),
         } as unknown as TouchEvent;
 
@@ -1147,10 +1027,12 @@ describe('createComboBox', () => {
         const secondTouchEvent = {
           target: mockElement,
           timeStamp: 1200, // 200ms later
-          changedTouches: [{
-            clientX: Math.ceil(0 + 0.5 * 100),
-            clientY: Math.ceil(0 + 0.5 * 50),
-          }],
+          changedTouches: [
+            {
+              clientX: Math.ceil(0 + 0.5 * 100),
+              clientY: Math.ceil(0 + 0.5 * 50),
+            },
+          ],
           preventDefault: vi.fn(),
         } as unknown as TouchEvent;
 
@@ -1164,17 +1046,17 @@ describe('createComboBox', () => {
     });
   });
 
-  describe('link support in ComboBox items (P1.3)', () => {
-    it('should navigate to link on Enter when focused item has href', () => {
+  describe("link support in ComboBox items (P1.3)", () => {
+    it("should navigate to link on Enter when focused item has href", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
         let listBoxRef: HTMLElement | null = null;
 
         // Items with href property
         const linkItems = [
-          { id: '1', name: 'Google', href: 'https://google.com' },
-          { id: '2', name: 'GitHub', href: 'https://github.com' },
-          { id: '3', name: 'Regular Item' },
+          { id: "1", name: "Google", href: "https://google.com" },
+          { id: "2", name: "GitHub", href: "https://github.com" },
+          { id: "3", name: "Regular Item" },
         ];
 
         const state = createComboBoxState({
@@ -1184,31 +1066,31 @@ describe('createComboBox', () => {
         });
 
         // Mock openLink
-        const openLinkSpy = vi.spyOn(domUtils, 'openLink').mockImplementation(() => {});
+        const openLinkSpy = vi.spyOn(domUtils, "openLink").mockImplementation(() => {});
 
         const comboBox = createComboBox(
-          { label: 'Sites' },
+          { label: "Sites" },
           state,
           () => inputRef,
           undefined,
-          () => listBoxRef
+          () => listBoxRef,
         );
 
         // Create mock listbox with anchor element
-        listBoxRef = document.createElement('ul');
-        const linkOption = document.createElement('a') as HTMLAnchorElement;
-        linkOption.setAttribute('data-key', '1');
-        linkOption.href = 'https://google.com';
+        listBoxRef = document.createElement("ul");
+        const linkOption = document.createElement("a") as HTMLAnchorElement;
+        linkOption.setAttribute("data-key", "1");
+        linkOption.href = "https://google.com";
         listBoxRef.appendChild(linkOption);
 
         // Open and focus the link item
         state.open();
-        state.setFocusedKey('1');
+        state.setFocusedKey("1");
 
         // Simulate Enter key
         const onKeyDown = comboBox.inputProps.onKeyDown as (e: KeyboardEvent) => void;
         const enterEvent = {
-          key: 'Enter',
+          key: "Enter",
           preventDefault: vi.fn(),
         } as unknown as KeyboardEvent;
 
@@ -1223,15 +1105,15 @@ describe('createComboBox', () => {
       });
     });
 
-    it('should commit selection on Enter when focused item has no href', () => {
+    it("should commit selection on Enter when focused item has no href", () => {
       createRoot((dispose) => {
         let inputRef: HTMLInputElement | null = null;
         let listBoxRef: HTMLElement | null = null;
 
         // Regular items without href
         const regularItems = [
-          { id: '1', name: 'Apple' },
-          { id: '2', name: 'Banana' },
+          { id: "1", name: "Apple" },
+          { id: "2", name: "Banana" },
         ];
 
         const state = createComboBoxState({
@@ -1240,25 +1122,25 @@ describe('createComboBox', () => {
           getTextValue: (item) => item.name,
         });
 
-        const openLinkSpy = vi.spyOn(domUtils, 'openLink').mockImplementation(() => {});
+        const openLinkSpy = vi.spyOn(domUtils, "openLink").mockImplementation(() => {});
 
         const comboBox = createComboBox(
-          { label: 'Fruit' },
+          { label: "Fruit" },
           state,
           () => inputRef,
           undefined,
-          () => listBoxRef
+          () => listBoxRef,
         );
 
-        listBoxRef = document.createElement('ul');
+        listBoxRef = document.createElement("ul");
 
         // Open and focus a regular item
         state.open();
-        state.setFocusedKey('1');
+        state.setFocusedKey("1");
 
         const onKeyDown = comboBox.inputProps.onKeyDown as (e: KeyboardEvent) => void;
         const enterEvent = {
-          key: 'Enter',
+          key: "Enter",
           preventDefault: vi.fn(),
         } as unknown as KeyboardEvent;
 
@@ -1267,7 +1149,7 @@ describe('createComboBox', () => {
         // Should NOT call openLink
         expect(openLinkSpy).not.toHaveBeenCalled();
         // Should call state.commit() which selects the focused key
-        expect(state.selectedKey()).toBe('1');
+        expect(state.selectedKey()).toBe("1");
 
         openLinkSpy.mockRestore();
         dispose();

@@ -3,8 +3,8 @@
  * Wraps native events with press-specific data.
  */
 
-export type PointerType = 'mouse' | 'pen' | 'touch' | 'keyboard' | 'virtual';
-export type PressEventType = 'pressstart' | 'pressend' | 'pressup' | 'press';
+export type PointerType = "mouse" | "pen" | "touch" | "keyboard" | "virtual";
+export type PressEventType = "pressstart" | "pressend" | "pressup" | "press";
 
 /**
  * Minimal event data needed to create a PressEvent.
@@ -67,7 +67,7 @@ export class PressEvent implements IPressEvent {
     type: PressEventType,
     pointerType: PointerType,
     originalEvent: PressEventSource | null,
-    target: Element | null
+    target: Element | null,
   ) {
     this.type = type;
     this.pointerType = pointerType;
@@ -120,7 +120,7 @@ export function createPressEvent(
   type: PressEventType,
   pointerType: PointerType,
   originalEvent: PressEventSource | null,
-  target: Element | null
+  target: Element | null,
 ): PressEvent {
   return new PressEvent(type, pointerType, originalEvent, target);
 }

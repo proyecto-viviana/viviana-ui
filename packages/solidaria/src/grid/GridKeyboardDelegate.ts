@@ -3,9 +3,9 @@
  * Based on @react-aria/grid/GridKeyboardDelegate.
  */
 
-import type { GridCollection, GridNode, Key } from '@proyecto-viviana/solid-stately';
-import type { KeyboardDelegate } from './types';
-import type { Accessor } from 'solid-js';
+import type { GridCollection, GridNode, Key } from "@proyecto-viviana/solid-stately";
+import type { KeyboardDelegate } from "./types";
+import type { Accessor } from "solid-js";
 
 export interface GridKeyboardDelegateOptions<T> {
   /** The grid collection. */
@@ -15,9 +15,9 @@ export interface GridKeyboardDelegateOptions<T> {
   /** Ref to the grid element. */
   ref: Accessor<HTMLElement | null>;
   /** Focus mode: row or cell. */
-  focusMode: 'row' | 'cell';
+  focusMode: "row" | "cell";
   /** Text direction (ltr or rtl). */
-  direction: 'ltr' | 'rtl';
+  direction: "ltr" | "rtl";
 }
 
 /**
@@ -27,8 +27,8 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
   private collection: GridCollection<T>;
   private disabledKeys: Set<Key>;
   private ref: Accessor<HTMLElement | null>;
-  private focusMode: 'row' | 'cell';
-  private direction: 'ltr' | 'rtl';
+  private focusMode: "row" | "cell";
+  private direction: "ltr" | "rtl";
 
   constructor(options: GridKeyboardDelegateOptions<T>) {
     this.collection = options.collection;
@@ -52,11 +52,11 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
     const item = this.collection.getItem(key);
     if (!item) return null;
 
-    if (item.type === 'item') {
+    if (item.type === "item") {
       return key;
     }
 
-    if (item.type === 'cell' && item.parentKey != null) {
+    if (item.type === "cell" && item.parentKey != null) {
       return item.parentKey;
     }
 
@@ -67,7 +67,7 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
    * Get all body rows (excluding header rows).
    */
   private getBodyRows(): GridNode<T>[] {
-    return this.collection.rows.filter((row) => row.type === 'item');
+    return this.collection.rows.filter((row) => row.type === "item");
   }
 
   /**
@@ -76,7 +76,7 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
   getFirstKey(fromKey?: Key, global?: boolean): Key | null {
     const rows = this.getBodyRows();
 
-    if (this.focusMode === 'row' || global) {
+    if (this.focusMode === "row" || global) {
       // Find first non-disabled row
       for (const row of rows) {
         if (!this.isDisabled(row.key)) {
@@ -114,7 +114,7 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
   getLastKey(fromKey?: Key, global?: boolean): Key | null {
     const rows = this.getBodyRows();
 
-    if (this.focusMode === 'row' || global) {
+    if (this.focusMode === "row" || global) {
       // Find last non-disabled row
       for (let i = rows.length - 1; i >= 0; i--) {
         if (!this.isDisabled(rows[i].key)) {
@@ -155,9 +155,9 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
 
     const rows = this.getBodyRows();
 
-    if (this.focusMode === 'row' || item.type === 'item') {
+    if (this.focusMode === "row" || item.type === "item") {
       // Find the row and get the previous one
-      const rowKey = item.type === 'item' ? key : item.parentKey;
+      const rowKey = item.type === "item" ? key : item.parentKey;
       const rowIndex = rows.findIndex((r) => r.key === rowKey);
 
       if (rowIndex > 0) {
@@ -172,7 +172,7 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
     }
 
     // Cell focus mode - get cell in same column of previous row
-    if (item.type === 'cell' && item.parentKey != null) {
+    if (item.type === "cell" && item.parentKey != null) {
       const rowIndex = rows.findIndex((r) => r.key === item.parentKey);
       const colIndex = item.column ?? item.index;
 
@@ -201,9 +201,9 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
 
     const rows = this.getBodyRows();
 
-    if (this.focusMode === 'row' || item.type === 'item') {
+    if (this.focusMode === "row" || item.type === "item") {
       // Find the row and get the next one
-      const rowKey = item.type === 'item' ? key : item.parentKey;
+      const rowKey = item.type === "item" ? key : item.parentKey;
       const rowIndex = rows.findIndex((r) => r.key === rowKey);
 
       if (rowIndex >= 0 && rowIndex < rows.length - 1) {
@@ -218,7 +218,7 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
     }
 
     // Cell focus mode - get cell in same column of next row
-    if (item.type === 'cell' && item.parentKey != null) {
+    if (item.type === "cell" && item.parentKey != null) {
       const rowIndex = rows.findIndex((r) => r.key === item.parentKey);
       const colIndex = item.column ?? item.index;
 
@@ -246,15 +246,15 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
     if (!item) return null;
 
     // In row focus mode, left/right might not be meaningful
-    if (this.focusMode === 'row') {
+    if (this.focusMode === "row") {
       return null;
     }
 
-    if (item.type === 'cell' && item.parentKey != null) {
+    if (item.type === "cell" && item.parentKey != null) {
       const children = [...this.collection.getChildren(item.parentKey)];
       const colIndex = children.findIndex((c) => c.key === key);
 
-      if (this.direction === 'rtl') {
+      if (this.direction === "rtl") {
         // RTL: left moves to higher index
         if (colIndex < children.length - 1) {
           return children[colIndex + 1].key;
@@ -278,15 +278,15 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
     if (!item) return null;
 
     // In row focus mode, left/right might not be meaningful
-    if (this.focusMode === 'row') {
+    if (this.focusMode === "row") {
       return null;
     }
 
-    if (item.type === 'cell' && item.parentKey != null) {
+    if (item.type === "cell" && item.parentKey != null) {
       const children = [...this.collection.getChildren(item.parentKey)];
       const colIndex = children.findIndex((c) => c.key === key);
 
-      if (this.direction === 'rtl') {
+      if (this.direction === "rtl") {
         // RTL: right moves to lower index
         if (colIndex > 0) {
           return children[colIndex - 1].key;
@@ -327,12 +327,12 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
     // Find first non-disabled row at or before target
     for (let i = targetIndex; i >= 0; i--) {
       if (!this.isDisabled(rows[i].key)) {
-        if (this.focusMode === 'row' || item.type === 'item') {
+        if (this.focusMode === "row" || item.type === "item") {
           return rows[i].key;
         }
 
         // Cell focus mode - return cell at same column
-        const colIndex = item.type === 'cell' ? (item.column ?? item.index) : 0;
+        const colIndex = item.type === "cell" ? (item.column ?? item.index) : 0;
         const children = [...this.collection.getChildren(rows[i].key)];
         const targetCol = Math.min(colIndex, children.length - 1);
         if (targetCol >= 0) {
@@ -369,12 +369,12 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
     // Find first non-disabled row at or after target
     for (let i = targetIndex; i < rows.length; i++) {
       if (!this.isDisabled(rows[i].key)) {
-        if (this.focusMode === 'row' || item.type === 'item') {
+        if (this.focusMode === "row" || item.type === "item") {
           return rows[i].key;
         }
 
         // Cell focus mode - return cell at same column
-        const colIndex = item.type === 'cell' ? (item.column ?? item.index) : 0;
+        const colIndex = item.type === "cell" ? (item.column ?? item.index) : 0;
         const children = [...this.collection.getChildren(rows[i].key)];
         const targetCol = Math.min(colIndex, children.length - 1);
         if (targetCol >= 0) {
@@ -406,7 +406,7 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
     for (let i = startIndex; i < rows.length; i++) {
       const row = rows[i];
       if (!this.isDisabled(row.key)) {
-        const textValue = row.textValue?.toLowerCase() ?? '';
+        const textValue = row.textValue?.toLowerCase() ?? "";
         if (textValue.startsWith(searchLower)) {
           return row.key;
         }
@@ -417,7 +417,7 @@ export class GridKeyboardDelegate<T> implements KeyboardDelegate {
     for (let i = 0; i < startIndex; i++) {
       const row = rows[i];
       if (!this.isDisabled(row.key)) {
-        const textValue = row.textValue?.toLowerCase() ?? '';
+        const textValue = row.textValue?.toLowerCase() ?? "";
         if (textValue.startsWith(searchLower)) {
           return row.key;
         }

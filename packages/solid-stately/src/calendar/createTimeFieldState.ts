@@ -5,16 +5,16 @@
  * Based on @react-stately/datepicker useTimeFieldState
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from "solid-js";
 import {
   type Time,
   type CalendarDateTime,
   type ZonedDateTime,
   getLocalTimeZone,
   DateFormatter,
-} from '@internationalized/date';
-import { access, type MaybeAccessor } from '../utils';
-import type { ValidationState } from './createCalendarState';
+} from "@internationalized/date";
+import { access, type MaybeAccessor } from "../utils";
+import type { ValidationState } from "./createCalendarState";
 
 // ============================================
 // TYPES
@@ -22,12 +22,7 @@ import type { ValidationState } from './createCalendarState';
 
 export type TimeValue = Time | CalendarDateTime | ZonedDateTime;
 
-export type TimeSegmentType =
-  | 'hour'
-  | 'minute'
-  | 'second'
-  | 'dayPeriod'
-  | 'literal';
+export type TimeSegmentType = "hour" | "minute" | "second" | "dayPeriod" | "literal";
 
 export interface TimeSegment {
   /** The type of segment. */
@@ -68,7 +63,7 @@ export interface TimeFieldStateProps<T extends TimeValue = Time> {
   /** The locale to use for formatting. */
   locale?: string;
   /** The granularity (hour, minute, second). */
-  granularity?: 'hour' | 'minute' | 'second';
+  granularity?: "hour" | "minute" | "second";
   /** Whether to show 12 or 24 hour format. */
   hourCycle?: 12 | 24;
   /** Validation state. */
@@ -101,7 +96,7 @@ export interface TimeFieldState<T extends TimeValue = Time> {
   /** The validation state. */
   validationState: Accessor<ValidationState | undefined>;
   /** The granularity. */
-  granularity: 'hour' | 'minute' | 'second';
+  granularity: "hour" | "minute" | "second";
   /** Whether the value is invalid. */
   isInvalid: Accessor<boolean>;
   /** The locale. */
@@ -118,17 +113,15 @@ export interface TimeFieldState<T extends TimeValue = Time> {
  * Provides state management for a time field component.
  */
 export function createTimeFieldState<T extends TimeValue = Time>(
-  props: TimeFieldStateProps<T> = {}
+  props: TimeFieldStateProps<T> = {},
 ): TimeFieldState<T> {
   const timeZone = getLocalTimeZone();
-  const locale = props.locale ?? 'en-US';
-  const granularity = props.granularity ?? 'minute';
+  const locale = props.locale ?? "en-US";
+  const granularity = props.granularity ?? "minute";
   const hourCycle = props.hourCycle ?? 12;
 
   // State signals
-  const [internalValue, setInternalValue] = createSignal<T | null>(
-    props.defaultValue ?? null
-  );
+  const [internalValue, setInternalValue] = createSignal<T | null>(props.defaultValue ?? null);
 
   // Track partial values during editing
   const [placeholderParts, setPlaceholderParts] = createSignal<Partial<TimeParts>>({});
@@ -156,7 +149,7 @@ export function createTimeFieldState<T extends TimeValue = Time>(
     if (minValue && compareTime(v, minValue) < 0) return true;
     if (maxValue && compareTime(v, maxValue) > 0) return true;
 
-    return validationState() === 'invalid';
+    return validationState() === "invalid";
   });
 
   // Generate segments based on granularity
@@ -167,13 +160,13 @@ export function createTimeFieldState<T extends TimeValue = Time>(
 
     // Determine format options
     const formatOptions: Intl.DateTimeFormatOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
-      hourCycle: hourCycle === 12 ? 'h12' : 'h23',
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: hourCycle === 12 ? "h12" : "h23",
     };
 
-    if (granularity === 'second') {
-      formatOptions.second = '2-digit';
+    if (granularity === "second") {
+      formatOptions.second = "2-digit";
     }
 
     // Use a base date for formatting
@@ -188,9 +181,9 @@ export function createTimeFieldState<T extends TimeValue = Time>(
     for (const part of formattedParts) {
       const type = mapTimePartType(part.type);
 
-      if (type === 'literal') {
+      if (type === "literal") {
         segs.push({
-          type: 'literal',
+          type: "literal",
           text: part.value,
           isEditable: false,
           isPlaceholder: false,
@@ -236,7 +229,7 @@ export function createTimeFieldState<T extends TimeValue = Time>(
   // Set a specific segment value
   const setSegment = (type: TimeSegmentType, newValue: number) => {
     if (isDisabled() || isReadOnly()) return;
-    if (type === 'literal') return;
+    if (type === "literal") return;
 
     const v = value();
 
@@ -254,20 +247,18 @@ export function createTimeFieldState<T extends TimeValue = Time>(
   // Increment a segment
   const incrementSegment = (type: TimeSegmentType) => {
     if (isDisabled() || isReadOnly()) return;
-    if (type === 'literal') return;
+    if (type === "literal") return;
 
     const v = value();
-    const current = v
-      ? getTimeSegmentValue(v, type)
-      : placeholderParts()[type as keyof TimeParts];
+    const current = v ? getTimeSegmentValue(v, type) : placeholderParts()[type as keyof TimeParts];
     const max = getTimeMaxValue(type, hourCycle);
     const min = getTimeMinValue(type, hourCycle);
 
-    if (type === 'dayPeriod') {
+    if (type === "dayPeriod") {
       // Toggle AM/PM
       const currentHour = v ? getHour(v) : (placeholderParts().hour ?? 0);
       const newHour = currentHour >= 12 ? currentHour - 12 : currentHour + 12;
-      setSegment('hour', newHour);
+      setSegment("hour", newHour);
       return;
     }
 
@@ -278,20 +269,18 @@ export function createTimeFieldState<T extends TimeValue = Time>(
   // Decrement a segment
   const decrementSegment = (type: TimeSegmentType) => {
     if (isDisabled() || isReadOnly()) return;
-    if (type === 'literal') return;
+    if (type === "literal") return;
 
     const v = value();
-    const current = v
-      ? getTimeSegmentValue(v, type)
-      : placeholderParts()[type as keyof TimeParts];
+    const current = v ? getTimeSegmentValue(v, type) : placeholderParts()[type as keyof TimeParts];
     const max = getTimeMaxValue(type, hourCycle);
     const min = getTimeMinValue(type, hourCycle);
 
-    if (type === 'dayPeriod') {
+    if (type === "dayPeriod") {
       // Toggle AM/PM
       const currentHour = v ? getHour(v) : (placeholderParts().hour ?? 0);
       const newHour = currentHour >= 12 ? currentHour - 12 : currentHour + 12;
-      setSegment('hour', newHour);
+      setSegment("hour", newHour);
       return;
     }
 
@@ -346,56 +335,53 @@ interface TimeParts {
 
 function mapTimePartType(type: Intl.DateTimeFormatPartTypes): TimeSegmentType | null {
   switch (type) {
-    case 'hour':
-      return 'hour';
-    case 'minute':
-      return 'minute';
-    case 'second':
-      return 'second';
-    case 'dayPeriod':
-      return 'dayPeriod';
-    case 'literal':
-      return 'literal';
+    case "hour":
+      return "hour";
+    case "minute":
+      return "minute";
+    case "second":
+      return "second";
+    case "dayPeriod":
+      return "dayPeriod";
+    case "literal":
+      return "literal";
     default:
       return null;
   }
 }
 
 function getHour(time: TimeValue): number {
-  if ('hour' in time) {
+  if ("hour" in time) {
     return time.hour;
   }
   return 0;
 }
 
 function getMinute(time: TimeValue): number {
-  if ('minute' in time) {
+  if ("minute" in time) {
     return time.minute;
   }
   return 0;
 }
 
 function getSecond(time: TimeValue): number {
-  if ('second' in time) {
+  if ("second" in time) {
     return time.second;
   }
   return 0;
 }
 
-function getTimeSegmentValue(
-  time: TimeValue | null,
-  type: TimeSegmentType
-): number | undefined {
+function getTimeSegmentValue(time: TimeValue | null, type: TimeSegmentType): number | undefined {
   if (!time) return undefined;
 
   switch (type) {
-    case 'hour':
+    case "hour":
       return getHour(time);
-    case 'minute':
+    case "minute":
       return getMinute(time);
-    case 'second':
+    case "second":
       return getSecond(time);
-    case 'dayPeriod':
+    case "dayPeriod":
       return getHour(time) >= 12 ? 1 : 0;
     default:
       return undefined;
@@ -404,13 +390,13 @@ function getTimeSegmentValue(
 
 function getTimeMinValue(type: TimeSegmentType, hourCycle: number): number {
   switch (type) {
-    case 'hour':
+    case "hour":
       return hourCycle === 12 ? 1 : 0;
-    case 'minute':
+    case "minute":
       return 0;
-    case 'second':
+    case "second":
       return 0;
-    case 'dayPeriod':
+    case "dayPeriod":
       return 0;
     default:
       return 0;
@@ -419,13 +405,13 @@ function getTimeMinValue(type: TimeSegmentType, hourCycle: number): number {
 
 function getTimeMaxValue(type: TimeSegmentType, hourCycle: number): number {
   switch (type) {
-    case 'hour':
+    case "hour":
       return hourCycle === 12 ? 12 : 23;
-    case 'minute':
+    case "minute":
       return 59;
-    case 'second':
+    case "second":
       return 59;
-    case 'dayPeriod':
+    case "dayPeriod":
       return 1;
     default:
       return 0;
@@ -434,16 +420,16 @@ function getTimeMaxValue(type: TimeSegmentType, hourCycle: number): number {
 
 function getTimePlaceholderText(type: TimeSegmentType): string {
   switch (type) {
-    case 'hour':
-      return '––';
-    case 'minute':
-      return '––';
-    case 'second':
-      return '––';
-    case 'dayPeriod':
-      return 'AM';
+    case "hour":
+      return "––";
+    case "minute":
+      return "––";
+    case "second":
+      return "––";
+    case "dayPeriod":
+      return "AM";
     default:
-      return '';
+      return "";
   }
 }
 
@@ -451,15 +437,15 @@ function updateTimePart(
   time: TimeValue,
   type: TimeSegmentType,
   value: number,
-  hourCycle: number
+  hourCycle: number,
 ): TimeValue {
-  if ('set' in time) {
+  if ("set" in time) {
     switch (type) {
-      case 'hour':
+      case "hour":
         return time.set({ hour: value });
-      case 'minute':
+      case "minute":
         return time.set({ minute: value });
-      case 'second':
+      case "second":
         return time.set({ second: value });
       default:
         return time;

@@ -15,27 +15,27 @@ import {
   splitProps,
   Show,
   useContext,
-} from 'solid-js';
-import { Portal, isServer } from 'solid-js/web';
+} from "solid-js";
+import { Portal, isServer } from "solid-js/web";
 import {
   type ToastState,
   type QueuedToast,
   type ToastQueueOptions,
   ToastQueue,
   createToastState,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   createToast,
   createToastRegion,
   useUNSAFE_PortalContext,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
   type StyleOrFunction,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -47,7 +47,7 @@ export interface ToastContent {
   /** The description/body of the toast. */
   description?: string;
   /** The type/variant of the toast (info, success, warning, error). */
-  type?: 'info' | 'success' | 'warning' | 'error';
+  type?: "info" | "success" | "warning" | "error";
   /** Custom action button. */
   action?: {
     label: string;
@@ -61,7 +61,7 @@ export interface ToastRenderProps {
   /** Whether the toast is currently animating out. */
   isExiting: boolean;
   /** The animation state (entering, exiting, queued). */
-  animation: 'entering' | 'exiting' | 'queued' | undefined;
+  animation: "entering" | "exiting" | "queued" | undefined;
   /** The toast data. */
   toast: QueuedToast<ToastContent>;
 }
@@ -81,11 +81,11 @@ export interface ToastRegionProps {
   /** The toast state to display. If not provided, uses ToastContext. */
   state?: ToastState<ToastContent>;
   /** Accessible label for the region. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Whether to render in a portal. */
   portal?: boolean;
   /** Placement of the toast region. */
-  placement?: 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end';
+  placement?: "top" | "top-start" | "top-end" | "bottom" | "bottom-start" | "bottom-end";
 }
 
 export interface ToastProps {
@@ -116,7 +116,7 @@ const toastStateByKey = new Map<string, ToastState<ToastContent>>();
 export function useToastContext(): ToastState<ToastContent> {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('Toast components must be used within a ToastProvider');
+    throw new Error("Toast components must be used within a ToastProvider");
   }
   return context;
 }
@@ -137,7 +137,7 @@ export const globalToastQueue = new ToastQueue<ToastContent>({
  */
 export function addToast(
   content: ToastContent,
-  options?: { timeout?: number; priority?: number }
+  options?: { timeout?: number; priority?: number },
 ): string {
   return globalToastQueue.add(content, options);
 }
@@ -174,11 +174,7 @@ export function ToastProvider(props: ToastProviderProps): JSX.Element {
 
   const state = createToastState({ queue });
 
-  return (
-    <ToastContext.Provider value={state}>
-      {props.children}
-    </ToastContext.Provider>
-  );
+  return <ToastContext.Provider value={state}>{props.children}</ToastContext.Provider>;
 }
 
 // ============================================
@@ -206,13 +202,13 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
   }
 
   const [local, rest] = splitProps(props, [
-    'children',
-    'class',
-    'style',
-    'state',
-    'aria-label',
-    'portal',
-    'placement',
+    "children",
+    "class",
+    "style",
+    "state",
+    "aria-label",
+    "portal",
+    "placement",
   ]);
   const portalContext = useUNSAFE_PortalContext();
   const portalContainer = () => portalContext.getContainer?.() ?? undefined;
@@ -227,7 +223,7 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
     if (!s) return null;
     return createToastRegion({
       state: s,
-      'aria-label': local['aria-label'],
+      "aria-label": local["aria-label"],
     });
   };
 
@@ -242,40 +238,47 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ToastRegion',
+      defaultClassName: "solidaria-ToastRegion",
     },
-    renderValues
+    renderValues,
   );
   const renderedChildren = createMemo(() => renderProps.renderChildren());
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   // Placement styles
   const placementStyles = createMemo<JSX.CSSProperties>(() => {
-    const placement = local.placement ?? 'bottom-end';
+    const placement = local.placement ?? "bottom-end";
     const base: JSX.CSSProperties = {
-      position: 'fixed',
-      'z-index': 100001,
-      display: 'flex',
-      'flex-direction': 'column',
-      gap: '8px',
-      padding: '16px',
-      'pointer-events': 'none',
+      position: "fixed",
+      "z-index": 100001,
+      display: "flex",
+      "flex-direction": "column",
+      gap: "8px",
+      padding: "16px",
+      "pointer-events": "none",
     };
 
     switch (placement) {
-      case 'top':
-        return { ...base, top: 0, left: '50%', transform: 'translateX(-50%)' } as JSX.CSSProperties;
-      case 'top-start':
+      case "top":
+        return { ...base, top: 0, left: "50%", transform: "translateX(-50%)" } as JSX.CSSProperties;
+      case "top-start":
         return { ...base, top: 0, left: 0 } as JSX.CSSProperties;
-      case 'top-end':
+      case "top-end":
         return { ...base, top: 0, right: 0 } as JSX.CSSProperties;
-      case 'bottom':
-        return { ...base, bottom: 0, left: '50%', transform: 'translateX(-50%)' } as JSX.CSSProperties;
-      case 'bottom-start':
+      case "bottom":
+        return {
+          ...base,
+          bottom: 0,
+          left: "50%",
+          transform: "translateX(-50%)",
+        } as JSX.CSSProperties;
+      case "bottom-start":
         return { ...base, bottom: 0, left: 0 } as JSX.CSSProperties;
-      case 'bottom-end':
+      case "bottom-end":
       default:
         return { ...base, bottom: 0, right: 0 } as JSX.CSSProperties;
     }
@@ -305,7 +308,7 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
         {...cleanRegionProps}
         class={renderProps.class()}
         style={mergedStyle()}
-        data-placement={local.placement ?? 'bottom-end'}
+        data-placement={local.placement ?? "bottom-end"}
       >
         {renderedChildren()}
       </div>
@@ -342,12 +345,7 @@ export function ToastRegion(props: ToastRegionProps): JSX.Element {
  * ```
  */
 export function Toast(props: ToastProps): JSX.Element {
-  const [local, rest] = splitProps(props, [
-    'toast',
-    'children',
-    'class',
-    'style',
-  ]);
+  const [local, rest] = splitProps(props, ["toast", "children", "class", "style"]);
 
   let toastRef!: HTMLDivElement;
 
@@ -374,8 +372,8 @@ export function Toast(props: ToastProps): JSX.Element {
 
   // Render props values
   const renderValues = createMemo<ToastRenderProps>(() => ({
-    isEntering: local.toast.animation === 'entering',
-    isExiting: local.toast.animation === 'exiting',
+    isEntering: local.toast.animation === "entering",
+    isExiting: local.toast.animation === "exiting",
     animation: local.toast.animation,
     toast: local.toast,
   }));
@@ -386,25 +384,27 @@ export function Toast(props: ToastProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Toast',
+      defaultClassName: "solidaria-Toast",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   // Merge styles
   const mergedStyle = () => {
     const custom = renderProps.style();
-    if (!custom) return { 'pointer-events': 'auto' as const };
-    return { 'pointer-events': 'auto' as const, ...custom } as JSX.CSSProperties;
+    if (!custom) return { "pointer-events": "auto" as const };
+    return { "pointer-events": "auto" as const, ...custom } as JSX.CSSProperties;
   };
 
   const handleRootClick = (event: MouseEvent) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
-    if (target.closest('[data-solidaria-toast-close-button]')) {
+    if (target.closest("[data-solidaria-toast-close-button]")) {
       state.close(local.toast.key);
       state.remove(local.toast.key);
     }
@@ -417,14 +417,14 @@ export function Toast(props: ToastProps): JSX.Element {
   // Reduced-motion is handled by CSS (shorter/no animations), so the lifecycle
   // naturally completes faster when the user prefers reduced motion.
   createEffect(() => {
-    if (local.toast.animation !== 'exiting') return;
+    if (local.toast.animation !== "exiting") return;
     if (!toastRef) {
       state.remove(local.toast.key);
       return;
     }
 
     // Check if the element supports the Web Animations API
-    if (!('getAnimations' in toastRef)) {
+    if (!("getAnimations" in toastRef)) {
       state.remove(local.toast.key);
       return;
     }
@@ -465,17 +465,19 @@ export function Toast(props: ToastProps): JSX.Element {
     if (!toastRef) return;
 
     const titleId = (toastAria.titleProps as Record<string, unknown>).id as string | undefined;
-    const descriptionId = (toastAria.descriptionProps as Record<string, unknown>).id as string | undefined;
+    const descriptionId = (toastAria.descriptionProps as Record<string, unknown>).id as
+      | string
+      | undefined;
 
     if (titleId) {
-      const titleEl = toastRef.querySelector('[data-solidaria-toast-title]');
+      const titleEl = toastRef.querySelector("[data-solidaria-toast-title]");
       if (titleEl instanceof HTMLElement) {
         titleEl.id = titleId;
       }
     }
 
     if (descriptionId) {
-      const descriptionEl = toastRef.querySelector('[data-solidaria-toast-description]');
+      const descriptionEl = toastRef.querySelector("[data-solidaria-toast-description]");
       if (descriptionEl instanceof HTMLElement) {
         descriptionEl.id = descriptionId;
       }
@@ -483,7 +485,9 @@ export function Toast(props: ToastProps): JSX.Element {
   });
 
   return (
-    <ToastAriaContext.Provider value={{ titleProps: toastAria.titleProps, descriptionProps: toastAria.descriptionProps }}>
+    <ToastAriaContext.Provider
+      value={{ titleProps: toastAria.titleProps, descriptionProps: toastAria.descriptionProps }}
+    >
       <div
         ref={toastRef}
         {...domProps()}
@@ -535,10 +539,18 @@ export interface ToastDescriptionProps {
  */
 export function ToastDescription(props: ToastDescriptionProps): JSX.Element {
   const context = useContext(ToastAriaContext);
-  const { ref: _ref, ...ariaDescriptionProps } = (context?.descriptionProps ?? {}) as Record<string, unknown>;
+  const { ref: _ref, ...ariaDescriptionProps } = (context?.descriptionProps ?? {}) as Record<
+    string,
+    unknown
+  >;
 
   return (
-    <div data-solidaria-toast-description="" {...ariaDescriptionProps} class={props.class} style={props.style}>
+    <div
+      data-solidaria-toast-description=""
+      {...ariaDescriptionProps}
+      class={props.class}
+      style={props.style}
+    >
       {props.children}
     </div>
   );
@@ -550,7 +562,7 @@ export interface ToastCloseButtonProps {
   children?: JSX.Element;
   class?: string;
   style?: JSX.CSSProperties;
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 /**
@@ -570,12 +582,12 @@ export function ToastCloseButton(props: ToastCloseButtonProps): JSX.Element {
       type="button"
       class={props.class}
       style={props.style}
-      aria-label={props['aria-label'] ?? 'Close'}
+      aria-label={props["aria-label"] ?? "Close"}
       data-solidaria-toast-close-button=""
       on:click={handleClose}
       onClick={handleClose}
     >
-      {props.children ?? '×'}
+      {props.children ?? "×"}
     </button>
   );
 }
@@ -597,10 +609,10 @@ export function DefaultToast(props: DefaultToastProps): JSX.Element {
 
   return (
     <Toast toast={props.toast}>
-      <div style={{ display: 'flex', 'align-items': 'flex-start', gap: '12px' }}>
+      <div style={{ display: "flex", "align-items": "flex-start", gap: "12px" }}>
         <div style={{ flex: 1 }}>
           <Show when={content().title}>
-            <ToastTitle style={{ 'font-weight': 'bold', 'margin-bottom': '4px' }}>
+            <ToastTitle style={{ "font-weight": "bold", "margin-bottom": "4px" }}>
               {content().title}
             </ToastTitle>
           </Show>
@@ -610,7 +622,7 @@ export function DefaultToast(props: DefaultToastProps): JSX.Element {
           <Show when={content().action}>
             <button
               type="button"
-              style={{ 'margin-top': '8px' }}
+              style={{ "margin-top": "8px" }}
               onClick={content().action?.onAction}
             >
               {content().action?.label}

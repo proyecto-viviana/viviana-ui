@@ -7,14 +7,14 @@
  * we can just set it on the target element.
  */
 
-import { isIOS } from './platform';
-import { getOwnerDocument } from './dom';
+import { isIOS } from "./platform";
+import { getOwnerDocument } from "./dom";
 
-type State = 'default' | 'disabled' | 'restoring';
+type State = "default" | "disabled" | "restoring";
 
 // Global state to manage text selection across multiple press interactions
-let state: State = 'default';
-let savedUserSelect = '';
+let state: State = "default";
+let savedUserSelect = "";
 let modifiedElementMap = new WeakMap<HTMLElement, string>();
 
 /**
@@ -24,18 +24,18 @@ let modifiedElementMap = new WeakMap<HTMLElement, string>();
 export function disableTextSelection(target?: HTMLElement): void {
   if (isIOS()) {
     // iOS requires disabling selection on the entire page
-    if (state === 'default') {
+    if (state === "default") {
       const documentElement = getOwnerDocument(target).documentElement;
       savedUserSelect = documentElement.style.webkitUserSelect;
-      documentElement.style.webkitUserSelect = 'none';
+      documentElement.style.webkitUserSelect = "none";
     }
-    state = 'disabled';
+    state = "disabled";
   } else if (target) {
     // On other platforms, just disable on the target
     const element = target as HTMLElement;
     if (!modifiedElementMap.has(element)) {
       modifiedElementMap.set(element, element.style.userSelect);
-      element.style.userSelect = 'none';
+      element.style.userSelect = "none";
     }
   }
 }
@@ -47,11 +47,11 @@ export function disableTextSelection(target?: HTMLElement): void {
 export function restoreTextSelection(target?: HTMLElement): void {
   if (isIOS()) {
     // Don't restore if another press is active
-    if (state !== 'disabled') {
+    if (state !== "disabled") {
       return;
     }
 
-    state = 'restoring';
+    state = "restoring";
 
     // Wait for iOS to finish any pending selection actions
     // 300ms is the iOS long-press delay
@@ -59,15 +59,15 @@ export function restoreTextSelection(target?: HTMLElement): void {
       // Use runAfterTransition to avoid CSS recomputation during animation
       runAfterTransition(() => {
         // Only restore if still in 'restoring' state (no new press started)
-        if (state === 'restoring') {
+        if (state === "restoring") {
           const documentElement = getOwnerDocument(target).documentElement;
           if (savedUserSelect) {
             documentElement.style.webkitUserSelect = savedUserSelect;
           } else {
-            documentElement.style.removeProperty('-webkit-user-select');
+            documentElement.style.removeProperty("-webkit-user-select");
           }
-          savedUserSelect = '';
-          state = 'default';
+          savedUserSelect = "";
+          state = "default";
         }
       });
     }, 300);
@@ -79,7 +79,7 @@ export function restoreTextSelection(target?: HTMLElement): void {
       if (savedValue) {
         element.style.userSelect = savedValue;
       } else {
-        element.style.removeProperty('user-select');
+        element.style.removeProperty("user-select");
       }
       modifiedElementMap.delete(element);
     }

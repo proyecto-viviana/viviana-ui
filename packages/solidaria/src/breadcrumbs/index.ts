@@ -5,4 +5,4 @@ export {
   type BreadcrumbsAria,
   type AriaBreadcrumbItemProps,
   type BreadcrumbItemAria,
-} from './createBreadcrumbs';
+} from "./createBreadcrumbs";

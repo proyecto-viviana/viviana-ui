@@ -2,7 +2,7 @@
  * Drag and Drop ARIA types for solidaria.
  */
 
-import type { JSX } from 'solid-js';
+import type { JSX } from "solid-js";
 import type {
   DragItem,
   DragStartEvent,
@@ -16,7 +16,7 @@ import type {
   DropOperation,
   DragTypes,
   DragPreviewRenderer,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 
 export interface AriaDragOptions {
   /** A function that returns the items being dragged. */
@@ -50,10 +50,7 @@ export interface AriaDropOptions {
   /**
    * A function returning the drop operation to be performed.
    */
-  getDropOperation?: (
-    types: DragTypes,
-    allowedOperations: DropOperation[]
-  ) => DropOperation;
+  getDropOperation?: (types: DragTypes, allowedOperations: DropOperation[]) => DropOperation;
   /**
    * A function returning the drop operation for a specific point.
    */
@@ -61,7 +58,7 @@ export interface AriaDropOptions {
     types: DragTypes,
     allowedOperations: DropOperation[],
     x: number,
-    y: number
+    y: number,
   ) => DropOperation;
   /** Handler that is called when a valid drag enters the drop target. */
   onDropEnter?: (e: DropEnterEvent) => void;

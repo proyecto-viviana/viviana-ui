@@ -266,7 +266,9 @@ function TabsPage() {
           </li>
           <li>Arrow keys navigate between tabs</li>
           <li>Home/End keys jump to first/last tab</li>
-          <li>Tab panels are linked via <code>aria-controls</code> and <code>aria-labelledby</code></li>
+          <li>
+            Tab panels are linked via <code>aria-controls</code> and <code>aria-labelledby</code>
+          </li>
           <li>Focus indicator clearly shows which tab is focused</li>
           <li>Automatic activation on focus (follows ARIA best practices)</li>
         </ul>

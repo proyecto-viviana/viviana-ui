@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's Table component patterns.
  */
 
-import { type JSX, splitProps, createContext, createMemo, useContext, Show } from 'solid-js'
+import { type JSX, splitProps, createContext, createMemo, useContext, Show } from "solid-js";
 import {
   Table as HeadlessTable,
   TableHeader as HeadlessTableHeader,
@@ -33,78 +33,80 @@ import {
   type TableFooterRenderProps,
   type TableRowRenderProps,
   type TableCellRenderProps,
-} from '@proyecto-viviana/solidaria-components'
-import type { Key, SortDescriptor, ColumnDefinition } from '@proyecto-viviana/solid-stately'
-import { useProviderProps } from '../provider'
+} from "@proyecto-viviana/solidaria-components";
+import type { Key, SortDescriptor, ColumnDefinition } from "@proyecto-viviana/solid-stately";
+import { useProviderProps } from "../provider";
 
 // ============================================
 // SIZE CONTEXT
 // ============================================
 
-export type TableSize = 'sm' | 'md' | 'lg'
-export type TableVariant = 'default' | 'striped' | 'bordered'
+export type TableSize = "sm" | "md" | "lg";
+export type TableVariant = "default" | "striped" | "bordered";
 
 interface TableContextValue {
-  size: TableSize
-  variant: TableVariant
+  size: TableSize;
+  variant: TableVariant;
 }
 
-const TableSizeContext = createContext<TableContextValue>({ size: 'md', variant: 'default' })
+const TableSizeContext = createContext<TableContextValue>({ size: "md", variant: "default" });
 
 // ============================================
 // TYPES
 // ============================================
 
-export interface TableProps<T extends object>
-  extends Omit<HeadlessTableProps<T>, 'class' | 'style' | 'children'> {
+export interface TableProps<T extends object> extends Omit<
+  HeadlessTableProps<T>,
+  "class" | "style" | "children"
+> {
   /** The size of the table. */
-  size?: TableSize
+  size?: TableSize;
   /** The visual variant of the table. */
-  variant?: TableVariant
+  variant?: TableVariant;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Title for the table. */
-  title?: string
+  title?: string;
   /** Description for the table. */
-  description?: string
+  description?: string;
   /** Children components (TableHeader, TableBody). */
-  children?: JSX.Element | (() => JSX.Element)
+  children?: JSX.Element | (() => JSX.Element);
 }
 
-export interface TableHeaderProps extends Omit<HeadlessTableHeaderProps, 'class' | 'style'> {
+export interface TableHeaderProps extends Omit<HeadlessTableHeaderProps, "class" | "style"> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
-export interface TableColumnProps extends Omit<HeadlessTableColumnProps, 'class' | 'style'> {
+export interface TableColumnProps extends Omit<HeadlessTableColumnProps, "class" | "style"> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Text alignment for the column. */
-  align?: 'left' | 'center' | 'right'
+  align?: "left" | "center" | "right";
   /** Width of the column (CSS value). */
-  width?: string
+  width?: string;
 }
 
-export interface TableBodyProps<T> extends Omit<HeadlessTableBodyProps<T>, 'class' | 'style'> {
+export interface TableBodyProps<T> extends Omit<HeadlessTableBodyProps<T>, "class" | "style"> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
-export interface TableFooterProps<T> extends Omit<HeadlessTableFooterProps<T>, 'class' | 'style'> {
+export interface TableFooterProps<T> extends Omit<HeadlessTableFooterProps<T>, "class" | "style"> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
-export interface TableRowProps<T> extends Omit<HeadlessTableRowProps<T>, 'class' | 'style'> {
+export interface TableRowProps<T> extends Omit<HeadlessTableRowProps<T>, "class" | "style"> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
-export interface TableCellProps extends Omit<HeadlessTableCellProps, 'class' | 'style'> {
+export interface TableCellProps extends Omit<HeadlessTableCellProps, "class" | "style"> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Text alignment for the cell. */
-  align?: 'left' | 'center' | 'right'
+  align?: "left" | "center" | "right";
 }
 
 // ============================================
@@ -113,54 +115,54 @@ export interface TableCellProps extends Omit<HeadlessTableCellProps, 'class' | '
 
 const sizeStyles = {
   sm: {
-    table: 'text-sm',
-    headerCell: 'px-3 py-2',
-    cell: 'px-3 py-2',
-    checkbox: 'w-4 h-4',
+    table: "text-sm",
+    headerCell: "px-3 py-2",
+    cell: "px-3 py-2",
+    checkbox: "w-4 h-4",
   },
   md: {
-    table: 'text-base',
-    headerCell: 'px-4 py-3',
-    cell: 'px-4 py-3',
-    checkbox: 'w-5 h-5',
+    table: "text-base",
+    headerCell: "px-4 py-3",
+    cell: "px-4 py-3",
+    checkbox: "w-5 h-5",
   },
   lg: {
-    table: 'text-lg',
-    headerCell: 'px-5 py-4',
-    cell: 'px-5 py-4',
-    checkbox: 'w-6 h-6',
+    table: "text-lg",
+    headerCell: "px-5 py-4",
+    cell: "px-5 py-4",
+    checkbox: "w-6 h-6",
   },
-}
+};
 
 const variantStyles = {
   default: {
-    wrapper: 'rounded-lg border border-bg-300 overflow-hidden',
-    header: 'bg-bg-300 border-b border-bg-400',
-    row: '',
-    rowHover: 'hover:bg-bg-200/50',
-    rowSelected: 'bg-accent/10',
+    wrapper: "rounded-lg border border-bg-300 overflow-hidden",
+    header: "bg-bg-300 border-b border-bg-400",
+    row: "",
+    rowHover: "hover:bg-bg-200/50",
+    rowSelected: "bg-accent/10",
   },
   striped: {
-    wrapper: 'rounded-lg border border-bg-300 overflow-hidden',
-    header: 'bg-bg-300 border-b border-bg-400',
-    row: 'even:bg-bg-200/30',
-    rowHover: 'hover:bg-bg-200/50',
-    rowSelected: 'bg-accent/10',
+    wrapper: "rounded-lg border border-bg-300 overflow-hidden",
+    header: "bg-bg-300 border-b border-bg-400",
+    row: "even:bg-bg-200/30",
+    rowHover: "hover:bg-bg-200/50",
+    rowSelected: "bg-accent/10",
   },
   bordered: {
-    wrapper: 'rounded-lg border-2 border-bg-400 overflow-hidden',
-    header: 'bg-bg-300 border-b-2 border-bg-400',
-    row: 'border-b border-bg-300 last:border-b-0',
-    rowHover: 'hover:bg-bg-200/50',
-    rowSelected: 'bg-accent/10',
+    wrapper: "rounded-lg border-2 border-bg-400 overflow-hidden",
+    header: "bg-bg-300 border-b-2 border-bg-400",
+    row: "border-b border-bg-300 last:border-b-0",
+    rowHover: "hover:bg-bg-200/50",
+    rowSelected: "bg-accent/10",
   },
-}
+};
 
 const alignStyles = {
-  left: 'text-left',
-  center: 'text-center',
-  right: 'text-right',
-}
+  left: "text-left",
+  center: "text-center",
+  right: "text-right",
+};
 
 // ============================================
 // TABLE COMPONENT
@@ -214,39 +216,39 @@ const alignStyles = {
  * ```
  */
 export function Table<T extends object>(props: TableProps<T>): JSX.Element {
-  const mergedProps = useProviderProps(props)
+  const mergedProps = useProviderProps(props);
   const [local, headlessProps] = splitProps(mergedProps, [
-    'size',
-    'variant',
-    'class',
-    'title',
-    'description',
-    'children',
-  ])
+    "size",
+    "variant",
+    "class",
+    "title",
+    "description",
+    "children",
+  ]);
 
-  const size = () => local.size ?? 'md'
-  const variant = () => local.variant ?? 'default'
-  const styles = () => sizeStyles[size()]
-  const variantStyle = () => variantStyles[variant()]
-  const customClass = local.class ?? ''
+  const size = () => local.size ?? "md";
+  const variant = () => local.variant ?? "default";
+  const styles = () => sizeStyles[size()];
+  const variantStyle = () => variantStyles[variant()];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: TableRenderProps): string => {
-    const base = 'w-full bg-bg-400'
-    const sizeClass = styles().table
+    const base = "w-full bg-bg-400";
+    const sizeClass = styles().table;
 
-    let stateClass = ''
+    let stateClass = "";
     if (renderProps.isEmpty) {
-      stateClass = ''
+      stateClass = "";
     }
 
     const focusClass = renderProps.isFocusVisible
-      ? 'ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400'
-      : ''
+      ? "ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400"
+      : "";
 
-    return [base, sizeClass, stateClass, focusClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, sizeClass, stateClass, focusClass, customClass].filter(Boolean).join(" ");
+  };
 
-  const contextValue = createMemo(() => ({ size: size(), variant: variant() }))
+  const contextValue = createMemo(() => ({ size: size(), variant: variant() }));
 
   return (
     <TableSizeContext.Provider value={contextValue()}>
@@ -264,7 +266,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
         </div>
       </div>
     </TableSizeContext.Provider>
-  )
+  );
 }
 
 // ============================================
@@ -275,18 +277,18 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
  * A header row in a table containing column headers.
  */
 export function TableHeader(props: TableHeaderProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
-  const context = useContext(TableSizeContext)
-  const variantStyle = variantStyles[context.variant]
-  const customClass = local.class ?? ''
+  const [local, headlessProps] = splitProps(props, ["class"]);
+  const context = useContext(TableSizeContext);
+  const variantStyle = variantStyles[context.variant];
+  const customClass = local.class ?? "";
 
-  const className = [variantStyle.header, customClass].filter(Boolean).join(' ')
+  const className = [variantStyle.header, customClass].filter(Boolean).join(" ");
 
   return (
     <HeadlessTableHeader {...headlessProps} class={className}>
       {props.children}
     </HeadlessTableHeader>
-  )
+  );
 }
 
 // ============================================
@@ -297,46 +299,44 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
  * A column header in a table.
  */
 export function TableColumn(props: TableColumnProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'align', 'width'])
-  const context = useContext(TableSizeContext)
-  const sizeStyle = sizeStyles[context.size]
-  const customClass = local.class ?? ''
+  const [local, headlessProps] = splitProps(props, ["class", "align", "width"]);
+  const context = useContext(TableSizeContext);
+  const sizeStyle = sizeStyles[context.size];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: TableColumnRenderProps): string => {
-    const base = 'font-semibold text-primary-200 select-none'
-    const sizeClass = sizeStyle.headerCell
-    const alignClass = alignStyles[local.align ?? 'left']
+    const base = "font-semibold text-primary-200 select-none";
+    const sizeClass = sizeStyle.headerCell;
+    const alignClass = alignStyles[local.align ?? "left"];
 
-    let sortClass = ''
+    let sortClass = "";
     if (renderProps.isSortable) {
-      sortClass = 'cursor-pointer'
+      sortClass = "cursor-pointer";
       if (renderProps.isHovered) {
-        sortClass += ' text-primary-100'
+        sortClass += " text-primary-100";
       }
     }
 
-    const focusClass = renderProps.isFocusVisible
-      ? 'ring-2 ring-inset ring-accent-300'
-      : ''
+    const focusClass = renderProps.isFocusVisible ? "ring-2 ring-inset ring-accent-300" : "";
 
-    return [base, sizeClass, alignClass, sortClass, focusClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, sizeClass, alignClass, sortClass, focusClass, customClass]
+      .filter(Boolean)
+      .join(" ");
+  };
 
   const getStyle = (): JSX.CSSProperties | undefined => {
     if (local.width) {
-      return { width: local.width }
+      return { width: local.width };
     }
-    return undefined
-  }
+    return undefined;
+  };
 
   return (
     <HeadlessTableColumn {...headlessProps} class={getClassName} style={getStyle()}>
       {(renderProps: TableColumnRenderProps) => (
         <div class="flex items-center gap-2">
           <span class="flex-1">
-            {typeof props.children === 'function'
-              ? props.children(renderProps)
-              : props.children}
+            {typeof props.children === "function" ? props.children(renderProps) : props.children}
           </span>
           <Show when={renderProps.isSortable && renderProps.sortDirection}>
             <SortIcon direction={renderProps.sortDirection!} class="w-4 h-4" />
@@ -344,7 +344,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
         </div>
       )}
     </HeadlessTableColumn>
-  )
+  );
 }
 
 // ============================================
@@ -355,8 +355,8 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
  * The body of a table containing data rows.
  */
 export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'renderEmptyState'])
-  const customClass = local.class ?? ''
+  const [local, headlessProps] = splitProps(props, ["class", "renderEmptyState"]);
+  const customClass = local.class ?? "";
 
   const defaultEmptyState = () => (
     <tr>
@@ -367,7 +367,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
         </div>
       </td>
     </tr>
-  )
+  );
 
   return (
     <HeadlessTableBody
@@ -377,7 +377,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
     >
       {props.children}
     </HeadlessTableBody>
-  )
+  );
 }
 
 // ============================================
@@ -388,20 +388,20 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
  * The footer of a table containing summary rows.
  */
 export function TableFooter<T extends object>(props: TableFooterProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
-  const context = useContext(TableSizeContext)
-  const variantStyle = variantStyles[context.variant]
-  const customClass = local.class ?? ''
+  const [local, headlessProps] = splitProps(props, ["class"]);
+  const context = useContext(TableSizeContext);
+  const variantStyle = variantStyles[context.variant];
+  const customClass = local.class ?? "";
 
   const getClassName = (_renderProps: TableFooterRenderProps): string => {
-    return [variantStyle.header, customClass].filter(Boolean).join(' ')
-  }
+    return [variantStyle.header, customClass].filter(Boolean).join(" ");
+  };
 
   return (
     <HeadlessTableFooter {...headlessProps} class={getClassName}>
       {props.children}
     </HeadlessTableFooter>
-  )
+  );
 }
 
 // ============================================
@@ -412,40 +412,38 @@ export function TableFooter<T extends object>(props: TableFooterProps<T>): JSX.E
  * A row in a table.
  */
 export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
-  const context = useContext(TableSizeContext)
-  const variantStyle = variantStyles[context.variant]
-  const customClass = local.class ?? ''
+  const [local, headlessProps] = splitProps(props, ["class"]);
+  const context = useContext(TableSizeContext);
+  const variantStyle = variantStyles[context.variant];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: TableRowRenderProps): string => {
-    const base = 'transition-colors duration-150 outline-none'
-    const variantClass = variantStyle.row
+    const base = "transition-colors duration-150 outline-none";
+    const variantClass = variantStyle.row;
 
-    let stateClass = ''
+    let stateClass = "";
     if (renderProps.isDisabled) {
-      stateClass = 'opacity-50 cursor-not-allowed'
+      stateClass = "opacity-50 cursor-not-allowed";
     } else if (renderProps.isSelected) {
-      stateClass = variantStyle.rowSelected
+      stateClass = variantStyle.rowSelected;
     } else if (renderProps.isHovered) {
-      stateClass = variantStyle.rowHover
+      stateClass = variantStyle.rowHover;
     }
 
-    const focusClass = renderProps.isFocusVisible
-      ? 'ring-2 ring-inset ring-accent-300'
-      : ''
+    const focusClass = renderProps.isFocusVisible ? "ring-2 ring-inset ring-accent-300" : "";
 
-    const pressedClass = renderProps.isPressed ? 'bg-bg-200/70' : ''
+    const pressedClass = renderProps.isPressed ? "bg-bg-200/70" : "";
 
     return [base, variantClass, stateClass, focusClass, pressedClass, customClass]
       .filter(Boolean)
-      .join(' ')
-  }
+      .join(" ");
+  };
 
   return (
     <HeadlessTableRow {...headlessProps} class={getClassName}>
       {props.children}
     </HeadlessTableRow>
-  )
+  );
 }
 
 // ============================================
@@ -456,28 +454,26 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
  * A cell in a table row.
  */
 export function TableCell(props: TableCellProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'align'])
-  const context = useContext(TableSizeContext)
-  const sizeStyle = sizeStyles[context.size]
-  const customClass = local.class ?? ''
+  const [local, headlessProps] = splitProps(props, ["class", "align"]);
+  const context = useContext(TableSizeContext);
+  const sizeStyle = sizeStyles[context.size];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: TableCellRenderProps): string => {
-    const base = 'text-primary-200'
-    const sizeClass = sizeStyle.cell
-    const alignClass = alignStyles[local.align ?? 'left']
+    const base = "text-primary-200";
+    const sizeClass = sizeStyle.cell;
+    const alignClass = alignStyles[local.align ?? "left"];
 
-    const focusClass = renderProps.isFocusVisible
-      ? 'ring-2 ring-inset ring-accent-300'
-      : ''
+    const focusClass = renderProps.isFocusVisible ? "ring-2 ring-inset ring-accent-300" : "";
 
-    return [base, sizeClass, alignClass, focusClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, sizeClass, alignClass, focusClass, customClass].filter(Boolean).join(" ");
+  };
 
   return (
     <HeadlessTableCell {...headlessProps} class={getClassName}>
       {props.children}
     </HeadlessTableCell>
-  )
+  );
 }
 
 // ============================================
@@ -488,9 +484,9 @@ export function TableCell(props: TableCellProps): JSX.Element {
  * A styled checkbox cell for row selection.
  */
 export function TableSelectionCheckbox(props: { rowKey: Key }): JSX.Element {
-  const context = useContext(TableSizeContext)
-  const sizeStyle = sizeStyles[context.size]
-  const checkboxClass = `${sizeStyle.checkbox} rounded border-2 border-primary-500 bg-bg-400 text-accent cursor-pointer checked:bg-accent checked:border-accent focus:ring-2 focus:ring-accent-300 focus:ring-offset-1 focus:ring-offset-bg-400`
+  const context = useContext(TableSizeContext);
+  const sizeStyle = sizeStyles[context.size];
+  const checkboxClass = `${sizeStyle.checkbox} rounded border-2 border-primary-500 bg-bg-400 text-accent cursor-pointer checked:bg-accent checked:border-accent focus:ring-2 focus:ring-accent-300 focus:ring-offset-1 focus:ring-offset-bg-400`;
 
   return (
     <td class={`${sizeStyle.cell} w-px`}>
@@ -498,16 +494,16 @@ export function TableSelectionCheckbox(props: { rowKey: Key }): JSX.Element {
         <HeadlessTableSelectionCheckbox rowKey={props.rowKey} />
       </span>
     </td>
-  )
+  );
 }
 
 /**
  * A styled checkbox for select-all functionality.
  */
 export function TableSelectAllCheckbox(): JSX.Element {
-  const context = useContext(TableSizeContext)
-  const sizeStyle = sizeStyles[context.size]
-  const checkboxClass = `${sizeStyle.checkbox} rounded border-2 border-primary-500 bg-bg-400 text-accent cursor-pointer checked:bg-accent checked:border-accent focus:ring-2 focus:ring-accent-300 focus:ring-offset-1 focus:ring-offset-bg-400`
+  const context = useContext(TableSizeContext);
+  const sizeStyle = sizeStyles[context.size];
+  const checkboxClass = `${sizeStyle.checkbox} rounded border-2 border-primary-500 bg-bg-400 text-accent cursor-pointer checked:bg-accent checked:border-accent focus:ring-2 focus:ring-accent-300 focus:ring-offset-1 focus:ring-offset-bg-400`;
 
   return (
     <th class={`${sizeStyle.headerCell} w-px`}>
@@ -515,95 +511,82 @@ export function TableSelectAllCheckbox(): JSX.Element {
         <HeadlessTableSelectAllCheckbox />
       </span>
     </th>
-  )
+  );
 }
 
 // ============================================
 // COLUMN RESIZER COMPONENT
 // ============================================
 
-export interface ColumnResizerProps extends Omit<HeadlessColumnResizerProps, 'class' | 'style'> {
+export interface ColumnResizerProps extends Omit<HeadlessColumnResizerProps, "class" | "style"> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
 /**
  * A styled column resize handle. Place inside a TableColumn that has allowsResizing.
  */
 export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
-  const customClass = local.class ?? ''
+  const [local, headlessProps] = splitProps(props, ["class"]);
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: ColumnResizerRenderProps): string => {
-    const base = 'absolute right-0 top-0 bottom-0 w-[3px] cursor-col-resize select-none'
-    const idle = 'bg-transparent'
-    const hovered = 'bg-accent/50'
-    const resizing = 'bg-accent'
+    const base = "absolute right-0 top-0 bottom-0 w-[3px] cursor-col-resize select-none";
+    const idle = "bg-transparent";
+    const hovered = "bg-accent/50";
+    const resizing = "bg-accent";
 
-    let stateClass = idle
+    let stateClass = idle;
     if (renderProps.isResizing) {
-      stateClass = resizing
+      stateClass = resizing;
     } else if (renderProps.isHovered) {
-      stateClass = hovered
+      stateClass = hovered;
     }
 
-    return [base, stateClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, stateClass, customClass].filter(Boolean).join(" ");
+  };
 
-  return (
-    <HeadlessColumnResizer
-      {...headlessProps}
-      class={getClassName}
-    />
-  )
+  return <HeadlessColumnResizer {...headlessProps} class={getClassName} />;
 }
 
 // ============================================
 // RESIZABLE TABLE CONTAINER COMPONENT
 // ============================================
 
-export interface ResizableTableContainerProps extends Omit<HeadlessResizableTableContainerProps, 'class' | 'style'> {
+export interface ResizableTableContainerProps extends Omit<
+  HeadlessResizableTableContainerProps,
+  "class" | "style"
+> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
 /**
  * A styled wrapper that enables column resizing for its child Table.
  */
 export function ResizableTableContainer(props: ResizableTableContainerProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
-  const customClass = local.class ?? ''
+  const [local, headlessProps] = splitProps(props, ["class"]);
+  const customClass = local.class ?? "";
 
-  const className = ['relative overflow-auto', customClass].filter(Boolean).join(' ')
+  const className = ["relative overflow-auto", customClass].filter(Boolean).join(" ");
 
-  return (
-    <HeadlessResizableTableContainer
-      {...headlessProps}
-      class={className}
-    />
-  )
+  return <HeadlessResizableTableContainer {...headlessProps} class={className} />;
 }
 
 // ============================================
 // ICONS
 // ============================================
 
-function SortIcon(props: { direction: 'ascending' | 'descending'; class?: string }): JSX.Element {
+function SortIcon(props: { direction: "ascending" | "descending"; class?: string }): JSX.Element {
   return (
-    <svg
-      class={props.class}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      {props.direction === 'ascending' ? (
+    <svg class={props.class} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      {props.direction === "ascending" ? (
         <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
       ) : (
         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
       )}
     </svg>
-  )
+  );
 }
 
 function EmptyIcon(props: { class?: string }): JSX.Element {
@@ -621,25 +604,25 @@ function EmptyIcon(props: { class?: string }): JSX.Element {
         d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
       />
     </svg>
-  )
+  );
 }
 
 // Attach sub-components for convenience
-Table.Header = TableHeader
-Table.Column = TableColumn
-Table.Body = TableBody
-Table.Footer = TableFooter
-Table.Row = TableRow
-Table.Cell = TableCell
-Table.SelectionCheckbox = TableSelectionCheckbox
-Table.SelectAllCheckbox = TableSelectAllCheckbox
-Table.ColumnResizer = ColumnResizer
+Table.Header = TableHeader;
+Table.Column = TableColumn;
+Table.Body = TableBody;
+Table.Footer = TableFooter;
+Table.Row = TableRow;
+Table.Cell = TableCell;
+Table.SelectionCheckbox = TableSelectionCheckbox;
+Table.SelectAllCheckbox = TableSelectAllCheckbox;
+Table.ColumnResizer = ColumnResizer;
 
-export const TableView = Table
-export const Column = TableColumn
-export const Footer = TableFooter
-export const Row = TableRow
-export const Cell = TableCell
+export const TableView = Table;
+export const Column = TableColumn;
+export const Footer = TableFooter;
+export const Row = TableRow;
+export const Cell = TableCell;
 
 // Re-export types for convenience
-export type { Key, SortDescriptor, ColumnDefinition }
+export type { Key, SortDescriptor, ColumnDefinition };

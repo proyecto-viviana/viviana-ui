@@ -102,23 +102,54 @@ function AlertDialogPage() {
       <PropsTable
         props={[
           { name: "title", type: "string", description: "Dialog title shown in the header" },
-          { name: "variant", type: "'destructive' | 'confirmation' | 'information'", default: "'confirmation'", description: "Visual style and semantic meaning" },
-          { name: "primaryActionLabel", type: "string", description: "Label for the primary (confirm) button" },
-          { name: "cancelLabel", type: "string", description: "Label for the cancel/dismiss button" },
-          { name: "onPrimaryAction", type: "() => void", description: "Called when the primary action is confirmed" },
-          { name: "onCancel", type: "() => void", description: "Called when the dialog is cancelled or dismissed" },
-          { name: "trigger", type: "JSX.Element", description: "Element that opens the dialog when pressed" },
+          {
+            name: "variant",
+            type: "'destructive' | 'confirmation' | 'information'",
+            default: "'confirmation'",
+            description: "Visual style and semantic meaning",
+          },
+          {
+            name: "primaryActionLabel",
+            type: "string",
+            description: "Label for the primary (confirm) button",
+          },
+          {
+            name: "cancelLabel",
+            type: "string",
+            description: "Label for the cancel/dismiss button",
+          },
+          {
+            name: "onPrimaryAction",
+            type: "() => void",
+            description: "Called when the primary action is confirmed",
+          },
+          {
+            name: "onCancel",
+            type: "() => void",
+            description: "Called when the dialog is cancelled or dismissed",
+          },
+          {
+            name: "trigger",
+            type: "JSX.Element",
+            description: "Element that opens the dialog when pressed",
+          },
           { name: "children", type: "JSX.Element", description: "The alert message body" },
         ]}
       />
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Uses <code>role="alertdialog"</code> — announced immediately when opened</li>
+          <li>
+            Uses <code>role="alertdialog"</code> — announced immediately when opened
+          </li>
           <li>Focus is trapped inside the dialog until dismissed</li>
           <li>Escape key cancels the dialog</li>
-          <li>The title is linked via <code>aria-labelledby</code></li>
-          <li>The body text is linked via <code>aria-describedby</code></li>
+          <li>
+            The title is linked via <code>aria-labelledby</code>
+          </li>
+          <li>
+            The body text is linked via <code>aria-describedby</code>
+          </li>
         </ul>
       </AccessibilitySection>
     </DocPage>

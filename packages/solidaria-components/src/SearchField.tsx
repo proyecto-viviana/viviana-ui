@@ -5,25 +5,15 @@
  * Port of react-aria-components/src/SearchField.tsx
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-  useContext,
-  Show,
-} from 'solid-js';
+import { type JSX, createContext, createMemo, splitProps, useContext, Show } from "solid-js";
 import {
   createSearchField,
   createFocusRing,
   createHover,
   createPress,
   type AriaSearchFieldProps,
-} from '@proyecto-viviana/solidaria';
-import {
-  createSearchFieldState,
-  type SearchFieldState,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solidaria";
+import { createSearchFieldState, type SearchFieldState } from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -31,7 +21,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -52,7 +42,7 @@ export interface SearchFieldRenderProps {
   value: string;
 }
 
-export interface SearchFieldProps extends Omit<AriaSearchFieldProps, 'label'>, SlotProps {
+export interface SearchFieldProps extends Omit<AriaSearchFieldProps, "label">, SlotProps {
   /** The current value (controlled). */
   value?: string;
   /** The default value (uncontrolled). */
@@ -86,7 +76,8 @@ export interface SearchFieldInputRenderProps {
   isInvalid: boolean;
 }
 
-export interface SearchFieldInputProps extends SlotProps, Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'class' | 'style'> {
+export interface SearchFieldInputProps
+  extends SlotProps, Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "class" | "style"> {
   /** The CSS className for the element. */
   class?: ClassNameOrFunction<SearchFieldInputRenderProps>;
   /** The inline style for the element. */
@@ -102,7 +93,10 @@ export interface SearchFieldClearButtonRenderProps {
   isDisabled: boolean;
 }
 
-export interface SearchFieldClearButtonProps extends SlotProps, Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, 'class' | 'style' | 'children'> {
+export interface SearchFieldClearButtonProps
+  extends
+    SlotProps,
+    Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "class" | "style" | "children"> {
   /** The children of the button. */
   children?: RenderChildren<SearchFieldClearButtonRenderProps>;
   /** The CSS className for the element. */
@@ -119,7 +113,7 @@ interface SearchFieldContextValue {
   state: SearchFieldState;
   inputProps: JSX.InputHTMLAttributes<HTMLInputElement>;
   clearButtonProps: {
-    'aria-label': string;
+    "aria-label": string;
     tabIndex: number;
     disabled?: boolean;
     onMouseDown: (e: MouseEvent) => void;
@@ -147,46 +141,46 @@ export const SearchFieldContext = createContext<SearchFieldContextValue | null>(
 export function SearchField(props: SearchFieldProps): JSX.Element {
   const [local, stateProps, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
-    ['value', 'defaultValue', 'onChange', 'onSubmit', 'onClear'],
+    ["children", "class", "style", "slot"],
+    ["value", "defaultValue", "onChange", "onSubmit", "onClear"],
     [
-      'label',
-      'aria-label',
-      'aria-labelledby',
-      'aria-describedby',
-      'isDisabled',
-      'isReadOnly',
-      'isRequired',
-      'isInvalid',
-      'description',
-      'errorMessage',
-      'id',
-      'autoFocus',
-      'name',
-      'placeholder',
-      'autoComplete',
-      'inputMode',
-      'autoCorrect',
-      'autoCapitalize',
-      'spellCheck',
-      'maxLength',
-      'minLength',
-      'pattern',
-      'onFocus',
-      'onBlur',
-      'onFocusChange',
-      'onKeyDown',
-      'onKeyUp',
-      'onCopy',
-      'onCut',
-      'onPaste',
-      'onCompositionStart',
-      'onCompositionEnd',
-      'onCompositionUpdate',
-      'onSelect',
-      'onBeforeInput',
-      'onInput',
-    ]
+      "label",
+      "aria-label",
+      "aria-labelledby",
+      "aria-describedby",
+      "isDisabled",
+      "isReadOnly",
+      "isRequired",
+      "isInvalid",
+      "description",
+      "errorMessage",
+      "id",
+      "autoFocus",
+      "name",
+      "placeholder",
+      "autoComplete",
+      "inputMode",
+      "autoCorrect",
+      "autoCapitalize",
+      "spellCheck",
+      "maxLength",
+      "minLength",
+      "pattern",
+      "onFocus",
+      "onBlur",
+      "onFocusChange",
+      "onKeyDown",
+      "onKeyUp",
+      "onCopy",
+      "onCut",
+      "onPaste",
+      "onCompositionStart",
+      "onCompositionEnd",
+      "onCompositionUpdate",
+      "onSelect",
+      "onBeforeInput",
+      "onInput",
+    ],
   );
 
   // Create search field state
@@ -226,14 +220,14 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
       get label() {
         return ariaProps.label;
       },
-      get 'aria-label'() {
-        return ariaProps['aria-label'];
+      get "aria-label"() {
+        return ariaProps["aria-label"];
       },
-      get 'aria-labelledby'() {
-        return ariaProps['aria-labelledby'];
+      get "aria-labelledby"() {
+        return ariaProps["aria-labelledby"];
       },
-      get 'aria-describedby'() {
-        return ariaProps['aria-describedby'];
+      get "aria-describedby"() {
+        return ariaProps["aria-describedby"];
       },
       get description() {
         return ariaProps.description;
@@ -324,12 +318,12 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
       },
     },
     state,
-    () => inputRef ?? null
+    () => inputRef ?? null,
   );
 
   // Render props values
   const renderValues = createMemo<SearchFieldRenderProps>(() => ({
-    isEmpty: state.value() === '',
+    isEmpty: state.value() === "",
     isDisabled: ariaProps.isDisabled ?? false,
     isInvalid: searchFieldAria.isInvalid ?? false,
     isRequired: ariaProps.isRequired ?? false,
@@ -343,13 +337,15 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-SearchField',
+      defaultClassName: "solidaria-SearchField",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   const contextValue: SearchFieldContextValue = {
     state,
@@ -389,7 +385,7 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
         {...domProps()}
         class={renderProps.class()}
         style={renderProps.style()}
-        data-empty={state.value() === '' || undefined}
+        data-empty={state.value() === "" || undefined}
         data-disabled={ariaProps.isDisabled || undefined}
         data-invalid={searchFieldAria.isInvalid || undefined}
         data-required={ariaProps.isRequired || undefined}
@@ -404,10 +400,14 @@ export function SearchField(props: SearchFieldProps): JSX.Element {
 /**
  * The label for a search field.
  */
-export function SearchFieldLabel(props: { children?: JSX.Element; class?: string; style?: JSX.CSSProperties }): JSX.Element {
+export function SearchFieldLabel(props: {
+  children?: JSX.Element;
+  class?: string;
+  style?: JSX.CSSProperties;
+}): JSX.Element {
   const context = useContext(SearchFieldContext);
   if (!context) {
-    throw new Error('SearchFieldLabel must be used within a SearchField');
+    throw new Error("SearchFieldLabel must be used within a SearchField");
   }
 
   const cleanLabelProps = () => {
@@ -418,7 +418,7 @@ export function SearchFieldLabel(props: { children?: JSX.Element; class?: string
   return (
     <label
       {...cleanLabelProps()}
-      class={props.class ?? 'solidaria-SearchField-label'}
+      class={props.class ?? "solidaria-SearchField-label"}
       style={props.style}
     >
       {props.children}
@@ -430,11 +430,11 @@ export function SearchFieldLabel(props: { children?: JSX.Element; class?: string
  * The input element for a search field.
  */
 export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot"]);
 
   const context = useContext(SearchFieldContext);
   if (!context) {
-    throw new Error('SearchFieldInput must be used within a SearchField');
+    throw new Error("SearchFieldInput must be used within a SearchField");
   }
 
   // Create focus ring
@@ -461,9 +461,9 @@ export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-SearchField-input',
+      defaultClassName: "solidaria-SearchField-input",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -502,15 +502,15 @@ export function SearchFieldInput(props: SearchFieldInputProps): JSX.Element {
  * The clear button for a search field.
  */
 export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(SearchFieldContext);
   if (!context) {
-    throw new Error('SearchFieldClearButton must be used within a SearchField');
+    throw new Error("SearchFieldClearButton must be used within a SearchField");
   }
 
   const isDisabled = () => context.isDisabled || context.isReadOnly;
-  const isEmpty = () => context.state.value() === '';
+  const isEmpty = () => context.state.value() === "";
   const clear = () => {
     if (!isDisabled() && !isEmpty()) {
       context.clearButtonProps.onClick();
@@ -546,9 +546,9 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-SearchField-clear',
+      defaultClassName: "solidaria-SearchField-clear",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -567,7 +567,7 @@ export function SearchFieldClearButton(props: SearchFieldClearButtonProps): JSX.
       <button
         {...domProps}
         type="button"
-        aria-label={context.clearButtonProps['aria-label']}
+        aria-label={context.clearButtonProps["aria-label"]}
         tabIndex={context.clearButtonProps.tabIndex}
         disabled={context.clearButtonProps.disabled}
         onMouseDown={context.clearButtonProps.onMouseDown}

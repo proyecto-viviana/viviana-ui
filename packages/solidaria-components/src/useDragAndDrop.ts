@@ -5,9 +5,9 @@
  * state and aria primitives.
  */
 
-import type { Accessor, JSX } from 'solid-js';
-import { DragPreview } from './DragPreview';
-import { ListDropTargetDelegate } from './ListDropTargetDelegate';
+import type { Accessor, JSX } from "solid-js";
+import { DragPreview } from "./DragPreview";
+import { ListDropTargetDelegate } from "./ListDropTargetDelegate";
 import {
   createDraggableCollection,
   createDraggableItem,
@@ -24,7 +24,7 @@ import {
   type DroppableItemOptions,
   type DroppableItemAria,
   type DropTargetDelegate as AriaDropTargetDelegate,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createDraggableCollectionState,
   createDroppableCollectionState,
@@ -37,42 +37,51 @@ import {
   type DroppableCollectionProps,
   type DroppableCollectionState,
   type DroppableCollectionStateOptions,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 
-interface DraggableCollectionStateOpts<T = object>
-  extends Omit<DraggableCollectionStateOptions<T>, 'getItems'> {
+interface DraggableCollectionStateOpts<T = object> extends Omit<
+  DraggableCollectionStateOptions<T>,
+  "getItems"
+> {
   items?: T[];
 }
 
 interface DragHooks<T = object> {
-  useDraggableCollectionState?: (props: DraggableCollectionStateOpts<T>) => DraggableCollectionState;
+  useDraggableCollectionState?: (
+    props: DraggableCollectionStateOpts<T>,
+  ) => DraggableCollectionState;
   useDraggableCollection?: (
-    props: Omit<DraggableCollectionOptions, 'ref'>,
+    props: Omit<DraggableCollectionOptions, "ref">,
     state: DraggableCollectionState,
-    ref: Accessor<HTMLElement | null>
+    ref: Accessor<HTMLElement | null>,
   ) => DraggableCollectionAria;
-  useDraggableItem?: (props: DraggableItemOptions, state: DraggableCollectionState) => DraggableItemAria;
+  useDraggableItem?: (
+    props: DraggableItemOptions,
+    state: DraggableCollectionState,
+  ) => DraggableItemAria;
   DragPreview?: typeof DragPreview;
-  renderDragPreview?: DragAndDropOptions<T>['renderDragPreview'];
+  renderDragPreview?: DragAndDropOptions<T>["renderDragPreview"];
   isVirtualDragging?: () => boolean;
 }
 
 interface DropHooks {
-  useDroppableCollectionState?: (props: DroppableCollectionStateOptions) => DroppableCollectionState;
+  useDroppableCollectionState?: (
+    props: DroppableCollectionStateOptions,
+  ) => DroppableCollectionState;
   useDroppableCollection?: (
-    props: Omit<DroppableCollectionOptions, 'ref'>,
+    props: Omit<DroppableCollectionOptions, "ref">,
     state: DroppableCollectionState,
-    ref: Accessor<HTMLElement | null>
+    ref: Accessor<HTMLElement | null>,
   ) => DroppableCollectionAria;
   useDroppableItem?: (
-    options: Omit<DroppableItemOptions, 'ref'>,
+    options: Omit<DroppableItemOptions, "ref">,
     state: DroppableCollectionState,
-    ref: Accessor<HTMLElement | null>
+    ref: Accessor<HTMLElement | null>,
   ) => DroppableItemAria;
   useDropIndicator?: (
     props: { target: DropTarget },
     state: DroppableCollectionState,
-    ref: Accessor<HTMLElement | null>
+    ref: Accessor<HTMLElement | null>,
   ) => {
     dropIndicatorProps: JSX.HTMLAttributes<HTMLElement>;
     isDropTarget: boolean;
@@ -91,16 +100,15 @@ export interface DragAndDrop<T = object> {
 }
 
 export interface DragAndDropOptions<T = object>
-  extends Partial<Omit<DraggableCollectionProps<T>, 'preview'>>,
-    Partial<DroppableCollectionProps> {
+  extends Partial<Omit<DraggableCollectionProps<T>, "preview">>, Partial<DroppableCollectionProps> {
   /**
    * Optional keyboard delegate forwarded to the collection droppable hook.
    */
-  keyboardDelegate?: DroppableCollectionOptions['keyboardDelegate'];
+  keyboardDelegate?: DroppableCollectionOptions["keyboardDelegate"];
   /**
    * Optional keydown handler composed with collection droppable keyboard behavior.
    */
-  onKeyDown?: DroppableCollectionOptions['onKeyDown'];
+  onKeyDown?: DroppableCollectionOptions["onKeyDown"];
   /**
    * A function that returns the items being dragged.
    * If omitted, draggable hooks are not added.
@@ -109,7 +117,9 @@ export interface DragAndDropOptions<T = object>
   /**
    * Optional custom drag preview renderer.
    */
-  renderDragPreview?: (items: DragItem[]) => JSX.Element | { element: JSX.Element; x: number; y: number };
+  renderDragPreview?: (
+    items: DragItem[],
+  ) => JSX.Element | { element: JSX.Element; x: number; y: number };
   /**
    * Optional drop indicator renderer for collection components.
    */
@@ -149,39 +159,44 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
     dropTargetDelegate,
   } = options;
 
-  const isDraggable = typeof getItems === 'function';
-  const isDroppable = Boolean(onDrop || onInsert || onItemDrop || onReorder || onMove || onRootDrop);
+  const isDraggable = typeof getItems === "function";
+  const isDroppable = Boolean(
+    onDrop || onInsert || onItemDrop || onReorder || onMove || onRootDrop,
+  );
 
   const hooks: DragAndDropHooks<T> = {};
-  const hasDom = typeof HTMLElement !== 'undefined';
+  const hasDom = typeof HTMLElement !== "undefined";
   const isElementNode = (value: unknown): value is HTMLElement => {
     if (!value) return false;
     if (hasDom && value instanceof HTMLElement) return true;
-    return typeof value === 'object' && (value as { nodeType?: number }).nodeType === 1;
+    return typeof value === "object" && (value as { nodeType?: number }).nodeType === 1;
   };
-  const resolvedPreview = options.preview ?? (
-    renderDragPreview
+  const resolvedPreview =
+    options.preview ??
+    (renderDragPreview
       ? {
-          current: (items: DragItem[], callback: (node: HTMLElement | null, x?: number, y?: number) => void) => {
+          current: (
+            items: DragItem[],
+            callback: (node: HTMLElement | null, x?: number, y?: number) => void,
+          ) => {
             const rendered = renderDragPreview(items);
             if (!rendered) {
               callback(null);
               return;
             }
-            if (
-              typeof rendered === 'object' &&
-              rendered !== null &&
-              'element' in rendered
-            ) {
+            if (typeof rendered === "object" && rendered !== null && "element" in rendered) {
               const previewValue = rendered as { element: unknown; x?: number; y?: number };
-              callback(isElementNode(previewValue.element) ? previewValue.element : null, previewValue.x, previewValue.y);
+              callback(
+                isElementNode(previewValue.element) ? previewValue.element : null,
+                previewValue.x,
+                previewValue.y,
+              );
               return;
             }
             callback(isElementNode(rendered) ? rendered : null);
           },
         }
-      : undefined
-  );
+      : undefined);
 
   if (isDraggable && getItems) {
     hooks.useDraggableCollectionState = (props: DraggableCollectionStateOpts<T>) => {
@@ -189,7 +204,8 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
         onDragStart: options.onDragStart ?? props.onDragStart,
         onDragMove: options.onDragMove ?? props.onDragMove,
         onDragEnd: options.onDragEnd ?? props.onDragEnd,
-        getAllowedDropOperations: options.getAllowedDropOperations ?? props.getAllowedDropOperations,
+        getAllowedDropOperations:
+          options.getAllowedDropOperations ?? props.getAllowedDropOperations,
         isDisabled: options.isDisabled ?? props.isDisabled,
         preview: resolvedPreview ?? props.preview,
         getItems: (keys) => {
@@ -199,9 +215,9 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
       }));
     };
     hooks.useDraggableCollection = (
-      props: Omit<DraggableCollectionOptions, 'ref'>,
+      props: Omit<DraggableCollectionOptions, "ref">,
       state: DraggableCollectionState,
-      ref: Accessor<HTMLElement | null>
+      ref: Accessor<HTMLElement | null>,
     ) => createDraggableCollection({ ...props, ref }, state);
     hooks.useDraggableItem = (props, state) => createDraggableItem(() => props, state);
     hooks.DragPreview = DragPreview;
@@ -229,17 +245,19 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
       }));
     };
     hooks.useDroppableCollection = (
-      props: Omit<DroppableCollectionOptions, 'ref'>,
+      props: Omit<DroppableCollectionOptions, "ref">,
       state: DroppableCollectionState,
-      ref: Accessor<HTMLElement | null>
+      ref: Accessor<HTMLElement | null>,
     ) => {
-      const acceptedDragTypes = (options.acceptedDragTypes ?? props.acceptedDragTypes);
-      const normalizedAcceptedDragTypes = acceptedDragTypes === 'all'
-        ? 'all'
-        : acceptedDragTypes?.filter((type): type is string | symbol =>
-          typeof type === 'string' || typeof type === 'symbol');
-      return (
-      createDroppableCollection(
+      const acceptedDragTypes = options.acceptedDragTypes ?? props.acceptedDragTypes;
+      const normalizedAcceptedDragTypes =
+        acceptedDragTypes === "all"
+          ? "all"
+          : acceptedDragTypes?.filter(
+              (type): type is string | symbol =>
+                typeof type === "string" || typeof type === "symbol",
+            );
+      return createDroppableCollection(
         () => ({
           ref,
           dropTargetDelegate: options.dropTargetDelegate ?? props.dropTargetDelegate,
@@ -249,7 +267,7 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
           isDisabled: options.isDisabled ?? props.isDisabled,
           onDropActivate: (e) => {
             (options.onDropActivate ?? props.onDropActivate)?.({
-              type: 'dropactivate',
+              type: "dropactivate",
               target: e.target,
               x: e.x,
               y: e.y,
@@ -257,7 +275,7 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
           },
           onDrop: (e) => {
             (options.onDrop ?? props.onDrop)?.({
-              type: 'drop',
+              type: "drop",
               target: e.target,
               x: e.x,
               y: e.y,
@@ -267,7 +285,7 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
           },
           onRootDrop: options.onRootDrop ?? props.onRootDrop,
           onItemDrop: (e) => {
-            if (e.target.type === 'item') {
+            if (e.target.type === "item") {
               (options.onItemDrop ?? props.onItemDrop)?.({
                 items: e.items,
                 target: e.target,
@@ -277,7 +295,7 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
             }
           },
           onInsert: (e) => {
-            if (e.target.type === 'item') {
+            if (e.target.type === "item") {
               (options.onInsert ?? props.onInsert)?.({
                 items: e.items,
                 target: e.target,
@@ -286,7 +304,7 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
             }
           },
           onReorder: (e) => {
-            if (e.target.type === 'item') {
+            if (e.target.type === "item") {
               (options.onReorder ?? props.onReorder)?.({
                 keys: e.keys,
                 target: e.target,
@@ -295,7 +313,7 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
             }
           },
           onMove: (e) => {
-            if (e.target.type === 'item') {
+            if (e.target.type === "item") {
               (options.onMove ?? props.onMove)?.({
                 keys: e.keys,
                 target: e.target,
@@ -304,37 +322,35 @@ export function useDragAndDrop<T = object>(options: DragAndDropOptions<T> = {}):
             }
           },
         }),
-        state
-      ));
+        state,
+      );
     };
     hooks.useDroppableItem = (
-      props: Omit<DroppableItemOptions, 'ref'>,
+      props: Omit<DroppableItemOptions, "ref">,
       state: DroppableCollectionState,
-      ref: Accessor<HTMLElement | null>
+      ref: Accessor<HTMLElement | null>,
     ) => createDroppableItem(() => ({ ...props, ref }), state);
     hooks.useDropIndicator = (
       props: { target: DropTarget },
       state: DroppableCollectionState,
-      _ref: Accessor<HTMLElement | null>
+      _ref: Accessor<HTMLElement | null>,
     ) => {
       const target = props.target;
       const activeTarget = state.target;
       const isDropTarget =
         activeTarget?.type === target.type &&
-        (target.type === 'root'
-          || (
-            activeTarget.type === 'item' &&
-            target.type === 'item' &&
+        (target.type === "root" ||
+          (activeTarget.type === "item" &&
+            target.type === "item" &&
             activeTarget.key === target.key &&
-            activeTarget.dropPosition === target.dropPosition
-          ));
+            activeTarget.dropPosition === target.dropPosition));
       return {
         dropIndicatorProps: {
-          role: 'option',
-          'aria-disabled': true,
-          'aria-hidden': isDropTarget ? undefined : 'true',
+          role: "option",
+          "aria-disabled": true,
+          "aria-hidden": isDropTarget ? undefined : "true",
           tabIndex: -1,
-          'data-drop-target': isDropTarget ? '' : undefined,
+          "data-drop-target": isDropTarget ? "" : undefined,
         },
         isDropTarget,
         isHidden: !isDropTarget,

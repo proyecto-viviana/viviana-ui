@@ -3,14 +3,14 @@
  * Based on @react-aria/menu useMenuItem.
  */
 
-import { type JSX, type Accessor } from 'solid-js';
-import { createPress } from '../interactions/createPress';
-import { createHover } from '../interactions/createHover';
-import { createFocusRing } from '../interactions/createFocusRing';
-import { mergeProps } from '../utils/mergeProps';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { getMenuData } from './createMenu';
-import type { MenuState, Key } from '@proyecto-viviana/solid-stately';
+import { type JSX, type Accessor } from "solid-js";
+import { createPress } from "../interactions/createPress";
+import { createHover } from "../interactions/createHover";
+import { createFocusRing } from "../interactions/createFocusRing";
+import { mergeProps } from "../utils/mergeProps";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { getMenuData } from "./createMenu";
+import type { MenuState, Key } from "@proyecto-viviana/solid-stately";
 
 export interface AriaMenuItemProps {
   /** The unique key for the menu item. */
@@ -18,7 +18,7 @@ export interface AriaMenuItemProps {
   /** Whether the menu item is disabled. */
   isDisabled?: boolean;
   /** An accessible label for the menu item. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Handler called when the menu item is selected. */
   onAction?: () => void;
   /** Whether to close the menu when this item is selected. */
@@ -58,7 +58,7 @@ export interface MenuItemAria {
 export function createMenuItem<T>(
   props: MaybeAccessor<AriaMenuItemProps>,
   state: MenuState<T>,
-  _ref?: () => HTMLElement | null
+  _ref?: () => HTMLElement | null,
 ): MenuItemAria {
   const getProps = () => access(props);
 
@@ -67,7 +67,9 @@ export function createMenuItem<T>(
 
   // Computed states
   const isDisabled: Accessor<boolean> = () => {
-    return Boolean(getData()?.isDisabled || getProps().isDisabled || state.isDisabled(getProps().key));
+    return Boolean(
+      getData()?.isDisabled || getProps().isDisabled || state.isDisabled(getProps().key),
+    );
   };
 
   const isFocused: Accessor<boolean> = () => {
@@ -123,20 +125,20 @@ export function createMenuItem<T>(
     get menuItemProps() {
       const p = getProps();
       const key = p.key;
-      const ariaLabel = p['aria-label'];
+      const ariaLabel = p["aria-label"];
 
       const baseProps: Record<string, unknown> = {
-        role: 'menuitem',
+        role: "menuitem",
         id: String(key),
-        'aria-disabled': isDisabled() || undefined,
-        'aria-label': ariaLabel,
-        'aria-labelledby': !ariaLabel ? labelId : undefined,
-        'aria-describedby': descriptionId,
+        "aria-disabled": isDisabled() || undefined,
+        "aria-label": ariaLabel,
+        "aria-labelledby": !ariaLabel ? labelId : undefined,
+        "aria-describedby": descriptionId,
         tabIndex: isFocused() ? 0 : -1,
-        'data-focused': isFocused() || undefined,
-        'data-focus-visible': isFocusVisible() || undefined,
-        'data-pressed': isPressed() || undefined,
-        'data-disabled': isDisabled() || undefined,
+        "data-focused": isFocused() || undefined,
+        "data-focus-visible": isFocusVisible() || undefined,
+        "data-pressed": isPressed() || undefined,
+        "data-disabled": isDisabled() || undefined,
       };
 
       // Add link props when href is present
@@ -145,7 +147,7 @@ export function createMenuItem<T>(
         if (p.target) baseProps.target = p.target;
         if (p.rel) baseProps.rel = p.rel;
         if (p.download != null && p.download !== false) {
-          baseProps.download = p.download === true ? '' : p.download;
+          baseProps.download = p.download === true ? "" : p.download;
         }
       }
 
@@ -153,7 +155,7 @@ export function createMenuItem<T>(
         pressProps as Record<string, unknown>,
         hoverProps as Record<string, unknown>,
         focusProps as Record<string, unknown>,
-        baseProps
+        baseProps,
       ) as JSX.HTMLAttributes<HTMLElement>;
     },
     labelProps: {
@@ -164,7 +166,7 @@ export function createMenuItem<T>(
     },
     keyboardShortcutProps: {
       id: keyboardId,
-      'aria-hidden': true,
+      "aria-hidden": true,
     },
     isFocused,
     isFocusVisible: () => isFocused() && isFocusVisible(),

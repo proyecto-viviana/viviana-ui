@@ -1,8 +1,8 @@
-export { mergeProps } from './mergeProps';
-export { filterDOMProps, type FilterDOMPropsOptions } from './filterDOMProps';
+export { mergeProps } from "./mergeProps";
+export { filterDOMProps, type FilterDOMPropsOptions } from "./filterDOMProps";
 
 // Reactivity utilities
-export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from './reactivity';
+export { access, isAccessor, type MaybeAccessor, type MaybeAccessorValue } from "./reactivity";
 
 // Platform detection
 export {
@@ -15,7 +15,7 @@ export {
   isChrome,
   isAndroid,
   isFirefox,
-} from './platform';
+} from "./platform";
 
 // DOM utilities
 export {
@@ -33,7 +33,7 @@ export {
   isScrollable,
   getScrollParent,
   willOpenKeyboard,
-} from './dom';
+} from "./dom";
 
 // Geometry utilities
 export {
@@ -44,7 +44,7 @@ export {
   getTouchById,
   type Rect,
   type EventPoint,
-} from './geometry';
+} from "./geometry";
 
 // Event utilities
 export {
@@ -53,23 +53,23 @@ export {
   createMouseEvent,
   chain,
   setEventTarget,
-} from './events';
+} from "./events";
 
 // Text selection management
-export { disableTextSelection, restoreTextSelection } from './textSelection';
+export { disableTextSelection, restoreTextSelection } from "./textSelection";
 
 // Focus utilities
-export { focusWithoutScrolling, focusSafely, preventFocus } from './focus';
+export { focusWithoutScrolling, focusSafely, preventFocus } from "./focus";
 
 // Global listener management
 export {
   createGlobalListeners,
   addGlobalListenerOnce,
   type GlobalListenerOptions,
-} from './globalListeners';
+} from "./globalListeners";
 
 // Environment detection
-export { isTestEnv, isDevEnv, isProdEnv } from './env';
+export { isTestEnv, isDevEnv, isProdEnv } from "./env";
 
 // Description utility for aria-describedby
 export {
@@ -77,4 +77,4 @@ export {
   type DescriptionProps,
   getDescriptionNodeCount,
   clearDescriptionNodes,
-} from './createDescription';
+} from "./createDescription";

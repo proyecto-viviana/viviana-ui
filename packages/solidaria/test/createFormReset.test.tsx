@@ -2,19 +2,19 @@
  * Tests for createFormReset utility.
  */
 
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, cleanup, fireEvent } from '@solidjs/testing-library';
-import { createSignal } from 'solid-js';
-import { createFormReset } from '../src/form/createFormReset';
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { render, cleanup, fireEvent } from "@solidjs/testing-library";
+import { createSignal } from "solid-js";
+import { createFormReset } from "../src/form/createFormReset";
 
 afterEach(() => {
   cleanup();
 });
 
-describe('createFormReset', () => {
-  it('should reset value when form is reset', () => {
+describe("createFormReset", () => {
+  it("should reset value when form is reset", () => {
     const onReset = vi.fn();
-    const defaultValue = 'default-value';
+    const defaultValue = "default-value";
 
     render(() => {
       let inputRef: HTMLInputElement | undefined;
@@ -37,9 +37,9 @@ describe('createFormReset', () => {
     expect(onReset).toHaveBeenCalledWith(defaultValue);
   });
 
-  it('should handle objects as default values', () => {
+  it("should handle objects as default values", () => {
     const onReset = vi.fn();
-    const defaultValue = { id: 'default', name: 'Default Item' };
+    const defaultValue = { id: "default", name: "Default Item" };
 
     render(() => {
       let inputRef: HTMLInputElement | undefined;
@@ -59,13 +59,13 @@ describe('createFormReset', () => {
     expect(onReset).toHaveBeenCalledWith(defaultValue);
   });
 
-  it('should not reset when element has no form', () => {
+  it("should not reset when element has no form", () => {
     const onReset = vi.fn();
 
     render(() => {
       let inputRef: HTMLInputElement | undefined;
 
-      createFormReset(() => inputRef, 'default', onReset);
+      createFormReset(() => inputRef, "default", onReset);
 
       // Input not wrapped in a form
       return <input ref={(el) => (inputRef = el)} type="text" />;
@@ -75,14 +75,14 @@ describe('createFormReset', () => {
     expect(onReset).not.toHaveBeenCalled();
   });
 
-  it('should clean up event listener on unmount', () => {
+  it("should clean up event listener on unmount", () => {
     const onReset = vi.fn();
     let formRef: HTMLFormElement | undefined;
 
     const { unmount } = render(() => {
       let inputRef: HTMLInputElement | undefined;
 
-      createFormReset(() => inputRef, 'default', onReset);
+      createFormReset(() => inputRef, "default", onReset);
 
       return (
         <form ref={(el) => (formRef = el)}>
@@ -99,13 +99,13 @@ describe('createFormReset', () => {
     expect(onReset).not.toHaveBeenCalled();
   });
 
-  it('should work with select elements', () => {
+  it("should work with select elements", () => {
     const onReset = vi.fn();
 
     render(() => {
       let selectRef: HTMLSelectElement | undefined;
 
-      createFormReset(() => selectRef, 'option1', onReset);
+      createFormReset(() => selectRef, "option1", onReset);
 
       return (
         <form data-testid="form">
@@ -120,16 +120,16 @@ describe('createFormReset', () => {
     const form = document.querySelector('[data-testid="form"]') as HTMLFormElement;
     fireEvent.reset(form);
 
-    expect(onReset).toHaveBeenCalledWith('option1');
+    expect(onReset).toHaveBeenCalledWith("option1");
   });
 
-  it('should work with textarea elements', () => {
+  it("should work with textarea elements", () => {
     const onReset = vi.fn();
 
     render(() => {
       let textareaRef: HTMLTextAreaElement | undefined;
 
-      createFormReset(() => textareaRef, 'default text', onReset);
+      createFormReset(() => textareaRef, "default text", onReset);
 
       return (
         <form data-testid="form">
@@ -141,16 +141,16 @@ describe('createFormReset', () => {
     const form = document.querySelector('[data-testid="form"]') as HTMLFormElement;
     fireEvent.reset(form);
 
-    expect(onReset).toHaveBeenCalledWith('default text');
+    expect(onReset).toHaveBeenCalledWith("default text");
   });
 
-  it('should handle multiple resets', () => {
+  it("should handle multiple resets", () => {
     const onReset = vi.fn();
 
     render(() => {
       let inputRef: HTMLInputElement | undefined;
 
-      createFormReset(() => inputRef, 'default', onReset);
+      createFormReset(() => inputRef, "default", onReset);
 
       return (
         <form data-testid="form">
@@ -168,7 +168,7 @@ describe('createFormReset', () => {
     expect(onReset).toHaveBeenCalledTimes(3);
   });
 
-  it('should handle null/undefined default values', () => {
+  it("should handle null/undefined default values", () => {
     const onReset = vi.fn();
 
     render(() => {

@@ -3,32 +3,32 @@
  * Simplified from @react-stately/collections for SolidJS.
  */
 
-import type { JSX } from 'solid-js';
+import type { JSX } from "solid-js";
 
 /** A unique identifier for an item in a collection. */
 export type Key = string | number;
 
 /** The type of selection allowed in a collection. */
-export type SelectionMode = 'none' | 'single' | 'multiple';
+export type SelectionMode = "none" | "single" | "multiple";
 
 /** How selection behaves when clicking on items. */
-export type SelectionBehavior = 'toggle' | 'replace';
+export type SelectionBehavior = "toggle" | "replace";
 
 /** Represents the current selection state. */
-export type Selection = 'all' | Set<Key>;
+export type Selection = "all" | Set<Key>;
 
 /** Strategy for focusing first or last item. */
-export type FocusStrategy = 'first' | 'last';
+export type FocusStrategy = "first" | "last";
 
 /** Whether disabled keys affect selection, actions, or both. */
-export type DisabledBehavior = 'selection' | 'all';
+export type DisabledBehavior = "selection" | "all";
 
 /**
  * Represents a node in a collection (item or section).
  */
 export interface CollectionNode<T = unknown> {
   /** The type of node: 'item' or 'section'. */
-  type: 'item' | 'section';
+  type: "item" | "section";
   /** A unique key for the node. */
   key: Key;
   /** The original value/data for this node. */
@@ -50,7 +50,7 @@ export interface CollectionNode<T = unknown> {
   /** Whether this item is disabled. */
   isDisabled?: boolean;
   /** ARIA label for this node. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Additional props for the node. */
   props?: Record<string, unknown>;
 }
@@ -115,7 +115,7 @@ export interface ItemProps<T = unknown> {
   /** The rendered content of the item. */
   children?: JSX.Element;
   /** ARIA label for the item. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The original value for dynamic collections. */
   value?: T;
 }
@@ -129,7 +129,7 @@ export interface SectionProps<T = unknown> {
   /** The section header/title. */
   title?: JSX.Element;
   /** ARIA label for the section. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The items in this section. */
   children?: JSX.Element;
   /** Items for dynamic rendering. */
@@ -171,9 +171,9 @@ export interface MultipleSelection {
   /** Whether empty selection is allowed. */
   disallowEmptySelection?: boolean;
   /** The currently selected keys (controlled). */
-  selectedKeys?: 'all' | Iterable<Key>;
+  selectedKeys?: "all" | Iterable<Key>;
   /** The default selected keys (uncontrolled). */
-  defaultSelectedKeys?: 'all' | Iterable<Key>;
+  defaultSelectedKeys?: "all" | Iterable<Key>;
   /** Handler called when selection changes. */
   onSelectionChange?: (keys: Selection) => void;
   /** Keys of disabled items. */

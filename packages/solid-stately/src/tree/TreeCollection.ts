@@ -6,8 +6,8 @@
  * Only visible nodes (root + expanded children) are included in iteration.
  */
 
-import type { Key } from '../collections/types';
-import type { TreeCollection as ITreeCollection, TreeNode, TreeItemData } from './types';
+import type { Key } from "../collections/types";
+import type { TreeCollection as ITreeCollection, TreeNode, TreeItemData } from "./types";
 
 /**
  * Creates a TreeCollection from hierarchical data.
@@ -19,10 +19,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
   private firstKey: Key | null = null;
   private lastKey: Key | null = null;
 
-  constructor(
-    items: TreeItemData<T>[],
-    expandedKeys: Set<Key>
-  ) {
+  constructor(items: TreeItemData<T>[], expandedKeys: Set<Key>) {
     this.buildCollection(items, expandedKeys);
   }
 
@@ -34,7 +31,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
       item: TreeItemData<T>,
       level: number,
       parentKey: Key | null,
-      indexInParent: number
+      indexInParent: number,
     ): TreeNode<T> => {
       const hasChildren = item.children && item.children.length > 0;
       const isExpanded = hasChildren && expandedKeys.has(item.key);
@@ -49,7 +46,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
       }
 
       const node: TreeNode<T> = {
-        type: 'item',
+        type: "item",
         key: item.key,
         value: item.value,
         textValue: item.textValue || String(item.key),
@@ -136,7 +133,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
     while (previousKey != null) {
       const candidate = this.keyMap.get(previousKey);
       if (!candidate) break;
-      if (candidate.type !== 'content') {
+      if (candidate.type !== "content") {
         return candidate.key;
       }
       previousKey = candidate.prevKey ?? null;
@@ -150,7 +147,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
     while (nextKey != null) {
       const candidate = this.keyMap.get(nextKey);
       if (!candidate) break;
-      if (candidate.type !== 'content') {
+      if (candidate.type !== "content") {
         return candidate.key;
       }
       nextKey = candidate.nextKey ?? null;
@@ -161,7 +158,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
   getFirstKey(): Key | null {
     if (this.firstKey == null) return null;
     const candidate = this.keyMap.get(this.firstKey);
-    if (candidate?.type === 'content') {
+    if (candidate?.type === "content") {
       return this.getKeyAfter(candidate.key);
     }
     return this.firstKey;
@@ -170,7 +167,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
   getLastKey(): Key | null {
     if (this.lastKey == null) return null;
     const candidate = this.keyMap.get(this.lastKey);
-    if (candidate?.type === 'content') {
+    if (candidate?.type === "content") {
       return this.getKeyBefore(candidate.key);
     }
     return this.lastKey;
@@ -183,7 +180,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
 
   getTextValue(key: Key): string {
     const node = this.keyMap.get(key);
-    return node?.textValue ?? '';
+    return node?.textValue ?? "";
   }
 
   getParentKey(key: Key): Key | null {
@@ -202,7 +199,7 @@ export class TreeCollection<T> implements ITreeCollection<T> {
  */
 export function createTreeCollection<T>(
   items: TreeItemData<T>[],
-  expandedKeys: Set<Key>
+  expandedKeys: Set<Key>,
 ): TreeCollection<T> {
   return new TreeCollection(items, expandedKeys);
 }

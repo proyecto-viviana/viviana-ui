@@ -3,14 +3,14 @@
  * Based on @react-aria/menu useMenuTrigger.
  */
 
-import { type JSX } from 'solid-js';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { OverlayTriggerState } from '@proyecto-viviana/solid-stately';
+import { type JSX } from "solid-js";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import type { OverlayTriggerState } from "@proyecto-viviana/solid-stately";
 
 export interface AriaMenuTriggerProps {
   /** The type of menu that the menu trigger opens. */
-  type?: 'menu' | 'listbox';
+  type?: "menu" | "listbox";
   /** Whether the menu trigger is disabled. */
   isDisabled?: boolean;
   /** An ID for the menu. */
@@ -32,7 +32,7 @@ export interface MenuTriggerAria {
  */
 export function createMenuTrigger(
   props: MaybeAccessor<AriaMenuTriggerProps>,
-  state: OverlayTriggerState
+  state: OverlayTriggerState,
 ): MenuTriggerAria {
   const getProps = () => access(props);
   const menuId = createId(getProps().id);
@@ -47,16 +47,16 @@ export function createMenuTrigger(
     if (getProps().isDisabled) return;
 
     switch (e.key) {
-      case 'Enter':
-      case ' ':
-      case 'ArrowDown': {
+      case "Enter":
+      case " ":
+      case "ArrowDown": {
         e.preventDefault();
         if (!state.isOpen()) {
           state.open();
         }
         break;
       }
-      case 'ArrowUp': {
+      case "ArrowUp": {
         e.preventDefault();
         if (!state.isOpen()) {
           state.open();
@@ -69,14 +69,14 @@ export function createMenuTrigger(
   return {
     get menuTriggerProps() {
       const p = getProps();
-      const type = p.type ?? 'menu';
+      const type = p.type ?? "menu";
       const isOpen = state.isOpen();
 
       return {
-        'aria-haspopup': type,
-        'aria-expanded': isOpen,
-        'aria-controls': isOpen ? menuId : undefined,
-        'aria-disabled': p.isDisabled || undefined,
+        "aria-haspopup": type,
+        "aria-expanded": isOpen,
+        "aria-controls": isOpen ? menuId : undefined,
+        "aria-disabled": p.isDisabled || undefined,
         onPress,
         onKeyDown,
       };

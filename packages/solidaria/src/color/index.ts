@@ -14,11 +14,11 @@ export type {
   ColorFieldAria,
   AriaColorSwatchOptions,
   ColorSwatchAria,
-} from './types';
+} from "./types";
 
 // Hooks
-export { createColorSlider } from './createColorSlider';
-export { createColorArea } from './createColorArea';
-export { createColorWheel } from './createColorWheel';
-export { createColorField } from './createColorField';
-export { createColorSwatch } from './createColorSwatch';
+export { createColorSlider } from "./createColorSlider";
+export { createColorArea } from "./createColorArea";
+export { createColorWheel } from "./createColorWheel";
+export { createColorField } from "./createColorField";
+export { createColorSwatch } from "./createColorSwatch";

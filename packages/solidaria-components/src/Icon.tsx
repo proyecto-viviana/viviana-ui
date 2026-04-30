@@ -9,13 +9,7 @@
  * The UI layer consumes this for styling/composition only.
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  Show,
-  splitProps,
-} from 'solid-js';
+import { type JSX, createContext, createMemo, Show, splitProps } from "solid-js";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -23,9 +17,9 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
-import { Button } from './Button';
-import type { PressEvent } from '@proyecto-viviana/solidaria';
+} from "./utils";
+import { Button } from "./Button";
+import type { PressEvent } from "@proyecto-viviana/solidaria";
 
 // ============================================
 // TYPES
@@ -42,9 +36,9 @@ export interface IconProps extends SlotProps {
   /** Handler called when the icon is pressed (makes it interactive). */
   onPress?: (e: PressEvent) => void;
   /** Accessible label for the icon. When provided, the icon is informative (role="img"). */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ID of an element that labels this icon. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The children of the component. A function may be provided to receive render props. */
   children?: RenderChildren<IconRenderProps>;
   /** The CSS className for the element. */
@@ -86,16 +80,16 @@ export const IconContext = createContext<IconProps | null>(null);
  */
 export function Icon(props: IconProps): JSX.Element {
   const [local, rest] = splitProps(props, [
-    'children',
-    'class',
-    'style',
-    'slot',
-    'onPress',
-    'aria-label',
-    'aria-labelledby',
+    "children",
+    "class",
+    "style",
+    "slot",
+    "onPress",
+    "aria-label",
+    "aria-labelledby",
   ]);
 
-  const hasLabel = () => !!(local['aria-label'] || local['aria-labelledby']);
+  const hasLabel = () => !!(local["aria-label"] || local["aria-labelledby"]);
   const isInteractive = () => !!local.onPress;
   const isDecorative = () => !hasLabel();
 
@@ -111,9 +105,9 @@ export function Icon(props: IconProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Icon',
+      defaultClassName: "solidaria-Icon",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
@@ -125,10 +119,10 @@ export function Icon(props: IconProps): JSX.Element {
       fallback={
         <span
           {...domProps()}
-          role={hasLabel() ? 'img' : undefined}
-          aria-hidden={isDecorative() ? 'true' : undefined}
-          aria-label={local['aria-label']}
-          aria-labelledby={local['aria-labelledby']}
+          role={hasLabel() ? "img" : undefined}
+          aria-hidden={isDecorative() ? "true" : undefined}
+          aria-label={local["aria-label"]}
+          aria-labelledby={local["aria-labelledby"]}
           class={renderProps.class()}
           style={renderProps.style()}
           data-interactive={undefined}
@@ -141,8 +135,8 @@ export function Icon(props: IconProps): JSX.Element {
       <Button
         {...domProps()}
         onPress={local.onPress}
-        aria-label={local['aria-label']}
-        aria-labelledby={local['aria-labelledby']}
+        aria-label={local["aria-label"]}
+        aria-labelledby={local["aria-labelledby"]}
         class={renderProps.class()}
         style={renderProps.style()}
         data-interactive=""

@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page, type TestInfo } from '@playwright/test';
+import { expect, test, type Locator, type Page, type TestInfo } from "@playwright/test";
 
 type DialogGeometry = {
   x: number;
@@ -9,27 +9,30 @@ type DialogGeometry = {
   visibleInViewport: boolean;
 };
 
-const dialogText = 'Dialog focus and dismissal are compared from this island.';
+const dialogText = "Dialog focus and dismissal are compared from this island.";
 const strictPairDiff = {
   maxMismatchRatio: 0,
   maxDimensionDelta: 0,
   pixelThreshold: 0,
 };
 
-async function frameworkCard(section: Locator, framework: 'React Spectrum stack' | 'Solidaria stack') {
-  const card = section.locator('.framework-card').filter({ hasText: framework });
+async function frameworkCard(
+  section: Locator,
+  framework: "React Spectrum stack" | "Solidaria stack",
+) {
+  const card = section.locator(".framework-card").filter({ hasText: framework });
   await expect(card).toHaveCount(1);
   return card;
 }
 
 async function openDialog(card: Locator) {
-  const trigger = card.getByRole('button', { name: 'Open Dialog' });
+  const trigger = card.getByRole("button", { name: "Open Dialog" });
   await expect(trigger).toBeVisible();
   await trigger.click();
 }
 
 async function closeButton(dialog: Locator) {
-  const button = dialog.getByRole('button', { name: /dismiss|close/i }).first();
+  const button = dialog.getByRole("button", { name: /dismiss|close/i }).first();
   await expect(button).toBeVisible();
   return button;
 }
@@ -44,11 +47,19 @@ async function compareElementScreenshots(
   pixelThreshold: number = strictPairDiff.pixelThreshold,
 ) {
   const [reactPng, solidPng] = await Promise.all([
-    reactElement.screenshot({ animations: 'disabled' }),
-    solidElement.screenshot({ animations: 'disabled' }),
+    reactElement.screenshot({ animations: "disabled" }),
+    solidElement.screenshot({ animations: "disabled" }),
   ]);
 
-  await compareScreenshots(page, reactPng, solidPng, label, maxMismatchRatio, maxDimensionDelta, pixelThreshold);
+  await compareScreenshots(
+    page,
+    reactPng,
+    solidPng,
+    label,
+    maxMismatchRatio,
+    maxDimensionDelta,
+    pixelThreshold,
+  );
 }
 
 async function compareScreenshots(
@@ -75,12 +86,12 @@ async function compareScreenshots(
       const width = Math.min(reactImage.width, solidImage.width);
       const height = Math.min(reactImage.height, solidImage.height);
 
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = width * 2;
       canvas.height = height;
-      const context = canvas.getContext('2d', { willReadFrequently: true });
+      const context = canvas.getContext("2d", { willReadFrequently: true });
       if (!context) {
-        throw new Error('Could not create canvas context for screenshot comparison');
+        throw new Error("Could not create canvas context for screenshot comparison");
       }
 
       context.drawImage(reactImage, 0, 0, width, height);
@@ -114,14 +125,19 @@ async function compareScreenshots(
       };
     },
     {
-      reactBase64: reactPng.toString('base64'),
-      solidBase64: solidPng.toString('base64'),
+      reactBase64: reactPng.toString("base64"),
+      solidBase64: solidPng.toString("base64"),
       pixelThreshold,
     },
   );
 
-  expect(Math.abs(result.width - result.comparedWidth), `${label} width delta`).toBeLessThanOrEqual(maxDimensionDelta);
-  expect(Math.abs(result.height - result.comparedHeight), `${label} height delta`).toBeLessThanOrEqual(maxDimensionDelta);
+  expect(Math.abs(result.width - result.comparedWidth), `${label} width delta`).toBeLessThanOrEqual(
+    maxDimensionDelta,
+  );
+  expect(
+    Math.abs(result.height - result.comparedHeight),
+    `${label} height delta`,
+  ).toBeLessThanOrEqual(maxDimensionDelta);
   expect(
     result.mismatchRatio,
     `${label} screenshot mismatch ratio ${result.mismatchRatio} exceeded ${maxMismatchRatio}`,
@@ -158,13 +174,13 @@ async function clickOutsideDialog(page: Page, dialog: Locator) {
 }
 
 async function expectTabFocusContained(page: Page, dialog: Locator) {
-  await page.keyboard.press('Tab');
-  const activeAfterFirstTab = dialog.page().locator(':focus');
+  await page.keyboard.press("Tab");
+  const activeAfterFirstTab = dialog.page().locator(":focus");
   await expect(activeAfterFirstTab).toBeVisible();
   await expect(dialog).toContainText(dialogText);
   expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
 
-  await page.keyboard.press('Tab');
+  await page.keyboard.press("Tab");
   expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
 }
 
@@ -186,7 +202,7 @@ async function expectDialogViewportUnoccluded(dialog: Locator) {
     });
   });
 
-  expect(occludedPoints, 'dialog should be topmost at sampled viewport points').toHaveLength(0);
+  expect(occludedPoints, "dialog should be topmost at sampled viewport points").toHaveLength(0);
 }
 
 function assertVisibleDialogGeometry(geometry: DialogGeometry) {
@@ -199,47 +215,57 @@ function assertVisibleDialogGeometry(geometry: DialogGeometry) {
   expect(geometry.y).toBeGreaterThan(40);
 }
 
-test.describe('comparison Dialog visual parity', () => {
-  test('React and Solid dialogs open visibly, stay in viewport, and dismiss', async ({ page }, testInfo: TestInfo) => {
-    await page.goto('/components/dialog/');
-    await page.waitForLoadState('networkidle');
+test.describe("comparison Dialog visual parity", () => {
+  test("React and Solid dialogs open visibly, stay in viewport, and dismiss", async ({
+    page,
+  }, testInfo: TestInfo) => {
+    await page.goto("/components/dialog/");
+    await page.waitForLoadState("networkidle");
 
-    await expect(page.locator('astro-island')).toHaveCount(0);
+    await expect(page.locator("astro-island")).toHaveCount(0);
 
-    const styledSection = page.locator('.layer-block').filter({
-      has: page.getByRole('heading', { name: 'Styled Layer' }),
+    const styledSection = page.locator(".layer-block").filter({
+      has: page.getByRole("heading", { name: "Styled Layer" }),
     });
     await expect(styledSection).toHaveCount(1);
     await styledSection.scrollIntoViewIfNeeded();
 
-    const reactCard = await frameworkCard(styledSection, 'React Spectrum stack');
-    const solidCard = await frameworkCard(styledSection, 'Solidaria stack');
-    const solidRoot = page.locator('.comparison-stack[data-comparison-open]').first();
-    const reactTrigger = reactCard.getByRole('button', { name: 'Open Dialog' });
-    const solidTrigger = solidCard.getByRole('button', { name: 'Open Dialog' });
+    const reactCard = await frameworkCard(styledSection, "React Spectrum stack");
+    const solidCard = await frameworkCard(styledSection, "Solidaria stack");
+    const solidRoot = page.locator(".comparison-stack[data-comparison-open]").first();
+    const reactTrigger = reactCard.getByRole("button", { name: "Open Dialog" });
+    const solidTrigger = solidCard.getByRole("button", { name: "Open Dialog" });
 
     await page.screenshot({
-      animations: 'disabled',
-      path: testInfo.outputPath('dialog-before-react-click.png'),
+      animations: "disabled",
+      path: testInfo.outputPath("dialog-before-react-click.png"),
     });
 
-    await expect(solidRoot).toHaveAttribute('data-comparison-open', 'false');
-    await expect(reactTrigger).toHaveScreenshot('dialog-trigger-react.png', { animations: 'disabled' });
-    await expect(solidTrigger).toHaveScreenshot('dialog-trigger-solid.png', { animations: 'disabled' });
-    await compareElementScreenshots(page, reactTrigger, solidTrigger, 'Dialog trigger');
+    await expect(solidRoot).toHaveAttribute("data-comparison-open", "false");
+    await expect(reactTrigger).toHaveScreenshot("dialog-trigger-react.png", {
+      animations: "disabled",
+    });
+    await expect(solidTrigger).toHaveScreenshot("dialog-trigger-solid.png", {
+      animations: "disabled",
+    });
+    await compareElementScreenshots(page, reactTrigger, solidTrigger, "Dialog trigger");
 
     await reactTrigger.hover();
-    const solidTriggerBorderBeforeHover = await solidTrigger.evaluate((node) => window.getComputedStyle(node as HTMLElement).borderColor);
+    const solidTriggerBorderBeforeHover = await solidTrigger.evaluate(
+      (node) => window.getComputedStyle(node as HTMLElement).borderColor,
+    );
     await solidTrigger.hover();
-    await expect(solidTrigger).toHaveAttribute('data-hovered', 'true');
+    await expect(solidTrigger).toHaveAttribute("data-hovered", "true");
     await expect
-      .poll(() => solidTrigger.evaluate((node) => window.getComputedStyle(node as HTMLElement).borderColor))
+      .poll(() =>
+        solidTrigger.evaluate((node) => window.getComputedStyle(node as HTMLElement).borderColor),
+      )
       .not.toBe(solidTriggerBorderBeforeHover);
 
     await openDialog(reactCard);
-    const reactDialog = page.getByRole('dialog', { name: 'Review Changes' });
+    const reactDialog = page.getByRole("dialog", { name: "Review Changes" });
     await expect(reactDialog).toBeVisible();
-    await expect(reactDialog.getByRole('heading', { name: 'Review Changes' })).toBeVisible();
+    await expect(reactDialog.getByRole("heading", { name: "Review Changes" })).toBeVisible();
     await expect(reactDialog.getByText(dialogText)).toBeVisible();
     const reactCloseButton = await closeButton(reactDialog);
 
@@ -247,11 +273,13 @@ test.describe('comparison Dialog visual parity', () => {
     assertVisibleDialogGeometry(reactGeometry);
     await expectDialogViewportUnoccluded(reactDialog);
     await page.screenshot({
-      animations: 'disabled',
-      path: testInfo.outputPath('dialog-after-react-click.png'),
+      animations: "disabled",
+      path: testInfo.outputPath("dialog-after-react-click.png"),
     });
-    await expect(reactDialog).toHaveScreenshot('dialog-surface-react.png', { animations: 'disabled' });
-    const reactDialogPng = await reactDialog.screenshot({ animations: 'disabled' });
+    await expect(reactDialog).toHaveScreenshot("dialog-surface-react.png", {
+      animations: "disabled",
+    });
+    const reactDialogPng = await reactDialog.screenshot({ animations: "disabled" });
     await expectTabFocusContained(page, reactDialog);
 
     await clickOutsideDialog(page, reactDialog);
@@ -263,21 +291,23 @@ test.describe('comparison Dialog visual parity', () => {
     await expect(reactDialog).toHaveCount(0);
 
     await openDialog(solidCard);
-    await expect(solidRoot).toHaveAttribute('data-comparison-open', 'true');
+    await expect(solidRoot).toHaveAttribute("data-comparison-open", "true");
 
-    const solidDialog = page.getByRole('dialog', { name: 'Review Changes' });
+    const solidDialog = page.getByRole("dialog", { name: "Review Changes" });
     await expect(solidDialog).toBeVisible();
     await expect(solidDialog).toHaveClass(/comparison-spectrum-Dialog/);
-    await expect(solidDialog.getByRole('heading', { name: 'Review Changes' })).toBeVisible();
+    await expect(solidDialog.getByRole("heading", { name: "Review Changes" })).toBeVisible();
     await expect(solidDialog.getByText(dialogText)).toBeVisible();
     await closeButton(solidDialog);
 
     const solidGeometry = await dialogGeometry(solidDialog);
     assertVisibleDialogGeometry(solidGeometry);
-    expect(solidGeometry.position).not.toBe('static');
-    await expect(solidDialog).toHaveScreenshot('dialog-surface-solid.png', { animations: 'disabled' });
-    const solidDialogPng = await solidDialog.screenshot({ animations: 'disabled' });
-    await compareScreenshots(page, reactDialogPng, solidDialogPng, 'Dialog surface');
+    expect(solidGeometry.position).not.toBe("static");
+    await expect(solidDialog).toHaveScreenshot("dialog-surface-solid.png", {
+      animations: "disabled",
+    });
+    const solidDialogPng = await solidDialog.screenshot({ animations: "disabled" });
+    await compareScreenshots(page, reactDialogPng, solidDialogPng, "Dialog surface");
     await expectTabFocusContained(page, solidDialog);
 
     expect(Math.abs(solidGeometry.x - reactGeometry.x)).toBeLessThanOrEqual(40);
@@ -286,16 +316,16 @@ test.describe('comparison Dialog visual parity', () => {
 
     await clickOutsideDialog(page, solidDialog);
     await expect(solidDialog).toHaveCount(0);
-    await expect(solidRoot).toHaveAttribute('data-comparison-open', 'false');
+    await expect(solidRoot).toHaveAttribute("data-comparison-open", "false");
 
     await openDialog(solidCard);
-    await expect(solidRoot).toHaveAttribute('data-comparison-open', 'true');
-    const solidDialogAfterOutsideDismiss = page.getByRole('dialog', { name: 'Review Changes' });
+    await expect(solidRoot).toHaveAttribute("data-comparison-open", "true");
+    const solidDialogAfterOutsideDismiss = page.getByRole("dialog", { name: "Review Changes" });
     await expect(solidDialogAfterOutsideDismiss).toBeVisible();
 
-    await page.keyboard.press('Escape');
+    await page.keyboard.press("Escape");
     await expect(solidDialogAfterOutsideDismiss).toHaveCount(0);
-    await expect(solidRoot).toHaveAttribute('data-comparison-open', 'false');
-    await expect(solidRoot).toHaveAttribute('data-comparison-focus-returned', 'true');
+    await expect(solidRoot).toHaveAttribute("data-comparison-open", "false");
+    await expect(solidRoot).toHaveAttribute("data-comparison-focus-returned", "true");
   });
 });

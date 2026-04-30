@@ -40,7 +40,7 @@ export function generatePowerset<T extends Record<string, unknown>>(
   function generate(index: number, current: Partial<T>, labels: string[]): void {
     if (index === keys.length) {
       result.push({
-        label: labels.join(', '),
+        label: labels.join(", "),
         props: { ...current },
       });
       return;
@@ -50,11 +50,10 @@ export function generatePowerset<T extends Record<string, unknown>>(
     const values = propValues[key]!;
 
     for (const value of values) {
-      generate(
-        index + 1,
-        { ...current, [key]: value },
-        [...labels, `${String(key)}=${String(value)}`],
-      );
+      generate(index + 1, { ...current, [key]: value }, [
+        ...labels,
+        `${String(key)}=${String(value)}`,
+      ]);
     }
   }
 

@@ -7,15 +7,15 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { fireEvent, render, waitFor, cleanup } from '@solidjs/testing-library';
-import { FocusScope } from '../src/focus/FocusScope';
-import { Portal } from 'solid-js/web';
-import userEvent from '@testing-library/user-event';
-import { pointerMap } from '@proyecto-viviana/solidaria-test-utils';
-import { createSignal, Show } from 'solid-js';
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { fireEvent, render, waitFor, cleanup } from "@solidjs/testing-library";
+import { FocusScope } from "../src/focus/FocusScope";
+import { Portal } from "solid-js/web";
+import userEvent from "@testing-library/user-event";
+import { pointerMap } from "@proyecto-viviana/solidaria-test-utils";
+import { createSignal, Show } from "solid-js";
 
-describe('FocusScope (ownerDocument)', () => {
+describe("FocusScope (ownerDocument)", () => {
   let iframe: HTMLIFrameElement;
   let iframeRoot: HTMLDivElement;
 
@@ -24,10 +24,10 @@ describe('FocusScope (ownerDocument)', () => {
   };
 
   beforeEach(() => {
-    iframe = document.createElement('iframe');
+    iframe = document.createElement("iframe");
     window.document.body.appendChild(iframe);
     const iframeDocument = iframe.contentWindow!.document;
-    iframeRoot = iframeDocument.createElement('div');
+    iframeRoot = iframeDocument.createElement("div");
     iframeDocument.body.appendChild(iframeRoot);
   });
 
@@ -36,8 +36,8 @@ describe('FocusScope (ownerDocument)', () => {
     iframe.remove();
   });
 
-  describe('focus containment', () => {
-    it('should contain focus within the scope', async () => {
+  describe("focus containment", () => {
+    it("should contain focus within the scope", async () => {
       render(() => (
         <IframeExample>
           <FocusScope contain>
@@ -51,16 +51,26 @@ describe('FocusScope (ownerDocument)', () => {
       await waitFor(() => {
         expect(
           document
-            .querySelector('iframe')!
-            .contentWindow!.document.body.querySelector('input[data-testid="input1"]')
+            .querySelector("iframe")!
+            .contentWindow!.document.body.querySelector('input[data-testid="input1"]'),
         ).toBeTruthy();
       });
 
       const iframeDocument = iframe.contentWindow!.document;
-      const user = userEvent.setup({ delay: null, pointerMap: pointerMap as any, document: iframeDocument });
-      const input1 = iframeDocument.querySelector('input[data-testid="input1"]') as HTMLInputElement;
-      const input2 = iframeDocument.querySelector('input[data-testid="input2"]') as HTMLInputElement;
-      const input3 = iframeDocument.querySelector('input[data-testid="input3"]') as HTMLInputElement;
+      const user = userEvent.setup({
+        delay: null,
+        pointerMap: pointerMap as any,
+        document: iframeDocument,
+      });
+      const input1 = iframeDocument.querySelector(
+        'input[data-testid="input1"]',
+      ) as HTMLInputElement;
+      const input2 = iframeDocument.querySelector(
+        'input[data-testid="input2"]',
+      ) as HTMLInputElement;
+      const input3 = iframeDocument.querySelector(
+        'input[data-testid="input3"]',
+      ) as HTMLInputElement;
 
       input1.focus();
       expect(iframeDocument.activeElement).toBe(input1);
@@ -78,7 +88,7 @@ describe('FocusScope (ownerDocument)', () => {
       expect(iframeDocument.activeElement).toBe(input3);
     });
 
-    it('focus properly moves into child iframe on click', async () => {
+    it("focus properly moves into child iframe on click", async () => {
       render(() => (
         <IframeExample>
           <FocusScope contain>
@@ -91,14 +101,18 @@ describe('FocusScope (ownerDocument)', () => {
       await waitFor(() => {
         expect(
           document
-            .querySelector('iframe')!
-            .contentWindow!.document.body.querySelector('input[data-testid="input1"]')
+            .querySelector("iframe")!
+            .contentWindow!.document.body.querySelector('input[data-testid="input1"]'),
         ).toBeTruthy();
       });
 
       const iframeDocument = iframe.contentWindow!.document;
-      const input1 = iframeDocument.querySelector('input[data-testid="input1"]') as HTMLInputElement;
-      const input2 = iframeDocument.querySelector('input[data-testid="input2"]') as HTMLInputElement;
+      const input1 = iframeDocument.querySelector(
+        'input[data-testid="input1"]',
+      ) as HTMLInputElement;
+      const input2 = iframeDocument.querySelector(
+        'input[data-testid="input2"]',
+      ) as HTMLInputElement;
 
       input1.focus();
       fireEvent.focusIn(input1);
@@ -110,8 +124,8 @@ describe('FocusScope (ownerDocument)', () => {
     });
   });
 
-  describe('focus restoration', () => {
-    it('should restore focus to the previously focused node on unmount', async () => {
+  describe("focus restoration", () => {
+    it("should restore focus to the previously focused node on unmount", async () => {
       const [show, setShow] = createSignal(false);
 
       const Test = () => (
@@ -130,7 +144,7 @@ describe('FocusScope (ownerDocument)', () => {
       );
 
       const { getByTestId } = render(() => <Test />);
-      const outside = getByTestId('outside') as HTMLInputElement;
+      const outside = getByTestId("outside") as HTMLInputElement;
       outside.focus();
 
       setShow(true);
@@ -138,14 +152,16 @@ describe('FocusScope (ownerDocument)', () => {
       await waitFor(() => {
         expect(
           document
-            .querySelector('iframe')!
-            .contentWindow!.document.body.querySelector('input[data-testid="input1"]')
+            .querySelector("iframe")!
+            .contentWindow!.document.body.querySelector('input[data-testid="input1"]'),
         ).toBeTruthy();
       });
 
       // AutoFocus should move focus into the iframe scope
       const iframeDocument = iframe.contentWindow!.document;
-      const input1 = iframeDocument.querySelector('input[data-testid="input1"]') as HTMLInputElement;
+      const input1 = iframeDocument.querySelector(
+        'input[data-testid="input1"]',
+      ) as HTMLInputElement;
       expect(iframeDocument.activeElement).toBe(input1);
 
       setShow(false);
@@ -154,4 +170,3 @@ describe('FocusScope (ownerDocument)', () => {
     });
   });
 });
-

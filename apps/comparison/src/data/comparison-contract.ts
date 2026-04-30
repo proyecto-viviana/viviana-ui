@@ -30,8 +30,7 @@ export const comparisonTabItems = [
   {
     id: "parity",
     label: "Parity",
-    content:
-      "Collection composition is the main remaining styled-layer nuance.",
+    content: "Collection composition is the main remaining styled-layer nuance.",
   },
   {
     id: "testing",
@@ -75,11 +74,7 @@ export const comparisonSpectrumSkin = {
   selectOptionClass: "solidaria-Select-option comparison-spectrum-Select-option",
 } as const;
 
-const nativeSolidSpectrumStyledSlugs = new Set<ComparisonSlug>([
-  "provider",
-  "tabs",
-  "toast",
-]);
+const nativeSolidSpectrumStyledSlugs = new Set<ComparisonSlug>(["provider", "tabs", "toast"]);
 
 export function getComparisonReferenceKind(
   framework: ComparisonFramework,
@@ -91,15 +86,11 @@ export function getComparisonReferenceKind(
       return "react-spectrum";
     }
 
-    return nativeSolidSpectrumStyledSlugs.has(componentSlug)
-      ? "solid-spectrum"
-      : "spectrum-skin";
+    return nativeSolidSpectrumStyledSlugs.has(componentSlug) ? "solid-spectrum" : "spectrum-skin";
   }
 
   if (layer === "components") {
-    return framework === "react"
-      ? "react-aria-components"
-      : "solidaria-components";
+    return framework === "react" ? "react-aria-components" : "solidaria-components";
   }
 
   if (layer === "headless") {

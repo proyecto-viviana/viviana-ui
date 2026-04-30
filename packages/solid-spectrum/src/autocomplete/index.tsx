@@ -5,7 +5,7 @@
  * UI layer owns styling only; behavior lives in solidaria layers.
  */
 
-import { type JSX, splitProps } from 'solid-js'
+import { type JSX, splitProps } from "solid-js";
 import {
   ComboBox,
   ComboBoxInput,
@@ -14,51 +14,53 @@ import {
   ComboBoxOption,
   type FilterFn,
   type Key,
-} from '../combobox'
+} from "../combobox";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type SearchAutocompleteSize = 'sm' | 'md' | 'lg'
+export type SearchAutocompleteSize = "sm" | "md" | "lg";
 
 export interface SearchAutocompleteItem {
-  id: string
-  name: string
-  [key: string]: unknown
+  id: string;
+  name: string;
+  [key: string]: unknown;
 }
 
-export interface SearchAutocompleteProps<T extends SearchAutocompleteItem = SearchAutocompleteItem> {
+export interface SearchAutocompleteProps<
+  T extends SearchAutocompleteItem = SearchAutocompleteItem,
+> {
   /** The items to display in the dropdown. */
-  items: T[]
+  items: T[];
   /** The size of the autocomplete. @default 'md' */
-  size?: SearchAutocompleteSize
+  size?: SearchAutocompleteSize;
   /** Placeholder text for the input. */
-  placeholder?: string
+  placeholder?: string;
   /** Accessible label for the input. */
-  'aria-label'?: string
+  "aria-label"?: string;
   /** Label text shown above the input. */
-  label?: string
+  label?: string;
   /** Description text shown below the input. */
-  description?: string
+  description?: string;
   /** The current input value (controlled). */
-  inputValue?: string
+  inputValue?: string;
   /** The default input value (uncontrolled). */
-  defaultInputValue?: string
+  defaultInputValue?: string;
   /** Handler called when the input value changes. */
-  onInputChange?: (value: string) => void
+  onInputChange?: (value: string) => void;
   /** Handler called when an item is selected. */
-  onSelect?: (item: T) => void
+  onSelect?: (item: T) => void;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Whether the input is disabled. */
-  isDisabled?: boolean
+  isDisabled?: boolean;
   /** Custom filter function. */
-  filter?: FilterFn
+  filter?: FilterFn;
   /** Custom render function for items. */
-  renderItem?: (item: T) => JSX.Element
+  renderItem?: (item: T) => JSX.Element;
   /** Key to use for the display text. @default 'name' */
-  textKey?: keyof T
+  textKey?: keyof T;
 }
 
 // ============================================
@@ -67,15 +69,15 @@ export interface SearchAutocompleteProps<T extends SearchAutocompleteItem = Sear
 
 const sizeStyles = {
   sm: {
-    container: 'text-sm',
+    container: "text-sm",
   },
   md: {
-    container: 'text-base',
+    container: "text-base",
   },
   lg: {
-    container: 'text-lg',
+    container: "text-lg",
   },
-}
+};
 
 // ============================================
 // SEARCH AUTOCOMPLETE COMPONENT
@@ -85,48 +87,52 @@ const sizeStyles = {
  * A styled autocomplete component for searching and selecting from a list.
  */
 export function SearchAutocomplete<T extends SearchAutocompleteItem = SearchAutocompleteItem>(
-  props: SearchAutocompleteProps<T>
+  props: SearchAutocompleteProps<T>,
 ): JSX.Element {
   const [local, comboBoxProps] = splitProps(props, [
-    'items',
-    'size',
-    'placeholder',
-    'aria-label',
-    'label',
-    'description',
-    'onSelect',
-    'class',
-    'isDisabled',
-    'renderItem',
-    'textKey',
-  ])
+    "items",
+    "size",
+    "placeholder",
+    "aria-label",
+    "label",
+    "description",
+    "onSelect",
+    "class",
+    "isDisabled",
+    "renderItem",
+    "textKey",
+  ]);
 
-  const size = () => local.size ?? 'md'
-  const textKey = () => (local.textKey ?? 'name') as keyof T
-  const styles = () => sizeStyles[size()]
+  const size = () => local.size ?? "md";
+  const textKey = () => (local.textKey ?? "name") as keyof T;
+  const styles = () => sizeStyles[size()];
 
   const getTextValue = (item: T): string => {
-    const text = item[textKey()] ?? item.name
-    return String(text ?? '')
-  }
+    const text = item[textKey()] ?? item.name;
+    return String(text ?? "");
+  };
 
   const handleSelectionChange = (key: Key | null) => {
-    if (key == null) return
-    const selected = local.items.find((item) => String(item.id) === String(key))
+    if (key == null) return;
+    const selected = local.items.find((item) => String(item.id) === String(key));
     if (selected) {
-      local.onSelect?.(selected)
+      local.onSelect?.(selected);
     }
-  }
+  };
 
   return (
-    <div class={['vui-search-autocomplete relative', styles().container, local.class].filter(Boolean).join(' ')}>
+    <div
+      class={["vui-search-autocomplete relative", styles().container, local.class]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <ComboBox<T>
         {...comboBoxProps}
         items={local.items}
         size={size()}
         label={local.label}
         description={local.description}
-        aria-label={local['aria-label']}
+        aria-label={local["aria-label"]}
         placeholder={local.placeholder}
         isDisabled={local.isDisabled}
         defaultFilter={comboBoxProps.filter}
@@ -147,5 +153,5 @@ export function SearchAutocomplete<T extends SearchAutocompleteItem = SearchAuto
         </ComboBoxListBox>
       </ComboBox>
     </div>
-  )
+  );
 }

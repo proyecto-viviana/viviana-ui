@@ -3,13 +3,16 @@
  *
  * Based on @react-stately/disclosure useDisclosureState and useDisclosureGroupState.
  */
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
-import { createDisclosureState, createDisclosureGroupState } from '../src/disclosure/createDisclosureState';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot, createSignal } from "solid-js";
+import {
+  createDisclosureState,
+  createDisclosureGroupState,
+} from "../src/disclosure/createDisclosureState";
 
-describe('createDisclosureState', () => {
-  describe('basic state management', () => {
-    it('should default to collapsed', () => {
+describe("createDisclosureState", () => {
+  describe("basic state management", () => {
+    it("should default to collapsed", () => {
       createRoot((dispose) => {
         const state = createDisclosureState();
 
@@ -19,10 +22,10 @@ describe('createDisclosureState', () => {
       });
     });
 
-    it('should use defaultExpanded for initial value', () => {
+    it("should use defaultExpanded for initial value", () => {
       createRoot((dispose) => {
         const state = createDisclosureState({
-          defaultExpanded: true
+          defaultExpanded: true,
         });
 
         expect(state.isExpanded()).toBe(true);
@@ -31,10 +34,10 @@ describe('createDisclosureState', () => {
       });
     });
 
-    it('should use isExpanded for controlled mode', () => {
+    it("should use isExpanded for controlled mode", () => {
       createRoot((dispose) => {
         const state = createDisclosureState({
-          isExpanded: true
+          isExpanded: true,
         });
 
         expect(state.isExpanded()).toBe(true);
@@ -44,8 +47,8 @@ describe('createDisclosureState', () => {
     });
   });
 
-  describe('expand and collapse', () => {
-    it('should expand', () => {
+  describe("expand and collapse", () => {
+    it("should expand", () => {
       createRoot((dispose) => {
         const state = createDisclosureState();
 
@@ -57,10 +60,10 @@ describe('createDisclosureState', () => {
       });
     });
 
-    it('should collapse', () => {
+    it("should collapse", () => {
       createRoot((dispose) => {
         const state = createDisclosureState({
-          defaultExpanded: true
+          defaultExpanded: true,
         });
 
         expect(state.isExpanded()).toBe(true);
@@ -71,7 +74,7 @@ describe('createDisclosureState', () => {
       });
     });
 
-    it('should toggle', () => {
+    it("should toggle", () => {
       createRoot((dispose) => {
         const state = createDisclosureState();
 
@@ -85,7 +88,7 @@ describe('createDisclosureState', () => {
       });
     });
 
-    it('should set expanded state directly', () => {
+    it("should set expanded state directly", () => {
       createRoot((dispose) => {
         const state = createDisclosureState();
 
@@ -100,8 +103,8 @@ describe('createDisclosureState', () => {
     });
   });
 
-  describe('onChange callback', () => {
-    it('should call onExpandedChange when expanding', () => {
+  describe("onChange callback", () => {
+    it("should call onExpandedChange when expanding", () => {
       createRoot((dispose) => {
         const onExpandedChange = vi.fn();
         const state = createDisclosureState({ onExpandedChange });
@@ -115,12 +118,12 @@ describe('createDisclosureState', () => {
       });
     });
 
-    it('should call onExpandedChange when collapsing', () => {
+    it("should call onExpandedChange when collapsing", () => {
       createRoot((dispose) => {
         const onExpandedChange = vi.fn();
         const state = createDisclosureState({
           defaultExpanded: true,
-          onExpandedChange
+          onExpandedChange,
         });
 
         state.collapse();
@@ -132,7 +135,7 @@ describe('createDisclosureState', () => {
       });
     });
 
-    it('should call onExpandedChange when toggling', () => {
+    it("should call onExpandedChange when toggling", () => {
       createRoot((dispose) => {
         const onExpandedChange = vi.fn();
         const state = createDisclosureState({ onExpandedChange });
@@ -150,13 +153,13 @@ describe('createDisclosureState', () => {
     });
   });
 
-  describe('controlled mode', () => {
-    it('should not update internal state in controlled mode', () => {
+  describe("controlled mode", () => {
+    it("should not update internal state in controlled mode", () => {
       createRoot((dispose) => {
         const onExpandedChange = vi.fn();
         const state = createDisclosureState({
           isExpanded: false,
-          onExpandedChange
+          onExpandedChange,
         });
 
         state.expand();
@@ -170,11 +173,13 @@ describe('createDisclosureState', () => {
       });
     });
 
-    it('should be possible to control the value', () => {
+    it("should be possible to control the value", () => {
       createRoot((dispose) => {
         const [isExpanded, setIsExpanded] = createSignal(false);
         const state = createDisclosureState({
-          get isExpanded() { return isExpanded(); }
+          get isExpanded() {
+            return isExpanded();
+          },
         });
 
         expect(state.isExpanded()).toBe(false);
@@ -191,9 +196,9 @@ describe('createDisclosureState', () => {
   });
 });
 
-describe('createDisclosureGroupState', () => {
-  describe('basic state management', () => {
-    it('should have no expanded keys by default', () => {
+describe("createDisclosureGroupState", () => {
+  describe("basic state management", () => {
+    it("should have no expanded keys by default", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState();
 
@@ -203,27 +208,27 @@ describe('createDisclosureGroupState', () => {
       });
     });
 
-    it('should use defaultExpandedKeys for initial state', () => {
+    it("should use defaultExpandedKeys for initial state", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState({
-          defaultExpandedKeys: ['key1', 'key2']
+          defaultExpandedKeys: ["key1", "key2"],
         });
 
-        expect(state.expandedKeys().has('key1')).toBe(true);
-        expect(state.expandedKeys().has('key2')).toBe(true);
+        expect(state.expandedKeys().has("key1")).toBe(true);
+        expect(state.expandedKeys().has("key2")).toBe(true);
         expect(state.expandedKeys().size).toBe(2);
 
         dispose();
       });
     });
 
-    it('should use expandedKeys for controlled mode', () => {
+    it("should use expandedKeys for controlled mode", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState({
-          expandedKeys: new Set(['key1'])
+          expandedKeys: new Set(["key1"]),
         });
 
-        expect(state.expandedKeys().has('key1')).toBe(true);
+        expect(state.expandedKeys().has("key1")).toBe(true);
         expect(state.expandedKeys().size).toBe(1);
 
         dispose();
@@ -231,46 +236,46 @@ describe('createDisclosureGroupState', () => {
     });
   });
 
-  describe('single selection mode (default)', () => {
-    it('should toggle key on and off', () => {
+  describe("single selection mode (default)", () => {
+    it("should toggle key on and off", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState();
 
-        state.toggleKey('key1');
-        expect(state.isExpanded('key1')).toBe(true);
+        state.toggleKey("key1");
+        expect(state.isExpanded("key1")).toBe(true);
 
-        state.toggleKey('key1');
-        expect(state.isExpanded('key1')).toBe(false);
+        state.toggleKey("key1");
+        expect(state.isExpanded("key1")).toBe(false);
 
         dispose();
       });
     });
 
-    it('should collapse previous item when expanding new one', () => {
+    it("should collapse previous item when expanding new one", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState();
 
-        state.toggleKey('key1');
-        expect(state.isExpanded('key1')).toBe(true);
+        state.toggleKey("key1");
+        expect(state.isExpanded("key1")).toBe(true);
         expect(state.expandedKeys().size).toBe(1);
 
-        state.toggleKey('key2');
-        expect(state.isExpanded('key1')).toBe(false);
-        expect(state.isExpanded('key2')).toBe(true);
+        state.toggleKey("key2");
+        expect(state.isExpanded("key1")).toBe(false);
+        expect(state.isExpanded("key2")).toBe(true);
         expect(state.expandedKeys().size).toBe(1);
 
         dispose();
       });
     });
 
-    it('should allow all items to be collapsed', () => {
+    it("should allow all items to be collapsed", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState();
 
-        state.toggleKey('key1');
+        state.toggleKey("key1");
         expect(state.expandedKeys().size).toBe(1);
 
-        state.toggleKey('key1');
+        state.toggleKey("key1");
         expect(state.expandedKeys().size).toBe(0);
 
         dispose();
@@ -278,39 +283,39 @@ describe('createDisclosureGroupState', () => {
     });
   });
 
-  describe('multiple selection mode', () => {
-    it('should allow multiple items to be expanded', () => {
+  describe("multiple selection mode", () => {
+    it("should allow multiple items to be expanded", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState({
-          allowsMultipleExpanded: true
+          allowsMultipleExpanded: true,
         });
 
-        state.toggleKey('key1');
-        state.toggleKey('key2');
-        state.toggleKey('key3');
+        state.toggleKey("key1");
+        state.toggleKey("key2");
+        state.toggleKey("key3");
 
-        expect(state.isExpanded('key1')).toBe(true);
-        expect(state.isExpanded('key2')).toBe(true);
-        expect(state.isExpanded('key3')).toBe(true);
+        expect(state.isExpanded("key1")).toBe(true);
+        expect(state.isExpanded("key2")).toBe(true);
+        expect(state.isExpanded("key3")).toBe(true);
         expect(state.expandedKeys().size).toBe(3);
 
         dispose();
       });
     });
 
-    it('should toggle individual items independently', () => {
+    it("should toggle individual items independently", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState({
-          allowsMultipleExpanded: true
+          allowsMultipleExpanded: true,
         });
 
-        state.toggleKey('key1');
-        state.toggleKey('key2');
+        state.toggleKey("key1");
+        state.toggleKey("key2");
         expect(state.expandedKeys().size).toBe(2);
 
-        state.toggleKey('key1');
-        expect(state.isExpanded('key1')).toBe(false);
-        expect(state.isExpanded('key2')).toBe(true);
+        state.toggleKey("key1");
+        expect(state.isExpanded("key1")).toBe(false);
+        expect(state.isExpanded("key2")).toBe(true);
         expect(state.expandedKeys().size).toBe(1);
 
         dispose();
@@ -318,67 +323,67 @@ describe('createDisclosureGroupState', () => {
     });
   });
 
-  describe('isExpanded method', () => {
-    it('should check if key is expanded', () => {
+  describe("isExpanded method", () => {
+    it("should check if key is expanded", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState({
-          defaultExpandedKeys: ['key1']
+          defaultExpandedKeys: ["key1"],
         });
 
-        expect(state.isExpanded('key1')).toBe(true);
-        expect(state.isExpanded('key2')).toBe(false);
-        expect(state.isExpanded('key3')).toBe(false);
+        expect(state.isExpanded("key1")).toBe(true);
+        expect(state.isExpanded("key2")).toBe(false);
+        expect(state.isExpanded("key3")).toBe(false);
 
         dispose();
       });
     });
   });
 
-  describe('setExpandedKeys', () => {
-    it('should replace all expanded keys', () => {
+  describe("setExpandedKeys", () => {
+    it("should replace all expanded keys", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState({
           allowsMultipleExpanded: true,
-          defaultExpandedKeys: ['key1', 'key2']
+          defaultExpandedKeys: ["key1", "key2"],
         });
 
         expect(state.expandedKeys().size).toBe(2);
 
-        state.setExpandedKeys(new Set(['key3', 'key4']));
+        state.setExpandedKeys(new Set(["key3", "key4"]));
 
-        expect(state.isExpanded('key1')).toBe(false);
-        expect(state.isExpanded('key2')).toBe(false);
-        expect(state.isExpanded('key3')).toBe(true);
-        expect(state.isExpanded('key4')).toBe(true);
+        expect(state.isExpanded("key1")).toBe(false);
+        expect(state.isExpanded("key2")).toBe(false);
+        expect(state.isExpanded("key3")).toBe(true);
+        expect(state.isExpanded("key4")).toBe(true);
 
         dispose();
       });
     });
   });
 
-  describe('onExpandedChange callback', () => {
-    it('should call onExpandedChange when keys change', () => {
+  describe("onExpandedChange callback", () => {
+    it("should call onExpandedChange when keys change", () => {
       createRoot((dispose) => {
         const onExpandedChange = vi.fn();
         const state = createDisclosureGroupState({ onExpandedChange });
 
-        state.toggleKey('key1');
+        state.toggleKey("key1");
 
-        expect(onExpandedChange).toHaveBeenCalledWith(new Set(['key1']));
+        expect(onExpandedChange).toHaveBeenCalledWith(new Set(["key1"]));
 
         dispose();
       });
     });
 
-    it('should call onExpandedChange with empty set when all collapsed', () => {
+    it("should call onExpandedChange with empty set when all collapsed", () => {
       createRoot((dispose) => {
         const onExpandedChange = vi.fn();
         const state = createDisclosureGroupState({
-          defaultExpandedKeys: ['key1'],
-          onExpandedChange
+          defaultExpandedKeys: ["key1"],
+          onExpandedChange,
         });
 
-        state.toggleKey('key1');
+        state.toggleKey("key1");
 
         expect(onExpandedChange).toHaveBeenCalledWith(new Set());
 
@@ -387,11 +392,11 @@ describe('createDisclosureGroupState', () => {
     });
   });
 
-  describe('disabled state', () => {
-    it('should expose isDisabled', () => {
+  describe("disabled state", () => {
+    it("should expose isDisabled", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState({
-          isDisabled: true
+          isDisabled: true,
         });
 
         expect(state.isDisabled).toBe(true);
@@ -400,7 +405,7 @@ describe('createDisclosureGroupState', () => {
       });
     });
 
-    it('should default isDisabled to false', () => {
+    it("should default isDisabled to false", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState();
 
@@ -411,11 +416,11 @@ describe('createDisclosureGroupState', () => {
     });
   });
 
-  describe('allowsMultipleExpanded accessor', () => {
-    it('should expose allowsMultipleExpanded', () => {
+  describe("allowsMultipleExpanded accessor", () => {
+    it("should expose allowsMultipleExpanded", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState({
-          allowsMultipleExpanded: true
+          allowsMultipleExpanded: true,
         });
 
         expect(state.allowsMultipleExpanded).toBe(true);
@@ -424,7 +429,7 @@ describe('createDisclosureGroupState', () => {
       });
     });
 
-    it('should default allowsMultipleExpanded to false', () => {
+    it("should default allowsMultipleExpanded to false", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState();
 
@@ -435,19 +440,19 @@ describe('createDisclosureGroupState', () => {
     });
   });
 
-  describe('controlled mode', () => {
-    it('should not update internal state in controlled mode', () => {
+  describe("controlled mode", () => {
+    it("should not update internal state in controlled mode", () => {
       createRoot((dispose) => {
         const onExpandedChange = vi.fn();
         const state = createDisclosureGroupState({
-          expandedKeys: new Set(['key1']),
-          onExpandedChange
+          expandedKeys: new Set(["key1"]),
+          onExpandedChange,
         });
 
-        state.toggleKey('key1');
+        state.toggleKey("key1");
 
         // Value should NOT change in controlled mode
-        expect(state.isExpanded('key1')).toBe(true);
+        expect(state.isExpanded("key1")).toBe(true);
         // But onExpandedChange should be called
         expect(onExpandedChange).toHaveBeenCalled();
 
@@ -455,33 +460,35 @@ describe('createDisclosureGroupState', () => {
       });
     });
 
-    it('should be possible to control the value', () => {
+    it("should be possible to control the value", () => {
       createRoot((dispose) => {
         const [expandedKeys, setExpandedKeys] = createSignal<Set<string>>(new Set());
         const state = createDisclosureGroupState({
-          get expandedKeys() { return expandedKeys(); }
+          get expandedKeys() {
+            return expandedKeys();
+          },
         });
 
         expect(state.expandedKeys().size).toBe(0);
 
-        setExpandedKeys(new Set(['key1']));
-        expect(state.isExpanded('key1')).toBe(true);
+        setExpandedKeys(new Set(["key1"]));
+        expect(state.isExpanded("key1")).toBe(true);
 
-        setExpandedKeys(new Set(['key2', 'key3']));
-        expect(state.isExpanded('key1')).toBe(false);
-        expect(state.isExpanded('key2')).toBe(true);
-        expect(state.isExpanded('key3')).toBe(true);
+        setExpandedKeys(new Set(["key2", "key3"]));
+        expect(state.isExpanded("key1")).toBe(false);
+        expect(state.isExpanded("key2")).toBe(true);
+        expect(state.isExpanded("key3")).toBe(true);
 
         dispose();
       });
     });
   });
 
-  describe('numeric keys', () => {
-    it('should support numeric keys', () => {
+  describe("numeric keys", () => {
+    it("should support numeric keys", () => {
       createRoot((dispose) => {
         const state = createDisclosureGroupState({
-          allowsMultipleExpanded: true
+          allowsMultipleExpanded: true,
         });
 
         state.toggleKey(1);

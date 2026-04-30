@@ -15,14 +15,14 @@ import {
   For,
   Index,
   Show,
-} from 'solid-js';
+} from "solid-js";
 import {
   createRangeCalendar,
   createCalendarGrid,
   createRangeCalendarCell,
   type AriaRangeCalendarProps,
   type AriaCalendarGridProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createRangeCalendarState,
   type RangeCalendarState,
@@ -32,7 +32,7 @@ import {
   type RangeValue,
   endOfMonth,
   isSameMonth,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -41,7 +41,7 @@ import {
   useRenderProps,
   dataAttr,
   useIsHydrated,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -57,8 +57,9 @@ export interface RangeCalendarRenderProps {
 }
 
 export interface RangeCalendarProps<T extends DateValue = DateValue>
-  extends Omit<AriaRangeCalendarProps, 'id' | 'isDisabled' | 'isReadOnly'>,
-    Omit<RangeCalendarStateProps<T>, 'locale'>,
+  extends
+    Omit<AriaRangeCalendarProps, "id" | "isDisabled" | "isReadOnly">,
+    Omit<RangeCalendarStateProps<T>, "locale">,
     SlotProps {
   /** The children of the component. */
   children?: JSX.Element;
@@ -75,7 +76,8 @@ export interface RangeCalendarGridRenderProps {
   isDisabled: boolean;
 }
 
-export interface RangeCalendarGridProps extends Omit<AriaCalendarGridProps, 'startDate' | 'endDate'>, SlotProps {
+export interface RangeCalendarGridProps
+  extends Omit<AriaCalendarGridProps, "startDate" | "endDate">, SlotProps {
   /** The children of the component (render function receiving dates). */
   children?: (date: CalendarDate) => JSX.Element;
   /** The CSS className for the element. */
@@ -131,7 +133,7 @@ const RangeCalendarGridMonthContext = createContext<CalendarDate | null>(null);
 export function useRangeCalendarContext(): RangeCalendarState<DateValue> {
   const context = useContext(RangeCalendarContext);
   if (!context) {
-    throw new Error('RangeCalendar components must be used within a RangeCalendar');
+    throw new Error("RangeCalendar components must be used within a RangeCalendar");
   }
   return context;
 }
@@ -158,7 +160,7 @@ export function useRangeCalendarContext(): RangeCalendarState<DateValue> {
  * ```
  */
 export function RangeCalendar<T extends DateValue = CalendarDate>(
-  props: RangeCalendarProps<T>
+  props: RangeCalendarProps<T>,
 ): JSX.Element {
   // Use hydration-safe pattern for client-only rendering
   const isHydrated = useIsHydrated();
@@ -166,7 +168,12 @@ export function RangeCalendar<T extends DateValue = CalendarDate>(
   return (
     <Show
       when={isHydrated()}
-      fallback={<div class="solidaria-RangeCalendar solidaria-RangeCalendar--placeholder" aria-hidden="true" />}
+      fallback={
+        <div
+          class="solidaria-RangeCalendar solidaria-RangeCalendar--placeholder"
+          aria-hidden="true"
+        />
+      }
     >
       <RangeCalendarInner {...props} />
     </Show>
@@ -177,30 +184,30 @@ export function RangeCalendar<T extends DateValue = CalendarDate>(
  * Internal RangeCalendar component that renders after client mount.
  */
 function RangeCalendarInner<T extends DateValue = CalendarDate>(
-  props: RangeCalendarProps<T>
+  props: RangeCalendarProps<T>,
 ): JSX.Element {
   const [local, stateProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
+    ["children", "class", "style", "slot"],
     [
-      'value',
-      'defaultValue',
-      'onChange',
-      'minValue',
-      'maxValue',
-      'isDisabled',
-      'isReadOnly',
-      'focusedValue',
-      'defaultFocusedValue',
-      'onFocusChange',
-      'locale',
-      'isDateUnavailable',
-      'visibleMonths',
-      'isDateDisabled',
-      'validationState',
-      'allowsNonContiguousRanges',
-      'firstDayOfWeek',
-    ]
+      "value",
+      "defaultValue",
+      "onChange",
+      "minValue",
+      "maxValue",
+      "isDisabled",
+      "isReadOnly",
+      "focusedValue",
+      "defaultFocusedValue",
+      "onFocusChange",
+      "locale",
+      "isDateUnavailable",
+      "visibleMonths",
+      "isDateDisabled",
+      "validationState",
+      "allowsNonContiguousRanges",
+      "firstDayOfWeek",
+    ],
   );
 
   // Create range calendar state
@@ -221,9 +228,9 @@ function RangeCalendarInner<T extends DateValue = CalendarDate>(
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-RangeCalendar',
+      defaultClassName: "solidaria-RangeCalendar",
     },
-    renderValues
+    renderValues,
   );
 
   return (
@@ -263,7 +270,7 @@ export function RangeCalendarHeading(props: RangeCalendarHeadingProps): JSX.Elem
 
   return (
     <h2
-      class={props.class ?? 'solidaria-RangeCalendarHeading'}
+      class={props.class ?? "solidaria-RangeCalendarHeading"}
       style={props.style}
       aria-live="polite"
     >
@@ -278,7 +285,7 @@ export function RangeCalendarHeading(props: RangeCalendarHeadingProps): JSX.Elem
 
 export interface RangeCalendarButtonProps extends SlotProps {
   /** The slot for this button (previous or next). */
-  slot?: 'previous' | 'next';
+  slot?: "previous" | "next";
   /** The children of the component. */
   children?: JSX.Element;
   /** The CSS className for the element. */
@@ -297,7 +304,7 @@ export function RangeCalendarButton(props: RangeCalendarButtonProps): JSX.Elemen
   const calendarAria = createRangeCalendar({}, state);
 
   const buttonProps = createMemo(() => {
-    if (props.slot === 'previous') {
+    if (props.slot === "previous") {
       return calendarAria.prevButtonProps;
     }
     return calendarAria.nextButtonProps;
@@ -306,7 +313,7 @@ export function RangeCalendarButton(props: RangeCalendarButtonProps): JSX.Elemen
   return (
     <button
       {...buttonProps()}
-      class={props.class ?? 'solidaria-RangeCalendarButton'}
+      class={props.class ?? "solidaria-RangeCalendarButton"}
       style={props.style}
       disabled={props.isDisabled || state.isDisabled()}
     >
@@ -339,7 +346,7 @@ export function RangeCalendarGrid(props: RangeCalendarGridProps): JSX.Element {
       weekdayStyle: props.weekdayStyle,
     },
     state as unknown as Parameters<typeof createCalendarGrid>[1],
-    gridRef
+    gridRef,
   );
 
   // Render props values
@@ -352,9 +359,9 @@ export function RangeCalendarGrid(props: RangeCalendarGridProps): JSX.Element {
     {
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-RangeCalendarGrid',
+      defaultClassName: "solidaria-RangeCalendarGrid",
     },
-    renderValues
+    renderValues,
   );
 
   // Memoize all dates for the grid to avoid reactive loops in render paths.
@@ -421,7 +428,7 @@ export function RangeCalendarCell(props: RangeCalendarCellProps): JSX.Element {
   const currentMonthStart = useContext(RangeCalendarGridMonthContext);
   const [cellRef, setCellRef] = createSignal<HTMLDivElement | null>(null);
   const isOutsideMonth = createMemo(
-    () => currentMonthStart != null && !isSameMonth(currentMonthStart, props.date)
+    () => currentMonthStart != null && !isSameMonth(currentMonthStart, props.date),
   );
 
   // Create cell ARIA props
@@ -431,7 +438,7 @@ export function RangeCalendarCell(props: RangeCalendarCellProps): JSX.Element {
       isOutsideMonth: isOutsideMonth(),
     }),
     state,
-    cellRef
+    cellRef,
   );
 
   // Render props values
@@ -454,14 +461,14 @@ export function RangeCalendarCell(props: RangeCalendarCellProps): JSX.Element {
       children: props.children,
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-RangeCalendarCell',
+      defaultClassName: "solidaria-RangeCalendarCell",
     },
-    renderValues
+    renderValues,
   );
 
   // Determine children content - avoid Show for SSR hydration compatibility
   const getChildren = () => {
-    if (typeof props.children === 'function') {
+    if (typeof props.children === "function") {
       return renderProps.renderChildren();
     }
     return cellAria.formattedDate;

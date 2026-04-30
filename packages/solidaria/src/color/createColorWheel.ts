@@ -4,10 +4,10 @@
  * Provides ARIA attributes and keyboard/pointer handling for a circular hue selector.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import type { ColorWheelState } from '@proyecto-viviana/solid-stately';
-import { createId } from '../ssr';
-import type { AriaColorWheelOptions, ColorWheelAria } from './types';
+import { createMemo, type Accessor } from "solid-js";
+import type { ColorWheelState } from "@proyecto-viviana/solid-stately";
+import { createId } from "../ssr";
+import type { AriaColorWheelOptions, ColorWheelAria } from "./types";
 
 /**
  * Creates ARIA props for a color wheel.
@@ -15,7 +15,7 @@ import type { AriaColorWheelOptions, ColorWheelAria } from './types';
 export function createColorWheel(
   props: Accessor<AriaColorWheelOptions>,
   state: Accessor<ColorWheelState>,
-  wheelRef: Accessor<HTMLDivElement | null>
+  wheelRef: Accessor<HTMLDivElement | null>,
 ): ColorWheelAria {
   const getProps = () => props();
   const getState = () => state();
@@ -77,24 +77,24 @@ export function createColorWheel(
     let handled = true;
 
     switch (e.key) {
-      case 'ArrowRight':
-      case 'ArrowUp':
+      case "ArrowRight":
+      case "ArrowUp":
         s.increment();
         break;
-      case 'ArrowLeft':
-      case 'ArrowDown':
+      case "ArrowLeft":
+      case "ArrowDown":
         s.decrement();
         break;
-      case 'PageUp':
+      case "PageUp":
         s.increment(s.pageStep);
         break;
-      case 'PageDown':
+      case "PageDown":
         s.decrement(s.pageStep);
         break;
-      case 'Home':
+      case "Home":
         s.setHue(0);
         break;
-      case 'End':
+      case "End":
         s.setHue(359);
         break;
       default:
@@ -116,22 +116,22 @@ export function createColorWheel(
     const p = getProps();
 
     return {
-      role: 'presentation' as const,
+      role: "presentation" as const,
       onPointerDown,
       onPointerMove,
       onPointerUp,
       style: {
-        position: 'relative' as const,
-        'touch-action': 'none',
-        'border-radius': '50%',
+        position: "relative" as const,
+        "touch-action": "none",
+        "border-radius": "50%",
         background: conicGradient,
         // Use radial-gradient mask to cut out center hole (creates ring shape)
         // 35% inner radius leaves a nice thick ring
-        '-webkit-mask-image': 'radial-gradient(circle, transparent 35%, black 36%)',
-        'mask-image': 'radial-gradient(circle, transparent 35%, black 36%)',
-        'forced-color-adjust': 'none' as const,
+        "-webkit-mask-image": "radial-gradient(circle, transparent 35%, black 36%)",
+        "mask-image": "radial-gradient(circle, transparent 35%, black 36%)",
+        "forced-color-adjust": "none" as const,
       },
-      'data-disabled': s.isDisabled || p.isDisabled || undefined,
+      "data-disabled": s.isDisabled || p.isDisabled || undefined,
     };
   });
 
@@ -148,18 +148,18 @@ export function createColorWheel(
     const thumbY = -Math.sin(angle); // Negative because CSS Y is inverted
 
     return {
-      role: 'presentation' as const,
+      role: "presentation" as const,
       style: {
-        position: 'absolute' as const,
+        position: "absolute" as const,
         // Position relative to center, scaled to radius
         // These will be overridden by the component with actual radius
         left: `calc(50% + ${thumbX * 50}%)`,
         top: `calc(50% + ${thumbY * 50}%)`,
-        transform: 'translate(-50%, -50%)',
-        'touch-action': 'none',
+        transform: "translate(-50%, -50%)",
+        "touch-action": "none",
       },
-      'data-dragging': s.isDragging || undefined,
-      'data-disabled': s.isDisabled || p.isDisabled || undefined,
+      "data-dragging": s.isDragging || undefined,
+      "data-disabled": s.isDisabled || p.isDisabled || undefined,
     };
   });
 
@@ -169,17 +169,17 @@ export function createColorWheel(
     const p = getProps();
 
     return {
-      type: 'range',
+      type: "range",
       id: inputId,
       min: 0,
       max: 360,
       step: s.step,
       value: s.getHue(),
       disabled: s.isDisabled || p.isDisabled,
-      'aria-label': p['aria-label'] ?? 'Hue',
-      'aria-labelledby': p['aria-labelledby'],
-      'aria-describedby': p['aria-describedby'],
-      'aria-valuetext': `${s.getHue()}°`,
+      "aria-label": p["aria-label"] ?? "Hue",
+      "aria-labelledby": p["aria-labelledby"],
+      "aria-describedby": p["aria-describedby"],
+      "aria-valuetext": `${s.getHue()}°`,
       onKeyDown,
       onChange: (e: Event) => {
         const target = e.target as HTMLInputElement;
@@ -191,15 +191,15 @@ export function createColorWheel(
         }
       },
       style: {
-        position: 'absolute' as const,
-        width: '1px',
-        height: '1px',
-        padding: '0',
-        margin: '-1px',
-        overflow: 'hidden',
-        clip: 'rect(0, 0, 0, 0)',
-        'white-space': 'nowrap',
-        border: '0',
+        position: "absolute" as const,
+        width: "1px",
+        height: "1px",
+        padding: "0",
+        margin: "-1px",
+        overflow: "hidden",
+        clip: "rect(0, 0, 0, 0)",
+        "white-space": "nowrap",
+        border: "0",
       },
     };
   });

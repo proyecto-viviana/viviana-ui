@@ -3,8 +3,8 @@
  * Based on @react-aria/grid types.
  */
 
-import type { JSX } from 'solid-js';
-import type { Key } from '@proyecto-viviana/solid-stately';
+import type { JSX } from "solid-js";
+import type { Key } from "@proyecto-viviana/solid-stately";
 
 /**
  * Keyboard delegate interface for grid navigation.
@@ -43,21 +43,21 @@ export interface GridProps {
   /** Custom keyboard delegate for navigation. */
   keyboardDelegate?: KeyboardDelegate;
   /** Whether focus should be on row or cell. */
-  focusMode?: 'row' | 'cell';
+  focusMode?: "row" | "cell";
   /** Handler for row actions. */
   onRowAction?: (key: Key) => void;
   /** Handler for cell actions. */
   onCellAction?: (key: Key) => void;
   /** Escape key behavior. */
-  escapeKeyBehavior?: 'clearSelection' | 'none';
+  escapeKeyBehavior?: "clearSelection" | "none";
   /** Whether selection should occur on press up. */
   shouldSelectOnPressUp?: boolean;
   /** ARIA label for the grid. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ARIA labelledby for the grid. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ARIA describedby for the grid. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
 }
 
 /**
@@ -111,7 +111,7 @@ export interface GridCellProps {
   /** Whether the grid is virtualized. */
   isVirtualized?: boolean;
   /** Whether to focus cell or child element. */
-  focusMode?: 'child' | 'cell';
+  focusMode?: "child" | "cell";
   /** Handler for cell action. */
   onAction?: () => void;
 }

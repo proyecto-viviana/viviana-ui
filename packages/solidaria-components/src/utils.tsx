@@ -14,8 +14,8 @@ import {
   createSignal,
   onMount,
   Show,
-} from 'solid-js';
-import { isServer } from 'solid-js/web';
+} from "solid-js";
+import { isServer } from "solid-js/web";
 
 // ============================================
 // TYPES
@@ -56,7 +56,7 @@ export interface SlotProps {
   slot?: string;
 }
 
-export const DEFAULT_SLOT = 'default';
+export const DEFAULT_SLOT = "default";
 
 // ============================================
 // RENDER PROPS
@@ -98,25 +98,23 @@ export interface RenderPropsResult<T> {
  */
 export function useRenderProps<T extends object>(
   props: RenderPropsBase<T> & { defaultClassName?: string },
-  values: Accessor<T>
+  values: Accessor<T>,
 ): RenderPropsResult<T> {
   // Don't destructure children — access lazily to avoid eager evaluation
   // that would trigger child component creation before context providers mount.
-  const { class: className, style, defaultClassName = '' } = props;
+  const { class: className, style, defaultClassName = "" } = props;
 
   // Compute class and style eagerly (they don't depend on context)
   const computedClass = createMemo(() => {
     const currentValues = values();
-    return typeof className === 'function'
+    return typeof className === "function"
       ? className(currentValues)
-      : className ?? defaultClassName;
+      : (className ?? defaultClassName);
   });
 
   const computedStyle = createMemo(() => {
     const currentValues = values();
-    return typeof style === 'function'
-      ? style(currentValues)
-      : style;
+    return typeof style === "function" ? style(currentValues) : style;
   });
 
   // Return object with explicit function for rendering children
@@ -127,18 +125,18 @@ export function useRenderProps<T extends object>(
     renderChildren: () => {
       const currentValues = values();
       const children = props.children;
-      return typeof children === 'function'
-        ? children(currentValues)
-        : children;
+      return typeof children === "function" ? children(currentValues) : children;
     },
-    get children() { return props.children; },
+    get children() {
+      return props.children;
+    },
     values,
   };
 }
 
 export function composeRenderProps<T extends object>(
   base: RenderPropsBase<T> | undefined,
-  override: RenderPropsBase<T> | undefined
+  override: RenderPropsBase<T> | undefined,
 ): RenderPropsBase<T> {
   if (!base) return override ?? {};
   if (!override) return base;
@@ -168,14 +166,16 @@ export function createSlottedContext<T>() {
 /**
  * Use context with null check
  */
-export function useSlottedContext<T>(context: ReturnType<typeof createContext<T | null>>): T | null {
+export function useSlottedContext<T>(
+  context: ReturnType<typeof createContext<T | null>>,
+): T | null {
   return useContext(context);
 }
 
 export function useContextProps<TProps extends object, TRef>(
   props: TProps,
   ref: TRef,
-  context?: ContextValue<Partial<TProps>>
+  context?: ContextValue<Partial<TProps>>,
 ): [TProps, TRef] {
   if (!context) return [props, ref];
   return [{ ...(context as TProps), ...props }, ref];
@@ -194,21 +194,21 @@ export const Provider: ParentComponent<{
 /**
  * Converts boolean state values to data attributes
  */
-export function dataAttr(value: boolean | undefined): '' | undefined {
-  return value ? '' : undefined;
+export function dataAttr(value: boolean | undefined): "" | undefined {
+  return value ? "" : undefined;
 }
 
 /**
  * Creates data attributes from render props
  */
 export function createDataAttributes<T extends Record<string, boolean | string | undefined>>(
-  values: T
+  values: T,
 ): Record<string, string | undefined> {
   const result: Record<string, string | undefined> = {};
 
   for (const [key, value] of Object.entries(values)) {
-    if (typeof value === 'boolean') {
-      result[`data-${camelToKebab(key)}`] = value ? '' : undefined;
+    if (typeof value === "boolean") {
+      result[`data-${camelToKebab(key)}`] = value ? "" : undefined;
     } else if (value !== undefined) {
       result[`data-${camelToKebab(key)}`] = value;
     }
@@ -218,7 +218,7 @@ export function createDataAttributes<T extends Record<string, boolean | string |
 }
 
 function camelToKebab(str: string): string {
-  return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+  return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
 // ============================================
@@ -232,7 +232,7 @@ export function removeDataAttributes<T extends Record<string, unknown>>(props: T
   const result: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(props)) {
-    if (!key.startsWith('data-')) {
+    if (!key.startsWith("data-")) {
       result[key] = value;
     }
   }
@@ -249,14 +249,25 @@ export function removeDataAttributes<T extends Record<string, unknown>>(props: T
  */
 export function filterDOMProps<R extends object = Record<string, unknown>>(
   props: object,
-  options: { global?: boolean } = {}
+  options: { global?: boolean } = {},
 ): R {
   const { global = false } = options;
   const result: Record<string, unknown> = {};
 
   const globalAttrs = new Set([
-    'id', 'class', 'style', 'tabIndex', 'role', 'title', 'lang', 'dir',
-    'hidden', 'draggable', 'accessKey', 'contentEditable', 'spellcheck',
+    "id",
+    "class",
+    "style",
+    "tabIndex",
+    "role",
+    "title",
+    "lang",
+    "dir",
+    "hidden",
+    "draggable",
+    "accessKey",
+    "contentEditable",
+    "spellcheck",
   ]);
 
   const ariaAttrs = /^aria-/;
@@ -266,12 +277,10 @@ export function filterDOMProps<R extends object = Record<string, unknown>>(
   for (const key in props) {
     if (
       Object.prototype.hasOwnProperty.call(props, key) &&
-      (
-        (global && globalAttrs.has(key)) ||
+      ((global && globalAttrs.has(key)) ||
         ariaAttrs.test(key) ||
         dataAttrs.test(key) ||
-        eventHandlers.test(key)
-      )
+        eventHandlers.test(key))
     ) {
       result[key] = (props as Record<string, unknown>)[key];
     }

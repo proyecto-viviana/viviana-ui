@@ -12,16 +12,13 @@ import {
   createMemo,
   splitProps,
   useContext,
-} from 'solid-js'
+} from "solid-js";
 import {
   createToolbar,
   type AriaToolbarProps,
   type Orientation,
-} from '@proyecto-viviana/solidaria'
-import {
-  type SlotProps,
-  filterDOMProps,
-} from './utils'
+} from "@proyecto-viviana/solidaria";
+import { type SlotProps, filterDOMProps } from "./utils";
 
 // ============================================
 // TYPES
@@ -29,19 +26,16 @@ import {
 
 export interface ToolbarRenderProps {
   /** The orientation of the toolbar. */
-  orientation: Orientation
+  orientation: Orientation;
 }
 
-export interface ToolbarProps
-  extends AriaToolbarProps,
-    ParentProps,
-    SlotProps {
+export interface ToolbarProps extends AriaToolbarProps, ParentProps, SlotProps {
   /** The CSS className for the element. A function may be provided to receive render props. */
-  class?: string | ((renderProps: ToolbarRenderProps) => string)
+  class?: string | ((renderProps: ToolbarRenderProps) => string);
   /** The inline style for the element. A function may be provided to receive render props. */
-  style?: JSX.CSSProperties | ((renderProps: ToolbarRenderProps) => JSX.CSSProperties)
+  style?: JSX.CSSProperties | ((renderProps: ToolbarRenderProps) => JSX.CSSProperties);
   /** Additional data-* attributes. */
-  [key: `data-${string}`]: string | undefined
+  [key: `data-${string}`]: string | undefined;
 }
 
 // ============================================
@@ -50,11 +44,11 @@ export interface ToolbarProps
 
 export interface ToolbarContextValue {
   slots?: {
-    [name: string]: Record<string, unknown>
-  }
+    [name: string]: Record<string, unknown>;
+  };
 }
 
-export const ToolbarContext = createContext<ToolbarContextValue | null>(null)
+export const ToolbarContext = createContext<ToolbarContextValue | null>(null);
 
 // ============================================
 // TOOLBAR COMPONENT
@@ -87,69 +81,69 @@ export const ToolbarContext = createContext<ToolbarContextValue | null>(null)
 export function Toolbar(props: ToolbarProps): JSX.Element {
   const [local, ariaProps, domProps] = splitProps(
     props,
-    ['class', 'style', 'slot', 'children'],
-    ['orientation', 'aria-label', 'aria-labelledby']
-  )
+    ["class", "style", "slot", "children"],
+    ["orientation", "aria-label", "aria-labelledby"],
+  );
 
   // Get slot props from context if available
-  const ctx = useContext(ToolbarContext)
+  const ctx = useContext(ToolbarContext);
   const slotProps = () => {
     if (ctx?.slots && local.slot) {
-      return ctx.slots[local.slot] || {}
+      return ctx.slots[local.slot] || {};
     }
-    return {}
-  }
+    return {};
+  };
 
   // Create toolbar aria props
   const { toolbarProps, orientation } = createToolbar({
     get orientation() {
-      return ariaProps.orientation
+      return ariaProps.orientation;
     },
-    get 'aria-label'() {
+    get "aria-label"() {
       return (
-        (ariaProps['aria-label'] as string | undefined) ??
-        (slotProps()['aria-label'] as string | undefined)
-      )
+        (ariaProps["aria-label"] as string | undefined) ??
+        (slotProps()["aria-label"] as string | undefined)
+      );
     },
-    get 'aria-labelledby'() {
-      return ariaProps['aria-labelledby'] as string | undefined
+    get "aria-labelledby"() {
+      return ariaProps["aria-labelledby"] as string | undefined;
     },
-  })
+  });
 
   // Render props values
   const renderValues = createMemo<ToolbarRenderProps>(() => ({
     orientation: orientation(),
-  }))
+  }));
 
   // Resolve class
   const resolvedClass = createMemo(() => {
-    const cls = local.class
-    if (typeof cls === 'function') {
-      return cls(renderValues())
+    const cls = local.class;
+    if (typeof cls === "function") {
+      return cls(renderValues());
     }
-    return cls ?? 'solidaria-Toolbar'
-  })
+    return cls ?? "solidaria-Toolbar";
+  });
 
   // Resolve style
   const resolvedStyle = createMemo(() => {
-    const style = local.style
-    if (typeof style === 'function') {
-      return style(renderValues())
+    const style = local.style;
+    if (typeof style === "function") {
+      return style(renderValues());
     }
-    return style
-  })
+    return style;
+  });
 
   // Resolve children (support render props)
   const resolvedChildren = createMemo(() => {
-    const children = props.children
-    if (typeof children === 'function') {
-      return (children as (props: ToolbarRenderProps) => JSX.Element)(renderValues())
+    const children = props.children;
+    if (typeof children === "function") {
+      return (children as (props: ToolbarRenderProps) => JSX.Element)(renderValues());
     }
-    return children
-  })
+    return children;
+  });
 
   // Filter remaining DOM props
-  const filteredDOMProps = createMemo(() => filterDOMProps(domProps, { global: true }))
+  const filteredDOMProps = createMemo(() => filterDOMProps(domProps, { global: true }));
 
   return (
     <div
@@ -162,5 +156,5 @@ export function Toolbar(props: ToolbarProps): JSX.Element {
     >
       {resolvedChildren()}
     </div>
-  )
+  );
 }

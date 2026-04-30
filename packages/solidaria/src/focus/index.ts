@@ -5,7 +5,7 @@ export {
   type FocusScopeProps,
   type FocusManager,
   type FocusManagerOptions,
-} from './FocusScope';
+} from "./FocusScope";
 
 // Focus Restoration
 export {
@@ -16,14 +16,14 @@ export {
   clearFocusStack,
   type FocusRestoreOptions,
   type FocusRestoreResult,
-} from './createFocusRestore';
+} from "./createFocusRestore";
 
 // Virtual Focus
 export {
   createVirtualFocus,
   type VirtualFocusOptions,
   type VirtualFocusResult,
-} from './createVirtualFocus';
+} from "./createVirtualFocus";
 
 // Auto Focus
 export {
@@ -32,4 +32,4 @@ export {
   getAutoFocusQueueLength,
   type AutoFocusOptions,
   type AutoFocusResult,
-} from './createAutoFocus';
+} from "./createAutoFocus";

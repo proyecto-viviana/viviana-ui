@@ -10,14 +10,14 @@ interface NavigatorWithUserAgentData extends Navigator {
 }
 
 function getNavigator(): NavigatorWithUserAgentData | null {
-  if (typeof window === 'undefined' || window.navigator == null) return null;
+  if (typeof window === "undefined" || window.navigator == null) return null;
   return window.navigator as NavigatorWithUserAgentData;
 }
 
 function testPlatform(re: RegExp): boolean {
   const nav = getNavigator();
   if (!nav) return false;
-  return re.test(nav.platform || nav.userAgentData?.platform || '');
+  return re.test(nav.platform || nav.userAgentData?.platform || "");
 }
 
 function testUserAgent(re: RegExp): boolean {

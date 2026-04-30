@@ -4,11 +4,11 @@
  * Styling-only presentation primitive for read-only label/value pairs.
  */
 
-import { type JSX, Show, splitProps } from 'solid-js';
-import { Label as UILabel } from '../label';
-import { Text as UIText } from '../text';
+import { type JSX, Show, splitProps } from "solid-js";
+import { Label as UILabel } from "../label";
+import { Text as UIText } from "../text";
 
-export type LabeledValueOrientation = 'vertical' | 'horizontal';
+export type LabeledValueOrientation = "vertical" | "horizontal";
 
 export interface LabeledValueProps {
   /** Visible label content. */
@@ -28,27 +28,27 @@ export interface LabeledValueProps {
 }
 
 const orientationStyles: Record<LabeledValueOrientation, string> = {
-  vertical: 'flex-col items-start gap-1',
-  horizontal: 'flex-row items-center justify-between gap-3',
+  vertical: "flex-col items-start gap-1",
+  horizontal: "flex-row items-center justify-between gap-3",
 };
 
 export function LabeledValue(props: LabeledValueProps): JSX.Element {
   const [local] = splitProps(props, [
-    'label',
-    'value',
-    'children',
-    'orientation',
-    'class',
-    'labelClass',
-    'valueClass',
+    "label",
+    "value",
+    "children",
+    "orientation",
+    "class",
+    "labelClass",
+    "valueClass",
   ]);
 
-  const orientation = () => local.orientation ?? 'vertical';
+  const orientation = () => local.orientation ?? "vertical";
   const resolvedValue = () => local.value ?? local.children;
 
   return (
-    <div class={`flex ${orientationStyles[orientation()]} ${local.class ?? ''}`}>
-      <UILabel size="sm" class={`text-primary-400 ${local.labelClass ?? ''}`}>
+    <div class={`flex ${orientationStyles[orientation()]} ${local.class ?? ""}`}>
+      <UILabel size="sm" class={`text-primary-400 ${local.labelClass ?? ""}`}>
         {local.label}
       </UILabel>
       <Show when={resolvedValue()}>
@@ -59,4 +59,3 @@ export function LabeledValue(props: LabeledValueProps): JSX.Element {
     </div>
   );
 }
-

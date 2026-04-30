@@ -5,25 +5,16 @@
  * Enables F6 keyboard navigation between major page sections.
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  createSignal,
-  splitProps,
-} from 'solid-js';
-import { Dynamic } from 'solid-js/web';
+import { type JSX, createContext, createMemo, createSignal, splitProps } from "solid-js";
+import { Dynamic } from "solid-js/web";
 import {
   createLandmark,
   getLandmarkController,
   type AriaLandmarkProps,
   type AriaLandmarkRole,
   type LandmarkController,
-} from '@proyecto-viviana/solidaria';
-import {
-  type SlotProps,
-  filterDOMProps,
-} from './utils';
+} from "@proyecto-viviana/solidaria";
+import { type SlotProps, filterDOMProps } from "./utils";
 
 // ============================================
 // TYPES
@@ -34,9 +25,7 @@ export interface LandmarkRenderProps {
   role: AriaLandmarkRole;
 }
 
-export interface LandmarkProps
-  extends AriaLandmarkProps,
-    SlotProps {
+export interface LandmarkProps extends AriaLandmarkProps, SlotProps {
   /**
    * The HTML element type to render.
    * @default 'div' (or semantic element based on role)
@@ -68,14 +57,14 @@ export const LandmarkContext = createContext<LandmarkProps | null>(null);
  * Using semantic elements is preferred when possible.
  */
 const roleToSemanticElement: Partial<Record<AriaLandmarkRole, keyof JSX.IntrinsicElements>> = {
-  main: 'main',
-  navigation: 'nav',
-  search: 'search', // HTML5.3 <search> element
-  banner: 'header',
-  contentinfo: 'footer',
-  complementary: 'aside',
-  form: 'form',
-  region: 'section',
+  main: "main",
+  navigation: "nav",
+  search: "search", // HTML5.3 <search> element
+  banner: "header",
+  contentinfo: "footer",
+  complementary: "aside",
+  form: "form",
+  region: "section",
 };
 
 // ============================================
@@ -112,11 +101,11 @@ const roleToSemanticElement: Partial<Record<AriaLandmarkRole, keyof JSX.Intrinsi
  */
 export function Landmark(props: LandmarkProps): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'class',
-    'style',
-    'slot',
-    'children',
-    'elementType',
+    "class",
+    "style",
+    "slot",
+    "children",
+    "elementType",
   ]);
 
   // Element ref
@@ -127,19 +116,29 @@ export function Landmark(props: LandmarkProps): JSX.Element {
     if (local.elementType) {
       return local.elementType;
     }
-    return roleToSemanticElement[ariaProps.role] ?? 'div';
+    return roleToSemanticElement[ariaProps.role] ?? "div";
   });
 
   // Create landmark aria props
   const landmarkAria = createLandmark(
     {
-      get role() { return ariaProps.role; },
-      get 'aria-label'() { return ariaProps['aria-label']; },
-      get 'aria-labelledby'() { return ariaProps['aria-labelledby']; },
-      get id() { return ariaProps.id; },
-      get focus() { return ariaProps.focus; },
+      get role() {
+        return ariaProps.role;
+      },
+      get "aria-label"() {
+        return ariaProps["aria-label"];
+      },
+      get "aria-labelledby"() {
+        return ariaProps["aria-labelledby"];
+      },
+      get id() {
+        return ariaProps.id;
+      },
+      get focus() {
+        return ariaProps.focus;
+      },
     },
-    ref
+    ref,
   );
 
   // Render props values
@@ -150,7 +149,7 @@ export function Landmark(props: LandmarkProps): JSX.Element {
   // Resolve class
   const resolvedClass = createMemo(() => {
     const cls = local.class;
-    if (typeof cls === 'function') {
+    if (typeof cls === "function") {
       return cls(renderValues());
     }
     return cls ?? `solidaria-Landmark solidaria-Landmark--${ariaProps.role}`;
@@ -159,7 +158,7 @@ export function Landmark(props: LandmarkProps): JSX.Element {
   // Resolve style
   const resolvedStyle = createMemo(() => {
     const style = local.style;
-    if (typeof style === 'function') {
+    if (typeof style === "function") {
       return style(renderValues());
     }
     return style;

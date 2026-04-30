@@ -7,15 +7,13 @@ const releasablePaths = [
   "packages/solid-stately/",
   "packages/solidaria/",
   "packages/solidaria-components/",
-  "packages/silapse/",
+  "packages/solid-spectrum/",
 ];
 
 function getChangedFiles() {
-  const output = execFileSync(
-    "git",
-    ["diff", "--name-only", `${baseRef}...HEAD`],
-    { encoding: "utf8" },
-  );
+  const output = execFileSync("git", ["diff", "--name-only", `${baseRef}...HEAD`], {
+    encoding: "utf8",
+  });
 
   return output
     .split("\n")
@@ -26,8 +24,7 @@ function getChangedFiles() {
 let changedFiles;
 
 if (process.env.CHANGED_FILES) {
-  changedFiles = process.env.CHANGED_FILES
-    .split("\n")
+  changedFiles = process.env.CHANGED_FILES.split("\n")
     .map((file) => file.trim())
     .filter(Boolean);
 } else {
@@ -46,7 +43,7 @@ if (changedFiles.length === 0) {
 }
 
 const touchesReleasablePackage = changedFiles.some((file) =>
-  releasablePaths.some((prefix) => file.startsWith(prefix))
+  releasablePaths.some((prefix) => file.startsWith(prefix)),
 );
 
 if (!touchesReleasablePackage) {
@@ -54,8 +51,8 @@ if (!touchesReleasablePackage) {
   process.exit(0);
 }
 
-const hasChangesetFile = changedFiles.some((file) =>
-  /^\.changeset\/[^/]+\.md$/.test(file) && file !== ".changeset/README.md"
+const hasChangesetFile = changedFiles.some(
+  (file) => /^\.changeset\/[^/]+\.md$/.test(file) && file !== ".changeset/README.md",
 );
 
 if (hasChangesetFile) {

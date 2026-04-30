@@ -11,9 +11,9 @@
  * - ARIA attributes
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
-import { createSignal } from 'solid-js';
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { render, screen, cleanup, fireEvent, waitFor } from "@solidjs/testing-library";
+import { createSignal } from "solid-js";
 import {
   ComboBox,
   ComboBoxInput,
@@ -23,24 +23,24 @@ import {
   ComboBoxOption,
   ComboBoxTagGroup,
   ComboBoxTag,
-} from '../src/ComboBox';
-import { SelectionIndicator } from '../src/SelectionIndicator';
-import { I18nProvider } from '@proyecto-viviana/solidaria';
+} from "../src/ComboBox";
+import { SelectionIndicator } from "../src/SelectionIndicator";
+import { I18nProvider } from "@proyecto-viviana/solidaria";
 import {
   setupUser,
   assertAriaIdIntegrity,
   checkAriaIdIntegrity,
-} from '@proyecto-viviana/solidaria-test-utils';
+} from "@proyecto-viviana/solidaria-test-utils";
 
 // setupUser is consolidated in solidaria-test-utils.
 
 // Sample items for testing
 const items = [
-  { id: '1', name: 'Apple' },
-  { id: '2', name: 'Banana' },
-  { id: '3', name: 'Cherry' },
-  { id: '4', name: 'Date' },
-  { id: '5', name: 'Elderberry' },
+  { id: "1", name: "Apple" },
+  { id: "2", name: "Banana" },
+  { id: "3", name: "Cherry" },
+  { id: "4", name: "Date" },
+  { id: "5", name: "Elderberry" },
 ];
 
 // Helper component for testing
@@ -66,7 +66,7 @@ function TestComboBox(props: {
   );
 }
 
-describe('ComboBox', () => {
+describe("ComboBox", () => {
   let user: ReturnType<typeof setupUser>;
 
   beforeEach(() => {
@@ -81,43 +81,43 @@ describe('ComboBox', () => {
   // RENDERING
   // ============================================
 
-  describe('rendering', () => {
-    it('should render with default class', () => {
+  describe("rendering", () => {
+    it("should render with default class", () => {
       render(() => <TestComboBox />);
 
-      const combobox = document.querySelector('.solidaria-ComboBox');
+      const combobox = document.querySelector(".solidaria-ComboBox");
       expect(combobox).toBeInTheDocument();
     });
 
-    it('should render input with combobox role', () => {
+    it("should render input with combobox role", () => {
       render(() => <TestComboBox />);
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       expect(input).toBeInTheDocument();
     });
 
-    it('should render trigger button', () => {
+    it("should render trigger button", () => {
       render(() => <TestComboBox />);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       expect(button).toBeInTheDocument();
     });
 
-    it('should not render listbox when closed', () => {
+    it("should not render listbox when closed", () => {
       render(() => <TestComboBox />);
 
-      const listbox = screen.queryByRole('listbox');
+      const listbox = screen.queryByRole("listbox");
       expect(listbox).not.toBeInTheDocument();
     });
 
-    it('should render with custom class', () => {
-      render(() => <TestComboBox comboBoxProps={{ class: 'my-combobox' }} />);
+    it("should render with custom class", () => {
+      render(() => <TestComboBox comboBoxProps={{ class: "my-combobox" }} />);
 
-      const combobox = document.querySelector('.my-combobox');
+      const combobox = document.querySelector(".my-combobox");
       expect(combobox).toBeInTheDocument();
     });
 
-    it('should expose isReadOnly in root render props', () => {
+    it("should expose isReadOnly in root render props", () => {
       render(() => (
         <ComboBox
           aria-label="Test ComboBox"
@@ -125,7 +125,9 @@ describe('ComboBox', () => {
           getKey={(item) => item.id}
           getTextValue={(item) => item.name}
           isReadOnly
-          class={(renderProps) => renderProps.isReadOnly ? 'readonly-combobox' : 'editable-combobox'}
+          class={(renderProps) =>
+            renderProps.isReadOnly ? "readonly-combobox" : "editable-combobox"
+          }
         >
           <ComboBoxInput />
           <ComboBoxButton>▼</ComboBoxButton>
@@ -135,12 +137,12 @@ describe('ComboBox', () => {
         </ComboBox>
       ));
 
-      const combobox = document.querySelector('.readonly-combobox');
+      const combobox = document.querySelector(".readonly-combobox");
       expect(combobox).toBeInTheDocument();
-      expect(combobox).toHaveAttribute('data-readonly');
+      expect(combobox).toHaveAttribute("data-readonly");
     });
 
-    it('should render selected text from ComboBoxValue when input text differs', () => {
+    it("should render selected text from ComboBoxValue when input text differs", () => {
       render(() => (
         <ComboBox
           aria-label="ComboBox value"
@@ -159,18 +161,18 @@ describe('ComboBox', () => {
         </ComboBox>
       ));
 
-      expect(screen.getByText('Banana')).toBeInTheDocument();
-      expect(screen.queryByText('typed text')).not.toBeInTheDocument();
+      expect(screen.getByText("Banana")).toBeInTheDocument();
+      expect(screen.queryByText("typed text")).not.toBeInTheDocument();
     });
 
-    it('provides slots', () => {
+    it("provides slots", () => {
       render(() => (
         <ComboBox
           aria-label="Outer ComboBox"
           items={[]}
           slots={{
             test: {
-              'aria-label': 'Slot ComboBox',
+              "aria-label": "Slot ComboBox",
               items,
               getKey: (item) => item.id,
               getTextValue: (item) => item.name,
@@ -187,31 +189,34 @@ describe('ComboBox', () => {
         </ComboBox>
       ));
 
-      const roots = document.querySelectorAll('.solidaria-ComboBox');
-      expect(roots[1]).toHaveAttribute('aria-label', 'Slot ComboBox');
-      expect(roots[1]).toHaveAttribute('slot', 'test');
+      const roots = document.querySelectorAll(".solidaria-ComboBox");
+      expect(roots[1]).toHaveAttribute("aria-label", "Slot ComboBox");
+      expect(roots[1]).toHaveAttribute("slot", "test");
     });
 
-    it('should support slot', () => {
-      render(() => <TestComboBox comboBoxProps={{ slot: 'test' }} />);
+    it("should support slot", () => {
+      render(() => <TestComboBox comboBoxProps={{ slot: "test" }} />);
 
-      expect(screen.getByRole('combobox').closest('.solidaria-ComboBox')).toHaveAttribute('slot', 'test');
+      expect(screen.getByRole("combobox").closest(".solidaria-ComboBox")).toHaveAttribute(
+        "slot",
+        "test",
+      );
     });
 
-    it('should support custom render function', () => {
+    it("should support custom render function", () => {
       render(() => (
         <TestComboBox
           comboBoxProps={{
             defaultOpen: true,
-            class: ({ isOpen }) => isOpen ? 'is-open' : 'is-closed',
+            class: ({ isOpen }) => (isOpen ? "is-open" : "is-closed"),
           }}
         />
       ));
 
-      expect(document.querySelector('.is-open')).toBeInTheDocument();
+      expect(document.querySelector(".is-open")).toBeInTheDocument();
     });
 
-    it('should support render props', () => {
+    it("should support render props", () => {
       render(() => (
         <ComboBox
           aria-label="Test ComboBox"
@@ -232,7 +237,7 @@ describe('ComboBox', () => {
         </ComboBox>
       ));
 
-      expect(screen.getByRole('button')).toHaveTextContent('Apple');
+      expect(screen.getByRole("button")).toHaveTextContent("Apple");
     });
   });
 
@@ -240,125 +245,125 @@ describe('ComboBox', () => {
   // OPENING/CLOSING
   // ============================================
 
-  describe('opening/closing', () => {
-    it('should open on button click', async () => {
+  describe("opening/closing", () => {
+    it("should open on button click", async () => {
       render(() => <TestComboBox />);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       await user.click(button);
 
       await waitFor(() => {
-        const listbox = screen.getByRole('listbox');
+        const listbox = screen.getByRole("listbox");
         expect(listbox).toBeInTheDocument();
       });
     });
 
-    it('should open on input focus with menuTrigger=focus', async () => {
-      render(() => <TestComboBox comboBoxProps={{ menuTrigger: 'focus' }} />);
+    it("should open on input focus with menuTrigger=focus", async () => {
+      render(() => <TestComboBox comboBoxProps={{ menuTrigger: "focus" }} />);
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       await user.click(input);
 
       await waitFor(() => {
-        const listbox = screen.getByRole('listbox');
+        const listbox = screen.getByRole("listbox");
         expect(listbox).toBeInTheDocument();
       });
     });
 
-    it('should not open the menu when isReadOnly', async () => {
-      render(() => <TestComboBox comboBoxProps={{ isReadOnly: true, menuTrigger: 'focus' }} />);
+    it("should not open the menu when isReadOnly", async () => {
+      render(() => <TestComboBox comboBoxProps={{ isReadOnly: true, menuTrigger: "focus" }} />);
 
-      await user.click(screen.getByRole('combobox'));
+      await user.click(screen.getByRole("combobox"));
 
-      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     });
 
-    it('should open on ArrowDown', async () => {
+    it("should open on ArrowDown", async () => {
       render(() => <TestComboBox />);
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       input.focus();
-      await user.keyboard('{ArrowDown}');
+      await user.keyboard("{ArrowDown}");
 
       await waitFor(() => {
-        const listbox = screen.getByRole('listbox');
+        const listbox = screen.getByRole("listbox");
         expect(listbox).toBeInTheDocument();
       });
     });
 
-    it('should open on ArrowUp', async () => {
+    it("should open on ArrowUp", async () => {
       render(() => <TestComboBox />);
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       input.focus();
-      await user.keyboard('{ArrowUp}');
+      await user.keyboard("{ArrowUp}");
 
       await waitFor(() => {
-        const listbox = screen.getByRole('listbox');
+        const listbox = screen.getByRole("listbox");
         expect(listbox).toBeInTheDocument();
       });
     });
 
-    it('should close on Escape', async () => {
+    it("should close on Escape", async () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       // Wait for listbox to be visible
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       input.focus();
-      await user.keyboard('{Escape}');
+      await user.keyboard("{Escape}");
 
       await waitFor(() => {
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+        expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
       });
     });
 
-    it('should not close on input scrolling for cursor placement', async () => {
+    it("should not close on input scrolling for cursor placement", async () => {
       render(() => <TestComboBox />);
 
-      const input = screen.getByRole('combobox');
-      await user.click(screen.getByRole('button'));
+      const input = screen.getByRole("combobox");
+      await user.click(screen.getByRole("button"));
 
-      expect(screen.getByRole('listbox')).toBeInTheDocument();
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
       expect(input).toHaveFocus();
 
       fireEvent.scroll(input);
-      expect(screen.getByRole('listbox')).toBeInTheDocument();
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
     });
 
-    it('should close on trigger button click when already open', async () => {
+    it("should close on trigger button click when already open", async () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
-      const button = screen.getByRole('button', { hidden: true });
+      const button = screen.getByRole("button", { hidden: true });
       await user.click(button);
 
       await waitFor(() => {
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+        expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
       });
     });
 
-    it('should support controlled open state', async () => {
+    it("should support controlled open state", async () => {
       const onOpenChange = vi.fn();
       render(() => <TestComboBox comboBoxProps={{ isOpen: true, onOpenChange }} />);
 
       await waitFor(() => {
-        const listbox = screen.getByRole('listbox');
+        const listbox = screen.getByRole("listbox");
         expect(listbox).toBeInTheDocument();
       });
     });
 
-    it('should fire onOpenChange', async () => {
+    it("should fire onOpenChange", async () => {
       const onOpenChange = vi.fn();
       render(() => <TestComboBox comboBoxProps={{ onOpenChange }} />);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       await user.click(button);
 
       await waitFor(() => {
@@ -366,7 +371,7 @@ describe('ComboBox', () => {
       });
     });
 
-    it('should aria-hide outside content while open', async () => {
+    it("should aria-hide outside content while open", async () => {
       render(() => (
         <div>
           <p data-testid="outside-content">Outside</p>
@@ -375,11 +380,11 @@ describe('ComboBox', () => {
       ));
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
       await waitFor(() => {
-        const outside = screen.getByTestId('outside-content');
+        const outside = screen.getByTestId("outside-content");
         expect(outside.closest('[aria-hidden="true"]')).not.toBeNull();
       });
     });
@@ -389,99 +394,96 @@ describe('ComboBox', () => {
   // OPTIONS
   // ============================================
 
-  describe('options', () => {
-    it('should render options when open', async () => {
+  describe("options", () => {
+    it("should render options when open", async () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       await waitFor(() => {
-        const options = screen.getAllByRole('option');
+        const options = screen.getAllByRole("option");
         expect(options).toHaveLength(5);
       });
     });
 
-    it('should display option text', async () => {
+    it("should display option text", async () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       await waitFor(() => {
-        expect(screen.getByText('Apple')).toBeInTheDocument();
-        expect(screen.getByText('Banana')).toBeInTheDocument();
+        expect(screen.getByText("Apple")).toBeInTheDocument();
+        expect(screen.getByText("Banana")).toBeInTheDocument();
       });
     });
-
   });
 
   // ============================================
   // SELECTION
   // ============================================
 
-  describe('selection', () => {
-    it('should select on option click', async () => {
+  describe("selection", () => {
+    it("should select on option click", async () => {
       const onSelectionChange = vi.fn();
-      render(() => (
-        <TestComboBox comboBoxProps={{ defaultOpen: true, onSelectionChange }} />
-      ));
+      render(() => <TestComboBox comboBoxProps={{ defaultOpen: true, onSelectionChange }} />);
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
       // Click on the option element itself, not just the text
-      const option = screen.getByRole('option', { name: 'Banana' });
+      const option = screen.getByRole("option", { name: "Banana" });
       await user.click(option);
 
       await waitFor(() => {
-        expect(onSelectionChange).toHaveBeenCalledWith('2');
+        expect(onSelectionChange).toHaveBeenCalledWith("2");
       });
     });
 
-    it('should update input value on selection', async () => {
+    it("should update input value on selection", async () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
       // Click on the option element itself
-      const option = screen.getByRole('option', { name: 'Cherry' });
+      const option = screen.getByRole("option", { name: "Cherry" });
       await user.click(option);
 
       await waitFor(() => {
-        const input = screen.getByRole('combobox');
-        expect(input).toHaveValue('Cherry');
+        const input = screen.getByRole("combobox");
+        expect(input).toHaveValue("Cherry");
       });
     });
 
-    it('should support defaultSelectedKey', () => {
-      render(() => <TestComboBox comboBoxProps={{ defaultSelectedKey: '3' }} />);
+    it("should support defaultSelectedKey", () => {
+      render(() => <TestComboBox comboBoxProps={{ defaultSelectedKey: "3" }} />);
 
-      const input = screen.getByRole('combobox');
-      expect(input).toHaveValue('Cherry');
+      const input = screen.getByRole("combobox");
+      expect(input).toHaveValue("Cherry");
     });
 
-    it('should support controlled selectedKey', () => {
-      render(() => <TestComboBox comboBoxProps={{ selectedKey: '4' }} />);
+    it("should support controlled selectedKey", () => {
+      render(() => <TestComboBox comboBoxProps={{ selectedKey: "4" }} />);
 
-      const input = screen.getByRole('combobox');
-      expect(input).toHaveValue('Date');
+      const input = screen.getByRole("combobox");
+      expect(input).toHaveValue("Date");
     });
 
-    it('should close after selection', async () => {
+    it("should close after selection", async () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
       // Click on the option element itself
-      const option = screen.getByRole('option', { name: 'Apple' });
+      const option = screen.getByRole("option", { name: "Apple" });
       await user.click(option);
 
       await waitFor(() => {
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+        expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
       });
     });
 
-    it('should render SelectionIndicator only for selected option', async () => {
+    it("should render SelectionIndicator only for selected option", async () => {
       render(() => (
         <ComboBox
           aria-label="Test ComboBox"
@@ -507,11 +509,11 @@ describe('ComboBox', () => {
         </ComboBox>
       ));
 
-      await user.click(screen.getByRole('button', { name: 'Show suggestions' }));
-      expect(screen.getAllByText('Selected')).toHaveLength(1);
-      await user.click(screen.getByRole('option', { name: 'Banana' }));
+      await user.click(screen.getByRole("button", { name: "Show suggestions" }));
+      expect(screen.getAllByText("Selected")).toHaveLength(1);
+      await user.click(screen.getByRole("option", { name: "Banana" }));
       await waitFor(() => {
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+        expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
       });
     });
   });
@@ -520,27 +522,27 @@ describe('ComboBox', () => {
   // INPUT VALUE
   // ============================================
 
-  describe('input value', () => {
-    it('should support defaultInputValue', () => {
-      render(() => <TestComboBox comboBoxProps={{ defaultInputValue: 'test' }} />);
+  describe("input value", () => {
+    it("should support defaultInputValue", () => {
+      render(() => <TestComboBox comboBoxProps={{ defaultInputValue: "test" }} />);
 
-      const input = screen.getByRole('combobox');
-      expect(input).toHaveValue('test');
+      const input = screen.getByRole("combobox");
+      expect(input).toHaveValue("test");
     });
 
-    it('should support controlled inputValue', () => {
-      render(() => <TestComboBox comboBoxProps={{ inputValue: 'controlled' }} />);
+    it("should support controlled inputValue", () => {
+      render(() => <TestComboBox comboBoxProps={{ inputValue: "controlled" }} />);
 
-      const input = screen.getByRole('combobox');
-      expect(input).toHaveValue('controlled');
+      const input = screen.getByRole("combobox");
+      expect(input).toHaveValue("controlled");
     });
 
-    it('should fire onInputChange when typing', async () => {
+    it("should fire onInputChange when typing", async () => {
       const onInputChange = vi.fn();
       render(() => <TestComboBox comboBoxProps={{ onInputChange }} />);
 
-      const input = screen.getByRole('combobox');
-      await user.type(input, 'test');
+      const input = screen.getByRole("combobox");
+      await user.type(input, "test");
 
       await waitFor(() => {
         expect(onInputChange).toHaveBeenCalled();
@@ -552,51 +554,54 @@ describe('ComboBox', () => {
   // FILTERING
   // ============================================
 
-  describe('filtering', () => {
-    it('should filter options based on input', async () => {
-      render(() => <TestComboBox comboBoxProps={{ menuTrigger: 'input' }} />);
+  describe("filtering", () => {
+    it("should filter options based on input", async () => {
+      render(() => <TestComboBox comboBoxProps={{ menuTrigger: "input" }} />);
 
-      const input = screen.getByRole('combobox');
-      await user.type(input, 'Ap');
+      const input = screen.getByRole("combobox");
+      await user.type(input, "Ap");
 
       await waitFor(() => {
-        const listbox = screen.getByRole('listbox');
+        const listbox = screen.getByRole("listbox");
         expect(listbox).toBeInTheDocument();
       });
 
       // Filtering is async, verify that the filter reduces options
       await waitFor(() => {
         // At minimum, Apple should be visible since it matches "Ap"
-        expect(screen.getByText('Apple')).toBeInTheDocument();
+        expect(screen.getByText("Apple")).toBeInTheDocument();
       });
     });
 
-    it('should show all options when opened with button', async () => {
+    it("should show all options when opened with button", async () => {
       render(() => <TestComboBox />);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       await user.click(button);
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
       await waitFor(() => {
-        const options = screen.getAllByRole('option');
+        const options = screen.getAllByRole("option");
         expect(options).toHaveLength(5);
       });
     });
 
-    it('should support dynamic collections', async () => {
+    it("should support dynamic collections", async () => {
       function DynamicComboBox() {
         const [dynamicItems, setDynamicItems] = createSignal([
-          { id: 'cat', name: 'Cat' },
-          { id: 'dog', name: 'Dog' },
+          { id: "cat", name: "Cat" },
+          { id: "dog", name: "Dog" },
         ]);
 
         return (
           <>
-            <button type="button" onClick={() => setDynamicItems([{ id: 'kangaroo', name: 'Kangaroo' }])}>
+            <button
+              type="button"
+              onClick={() => setDynamicItems([{ id: "kangaroo", name: "Kangaroo" }])}
+            >
               Update
             </button>
             <ComboBox
@@ -619,13 +624,18 @@ describe('ComboBox', () => {
       render(() => <DynamicComboBox />);
 
       await waitFor(() => {
-        expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['Cat', 'Dog']);
+        expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
+          "Cat",
+          "Dog",
+        ]);
       });
 
-      fireEvent.click(screen.getByText('Update'));
+      fireEvent.click(screen.getByText("Update"));
 
       await waitFor(() => {
-        expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['Kangaroo']);
+        expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
+          "Kangaroo",
+        ]);
       });
     });
   });
@@ -634,45 +644,43 @@ describe('ComboBox', () => {
   // KEYBOARD NAVIGATION
   // ============================================
 
-  describe('keyboard navigation', () => {
-    it('should navigate with ArrowDown', async () => {
+  describe("keyboard navigation", () => {
+    it("should navigate with ArrowDown", async () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       input.focus();
-      await user.keyboard('{ArrowDown}');
+      await user.keyboard("{ArrowDown}");
 
       // First option should be focused
       await waitFor(() => {
-        const firstOption = screen.getByText('Apple').closest('[role="option"]');
-        expect(firstOption).toHaveAttribute('data-focused');
+        const firstOption = screen.getByText("Apple").closest('[role="option"]');
+        expect(firstOption).toHaveAttribute("data-focused");
       });
     });
 
-    it('should select on Enter', async () => {
+    it("should select on Enter", async () => {
       const onSelectionChange = vi.fn();
-      render(() => (
-        <TestComboBox comboBoxProps={{ defaultOpen: true, onSelectionChange }} />
-      ));
+      render(() => <TestComboBox comboBoxProps={{ defaultOpen: true, onSelectionChange }} />);
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       input.focus();
-      await user.keyboard('{ArrowDown}{Enter}');
+      await user.keyboard("{ArrowDown}{Enter}");
 
       await waitFor(() => {
         expect(onSelectionChange).toHaveBeenCalled();
       });
     });
 
-    it.each(['keyboard', 'mouse'])('should support onAction with %s', async (interactionType) => {
+    it.each(["keyboard", "mouse"])("should support onAction with %s", async (interactionType) => {
       const onAction = vi.fn();
       render(() => (
         <ComboBox
@@ -695,14 +703,14 @@ describe('ComboBox', () => {
       ));
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
-      if (interactionType === 'keyboard') {
-        screen.getByRole('option', { name: 'Apple' }).focus();
-        await user.keyboard('{Enter}');
+      if (interactionType === "keyboard") {
+        screen.getByRole("option", { name: "Apple" }).focus();
+        await user.keyboard("{Enter}");
       } else {
-        await user.click(screen.getByRole('option', { name: 'Apple' }));
+        await user.click(screen.getByRole("option", { name: "Apple" }));
       }
 
       expect(onAction).toHaveBeenCalledTimes(1);
@@ -713,36 +721,36 @@ describe('ComboBox', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('should support isDisabled', () => {
+  describe("disabled state", () => {
+    it("should support isDisabled", () => {
       render(() => <TestComboBox comboBoxProps={{ isDisabled: true }} />);
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       expect(input).toBeDisabled();
     });
 
-    it('should disable button when disabled', () => {
+    it("should disable button when disabled", () => {
       render(() => <TestComboBox comboBoxProps={{ isDisabled: true }} />);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       // Button uses aria-disabled instead of native disabled
-      expect(button).toHaveAttribute('aria-disabled', 'true');
+      expect(button).toHaveAttribute("aria-disabled", "true");
     });
 
-    it('should have data-disabled attribute', () => {
+    it("should have data-disabled attribute", () => {
       render(() => <TestComboBox comboBoxProps={{ isDisabled: true }} />);
 
-      const combobox = document.querySelector('.solidaria-ComboBox');
-      expect(combobox).toHaveAttribute('data-disabled');
+      const combobox = document.querySelector(".solidaria-ComboBox");
+      expect(combobox).toHaveAttribute("data-disabled");
     });
 
-    it('should not open when disabled', async () => {
+    it("should not open when disabled", async () => {
       render(() => <TestComboBox comboBoxProps={{ isDisabled: true }} />);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       await user.click(button);
 
-      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     });
   });
 
@@ -750,19 +758,19 @@ describe('ComboBox', () => {
   // REQUIRED STATE
   // ============================================
 
-  describe('required state', () => {
-    it('should support isRequired', () => {
+  describe("required state", () => {
+    it("should support isRequired", () => {
       render(() => <TestComboBox comboBoxProps={{ isRequired: true }} />);
 
-      const input = screen.getByRole('combobox');
-      expect(input).toHaveAttribute('aria-required', 'true');
+      const input = screen.getByRole("combobox");
+      expect(input).toHaveAttribute("aria-required", "true");
     });
 
-    it('should have data-required attribute', () => {
+    it("should have data-required attribute", () => {
       render(() => <TestComboBox comboBoxProps={{ isRequired: true }} />);
 
-      const combobox = document.querySelector('.solidaria-ComboBox');
-      expect(combobox).toHaveAttribute('data-required');
+      const combobox = document.querySelector(".solidaria-ComboBox");
+      expect(combobox).toHaveAttribute("data-required");
     });
   });
 
@@ -770,57 +778,57 @@ describe('ComboBox', () => {
   // ARIA ATTRIBUTES
   // ============================================
 
-  describe('aria attributes', () => {
-    it('should have combobox role', () => {
+  describe("aria attributes", () => {
+    it("should have combobox role", () => {
       render(() => <TestComboBox />);
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       expect(input).toBeInTheDocument();
     });
 
-    it('should have aria-label when provided', () => {
+    it("should have aria-label when provided", () => {
       render(() => <TestComboBox />);
 
-      const input = screen.getByRole('combobox');
-      expect(input).toHaveAttribute('aria-label', 'Test ComboBox');
+      const input = screen.getByRole("combobox");
+      expect(input).toHaveAttribute("aria-label", "Test ComboBox");
     });
 
-    it('should have aria-expanded false when closed', () => {
+    it("should have aria-expanded false when closed", () => {
       render(() => <TestComboBox />);
 
-      const input = screen.getByRole('combobox');
-      expect(input).toHaveAttribute('aria-expanded', 'false');
+      const input = screen.getByRole("combobox");
+      expect(input).toHaveAttribute("aria-expanded", "false");
     });
 
-    it('should have aria-expanded true when open', async () => {
+    it("should have aria-expanded true when open", async () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       await waitFor(() => {
-        const input = screen.getByRole('combobox');
-        expect(input).toHaveAttribute('aria-expanded', 'true');
+        const input = screen.getByRole("combobox");
+        expect(input).toHaveAttribute("aria-expanded", "true");
       });
     });
 
-    it('should have aria-haspopup listbox', () => {
+    it("should have aria-haspopup listbox", () => {
       render(() => <TestComboBox />);
 
-      const input = screen.getByRole('combobox');
-      expect(input).toHaveAttribute('aria-haspopup', 'listbox');
+      const input = screen.getByRole("combobox");
+      expect(input).toHaveAttribute("aria-haspopup", "listbox");
     });
 
-    it('should have aria-controls when open', async () => {
+    it("should have aria-controls when open", async () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       await waitFor(() => {
-        const input = screen.getByRole('combobox');
-        expect(input).toHaveAttribute('aria-controls');
+        const input = screen.getByRole("combobox");
+        expect(input).toHaveAttribute("aria-controls");
         // aria-controls should reference the listbox (may have different ID format)
-        const ariaControls = input.getAttribute('aria-controls');
+        const ariaControls = input.getAttribute("aria-controls");
         expect(ariaControls).toBeTruthy();
       });
     });
 
-    it('should expose open state as button pressed render prop', () => {
+    it("should expose open state as button pressed render prop", () => {
       render(() => (
         <ComboBox
           aria-label="Test ComboBox"
@@ -830,7 +838,7 @@ describe('ComboBox', () => {
           defaultOpen
         >
           <ComboBoxInput />
-          <ComboBoxButton class={({ isPressed }) => (isPressed ? 'pressed' : 'not-pressed')}>
+          <ComboBoxButton class={({ isPressed }) => (isPressed ? "pressed" : "not-pressed")}>
             ▼
           </ComboBoxButton>
           <ComboBoxListBox>
@@ -839,15 +847,15 @@ describe('ComboBox', () => {
         </ComboBox>
       ));
 
-      const button = screen.getByRole('button', { hidden: true });
-      expect(button).toHaveClass('pressed');
+      const button = screen.getByRole("button", { hidden: true });
+      expect(button).toHaveClass("pressed");
     });
 
-    it('should apply isPressed state to button when expanded', () => {
+    it("should apply isPressed state to button when expanded", () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
-      const button = screen.getByRole('button', { hidden: true });
-      expect(button).toHaveAttribute('data-pressed');
+      const button = screen.getByRole("button", { hidden: true });
+      expect(button).toHaveAttribute("data-pressed");
     });
   });
 
@@ -855,36 +863,36 @@ describe('ComboBox', () => {
   // DATA ATTRIBUTES
   // ============================================
 
-  describe('data attributes', () => {
-    it('should have data-open when open', async () => {
+  describe("data attributes", () => {
+    it("should have data-open when open", async () => {
       render(() => <TestComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       await waitFor(() => {
-        const combobox = document.querySelector('.solidaria-ComboBox');
-        expect(combobox).toHaveAttribute('data-open');
+        const combobox = document.querySelector(".solidaria-ComboBox");
+        expect(combobox).toHaveAttribute("data-open");
       });
     });
 
-    it('should not have data-open when closed', () => {
+    it("should not have data-open when closed", () => {
       render(() => <TestComboBox />);
 
-      const combobox = document.querySelector('.solidaria-ComboBox');
-      expect(combobox).not.toHaveAttribute('data-open');
+      const combobox = document.querySelector(".solidaria-ComboBox");
+      expect(combobox).not.toHaveAttribute("data-open");
     });
 
-    it('should have data-invalid when invalid', () => {
+    it("should have data-invalid when invalid", () => {
       render(() => <TestComboBox comboBoxProps={{ isInvalid: true }} />);
 
-      const combobox = document.querySelector('.solidaria-ComboBox');
-      expect(combobox).toHaveAttribute('data-invalid');
+      const combobox = document.querySelector(".solidaria-ComboBox");
+      expect(combobox).toHaveAttribute("data-invalid");
     });
 
-    it('should render data- attributes on outer element', () => {
-      render(() => <TestComboBox comboBoxProps={{ 'data-testid': 'combobox-root' } as never} />);
+    it("should render data- attributes on outer element", () => {
+      render(() => <TestComboBox comboBoxProps={{ "data-testid": "combobox-root" } as never} />);
 
-      const combobox = screen.getByTestId('combobox-root');
-      expect(combobox).toHaveClass('solidaria-ComboBox');
-      expect(screen.getByRole('combobox')).not.toHaveAttribute('data-testid');
+      const combobox = screen.getByTestId("combobox-root");
+      expect(combobox).toHaveClass("solidaria-ComboBox");
+      expect(screen.getByRole("combobox")).not.toHaveAttribute("data-testid");
     });
   });
 
@@ -892,31 +900,29 @@ describe('ComboBox', () => {
   // DISABLED OPTIONS
   // ============================================
 
-  describe('disabled options', () => {
-    it('should support disabledKeys', async () => {
-      render(() => (
-        <TestComboBox comboBoxProps={{ defaultOpen: true, disabledKeys: ['2'] }} />
-      ));
+  describe("disabled options", () => {
+    it("should support disabledKeys", async () => {
+      render(() => <TestComboBox comboBoxProps={{ defaultOpen: true, disabledKeys: ["2"] }} />);
 
       await waitFor(() => {
-        const option = screen.getByText('Banana').closest('[role="option"]');
-        expect(option).toHaveAttribute('data-disabled');
+        const option = screen.getByText("Banana").closest('[role="option"]');
+        expect(option).toHaveAttribute("data-disabled");
       });
     });
 
-    it('should not select disabled options', async () => {
+    it("should not select disabled options", async () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestComboBox
-          comboBoxProps={{ defaultOpen: true, disabledKeys: ['2'], onSelectionChange }}
+          comboBoxProps={{ defaultOpen: true, disabledKeys: ["2"], onSelectionChange }}
         />
       ));
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
-      const option = screen.getByText('Banana');
+      const option = screen.getByText("Banana");
       await user.click(option);
 
       expect(onSelectionChange).not.toHaveBeenCalled();
@@ -927,17 +933,15 @@ describe('ComboBox', () => {
   // ALLOWS CUSTOM VALUE
   // ============================================
 
-  describe('allows custom value', () => {
-    it('should allow custom value when allowsCustomValue is true', async () => {
-      render(() => (
-        <TestComboBox comboBoxProps={{ allowsCustomValue: true }} />
-      ));
+  describe("allows custom value", () => {
+    it("should allow custom value when allowsCustomValue is true", async () => {
+      render(() => <TestComboBox comboBoxProps={{ allowsCustomValue: true }} />);
 
-      const input = screen.getByRole('combobox');
-      await user.type(input, 'Custom Value');
+      const input = screen.getByRole("combobox");
+      await user.type(input, "Custom Value");
 
       await waitFor(() => {
-        expect(input).toHaveValue('Custom Value');
+        expect(input).toHaveValue("Custom Value");
       });
     });
   });
@@ -946,70 +950,70 @@ describe('ComboBox', () => {
   // FORM INTEGRATION
   // ============================================
 
-  describe('form integration', () => {
-    it('should support formValue', () => {
+  describe("form integration", () => {
+    it("should support formValue", () => {
       render(() => (
-        <TestComboBox comboBoxProps={{ name: 'fruit', formValue: 'key', defaultSelectedKey: '2' }} />
+        <TestComboBox
+          comboBoxProps={{ name: "fruit", formValue: "key", defaultSelectedKey: "2" }}
+        />
       ));
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       const hiddenInput = document.querySelector('input[type="hidden"][name="fruit"]');
-      expect(input).not.toHaveAttribute('name');
-      expect(hiddenInput).toHaveValue('2');
+      expect(input).not.toHaveAttribute("name");
+      expect(hiddenInput).toHaveValue("2");
     });
 
-    it('should render hidden input with selected key by default', () => {
-      render(() => (
-        <TestComboBox comboBoxProps={{ name: 'fruit', defaultSelectedKey: '1' }} />
-      ));
+    it("should render hidden input with selected key by default", () => {
+      render(() => <TestComboBox comboBoxProps={{ name: "fruit", defaultSelectedKey: "1" }} />);
 
       const hiddenInput = document.querySelector('input[type="hidden"][name="fruit"]');
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       expect(hiddenInput).toBeInTheDocument();
-      expect(hiddenInput).toHaveValue('1');
-      expect(input).not.toHaveAttribute('name');
+      expect(hiddenInput).toHaveValue("1");
+      expect(input).not.toHaveAttribute("name");
     });
 
-    it('should submit text value when formValue is text', () => {
+    it("should submit text value when formValue is text", () => {
       render(() => (
         <TestComboBox
           comboBoxProps={{
-            name: 'fruit',
-            formValue: 'text',
-            defaultInputValue: 'Apple',
+            name: "fruit",
+            formValue: "text",
+            defaultInputValue: "Apple",
           }}
         />
       ));
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       const hiddenInput = document.querySelector('input[type="hidden"][name="fruit"]');
-      expect(input).toHaveAttribute('name', 'fruit');
+      expect(input).toHaveAttribute("name", "fruit");
       expect(hiddenInput).not.toBeInTheDocument();
     });
 
-    it('should force text form submission when allowsCustomValue is true', () => {
+    it("should force text form submission when allowsCustomValue is true", () => {
       render(() => (
         <TestComboBox
           comboBoxProps={{
-            name: 'fruit',
-            formValue: 'key',
+            name: "fruit",
+            formValue: "key",
             allowsCustomValue: true,
-            defaultInputValue: 'Dragonfruit',
+            defaultInputValue: "Dragonfruit",
           }}
         />
       ));
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       const hiddenInput = document.querySelector('input[type="hidden"][name="fruit"]');
-      expect(input).toHaveAttribute('name', 'fruit');
-      expect(input).toHaveValue('Dragonfruit');
+      expect(input).toHaveAttribute("name", "fruit");
+      expect(input).toHaveValue("Dragonfruit");
       expect(hiddenInput).not.toBeInTheDocument();
     });
 
-    it('should support form prop', () => {
-      render(() => <TestComboBox comboBoxProps={{ form: 'test-form' } as never} />);
+    it("should support form prop", () => {
+      render(() => <TestComboBox comboBoxProps={{ form: "test-form" } as never} />);
 
-      expect(screen.getByRole('combobox')).toHaveAttribute('form', 'test-form');
+      expect(screen.getByRole("combobox")).toHaveAttribute("form", "test-form");
     });
   });
 
@@ -1017,15 +1021,15 @@ describe('ComboBox', () => {
   // A11Y RISK AREA: ARIA ID integrity
   // ============================================
 
-  describe('a11y ARIA ID integrity', () => {
-    it('input aria-controls resolves to listbox when open', async () => {
+  describe("a11y ARIA ID integrity", () => {
+    it("input aria-controls resolves to listbox when open", async () => {
       render(() => <TestComboBox />);
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       await user.click(input);
 
       // After opening, aria-controls should point to the listbox
-      const controlsId = input.getAttribute('aria-controls');
+      const controlsId = input.getAttribute("aria-controls");
       if (controlsId) {
         expect(document.getElementById(controlsId)).toBeTruthy();
       }
@@ -1033,21 +1037,21 @@ describe('ComboBox', () => {
       assertAriaIdIntegrity(document.body);
     });
 
-    it('aria-activedescendant resolves to focused option when navigating', async () => {
+    it("aria-activedescendant resolves to focused option when navigating", async () => {
       render(() => <TestComboBox />);
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       await user.click(input);
 
       // Navigate down to first option
-      await user.keyboard('{ArrowDown}');
+      await user.keyboard("{ArrowDown}");
 
-      const activeDesc = input.getAttribute('aria-activedescendant');
+      const activeDesc = input.getAttribute("aria-activedescendant");
       if (activeDesc) {
         // The activedescendant ID should reference an element in the listbox
         const target = document.getElementById(activeDesc);
         if (target) {
-          expect(target.getAttribute('role')).toBe('option');
+          expect(target.getAttribute("role")).toBe("option");
         }
       }
 
@@ -1062,7 +1066,7 @@ describe('ComboBox', () => {
   // MULTI-SELECT MODE
   // ============================================
 
-  describe('multi-select mode', () => {
+  describe("multi-select mode", () => {
     function MultiSelectComboBox(props: {
       comboBoxProps?: Partial<Parameters<typeof ComboBox>[0]>;
     }) {
@@ -1075,9 +1079,7 @@ describe('ComboBox', () => {
           selectionMode="multiple"
           {...props.comboBoxProps}
         >
-          <ComboBoxTagGroup>
-            {(item) => <ComboBoxTag item={item} />}
-          </ComboBoxTagGroup>
+          <ComboBoxTagGroup>{(item) => <ComboBoxTag item={item} />}</ComboBoxTagGroup>
           <ComboBoxInput />
           <ComboBoxButton>&#9660;</ComboBoxButton>
           <ComboBoxListBox>
@@ -1087,126 +1089,120 @@ describe('ComboBox', () => {
       );
     }
 
-    it('allows selecting multiple items', async () => {
+    it("allows selecting multiple items", async () => {
       const onSelectionChangeMultiple = vi.fn();
-      render(() => (
-        <MultiSelectComboBox comboBoxProps={{ onSelectionChangeMultiple }} />
-      ));
+      render(() => <MultiSelectComboBox comboBoxProps={{ onSelectionChangeMultiple }} />);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       await user.click(button);
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
       // Select first item
-      const appleOption = screen.getByRole('option', { name: 'Apple' });
+      const appleOption = screen.getByRole("option", { name: "Apple" });
       await user.click(appleOption);
 
       await waitFor(() => {
-        expect(onSelectionChangeMultiple).toHaveBeenCalledWith(new Set(['1']));
+        expect(onSelectionChangeMultiple).toHaveBeenCalledWith(new Set(["1"]));
       });
 
       // Select second item
-      const bananaOption = screen.getByRole('option', { name: 'Banana' });
+      const bananaOption = screen.getByRole("option", { name: "Banana" });
       await user.click(bananaOption);
 
       await waitFor(() => {
-        expect(onSelectionChangeMultiple).toHaveBeenCalledWith(new Set(['1', '2']));
+        expect(onSelectionChangeMultiple).toHaveBeenCalledWith(new Set(["1", "2"]));
       });
     });
 
-    it('keeps menu open after selection', async () => {
+    it("keeps menu open after selection", async () => {
       render(() => <MultiSelectComboBox />);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       await user.click(button);
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
       // Select an item
-      const option = screen.getByRole('option', { name: 'Apple' });
+      const option = screen.getByRole("option", { name: "Apple" });
       await user.click(option);
 
       // Menu should still be open
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
     });
 
-    it('shows selected items as tags', async () => {
-      render(() => (
-        <MultiSelectComboBox comboBoxProps={{ defaultSelectedKeys: ['1', '3'] }} />
-      ));
+    it("shows selected items as tags", async () => {
+      render(() => <MultiSelectComboBox comboBoxProps={{ defaultSelectedKeys: ["1", "3"] }} />);
 
       // Tags should be rendered for the selected items
       await waitFor(() => {
-        expect(screen.getByText('Apple')).toBeInTheDocument();
-        expect(screen.getByText('Cherry')).toBeInTheDocument();
+        expect(screen.getByText("Apple")).toBeInTheDocument();
+        expect(screen.getByText("Cherry")).toBeInTheDocument();
       });
 
       // Should have remove buttons
-      const removeButtons = screen.getAllByRole('button', { name: /Remove/ });
+      const removeButtons = screen.getAllByRole("button", { name: /Remove/ });
       expect(removeButtons.length).toBe(2);
     });
 
-    it('removes last selected item on Backspace when input empty', async () => {
+    it("removes last selected item on Backspace when input empty", async () => {
       const onSelectionChangeMultiple = vi.fn();
       render(() => (
         <MultiSelectComboBox
           comboBoxProps={{
-            defaultSelectedKeys: ['1', '2'],
+            defaultSelectedKeys: ["1", "2"],
             onSelectionChangeMultiple,
           }}
         />
       ));
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       input.focus();
 
       // Press Backspace with empty input
-      await user.keyboard('{Backspace}');
+      await user.keyboard("{Backspace}");
 
       await waitFor(() => {
         // Should remove the last key ('2')
-        expect(onSelectionChangeMultiple).toHaveBeenCalledWith(new Set(['1']));
+        expect(onSelectionChangeMultiple).toHaveBeenCalledWith(new Set(["1"]));
       });
     });
 
-    it('sets aria-multiselectable on listbox', async () => {
+    it("sets aria-multiselectable on listbox", async () => {
       render(() => <MultiSelectComboBox comboBoxProps={{ defaultOpen: true }} />);
 
       await waitFor(() => {
-        const listbox = screen.getByRole('listbox');
-        expect(listbox).toHaveAttribute('aria-multiselectable', 'true');
+        const listbox = screen.getByRole("listbox");
+        expect(listbox).toHaveAttribute("aria-multiselectable", "true");
       });
     });
 
-    it('single mode still works as before (regression)', async () => {
+    it("single mode still works as before (regression)", async () => {
       const onSelectionChange = vi.fn();
-      render(() => (
-        <TestComboBox comboBoxProps={{ defaultOpen: true, onSelectionChange }} />
-      ));
+      render(() => <TestComboBox comboBoxProps={{ defaultOpen: true, onSelectionChange }} />);
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
       // Select an item
-      const option = screen.getByRole('option', { name: 'Banana' });
+      const option = screen.getByRole("option", { name: "Banana" });
       await user.click(option);
 
       // Should call single-mode handler
       await waitFor(() => {
-        expect(onSelectionChange).toHaveBeenCalledWith('2');
+        expect(onSelectionChange).toHaveBeenCalledWith("2");
       });
 
       // Menu should close in single mode
       await waitFor(() => {
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+        expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
       });
 
       // Listbox should NOT have aria-multiselectable
@@ -1218,42 +1214,42 @@ describe('ComboBox', () => {
   // RTL (Right-to-Left) KEYBOARD NAVIGATION
   // ============================================
 
-  describe('RTL keyboard navigation', () => {
-    it('should open listbox with ArrowDown in RTL', async () => {
+  describe("RTL keyboard navigation", () => {
+    it("should open listbox with ArrowDown in RTL", async () => {
       render(() => (
         <I18nProvider locale="ar-AE">
           <TestComboBox />
         </I18nProvider>
       ));
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       input.focus();
-      await user.keyboard('{ArrowDown}');
+      await user.keyboard("{ArrowDown}");
 
       await waitFor(() => {
-        const listbox = screen.getByRole('listbox');
+        const listbox = screen.getByRole("listbox");
         expect(listbox).toBeInTheDocument();
       });
     });
 
-    it('should open listbox with ArrowUp in RTL', async () => {
+    it("should open listbox with ArrowUp in RTL", async () => {
       render(() => (
         <I18nProvider locale="ar-AE">
           <TestComboBox />
         </I18nProvider>
       ));
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       input.focus();
-      await user.keyboard('{ArrowUp}');
+      await user.keyboard("{ArrowUp}");
 
       await waitFor(() => {
-        const listbox = screen.getByRole('listbox');
+        const listbox = screen.getByRole("listbox");
         expect(listbox).toBeInTheDocument();
       });
     });
 
-    it('should navigate listbox options with ArrowDown/ArrowUp in RTL', async () => {
+    it("should navigate listbox options with ArrowDown/ArrowUp in RTL", async () => {
       render(() => (
         <I18nProvider locale="ar-AE">
           <TestComboBox comboBoxProps={{ defaultOpen: true }} />
@@ -1261,30 +1257,30 @@ describe('ComboBox', () => {
       ));
 
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       input.focus();
 
       // ArrowDown should navigate options normally (vertical list unaffected by RTL)
-      await user.keyboard('{ArrowDown}');
+      await user.keyboard("{ArrowDown}");
 
-      const options = screen.getAllByRole('option');
-      expect(options[0]).toHaveAttribute('data-focused');
+      const options = screen.getAllByRole("option");
+      expect(options[0]).toHaveAttribute("data-focused");
     });
 
-    it('should render combobox correctly within RTL context', () => {
+    it("should render combobox correctly within RTL context", () => {
       render(() => (
         <I18nProvider locale="ar-AE">
           <TestComboBox />
         </I18nProvider>
       ));
 
-      const input = screen.getByRole('combobox');
+      const input = screen.getByRole("combobox");
       expect(input).toBeInTheDocument();
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       expect(button).toBeInTheDocument();
     });
   });

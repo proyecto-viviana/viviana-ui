@@ -2,15 +2,15 @@
  * Tests for createTableState and TableCollection.
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot } from 'solid-js';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot } from "solid-js";
 import {
   createTableState,
   TableCollection,
   createTableCollection,
   type ColumnDefinition,
   type RowDefinition,
-} from '../src/table';
+} from "../src/table";
 
 interface Person {
   id: number;
@@ -20,20 +20,20 @@ interface Person {
 }
 
 const testColumns: ColumnDefinition<Person>[] = [
-  { key: 'name', name: 'Name', isRowHeader: true },
-  { key: 'email', name: 'Email' },
-  { key: 'role', name: 'Role' },
+  { key: "name", name: "Name", isRowHeader: true },
+  { key: "email", name: "Email" },
+  { key: "role", name: "Role" },
 ];
 
 const testData: Person[] = [
-  { id: 1, name: 'Alice', email: 'alice@example.com', role: 'Admin' },
-  { id: 2, name: 'Bob', email: 'bob@example.com', role: 'User' },
-  { id: 3, name: 'Charlie', email: 'charlie@example.com', role: 'User' },
+  { id: 1, name: "Alice", email: "alice@example.com", role: "Admin" },
+  { id: 2, name: "Bob", email: "bob@example.com", role: "User" },
+  { id: 3, name: "Charlie", email: "charlie@example.com", role: "User" },
 ];
 
-describe('TableCollection', () => {
-  describe('basic collection', () => {
-    it('creates collection with columns and rows', () => {
+describe("TableCollection", () => {
+  describe("basic collection", () => {
+    it("creates collection with columns and rows", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -46,7 +46,7 @@ describe('TableCollection', () => {
       expect(collection.columnCount).toBe(3);
     });
 
-    it('creates header rows', () => {
+    it("creates header rows", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -54,11 +54,11 @@ describe('TableCollection', () => {
       });
 
       expect(collection.headerRows.length).toBe(1);
-      expect(collection.headerRows[0].type).toBe('headerrow');
+      expect(collection.headerRows[0].type).toBe("headerrow");
       expect(collection.headerRows[0].childNodes.length).toBe(3);
     });
 
-    it('creates body node with data rows', () => {
+    it("creates body node with data rows", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -72,7 +72,7 @@ describe('TableCollection', () => {
       expect(collection.body.childNodes[2].key).toBe(3);
     });
 
-    it('creates cells for each row', () => {
+    it("creates cells for each row", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -81,24 +81,24 @@ describe('TableCollection', () => {
 
       const firstRow = collection.body.childNodes[0];
       expect(firstRow.childNodes.length).toBe(3);
-      expect(firstRow.childNodes[0].type).toBe('rowheader'); // name column is row header
-      expect(firstRow.childNodes[1].type).toBe('cell');
-      expect(firstRow.childNodes[2].type).toBe('cell');
+      expect(firstRow.childNodes[0].type).toBe("rowheader"); // name column is row header
+      expect(firstRow.childNodes[1].type).toBe("cell");
+      expect(firstRow.childNodes[2].type).toBe("cell");
     });
 
-    it('sets default row header column', () => {
+    it("sets default row header column", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
         getKey: (item) => item.id,
       });
 
-      expect(collection.rowHeaderColumnKeys.has('name')).toBe(true);
+      expect(collection.rowHeaderColumnKeys.has("name")).toBe(true);
     });
   });
 
-  describe('getItem', () => {
-    it('returns row by key', () => {
+  describe("getItem", () => {
+    it("returns row by key", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -108,22 +108,22 @@ describe('TableCollection', () => {
       const row = collection.getItem(1);
       expect(row).not.toBeNull();
       expect(row?.key).toBe(1);
-      expect(row?.type).toBe('item');
+      expect(row?.type).toBe("item");
     });
 
-    it('returns cell by key', () => {
+    it("returns cell by key", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
         getKey: (item) => item.id,
       });
 
-      const cell = collection.getItem('1-name');
+      const cell = collection.getItem("1-name");
       expect(cell).not.toBeNull();
-      expect(cell?.type).toBe('rowheader');
+      expect(cell?.type).toBe("rowheader");
     });
 
-    it('returns null for non-existent key', () => {
+    it("returns null for non-existent key", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -134,32 +134,32 @@ describe('TableCollection', () => {
     });
   });
 
-  describe('getCell', () => {
-    it('returns cell by row and column keys', () => {
+  describe("getCell", () => {
+    it("returns cell by row and column keys", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
         getKey: (item) => item.id,
       });
 
-      const cell = collection.getCell(1, 'email');
+      const cell = collection.getCell(1, "email");
       expect(cell).not.toBeNull();
-      expect(cell?.textValue).toBe('alice@example.com');
+      expect(cell?.textValue).toBe("alice@example.com");
     });
 
-    it('returns null for non-existent cell', () => {
+    it("returns null for non-existent cell", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
         getKey: (item) => item.id,
       });
 
-      expect(collection.getCell(999, 'email')).toBeNull();
+      expect(collection.getCell(999, "email")).toBeNull();
     });
   });
 
-  describe('navigation methods', () => {
-    it('getFirstKey returns first data row key', () => {
+  describe("navigation methods", () => {
+    it("getFirstKey returns first data row key", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -169,7 +169,7 @@ describe('TableCollection', () => {
       expect(collection.getFirstKey()).toBe(1);
     });
 
-    it('getLastKey returns last data row key', () => {
+    it("getLastKey returns last data row key", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -179,7 +179,7 @@ describe('TableCollection', () => {
       expect(collection.getLastKey()).toBe(3);
     });
 
-    it('getKeyBefore returns previous row key', () => {
+    it("getKeyBefore returns previous row key", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -190,7 +190,7 @@ describe('TableCollection', () => {
       expect(collection.getKeyBefore(1)).toBeNull();
     });
 
-    it('getKeyAfter returns next row key', () => {
+    it("getKeyAfter returns next row key", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -201,7 +201,7 @@ describe('TableCollection', () => {
       expect(collection.getKeyAfter(3)).toBeNull();
     });
 
-    it('at returns row at index', () => {
+    it("at returns row at index", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -214,8 +214,8 @@ describe('TableCollection', () => {
     });
   });
 
-  describe('selection checkboxes', () => {
-    it('adds selection column when showSelectionCheckboxes is true', () => {
+  describe("selection checkboxes", () => {
+    it("adds selection column when showSelectionCheckboxes is true", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -224,12 +224,12 @@ describe('TableCollection', () => {
       });
 
       expect(collection.columns.length).toBe(4); // selection + 3 columns
-      expect(collection.columns[0].key).toBe('__selection__');
+      expect(collection.columns[0].key).toBe("__selection__");
     });
   });
 
-  describe('iterator', () => {
-    it('iterates over body rows only', () => {
+  describe("iterator", () => {
+    it("iterates over body rows only", () => {
       const collection = createTableCollection({
         columns: testColumns,
         rows: testData,
@@ -245,9 +245,9 @@ describe('TableCollection', () => {
   });
 });
 
-describe('createTableState', () => {
-  describe('basic state', () => {
-    it('creates table state with collection', () => {
+describe("createTableState", () => {
+  describe("basic state", () => {
+    it("creates table state with collection", () => {
       createRoot((dispose) => {
         const collection = createTableCollection({
           columns: testColumns,
@@ -260,7 +260,7 @@ describe('createTableState', () => {
         }));
 
         expect(state.collection).toBe(collection);
-        expect(state.selectionMode).toBe('none');
+        expect(state.selectionMode).toBe("none");
         expect(state.showSelectionCheckboxes).toBe(false);
         expect(state.sortDescriptor).toBeNull();
 
@@ -269,8 +269,8 @@ describe('createTableState', () => {
     });
   });
 
-  describe('selection', () => {
-    it('supports single selection', () => {
+  describe("selection", () => {
+    it("supports single selection", () => {
       createRoot((dispose) => {
         const collection = createTableCollection({
           columns: testColumns,
@@ -280,10 +280,10 @@ describe('createTableState', () => {
 
         const state = createTableState(() => ({
           collection,
-          selectionMode: 'single',
+          selectionMode: "single",
         }));
 
-        expect(state.selectionMode).toBe('single');
+        expect(state.selectionMode).toBe("single");
         expect(state.isSelected(1)).toBe(false);
 
         state.toggleSelection(1);
@@ -297,7 +297,7 @@ describe('createTableState', () => {
       });
     });
 
-    it('supports multiple selection', () => {
+    it("supports multiple selection", () => {
       createRoot((dispose) => {
         const collection = createTableCollection({
           columns: testColumns,
@@ -307,7 +307,7 @@ describe('createTableState', () => {
 
         const state = createTableState(() => ({
           collection,
-          selectionMode: 'multiple',
+          selectionMode: "multiple",
         }));
 
         state.toggleSelection(1);
@@ -321,7 +321,7 @@ describe('createTableState', () => {
       });
     });
 
-    it('supports select all', () => {
+    it("supports select all", () => {
       createRoot((dispose) => {
         const collection = createTableCollection({
           columns: testColumns,
@@ -331,17 +331,17 @@ describe('createTableState', () => {
 
         const state = createTableState(() => ({
           collection,
-          selectionMode: 'multiple',
+          selectionMode: "multiple",
         }));
 
         state.selectAll();
-        expect(state.selectedKeys).toBe('all');
+        expect(state.selectedKeys).toBe("all");
 
         dispose();
       });
     });
 
-    it('calls onSelectionChange', () => {
+    it("calls onSelectionChange", () => {
       createRoot((dispose) => {
         const onSelectionChange = vi.fn();
 
@@ -353,7 +353,7 @@ describe('createTableState', () => {
 
         const state = createTableState(() => ({
           collection,
-          selectionMode: 'single',
+          selectionMode: "single",
           onSelectionChange,
         }));
 
@@ -366,8 +366,8 @@ describe('createTableState', () => {
     });
   });
 
-  describe('sorting', () => {
-    it('has null sortDescriptor by default', () => {
+  describe("sorting", () => {
+    it("has null sortDescriptor by default", () => {
       createRoot((dispose) => {
         const collection = createTableCollection({
           columns: testColumns,
@@ -385,7 +385,7 @@ describe('createTableState', () => {
       });
     });
 
-    it('uses provided sortDescriptor', () => {
+    it("uses provided sortDescriptor", () => {
       createRoot((dispose) => {
         const collection = createTableCollection({
           columns: testColumns,
@@ -395,19 +395,19 @@ describe('createTableState', () => {
 
         const state = createTableState(() => ({
           collection,
-          sortDescriptor: { column: 'name', direction: 'ascending' },
+          sortDescriptor: { column: "name", direction: "ascending" },
         }));
 
         expect(state.sortDescriptor).toEqual({
-          column: 'name',
-          direction: 'ascending',
+          column: "name",
+          direction: "ascending",
         });
 
         dispose();
       });
     });
 
-    it('sort() calls onSortChange with ascending for new column', () => {
+    it("sort() calls onSortChange with ascending for new column", () => {
       createRoot((dispose) => {
         const onSortChange = vi.fn();
 
@@ -422,18 +422,18 @@ describe('createTableState', () => {
           onSortChange,
         }));
 
-        state.sort('name');
+        state.sort("name");
 
         expect(onSortChange).toHaveBeenCalledWith({
-          column: 'name',
-          direction: 'ascending',
+          column: "name",
+          direction: "ascending",
         });
 
         dispose();
       });
     });
 
-    it('sort() toggles direction for same column', () => {
+    it("sort() toggles direction for same column", () => {
       createRoot((dispose) => {
         const onSortChange = vi.fn();
 
@@ -445,22 +445,22 @@ describe('createTableState', () => {
 
         const state = createTableState(() => ({
           collection,
-          sortDescriptor: { column: 'name', direction: 'ascending' },
+          sortDescriptor: { column: "name", direction: "ascending" },
           onSortChange,
         }));
 
-        state.sort('name');
+        state.sort("name");
 
         expect(onSortChange).toHaveBeenCalledWith({
-          column: 'name',
-          direction: 'descending',
+          column: "name",
+          direction: "descending",
         });
 
         dispose();
       });
     });
 
-    it('sort() uses explicit direction when provided', () => {
+    it("sort() uses explicit direction when provided", () => {
       createRoot((dispose) => {
         const onSortChange = vi.fn();
 
@@ -475,11 +475,11 @@ describe('createTableState', () => {
           onSortChange,
         }));
 
-        state.sort('name', 'descending');
+        state.sort("name", "descending");
 
         expect(onSortChange).toHaveBeenCalledWith({
-          column: 'name',
-          direction: 'descending',
+          column: "name",
+          direction: "descending",
         });
 
         dispose();
@@ -487,8 +487,8 @@ describe('createTableState', () => {
     });
   });
 
-  describe('disabled keys', () => {
-    it('respects disabled keys', () => {
+  describe("disabled keys", () => {
+    it("respects disabled keys", () => {
       createRoot((dispose) => {
         const collection = createTableCollection({
           columns: testColumns,
@@ -498,7 +498,7 @@ describe('createTableState', () => {
 
         const state = createTableState(() => ({
           collection,
-          selectionMode: 'single',
+          selectionMode: "single",
           disabledKeys: [2],
         }));
 
@@ -515,8 +515,8 @@ describe('createTableState', () => {
     });
   });
 
-  describe('showSelectionCheckboxes', () => {
-    it('tracks showSelectionCheckboxes option', () => {
+  describe("showSelectionCheckboxes", () => {
+    it("tracks showSelectionCheckboxes option", () => {
       createRoot((dispose) => {
         const collection = createTableCollection({
           columns: testColumns,
@@ -537,8 +537,8 @@ describe('createTableState', () => {
     });
   });
 
-  describe('focus management', () => {
-    it('tracks focused key', () => {
+  describe("focus management", () => {
+    it("tracks focused key", () => {
       createRoot((dispose) => {
         const collection = createTableCollection({
           columns: testColumns,
@@ -562,7 +562,7 @@ describe('createTableState', () => {
       });
     });
 
-    it('tracks focused state', () => {
+    it("tracks focused state", () => {
       createRoot((dispose) => {
         const collection = createTableCollection({
           columns: testColumns,

@@ -3,10 +3,6 @@ export {
   getTagGroupData,
   type AriaTagGroupProps,
   type TagGroupAria,
-} from './createTagGroup';
+} from "./createTagGroup";
 
-export {
-  createTag,
-  type AriaTagProps,
-  type TagAria,
-} from './createTag';
+export { createTag, type AriaTagProps, type TagAria } from "./createTag";

@@ -8,7 +8,11 @@ type FileNode = {
   name: string;
 };
 
-function fileItem(key: string, name: string, children?: TreeItemData<FileNode>[]): TreeItemData<FileNode> {
+function fileItem(
+  key: string,
+  name: string,
+  children?: TreeItemData<FileNode>[],
+): TreeItemData<FileNode> {
   return { key, value: { name }, textValue: name, children };
 }
 
@@ -57,9 +61,7 @@ export const Route = createFileRoute("/silapse/docs/components/tree")({
 
 function TreePage() {
   const [selectedKeys, setSelectedKeys] = createSignal<Set<Key>>(new Set());
-  const [expandedKeys, setExpandedKeys] = createSignal<Set<Key>>(
-    new Set(["src", "components"])
-  );
+  const [expandedKeys, setExpandedKeys] = createSignal<Set<Key>>(new Set(["src", "components"]));
 
   return (
     <DocPage
@@ -245,7 +247,9 @@ function TreePage() {
           <li>
             Selection state is communicated via <code>aria-selected</code>
           </li>
-          <li>Nested level is exposed via <code>aria-level</code></li>
+          <li>
+            Nested level is exposed via <code>aria-level</code>
+          </li>
         </ul>
       </AccessibilitySection>
     </DocPage>

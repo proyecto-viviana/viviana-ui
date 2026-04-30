@@ -4,17 +4,17 @@
  * Port of @react-aria/interactions useLongPress, adapted for SolidJS.
  */
 
-import { JSX, onCleanup } from 'solid-js';
-import { createPress, type PressEvent } from './createPress';
-import { mergeProps, focusWithoutScrolling, createGlobalListeners } from '../utils';
-import { createDescription } from '../utils/createDescription';
-import { type MaybeAccessor } from '../utils/reactivity';
+import { JSX, onCleanup } from "solid-js";
+import { createPress, type PressEvent } from "./createPress";
+import { mergeProps, focusWithoutScrolling, createGlobalListeners } from "../utils";
+import { createDescription } from "../utils/createDescription";
+import { type MaybeAccessor } from "../utils/reactivity";
 
 export interface LongPressEvent {
   /** The type of long press event being fired. */
-  type: 'longpressstart' | 'longpressend' | 'longpress';
+  type: "longpressstart" | "longpressend" | "longpress";
   /** The pointer type that triggered the long press. */
-  pointerType: PressEvent['pointerType'];
+  pointerType: PressEvent["pointerType"];
   /** The target element of the long press event. */
   target: Element;
   /** Whether the shift keyboard modifier was held during the long press event. */
@@ -66,10 +66,10 @@ export interface LongPressResult {
 const DEFAULT_THRESHOLD = 500;
 
 function isDisabledValue(isDisabled: MaybeAccessor<boolean> | undefined): boolean {
-  return typeof isDisabled === 'function' ? isDisabled() : !!isDisabled;
+  return typeof isDisabled === "function" ? isDisabled() : !!isDisabled;
 }
 
-function createLongPressEvent(type: LongPressEvent['type'], e: PressEvent): LongPressEvent {
+function createLongPressEvent(type: LongPressEvent["type"], e: PressEvent): LongPressEvent {
   return {
     type,
     pointerType: e.pointerType,
@@ -103,37 +103,37 @@ export function createLongPress(props: LongPressProps = {}): LongPressResult {
     isDisabled,
     onPressStart(e) {
       e.continuePropagation();
-      if (e.pointerType === 'mouse' || e.pointerType === 'touch') {
-        onLongPressStart?.(createLongPressEvent('longpressstart', e));
+      if (e.pointerType === "mouse" || e.pointerType === "touch") {
+        onLongPressStart?.(createLongPressEvent("longpressstart", e));
 
         timeoutId = setTimeout(() => {
           // Prevent other press handlers from also handling this event.
-          e.target.dispatchEvent(new PointerEvent('pointercancel', { bubbles: true }));
+          e.target.dispatchEvent(new PointerEvent("pointercancel", { bubbles: true }));
 
           // Ensure target is focused. On touch devices, browsers typically focus on pointer up.
           if (document.activeElement !== e.target) {
             focusWithoutScrolling(e.target as HTMLElement);
           }
 
-          onLongPress?.(createLongPressEvent('longpress', e));
+          onLongPress?.(createLongPressEvent("longpress", e));
           timeoutId = undefined;
         }, threshold);
 
-        if (e.pointerType === 'touch') {
+        if (e.pointerType === "touch") {
           const onContextMenu = (event: Event) => {
             event.preventDefault();
           };
           const target = e.target as HTMLElement;
-          target.addEventListener('contextmenu', onContextMenu, { once: true });
+          target.addEventListener("contextmenu", onContextMenu, { once: true });
 
           addGlobalListener(
-            'pointerup',
+            "pointerup",
             () => {
               setTimeout(() => {
-                target.removeEventListener('contextmenu', onContextMenu);
+                target.removeEventListener("contextmenu", onContextMenu);
               }, 30);
             },
-            { isWindow: true, once: true }
+            { isWindow: true, once: true },
           );
         }
       }
@@ -144,14 +144,14 @@ export function createLongPress(props: LongPressProps = {}): LongPressResult {
         timeoutId = undefined;
       }
 
-      if (onLongPressEnd && (e.pointerType === 'mouse' || e.pointerType === 'touch')) {
-        onLongPressEnd(createLongPressEvent('longpressend', e));
+      if (onLongPressEnd && (e.pointerType === "mouse" || e.pointerType === "touch")) {
+        onLongPressEnd(createLongPressEvent("longpressend", e));
       }
     },
   });
 
   const descriptionProps = createDescription(() =>
-    onLongPress && !isDisabledValue(isDisabled) ? accessibilityDescription : undefined
+    onLongPress && !isDisabledValue(isDisabled) ? accessibilityDescription : undefined,
   );
 
   onCleanup(() => {
@@ -162,8 +162,8 @@ export function createLongPress(props: LongPressProps = {}): LongPressResult {
   });
 
   const longPressProps = mergeProps(pressProps) as JSX.HTMLAttributes<HTMLElement>;
-  Object.defineProperty(longPressProps, 'aria-describedby', {
-    get: () => descriptionProps['aria-describedby'],
+  Object.defineProperty(longPressProps, "aria-describedby", {
+    get: () => descriptionProps["aria-describedby"],
     enumerable: true,
     configurable: true,
   });

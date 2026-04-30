@@ -16,40 +16,40 @@ solidaria-components provides ready-to-use headless components that combine stat
 
 ### Form Controls
 
-| Component | Description |
-|-----------|-------------|
-| Button | Accessible button with press states |
-| Checkbox, CheckboxGroup | Checkboxes with group support |
-| Radio, RadioGroup | Radio buttons |
-| ToggleSwitch | Toggle switch control |
-| TextField, Input, TextArea, Label | Text inputs with labels |
-| NumberField | Numeric input with inc/dec buttons |
-| SearchField | Search input with clear button |
-| Slider, SliderTrack, SliderThumb | Range slider |
+| Component                         | Description                         |
+| --------------------------------- | ----------------------------------- |
+| Button                            | Accessible button with press states |
+| Checkbox, CheckboxGroup           | Checkboxes with group support       |
+| Radio, RadioGroup                 | Radio buttons                       |
+| ToggleSwitch                      | Toggle switch control               |
+| TextField, Input, TextArea, Label | Text inputs with labels             |
+| NumberField                       | Numeric input with inc/dec buttons  |
+| SearchField                       | Search input with clear button      |
+| Slider, SliderTrack, SliderThumb  | Range slider                        |
 
 ### Navigation
 
-| Component | Description |
-|-----------|-------------|
-| Tabs, TabList, Tab, TabPanel | Tabbed navigation |
-| Breadcrumbs, BreadcrumbItem | Breadcrumb navigation |
-| Link | Accessible link |
-| Landmark | ARIA landmark regions with F6 navigation |
+| Component                    | Description                              |
+| ---------------------------- | ---------------------------------------- |
+| Tabs, TabList, Tab, TabPanel | Tabbed navigation                        |
+| Breadcrumbs, BreadcrumbItem  | Breadcrumb navigation                    |
+| Link                         | Accessible link                          |
+| Landmark                     | ARIA landmark regions with F6 navigation |
 
 ### Selection
 
-| Component | Description |
-|-----------|-------------|
-| Select, SelectTrigger, SelectValue, SelectListBox, SelectOption | Dropdown select |
-| Menu, MenuItem, MenuTrigger, MenuButton | Action menus |
-| ListBox, ListBoxOption | Selectable lists |
+| Component                                                       | Description      |
+| --------------------------------------------------------------- | ---------------- |
+| Select, SelectTrigger, SelectValue, SelectListBox, SelectOption | Dropdown select  |
+| Menu, MenuItem, MenuTrigger, MenuButton                         | Action menus     |
+| ListBox, ListBoxOption                                          | Selectable lists |
 
 ### Feedback & Layout
 
-| Component | Description |
-|-----------|-------------|
-| ProgressBar | Progress indicator |
-| Separator | Visual divider |
+| Component      | Description                |
+| -------------- | -------------------------- |
+| ProgressBar    | Progress indicator         |
+| Separator      | Visual divider             |
 | VisuallyHidden | Screen reader only content |
 
 ## Usage
@@ -65,9 +65,7 @@ function MyButton() {
   return (
     <Button onPress={() => console.log("pressed")}>
       {({ isPressed, isHovered, isFocusVisible }) => (
-        <span
-          class={`btn ${isPressed() ? "pressed" : ""} ${isHovered() ? "hovered" : ""}`}
-        >
+        <span class={`btn ${isPressed() ? "pressed" : ""} ${isHovered() ? "hovered" : ""}`}>
           Click me
         </span>
       )}
@@ -121,9 +119,7 @@ function Preferences() {
             {({ inputProps, isSelected }) => (
               <label>
                 <input {...inputProps} />
-                <span class={isSelected() ? "checked" : ""}>
-                  Subscribe to newsletter
-                </span>
+                <span class={isSelected() ? "checked" : ""}>Subscribe to newsletter</span>
               </label>
             )}
           </Checkbox>
@@ -131,9 +127,7 @@ function Preferences() {
             {({ inputProps, isSelected }) => (
               <label>
                 <input {...inputProps} />
-                <span class={isSelected() ? "checked" : ""}>
-                  Receive updates
-                </span>
+                <span class={isSelected() ? "checked" : ""}>Receive updates</span>
               </label>
             )}
           </Checkbox>
@@ -147,7 +141,13 @@ function Preferences() {
 ### Select Example
 
 ```tsx
-import { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from "@proyecto-viviana/solidaria-components";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectListBox,
+  SelectOption,
+} from "@proyecto-viviana/solidaria-components";
 
 const countries = [
   { key: "us", label: "United States" },
@@ -165,9 +165,7 @@ function CountrySelect() {
         {(item) => (
           <SelectOption key={item.key}>
             {({ isSelected, isFocused }) => (
-              <span class={`option ${isSelected() ? "selected" : ""}`}>
-                {item.label}
-              </span>
+              <span class={`option ${isSelected() ? "selected" : ""}`}>{item.label}</span>
             )}
           </SelectOption>
         )}
@@ -194,9 +192,7 @@ function Navigation() {
       <TabList>
         {(item) => (
           <Tab id={item.id}>
-            {({ isSelected }) => (
-              <span class={isSelected() ? "active" : ""}>{item.label}</span>
-            )}
+            {({ isSelected }) => <span class={isSelected() ? "active" : ""}>{item.label}</span>}
           </Tab>
         )}
       </TabList>
@@ -211,7 +207,12 @@ function Navigation() {
 ### Slider Example
 
 ```tsx
-import { Slider, SliderTrack, SliderThumb, SliderOutput } from "@proyecto-viviana/solidaria-components";
+import {
+  Slider,
+  SliderTrack,
+  SliderThumb,
+  SliderOutput,
+} from "@proyecto-viviana/solidaria-components";
 
 function VolumeSlider() {
   return (
@@ -261,9 +262,7 @@ function CustomTabIndicator() {
 ```tsx
 <Button>
   {({ isPressed, isHovered }) => (
-    <span style={{ background: isPressed() ? "red" : isHovered() ? "pink" : "blue" }}>
-      Click
-    </span>
+    <span style={{ background: isPressed() ? "red" : isHovered() ? "pink" : "blue" }}>Click</span>
   )}
 </Button>
 ```
@@ -275,16 +274,18 @@ function CustomTabIndicator() {
 ```
 
 ```css
-.btn[data-pressed] { background: red; }
-.btn[data-hovered] { background: pink; }
+.btn[data-pressed] {
+  background: red;
+}
+.btn[data-hovered] {
+  background: pink;
+}
 ```
 
 ### 3. Class Functions
 
 ```tsx
-<Button class={({ isPressed }) => isPressed() ? "pressed" : "normal"}>
-  Click
-</Button>
+<Button class={({ isPressed }) => (isPressed() ? "pressed" : "normal")}>Click</Button>
 ```
 
 ## TypeScript

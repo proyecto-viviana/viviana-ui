@@ -12,30 +12,21 @@
  * - Orientation
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
-import {
-  Slider,
-  SliderTrack,
-  SliderThumb,
-  SliderOutput,
-} from '../src/Slider';
-import { I18nProvider } from '@proyecto-viviana/solidaria';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { render, screen, cleanup, fireEvent, waitFor } from "@solidjs/testing-library";
+import { Slider, SliderTrack, SliderThumb, SliderOutput } from "../src/Slider";
+import { I18nProvider } from "@proyecto-viviana/solidaria";
+import { setupUser } from "@proyecto-viviana/solidaria-test-utils";
 
 // setupUser is consolidated in solidaria-test-utils.
 
 // Helper component for testing - Slider may use render props pattern
-function TestSlider(props: {
-  sliderProps?: Partial<Parameters<typeof Slider>[0]>;
-}) {
+function TestSlider(props: { sliderProps?: Partial<Parameters<typeof Slider>[0]> }) {
   return (
     <Slider aria-label="Test Slider" {...props.sliderProps}>
       {() => (
         <>
-          <SliderTrack>
-            {() => <SliderThumb />}
-          </SliderTrack>
+          <SliderTrack>{() => <SliderThumb />}</SliderTrack>
           <SliderOutput />
         </>
       )}
@@ -43,7 +34,7 @@ function TestSlider(props: {
   );
 }
 
-describe('Slider', () => {
+describe("Slider", () => {
   let user: ReturnType<typeof setupUser>;
 
   beforeEach(() => {
@@ -58,53 +49,53 @@ describe('Slider', () => {
   // RENDERING
   // ============================================
 
-  describe('rendering', () => {
-    it('should render with default class', () => {
+  describe("rendering", () => {
+    it("should render with default class", () => {
       render(() => <TestSlider />);
 
-      const slider = document.querySelector('.solidaria-Slider');
+      const slider = document.querySelector(".solidaria-Slider");
       expect(slider).toBeInTheDocument();
     });
 
-    it('should render slider role element', () => {
+    it("should render slider role element", () => {
       render(() => <TestSlider />);
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       expect(slider).toBeInTheDocument();
     });
 
-    it('should render track', () => {
+    it("should render track", () => {
       render(() => <TestSlider />);
 
-      const track = document.querySelector('.solidaria-Slider-track');
+      const track = document.querySelector(".solidaria-Slider-track");
       expect(track).toBeInTheDocument();
     });
 
-    it('should render thumb', () => {
+    it("should render thumb", () => {
       render(() => <TestSlider />);
 
-      const thumb = document.querySelector('.solidaria-Slider-thumb');
+      const thumb = document.querySelector(".solidaria-Slider-thumb");
       expect(thumb).toBeInTheDocument();
     });
 
-    it('should render output', () => {
+    it("should render output", () => {
       render(() => <TestSlider />);
 
-      const output = document.querySelector('.solidaria-Slider-output');
+      const output = document.querySelector(".solidaria-Slider-output");
       expect(output).toBeInTheDocument();
     });
 
-    it('should render with custom class', () => {
-      render(() => <TestSlider sliderProps={{ class: 'my-slider' }} />);
+    it("should render with custom class", () => {
+      render(() => <TestSlider sliderProps={{ class: "my-slider" }} />);
 
-      const slider = document.querySelector('.my-slider');
+      const slider = document.querySelector(".my-slider");
       expect(slider).toBeInTheDocument();
     });
 
-    it('should render label when provided', () => {
-      render(() => <TestSlider sliderProps={{ label: 'Volume' }} />);
+    it("should render label when provided", () => {
+      render(() => <TestSlider sliderProps={{ label: "Volume" }} />);
 
-      expect(screen.getByText('Volume')).toBeInTheDocument();
+      expect(screen.getByText("Volume")).toBeInTheDocument();
     });
   });
 
@@ -112,43 +103,41 @@ describe('Slider', () => {
   // VALUE CONTROL
   // ============================================
 
-  describe('value control', () => {
-    it('should display defaultValue', () => {
+  describe("value control", () => {
+    it("should display defaultValue", () => {
       render(() => <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100 }} />);
 
-      const slider = screen.getByRole('slider');
-      expect(slider).toHaveAttribute('aria-valuenow', '50');
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-valuenow", "50");
     });
 
-    it('should display controlled value', () => {
+    it("should display controlled value", () => {
       render(() => <TestSlider sliderProps={{ value: 75, minValue: 0, maxValue: 100 }} />);
 
-      const slider = screen.getByRole('slider');
-      expect(slider).toHaveAttribute('aria-valuenow', '75');
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-valuenow", "75");
     });
 
-    it('should fire onChange when value changes', async () => {
+    it("should fire onChange when value changes", async () => {
       const onChange = vi.fn();
       render(() => (
         <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, onChange }} />
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowRight}');
+      await user.keyboard("{ArrowRight}");
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalled();
       });
     });
 
-    it('should display formatted value in output', () => {
-      render(() => (
-        <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100 }} />
-      ));
+    it("should display formatted value in output", () => {
+      render(() => <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100 }} />);
 
-      const output = document.querySelector('.solidaria-Slider-output');
-      expect(output?.textContent).toBe('50');
+      const output = document.querySelector(".solidaria-Slider-output");
+      expect(output?.textContent).toBe("50");
     });
   });
 
@@ -156,45 +145,41 @@ describe('Slider', () => {
   // MIN/MAX CONSTRAINTS
   // ============================================
 
-  describe('min/max constraints', () => {
-    it('should have aria-valuemin', () => {
+  describe("min/max constraints", () => {
+    it("should have aria-valuemin", () => {
       render(() => <TestSlider sliderProps={{ minValue: 10, maxValue: 100 }} />);
 
-      const slider = screen.getByRole('slider');
-      expect(slider).toHaveAttribute('aria-valuemin', '10');
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-valuemin", "10");
     });
 
-    it('should have aria-valuemax', () => {
+    it("should have aria-valuemax", () => {
       render(() => <TestSlider sliderProps={{ minValue: 0, maxValue: 200 }} />);
 
-      const slider = screen.getByRole('slider');
-      expect(slider).toHaveAttribute('aria-valuemax', '200');
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-valuemax", "200");
     });
 
-    it('should not go below minValue', async () => {
-      render(() => (
-        <TestSlider sliderProps={{ defaultValue: 0, minValue: 0, maxValue: 100 }} />
-      ));
+    it("should not go below minValue", async () => {
+      render(() => <TestSlider sliderProps={{ defaultValue: 0, minValue: 0, maxValue: 100 }} />);
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowLeft}');
+      await user.keyboard("{ArrowLeft}");
 
       // Value should remain at minValue
-      expect(slider).toHaveAttribute('aria-valuenow', '0');
+      expect(slider).toHaveAttribute("aria-valuenow", "0");
     });
 
-    it('should not go above maxValue', async () => {
-      render(() => (
-        <TestSlider sliderProps={{ defaultValue: 100, minValue: 0, maxValue: 100 }} />
-      ));
+    it("should not go above maxValue", async () => {
+      render(() => <TestSlider sliderProps={{ defaultValue: 100, minValue: 0, maxValue: 100 }} />);
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowRight}');
+      await user.keyboard("{ArrowRight}");
 
       // Value should remain at maxValue
-      expect(slider).toHaveAttribute('aria-valuenow', '100');
+      expect(slider).toHaveAttribute("aria-valuenow", "100");
     });
   });
 
@@ -202,31 +187,35 @@ describe('Slider', () => {
   // STEP VALUE
   // ============================================
 
-  describe('step value', () => {
-    it('should increment by step value', async () => {
+  describe("step value", () => {
+    it("should increment by step value", async () => {
       const onChange = vi.fn();
       render(() => (
-        <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, step: 10, onChange }} />
+        <TestSlider
+          sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, step: 10, onChange }}
+        />
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowRight}');
+      await user.keyboard("{ArrowRight}");
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(60);
       });
     });
 
-    it('should decrement by step value', async () => {
+    it("should decrement by step value", async () => {
       const onChange = vi.fn();
       render(() => (
-        <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, step: 5, onChange }} />
+        <TestSlider
+          sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, step: 5, onChange }}
+        />
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowLeft}');
+      await user.keyboard("{ArrowLeft}");
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(45);
@@ -238,91 +227,91 @@ describe('Slider', () => {
   // KEYBOARD INTERACTIONS
   // ============================================
 
-  describe('keyboard interactions', () => {
-    it('should increase with ArrowRight', async () => {
+  describe("keyboard interactions", () => {
+    it("should increase with ArrowRight", async () => {
       const onChange = vi.fn();
       render(() => (
         <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, onChange }} />
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowRight}');
+      await user.keyboard("{ArrowRight}");
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalled();
       });
     });
 
-    it('should decrease with ArrowLeft', async () => {
+    it("should decrease with ArrowLeft", async () => {
       const onChange = vi.fn();
       render(() => (
         <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, onChange }} />
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowLeft}');
+      await user.keyboard("{ArrowLeft}");
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalled();
       });
     });
 
-    it('should increase with ArrowUp', async () => {
+    it("should increase with ArrowUp", async () => {
       const onChange = vi.fn();
       render(() => (
         <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, onChange }} />
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowUp}');
+      await user.keyboard("{ArrowUp}");
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalled();
       });
     });
 
-    it('should decrease with ArrowDown', async () => {
+    it("should decrease with ArrowDown", async () => {
       const onChange = vi.fn();
       render(() => (
         <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, onChange }} />
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowDown}');
+      await user.keyboard("{ArrowDown}");
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalled();
       });
     });
 
-    it('should go to min with Home', async () => {
+    it("should go to min with Home", async () => {
       const onChange = vi.fn();
       render(() => (
         <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, onChange }} />
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{Home}');
+      await user.keyboard("{Home}");
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(0);
       });
     });
 
-    it('should go to max with End', async () => {
+    it("should go to max with End", async () => {
       const onChange = vi.fn();
       render(() => (
         <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, onChange }} />
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{End}');
+      await user.keyboard("{End}");
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(100);
@@ -334,30 +323,28 @@ describe('Slider', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('should support isDisabled', () => {
+  describe("disabled state", () => {
+    it("should support isDisabled", () => {
       render(() => <TestSlider sliderProps={{ isDisabled: true }} />);
 
-      const slider = screen.getByRole('slider');
-      expect(slider).toHaveAttribute('aria-disabled', 'true');
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-disabled", "true");
     });
 
-    it('should have data-disabled attribute', () => {
+    it("should have data-disabled attribute", () => {
       render(() => <TestSlider sliderProps={{ isDisabled: true }} />);
 
-      const sliderWrapper = document.querySelector('.solidaria-Slider');
-      expect(sliderWrapper).toHaveAttribute('data-disabled');
+      const sliderWrapper = document.querySelector(".solidaria-Slider");
+      expect(sliderWrapper).toHaveAttribute("data-disabled");
     });
 
-    it('should not respond to keyboard when disabled', async () => {
+    it("should not respond to keyboard when disabled", async () => {
       const onChange = vi.fn();
-      render(() => (
-        <TestSlider sliderProps={{ isDisabled: true, defaultValue: 50, onChange }} />
-      ));
+      render(() => <TestSlider sliderProps={{ isDisabled: true, defaultValue: 50, onChange }} />);
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowRight}');
+      await user.keyboard("{ArrowRight}");
 
       expect(onChange).not.toHaveBeenCalled();
     });
@@ -367,46 +354,46 @@ describe('Slider', () => {
   // ARIA ATTRIBUTES
   // ============================================
 
-  describe('aria attributes', () => {
-    it('should have slider role', () => {
+  describe("aria attributes", () => {
+    it("should have slider role", () => {
       render(() => <TestSlider />);
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       expect(slider).toBeInTheDocument();
     });
 
-    it('should be accessible via aria-label on group', () => {
+    it("should be accessible via aria-label on group", () => {
       render(() => <TestSlider />);
 
       // The slider uses a hidden input with role=slider
       // The aria-label is applied to the group container, not the hidden input
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       expect(slider).toBeInTheDocument();
 
       // The group should have the aria-label
-      const group = document.querySelector('.solidaria-Slider');
-      expect(group).toHaveAttribute('aria-label', 'Test Slider');
+      const group = document.querySelector(".solidaria-Slider");
+      expect(group).toHaveAttribute("aria-label", "Test Slider");
     });
 
-    it('should have aria-valuenow', () => {
+    it("should have aria-valuenow", () => {
       render(() => <TestSlider sliderProps={{ defaultValue: 42 }} />);
 
-      const slider = screen.getByRole('slider');
-      expect(slider).toHaveAttribute('aria-valuenow', '42');
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-valuenow", "42");
     });
 
-    it('should have aria-orientation for horizontal', () => {
-      render(() => <TestSlider sliderProps={{ orientation: 'horizontal' }} />);
+    it("should have aria-orientation for horizontal", () => {
+      render(() => <TestSlider sliderProps={{ orientation: "horizontal" }} />);
 
-      const slider = screen.getByRole('slider');
-      expect(slider).toHaveAttribute('aria-orientation', 'horizontal');
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-orientation", "horizontal");
     });
 
-    it('should have aria-orientation for vertical', () => {
-      render(() => <TestSlider sliderProps={{ orientation: 'vertical' }} />);
+    it("should have aria-orientation for vertical", () => {
+      render(() => <TestSlider sliderProps={{ orientation: "vertical" }} />);
 
-      const slider = screen.getByRole('slider');
-      expect(slider).toHaveAttribute('aria-orientation', 'vertical');
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-orientation", "vertical");
     });
   });
 
@@ -414,19 +401,19 @@ describe('Slider', () => {
   // ORIENTATION
   // ============================================
 
-  describe('orientation', () => {
-    it('should support horizontal orientation', () => {
-      render(() => <TestSlider sliderProps={{ orientation: 'horizontal' }} />);
+  describe("orientation", () => {
+    it("should support horizontal orientation", () => {
+      render(() => <TestSlider sliderProps={{ orientation: "horizontal" }} />);
 
-      const sliderWrapper = document.querySelector('.solidaria-Slider');
-      expect(sliderWrapper).toHaveAttribute('data-orientation', 'horizontal');
+      const sliderWrapper = document.querySelector(".solidaria-Slider");
+      expect(sliderWrapper).toHaveAttribute("data-orientation", "horizontal");
     });
 
-    it('should support vertical orientation', () => {
-      render(() => <TestSlider sliderProps={{ orientation: 'vertical' }} />);
+    it("should support vertical orientation", () => {
+      render(() => <TestSlider sliderProps={{ orientation: "vertical" }} />);
 
-      const sliderWrapper = document.querySelector('.solidaria-Slider');
-      expect(sliderWrapper).toHaveAttribute('data-orientation', 'vertical');
+      const sliderWrapper = document.querySelector(".solidaria-Slider");
+      expect(sliderWrapper).toHaveAttribute("data-orientation", "vertical");
     });
   });
 
@@ -434,19 +421,19 @@ describe('Slider', () => {
   // DATA ATTRIBUTES
   // ============================================
 
-  describe('data attributes', () => {
-    it('should have data-orientation', () => {
+  describe("data attributes", () => {
+    it("should have data-orientation", () => {
       render(() => <TestSlider />);
 
-      const sliderWrapper = document.querySelector('.solidaria-Slider');
-      expect(sliderWrapper).toHaveAttribute('data-orientation');
+      const sliderWrapper = document.querySelector(".solidaria-Slider");
+      expect(sliderWrapper).toHaveAttribute("data-orientation");
     });
 
-    it('should not have data-disabled when enabled', () => {
+    it("should not have data-disabled when enabled", () => {
       render(() => <TestSlider />);
 
-      const sliderWrapper = document.querySelector('.solidaria-Slider');
-      expect(sliderWrapper).not.toHaveAttribute('data-disabled');
+      const sliderWrapper = document.querySelector(".solidaria-Slider");
+      expect(sliderWrapper).not.toHaveAttribute("data-disabled");
     });
   });
 
@@ -454,8 +441,8 @@ describe('Slider', () => {
   // RTL (Right-to-Left) KEYBOARD NAVIGATION
   // ============================================
 
-  describe('RTL keyboard navigation', () => {
-    it('ArrowRight should DECREASE value in RTL', async () => {
+  describe("RTL keyboard navigation", () => {
+    it("ArrowRight should DECREASE value in RTL", async () => {
       const onChange = vi.fn();
       render(() => (
         <I18nProvider locale="ar-AE">
@@ -463,9 +450,9 @@ describe('Slider', () => {
         </I18nProvider>
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowRight}');
+      await user.keyboard("{ArrowRight}");
 
       await waitFor(() => {
         // In RTL, ArrowRight decreases value (reversed from LTR)
@@ -473,7 +460,7 @@ describe('Slider', () => {
       });
     });
 
-    it('ArrowLeft should INCREASE value in RTL', async () => {
+    it("ArrowLeft should INCREASE value in RTL", async () => {
       const onChange = vi.fn();
       render(() => (
         <I18nProvider locale="ar-AE">
@@ -481,9 +468,9 @@ describe('Slider', () => {
         </I18nProvider>
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowLeft}');
+      await user.keyboard("{ArrowLeft}");
 
       await waitFor(() => {
         // In RTL, ArrowLeft increases value (reversed from LTR)
@@ -491,7 +478,7 @@ describe('Slider', () => {
       });
     });
 
-    it('ArrowUp should still increase value in RTL', async () => {
+    it("ArrowUp should still increase value in RTL", async () => {
       const onChange = vi.fn();
       render(() => (
         <I18nProvider locale="ar-AE">
@@ -499,9 +486,9 @@ describe('Slider', () => {
         </I18nProvider>
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowUp}');
+      await user.keyboard("{ArrowUp}");
 
       await waitFor(() => {
         // ArrowUp should still call onChange (increases value)
@@ -509,17 +496,19 @@ describe('Slider', () => {
       });
     });
 
-    it('step increment should respect RTL direction', async () => {
+    it("step increment should respect RTL direction", async () => {
       const onChange = vi.fn();
       render(() => (
         <I18nProvider locale="ar-AE">
-          <TestSlider sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, step: 10, onChange }} />
+          <TestSlider
+            sliderProps={{ defaultValue: 50, minValue: 0, maxValue: 100, step: 10, onChange }}
+          />
         </I18nProvider>
       ));
 
-      const slider = screen.getByRole('slider');
+      const slider = screen.getByRole("slider");
       slider.focus();
-      await user.keyboard('{ArrowLeft}');
+      await user.keyboard("{ArrowLeft}");
 
       await waitFor(() => {
         // In RTL, ArrowLeft increases by step

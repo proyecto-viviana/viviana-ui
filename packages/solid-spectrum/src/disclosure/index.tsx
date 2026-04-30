@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's disclosure patterns.
  */
 
-import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js';
+import { type JSX, splitProps, createContext, useContext, Show } from "solid-js";
 import {
   Disclosure as HeadlessDisclosure,
   DisclosureGroup as HeadlessDisclosureGroup,
@@ -17,15 +17,15 @@ import {
   type DisclosurePanelProps as HeadlessDisclosurePanelProps,
   type DisclosureRenderProps,
   type DisclosureGroupRenderProps,
-} from '@proyecto-viviana/solidaria-components';
-import { useProviderProps } from '../provider';
+} from "@proyecto-viviana/solidaria-components";
+import { useProviderProps } from "../provider";
 
 // ============================================
 // SIZE AND VARIANT CONTEXT
 // ============================================
 
-export type DisclosureSize = 'sm' | 'md' | 'lg';
-export type DisclosureVariant = 'default' | 'bordered' | 'filled' | 'ghost';
+export type DisclosureSize = "sm" | "md" | "lg";
+export type DisclosureVariant = "default" | "bordered" | "filled" | "ghost";
 
 interface DisclosureContextValue {
   size: DisclosureSize;
@@ -33,15 +33,18 @@ interface DisclosureContextValue {
 }
 
 const DisclosureSizeContext = createContext<DisclosureContextValue>({
-  size: 'md',
-  variant: 'default',
+  size: "md",
+  variant: "default",
 });
 
 // ============================================
 // TYPES
 // ============================================
 
-export interface DisclosureGroupProps extends Omit<HeadlessDisclosureGroupProps, 'class' | 'style'> {
+export interface DisclosureGroupProps extends Omit<
+  HeadlessDisclosureGroupProps,
+  "class" | "style"
+> {
   /** The size of all disclosures in the group. */
   size?: DisclosureSize;
   /** The visual variant of all disclosures in the group. */
@@ -50,7 +53,7 @@ export interface DisclosureGroupProps extends Omit<HeadlessDisclosureGroupProps,
   class?: string;
 }
 
-export interface DisclosureProps extends Omit<HeadlessDisclosureProps, 'class' | 'style'> {
+export interface DisclosureProps extends Omit<HeadlessDisclosureProps, "class" | "style"> {
   /** The size of the disclosure. Overrides group size if set. */
   size?: DisclosureSize;
   /** The visual variant. Overrides group variant if set. */
@@ -59,14 +62,20 @@ export interface DisclosureProps extends Omit<HeadlessDisclosureProps, 'class' |
   class?: string;
 }
 
-export interface DisclosureTriggerProps extends Omit<HeadlessDisclosureTriggerProps, 'class' | 'style'> {
+export interface DisclosureTriggerProps extends Omit<
+  HeadlessDisclosureTriggerProps,
+  "class" | "style"
+> {
   /** Additional CSS class name. */
   class?: string;
   /** Optional icon to show (defaults to chevron). */
   hideIcon?: boolean;
 }
 
-export interface DisclosurePanelProps extends Omit<HeadlessDisclosurePanelProps, 'class' | 'style'> {
+export interface DisclosurePanelProps extends Omit<
+  HeadlessDisclosurePanelProps,
+  "class" | "style"
+> {
   /** Additional CSS class name. */
   class?: string;
 }
@@ -77,61 +86,61 @@ export interface DisclosurePanelProps extends Omit<HeadlessDisclosurePanelProps,
 
 const sizeStyles = {
   sm: {
-    trigger: 'px-3 py-2 text-sm',
-    panel: 'px-3 py-2 text-sm',
-    icon: 'w-4 h-4',
-    gap: 'gap-1',
+    trigger: "px-3 py-2 text-sm",
+    panel: "px-3 py-2 text-sm",
+    icon: "w-4 h-4",
+    gap: "gap-1",
   },
   md: {
-    trigger: 'px-4 py-3 text-base',
-    panel: 'px-4 py-3 text-base',
-    icon: 'w-5 h-5',
-    gap: 'gap-2',
+    trigger: "px-4 py-3 text-base",
+    panel: "px-4 py-3 text-base",
+    icon: "w-5 h-5",
+    gap: "gap-2",
   },
   lg: {
-    trigger: 'px-5 py-4 text-lg',
-    panel: 'px-5 py-4 text-lg',
-    icon: 'w-6 h-6',
-    gap: 'gap-3',
+    trigger: "px-5 py-4 text-lg",
+    panel: "px-5 py-4 text-lg",
+    icon: "w-6 h-6",
+    gap: "gap-3",
   },
 };
 
 const variantStyles = {
   default: {
-    container: 'border-b border-primary-700',
+    container: "border-b border-primary-700",
     trigger: {
-      base: 'w-full flex items-center justify-between text-left transition-colors duration-200',
-      default: 'text-primary-200 hover:text-primary-100 hover:bg-bg-400/50',
-      disabled: 'text-primary-500 cursor-not-allowed',
+      base: "w-full flex items-center justify-between text-left transition-colors duration-200",
+      default: "text-primary-200 hover:text-primary-100 hover:bg-bg-400/50",
+      disabled: "text-primary-500 cursor-not-allowed",
     },
-    panel: 'text-primary-300',
+    panel: "text-primary-300",
   },
   bordered: {
-    container: 'border border-primary-600 rounded-lg mb-2 overflow-hidden',
+    container: "border border-primary-600 rounded-lg mb-2 overflow-hidden",
     trigger: {
-      base: 'w-full flex items-center justify-between text-left transition-colors duration-200',
-      default: 'text-primary-200 hover:bg-bg-400/50',
-      disabled: 'text-primary-500 cursor-not-allowed',
+      base: "w-full flex items-center justify-between text-left transition-colors duration-200",
+      default: "text-primary-200 hover:bg-bg-400/50",
+      disabled: "text-primary-500 cursor-not-allowed",
     },
-    panel: 'text-primary-300 border-t border-primary-600',
+    panel: "text-primary-300 border-t border-primary-600",
   },
   filled: {
-    container: 'bg-bg-400 rounded-lg mb-2 overflow-hidden',
+    container: "bg-bg-400 rounded-lg mb-2 overflow-hidden",
     trigger: {
-      base: 'w-full flex items-center justify-between text-left transition-colors duration-200',
-      default: 'text-primary-200 hover:bg-bg-300',
-      disabled: 'text-primary-500 cursor-not-allowed',
+      base: "w-full flex items-center justify-between text-left transition-colors duration-200",
+      default: "text-primary-200 hover:bg-bg-300",
+      disabled: "text-primary-500 cursor-not-allowed",
     },
-    panel: 'text-primary-300 bg-bg-300/50',
+    panel: "text-primary-300 bg-bg-300/50",
   },
   ghost: {
-    container: '',
+    container: "",
     trigger: {
-      base: 'w-full flex items-center justify-between text-left transition-colors duration-200 rounded-md',
-      default: 'text-primary-200 hover:bg-bg-400/50',
-      disabled: 'text-primary-500 cursor-not-allowed',
+      base: "w-full flex items-center justify-between text-left transition-colors duration-200 rounded-md",
+      default: "text-primary-200 hover:bg-bg-400/50",
+      disabled: "text-primary-500 cursor-not-allowed",
     },
-    panel: 'text-primary-300',
+    panel: "text-primary-300",
   },
 };
 
@@ -159,29 +168,21 @@ const variantStyles = {
  */
 export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
   const mergedProps = useProviderProps(props);
-  const [local, headlessProps] = splitProps(mergedProps, [
-    'size',
-    'variant',
-    'class',
-  ]);
+  const [local, headlessProps] = splitProps(mergedProps, ["size", "variant", "class"]);
 
-  const size = local.size ?? 'md';
-  const variant = local.variant ?? 'default';
-  const customClass = local.class ?? '';
+  const size = local.size ?? "md";
+  const variant = local.variant ?? "default";
+  const customClass = local.class ?? "";
 
   const getClassName = (_renderProps: DisclosureGroupRenderProps): string => {
-    const base = 'flex flex-col';
+    const base = "flex flex-col";
     const gapClass = sizeStyles[size].gap;
-    return [base, gapClass, customClass].filter(Boolean).join(' ');
+    return [base, gapClass, customClass].filter(Boolean).join(" ");
   };
 
   return (
     <DisclosureSizeContext.Provider value={{ size, variant }}>
-      <HeadlessDisclosureGroup
-        {...headlessProps}
-        class={getClassName}
-        children={props.children}
-      />
+      <HeadlessDisclosureGroup {...headlessProps} class={getClassName} children={props.children} />
     </DisclosureSizeContext.Provider>
   );
 }
@@ -203,28 +204,21 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
  */
 export function Disclosure(props: DisclosureProps): JSX.Element {
   const mergedProps = useProviderProps(props);
-  const [local, headlessProps] = splitProps(mergedProps, [
-    'size',
-    'variant',
-    'class',
-  ]);
+  const [local, headlessProps] = splitProps(mergedProps, ["size", "variant", "class"]);
 
   const parentCtx = useContext(DisclosureSizeContext);
   const size = local.size ?? parentCtx.size;
   const variant = local.variant ?? parentCtx.variant;
-  const customClass = local.class ?? '';
+  const customClass = local.class ?? "";
 
   const getClassName = (_renderProps: DisclosureRenderProps): string => {
     const variantClass = variantStyles[variant].container;
-    return [variantClass, customClass].filter(Boolean).join(' ');
+    return [variantClass, customClass].filter(Boolean).join(" ");
   };
 
   return (
     <DisclosureSizeContext.Provider value={{ size, variant }}>
-      <HeadlessDisclosure
-        {...headlessProps}
-        class={getClassName}
-      >
+      <HeadlessDisclosure {...headlessProps} class={getClassName}>
         {props.children}
       </HeadlessDisclosure>
     </DisclosureSizeContext.Provider>
@@ -240,28 +234,32 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
  * The chevron rotates based on the data-expanded attribute using Tailwind's group class.
  */
 export function DisclosureTrigger(props: DisclosureTriggerProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'hideIcon']);
+  const [local, headlessProps] = splitProps(props, ["class", "hideIcon"]);
   const ctx = useContext(DisclosureSizeContext);
-  const customClass = local.class ?? '';
+  const customClass = local.class ?? "";
 
   return (
     <HeadlessDisclosureTrigger
       {...headlessProps}
       class={[
-        'group', // Enable Tailwind group selector for chevron rotation
+        "group", // Enable Tailwind group selector for chevron rotation
         variantStyles[ctx.variant].trigger.base,
         sizeStyles[ctx.size].trigger,
         customClass,
-      ].filter(Boolean).join(' ')}
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       {props.children}
       <Show when={!local.hideIcon}>
         <svg
           class={[
             sizeStyles[ctx.size].icon,
-            'transition-transform duration-200',
-            'group-data-[expanded=true]:rotate-180', // Rotate when expanded
-          ].filter(Boolean).join(' ')}
+            "transition-transform duration-200",
+            "group-data-[expanded=true]:rotate-180", // Rotate when expanded
+          ]
+            .filter(Boolean)
+            .join(" ")}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -285,22 +283,18 @@ export function DisclosureTrigger(props: DisclosureTriggerProps): JSX.Element {
  * DisclosurePanel contains the content that is shown/hidden.
  */
 export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class']);
+  const [local, headlessProps] = splitProps(props, ["class"]);
   const ctx = useContext(DisclosureSizeContext);
-  const customClass = local.class ?? '';
+  const customClass = local.class ?? "";
 
   const getClassName = (_renderProps: DisclosureRenderProps): string => {
     const base = variantStyles[ctx.variant].panel;
     const sizeClass = sizeStyles[ctx.size].panel;
-    return [base, sizeClass, customClass].filter(Boolean).join(' ');
+    return [base, sizeClass, customClass].filter(Boolean).join(" ");
   };
 
   return (
-    <HeadlessDisclosurePanel
-      {...headlessProps}
-      class={getClassName}
-      children={props.children}
-    />
+    <HeadlessDisclosurePanel {...headlessProps} class={getClassName} children={props.children} />
   );
 }
 

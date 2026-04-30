@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot, createEffect } from 'solid-js';
-import { createAsyncList } from '../../src/data/createAsyncList';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot, createEffect } from "solid-js";
+import { createAsyncList } from "../../src/data/createAsyncList";
 
 interface Item {
   id: number;
@@ -11,7 +11,7 @@ function waitForIdle(list: { loadingState: string }, timeout = 2000): Promise<vo
   return new Promise((resolve, reject) => {
     const start = Date.now();
     const check = () => {
-      if (list.loadingState === 'idle') {
+      if (list.loadingState === "idle") {
         resolve();
       } else if (Date.now() - start > timeout) {
         reject(new Error(`Timed out waiting for idle state. Current: ${list.loadingState}`));
@@ -23,14 +23,14 @@ function waitForIdle(list: { loadingState: string }, timeout = 2000): Promise<vo
   });
 }
 
-describe('createAsyncList', () => {
-  it('starts in loading state and loads items', async () => {
+describe("createAsyncList", () => {
+  it("starts in loading state and loads items", async () => {
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
         load: async () => ({
           items: [
-            { id: 1, name: 'One' },
-            { id: 2, name: 'Two' },
+            { id: 1, name: "One" },
+            { id: 2, name: "Two" },
           ],
         }),
       });
@@ -38,29 +38,29 @@ describe('createAsyncList', () => {
       expect(list.isLoading).toBe(true);
       await waitForIdle(list);
       expect(list.items).toHaveLength(2);
-      expect(list.items[0].name).toBe('One');
+      expect(list.items[0].name).toBe("One");
       expect(list.isLoading).toBe(false);
       dispose();
     });
   });
 
-  it('handles load errors', async () => {
+  it("handles load errors", async () => {
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
         load: async () => {
-          throw new Error('Load failed');
+          throw new Error("Load failed");
         },
       });
 
       // Wait for error state
-      await new Promise(resolve => setTimeout(resolve, 50));
-      expect(list.loadingState).toBe('error');
-      expect(list.error?.message).toBe('Load failed');
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(list.loadingState).toBe("error");
+      expect(list.error?.message).toBe("Load failed");
       dispose();
     });
   });
 
-  it('reload reloads the data', async () => {
+  it("reload reloads the data", async () => {
     let loadCount = 0;
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
@@ -81,7 +81,7 @@ describe('createAsyncList', () => {
     });
   });
 
-  it('supports pagination with loadMore', async () => {
+  it("supports pagination with loadMore", async () => {
     let page = 0;
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item, string>({
@@ -89,12 +89,12 @@ describe('createAsyncList', () => {
           page++;
           if (!cursor) {
             return {
-              items: [{ id: 1, name: 'Page1' }],
-              cursor: 'page2',
+              items: [{ id: 1, name: "Page1" }],
+              cursor: "page2",
             };
           }
           return {
-            items: [{ id: 2, name: 'Page2' }],
+            items: [{ id: 2, name: "Page2" }],
           };
         },
       });
@@ -106,20 +106,20 @@ describe('createAsyncList', () => {
       list.loadMore();
       await waitForIdle(list);
       expect(list.items).toHaveLength(2);
-      expect(list.items[1].name).toBe('Page2');
+      expect(list.items[1].name).toBe("Page2");
       dispose();
     });
   });
 
-  it('sort triggers sorting', async () => {
+  it("sort triggers sorting", async () => {
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
         load: async ({ sortDescriptor }) => {
           const items = [
-            { id: 1, name: 'Banana' },
-            { id: 2, name: 'Apple' },
+            { id: 1, name: "Banana" },
+            { id: 2, name: "Apple" },
           ];
-          if (sortDescriptor?.direction === 'ascending') {
+          if (sortDescriptor?.direction === "ascending") {
             items.sort((a, b) => a.name.localeCompare(b.name));
           }
           return { items };
@@ -127,20 +127,20 @@ describe('createAsyncList', () => {
       });
 
       await waitForIdle(list);
-      expect(list.items[0].name).toBe('Banana');
+      expect(list.items[0].name).toBe("Banana");
 
-      list.sort({ column: 'name', direction: 'ascending' });
+      list.sort({ column: "name", direction: "ascending" });
       await waitForIdle(list);
-      expect(list.items[0].name).toBe('Apple');
+      expect(list.items[0].name).toBe("Apple");
       dispose();
     });
   });
 
-  it('setSelectedKeys works', async () => {
+  it("setSelectedKeys works", async () => {
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
         load: async () => ({
-          items: [{ id: 1, name: 'One' }],
+          items: [{ id: 1, name: "One" }],
         }),
       });
 
@@ -151,46 +151,46 @@ describe('createAsyncList', () => {
     });
   });
 
-  it('getItem returns item by key', async () => {
+  it("getItem returns item by key", async () => {
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
         load: async () => ({
           items: [
-            { id: 1, name: 'One' },
-            { id: 2, name: 'Two' },
+            { id: 1, name: "One" },
+            { id: 2, name: "Two" },
           ],
         }),
       });
 
       await waitForIdle(list);
-      expect(list.getItem(2)?.name).toBe('Two');
+      expect(list.getItem(2)?.name).toBe("Two");
       expect(list.getItem(99)).toBeUndefined();
       dispose();
     });
   });
 
-  it('append adds items', async () => {
+  it("append adds items", async () => {
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
         load: async () => ({
-          items: [{ id: 1, name: 'One' }],
+          items: [{ id: 1, name: "One" }],
         }),
       });
 
       await waitForIdle(list);
-      list.append({ id: 2, name: 'Two' });
+      list.append({ id: 2, name: "Two" });
       expect(list.items).toHaveLength(2);
       dispose();
     });
   });
 
-  it('remove removes items', async () => {
+  it("remove removes items", async () => {
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
         load: async () => ({
           items: [
-            { id: 1, name: 'One' },
-            { id: 2, name: 'Two' },
+            { id: 1, name: "One" },
+            { id: 2, name: "Two" },
           ],
         }),
       });
@@ -198,24 +198,24 @@ describe('createAsyncList', () => {
       await waitForIdle(list);
       list.remove(1);
       expect(list.items).toHaveLength(1);
-      expect(list.items[0].name).toBe('Two');
+      expect(list.items[0].name).toBe("Two");
       dispose();
     });
   });
 
-  it('setFilterText triggers filtering', async () => {
-    let lastFilterText = '';
+  it("setFilterText triggers filtering", async () => {
+    let lastFilterText = "";
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
         load: async ({ filterText }) => {
-          lastFilterText = filterText ?? '';
+          lastFilterText = filterText ?? "";
           const items = [
-            { id: 1, name: 'Apple' },
-            { id: 2, name: 'Banana' },
+            { id: 1, name: "Apple" },
+            { id: 2, name: "Banana" },
           ];
           return {
             items: filterText
-              ? items.filter(i => i.name.toLowerCase().includes(filterText.toLowerCase()))
+              ? items.filter((i) => i.name.toLowerCase().includes(filterText.toLowerCase()))
               : items,
           };
         },
@@ -224,35 +224,35 @@ describe('createAsyncList', () => {
       await waitForIdle(list);
       expect(list.items).toHaveLength(2);
 
-      list.setFilterText('apple');
+      list.setFilterText("apple");
       await waitForIdle(list);
-      expect(lastFilterText).toBe('apple');
+      expect(lastFilterText).toBe("apple");
       dispose();
     });
   });
 
-  it('supports initialSortDescriptor', async () => {
+  it("supports initialSortDescriptor", async () => {
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
-        initialSortDescriptor: { column: 'name', direction: 'ascending' },
+        initialSortDescriptor: { column: "name", direction: "ascending" },
         load: async ({ sortDescriptor }) => ({
-          items: [{ id: 1, name: 'One' }],
+          items: [{ id: 1, name: "One" }],
           sortDescriptor,
         }),
       });
 
       await waitForIdle(list);
-      expect(list.sortDescriptor?.column).toBe('name');
-      expect(list.sortDescriptor?.direction).toBe('ascending');
+      expect(list.sortDescriptor?.column).toBe("name");
+      expect(list.sortDescriptor?.direction).toBe("ascending");
       dispose();
     });
   });
 
-  it('ignores loadMore when already loading', async () => {
+  it("ignores loadMore when already loading", async () => {
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
         load: async () => ({
-          items: [{ id: 1, name: 'One' }],
+          items: [{ id: 1, name: "One" }],
         }),
       });
 
@@ -264,17 +264,17 @@ describe('createAsyncList', () => {
     });
   });
 
-  it('handles synchronous load function', async () => {
+  it("handles synchronous load function", async () => {
     await createRoot(async (dispose) => {
       const list = createAsyncList<Item>({
         load: () => ({
-          items: [{ id: 1, name: 'Sync' }],
+          items: [{ id: 1, name: "Sync" }],
         }),
       });
 
       await waitForIdle(list);
       expect(list.items).toHaveLength(1);
-      expect(list.items[0].name).toBe('Sync');
+      expect(list.items[0].name).toBe("Sync");
       dispose();
     });
   });

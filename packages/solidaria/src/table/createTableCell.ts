@@ -3,11 +3,11 @@
  * Based on @react-aria/table/useTableCell.
  */
 
-import { createMemo, createSignal, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import type { TableState, TableCollection } from '@proyecto-viviana/solid-stately';
-import type { AriaTableCellProps, TableCellAria } from './types';
-import { getTableData } from './createTable';
+import { createMemo, createSignal, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import type { TableState, TableCollection } from "@proyecto-viviana/solid-stately";
+import type { AriaTableCellProps, TableCellAria } from "./types";
+import { getTableData } from "./createTable";
 
 /**
  * Creates accessibility props for a table cell.
@@ -15,7 +15,7 @@ import { getTableData } from './createTable';
 export function createTableCell<T extends object>(
   props: Accessor<AriaTableCellProps>,
   state: Accessor<TableState<T, TableCollection<T>>>,
-  _ref: Accessor<HTMLTableCellElement | null>
+  _ref: Accessor<HTMLTableCellElement | null>,
 ): TableCellAria {
   const [isPressed, setIsPressed] = createSignal(false);
 
@@ -64,7 +64,7 @@ export function createTableCell<T extends object>(
     if (isDisabled()) return;
 
     // Enter triggers cell action
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       const tableData = getTableData(s);
       const onCellAction = tableData?.actions.onCellAction;
 
@@ -103,17 +103,18 @@ export function createTableCell<T extends object>(
     const tableData = getTableData(s);
 
     // Determine the role based on node type
-    let role: string = 'gridcell';
-    if (node.type === 'rowheader') {
-      role = 'rowheader';
+    let role: string = "gridcell";
+    if (node.type === "rowheader") {
+      role = "rowheader";
     }
 
     const baseProps: Record<string, unknown> = {
       role,
-      id: tableData && node.parentKey != null
-        ? `${tableData.tableId}-${node.parentKey}-${node.key}`
-        : undefined,
-      'aria-disabled': isDisabled() || undefined,
+      id:
+        tableData && node.parentKey != null
+          ? `${tableData.tableId}-${node.parentKey}-${node.key}`
+          : undefined,
+      "aria-disabled": isDisabled() || undefined,
       tabIndex: isFocused() ? 0 : -1,
       onClick,
       onKeyDown,
@@ -124,12 +125,12 @@ export function createTableCell<T extends object>(
 
     // Add aria-colindex for virtualized tables
     if (p.isVirtualized && node.column != null) {
-      baseProps['aria-colindex'] = node.column + 1; // 1-based
+      baseProps["aria-colindex"] = node.column + 1; // 1-based
     }
 
     // Add colspan if present
     if (node.colspan != null && node.colspan > 1) {
-      baseProps['aria-colspan'] = node.colspan;
+      baseProps["aria-colspan"] = node.colspan;
       baseProps.colSpan = node.colspan;
     }
 

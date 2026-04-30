@@ -5,7 +5,7 @@
  * In SolidJS, we use onCleanup for automatic cleanup instead of useEffect return.
  */
 
-import { onCleanup } from 'solid-js';
+import { onCleanup } from "solid-js";
 
 export interface GlobalListenerOptions extends AddEventListenerOptions {
   /** Whether to add the listener to the window instead of document */
@@ -31,17 +31,17 @@ export function createGlobalListeners() {
   function addGlobalListener<K extends keyof DocumentEventMap>(
     type: K,
     handler: (ev: DocumentEventMap[K]) => void,
-    options?: GlobalListenerOptions
+    options?: GlobalListenerOptions,
   ): void;
   function addGlobalListener<K extends keyof WindowEventMap>(
     type: K,
     handler: (ev: WindowEventMap[K]) => void,
-    options?: GlobalListenerOptions & { isWindow: true }
+    options?: GlobalListenerOptions & { isWindow: true },
   ): void;
   function addGlobalListener(
     type: string,
     handler: EventListener,
-    options?: GlobalListenerOptions
+    options?: GlobalListenerOptions,
   ): void {
     const target = options?.isWindow ? window : document;
     const listenerOptions = options
@@ -62,17 +62,17 @@ export function createGlobalListeners() {
   function removeGlobalListener<K extends keyof DocumentEventMap>(
     type: K,
     handler: (ev: DocumentEventMap[K]) => void,
-    options?: AddEventListenerOptions
+    options?: AddEventListenerOptions,
   ): void;
   function removeGlobalListener<K extends keyof WindowEventMap>(
     type: K,
     handler: (ev: WindowEventMap[K]) => void,
-    options?: AddEventListenerOptions & { isWindow: true }
+    options?: AddEventListenerOptions & { isWindow: true },
   ): void;
   function removeGlobalListener(
     type: string,
     handler: EventListener,
-    options?: AddEventListenerOptions & { isWindow?: boolean }
+    options?: AddEventListenerOptions & { isWindow?: boolean },
   ): void {
     const target = options?.isWindow ? window : document;
     const listenerOptions = options
@@ -89,7 +89,7 @@ export function createGlobalListeners() {
         l.target === target &&
         l.type === type &&
         l.handler === handler &&
-        l.options?.capture === listenerOptions?.capture
+        l.options?.capture === listenerOptions?.capture,
     );
     if (index !== -1) {
       listeners.splice(index, 1);
@@ -123,7 +123,7 @@ export function createGlobalListeners() {
 export function addGlobalListenerOnce<K extends keyof DocumentEventMap>(
   type: K,
   handler: (ev: DocumentEventMap[K]) => void,
-  options?: GlobalListenerOptions
+  options?: GlobalListenerOptions,
 ): () => void {
   const target = options?.isWindow ? window : document;
   const listenerOptions = options

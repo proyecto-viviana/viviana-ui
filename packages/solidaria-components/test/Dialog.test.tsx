@@ -3,104 +3,99 @@
  *
  * Ported from react-aria-components Dialog.test.js
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, cleanup, within } from '@solidjs/testing-library'
-import { createSignal } from 'solid-js'
-import {
-  Dialog,
-  DialogTrigger,
-  Heading,
-  type DialogRenderProps,
-} from '../src/Dialog'
-import { Modal, ModalOverlay } from '../src/Modal'
-import { Button } from '../src/Button'
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, cleanup, within } from "@solidjs/testing-library";
+import { createSignal } from "solid-js";
+import { Dialog, DialogTrigger, Heading, type DialogRenderProps } from "../src/Dialog";
+import { Modal, ModalOverlay } from "../src/Modal";
+import { Button } from "../src/Button";
 import {
   setupUser,
   assertAriaIdIntegrity,
   createFocusFlowRecorder,
-} from '@proyecto-viviana/solidaria-test-utils'
+} from "@proyecto-viviana/solidaria-test-utils";
 
 // setupUser is consolidated in solidaria-test-utils.
 
-describe('Dialog', () => {
-  let user: ReturnType<typeof setupUser>
+describe("Dialog", () => {
+  let user: ReturnType<typeof setupUser>;
 
   beforeEach(() => {
-    user = setupUser()
-    vi.useFakeTimers({ shouldAdvanceTime: true })
-  })
+    user = setupUser();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
 
   afterEach(() => {
-    cleanup()
-    vi.useRealTimers()
-    vi.restoreAllMocks()
-  })
+    cleanup();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
 
-  it('should have a base default set of attributes', () => {
+  it("should have a base default set of attributes", () => {
     render(() => (
       <Dialog>
         <Heading>Title</Heading>
       </Dialog>
-    ))
+    ));
 
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toHaveClass('solidaria-Dialog')
-  })
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveClass("solidaria-Dialog");
+  });
 
-  it('should render dialog with aria-label', () => {
+  it("should render dialog with aria-label", () => {
     render(() => (
       <Dialog aria-label="Settings">
         <p>Content</p>
       </Dialog>
-    ))
+    ));
 
-    const dialog = screen.getByRole('dialog', { name: 'Settings' })
-    expect(dialog).toBeInTheDocument()
-  })
+    const dialog = screen.getByRole("dialog", { name: "Settings" });
+    expect(dialog).toBeInTheDocument();
+  });
 
-  it('should render dialog with aria-labelledby from Heading', () => {
+  it("should render dialog with aria-labelledby from Heading", () => {
     render(() => (
       <Dialog>
         <Heading>My Dialog Title</Heading>
         <p>Content</p>
       </Dialog>
-    ))
+    ));
 
-    const dialog = screen.getByRole('dialog')
-    const heading = screen.getByRole('heading')
-    const labelledBy = dialog.getAttribute('aria-labelledby')
-    const headingId = heading.getAttribute('id')
+    const dialog = screen.getByRole("dialog");
+    const heading = screen.getByRole("heading");
+    const labelledBy = dialog.getAttribute("aria-labelledby");
+    const headingId = heading.getAttribute("id");
 
     // Dialog and heading should always be linked for accessible naming.
-    expect(labelledBy).toBeTruthy()
-    expect(headingId).toBeTruthy()
-    expect(labelledBy).toBe(headingId)
-  })
+    expect(labelledBy).toBeTruthy();
+    expect(headingId).toBeTruthy();
+    expect(labelledBy).toBe(headingId);
+  });
 
-  it('should support custom Heading levels', () => {
+  it("should support custom Heading levels", () => {
     render(() => (
       <Dialog aria-label="Test">
         <Heading level={3}>H3 Title</Heading>
       </Dialog>
-    ))
+    ));
 
-    const heading = screen.getByRole('heading', { level: 3 })
-    expect(heading).toHaveTextContent('H3 Title')
-  })
+    const heading = screen.getByRole("heading", { level: 3 });
+    expect(heading).toHaveTextContent("H3 Title");
+  });
 
   it('should support role="alertdialog"', () => {
     render(() => (
       <Dialog role="alertdialog" aria-label="Alert">
         <p>Alert content</p>
       </Dialog>
-    ))
+    ));
 
-    const dialog = screen.getByRole('alertdialog')
-    expect(dialog).toBeInTheDocument()
-  })
+    const dialog = screen.getByRole("alertdialog");
+    expect(dialog).toBeInTheDocument();
+  });
 
-  it('should support render props with close function', () => {
-    const closeFn = vi.fn()
+  it("should support render props with close function", () => {
+    const closeFn = vi.fn();
     render(() => (
       <Dialog onClose={closeFn}>
         {({ close }) => (
@@ -110,32 +105,32 @@ describe('Dialog', () => {
           </>
         )}
       </Dialog>
-    ))
+    ));
 
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toBeInTheDocument()
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
 
-    const closeButton = screen.getByRole('button', { name: 'Close' })
-    closeButton.click()
-    expect(closeFn).toHaveBeenCalled()
-  })
-})
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    closeButton.click();
+    expect(closeFn).toHaveBeenCalled();
+  });
+});
 
-describe('DialogTrigger', () => {
-  let user: ReturnType<typeof setupUser>
+describe("DialogTrigger", () => {
+  let user: ReturnType<typeof setupUser>;
 
   beforeEach(() => {
-    user = setupUser()
-    vi.useFakeTimers({ shouldAdvanceTime: true })
-  })
+    user = setupUser();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
 
   afterEach(() => {
-    cleanup()
-    vi.useRealTimers()
-    vi.restoreAllMocks()
-  })
+    cleanup();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
 
-  it('should work with Modal', async () => {
+  it("should work with Modal", async () => {
     render(() => (
       <DialogTrigger>
         <Button>Open</Button>
@@ -150,27 +145,27 @@ describe('DialogTrigger', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    const button = screen.getByRole('button', { name: 'Open' })
-    await user.click(button)
+    const button = screen.getByRole("button", { name: "Open" });
+    await user.click(button);
 
     // Run timers for modal to open
-    vi.runAllTimers()
+    vi.runAllTimers();
 
-    const dialog = screen.getByRole('alertdialog')
-    expect(dialog).toBeInTheDocument()
+    const dialog = screen.getByRole("alertdialog");
+    expect(dialog).toBeInTheDocument();
 
-    const closeButton = within(dialog).getByRole('button', { name: 'Close' })
-    await user.click(closeButton)
+    const closeButton = within(dialog).getByRole("button", { name: "Close" });
+    await user.click(closeButton);
 
     // Run timers for modal to close
-    vi.runAllTimers()
+    vi.runAllTimers();
 
-    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
-  })
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+  });
 
-  it('works with modal', async () => {
+  it("works with modal", async () => {
     render(() => (
       <DialogTrigger>
         <Button>Delete</Button>
@@ -185,24 +180,24 @@ describe('DialogTrigger', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    await user.click(screen.getByRole('button', { name: 'Delete' }))
-    vi.runAllTimers()
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+    vi.runAllTimers();
 
-    const dialog = screen.getByRole('alertdialog')
-    const heading = screen.getByRole('heading')
-    expect(dialog).toHaveAttribute('aria-labelledby', heading.id)
-    expect(dialog).toHaveAttribute('data-test', 'dialog')
-    expect(dialog.closest('.solidaria-Modal')).toHaveAttribute('data-test', 'modal')
-    expect(dialog.closest('.solidaria-ModalOverlay')).toBeInTheDocument()
+    const dialog = screen.getByRole("alertdialog");
+    const heading = screen.getByRole("heading");
+    expect(dialog).toHaveAttribute("aria-labelledby", heading.id);
+    expect(dialog).toHaveAttribute("data-test", "dialog");
+    expect(dialog.closest(".solidaria-Modal")).toHaveAttribute("data-test", "modal");
+    expect(dialog.closest(".solidaria-ModalOverlay")).toBeInTheDocument();
 
-    await user.click(within(dialog).getByRole('button', { name: 'Close' }))
-    vi.runAllTimers()
-    expect(dialog).not.toBeInTheDocument()
-  })
+    await user.click(within(dialog).getByRole("button", { name: "Close" }));
+    vi.runAllTimers();
+    expect(dialog).not.toBeInTheDocument();
+  });
 
-  it('has dismiss button when isDismissable', async () => {
+  it("has dismiss button when isDismissable", async () => {
     render(() => (
       <DialogTrigger>
         <Button>Delete</Button>
@@ -217,19 +212,19 @@ describe('DialogTrigger', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    await user.click(screen.getByRole('button', { name: 'Delete' }))
-    vi.runAllTimers()
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+    vi.runAllTimers();
 
-    const dialog = screen.getByRole('alertdialog')
-    await user.click(screen.getByLabelText('Dismiss'))
-    vi.runAllTimers()
+    const dialog = screen.getByRole("alertdialog");
+    await user.click(screen.getByLabelText("Dismiss"));
+    vi.runAllTimers();
 
-    expect(dialog).not.toBeInTheDocument()
-  })
+    expect(dialog).not.toBeInTheDocument();
+  });
 
-  it('should work with ModalOverlay', async () => {
+  it("should work with ModalOverlay", async () => {
     render(() => (
       <DialogTrigger>
         <Button>Open</Button>
@@ -246,20 +241,20 @@ describe('DialogTrigger', () => {
           </Modal>
         </ModalOverlay>
       </DialogTrigger>
-    ))
+    ));
 
-    const button = screen.getByRole('button', { name: 'Open' })
-    await user.click(button)
+    const button = screen.getByRole("button", { name: "Open" });
+    await user.click(button);
 
-    vi.runAllTimers()
+    vi.runAllTimers();
 
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toBeInTheDocument()
-    expect(dialog.closest('.modal')).toBeInTheDocument()
-    expect(dialog.closest('.overlay')).toBeInTheDocument()
-  })
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+    expect(dialog.closest(".modal")).toBeInTheDocument();
+    expect(dialog.closest(".overlay")).toBeInTheDocument();
+  });
 
-  it('works with modal and custom underlay', async () => {
+  it("works with modal and custom underlay", async () => {
     render(() => (
       <DialogTrigger>
         <Button>Delete</Button>
@@ -276,24 +271,24 @@ describe('DialogTrigger', () => {
           </Modal>
         </ModalOverlay>
       </DialogTrigger>
-    ))
+    ));
 
-    await user.click(screen.getByRole('button', { name: 'Delete' }))
-    vi.runAllTimers()
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+    vi.runAllTimers();
 
-    const dialog = screen.getByRole('alertdialog')
-    const heading = screen.getByRole('heading')
-    expect(dialog).toHaveAttribute('aria-labelledby', heading.id)
-    expect(dialog).toHaveAttribute('data-test', 'dialog')
-    expect(dialog.closest('.modal')).toHaveAttribute('data-test', 'modal')
-    expect(dialog.closest('.underlay')).toHaveAttribute('data-test', 'underlay')
+    const dialog = screen.getByRole("alertdialog");
+    const heading = screen.getByRole("heading");
+    expect(dialog).toHaveAttribute("aria-labelledby", heading.id);
+    expect(dialog).toHaveAttribute("data-test", "dialog");
+    expect(dialog.closest(".modal")).toHaveAttribute("data-test", "modal");
+    expect(dialog.closest(".underlay")).toHaveAttribute("data-test", "underlay");
 
-    await user.click(within(dialog).getByRole('button', { name: 'Close' }))
-    vi.runAllTimers()
-    expect(dialog).not.toBeInTheDocument()
-  })
+    await user.click(within(dialog).getByRole("button", { name: "Close" }));
+    vi.runAllTimers();
+    expect(dialog).not.toBeInTheDocument();
+  });
 
-  it('should get default aria label from trigger', async () => {
+  it("should get default aria label from trigger", async () => {
     render(() => (
       <DialogTrigger>
         <Button>Settings</Button>
@@ -301,16 +296,16 @@ describe('DialogTrigger', () => {
           <Dialog>Test</Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    const button = screen.getByRole('button', { name: 'Settings' })
-    await user.click(button)
-    vi.runAllTimers()
+    const button = screen.getByRole("button", { name: "Settings" });
+    await user.click(button);
+    vi.runAllTimers();
 
-    expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', button.id)
-  })
+    expect(screen.getByRole("dialog")).toHaveAttribute("aria-labelledby", button.id);
+  });
 
-  it('should support render props', async () => {
+  it("should support render props", async () => {
     render(() => (
       <DialogTrigger>
         <Button>Open</Button>
@@ -325,22 +320,22 @@ describe('DialogTrigger', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    await user.click(screen.getByRole('button', { name: 'Open' }))
-    vi.runAllTimers()
+    await user.click(screen.getByRole("button", { name: "Open" }));
+    vi.runAllTimers();
 
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toBeInTheDocument()
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
 
-    await user.click(within(dialog).getByRole('button', { name: 'Dismiss' }))
-    vi.runAllTimers()
-    expect(dialog).not.toBeInTheDocument()
-  })
+    await user.click(within(dialog).getByRole("button", { name: "Dismiss" }));
+    vi.runAllTimers();
+    expect(dialog).not.toBeInTheDocument();
+  });
 
-  it('should support controlled isOpen', async () => {
-    const [isOpen, setIsOpen] = createSignal(false)
-    const onOpenChange = vi.fn((open: boolean) => setIsOpen(open))
+  it("should support controlled isOpen", async () => {
+    const [isOpen, setIsOpen] = createSignal(false);
+    const onOpenChange = vi.fn((open: boolean) => setIsOpen(open));
 
     render(() => (
       <DialogTrigger isOpen={isOpen()} onOpenChange={onOpenChange}>
@@ -351,18 +346,18 @@ describe('DialogTrigger', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-    setIsOpen(true)
-    vi.runAllTimers()
+    setIsOpen(true);
+    vi.runAllTimers();
 
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
-    expect(onOpenChange).not.toHaveBeenCalled() // Not called on programmatic change
-  })
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled(); // Not called on programmatic change
+  });
 
-  it('should support defaultOpen', () => {
+  it("should support defaultOpen", () => {
     render(() => (
       <DialogTrigger defaultOpen>
         <Button>Open</Button>
@@ -372,15 +367,15 @@ describe('DialogTrigger', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
     // Should be open by default
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toBeInTheDocument()
-  })
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+  });
 
-  it('should call onOpenChange when dialog opens and closes', async () => {
-    const onOpenChange = vi.fn()
+  it("should call onOpenChange when dialog opens and closes", async () => {
+    const onOpenChange = vi.fn();
 
     render(() => (
       <DialogTrigger onOpenChange={onOpenChange}>
@@ -396,67 +391,67 @@ describe('DialogTrigger', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    const button = screen.getByRole('button', { name: 'Open' })
-    await user.click(button)
-    vi.runAllTimers()
+    const button = screen.getByRole("button", { name: "Open" });
+    await user.click(button);
+    vi.runAllTimers();
 
-    expect(onOpenChange).toHaveBeenCalledWith(true)
+    expect(onOpenChange).toHaveBeenCalledWith(true);
 
-    const closeButton = screen.getByRole('button', { name: 'Close' })
-    await user.click(closeButton)
-    vi.runAllTimers()
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    await user.click(closeButton);
+    vi.runAllTimers();
 
-    expect(onOpenChange).toHaveBeenCalledWith(false)
-    expect(onOpenChange).toHaveBeenCalledTimes(2)
-  })
-})
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(onOpenChange).toHaveBeenCalledTimes(2);
+  });
+});
 
-describe('Modal', () => {
-  let user: ReturnType<typeof setupUser>
+describe("Modal", () => {
+  let user: ReturnType<typeof setupUser>;
 
   beforeEach(() => {
-    user = setupUser()
-    vi.useFakeTimers({ shouldAdvanceTime: true })
-  })
+    user = setupUser();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
 
   afterEach(() => {
-    cleanup()
-    vi.useRealTimers()
-    vi.restoreAllMocks()
-  })
+    cleanup();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
 
-  it('should support Modal being used standalone with isOpen', () => {
-    const onOpenChange = vi.fn()
+  it("should support Modal being used standalone with isOpen", () => {
+    const onOpenChange = vi.fn();
     render(() => (
       <Modal isOpen onOpenChange={onOpenChange}>
         <Dialog aria-label="Standalone Modal">
           <p>A modal</p>
         </Dialog>
       </Modal>
-    ))
+    ));
 
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toHaveTextContent('A modal')
-  })
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveTextContent("A modal");
+  });
 
-  it('should support Modal being used standalone', async () => {
-    const onOpenChange = vi.fn()
+  it("should support Modal being used standalone", async () => {
+    const onOpenChange = vi.fn();
     render(() => (
       <Modal isDismissable isOpen onOpenChange={onOpenChange}>
         <Dialog aria-label="Modal">A modal</Dialog>
       </Modal>
-    ))
+    ));
 
-    expect(screen.getByRole('dialog')).toHaveTextContent('A modal')
-    await user.click(document.body)
-    vi.runAllTimers()
-    expect(onOpenChange).toHaveBeenCalledWith(false)
-  })
+    expect(screen.getByRole("dialog")).toHaveTextContent("A modal");
+    await user.click(document.body);
+    vi.runAllTimers();
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
 
-  it('isOpen and defaultOpen should override state from context', async () => {
-    const onOpenChange = vi.fn()
+  it("isOpen and defaultOpen should override state from context", async () => {
+    const onOpenChange = vi.fn();
     render(() => (
       <DialogTrigger>
         <Button />
@@ -464,62 +459,62 @@ describe('Modal', () => {
           <Dialog aria-label="Modal">A modal</Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    expect(screen.getByRole('dialog')).toHaveTextContent('A modal')
-    await user.click(document.body)
-    vi.runAllTimers()
-    expect(onOpenChange).toHaveBeenCalledWith(false)
-  })
+    expect(screen.getByRole("dialog")).toHaveTextContent("A modal");
+    await user.click(document.body);
+    vi.runAllTimers();
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
 
-  it('supports isEntering and isExiting props', async () => {
+  it("supports isEntering and isExiting props", async () => {
     const { unmount } = render(() => (
       <Modal isOpen isEntering>
         <Dialog aria-label="Modal">A modal</Dialog>
       </Modal>
-    ))
+    ));
 
-    let overlay = screen.getByRole('dialog').closest('.solidaria-ModalOverlay')
-    expect(overlay).toHaveAttribute('data-entering')
+    let overlay = screen.getByRole("dialog").closest(".solidaria-ModalOverlay");
+    expect(overlay).toHaveAttribute("data-entering");
 
-    unmount()
+    unmount();
     render(() => (
       <Modal isOpen isExiting>
         <Dialog aria-label="Modal">A modal</Dialog>
       </Modal>
-    ))
+    ));
 
-    overlay = screen.getByRole('dialog').closest('.solidaria-ModalOverlay')
-    expect(overlay).toHaveAttribute('data-exiting')
-  })
+    overlay = screen.getByRole("dialog").closest(".solidaria-ModalOverlay");
+    expect(overlay).toHaveAttribute("data-exiting");
+  });
 
-  it('should close on outside click when isDismissable', async () => {
-    const onOpenChange = vi.fn()
+  it("should close on outside click when isDismissable", async () => {
+    const onOpenChange = vi.fn();
     render(() => (
       <Modal isDismissable isOpen onOpenChange={onOpenChange}>
         <Dialog aria-label="Dismissable Modal">
           <p>Content</p>
         </Dialog>
       </Modal>
-    ))
+    ));
 
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toBeInTheDocument()
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
 
     // Click outside
-    await user.click(document.body)
-    vi.runAllTimers()
+    await user.click(document.body);
+    vi.runAllTimers();
 
-    expect(onOpenChange).toHaveBeenCalledWith(false)
-  })
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
 
-  it('should close with Escape after dismissable outside click and reopen', async () => {
-    const onOpenChange = vi.fn()
-    const [isOpen, setIsOpen] = createSignal(false)
+  it("should close with Escape after dismissable outside click and reopen", async () => {
+    const onOpenChange = vi.fn();
+    const [isOpen, setIsOpen] = createSignal(false);
     const handleOpenChange = (open: boolean) => {
-      onOpenChange(open)
-      setIsOpen(open)
-    }
+      onOpenChange(open);
+      setIsOpen(open);
+    };
 
     render(() => (
       <DialogTrigger isOpen={isOpen()} onOpenChange={handleOpenChange}>
@@ -530,78 +525,78 @@ describe('Modal', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    await user.click(screen.getByRole('button', { name: 'Open dialog' }))
-    expect(screen.getByRole('dialog', { name: 'Reopened dialog' })).toBeInTheDocument()
+    await user.click(screen.getByRole("button", { name: "Open dialog" }));
+    expect(screen.getByRole("dialog", { name: "Reopened dialog" })).toBeInTheDocument();
 
-    await user.click(document.body)
-    vi.runAllTimers()
-    expect(screen.queryByRole('dialog', { name: 'Reopened dialog' })).not.toBeInTheDocument()
+    await user.click(document.body);
+    vi.runAllTimers();
+    expect(screen.queryByRole("dialog", { name: "Reopened dialog" })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Open dialog' }))
-    expect(screen.getByRole('dialog', { name: 'Reopened dialog' })).toBeInTheDocument()
+    await user.click(screen.getByRole("button", { name: "Open dialog" }));
+    expect(screen.getByRole("dialog", { name: "Reopened dialog" })).toBeInTheDocument();
 
-    await user.keyboard('{Escape}')
-    vi.runAllTimers()
-    expect(screen.queryByRole('dialog', { name: 'Reopened dialog' })).not.toBeInTheDocument()
-    expect(onOpenChange).toHaveBeenLastCalledWith(false)
-  })
+    await user.keyboard("{Escape}");
+    vi.runAllTimers();
+    expect(screen.queryByRole("dialog", { name: "Reopened dialog" })).not.toBeInTheDocument();
+    expect(onOpenChange).toHaveBeenLastCalledWith(false);
+  });
 
-  it('should close on Escape key', async () => {
-    const onOpenChange = vi.fn()
+  it("should close on Escape key", async () => {
+    const onOpenChange = vi.fn();
     render(() => (
       <Modal isOpen onOpenChange={onOpenChange}>
         <Dialog aria-label="Escape Modal">
           <p>Content</p>
         </Dialog>
       </Modal>
-    ))
+    ));
 
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toBeInTheDocument()
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
 
-    await user.keyboard('{Escape}')
-    vi.runAllTimers()
+    await user.keyboard("{Escape}");
+    vi.runAllTimers();
 
-    expect(onOpenChange).toHaveBeenCalledWith(false)
-  })
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
 
-  it('should not close on outside click when not isDismissable', async () => {
-    const onOpenChange = vi.fn()
+  it("should not close on outside click when not isDismissable", async () => {
+    const onOpenChange = vi.fn();
     render(() => (
       <Modal isOpen onOpenChange={onOpenChange}>
         <Dialog aria-label="Non-dismissable Modal">
           <p>Content</p>
         </Dialog>
       </Modal>
-    ))
+    ));
 
-    await user.click(document.body)
-    vi.runAllTimers()
+    await user.click(document.body);
+    vi.runAllTimers();
 
     // Should not call onOpenChange for outside click
     // Escape still works by default
-    expect(onOpenChange).not.toHaveBeenCalled()
-  })
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
 
-  it('should support isKeyboardDismissDisabled', async () => {
-    const onOpenChange = vi.fn()
+  it("should support isKeyboardDismissDisabled", async () => {
+    const onOpenChange = vi.fn();
     render(() => (
       <Modal isOpen isKeyboardDismissDisabled onOpenChange={onOpenChange}>
         <Dialog aria-label="No Escape Modal">
           <p>Content</p>
         </Dialog>
       </Modal>
-    ))
+    ));
 
-    await user.keyboard('{Escape}')
-    vi.runAllTimers()
+    await user.keyboard("{Escape}");
+    vi.runAllTimers();
 
-    expect(onOpenChange).not.toHaveBeenCalled()
-  })
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
 
-  it('should support render props for state-based styling', () => {
+  it("should support render props for state-based styling", () => {
     render(() => (
       <Modal isOpen>
         {({ isEntering, isExiting }) => (
@@ -612,35 +607,35 @@ describe('Modal', () => {
           </div>
         )}
       </Modal>
-    ))
+    ));
 
-    const wrapper = screen.getByTestId('render-props-test')
-    expect(wrapper).toBeInTheDocument()
+    const wrapper = screen.getByTestId("render-props-test");
+    expect(wrapper).toBeInTheDocument();
     // Modal is open so not entering or exiting
-    expect(wrapper).not.toHaveAttribute('data-entering', 'true')
-    expect(wrapper).not.toHaveAttribute('data-exiting', 'true')
-  })
-})
+    expect(wrapper).not.toHaveAttribute("data-entering", "true");
+    expect(wrapper).not.toHaveAttribute("data-exiting", "true");
+  });
+});
 
 // ============================================
 // A11Y RISK AREA: Focus management + ARIA IDs
 // ============================================
 
-describe('Dialog a11y focus & ARIA integrity', () => {
-  let user: ReturnType<typeof setupUser>
+describe("Dialog a11y focus & ARIA integrity", () => {
+  let user: ReturnType<typeof setupUser>;
 
   beforeEach(() => {
-    user = setupUser()
-    vi.useFakeTimers({ shouldAdvanceTime: true })
-  })
+    user = setupUser();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
 
   afterEach(() => {
-    cleanup()
-    vi.useRealTimers()
-    vi.restoreAllMocks()
-  })
+    cleanup();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
 
-  it('should move focus inside dialog on open', async () => {
+  it("should move focus inside dialog on open", async () => {
     render(() => (
       <DialogTrigger>
         <Button>Open</Button>
@@ -655,18 +650,18 @@ describe('Dialog a11y focus & ARIA integrity', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    const openBtn = screen.getByRole('button', { name: 'Open' })
-    await user.click(openBtn)
-    vi.runAllTimers()
+    const openBtn = screen.getByRole("button", { name: "Open" });
+    await user.click(openBtn);
+    vi.runAllTimers();
 
-    const dialog = screen.getByRole('dialog')
+    const dialog = screen.getByRole("dialog");
     // Focus should be within the dialog
-    expect(dialog.contains(document.activeElement)).toBe(true)
-  })
+    expect(dialog.contains(document.activeElement)).toBe(true);
+  });
 
-  it('should contain Tab focus inside the dialog', async () => {
+  it("should contain Tab focus inside the dialog", async () => {
     render(() => (
       <DialogTrigger>
         <Button>Open</Button>
@@ -681,24 +676,24 @@ describe('Dialog a11y focus & ARIA integrity', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    await user.click(screen.getByRole('button', { name: 'Open' }))
-    vi.runAllTimers()
+    await user.click(screen.getByRole("button", { name: "Open" }));
+    vi.runAllTimers();
 
-    const dialog = screen.getByRole('dialog', { name: 'Tab Trap Test' })
-    expect(dialog.contains(document.activeElement)).toBe(true)
+    const dialog = screen.getByRole("dialog", { name: "Tab Trap Test" });
+    expect(dialog.contains(document.activeElement)).toBe(true);
 
-    await user.tab()
-    vi.runAllTimers()
-    expect(screen.getByRole('button', { name: 'Close dialog' })).toHaveFocus()
+    await user.tab();
+    vi.runAllTimers();
+    expect(screen.getByRole("button", { name: "Close dialog" })).toHaveFocus();
 
-    await user.tab()
-    vi.runAllTimers()
-    expect(dialog.contains(document.activeElement)).toBe(true)
-  })
+    await user.tab();
+    vi.runAllTimers();
+    expect(dialog.contains(document.activeElement)).toBe(true);
+  });
 
-  it('should restore focus to trigger on Escape close', async () => {
+  it("should restore focus to trigger on Escape close", async () => {
     render(() => (
       <DialogTrigger>
         <Button>Open</Button>
@@ -709,43 +704,43 @@ describe('Dialog a11y focus & ARIA integrity', () => {
           </Dialog>
         </Modal>
       </DialogTrigger>
-    ))
+    ));
 
-    const openBtn = screen.getByRole('button', { name: 'Open' })
-    await user.click(openBtn)
-    vi.runAllTimers()
+    const openBtn = screen.getByRole("button", { name: "Open" });
+    await user.click(openBtn);
+    vi.runAllTimers();
 
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
 
-    await user.keyboard('{Escape}')
-    vi.runAllTimers()
+    await user.keyboard("{Escape}");
+    vi.runAllTimers();
 
     // After closing, the dialog should be gone
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     // Focus should return to the trigger (or at least to the trigger's container)
     // jsdom may report body as activeElement after async close; verify button is focusable
-    const activeEl = document.activeElement
-    const restored = activeEl === openBtn || openBtn.contains(activeEl as Node)
+    const activeEl = document.activeElement;
+    const restored = activeEl === openBtn || openBtn.contains(activeEl as Node);
     if (!restored) {
       // In jsdom the focus restore can happen asynchronously — at minimum verify
       // the trigger is still in the document and focusable
-      expect(openBtn).toBeInTheDocument()
-      expect(openBtn.tabIndex).toBeGreaterThanOrEqual(0)
+      expect(openBtn).toBeInTheDocument();
+      expect(openBtn.tabIndex).toBeGreaterThanOrEqual(0);
     }
-  })
+  });
 
-  it('ARIA ID integrity: dialog aria-labelledby resolves', () => {
+  it("ARIA ID integrity: dialog aria-labelledby resolves", () => {
     render(() => (
       <Dialog>
         <Heading>My Dialog Title</Heading>
         <p>Content</p>
       </Dialog>
-    ))
+    ));
 
-    assertAriaIdIntegrity(document.body)
-  })
+    assertAriaIdIntegrity(document.body);
+  });
 
-  it('ARIA ID integrity: modal dialog with Heading', async () => {
+  it("ARIA ID integrity: modal dialog with Heading", async () => {
     render(() => (
       <Modal isOpen>
         <Dialog>
@@ -753,10 +748,10 @@ describe('Dialog a11y focus & ARIA integrity', () => {
           <p>Content</p>
         </Dialog>
       </Modal>
-    ))
+    ));
 
-    vi.runAllTimers()
+    vi.runAllTimers();
 
-    assertAriaIdIntegrity(document.body)
-  })
-})
+    assertAriaIdIntegrity(document.body);
+  });
+});

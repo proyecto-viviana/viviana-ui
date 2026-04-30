@@ -5,7 +5,7 @@
  */
 
 /** The type of drop operation to perform. */
-export type DropOperation = 'copy' | 'link' | 'move' | 'cancel';
+export type DropOperation = "copy" | "link" | "move" | "cancel";
 
 /** Drag item data as key-value pairs where keys are MIME types or custom types. */
 export interface DragItem {
@@ -23,19 +23,19 @@ export interface DragDropEvent {
 /** Event fired when a drag operation starts. */
 export interface DragStartEvent extends DragDropEvent {
   /** The event type. */
-  type: 'dragstart';
+  type: "dragstart";
 }
 
 /** Event fired as a drag moves. */
 export interface DragMoveEvent extends DragDropEvent {
   /** The event type. */
-  type: 'dragmove';
+  type: "dragmove";
 }
 
 /** Event fired when a drag operation ends. */
 export interface DragEndEvent extends DragDropEvent {
   /** The event type. */
-  type: 'dragend';
+  type: "dragend";
   /** The drop operation that occurred. */
   dropOperation: DropOperation;
 }
@@ -43,31 +43,31 @@ export interface DragEndEvent extends DragDropEvent {
 /** Event fired when a drag enters a drop target. */
 export interface DropEnterEvent extends DragDropEvent {
   /** The event type. */
-  type: 'dropenter';
+  type: "dropenter";
 }
 
 /** Event fired as a drag moves within a drop target. */
 export interface DropMoveEvent extends DragDropEvent {
   /** The event type. */
-  type: 'dropmove';
+  type: "dropmove";
 }
 
 /** Event fired when a drag is held over a drop target. */
 export interface DropActivateEvent extends DragDropEvent {
   /** The event type. */
-  type: 'dropactivate';
+  type: "dropactivate";
 }
 
 /** Event fired when a drag exits a drop target. */
 export interface DropExitEvent extends DragDropEvent {
   /** The event type. */
-  type: 'dropexit';
+  type: "dropexit";
 }
 
 /** A text item in a drop operation. */
 export interface TextDropItem {
   /** The item kind. */
-  kind: 'text';
+  kind: "text";
   /** The drag types available for this item. */
   types: Set<string>;
   /** Returns the data for the given type as a string. */
@@ -77,7 +77,7 @@ export interface TextDropItem {
 /** A file item in a drop operation. */
 export interface FileDropItem {
   /** The item kind. */
-  kind: 'file';
+  kind: "file";
   /** The file type (usually a mime type). */
   type: string;
   /** The file name. */
@@ -91,7 +91,7 @@ export interface FileDropItem {
 /** A directory item in a drop operation. */
 export interface DirectoryDropItem {
   /** The item kind. */
-  kind: 'directory';
+  kind: "directory";
   /** The directory name. */
   name: string;
   /** Returns the entries contained within the directory. */
@@ -104,7 +104,7 @@ export type DropItem = TextDropItem | FileDropItem | DirectoryDropItem;
 /** Event fired when items are dropped. */
 export interface DropEvent extends DragDropEvent {
   /** The event type. */
-  type: 'drop';
+  type: "drop";
   /** The drop operation that should occur. */
   dropOperation: DropOperation;
   /** The dropped items. */
@@ -112,18 +112,18 @@ export interface DropEvent extends DragDropEvent {
 }
 
 /** Position relative to an item for drop operations. */
-export type DropPosition = 'on' | 'before' | 'after';
+export type DropPosition = "on" | "before" | "after";
 
 /** Drop target representing the root of a collection. */
 export interface RootDropTarget {
   /** The drop target type. */
-  type: 'root';
+  type: "root";
 }
 
 /** Drop target representing an item in a collection. */
 export interface ItemDropTarget {
   /** The drop target type. */
-  type: 'item';
+  type: "item";
   /** The item key. */
   key: string | number;
   /** The drop position relative to the item. */
@@ -222,7 +222,7 @@ export interface DropTargetDelegate {
   getDropTargetFromPoint(
     x: number,
     y: number,
-    isValidDropTarget: (target: DropTarget) => boolean
+    isValidDropTarget: (target: DropTarget) => boolean,
   ): DropTarget | null;
 }
 
@@ -251,7 +251,7 @@ export interface DraggableCollectionEndEvent extends DragEndEvent {
 /** Function to render a custom drag preview. */
 export type DragPreviewRenderer = (
   items: DragItem[],
-  callback: (node: HTMLElement | null, x?: number, y?: number) => void
+  callback: (node: HTMLElement | null, x?: number, y?: number) => void,
 ) => void;
 
 // Props interfaces
@@ -262,7 +262,7 @@ export interface DroppableCollectionUtilityOptions {
    * The drag types that the droppable collection accepts.
    * @default 'all'
    */
-  acceptedDragTypes?: 'all' | Array<string | symbol>;
+  acceptedDragTypes?: "all" | Array<string | symbol>;
   /** Handler that is called when external items are dropped "between" items. */
   onInsert?: (e: DroppableCollectionInsertDropEvent) => void;
   /** Handler that is called when external items are dropped on the collection's root. */
@@ -291,14 +291,13 @@ export interface DroppableCollectionBaseProps {
   getDropOperation?: (
     target: DropTarget,
     types: DragTypes,
-    allowedOperations: DropOperation[]
+    allowedOperations: DropOperation[],
   ) => DropOperation;
 }
 
 /** Combined props for droppable collections. */
 export interface DroppableCollectionProps
-  extends DroppableCollectionUtilityOptions,
-    DroppableCollectionBaseProps {}
+  extends DroppableCollectionUtilityOptions, DroppableCollectionBaseProps {}
 
 /** Props for draggable collections. */
 export interface DraggableCollectionProps<T = object> {

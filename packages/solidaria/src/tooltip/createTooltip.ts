@@ -6,10 +6,10 @@
  * Port of @react-aria/tooltip useTooltip.
  */
 
-import { type JSX } from 'solid-js';
-import { type TooltipTriggerState } from '@proyecto-viviana/solid-stately';
-import { createHover } from '../interactions/createHover';
-import { filterDOMProps, mergeProps } from '../utils';
+import { type JSX } from "solid-js";
+import { type TooltipTriggerState } from "@proyecto-viviana/solid-stately";
+import { createHover } from "../interactions/createHover";
+import { filterDOMProps, mergeProps } from "../utils";
 
 // ============================================
 // TYPES
@@ -19,11 +19,11 @@ export interface TooltipProps {
   /** Whether the tooltip is disabled. */
   isDisabled?: boolean;
   /** Custom aria-label for the tooltip. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ID of an element that labels the tooltip. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ID of an element that describes the tooltip. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
 }
 
 export interface TooltipAria {
@@ -58,10 +58,7 @@ export interface TooltipAria {
  * }
  * ```
  */
-export function createTooltip(
-  props: TooltipProps = {},
-  state?: TooltipTriggerState
-): TooltipAria {
+export function createTooltip(props: TooltipProps = {}, state?: TooltipTriggerState): TooltipAria {
   const domProps = filterDOMProps(props, { labelable: true });
 
   const { hoverProps } = createHover({
@@ -70,10 +67,8 @@ export function createTooltip(
   });
 
   return {
-    tooltipProps: mergeProps<JSX.HTMLAttributes<HTMLElement>>(
-      domProps,
-      hoverProps,
-      { role: 'tooltip' }
-    ),
+    tooltipProps: mergeProps<JSX.HTMLAttributes<HTMLElement>>(domProps, hoverProps, {
+      role: "tooltip",
+    }),
   };
 }

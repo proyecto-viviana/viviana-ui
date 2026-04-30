@@ -7,22 +7,15 @@
  * Named "ToggleSwitch" to avoid conflict with SolidJS's built-in Switch component.
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  createUniqueId,
-  splitProps,
-  Show,
-} from 'solid-js';
+import { type JSX, createContext, createMemo, createUniqueId, splitProps, Show } from "solid-js";
 import {
   createSwitch,
   createFocusRing,
   createHover,
   type AriaSwitchProps,
-} from '@proyecto-viviana/solidaria';
-import { createToggleState, type ToggleState } from '@proyecto-viviana/solid-stately';
-import { VisuallyHidden } from './VisuallyHidden';
+} from "@proyecto-viviana/solidaria";
+import { createToggleState, type ToggleState } from "@proyecto-viviana/solid-stately";
+import { VisuallyHidden } from "./VisuallyHidden";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -30,7 +23,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -57,9 +50,7 @@ export interface ToggleSwitchRenderProps {
   state: ToggleState;
 }
 
-export interface ToggleSwitchProps
-  extends Omit<AriaSwitchProps, 'children'>,
-    SlotProps {
+export interface ToggleSwitchProps extends Omit<AriaSwitchProps, "children">, SlotProps {
   /** The children of the component. A function may be provided to receive render props. */
   children?: RenderChildren<ToggleSwitchRenderProps>;
   /** The CSS className for the element. */
@@ -109,11 +100,11 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
 
   // Split props
   const [local, ariaProps] = splitProps(props, [
-    'class',
-    'style',
-    'slot',
-    'description',
-    'errorMessage',
+    "class",
+    "style",
+    "slot",
+    "description",
+    "errorMessage",
   ]);
   const descriptionId = createUniqueId();
   const errorMessageId = createUniqueId();
@@ -121,28 +112,36 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   // Create toggle state
   // Use getters to ensure props are read lazily inside reactive contexts
   const state = createToggleState({
-    get isSelected() { return ariaProps.isSelected; },
-    get defaultSelected() { return ariaProps.defaultSelected; },
-    get onChange() { return ariaProps.onChange; },
-    get isReadOnly() { return ariaProps.isReadOnly; },
+    get isSelected() {
+      return ariaProps.isSelected;
+    },
+    get defaultSelected() {
+      return ariaProps.defaultSelected;
+    },
+    get onChange() {
+      return ariaProps.onChange;
+    },
+    get isReadOnly() {
+      return ariaProps.isReadOnly;
+    },
   });
 
   // Create switch aria props
   const switchAria = createSwitch(
     () => ({
       ...ariaProps,
-      children: typeof props.children === 'function' ? true : props.children,
+      children: typeof props.children === "function" ? true : props.children,
     }),
     state,
-    () => inputRef
+    () => inputRef,
   );
   const describedBy = () => {
     const ids = [
-      ariaProps['aria-describedby'],
+      ariaProps["aria-describedby"],
       local.description ? descriptionId : undefined,
       switchAria.isInvalid && local.errorMessage ? errorMessageId : undefined,
     ].filter(Boolean);
-    return ids.length ? ids.join(' ') : undefined;
+    return ids.length ? ids.join(" ") : undefined;
   };
 
   // Create focus ring
@@ -174,9 +173,9 @@ export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ToggleSwitch',
+      defaultClassName: "solidaria-ToggleSwitch",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props

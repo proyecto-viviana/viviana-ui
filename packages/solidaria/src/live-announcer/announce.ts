@@ -10,16 +10,16 @@
  * will only be created when running in the browser.
  */
 
-import { onCleanup, createEffect } from 'solid-js';
-import { isServer } from 'solid-js/web';
+import { onCleanup, createEffect } from "solid-js";
+import { isServer } from "solid-js/web";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type Assertiveness = 'assertive' | 'polite';
+export type Assertiveness = "assertive" | "polite";
 
-export type Message = string | { 'aria-labelledby': string };
+export type Message = string | { "aria-labelledby": string };
 
 // ============================================
 // CONSTANTS
@@ -41,27 +41,27 @@ class LiveAnnouncer {
   politeLog: HTMLElement | null = null;
 
   constructor() {
-    if (typeof document !== 'undefined') {
-      this.node = document.createElement('div');
-      this.node.dataset.liveAnnouncer = 'true';
+    if (typeof document !== "undefined") {
+      this.node = document.createElement("div");
+      this.node.dataset.liveAnnouncer = "true";
       // Visually hidden styles
       Object.assign(this.node.style, {
-        border: '0',
-        clip: 'rect(0 0 0 0)',
-        clipPath: 'inset(50%)',
-        height: '1px',
-        margin: '-1px',
-        overflow: 'hidden',
-        padding: '0',
-        position: 'absolute',
-        width: '1px',
-        whiteSpace: 'nowrap',
+        border: "0",
+        clip: "rect(0 0 0 0)",
+        clipPath: "inset(50%)",
+        height: "1px",
+        margin: "-1px",
+        overflow: "hidden",
+        padding: "0",
+        position: "absolute",
+        width: "1px",
+        whiteSpace: "nowrap",
       });
 
-      this.assertiveLog = this.createLog('assertive');
+      this.assertiveLog = this.createLog("assertive");
       this.node.appendChild(this.assertiveLog);
 
-      this.politeLog = this.createLog('polite');
+      this.politeLog = this.createLog("polite");
       this.node.appendChild(this.politeLog);
 
       document.body.prepend(this.node);
@@ -73,10 +73,10 @@ class LiveAnnouncer {
   }
 
   createLog(ariaLive: string): HTMLElement {
-    const node = document.createElement('div');
-    node.setAttribute('role', 'log');
-    node.setAttribute('aria-live', ariaLive);
-    node.setAttribute('aria-relevant', 'additions');
+    const node = document.createElement("div");
+    node.setAttribute("role", "log");
+    node.setAttribute("aria-live", ariaLive);
+    node.setAttribute("aria-relevant", "additions");
     return node;
   }
 
@@ -91,29 +91,29 @@ class LiveAnnouncer {
 
   announce(
     message: Message,
-    assertiveness: Assertiveness = 'assertive',
-    timeout: number = LIVEREGION_TIMEOUT_DELAY
+    assertiveness: Assertiveness = "assertive",
+    timeout: number = LIVEREGION_TIMEOUT_DELAY,
   ): void {
     if (!this.node) {
       return;
     }
 
-    const node = document.createElement('div');
-    if (typeof message === 'object') {
+    const node = document.createElement("div");
+    if (typeof message === "object") {
       // To read an aria-labelledby, the element must have an appropriate role, such as img.
-      node.setAttribute('role', 'img');
-      node.setAttribute('aria-labelledby', message['aria-labelledby']);
+      node.setAttribute("role", "img");
+      node.setAttribute("aria-labelledby", message["aria-labelledby"]);
     } else {
       node.textContent = message;
     }
 
-    if (assertiveness === 'assertive') {
+    if (assertiveness === "assertive") {
       this.assertiveLog?.appendChild(node);
     } else {
       this.politeLog?.appendChild(node);
     }
 
-    if (message !== '') {
+    if (message !== "") {
       setTimeout(() => {
         node.remove();
       }, timeout);
@@ -125,12 +125,12 @@ class LiveAnnouncer {
       return;
     }
 
-    if ((!assertiveness || assertiveness === 'assertive') && this.assertiveLog) {
-      this.assertiveLog.innerHTML = '';
+    if ((!assertiveness || assertiveness === "assertive") && this.assertiveLog) {
+      this.assertiveLog.innerHTML = "";
     }
 
-    if ((!assertiveness || assertiveness === 'polite') && this.politeLog) {
-      this.politeLog.innerHTML = '';
+    if ((!assertiveness || assertiveness === "polite") && this.politeLog) {
+      this.politeLog.innerHTML = "";
     }
   }
 }
@@ -166,8 +166,8 @@ let liveAnnouncer: LiveAnnouncer | null = null;
  */
 export function announce(
   message: Message,
-  assertiveness: Assertiveness = 'assertive',
-  timeout: number = LIVEREGION_TIMEOUT_DELAY
+  assertiveness: Assertiveness = "assertive",
+  timeout: number = LIVEREGION_TIMEOUT_DELAY,
 ): void {
   if (!liveAnnouncer) {
     liveAnnouncer = new LiveAnnouncer();
@@ -176,9 +176,10 @@ export function announce(
     // Found most times less than 100ms were not consistent when announcing with Safari.
 
     // Check for test environment
-    const isTestEnv = typeof (globalThis as Record<string, unknown>).IS_SOLIDARIA_TEST === 'boolean'
-      ? (globalThis as Record<string, unknown>).IS_SOLIDARIA_TEST
-      : typeof (globalThis as Record<string, unknown>).vitest !== 'undefined';
+    const isTestEnv =
+      typeof (globalThis as Record<string, unknown>).IS_SOLIDARIA_TEST === "boolean"
+        ? (globalThis as Record<string, unknown>).IS_SOLIDARIA_TEST
+        : typeof (globalThis as Record<string, unknown>).vitest !== "undefined";
 
     if (!isTestEnv) {
       setTimeout(() => {
@@ -239,11 +240,7 @@ export function destroyAnnouncer(): void {
 
 export interface UseAnnouncerResult {
   /** Announce a message to screen readers. */
-  announce: (
-    message: Message,
-    assertiveness?: Assertiveness,
-    timeout?: number
-  ) => void;
+  announce: (message: Message, assertiveness?: Assertiveness, timeout?: number) => void;
   /** Clear announcements for the given assertiveness level. */
   clear: (assertiveness?: Assertiveness) => void;
 }
@@ -310,8 +307,8 @@ export function useAnnouncer(): UseAnnouncerResult {
   return {
     announce: (
       message: Message,
-      assertiveness: Assertiveness = 'assertive',
-      timeout: number = LIVEREGION_TIMEOUT_DELAY
+      assertiveness: Assertiveness = "assertive",
+      timeout: number = LIVEREGION_TIMEOUT_DELAY,
     ) => {
       announce(message, assertiveness, timeout);
     },

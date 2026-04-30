@@ -26,9 +26,7 @@ export default defineConfig(({ command }) => ({
       ],
     }),
     solid({
-      include: [
-        "src/components/solid/**/*",
-      ],
+      include: ["src/components/solid/**/*"],
       exclude: ["src/components/react/**/*"],
     }),
   ],

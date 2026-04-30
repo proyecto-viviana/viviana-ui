@@ -5,25 +5,18 @@
  * Port of react-aria-components/src/Slider.tsx
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-  useContext,
-  Show,
-} from 'solid-js';
+import { type JSX, createContext, createMemo, splitProps, useContext, Show } from "solid-js";
 import {
   createSlider,
   createFocusRing,
   createHover,
   type AriaSliderProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createSliderState,
   type SliderState,
   type SliderOrientation,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -31,7 +24,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -52,7 +45,7 @@ export interface SliderRenderProps {
   orientation: SliderOrientation;
 }
 
-export interface SliderProps extends Omit<AriaSliderProps, 'label'>, SlotProps {
+export interface SliderProps extends Omit<AriaSliderProps, "label">, SlotProps {
   /** The current value (controlled). */
   value?: number;
   /** The default value (uncontrolled). */
@@ -94,7 +87,8 @@ export interface SliderTrackRenderProps {
   orientation: SliderOrientation;
 }
 
-export interface SliderTrackProps extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children'> {
+export interface SliderTrackProps
+  extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, "class" | "style" | "children"> {
   /** The children of the track. */
   children?: RenderChildren<SliderTrackRenderProps>;
   /** The CSS className for the element. */
@@ -120,7 +114,8 @@ export interface SliderThumbRenderProps {
   valuePercent: number;
 }
 
-export interface SliderThumbProps extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children'> {
+export interface SliderThumbProps
+  extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, "class" | "style" | "children"> {
   /** The children of the thumb. */
   children?: RenderChildren<SliderThumbRenderProps>;
   /** The CSS className for the element. */
@@ -136,7 +131,8 @@ export interface SliderOutputRenderProps {
   formattedValue: string;
 }
 
-export interface SliderOutputProps extends SlotProps, Omit<JSX.HTMLAttributes<HTMLElement>, 'class' | 'style' | 'children'> {
+export interface SliderOutputProps
+  extends SlotProps, Omit<JSX.HTMLAttributes<HTMLElement>, "class" | "style" | "children"> {
   /** The children of the output. */
   children?: RenderChildren<SliderOutputRenderProps>;
   /** The CSS className for the element. */
@@ -174,9 +170,20 @@ export const SliderOutputContext = SliderContext;
 export function Slider(props: SliderProps): JSX.Element {
   const [local, stateProps, ariaProps, rest] = splitProps(
     props,
-    ['class', 'style', 'slot'],
-    ['value', 'defaultValue', 'onChange', 'onChangeEnd', 'minValue', 'maxValue', 'step', 'orientation', 'locale', 'formatOptions'],
-    ['label', 'aria-label', 'aria-labelledby', 'aria-describedby', 'isDisabled', 'id']
+    ["class", "style", "slot"],
+    [
+      "value",
+      "defaultValue",
+      "onChange",
+      "onChangeEnd",
+      "minValue",
+      "maxValue",
+      "step",
+      "orientation",
+      "locale",
+      "formatOptions",
+    ],
+    ["label", "aria-label", "aria-labelledby", "aria-describedby", "isDisabled", "id"],
   );
 
   // Create slider state
@@ -223,14 +230,11 @@ export function Slider(props: SliderProps): JSX.Element {
   };
 
   // Create slider aria props
-  const {
-    labelProps,
-    groupProps,
-    trackProps,
-    thumbProps,
-    inputProps,
-    outputProps,
-  } = createSlider(ariaProps, state, () => trackRef ?? null);
+  const { labelProps, groupProps, trackProps, thumbProps, inputProps, outputProps } = createSlider(
+    ariaProps,
+    state,
+    () => trackRef ?? null,
+  );
 
   // Render props values
   const renderValues = createMemo<SliderRenderProps>(() => ({
@@ -248,13 +252,15 @@ export function Slider(props: SliderProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Slider',
+      defaultClassName: "solidaria-Slider",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   // Clean props helpers
   const cleanGroupProps = () => {
@@ -301,11 +307,11 @@ export function Slider(props: SliderProps): JSX.Element {
  * The track element of a slider.
  */
 export function SliderTrack(props: SliderTrackProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(SliderContext);
   if (!context) {
-    throw new Error('SliderTrack must be used within a Slider');
+    throw new Error("SliderTrack must be used within a Slider");
   }
 
   const { state, trackProps, setTrackRef } = context;
@@ -324,9 +330,9 @@ export function SliderTrack(props: SliderTrackProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Slider-track',
+      defaultClassName: "solidaria-Slider-track",
     },
-    renderValues
+    renderValues,
   );
 
   // Clean props
@@ -362,11 +368,11 @@ export function SliderTrack(props: SliderTrackProps): JSX.Element {
  * The thumb element of a slider.
  */
 export function SliderThumb(props: SliderThumbProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(SliderContext);
   if (!context) {
-    throw new Error('SliderFill must be used within a Slider');
+    throw new Error("SliderFill must be used within a Slider");
   }
 
   const { state, thumbProps } = context;
@@ -398,9 +404,9 @@ export function SliderThumb(props: SliderThumbProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Slider-thumb',
+      defaultClassName: "solidaria-Slider-thumb",
     },
-    renderValues
+    renderValues,
   );
 
   // Clean props
@@ -447,11 +453,11 @@ export function SliderThumb(props: SliderThumbProps): JSX.Element {
  * The output element of a slider, displaying the current value.
  */
 export function SliderOutput(props: SliderOutputProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(SliderContext);
   if (!context) {
-    throw new Error('SliderThumb must be used within a Slider');
+    throw new Error("SliderThumb must be used within a Slider");
   }
 
   const { state, outputProps } = context;
@@ -468,9 +474,9 @@ export function SliderOutput(props: SliderOutputProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Slider-output',
+      defaultClassName: "solidaria-Slider-output",
     },
-    renderValues
+    renderValues,
   );
 
   // Clean props

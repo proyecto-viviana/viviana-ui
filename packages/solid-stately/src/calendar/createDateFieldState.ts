@@ -5,7 +5,7 @@
  * Based on @react-stately/datepicker useDateFieldState
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from "solid-js";
 import {
   type CalendarDate,
   type CalendarDateTime,
@@ -16,25 +16,25 @@ import {
   DateFormatter,
   toCalendarDate as intlToCalendarDate,
   toCalendarDateTime,
-} from '@internationalized/date';
-import { access, type MaybeAccessor } from '../utils';
-import type { ValidationState } from './createCalendarState';
+} from "@internationalized/date";
+import { access, type MaybeAccessor } from "../utils";
+import type { ValidationState } from "./createCalendarState";
 
 // ============================================
 // TYPES
 // ============================================
 
 export type DateSegmentType =
-  | 'year'
-  | 'month'
-  | 'day'
-  | 'hour'
-  | 'minute'
-  | 'second'
-  | 'dayPeriod'
-  | 'era'
-  | 'timeZoneName'
-  | 'literal';
+  | "year"
+  | "month"
+  | "day"
+  | "hour"
+  | "minute"
+  | "second"
+  | "dayPeriod"
+  | "era"
+  | "timeZoneName"
+  | "literal";
 
 export interface DateSegment {
   /** The type of segment. */
@@ -75,7 +75,7 @@ export interface DateFieldStateProps<T extends DateValue = DateValue> {
   /** The locale to use for formatting. */
   locale?: string;
   /** The granularity of the date/time (day, hour, minute, second). */
-  granularity?: 'day' | 'hour' | 'minute' | 'second';
+  granularity?: "day" | "hour" | "minute" | "second";
   /** Whether to show the hour in 12 or 24 hour format. */
   hourCycle?: 12 | 24;
   /** Whether to hide the time zone. */
@@ -124,7 +124,7 @@ export interface DateFieldState<T extends DateValue = DateValue> {
   /** The validation state. */
   validationState: Accessor<ValidationState | undefined>;
   /** The granularity. */
-  granularity: 'day' | 'hour' | 'minute' | 'second';
+  granularity: "day" | "hour" | "minute" | "second";
   /** Whether the value is invalid. */
   isInvalid: Accessor<boolean>;
   /** The locale. */
@@ -141,16 +141,14 @@ export interface DateFieldState<T extends DateValue = DateValue> {
  * Provides state management for a date field component.
  */
 export function createDateFieldState<T extends DateValue = CalendarDate>(
-  props: DateFieldStateProps<T> = {}
+  props: DateFieldStateProps<T> = {},
 ): DateFieldState<T> {
   const timeZone = getLocalTimeZone();
-  const locale = props.locale ?? 'en-US';
-  const granularity = props.granularity ?? 'day';
+  const locale = props.locale ?? "en-US";
+  const granularity = props.granularity ?? "day";
 
   // State signals
-  const [internalValue, setInternalValue] = createSignal<T | null>(
-    props.defaultValue ?? null
-  );
+  const [internalValue, setInternalValue] = createSignal<T | null>(props.defaultValue ?? null);
 
   // Track partial values during editing
   const [placeholderDate, setPlaceholderDate] = createSignal<Partial<DateParts>>({});
@@ -177,7 +175,7 @@ export function createDateFieldState<T extends DateValue = CalendarDate>(
     const month = parts.month ?? placeholder.month;
     const day = parts.day ?? placeholder.day;
 
-    if (granularity === 'day') {
+    if (granularity === "day") {
       return intlToCalendarDate(placeholder).set({ year, month, day });
     }
 
@@ -213,7 +211,7 @@ export function createDateFieldState<T extends DateValue = CalendarDate>(
     if (minValue && v.compare(minValue) < 0) return true;
     if (maxValue && v.compare(maxValue) > 0) return true;
 
-    return validationState() === 'invalid';
+    return validationState() === "invalid";
   });
 
   // Generate segments based on granularity and locale
@@ -226,19 +224,19 @@ export function createDateFieldState<T extends DateValue = CalendarDate>(
 
     // Determine format options based on granularity
     const formatOptions: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     };
 
-    if (granularity !== 'day') {
-      formatOptions.hour = '2-digit';
-      formatOptions.minute = '2-digit';
-      if (granularity === 'second') {
-        formatOptions.second = '2-digit';
+    if (granularity !== "day") {
+      formatOptions.hour = "2-digit";
+      formatOptions.minute = "2-digit";
+      if (granularity === "second") {
+        formatOptions.second = "2-digit";
       }
       if (props.hourCycle) {
-        formatOptions.hourCycle = props.hourCycle === 12 ? 'h12' : 'h23';
+        formatOptions.hourCycle = props.hourCycle === 12 ? "h12" : "h23";
       }
     }
 
@@ -249,9 +247,9 @@ export function createDateFieldState<T extends DateValue = CalendarDate>(
     for (const part of formattedParts) {
       const type = mapPartType(part.type);
 
-      if (type === 'literal') {
+      if (type === "literal") {
         segs.push({
-          type: 'literal',
+          type: "literal",
           text: part.value,
           isEditable: false,
           isPlaceholder: false,
@@ -320,9 +318,7 @@ export function createDateFieldState<T extends DateValue = CalendarDate>(
     if (isDisabled() || isReadOnly()) return;
 
     const v = value();
-    const current = v
-      ? getSegmentValue(v, type)
-      : placeholderDate()[type as keyof DateParts];
+    const current = v ? getSegmentValue(v, type) : placeholderDate()[type as keyof DateParts];
     const max = getMaxValue(type, v ?? props.placeholderValue ?? today(timeZone));
     const min = getMinValue(type);
 
@@ -335,9 +331,7 @@ export function createDateFieldState<T extends DateValue = CalendarDate>(
     if (isDisabled() || isReadOnly()) return;
 
     const v = value();
-    const current = v
-      ? getSegmentValue(v, type)
-      : placeholderDate()[type as keyof DateParts];
+    const current = v ? getSegmentValue(v, type) : placeholderDate()[type as keyof DateParts];
     const max = getMaxValue(type, v ?? props.placeholderValue ?? today(timeZone));
     const min = getMinValue(type);
 
@@ -399,19 +393,19 @@ export function createDateFieldState<T extends DateValue = CalendarDate>(
   // Format the current value
   const formatValue = (fieldOptions?: Intl.DateTimeFormatOptions): string => {
     const v = value();
-    if (!v) return '';
+    if (!v) return "";
 
     const options: Intl.DateTimeFormatOptions = fieldOptions ?? {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     };
 
-    if (granularity !== 'day') {
-      options.hour = '2-digit';
-      options.minute = '2-digit';
-      if (granularity === 'second') {
-        options.second = '2-digit';
+    if (granularity !== "day") {
+      options.hour = "2-digit";
+      options.minute = "2-digit";
+      if (granularity === "second") {
+        options.second = "2-digit";
       }
     }
 
@@ -456,50 +450,47 @@ interface DateParts {
 
 function mapPartType(type: Intl.DateTimeFormatPartTypes): DateSegmentType | null {
   switch (type) {
-    case 'year':
-      return 'year';
-    case 'month':
-      return 'month';
-    case 'day':
-      return 'day';
-    case 'hour':
-      return 'hour';
-    case 'minute':
-      return 'minute';
-    case 'second':
-      return 'second';
-    case 'dayPeriod':
-      return 'dayPeriod';
-    case 'era':
-      return 'era';
-    case 'timeZoneName':
-      return 'timeZoneName';
-    case 'literal':
-      return 'literal';
+    case "year":
+      return "year";
+    case "month":
+      return "month";
+    case "day":
+      return "day";
+    case "hour":
+      return "hour";
+    case "minute":
+      return "minute";
+    case "second":
+      return "second";
+    case "dayPeriod":
+      return "dayPeriod";
+    case "era":
+      return "era";
+    case "timeZoneName":
+      return "timeZoneName";
+    case "literal":
+      return "literal";
     default:
       return null;
   }
 }
 
-function getSegmentValue(
-  date: DateValue | null,
-  type: DateSegmentType
-): number | undefined {
+function getSegmentValue(date: DateValue | null, type: DateSegmentType): number | undefined {
   if (!date) return undefined;
 
   switch (type) {
-    case 'year':
+    case "year":
       return date.year;
-    case 'month':
+    case "month":
       return date.month;
-    case 'day':
+    case "day":
       return date.day;
-    case 'hour':
-      return 'hour' in date ? (date as CalendarDateTime).hour : undefined;
-    case 'minute':
-      return 'minute' in date ? (date as CalendarDateTime).minute : undefined;
-    case 'second':
-      return 'second' in date ? (date as CalendarDateTime).second : undefined;
+    case "hour":
+      return "hour" in date ? (date as CalendarDateTime).hour : undefined;
+    case "minute":
+      return "minute" in date ? (date as CalendarDateTime).minute : undefined;
+    case "second":
+      return "second" in date ? (date as CalendarDateTime).second : undefined;
     default:
       return undefined;
   }
@@ -507,17 +498,17 @@ function getSegmentValue(
 
 function getMinValue(type: DateSegmentType): number {
   switch (type) {
-    case 'year':
+    case "year":
       return 1;
-    case 'month':
+    case "month":
       return 1;
-    case 'day':
+    case "day":
       return 1;
-    case 'hour':
+    case "hour":
       return 0;
-    case 'minute':
+    case "minute":
       return 0;
-    case 'second':
+    case "second":
       return 0;
     default:
       return 0;
@@ -526,18 +517,18 @@ function getMinValue(type: DateSegmentType): number {
 
 function getMaxValue(type: DateSegmentType, date: DateValue): number {
   switch (type) {
-    case 'year':
+    case "year":
       return 9999;
-    case 'month':
+    case "month":
       return 12;
-    case 'day':
+    case "day":
       // Get days in month
       return date.calendar.getDaysInMonth?.(date) ?? 31;
-    case 'hour':
+    case "hour":
       return 23;
-    case 'minute':
+    case "minute":
       return 59;
-    case 'second':
+    case "second":
       return 59;
     default:
       return 0;
@@ -546,38 +537,38 @@ function getMaxValue(type: DateSegmentType, date: DateValue): number {
 
 function getPlaceholderText(type: DateSegmentType): string {
   switch (type) {
-    case 'year':
-      return 'yyyy';
-    case 'month':
-      return 'mm';
-    case 'day':
-      return 'dd';
-    case 'hour':
-      return '––';
-    case 'minute':
-      return '––';
-    case 'second':
-      return '––';
-    case 'dayPeriod':
-      return 'AM';
+    case "year":
+      return "yyyy";
+    case "month":
+      return "mm";
+    case "day":
+      return "dd";
+    case "hour":
+      return "––";
+    case "minute":
+      return "––";
+    case "second":
+      return "––";
+    case "dayPeriod":
+      return "AM";
     default:
-      return '';
+      return "";
   }
 }
 
 function updateDatePart(date: DateValue, type: DateSegmentType, value: number): DateValue {
   switch (type) {
-    case 'year':
+    case "year":
       return (date as CalendarDate).set({ year: value });
-    case 'month':
+    case "month":
       return (date as CalendarDate).set({ month: value });
-    case 'day':
+    case "day":
       return (date as CalendarDate).set({ day: value });
-    case 'hour':
+    case "hour":
       return (date as CalendarDateTime).set({ hour: value });
-    case 'minute':
+    case "minute":
       return (date as CalendarDateTime).set({ minute: value });
-    case 'second':
+    case "second":
       return (date as CalendarDateTime).set({ second: value });
     default:
       return date;

@@ -6,9 +6,9 @@
  * Port of @react-aria/disclosure.
  */
 
-import { type JSX, createMemo } from 'solid-js';
-import { type DisclosureGroupState } from '@proyecto-viviana/solid-stately';
-import { access, type MaybeAccessor } from '../utils/reactivity';
+import { type JSX, createMemo } from "solid-js";
+import { type DisclosureGroupState } from "@proyecto-viviana/solid-stately";
+import { access, type MaybeAccessor } from "../utils/reactivity";
 
 // ============================================
 // TYPES
@@ -50,16 +50,18 @@ export interface DisclosureGroupAria {
  */
 export function createDisclosureGroup(
   props: MaybeAccessor<AriaDisclosureGroupProps>,
-  state: DisclosureGroupState
+  state: DisclosureGroupState,
 ): DisclosureGroupAria {
   const getProps = () => access(props);
 
   const groupProps = createMemo<JSX.HTMLAttributes<HTMLElement>>(() => ({
-    role: 'group',
-    'aria-disabled': getProps().isDisabled || state.isDisabled || undefined,
+    role: "group",
+    "aria-disabled": getProps().isDisabled || state.isDisabled || undefined,
   }));
 
   return {
-    get groupProps() { return groupProps(); },
+    get groupProps() {
+      return groupProps();
+    },
   };
 }

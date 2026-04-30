@@ -95,18 +95,39 @@ function SeparatorPage() {
 
       <PropsTable
         props={[
-          { name: "orientation", type: "'horizontal' | 'vertical'", default: "'horizontal'", description: "Direction of the separator" },
-          { name: "size", type: "'sm' | 'md' | 'lg'", default: "'md'", description: "Thickness of the separator line" },
-          { name: "variant", type: "'default' | 'subtle' | 'strong'", default: "'default'", description: "Visual emphasis" },
+          {
+            name: "orientation",
+            type: "'horizontal' | 'vertical'",
+            default: "'horizontal'",
+            description: "Direction of the separator",
+          },
+          {
+            name: "size",
+            type: "'sm' | 'md' | 'lg'",
+            default: "'md'",
+            description: "Thickness of the separator line",
+          },
+          {
+            name: "variant",
+            type: "'default' | 'subtle' | 'strong'",
+            default: "'default'",
+            description: "Visual emphasis",
+          },
           { name: "class", type: "string", description: "Additional CSS classes" },
         ]}
       />
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Uses <code>role="separator"</code> for proper semantics</li>
-          <li>Vertical separators include <code>aria-orientation="vertical"</code></li>
-          <li>Decorative separators can use <code>aria-hidden="true"</code></li>
+          <li>
+            Uses <code>role="separator"</code> for proper semantics
+          </li>
+          <li>
+            Vertical separators include <code>aria-orientation="vertical"</code>
+          </li>
+          <li>
+            Decorative separators can use <code>aria-hidden="true"</code>
+          </li>
         </ul>
       </AccessibilitySection>
     </DocPage>

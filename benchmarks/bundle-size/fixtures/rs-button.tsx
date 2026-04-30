@@ -1,7 +1,7 @@
 // React Spectrum - Single Button Component
-import * as React from 'react';
-import { Button } from '@adobe/react-spectrum';
+import * as React from "react";
+import { Button } from "@adobe/react-spectrum";
 
 export function App() {
-  return React.createElement(Button, null, 'Click Me');
+  return React.createElement(Button, null, "Click Me");
 }

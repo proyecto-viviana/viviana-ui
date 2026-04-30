@@ -5,12 +5,12 @@
  * Port direction: react-aria-components/src/Form.tsx
  */
 
-import { type JSX, createContext, splitProps } from 'solid-js';
+import { type JSX, createContext, splitProps } from "solid-js";
 import {
   FormValidationContext,
   type ValidationErrors,
   type ValidationBehavior,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -18,15 +18,14 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 export interface FormRenderProps {
   validationBehavior: ValidationBehavior;
 }
 
 export interface FormProps
-  extends Omit<JSX.FormHTMLAttributes<HTMLFormElement>, 'children' | 'class' | 'style'>,
-    SlotProps {
+  extends Omit<JSX.FormHTMLAttributes<HTMLFormElement>, "children" | "class" | "style">, SlotProps {
   /** Server-side validation errors keyed by field name. */
   validationErrors?: ValidationErrors;
   /** Validation behavior mode. */
@@ -43,26 +42,26 @@ export const FormContext = createContext<FormProps | null>(null);
 
 export function Form(props: FormProps): JSX.Element {
   const [local, domProps] = splitProps(props, [
-    'validationErrors',
-    'validationBehavior',
-    'children',
-    'class',
-    'style',
-    'slot',
+    "validationErrors",
+    "validationBehavior",
+    "children",
+    "class",
+    "style",
+    "slot",
   ]);
 
-  const validationBehavior: ValidationBehavior = local.validationBehavior ?? 'native';
+  const validationBehavior: ValidationBehavior = local.validationBehavior ?? "native";
   const errors = local.validationErrors ?? {};
   const renderProps = useRenderProps(
     {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Form',
+      defaultClassName: "solidaria-Form",
     },
     () => ({
       validationBehavior,
-    })
+    }),
   );
 
   const filteredDomProps = filterDOMProps(domProps, { global: true });
@@ -70,7 +69,7 @@ export function Form(props: FormProps): JSX.Element {
   return (
     <form
       {...filteredDomProps}
-      noValidate={validationBehavior !== 'native'}
+      noValidate={validationBehavior !== "native"}
       class={renderProps.class()}
       style={renderProps.style()}
       slot={local.slot}

@@ -9,21 +9,16 @@
  * - Accordion (DisclosureGroup) behavior
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, waitFor } from '@solidjs/testing-library';
-import { createSignal } from 'solid-js';
-import {
-  Disclosure,
-  DisclosureTrigger,
-  DisclosurePanel,
-  DisclosureGroup,
-} from '../src/Disclosure';
-import { firePointerClick, setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { render, screen, cleanup, waitFor } from "@solidjs/testing-library";
+import { createSignal } from "solid-js";
+import { Disclosure, DisclosureTrigger, DisclosurePanel, DisclosureGroup } from "../src/Disclosure";
+import { firePointerClick, setupUser } from "@proyecto-viviana/solidaria-test-utils";
 
 // User event instance - created per test
 let user: ReturnType<typeof setupUser>;
 
-describe('Disclosure', () => {
+describe("Disclosure", () => {
   beforeEach(() => {
     user = setupUser();
   });
@@ -36,8 +31,8 @@ describe('Disclosure', () => {
   // BASIC BEHAVIOR
   // ============================================
 
-  describe('basic behavior', () => {
-    it('should render collapsed by default', () => {
+  describe("basic behavior", () => {
+    it("should render collapsed by default", () => {
       render(() => (
         <Disclosure>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -45,14 +40,14 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      const trigger = screen.getByRole("button", { name: "Show more" });
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
 
-      const panel = screen.getByRole('region', { hidden: true });
-      expect(panel).toHaveAttribute('hidden');
+      const panel = screen.getByRole("region", { hidden: true });
+      expect(panel).toHaveAttribute("hidden");
     });
 
-    it('should expand on trigger click', async () => {
+    it("should expand on trigger click", async () => {
       render(() => (
         <Disclosure>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -60,15 +55,15 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
+      const trigger = screen.getByRole("button", { name: "Show more" });
       firePointerClick(trigger);
 
-      expect(trigger).toHaveAttribute('aria-expanded', 'true');
-      const panel = screen.getByRole('region');
-      expect(panel).not.toHaveAttribute('hidden');
+      expect(trigger).toHaveAttribute("aria-expanded", "true");
+      const panel = screen.getByRole("region");
+      expect(panel).not.toHaveAttribute("hidden");
     });
 
-    it('should collapse on trigger click when expanded', async () => {
+    it("should collapse on trigger click when expanded", async () => {
       render(() => (
         <Disclosure defaultExpanded>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -76,15 +71,15 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
-      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      const trigger = screen.getByRole("button", { name: "Show more" });
+      expect(trigger).toHaveAttribute("aria-expanded", "true");
 
       firePointerClick(trigger);
 
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
     });
 
-    it('should support defaultExpanded', () => {
+    it("should support defaultExpanded", () => {
       render(() => (
         <Disclosure defaultExpanded>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -92,14 +87,14 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
-      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      const trigger = screen.getByRole("button", { name: "Show more" });
+      expect(trigger).toHaveAttribute("aria-expanded", "true");
 
-      const panel = screen.getByRole('region');
-      expect(panel).not.toHaveAttribute('hidden');
+      const panel = screen.getByRole("region");
+      expect(panel).not.toHaveAttribute("hidden");
     });
 
-    it('should support controlled isExpanded', async () => {
+    it("should support controlled isExpanded", async () => {
       const onExpandedChange = vi.fn();
 
       render(() => (
@@ -109,13 +104,13 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
+      const trigger = screen.getByRole("button", { name: "Show more" });
       await user.click(trigger);
 
       expect(onExpandedChange).toHaveBeenCalledWith(true);
     });
 
-    it('should fire onExpandedChange callback', async () => {
+    it("should fire onExpandedChange callback", async () => {
       const onExpandedChange = vi.fn();
 
       render(() => (
@@ -125,7 +120,7 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
+      const trigger = screen.getByRole("button", { name: "Show more" });
       await user.click(trigger);
 
       expect(onExpandedChange).toHaveBeenCalledWith(true);
@@ -139,8 +134,8 @@ describe('Disclosure', () => {
   // KEYBOARD INTERACTIONS
   // ============================================
 
-  describe('keyboard interactions', () => {
-    it('should expand on Enter key', async () => {
+  describe("keyboard interactions", () => {
+    it("should expand on Enter key", async () => {
       render(() => (
         <Disclosure>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -148,14 +143,14 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
+      const trigger = screen.getByRole("button", { name: "Show more" });
       trigger.focus();
-      await user.keyboard('{Enter}');
+      await user.keyboard("{Enter}");
 
-      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      expect(trigger).toHaveAttribute("aria-expanded", "true");
     });
 
-    it('should expand on Space key', async () => {
+    it("should expand on Space key", async () => {
       render(() => (
         <Disclosure>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -163,14 +158,14 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
+      const trigger = screen.getByRole("button", { name: "Show more" });
       trigger.focus();
-      await user.keyboard(' ');
+      await user.keyboard(" ");
 
-      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      expect(trigger).toHaveAttribute("aria-expanded", "true");
     });
 
-    it('should toggle on repeated key presses', async () => {
+    it("should toggle on repeated key presses", async () => {
       render(() => (
         <Disclosure>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -178,14 +173,14 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
+      const trigger = screen.getByRole("button", { name: "Show more" });
       trigger.focus();
 
-      await user.keyboard('{Enter}');
-      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      await user.keyboard("{Enter}");
+      expect(trigger).toHaveAttribute("aria-expanded", "true");
 
-      await user.keyboard('{Enter}');
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      await user.keyboard("{Enter}");
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
     });
   });
 
@@ -193,8 +188,8 @@ describe('Disclosure', () => {
   // ARIA ATTRIBUTES
   // ============================================
 
-  describe('aria attributes', () => {
-    it('should have button role on trigger', () => {
+  describe("aria attributes", () => {
+    it("should have button role on trigger", () => {
       render(() => (
         <Disclosure>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -202,11 +197,11 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
+      const trigger = screen.getByRole("button", { name: "Show more" });
       expect(trigger).toBeInTheDocument();
     });
 
-    it('should have aria-expanded on trigger', () => {
+    it("should have aria-expanded on trigger", () => {
       render(() => (
         <Disclosure>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -214,11 +209,11 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
-      expect(trigger).toHaveAttribute('aria-expanded');
+      const trigger = screen.getByRole("button", { name: "Show more" });
+      expect(trigger).toHaveAttribute("aria-expanded");
     });
 
-    it('should have aria-controls linking trigger to panel', () => {
+    it("should have aria-controls linking trigger to panel", () => {
       render(() => (
         <Disclosure>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -226,13 +221,13 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
-      const panel = screen.getByRole('region', { hidden: true });
+      const trigger = screen.getByRole("button", { name: "Show more" });
+      const panel = screen.getByRole("region", { hidden: true });
 
-      expect(trigger).toHaveAttribute('aria-controls', panel.id);
+      expect(trigger).toHaveAttribute("aria-controls", panel.id);
     });
 
-    it('should default the panel role to region', () => {
+    it("should default the panel role to region", () => {
       render(() => (
         <Disclosure defaultExpanded>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -240,11 +235,11 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const panel = screen.getByRole('region');
+      const panel = screen.getByRole("region");
       expect(panel).toBeInTheDocument();
     });
 
-    it('should have aria-labelledby on panel linking to trigger', () => {
+    it("should have aria-labelledby on panel linking to trigger", () => {
       render(() => (
         <Disclosure defaultExpanded>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -252,13 +247,13 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
-      const panel = screen.getByRole('region');
+      const trigger = screen.getByRole("button", { name: "Show more" });
+      const panel = screen.getByRole("region");
 
-      expect(panel).toHaveAttribute('aria-labelledby', trigger.id);
+      expect(panel).toHaveAttribute("aria-labelledby", trigger.id);
     });
 
-    it('should support overriding the panel role', () => {
+    it("should support overriding the panel role", () => {
       render(() => (
         <Disclosure defaultExpanded>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -266,7 +261,7 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      expect(screen.getByRole('region')).toBeInTheDocument();
+      expect(screen.getByRole("region")).toBeInTheDocument();
     });
   });
 
@@ -274,8 +269,8 @@ describe('Disclosure', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('should support isDisabled on Disclosure', () => {
+  describe("disabled state", () => {
+    it("should support isDisabled on Disclosure", () => {
       render(() => (
         <Disclosure isDisabled>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -283,11 +278,11 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
+      const trigger = screen.getByRole("button", { name: "Show more" });
       expect(trigger).toBeDisabled();
     });
 
-    it('should not expand when disabled', async () => {
+    it("should not expand when disabled", async () => {
       render(() => (
         <Disclosure isDisabled>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -295,13 +290,13 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
+      const trigger = screen.getByRole("button", { name: "Show more" });
       await user.click(trigger);
 
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
     });
 
-    it('should have data-disabled attribute when disabled', () => {
+    it("should have data-disabled attribute when disabled", () => {
       render(() => (
         <Disclosure isDisabled>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -309,8 +304,8 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const disclosure = document.querySelector('.solidaria-Disclosure');
-      expect(disclosure).toHaveAttribute('data-disabled');
+      const disclosure = document.querySelector(".solidaria-Disclosure");
+      expect(disclosure).toHaveAttribute("data-disabled");
     });
   });
 
@@ -318,8 +313,8 @@ describe('Disclosure', () => {
   // DATA ATTRIBUTES
   // ============================================
 
-  describe('data attributes', () => {
-    it('should have data-expanded when expanded', async () => {
+  describe("data attributes", () => {
+    it("should have data-expanded when expanded", async () => {
       render(() => (
         <Disclosure>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -327,16 +322,16 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      const disclosure = document.querySelector('.solidaria-Disclosure');
-      expect(disclosure).not.toHaveAttribute('data-expanded');
+      const disclosure = document.querySelector(".solidaria-Disclosure");
+      expect(disclosure).not.toHaveAttribute("data-expanded");
 
-      const trigger = screen.getByRole('button', { name: 'Show more' });
+      const trigger = screen.getByRole("button", { name: "Show more" });
       await user.click(trigger);
 
-      expect(disclosure).toHaveAttribute('data-expanded');
+      expect(disclosure).toHaveAttribute("data-expanded");
     });
 
-    it('should have default class on components', () => {
+    it("should have default class on components", () => {
       render(() => (
         <Disclosure>
           <DisclosureTrigger>Show more</DisclosureTrigger>
@@ -344,8 +339,8 @@ describe('Disclosure', () => {
         </Disclosure>
       ));
 
-      expect(document.querySelector('.solidaria-Disclosure')).toBeInTheDocument();
-      expect(document.querySelector('.solidaria-DisclosurePanel')).toBeInTheDocument();
+      expect(document.querySelector(".solidaria-Disclosure")).toBeInTheDocument();
+      expect(document.querySelector(".solidaria-DisclosurePanel")).toBeInTheDocument();
     });
   });
 
@@ -353,8 +348,8 @@ describe('Disclosure', () => {
   // DISCLOSURE GROUP (ACCORDION)
   // ============================================
 
-  describe('DisclosureGroup (Accordion)', () => {
-    it('should render group with multiple disclosures', () => {
+  describe("DisclosureGroup (Accordion)", () => {
+    it("should render group with multiple disclosures", () => {
       render(() => (
         <DisclosureGroup>
           <Disclosure id="item1">
@@ -368,11 +363,11 @@ describe('Disclosure', () => {
         </DisclosureGroup>
       ));
 
-      expect(screen.getByRole('button', { name: 'Item 1' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Item 2' })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Item 1" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Item 2" })).toBeInTheDocument();
     });
 
-    it('should allow only one expanded by default (accordion behavior)', async () => {
+    it("should allow only one expanded by default (accordion behavior)", async () => {
       render(() => (
         <DisclosureGroup>
           <Disclosure id="item1">
@@ -386,21 +381,21 @@ describe('Disclosure', () => {
         </DisclosureGroup>
       ));
 
-      const trigger1 = screen.getByRole('button', { name: 'Item 1' });
-      const trigger2 = screen.getByRole('button', { name: 'Item 2' });
+      const trigger1 = screen.getByRole("button", { name: "Item 1" });
+      const trigger2 = screen.getByRole("button", { name: "Item 2" });
 
       // Expand first item
       await user.click(trigger1);
-      expect(trigger1).toHaveAttribute('aria-expanded', 'true');
-      expect(trigger2).toHaveAttribute('aria-expanded', 'false');
+      expect(trigger1).toHaveAttribute("aria-expanded", "true");
+      expect(trigger2).toHaveAttribute("aria-expanded", "false");
 
       // Expand second item - first should collapse
       await user.click(trigger2);
-      expect(trigger1).toHaveAttribute('aria-expanded', 'false');
-      expect(trigger2).toHaveAttribute('aria-expanded', 'true');
+      expect(trigger1).toHaveAttribute("aria-expanded", "false");
+      expect(trigger2).toHaveAttribute("aria-expanded", "true");
     });
 
-    it('should support allowsMultipleExpanded', async () => {
+    it("should support allowsMultipleExpanded", async () => {
       render(() => (
         <DisclosureGroup allowsMultipleExpanded>
           <Disclosure id="item1">
@@ -414,20 +409,20 @@ describe('Disclosure', () => {
         </DisclosureGroup>
       ));
 
-      const trigger1 = screen.getByRole('button', { name: 'Item 1' });
-      const trigger2 = screen.getByRole('button', { name: 'Item 2' });
+      const trigger1 = screen.getByRole("button", { name: "Item 1" });
+      const trigger2 = screen.getByRole("button", { name: "Item 2" });
 
       // Expand both items
       await user.click(trigger1);
       await user.click(trigger2);
 
-      expect(trigger1).toHaveAttribute('aria-expanded', 'true');
-      expect(trigger2).toHaveAttribute('aria-expanded', 'true');
+      expect(trigger1).toHaveAttribute("aria-expanded", "true");
+      expect(trigger2).toHaveAttribute("aria-expanded", "true");
     });
 
-    it('should support defaultExpandedKeys', () => {
+    it("should support defaultExpandedKeys", () => {
       render(() => (
-        <DisclosureGroup defaultExpandedKeys={['item2']}>
+        <DisclosureGroup defaultExpandedKeys={["item2"]}>
           <Disclosure id="item1">
             <DisclosureTrigger>Item 1</DisclosureTrigger>
             <DisclosurePanel>Content 1</DisclosurePanel>
@@ -439,18 +434,18 @@ describe('Disclosure', () => {
         </DisclosureGroup>
       ));
 
-      const trigger1 = screen.getByRole('button', { name: 'Item 1' });
-      const trigger2 = screen.getByRole('button', { name: 'Item 2' });
+      const trigger1 = screen.getByRole("button", { name: "Item 1" });
+      const trigger2 = screen.getByRole("button", { name: "Item 2" });
 
-      expect(trigger1).toHaveAttribute('aria-expanded', 'false');
-      expect(trigger2).toHaveAttribute('aria-expanded', 'true');
+      expect(trigger1).toHaveAttribute("aria-expanded", "false");
+      expect(trigger2).toHaveAttribute("aria-expanded", "true");
     });
 
-    it('should support controlled expandedKeys', async () => {
+    it("should support controlled expandedKeys", async () => {
       const onExpandedChange = vi.fn();
 
       render(() => (
-        <DisclosureGroup expandedKeys={['item1']} onExpandedChange={onExpandedChange}>
+        <DisclosureGroup expandedKeys={["item1"]} onExpandedChange={onExpandedChange}>
           <Disclosure id="item1">
             <DisclosureTrigger>Item 1</DisclosureTrigger>
             <DisclosurePanel>Content 1</DisclosurePanel>
@@ -462,16 +457,16 @@ describe('Disclosure', () => {
         </DisclosureGroup>
       ));
 
-      const trigger1 = screen.getByRole('button', { name: 'Item 1' });
-      expect(trigger1).toHaveAttribute('aria-expanded', 'true');
+      const trigger1 = screen.getByRole("button", { name: "Item 1" });
+      expect(trigger1).toHaveAttribute("aria-expanded", "true");
 
-      const trigger2 = screen.getByRole('button', { name: 'Item 2' });
+      const trigger2 = screen.getByRole("button", { name: "Item 2" });
       await user.click(trigger2);
 
       expect(onExpandedChange).toHaveBeenCalled();
     });
 
-    it('should disable all items when group is disabled', () => {
+    it("should disable all items when group is disabled", () => {
       render(() => (
         <DisclosureGroup isDisabled>
           <Disclosure id="item1">
@@ -485,14 +480,14 @@ describe('Disclosure', () => {
         </DisclosureGroup>
       ));
 
-      const trigger1 = screen.getByRole('button', { name: 'Item 1' });
-      const trigger2 = screen.getByRole('button', { name: 'Item 2' });
+      const trigger1 = screen.getByRole("button", { name: "Item 1" });
+      const trigger2 = screen.getByRole("button", { name: "Item 2" });
 
       expect(trigger1).toBeDisabled();
       expect(trigger2).toBeDisabled();
     });
 
-    it('should react to isDisabled changes on DisclosureGroup', async () => {
+    it("should react to isDisabled changes on DisclosureGroup", async () => {
       const [isDisabled, setIsDisabled] = createSignal(false);
 
       render(() => (
@@ -513,8 +508,8 @@ describe('Disclosure', () => {
         </>
       ));
 
-      const trigger1 = screen.getByRole('button', { name: 'Item 1' });
-      const toggle = screen.getByTestId('toggle-disabled');
+      const trigger1 = screen.getByRole("button", { name: "Item 1" });
+      const toggle = screen.getByTestId("toggle-disabled");
 
       expect(trigger1).not.toBeDisabled();
 
@@ -524,7 +519,7 @@ describe('Disclosure', () => {
       });
     });
 
-    it('should have default class on group', () => {
+    it("should have default class on group", () => {
       render(() => (
         <DisclosureGroup>
           <Disclosure id="item1">
@@ -534,7 +529,7 @@ describe('Disclosure', () => {
         </DisclosureGroup>
       ));
 
-      expect(document.querySelector('.solidaria-DisclosureGroup')).toBeInTheDocument();
+      expect(document.querySelector(".solidaria-DisclosureGroup")).toBeInTheDocument();
     });
   });
 });

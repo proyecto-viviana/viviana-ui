@@ -2,22 +2,15 @@
  * Shared SelectionIndicator primitive for selected collection items.
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-  useContext,
-  Show,
-} from 'solid-js';
+import { type JSX, createContext, createMemo, splitProps, useContext, Show } from "solid-js";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
   type StyleOrFunction,
   type SlotProps,
   useRenderProps,
-} from './utils';
-import { SharedElement, useHasSharedElementTransitionScope } from './SharedElementTransition';
+} from "./utils";
+import { SharedElement, useHasSharedElementTransitionScope } from "./SharedElementTransition";
 
 export interface SelectionIndicatorContextValue {
   isSelected: () => boolean;
@@ -30,7 +23,8 @@ export interface SelectionIndicatorRenderProps {
   isSelected: boolean;
 }
 
-export interface SelectionIndicatorProps extends SlotProps, Omit<JSX.HTMLAttributes<HTMLSpanElement>, 'class' | 'style' | 'children'> {
+export interface SelectionIndicatorProps
+  extends SlotProps, Omit<JSX.HTMLAttributes<HTMLSpanElement>, "class" | "style" | "children"> {
   /** Optional controlled selected state override. */
   isSelected?: boolean;
   /** Whether to keep mounted when not selected. */
@@ -47,7 +41,14 @@ export interface SelectionIndicatorProps extends SlotProps, Omit<JSX.HTMLAttribu
  * SelectionIndicator renders when its parent item is selected.
  */
 export function SelectionIndicator(props: SelectionIndicatorProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['isSelected', 'shouldForceMount', 'children', 'class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, [
+    "isSelected",
+    "shouldForceMount",
+    "children",
+    "class",
+    "style",
+    "slot",
+  ]);
 
   const context = useContext(SelectionIndicatorContext);
   const hasSharedElementScope = useHasSharedElementTransitionScope();
@@ -63,13 +64,15 @@ export function SelectionIndicator(props: SelectionIndicatorProps): JSX.Element 
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-SelectionIndicator',
+      defaultClassName: "solidaria-SelectionIndicator",
     },
-    renderValues
+    renderValues,
   );
 
   const sharedElementProps = createMemo(() => {
-    const { ref: _ref, ...rest } = domProps as JSX.HTMLAttributes<HTMLSpanElement> & { ref?: unknown };
+    const { ref: _ref, ...rest } = domProps as JSX.HTMLAttributes<HTMLSpanElement> & {
+      ref?: unknown;
+    };
     return rest;
   });
 

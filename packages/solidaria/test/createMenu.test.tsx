@@ -2,13 +2,13 @@
  * Tests for createMenu, createMenuItem, and createMenuTrigger hooks
  */
 
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { createRoot } from 'solid-js';
-import { cleanup } from '@solidjs/testing-library';
-import { createMenuState, createOverlayTriggerState } from '../../solid-stately/src';
-import { createMenu, createMenuItem, createMenuTrigger } from '../src/menu';
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { createRoot } from "solid-js";
+import { cleanup } from "@solidjs/testing-library";
+import { createMenuState, createOverlayTriggerState } from "../../solid-stately/src";
+import { createMenu, createMenuItem, createMenuTrigger } from "../src/menu";
 
-describe('createMenu', () => {
+describe("createMenu", () => {
   afterEach(() => {
     cleanup();
   });
@@ -16,8 +16,8 @@ describe('createMenu', () => {
   it('returns menu props with role="menu"', () => {
     createRoot((dispose) => {
       const items = [
-        { key: 'copy', label: 'Copy' },
-        { key: 'paste', label: 'Paste' },
+        { key: "copy", label: "Copy" },
+        { key: "paste", label: "Paste" },
       ];
 
       const state = createMenuState({
@@ -25,55 +25,51 @@ describe('createMenu', () => {
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Actions' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Actions" }, state);
 
-      expect(menuProps.role).toBe('menu');
+      expect(menuProps.role).toBe("menu");
       dispose();
     });
   });
 
-  it('sets aria-disabled when disabled', () => {
+  it("sets aria-disabled when disabled", () => {
     createRoot((dispose) => {
-      const items = [
-        { key: 'copy', label: 'Copy' },
-      ];
+      const items = [{ key: "copy", label: "Copy" }];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({ isDisabled: true, 'aria-label': 'Actions' }, state);
+      const { menuProps } = createMenu({ isDisabled: true, "aria-label": "Actions" }, state);
 
-      expect(menuProps['aria-disabled']).toBe(true);
+      expect(menuProps["aria-disabled"]).toBe(true);
       dispose();
     });
   });
 
-  it('has tabIndex 0 when not disabled', () => {
+  it("has tabIndex 0 when not disabled", () => {
     createRoot((dispose) => {
-      const items = [
-        { key: 'copy', label: 'Copy' },
-      ];
+      const items = [{ key: "copy", label: "Copy" }];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Actions' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Actions" }, state);
 
       expect(menuProps.tabIndex).toBe(0);
       dispose();
     });
   });
 
-  it('calls onAction when Enter is pressed', () => {
+  it("calls onAction when Enter is pressed", () => {
     createRoot((dispose) => {
       const onAction = vi.fn();
       const items = [
-        { key: 'copy', label: 'Copy' },
-        { key: 'paste', label: 'Paste' },
+        { key: "copy", label: "Copy" },
+        { key: "paste", label: "Paste" },
       ];
 
       const state = createMenuState({
@@ -81,38 +77,36 @@ describe('createMenu', () => {
         getKey: (item) => item.key,
       });
 
-      state.setFocusedKey('copy');
+      state.setFocusedKey("copy");
 
-      const { menuProps } = createMenu({ onAction, 'aria-label': 'Actions' }, state);
+      const { menuProps } = createMenu({ onAction, "aria-label": "Actions" }, state);
 
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'Enter',
+        key: "Enter",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
-      expect(onAction).toHaveBeenCalledWith('copy');
+      expect(onAction).toHaveBeenCalledWith("copy");
       dispose();
     });
   });
 
-  it('calls onClose when Escape is pressed', () => {
+  it("calls onClose when Escape is pressed", () => {
     createRoot((dispose) => {
       const onClose = vi.fn();
-      const items = [
-        { key: 'copy', label: 'Copy' },
-      ];
+      const items = [{ key: "copy", label: "Copy" }];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({ onClose, 'aria-label': 'Actions' }, state);
+      const { menuProps } = createMenu({ onClose, "aria-label": "Actions" }, state);
 
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'Escape',
+        key: "Escape",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
@@ -121,73 +115,67 @@ describe('createMenu', () => {
     });
   });
 
-  it('wires visible label props via aria-labelledby', () => {
+  it("wires visible label props via aria-labelledby", () => {
     createRoot((dispose) => {
-      const items = [
-        { key: 'copy', label: 'Copy' },
-      ];
+      const items = [{ key: "copy", label: "Copy" }];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
       });
 
-      const { menuProps, labelProps } = createMenu({ label: 'Actions' }, state);
+      const { menuProps, labelProps } = createMenu({ label: "Actions" }, state);
       expect(labelProps.id).toBeDefined();
-      expect(menuProps['aria-labelledby']).toContain(String(labelProps.id));
+      expect(menuProps["aria-labelledby"]).toContain(String(labelProps.id));
       dispose();
     });
   });
 });
 
-describe('createMenuItem', () => {
+describe("createMenuItem", () => {
   afterEach(() => {
     cleanup();
   });
 
   it('returns menuitem props with role="menuitem"', () => {
     createRoot((dispose) => {
-      const items = [
-        { key: 'copy', label: 'Copy' },
-      ];
+      const items = [{ key: "copy", label: "Copy" }];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
       });
 
-      const { menuItemProps } = createMenuItem({ key: 'copy' }, state);
+      const { menuItemProps } = createMenuItem({ key: "copy" }, state);
 
-      expect(menuItemProps.role).toBe('menuitem');
+      expect(menuItemProps.role).toBe("menuitem");
       dispose();
     });
   });
 
-  it('sets aria-disabled when disabled', () => {
+  it("sets aria-disabled when disabled", () => {
     createRoot((dispose) => {
-      const items = [
-        { key: 'copy', label: 'Copy' },
-      ];
+      const items = [{ key: "copy", label: "Copy" }];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
-        disabledKeys: ['copy'],
+        disabledKeys: ["copy"],
       });
 
-      const { menuItemProps, isDisabled } = createMenuItem({ key: 'copy' }, state);
+      const { menuItemProps, isDisabled } = createMenuItem({ key: "copy" }, state);
 
-      expect(menuItemProps['aria-disabled']).toBe(true);
+      expect(menuItemProps["aria-disabled"]).toBe(true);
       expect(isDisabled()).toBe(true);
       dispose();
     });
   });
 
-  it('tracks focused state', () => {
+  it("tracks focused state", () => {
     createRoot((dispose) => {
       const items = [
-        { key: 'copy', label: 'Copy' },
-        { key: 'paste', label: 'Paste' },
+        { key: "copy", label: "Copy" },
+        { key: "paste", label: "Paste" },
       ];
 
       const state = createMenuState({
@@ -195,24 +183,24 @@ describe('createMenuItem', () => {
         getKey: (item) => item.key,
       });
 
-      const { isFocused: isFocusedCopy } = createMenuItem({ key: 'copy' }, state);
-      const { isFocused: isFocusedPaste } = createMenuItem({ key: 'paste' }, state);
+      const { isFocused: isFocusedCopy } = createMenuItem({ key: "copy" }, state);
+      const { isFocused: isFocusedPaste } = createMenuItem({ key: "paste" }, state);
 
       expect(isFocusedCopy()).toBe(false);
       expect(isFocusedPaste()).toBe(false);
 
-      state.setFocusedKey('copy');
+      state.setFocusedKey("copy");
       expect(isFocusedCopy()).toBe(true);
       expect(isFocusedPaste()).toBe(false);
       dispose();
     });
   });
 
-  it('has tabIndex based on focus state', () => {
+  it("has tabIndex based on focus state", () => {
     createRoot((dispose) => {
       const items = [
-        { key: 'copy', label: 'Copy' },
-        { key: 'paste', label: 'Paste' },
+        { key: "copy", label: "Copy" },
+        { key: "paste", label: "Paste" },
       ];
 
       const state = createMenuState({
@@ -220,193 +208,193 @@ describe('createMenuItem', () => {
         getKey: (item) => item.key,
       });
 
-      const { menuItemProps: copyProps } = createMenuItem({ key: 'copy' }, state);
-      const { menuItemProps: pasteProps } = createMenuItem({ key: 'paste' }, state);
+      const { menuItemProps: copyProps } = createMenuItem({ key: "copy" }, state);
+      const { menuItemProps: pasteProps } = createMenuItem({ key: "paste" }, state);
 
       expect(copyProps.tabIndex).toBe(-1);
       expect(pasteProps.tabIndex).toBe(-1);
 
-      state.setFocusedKey('copy');
+      state.setFocusedKey("copy");
 
-      const { menuItemProps: copyPropsAfter } = createMenuItem({ key: 'copy' }, state);
+      const { menuItemProps: copyPropsAfter } = createMenuItem({ key: "copy" }, state);
       expect(copyPropsAfter.tabIndex).toBe(0);
       dispose();
     });
   });
 
-  it('inherits disabled state from parent menu metadata', () => {
+  it("inherits disabled state from parent menu metadata", () => {
     createRoot((dispose) => {
       const state = createMenuState({
-        items: [{ key: 'copy', label: 'Copy' }],
+        items: [{ key: "copy", label: "Copy" }],
         getKey: (item) => item.key,
       });
 
-      createMenu({ isDisabled: true, 'aria-label': 'Actions' }, state);
-      const { menuItemProps, isDisabled } = createMenuItem({ key: 'copy' }, state);
+      createMenu({ isDisabled: true, "aria-label": "Actions" }, state);
+      const { menuItemProps, isDisabled } = createMenuItem({ key: "copy" }, state);
 
-      expect(menuItemProps['aria-disabled']).toBe(true);
+      expect(menuItemProps["aria-disabled"]).toBe(true);
       expect(isDisabled()).toBe(true);
       dispose();
     });
   });
 });
 
-describe('createMenu - disabled key navigation', () => {
+describe("createMenu - disabled key navigation", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it('skips disabled keys when navigating with ArrowDown', () => {
+  it("skips disabled keys when navigating with ArrowDown", () => {
     createRoot((dispose) => {
       const items = [
-        { key: 'item1', label: 'Item 1' },
-        { key: 'item2', label: 'Item 2' },
-        { key: 'item3', label: 'Item 3' },
-        { key: 'item4', label: 'Item 4' },
+        { key: "item1", label: "Item 1" },
+        { key: "item2", label: "Item 2" },
+        { key: "item3", label: "Item 3" },
+        { key: "item4", label: "Item 4" },
       ];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
-        disabledKeys: ['item2', 'item3'],
+        disabledKeys: ["item2", "item3"],
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu" }, state);
 
       // Start at item1
-      state.setFocusedKey('item1');
-      expect(state.focusedKey()).toBe('item1');
+      state.setFocusedKey("item1");
+      expect(state.focusedKey()).toBe("item1");
 
       // Press ArrowDown - should skip item2 and item3, land on item4
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'ArrowDown',
+        key: "ArrowDown",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
-      expect(state.focusedKey()).toBe('item4');
+      expect(state.focusedKey()).toBe("item4");
       dispose();
     });
   });
 
-  it('skips disabled keys when navigating with ArrowUp', () => {
+  it("skips disabled keys when navigating with ArrowUp", () => {
     createRoot((dispose) => {
       const items = [
-        { key: 'item1', label: 'Item 1' },
-        { key: 'item2', label: 'Item 2' },
-        { key: 'item3', label: 'Item 3' },
-        { key: 'item4', label: 'Item 4' },
+        { key: "item1", label: "Item 1" },
+        { key: "item2", label: "Item 2" },
+        { key: "item3", label: "Item 3" },
+        { key: "item4", label: "Item 4" },
       ];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
-        disabledKeys: ['item2', 'item3'],
+        disabledKeys: ["item2", "item3"],
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu" }, state);
 
       // Start at item4
-      state.setFocusedKey('item4');
-      expect(state.focusedKey()).toBe('item4');
+      state.setFocusedKey("item4");
+      expect(state.focusedKey()).toBe("item4");
 
       // Press ArrowUp - should skip item3 and item2, land on item1
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'ArrowUp',
+        key: "ArrowUp",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
-      expect(state.focusedKey()).toBe('item1');
+      expect(state.focusedKey()).toBe("item1");
       dispose();
     });
   });
 
-  it('skips disabled keys when navigating to Home', () => {
+  it("skips disabled keys when navigating to Home", () => {
     createRoot((dispose) => {
       const items = [
-        { key: 'item1', label: 'Item 1' },
-        { key: 'item2', label: 'Item 2' },
-        { key: 'item3', label: 'Item 3' },
+        { key: "item1", label: "Item 1" },
+        { key: "item2", label: "Item 2" },
+        { key: "item3", label: "Item 3" },
       ];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
-        disabledKeys: ['item1'],
+        disabledKeys: ["item1"],
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu" }, state);
 
       // Start at item3
-      state.setFocusedKey('item3');
+      state.setFocusedKey("item3");
 
       // Press Home - should skip item1, land on item2
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'Home',
+        key: "Home",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
-      expect(state.focusedKey()).toBe('item2');
+      expect(state.focusedKey()).toBe("item2");
       dispose();
     });
   });
 
-  it('skips disabled keys when navigating to End', () => {
+  it("skips disabled keys when navigating to End", () => {
     createRoot((dispose) => {
       const items = [
-        { key: 'item1', label: 'Item 1' },
-        { key: 'item2', label: 'Item 2' },
-        { key: 'item3', label: 'Item 3' },
+        { key: "item1", label: "Item 1" },
+        { key: "item2", label: "Item 2" },
+        { key: "item3", label: "Item 3" },
       ];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
-        disabledKeys: ['item3'],
+        disabledKeys: ["item3"],
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu" }, state);
 
       // Start at item1
-      state.setFocusedKey('item1');
+      state.setFocusedKey("item1");
 
       // Press End - should skip item3, land on item2
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'End',
+        key: "End",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
-      expect(state.focusedKey()).toBe('item2');
+      expect(state.focusedKey()).toBe("item2");
       dispose();
     });
   });
 
-  it('does not activate disabled items on Enter', () => {
+  it("does not activate disabled items on Enter", () => {
     createRoot((dispose) => {
       const onAction = vi.fn();
       const items = [
-        { key: 'item1', label: 'Item 1' },
-        { key: 'item2', label: 'Item 2' },
+        { key: "item1", label: "Item 1" },
+        { key: "item2", label: "Item 2" },
       ];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
-        disabledKeys: ['item1'],
+        disabledKeys: ["item1"],
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu', onAction }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu", onAction }, state);
 
       // Focus disabled item1
-      state.setFocusedKey('item1');
+      state.setFocusedKey("item1");
 
       // Press Enter - should NOT call onAction
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'Enter',
+        key: "Enter",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
@@ -415,44 +403,44 @@ describe('createMenu - disabled key navigation', () => {
     });
   });
 
-  it('wraps to first non-disabled key when shouldFocusWrap is true', () => {
+  it("wraps to first non-disabled key when shouldFocusWrap is true", () => {
     createRoot((dispose) => {
       const items = [
-        { key: 'item1', label: 'Item 1' },
-        { key: 'item2', label: 'Item 2' },
-        { key: 'item3', label: 'Item 3' },
+        { key: "item1", label: "Item 1" },
+        { key: "item2", label: "Item 2" },
+        { key: "item3", label: "Item 3" },
       ];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
-        disabledKeys: ['item1'],
+        disabledKeys: ["item1"],
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu', shouldFocusWrap: true }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu", shouldFocusWrap: true }, state);
 
       // Start at item3 (last item)
-      state.setFocusedKey('item3');
+      state.setFocusedKey("item3");
 
       // Press ArrowDown - should wrap and skip item1, land on item2
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'ArrowDown',
+        key: "ArrowDown",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
-      expect(state.focusedKey()).toBe('item2');
+      expect(state.focusedKey()).toBe("item2");
       dispose();
     });
   });
 });
 
-describe('createMenu - page navigation', () => {
+describe("createMenu - page navigation", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it('moves focus down by multiple items on PageDown', () => {
+  it("moves focus down by multiple items on PageDown", () => {
     createRoot((dispose) => {
       // Create 15 items to test page navigation
       const items = Array.from({ length: 15 }, (_, i) => ({
@@ -465,30 +453,30 @@ describe('createMenu - page navigation', () => {
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu" }, state);
 
       // Start at item1
-      state.setFocusedKey('item1');
-      expect(state.focusedKey()).toBe('item1');
+      state.setFocusedKey("item1");
+      expect(state.focusedKey()).toBe("item1");
 
       // Press PageDown - should move forward by multiple items
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'PageDown',
+        key: "PageDown",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
       // Should have moved past item1 (exact number depends on fallback page size)
       const focused = state.focusedKey();
-      expect(focused).not.toBe('item1');
+      expect(focused).not.toBe("item1");
       // Should be somewhere in the middle or end
-      const focusedIndex = items.findIndex(i => i.key === focused);
+      const focusedIndex = items.findIndex((i) => i.key === focused);
       expect(focusedIndex).toBeGreaterThan(0);
       dispose();
     });
   });
 
-  it('moves focus up by multiple items on PageUp', () => {
+  it("moves focus up by multiple items on PageUp", () => {
     createRoot((dispose) => {
       // Create 15 items to test page navigation
       const items = Array.from({ length: 15 }, (_, i) => ({
@@ -501,30 +489,30 @@ describe('createMenu - page navigation', () => {
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu" }, state);
 
       // Start at last item
-      state.setFocusedKey('item15');
-      expect(state.focusedKey()).toBe('item15');
+      state.setFocusedKey("item15");
+      expect(state.focusedKey()).toBe("item15");
 
       // Press PageUp - should move backward by multiple items
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'PageUp',
+        key: "PageUp",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
       // Should have moved before item15
       const focused = state.focusedKey();
-      expect(focused).not.toBe('item15');
+      expect(focused).not.toBe("item15");
       // Should be somewhere in the middle or beginning
-      const focusedIndex = items.findIndex(i => i.key === focused);
+      const focusedIndex = items.findIndex((i) => i.key === focused);
       expect(focusedIndex).toBeLessThan(14);
       dispose();
     });
   });
 
-  it('skips disabled items on PageDown', () => {
+  it("skips disabled items on PageDown", () => {
     createRoot((dispose) => {
       const items = Array.from({ length: 15 }, (_, i) => ({
         key: `item${i + 1}`,
@@ -535,34 +523,34 @@ describe('createMenu - page navigation', () => {
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
-        disabledKeys: ['item2', 'item3', 'item4', 'item5'],
+        disabledKeys: ["item2", "item3", "item4", "item5"],
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu" }, state);
 
       // Start at item1
-      state.setFocusedKey('item1');
+      state.setFocusedKey("item1");
 
       // Press PageDown
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'PageDown',
+        key: "PageDown",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
       // Should have skipped disabled items
       const focused = state.focusedKey();
-      expect(['item2', 'item3', 'item4', 'item5']).not.toContain(focused);
+      expect(["item2", "item3", "item4", "item5"]).not.toContain(focused);
       dispose();
     });
   });
 
-  it('stops at last item on PageDown when near end', () => {
+  it("stops at last item on PageDown when near end", () => {
     createRoot((dispose) => {
       const items = [
-        { key: 'item1', label: 'Item 1' },
-        { key: 'item2', label: 'Item 2' },
-        { key: 'item3', label: 'Item 3' },
+        { key: "item1", label: "Item 1" },
+        { key: "item2", label: "Item 2" },
+        { key: "item3", label: "Item 3" },
       ];
 
       const state = createMenuState({
@@ -570,30 +558,30 @@ describe('createMenu - page navigation', () => {
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu" }, state);
 
       // Start at item2
-      state.setFocusedKey('item2');
+      state.setFocusedKey("item2");
 
       // Press PageDown with only 1 item below
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'PageDown',
+        key: "PageDown",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
       // Should be at the last item
-      expect(state.focusedKey()).toBe('item3');
+      expect(state.focusedKey()).toBe("item3");
       dispose();
     });
   });
 
-  it('stops at first item on PageUp when near beginning', () => {
+  it("stops at first item on PageUp when near beginning", () => {
     createRoot((dispose) => {
       const items = [
-        { key: 'item1', label: 'Item 1' },
-        { key: 'item2', label: 'Item 2' },
-        { key: 'item3', label: 'Item 3' },
+        { key: "item1", label: "Item 1" },
+        { key: "item2", label: "Item 2" },
+        { key: "item3", label: "Item 3" },
       ];
 
       const state = createMenuState({
@@ -601,37 +589,35 @@ describe('createMenu - page navigation', () => {
         getKey: (item) => item.key,
       });
 
-      const { menuProps } = createMenu({ 'aria-label': 'Test menu' }, state);
+      const { menuProps } = createMenu({ "aria-label": "Test menu" }, state);
 
       // Start at item2
-      state.setFocusedKey('item2');
+      state.setFocusedKey("item2");
 
       // Press PageUp with only 1 item above
       const onKeyDown = menuProps.onKeyDown as (e: KeyboardEvent) => void;
       onKeyDown({
-        key: 'PageUp',
+        key: "PageUp",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
       // Should be at the first item
-      expect(state.focusedKey()).toBe('item1');
+      expect(state.focusedKey()).toBe("item1");
       dispose();
     });
   });
 });
 
-describe('createMenu - accessibility warnings', () => {
+describe("createMenu - accessibility warnings", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it('should warn when no label is provided in development', () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  it("should warn when no label is provided in development", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     createRoot((dispose) => {
-      const items = [
-        { key: 'copy', label: 'Copy' },
-      ];
+      const items = [{ key: "copy", label: "Copy" }];
 
       const state = createMenuState({
         items,
@@ -641,29 +627,25 @@ describe('createMenu - accessibility warnings', () => {
       // Create menu without label, aria-label, or aria-labelledby
       createMenu({}, state);
 
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Menu requires')
-      );
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("Menu requires"));
       dispose();
     });
 
     warnSpy.mockRestore();
   });
 
-  it('should not warn when aria-label is provided', () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  it("should not warn when aria-label is provided", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     createRoot((dispose) => {
-      const items = [
-        { key: 'copy', label: 'Copy' },
-      ];
+      const items = [{ key: "copy", label: "Copy" }];
 
       const state = createMenuState({
         items,
         getKey: (item) => item.key,
       });
 
-      createMenu({ 'aria-label': 'Actions menu' }, state);
+      createMenu({ "aria-label": "Actions menu" }, state);
 
       expect(warnSpy).not.toHaveBeenCalled();
       dispose();
@@ -673,50 +655,53 @@ describe('createMenu - accessibility warnings', () => {
   });
 });
 
-describe('createMenuTrigger', () => {
+describe("createMenuTrigger", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it('returns trigger props with aria-haspopup', () => {
+  it("returns trigger props with aria-haspopup", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
-      const { menuTriggerProps } = createMenuTrigger({ type: 'menu' }, state);
+      const { menuTriggerProps } = createMenuTrigger({ type: "menu" }, state);
 
-      expect(menuTriggerProps['aria-haspopup']).toBe('menu');
+      expect(menuTriggerProps["aria-haspopup"]).toBe("menu");
       dispose();
     });
   });
 
-  it('sets aria-expanded based on state', () => {
+  it("sets aria-expanded based on state", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
       const { menuTriggerProps } = createMenuTrigger({}, state);
 
-      expect(menuTriggerProps['aria-expanded']).toBe(false);
+      expect(menuTriggerProps["aria-expanded"]).toBe(false);
 
       state.open();
       const { menuTriggerProps: triggerPropsAfter } = createMenuTrigger({}, state);
-      expect(triggerPropsAfter['aria-expanded']).toBe(true);
+      expect(triggerPropsAfter["aria-expanded"]).toBe(true);
       dispose();
     });
   });
 
-  it('sets aria-controls when open', () => {
+  it("sets aria-controls when open", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
       const { menuTriggerProps, menuProps } = createMenuTrigger({}, state);
 
-      expect(menuTriggerProps['aria-controls']).toBeUndefined();
+      expect(menuTriggerProps["aria-controls"]).toBeUndefined();
 
       state.open();
-      const { menuTriggerProps: triggerPropsAfter, menuProps: menuPropsAfter } = createMenuTrigger({}, state);
-      expect(triggerPropsAfter['aria-controls']).toBe(menuPropsAfter.id);
+      const { menuTriggerProps: triggerPropsAfter, menuProps: menuPropsAfter } = createMenuTrigger(
+        {},
+        state,
+      );
+      expect(triggerPropsAfter["aria-controls"]).toBe(menuPropsAfter.id);
       dispose();
     });
   });
 
-  it('onPress toggles state', () => {
+  it("onPress toggles state", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
       const { menuTriggerProps } = createMenuTrigger({}, state);
@@ -732,7 +717,7 @@ describe('createMenuTrigger', () => {
     });
   });
 
-  it('does not toggle when disabled', () => {
+  it("does not toggle when disabled", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
       const { menuTriggerProps } = createMenuTrigger({ isDisabled: true }, state);
@@ -743,13 +728,13 @@ describe('createMenuTrigger', () => {
     });
   });
 
-  it('opens on ArrowDown key', () => {
+  it("opens on ArrowDown key", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
       const { menuTriggerProps } = createMenuTrigger({}, state);
 
       menuTriggerProps.onKeyDown({
-        key: 'ArrowDown',
+        key: "ArrowDown",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
@@ -758,13 +743,13 @@ describe('createMenuTrigger', () => {
     });
   });
 
-  it('opens on Enter key', () => {
+  it("opens on Enter key", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
       const { menuTriggerProps } = createMenuTrigger({}, state);
 
       menuTriggerProps.onKeyDown({
-        key: 'Enter',
+        key: "Enter",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
@@ -773,13 +758,13 @@ describe('createMenuTrigger', () => {
     });
   });
 
-  it('opens on Space key', () => {
+  it("opens on Space key", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
       const { menuTriggerProps } = createMenuTrigger({}, state);
 
       menuTriggerProps.onKeyDown({
-        key: ' ',
+        key: " ",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 

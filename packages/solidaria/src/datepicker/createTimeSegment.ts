@@ -5,10 +5,10 @@
  * Based on @react-aria/datepicker useDateSegment semantics (time-field scope).
  */
 
-import { createMemo, createSignal } from 'solid-js';
-import { useLocale } from '../i18n';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { TimeFieldState, TimeSegment, TimeSegmentType } from '@proyecto-viviana/solid-stately';
+import { createMemo, createSignal } from "solid-js";
+import { useLocale } from "../i18n";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import type { TimeFieldState, TimeSegment, TimeSegmentType } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
@@ -42,11 +42,11 @@ export interface TimeSegmentAria {
 export function createTimeSegment<T extends TimeFieldState>(
   props: MaybeAccessor<AriaTimeSegmentProps>,
   state: T,
-  ref?: () => HTMLElement | null
+  ref?: () => HTMLElement | null,
 ): TimeSegmentAria {
   const getProps = () => access(props);
   const [isFocused, setIsFocused] = createSignal(false);
-  const [enteredKeys, setEnteredKeys] = createSignal('');
+  const [enteredKeys, setEnteredKeys] = createSignal("");
   const [isComposing, setIsComposing] = createSignal(false);
   const locale = useLocale();
 
@@ -57,25 +57,23 @@ export function createTimeSegment<T extends TimeFieldState>(
     return seg.isEditable && !state.isDisabled() && !state.isReadOnly();
   });
 
-  const focusSegment = (target: 'first' | 'last' | 'prev' | 'next') => {
+  const focusSegment = (target: "first" | "last" | "prev" | "next") => {
     const el = ref?.();
     if (!el) return;
 
     const container = el.parentElement;
     if (!container) return;
 
-    const segments = Array.from(
-      container.querySelectorAll<HTMLElement>('[role="spinbutton"]')
-    );
+    const segments = Array.from(container.querySelectorAll<HTMLElement>('[role="spinbutton"]'));
 
     if (segments.length === 0) return;
 
-    if (target === 'first') {
+    if (target === "first") {
       segments[0]?.focus();
       return;
     }
 
-    if (target === 'last') {
+    if (target === "last") {
       segments[segments.length - 1]?.focus();
       return;
     }
@@ -83,7 +81,7 @@ export function createTimeSegment<T extends TimeFieldState>(
     const currentIndex = segments.indexOf(el);
     if (currentIndex < 0) return;
 
-    const nextIndex = target === 'next' ? currentIndex + 1 : currentIndex - 1;
+    const nextIndex = target === "next" ? currentIndex + 1 : currentIndex - 1;
     if (nextIndex >= 0 && nextIndex < segments.length) {
       segments[nextIndex]?.focus();
     }
@@ -91,14 +89,10 @@ export function createTimeSegment<T extends TimeFieldState>(
 
   const clearCurrentSegment = (type: TimeSegmentType) => {
     state.clearSegment(type);
-    setEnteredKeys('');
+    setEnteredKeys("");
   };
 
-  const handleNumericInput = (
-    key: string,
-    type: TimeSegmentType,
-    seg: TimeSegment
-  ) => {
+  const handleNumericInput = (key: string, type: TimeSegmentType, seg: TimeSegment) => {
     const newKeys = enteredKeys() + key;
     const numValue = parseInt(newKeys, 10);
     const maxValue = seg.maxValue ?? 99;
@@ -108,10 +102,10 @@ export function createTimeSegment<T extends TimeFieldState>(
     if (numValue <= maxValue) {
       state.setSegment(type, numValue);
 
-      const potentialNextValue = parseInt(newKeys + '0', 10);
+      const potentialNextValue = parseInt(newKeys + "0", 10);
       if (potentialNextValue > maxValue || newKeys.length >= maxDigits) {
-        setEnteredKeys('');
-        focusSegment('next');
+        setEnteredKeys("");
+        focusSegment("next");
       } else {
         setEnteredKeys(newKeys);
       }
@@ -119,15 +113,15 @@ export function createTimeSegment<T extends TimeFieldState>(
       const singleValue = parseInt(key, 10);
       if (singleValue >= minValue && singleValue <= maxValue) {
         state.setSegment(type, singleValue);
-        const potentialNextValue = parseInt(key + '0', 10);
+        const potentialNextValue = parseInt(key + "0", 10);
         if (potentialNextValue > maxValue || key.length >= maxDigits) {
-          setEnteredKeys('');
-          focusSegment('next');
+          setEnteredKeys("");
+          focusSegment("next");
         } else {
           setEnteredKeys(key);
         }
       } else {
-        setEnteredKeys('');
+        setEnteredKeys("");
       }
     }
   };
@@ -139,42 +133,42 @@ export function createTimeSegment<T extends TimeFieldState>(
     const seg = segment();
     const type = seg.type;
 
-    if (type === 'literal') return;
+    if (type === "literal") return;
 
     switch (e.key) {
-      case 'ArrowRight':
+      case "ArrowRight":
         e.preventDefault();
-        focusSegment(locale().direction === 'rtl' ? 'prev' : 'next');
+        focusSegment(locale().direction === "rtl" ? "prev" : "next");
         break;
-      case 'ArrowLeft':
+      case "ArrowLeft":
         e.preventDefault();
-        focusSegment(locale().direction === 'rtl' ? 'next' : 'prev');
+        focusSegment(locale().direction === "rtl" ? "next" : "prev");
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         state.incrementSegment(type);
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         state.decrementSegment(type);
         break;
-      case 'Home':
+      case "Home":
         e.preventDefault();
-        focusSegment('first');
+        focusSegment("first");
         break;
-      case 'End':
+      case "End":
         e.preventDefault();
-        focusSegment('last');
+        focusSegment("last");
         break;
-      case 'Backspace':
+      case "Backspace":
         e.preventDefault();
         if (seg.isPlaceholder) {
-          focusSegment('prev');
+          focusSegment("prev");
         } else {
           clearCurrentSegment(type);
         }
         break;
-      case 'Delete':
+      case "Delete":
         e.preventDefault();
         clearCurrentSegment(type);
         break;
@@ -193,15 +187,15 @@ export function createTimeSegment<T extends TimeFieldState>(
     if (isComposing()) return;
 
     const seg = segment();
-    if (seg.type === 'literal') return;
+    if (seg.type === "literal") return;
 
-    if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
+    if (e.inputType === "deleteContentBackward" || e.inputType === "deleteContentForward") {
       e.preventDefault();
       clearCurrentSegment(seg.type);
       return;
     }
 
-    if (e.inputType === 'insertText' && e.data) {
+    if (e.inputType === "insertText" && e.data) {
       const normalizedDigit = normalizeDigit(e.data);
       if (!normalizedDigit) return;
       e.preventDefault();
@@ -212,7 +206,7 @@ export function createTimeSegment<T extends TimeFieldState>(
   const handleCompositionStart = () => {
     if (!isEditable()) return;
     setIsComposing(true);
-    setEnteredKeys('');
+    setEnteredKeys("");
   };
 
   const handleCompositionEnd = (e: CompositionEvent) => {
@@ -220,9 +214,9 @@ export function createTimeSegment<T extends TimeFieldState>(
     setIsComposing(false);
 
     const seg = segment();
-    if (seg.type === 'literal') return;
+    if (seg.type === "literal") return;
 
-    const digits = extractNormalizedDigits(e.data ?? '');
+    const digits = extractNormalizedDigits(e.data ?? "");
     if (digits.length === 0) return;
 
     for (const digit of digits) {
@@ -232,12 +226,12 @@ export function createTimeSegment<T extends TimeFieldState>(
 
   const handleFocus = () => {
     setIsFocused(true);
-    setEnteredKeys('');
+    setEnteredKeys("");
   };
 
   const handleBlur = () => {
     setIsFocused(false);
-    setEnteredKeys('');
+    setEnteredKeys("");
 
     const maybeState = state as unknown as { confirmPlaceholder?: () => void };
     maybeState.confirmPlaceholder?.();
@@ -247,28 +241,28 @@ export function createTimeSegment<T extends TimeFieldState>(
     const seg = segment();
     const type = seg.type;
 
-    if (type === 'literal') {
+    if (type === "literal") {
       return {
-        'aria-hidden': true,
+        "aria-hidden": true,
       };
     }
 
     return {
-      role: 'spinbutton',
+      role: "spinbutton",
       tabIndex: isEditable() ? 0 : -1,
-      'aria-label': getSegmentLabel(type, locale().locale),
-      'aria-valuenow': seg.value,
-      'aria-valuemin': seg.minValue,
-      'aria-valuemax': seg.maxValue,
-      'aria-valuetext': seg.isPlaceholder ? seg.placeholder : seg.text,
-      'aria-readonly': state.isReadOnly() || undefined,
-      'aria-disabled': state.isDisabled() || undefined,
-      'aria-invalid': state.isInvalid() || undefined,
+      "aria-label": getSegmentLabel(type, locale().locale),
+      "aria-valuenow": seg.value,
+      "aria-valuemin": seg.minValue,
+      "aria-valuemax": seg.maxValue,
+      "aria-valuetext": seg.isPlaceholder ? seg.placeholder : seg.text,
+      "aria-readonly": state.isReadOnly() || undefined,
+      "aria-disabled": state.isDisabled() || undefined,
+      "aria-invalid": state.isInvalid() || undefined,
       contentEditable: isEditable(),
       suppressContentEditableWarning: true,
-      inputMode: 'numeric' as const,
-      autoCorrect: 'off',
-      enterKeyHint: 'next' as const,
+      inputMode: "numeric" as const,
+      autoCorrect: "off",
+      enterKeyHint: "next" as const,
       spellCheck: false,
       onKeyDown: handleKeyDown,
       onFocus: handleFocus,
@@ -310,27 +304,27 @@ export function createTimeSegment<T extends TimeFieldState>(
 // HELPERS
 // ============================================
 
-type EditableTimeSegmentType = Exclude<TimeSegmentType, 'literal'>;
+type EditableTimeSegmentType = Exclude<TimeSegmentType, "literal">;
 
 const SEGMENT_LABELS: Record<string, Record<EditableTimeSegmentType, string>> = {
   en: {
-    hour: 'Hour',
-    minute: 'Minute',
-    second: 'Second',
-    dayPeriod: 'AM/PM',
+    hour: "Hour",
+    minute: "Minute",
+    second: "Second",
+    dayPeriod: "AM/PM",
   },
   es: {
-    hour: 'Hora',
-    minute: 'Minuto',
-    second: 'Segundo',
-    dayPeriod: 'AM/PM',
+    hour: "Hora",
+    minute: "Minuto",
+    second: "Segundo",
+    dayPeriod: "AM/PM",
   },
 };
 
 function getSegmentLabel(type: TimeSegmentType, locale: string): string {
-  if (type === 'literal') return '';
+  if (type === "literal") return "";
 
-  const language = locale.toLowerCase().split('-')[0] ?? 'en';
+  const language = locale.toLowerCase().split("-")[0] ?? "en";
   const labels = SEGMENT_LABELS[language] ?? SEGMENT_LABELS.en;
   return labels[type];
 }

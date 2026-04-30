@@ -4,16 +4,16 @@
  * Based on @react-aria/select useSelect.
  */
 
-import { type JSX, type Accessor, createEffect, onCleanup } from 'solid-js';
-import { createPress } from '../interactions/createPress';
-import { createFocusRing } from '../interactions/createFocusRing';
-import { createLabel } from '../label/createLabel';
-import { createTypeSelect } from '../selection/createTypeSelect';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { mergeProps } from '../utils/mergeProps';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { SelectState, CollectionNode } from '@proyecto-viviana/solid-stately';
+import { type JSX, type Accessor, createEffect, onCleanup } from "solid-js";
+import { createPress } from "../interactions/createPress";
+import { createFocusRing } from "../interactions/createFocusRing";
+import { createLabel } from "../label/createLabel";
+import { createTypeSelect } from "../selection/createTypeSelect";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { mergeProps } from "../utils/mergeProps";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import type { SelectState, CollectionNode } from "@proyecto-viviana/solid-stately";
 
 export interface AriaSelectProps {
   /** An ID for the select. */
@@ -25,11 +25,11 @@ export interface AriaSelectProps {
   /** The label for the select. */
   label?: JSX.Element;
   /** An accessible label for the select when no visible label is provided. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The ID of an element that labels the select. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The ID of an element that describes the select. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Placeholder text when no option is selected. */
   placeholder?: string;
   /** Whether the select should be auto-focused. */
@@ -90,7 +90,7 @@ export function getSelectData(state: SelectState): SelectData | undefined {
 export function createSelect<T>(
   props: MaybeAccessor<AriaSelectProps>,
   state: SelectState<T>,
-  _ref?: () => HTMLElement | null
+  _ref?: () => HTMLElement | null,
 ): SelectAria<T> {
   const getProps = () => access(props);
   const id = createId(getProps().id);
@@ -123,13 +123,13 @@ export function createSelect<T>(
     get label() {
       return getProps().label;
     },
-    get 'aria-label'() {
-      return getProps()['aria-label'];
+    get "aria-label"() {
+      return getProps()["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return getProps()['aria-labelledby'];
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
     },
-    labelElementType: 'span',
+    labelElementType: "span",
   });
 
   // Focus ring for keyboard focus styling
@@ -143,7 +143,8 @@ export function createSelect<T>(
   const isFocused = state.isFocused;
 
   // Handle press on trigger
-  const canOpen = () => getProps().allowsEmptyCollection || state.collection().getFirstKey() != null;
+  const canOpen = () =>
+    getProps().allowsEmptyCollection || state.collection().getFirstKey() != null;
 
   // Helper to check if key is disabled
   const isKeyDisabled = (key: string | number): boolean => {
@@ -152,14 +153,17 @@ export function createSelect<T>(
   };
 
   // Helper to find the next non-disabled key.
-  const findNextKey = (fromKey: string | number | null, direction: 'forward' | 'backward'): string | number | null => {
+  const findNextKey = (
+    fromKey: string | number | null,
+    direction: "forward" | "backward",
+  ): string | number | null => {
     const collection = state.collection();
-    const getAdjacent = direction === 'forward'
-      ? (k: string | number) => collection.getKeyAfter(k)
-      : (k: string | number) => collection.getKeyBefore(k);
-    const getBoundary = direction === 'forward'
-      ? () => collection.getFirstKey()
-      : () => collection.getLastKey();
+    const getAdjacent =
+      direction === "forward"
+        ? (k: string | number) => collection.getKeyAfter(k)
+        : (k: string | number) => collection.getKeyBefore(k);
+    const getBoundary =
+      direction === "forward" ? () => collection.getFirstKey() : () => collection.getLastKey();
 
     let key = fromKey == null ? getBoundary() : getAdjacent(fromKey);
     while (key != null && isKeyDisabled(key)) {
@@ -174,7 +178,7 @@ export function createSelect<T>(
     if (selectedKey != null && !isKeyDisabled(selectedKey)) {
       return selectedKey;
     }
-    return findNextKey(null, 'forward');
+    return findNextKey(null, "forward");
   };
 
   const openWithFocus = () => {
@@ -216,7 +220,9 @@ export function createSelect<T>(
     },
     isKeyDisabled,
     get isDisabled() {
-      return Boolean((getProps().disallowTypeAhead ?? false) || getProps().isDisabled || state.isDisabled);
+      return Boolean(
+        (getProps().disallowTypeAhead ?? false) || getProps().isDisabled || state.isDisabled,
+      );
     },
   });
 
@@ -227,8 +233,8 @@ export function createSelect<T>(
     const currentKey = state.focusedKey() ?? state.selectedKey();
 
     switch (e.key) {
-      case 'Enter':
-      case ' ':
+      case "Enter":
+      case " ":
         e.preventDefault();
         if (state.isOpen()) {
           state.close();
@@ -237,7 +243,7 @@ export function createSelect<T>(
         }
         break;
 
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         if (!state.isOpen()) {
           if (!canOpen()) {
@@ -245,9 +251,10 @@ export function createSelect<T>(
           }
           // ArrowDown: Open the dropdown and focus first/selected item
           state.open();
-          const focusKey = currentKey != null && !isKeyDisabled(currentKey)
-            ? currentKey
-            : findNextKey(currentKey, 'forward');
+          const focusKey =
+            currentKey != null && !isKeyDisabled(currentKey)
+              ? currentKey
+              : findNextKey(currentKey, "forward");
           if (focusKey) {
             state.setFocusedKey(focusKey);
           }
@@ -255,7 +262,7 @@ export function createSelect<T>(
         // When open, navigation is handled by the listbox
         break;
 
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         if (!state.isOpen()) {
           if (!canOpen()) {
@@ -263,9 +270,10 @@ export function createSelect<T>(
           }
           // ArrowUp: Open the dropdown and focus last/selected item
           state.open();
-          const focusKey = currentKey != null && !isKeyDisabled(currentKey)
-            ? currentKey
-            : findNextKey(currentKey, 'backward');
+          const focusKey =
+            currentKey != null && !isKeyDisabled(currentKey)
+              ? currentKey
+              : findNextKey(currentKey, "backward");
           if (focusKey) {
             state.setFocusedKey(focusKey);
           }
@@ -273,51 +281,51 @@ export function createSelect<T>(
         // When open, navigation is handled by the listbox
         break;
 
-      case 'ArrowRight':
+      case "ArrowRight":
         // ArrowRight: Select next option (for horizontal keyboard navigation pattern)
         if (!state.isOpen()) {
           e.preventDefault();
-          const nextKey = findNextKey(currentKey, 'forward');
+          const nextKey = findNextKey(currentKey, "forward");
           if (nextKey != null) {
             state.setSelectedKey(nextKey);
           }
         }
         break;
 
-      case 'ArrowLeft':
+      case "ArrowLeft":
         // ArrowLeft: Select previous option (for horizontal keyboard navigation pattern)
         if (!state.isOpen()) {
           e.preventDefault();
-          const prevKey = findNextKey(currentKey, 'backward');
+          const prevKey = findNextKey(currentKey, "backward");
           if (prevKey != null) {
             state.setSelectedKey(prevKey);
           }
         }
         break;
 
-      case 'Home':
+      case "Home":
         // Home: Select first option
         if (!state.isOpen()) {
           e.preventDefault();
-          const firstKey = findNextKey(null, 'forward');
+          const firstKey = findNextKey(null, "forward");
           if (firstKey != null) {
             state.setSelectedKey(firstKey);
           }
         }
         break;
 
-      case 'End':
+      case "End":
         // End: Select last option
         if (!state.isOpen()) {
           e.preventDefault();
-          const lastKey = findNextKey(null, 'backward');
+          const lastKey = findNextKey(null, "backward");
           if (lastKey != null) {
             state.setSelectedKey(lastKey);
           }
         }
         break;
 
-      case 'Escape':
+      case "Escape":
         if (state.isOpen()) {
           e.preventDefault();
           state.close();
@@ -355,27 +363,30 @@ export function createSelect<T>(
         fieldProps as Record<string, unknown>,
         {
           id: buttonId,
-          role: 'combobox',
-          type: 'button',
+          role: "combobox",
+          type: "button",
           tabIndex: isDisabled ? undefined : 0,
-          'aria-haspopup': 'listbox',
-          'aria-expanded': isOpen,
-          'aria-controls': isOpen ? listBoxId : undefined,
-          'aria-disabled': isDisabled || undefined,
-          'aria-required': p.isRequired || undefined,
-          'aria-describedby': p['aria-describedby'] || undefined,
+          "aria-haspopup": "listbox",
+          "aria-expanded": isOpen,
+          "aria-controls": isOpen ? listBoxId : undefined,
+          "aria-disabled": isDisabled || undefined,
+          "aria-required": p.isRequired || undefined,
+          "aria-describedby": p["aria-describedby"] || undefined,
           onKeyDown,
           onFocus: handleFocus,
           onBlur: handleBlur,
-          'data-open': isOpen || undefined,
-          'data-disabled': isDisabled || undefined,
-          'data-focus-visible': isFocusVisible() || undefined,
-        } as Record<string, unknown>
+          "data-open": isOpen || undefined,
+          "data-disabled": isDisabled || undefined,
+          "data-focus-visible": isFocusVisible() || undefined,
+        } as Record<string, unknown>,
       );
 
       // Add type-select props if enabled
       if (!p.disallowTypeAhead) {
-        return mergeProps(baseProps, typeSelectProps as Record<string, unknown>) as JSX.HTMLAttributes<HTMLElement>;
+        return mergeProps(
+          baseProps,
+          typeSelectProps as Record<string, unknown>,
+        ) as JSX.HTMLAttributes<HTMLElement>;
       }
 
       return baseProps as JSX.HTMLAttributes<HTMLElement>;
@@ -388,9 +399,9 @@ export function createSelect<T>(
     get menuProps() {
       return {
         id: listBoxId,
-        role: 'listbox',
-        'aria-labelledby': buttonId,
-        'aria-multiselectable': state.selectionMode() === 'multiple' ? true : undefined,
+        role: "listbox",
+        "aria-labelledby": buttonId,
+        "aria-multiselectable": state.selectionMode() === "multiple" ? true : undefined,
         tabIndex: -1,
       } as JSX.HTMLAttributes<HTMLElement>;
     },

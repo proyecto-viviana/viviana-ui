@@ -90,8 +90,7 @@ export const reactSpectrumCatalogue = [
   component("TreeView"),
 ] as const satisfies readonly ReactSpectrumCatalogueEntry[];
 
-export type ReactSpectrumComponentSlug =
-  (typeof reactSpectrumCatalogue)[number]["slug"];
+export type ReactSpectrumComponentSlug = (typeof reactSpectrumCatalogue)[number]["slug"];
 
 export const reactSpectrumCatalogueSource = {
   name: "React Spectrum S2 component catalogue",

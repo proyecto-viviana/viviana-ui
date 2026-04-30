@@ -3,20 +3,20 @@
  * Based on @react-stately/table/useTableState.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import { createGridState } from '../grid/createGridState';
-import type { Key } from '../collections/types';
+import { createMemo, type Accessor } from "solid-js";
+import { createGridState } from "../grid/createGridState";
+import type { Key } from "../collections/types";
 import type {
   TableState,
   TableStateOptions,
   TableCollection,
   SortDescriptor,
   SortDirection,
-} from './types';
+} from "./types";
 
 const OPPOSITE_SORT_DIRECTION: Record<SortDirection, SortDirection> = {
-  ascending: 'descending',
-  descending: 'ascending',
+  ascending: "descending",
+  descending: "ascending",
 };
 
 /**
@@ -66,7 +66,7 @@ export function createTableState<
       newDirection = OPPOSITE_SORT_DIRECTION[currentSort.direction];
     } else {
       // Default to ascending for new column
-      newDirection = 'ascending';
+      newDirection = "ascending";
     }
 
     opts.onSortChange?.({

@@ -4,8 +4,8 @@
  * Styling-only composition around tooltip primitives.
  */
 
-import { type JSX, Show, splitProps } from 'solid-js';
-import { TooltipTrigger, Tooltip } from '../tooltip';
+import { type JSX, Show, splitProps } from "solid-js";
+import { TooltipTrigger, Tooltip } from "../tooltip";
 
 export interface ContextualHelpProps {
   /** Help trigger content. */
@@ -19,20 +19,20 @@ export interface ContextualHelpProps {
 }
 
 export function ContextualHelp(props: ContextualHelpProps): JSX.Element {
-  const [local] = splitProps(props, ['children', 'content', 'triggerLabel', 'class']);
+  const [local] = splitProps(props, ["children", "content", "triggerLabel", "class"]);
   return (
     <TooltipTrigger>
       <Show
         when={local.children}
-        fallback={(
+        fallback={
           <button
             type="button"
-            aria-label={local.triggerLabel ?? 'More information'}
-            class={`inline-flex h-5 w-5 items-center justify-center rounded-full border border-primary-500 text-xs text-primary-200 hover:bg-bg-300 ${local.class ?? ''}`}
+            aria-label={local.triggerLabel ?? "More information"}
+            class={`inline-flex h-5 w-5 items-center justify-center rounded-full border border-primary-500 text-xs text-primary-200 hover:bg-bg-300 ${local.class ?? ""}`}
           >
             ?
           </button>
-        )}
+        }
       >
         {local.children}
       </Show>

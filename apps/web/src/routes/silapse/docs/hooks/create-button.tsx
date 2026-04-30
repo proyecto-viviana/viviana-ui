@@ -78,9 +78,7 @@ function CreateButtonPage() {
   );
 }`}
       >
-        <ButtonLink href="https://github.com/proyecto-viviana">
-          View on GitHub →
-        </ButtonLink>
+        <ButtonLink href="https://github.com/proyecto-viviana">View on GitHub →</ButtonLink>
       </Example>
 
       <h2>Parameters</h2>
@@ -169,7 +167,9 @@ function CreateButtonPage() {
           <li>
             Handles <code>role="button"</code> when using non-button elements
           </li>
-          <li>Manages <code>tabIndex</code> for keyboard accessibility</li>
+          <li>
+            Manages <code>tabIndex</code> for keyboard accessibility
+          </li>
           <li>Handles Enter and Space key presses</li>
           <li>
             Sets <code>aria-disabled</code> for disabled state

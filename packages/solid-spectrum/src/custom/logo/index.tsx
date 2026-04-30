@@ -46,7 +46,9 @@ export function Logo(props: LogoProps): JSX.Element {
   const secondWord = () => props.secondWord ?? "Viviana";
 
   return (
-    <span class={`vui-logo ${sizeClass()} ${props.inverted ? "vui-logo--inverted" : ""} ${props.class ?? ""}`}>
+    <span
+      class={`vui-logo ${sizeClass()} ${props.inverted ? "vui-logo--inverted" : ""} ${props.class ?? ""}`}
+    >
       <span class="vui-logo__first" data-text={props.inverted ? firstWord() : undefined}>
         {firstWord()}
       </span>

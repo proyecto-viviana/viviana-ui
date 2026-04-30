@@ -54,7 +54,7 @@
   --color-bg-light: #515151;
 
   /* Primary — Silapse blue scale */
-  --color-primary: #75ABC7;
+  --color-primary: #75abc7;
   --color-primary-50: #081018;
   --color-primary-100: #ddf4ff;
   --color-primary-200: #b6e3ff;
@@ -67,7 +67,7 @@
   --color-primary-900: #050a12;
 
   /* Accent — Silapse pink */
-  --color-accent: #DF5C9A;
+  --color-accent: #df5c9a;
   --color-accent-50: #100810;
   --color-accent-100: #0f0508;
   --color-accent-200: #150a12;
@@ -81,33 +81,33 @@
   --color-accent-highlight: #e2a2be;
 
   /* Semantic colors */
-  --color-success-100: #E5FFF3;
+  --color-success-100: #e5fff3;
   --color-success-200: #102a18;
   --color-success-300: #1a3a25;
-  --color-success-400: #C2FFC8;
-  --color-success-500: #5BC96E;
+  --color-success-400: #c2ffc8;
+  --color-success-500: #5bc96e;
   --color-success-600: #238636;
-  --color-success-700: #9FEFAA;
-  --color-success-800: #C2FFC8;
-  --color-success-900: #E5FFF3;
-  --color-warning-100: #FFFBE5;
+  --color-success-700: #9fefaa;
+  --color-success-800: #c2ffc8;
+  --color-success-900: #e5fff3;
+  --color-warning-100: #fffbe5;
   --color-warning-200: #2a2010;
   --color-warning-300: #3a2c18;
-  --color-warning-400: #FFDD87;
-  --color-warning-500: #E5C462;
+  --color-warning-400: #ffdd87;
+  --color-warning-500: #e5c462;
   --color-warning-600: #966a13;
-  --color-warning-700: #FFEA9F;
-  --color-warning-800: #FFF3C2;
-  --color-warning-900: #FFFBE5;
-  --color-danger-100: #FFE5E5;
+  --color-warning-700: #ffea9f;
+  --color-warning-800: #fff3c2;
+  --color-warning-900: #fffbe5;
+  --color-danger-100: #ffe5e5;
   --color-danger-200: #2a1010;
   --color-danger-300: #401818;
-  --color-danger-400: #FF8787;
-  --color-danger-500: #E56767;
+  --color-danger-400: #ff8787;
+  --color-danger-500: #e56767;
   --color-danger-600: #da3633;
-  --color-danger-700: #FFA8A8;
-  --color-danger-800: #FFC7C7;
-  --color-danger-900: #FFE5E5;
+  --color-danger-700: #ffa8a8;
+  --color-danger-800: #ffc7c7;
+  --color-danger-900: #ffe5e5;
 
   /* Cards */
   --color-cards-bg: #373737;
@@ -133,7 +133,7 @@
   --color-text: #ffffff;
   --color-text-secondary: #a0a0a0;
   --color-text-muted: #606060;
-  --color-text-dim: #4F6D85;
+  --color-text-dim: #4f6d85;
   --color-text-disabled: #404040;
 
   /* Borders */
@@ -150,12 +150,12 @@
   --color-danger-dim: #da3633;
 
   /* Typography */
-  --font-sen: 'Sen', sans-serif;
-  --font-jost: 'Jost', sans-serif;
-  --font-sans: 'Sen', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-title: 'Jost', system-ui, sans-serif;
-  --font-body: 'Sen', system-ui, sans-serif;
+  --font-sen: "Sen", sans-serif;
+  --font-jost: "Jost", sans-serif;
+  --font-sans: "Sen", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-title: "Jost", system-ui, sans-serif;
+  --font-body: "Sen", system-ui, sans-serif;
 
   /* Radius — Brutalist: zero */
   --radius-xs: 0px;
@@ -194,18 +194,19 @@
 
 /* ===== FONT UTILITIES ===== */
 .font-sen {
-  font-family: 'Sen', sans-serif;
+  font-family: "Sen", sans-serif;
 }
 
 .font-jost {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
 }
 
 /* ===== ANIMATION KEYFRAMES ===== */
 
 /* Gradient mesh animation - subtle breathing effect */
 @keyframes gradient-shift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -215,7 +216,8 @@
 
 /* Floating animation for decorative elements */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
   33% {
@@ -228,7 +230,8 @@
 
 /* Pulse glow for accent elements */
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.4;
     transform: scale(1);
   }
@@ -277,10 +280,12 @@
 
 /* Typing cursor blink */
 @keyframes blink {
-  0%, 50% {
+  0%,
+  50% {
     opacity: 1;
   }
-  51%, 100% {
+  51%,
+  100% {
     opacity: 0;
   }
 }
@@ -319,8 +324,12 @@
 
 /* Silapse wire pulse — animated dash traveling along SVG paths */
 @keyframes silapse-pulse {
-  0% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: -58; }
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -58;
+  }
 }
 
 /* ===== ANIMATION UTILITIES ===== */
@@ -369,14 +378,30 @@
 }
 
 /* Staggered animation delays */
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }
-.delay-600 { animation-delay: 0.6s; }
-.delay-700 { animation-delay: 0.7s; }
-.delay-800 { animation-delay: 0.8s; }
+.delay-100 {
+  animation-delay: 0.1s;
+}
+.delay-200 {
+  animation-delay: 0.2s;
+}
+.delay-300 {
+  animation-delay: 0.3s;
+}
+.delay-400 {
+  animation-delay: 0.4s;
+}
+.delay-500 {
+  animation-delay: 0.5s;
+}
+.delay-600 {
+  animation-delay: 0.6s;
+}
+.delay-700 {
+  animation-delay: 0.7s;
+}
+.delay-800 {
+  animation-delay: 0.8s;
+}
 
 /* Initially hidden for animation */
 .animate-initial {
@@ -437,28 +462,33 @@
 
 /* ===== GLOW UTILITIES ===== */
 .glow-accent {
-  box-shadow: 0 0 20px rgba(255, 160, 213, 0.3),
-              0 0 40px rgba(255, 160, 213, 0.1);
+  box-shadow:
+    0 0 20px rgba(255, 160, 213, 0.3),
+    0 0 40px rgba(255, 160, 213, 0.1);
 }
 
 .glow-accent-strong {
-  box-shadow: 0 0 30px rgba(255, 160, 213, 0.5),
-              0 0 60px rgba(255, 160, 213, 0.2);
+  box-shadow:
+    0 0 30px rgba(255, 160, 213, 0.5),
+    0 0 60px rgba(255, 160, 213, 0.2);
 }
 
 .glow-primary {
-  box-shadow: 0 0 20px rgba(77, 160, 255, 0.3),
-              0 0 40px rgba(77, 160, 255, 0.1);
+  box-shadow:
+    0 0 20px rgba(77, 160, 255, 0.3),
+    0 0 40px rgba(77, 160, 255, 0.1);
 }
 
 .text-glow-accent {
-  text-shadow: 0 0 20px rgba(255, 160, 213, 0.5),
-               0 0 40px rgba(255, 160, 213, 0.3);
+  text-shadow:
+    0 0 20px rgba(255, 160, 213, 0.5),
+    0 0 40px rgba(255, 160, 213, 0.3);
 }
 
 .text-glow-primary {
-  text-shadow: 0 0 20px rgba(77, 160, 255, 0.5),
-               0 0 40px rgba(77, 160, 255, 0.3);
+  text-shadow:
+    0 0 20px rgba(77, 160, 255, 0.5),
+    0 0 40px rgba(77, 160, 255, 0.3);
 }
 
 /* ===== GRADIENT UTILITIES ===== */
@@ -511,14 +541,62 @@
 
 .pattern-crystal {
   background-image:
-    linear-gradient(30deg, rgba(255, 160, 213, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 160, 213, 0.03) 87.5%, rgba(255, 160, 213, 0.03)),
-    linear-gradient(150deg, rgba(255, 160, 213, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 160, 213, 0.03) 87.5%, rgba(255, 160, 213, 0.03)),
-    linear-gradient(30deg, rgba(255, 160, 213, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 160, 213, 0.03) 87.5%, rgba(255, 160, 213, 0.03)),
-    linear-gradient(150deg, rgba(255, 160, 213, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 160, 213, 0.03) 87.5%, rgba(255, 160, 213, 0.03)),
-    linear-gradient(60deg, rgba(56, 139, 253, 0.04) 25%, transparent 25.5%, transparent 75%, rgba(56, 139, 253, 0.04) 75%, rgba(56, 139, 253, 0.04)),
-    linear-gradient(60deg, rgba(56, 139, 253, 0.04) 25%, transparent 25.5%, transparent 75%, rgba(56, 139, 253, 0.04) 75%, rgba(56, 139, 253, 0.04));
+    linear-gradient(
+      30deg,
+      rgba(255, 160, 213, 0.03) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      rgba(255, 160, 213, 0.03) 87.5%,
+      rgba(255, 160, 213, 0.03)
+    ),
+    linear-gradient(
+      150deg,
+      rgba(255, 160, 213, 0.03) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      rgba(255, 160, 213, 0.03) 87.5%,
+      rgba(255, 160, 213, 0.03)
+    ),
+    linear-gradient(
+      30deg,
+      rgba(255, 160, 213, 0.03) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      rgba(255, 160, 213, 0.03) 87.5%,
+      rgba(255, 160, 213, 0.03)
+    ),
+    linear-gradient(
+      150deg,
+      rgba(255, 160, 213, 0.03) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      rgba(255, 160, 213, 0.03) 87.5%,
+      rgba(255, 160, 213, 0.03)
+    ),
+    linear-gradient(
+      60deg,
+      rgba(56, 139, 253, 0.04) 25%,
+      transparent 25.5%,
+      transparent 75%,
+      rgba(56, 139, 253, 0.04) 75%,
+      rgba(56, 139, 253, 0.04)
+    ),
+    linear-gradient(
+      60deg,
+      rgba(56, 139, 253, 0.04) 25%,
+      transparent 25.5%,
+      transparent 75%,
+      rgba(56, 139, 253, 0.04) 75%,
+      rgba(56, 139, 253, 0.04)
+    );
   background-size: 80px 140px;
-  background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+  background-position:
+    0 0,
+    0 0,
+    40px 70px,
+    40px 70px,
+    0 0,
+    40px 70px;
 }
 
 /* ===== NOISE TEXTURE ===== */
@@ -527,7 +605,7 @@
 }
 
 .noise::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
@@ -547,7 +625,9 @@
 
 /* ===== HOVER EFFECTS ===== */
 .hover-lift {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
 }
 
 .hover-lift:hover {
@@ -634,10 +714,12 @@
 /* Silapse button base */
 .silapse-button {
   clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
-  transition: filter 0.15s ease, background 0.15s ease;
+  transition:
+    filter 0.15s ease,
+    background 0.15s ease;
   border: none;
   cursor: pointer;
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-weight: 600;
 }
 
@@ -674,9 +756,10 @@
 /* ===== FOCUS STATES ===== */
 .focus-glow:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-bg-400),
-              0 0 0 4px var(--color-accent-300),
-              0 0 20px rgba(255, 160, 213, 0.3);
+  box-shadow:
+    0 0 0 2px var(--color-bg-400),
+    0 0 0 4px var(--color-accent-300),
+    0 0 20px rgba(255, 160, 213, 0.3);
 }
 
 /* ===== SCROLLBAR STYLING ===== */
@@ -719,19 +802,37 @@
 }
 
 /* Fix old text color tokens to use Silapse-compatible values */
-.docs-content .text-bg-300 { color: var(--color-primary-600); }
-.docs-content .text-bg-400 { color: var(--color-primary-500); }
-.docs-content .text-bg-500 { color: var(--color-primary-400); }
-.docs-content .text-bg-600 { color: var(--color-primary-300); }
+.docs-content .text-bg-300 {
+  color: var(--color-primary-600);
+}
+.docs-content .text-bg-400 {
+  color: var(--color-primary-500);
+}
+.docs-content .text-bg-500 {
+  color: var(--color-primary-400);
+}
+.docs-content .text-bg-600 {
+  color: var(--color-primary-300);
+}
 
 /* Fix old background tokens */
-.docs-content .bg-bg-100 { background: var(--color-bg-200); }
-.docs-content .bg-bg-200 { background: var(--color-bg-300); }
-.docs-content .bg-bg-300 { background: var(--color-bg-400); }
+.docs-content .bg-bg-100 {
+  background: var(--color-bg-200);
+}
+.docs-content .bg-bg-200 {
+  background: var(--color-bg-300);
+}
+.docs-content .bg-bg-300 {
+  background: var(--color-bg-400);
+}
 
 /* Fix old border tokens */
-.docs-content .border-bg-200 { border-color: var(--color-bg-200); }
-.docs-content .border-bg-300 { border-color: var(--color-bg-100); }
+.docs-content .border-bg-200 {
+  border-color: var(--color-bg-200);
+}
+.docs-content .border-bg-300 {
+  border-color: var(--color-bg-100);
+}
 
 /* Force angular corners on doc page rounded elements */
 .docs-content .rounded-lg,
@@ -747,7 +848,9 @@
   color: var(--color-primary-300);
   text-decoration: none;
   border-bottom: 1px solid var(--color-primary-600);
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .docs-content a:not([class]):hover {
@@ -771,7 +874,7 @@
   --color-blue-100: #e0f0f7;
   --color-blue-200: #b6d9eb;
   --color-blue-300: #8bc4db;
-  --color-blue-400: #75ABC7;
+  --color-blue-400: #75abc7;
   --color-blue-500: #5a94b3;
   --color-blue-600: #3d7a9c;
   --color-blue-700: #2b6080;
@@ -781,7 +884,7 @@
   --color-pink-100: #fef2f7;
   --color-pink-200: #fcc7e0;
   --color-pink-300: #f78fb9;
-  --color-pink-400: #DF5C9A;
+  --color-pink-400: #df5c9a;
   --color-pink-500: #cf2c74;
   --color-pink-600: #a31f58;
   --color-pink-700: #8a1a4a;
@@ -796,7 +899,7 @@
   --color-bg-light: #ffffff;
 
   /* Primary — Silapse blue */
-  --color-primary: #75ABC7;
+  --color-primary: #75abc7;
   --color-primary-50: #f0f7ff;
   --color-primary-100: #06131d;
   --color-primary-200: #0c2436;
@@ -809,42 +912,42 @@
   --color-primary-900: #0d2a3d;
 
   /* Accent — Silapse pink */
-  --color-accent: #DF5C9A;
+  --color-accent: #df5c9a;
   --color-accent-100: #fef2f7;
   --color-accent-200: #7d1c48;
   --color-accent-300: #f78fb9;
-  --color-accent-400: #DF5C9A;
+  --color-accent-400: #df5c9a;
   --color-accent-500: #8a1e4a;
   --color-accent-highlight: #d4508a;
 
   /* Semantic — darker for readability on light bgs */
-  --color-success-100: #E5FFF3;
-  --color-success-200: #C2FFC8;
-  --color-success-300: #9FEFAA;
+  --color-success-100: #e5fff3;
+  --color-success-200: #c2ffc8;
+  --color-success-300: #9fefaa;
   --color-success-400: #1a7f37;
-  --color-success-500: #5BC96E;
+  --color-success-500: #5bc96e;
   --color-success-600: #116329;
-  --color-success-700: #3D7A5F;
-  --color-success-800: #2A5741;
-  --color-success-900: #1A3529;
-  --color-warning-100: #FFFBE5;
-  --color-warning-200: #FFF3C2;
-  --color-warning-300: #FFEA9F;
+  --color-success-700: #3d7a5f;
+  --color-success-800: #2a5741;
+  --color-success-900: #1a3529;
+  --color-warning-100: #fffbe5;
+  --color-warning-200: #fff3c2;
+  --color-warning-300: #ffea9f;
   --color-warning-400: #7d5200;
-  --color-warning-500: #E5C462;
+  --color-warning-500: #e5c462;
   --color-warning-600: #654200;
-  --color-warning-700: #7A6D42;
-  --color-warning-800: #574D2F;
-  --color-warning-900: #352F1C;
-  --color-danger-100: #FFE5E5;
-  --color-danger-200: #FFC7C7;
-  --color-danger-300: #FFA8A8;
+  --color-warning-700: #7a6d42;
+  --color-warning-800: #574d2f;
+  --color-warning-900: #352f1c;
+  --color-danger-100: #ffe5e5;
+  --color-danger-200: #ffc7c7;
+  --color-danger-300: #ffa8a8;
   --color-danger-400: #cf222e;
-  --color-danger-500: #E56767;
+  --color-danger-500: #e56767;
   --color-danger-600: #a40e26;
-  --color-danger-700: #7A4242;
-  --color-danger-800: #572F2F;
-  --color-danger-900: #351C1C;
+  --color-danger-700: #7a4242;
+  --color-danger-800: #572f2f;
+  --color-danger-900: #351c1c;
 
   --color-cards-bg: #ecf2f5;
   --color-cards-bg-load: #dfeaef;
@@ -861,7 +964,7 @@
   --color-bg-blue-deep: #e0f0f7;
   --color-bg-blue-dark: #b6d9eb;
   --color-bg-blue-mid: #8bc4db;
-  --color-bg-blue-light: #75ABC7;
+  --color-bg-blue-light: #75abc7;
 
   /* Text */
   --color-text: #1a3040;
@@ -875,12 +978,12 @@
   --color-divider: #dbe8ef;
 
   /* Semantic base + dim */
-  --color-success: #5BC96E;
-  --color-success-dim: #559D87;
-  --color-warning: #E5C462;
-  --color-warning-dim: #9D8D55;
-  --color-danger: #E56767;
-  --color-danger-dim: #9D5555;
+  --color-success: #5bc96e;
+  --color-success-dim: #559d87;
+  --color-warning: #e5c462;
+  --color-warning-dim: #9d8d55;
+  --color-danger: #e56767;
+  --color-danger-dim: #9d5555;
 
   /* New variables — dim, glow, bg tints */
   --color-primary-dim: #b6d9eb;
@@ -912,13 +1015,15 @@
 
 /* Light mode glow overrides */
 [data-theme="light"] .glow-accent {
-  box-shadow: 0 0 20px rgba(160, 37, 88, 0.2),
-              0 0 40px rgba(160, 37, 88, 0.08);
+  box-shadow:
+    0 0 20px rgba(160, 37, 88, 0.2),
+    0 0 40px rgba(160, 37, 88, 0.08);
 }
 
 [data-theme="light"] .glow-primary {
-  box-shadow: 0 0 20px rgba(25, 80, 115, 0.2),
-              0 0 40px rgba(25, 80, 115, 0.08);
+  box-shadow:
+    0 0 20px rgba(25, 80, 115, 0.2),
+    0 0 40px rgba(25, 80, 115, 0.08);
 }
 
 /* Light mode selection */
@@ -929,9 +1034,10 @@
 
 /* Light mode focus */
 [data-theme="light"] .focus-glow:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-bg-400),
-              0 0 0 4px var(--color-accent-300),
-              0 0 20px rgba(160, 37, 88, 0.2);
+  box-shadow:
+    0 0 0 2px var(--color-bg-400),
+    0 0 0 4px var(--color-accent-300),
+    0 0 20px rgba(160, 37, 88, 0.2);
 }
 
 /* Light mode hover glow */

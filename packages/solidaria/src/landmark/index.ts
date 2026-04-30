@@ -5,4 +5,4 @@ export {
   type AriaLandmarkProps,
   type LandmarkAria,
   type LandmarkController,
-} from './createLandmark';
+} from "./createLandmark";

@@ -5,12 +5,12 @@
  * Based on @react-aria/datepicker useDateField
  */
 
-import { createMemo } from 'solid-js';
-import { createId } from '../ssr';
-import { createLabel } from '../label/createLabel';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { mergeProps } from '../utils/mergeProps';
-import type { DateFieldState, DateSegment } from '@proyecto-viviana/solid-stately';
+import { createMemo } from "solid-js";
+import { createId } from "../ssr";
+import { createLabel } from "../label/createLabel";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { mergeProps } from "../utils/mergeProps";
+import type { DateFieldState, DateSegment } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
@@ -22,11 +22,11 @@ export interface AriaDateFieldProps {
   /** A visible label for the date field. */
   label?: string;
   /** An accessible label for the date field. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The ID of an element that labels the date field. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The ID of an element that describes the date field. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the date field is disabled. */
   isDisabled?: boolean;
   /** Whether the date field is read-only. */
@@ -66,7 +66,7 @@ export interface DateFieldAria {
 export function createDateField<T extends DateFieldState>(
   props: MaybeAccessor<AriaDateFieldProps>,
   state: T,
-  _ref?: () => HTMLElement | null
+  _ref?: () => HTMLElement | null,
 ): DateFieldAria {
   const getProps = () => access(props);
   const id = createId(getProps().id);
@@ -75,18 +75,24 @@ export function createDateField<T extends DateFieldState>(
 
   // Create label handling
   const { labelProps, fieldProps: labelFieldProps } = createLabel({
-    get label() { return getProps().label; },
-    get 'aria-label'() { return getProps()['aria-label']; },
-    get 'aria-labelledby'() { return getProps()['aria-labelledby']; },
-    labelElementType: 'span',
+    get label() {
+      return getProps().label;
+    },
+    get "aria-label"() {
+      return getProps()["aria-label"];
+    },
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
+    },
+    labelElementType: "span",
   });
 
   // Build aria-describedby
   const getAriaDescribedBy = () => {
     const p = getProps();
     const ids: string[] = [];
-    if (p['aria-describedby']) {
-      ids.push(p['aria-describedby']);
+    if (p["aria-describedby"]) {
+      ids.push(p["aria-describedby"]);
     }
     if (p.description) {
       ids.push(descriptionId);
@@ -94,7 +100,7 @@ export function createDateField<T extends DateFieldState>(
     if (p.isInvalid && p.errorMessage) {
       ids.push(errorMessageId);
     }
-    return ids.length > 0 ? ids.join(' ') : undefined;
+    return ids.length > 0 ? ids.join(" ") : undefined;
   };
 
   // Segments from state
@@ -106,18 +112,18 @@ export function createDateField<T extends DateFieldState>(
 
     return mergeProps(labelFieldProps as Record<string, unknown>, {
       id,
-      role: 'group',
-      'aria-disabled': p.isDisabled || state.isDisabled() || undefined,
-      'aria-readonly': p.isReadOnly || state.isReadOnly() || undefined,
-      'aria-required': p.isRequired || state.isRequired() || undefined,
-      'aria-invalid': p.isInvalid || state.isInvalid() || undefined,
-      'aria-describedby': getAriaDescribedBy(),
+      role: "group",
+      "aria-disabled": p.isDisabled || state.isDisabled() || undefined,
+      "aria-readonly": p.isReadOnly || state.isReadOnly() || undefined,
+      "aria-required": p.isRequired || state.isRequired() || undefined,
+      "aria-invalid": p.isInvalid || state.isInvalid() || undefined,
+      "aria-describedby": getAriaDescribedBy(),
     });
   });
 
   // Input container props
   const inputProps = createMemo(() => ({
-    role: 'presentation',
+    role: "presentation",
   }));
 
   // Description props
@@ -128,7 +134,7 @@ export function createDateField<T extends DateFieldState>(
   // Error message props
   const errorMessageProps = createMemo(() => ({
     id: errorMessageId,
-    role: 'alert',
+    role: "alert",
   }));
 
   return {

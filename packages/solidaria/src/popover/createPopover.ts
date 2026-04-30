@@ -5,16 +5,16 @@
  * Ported from @react-aria/overlays usePopover.
  */
 
-import { createEffect, onCleanup, type JSX } from 'solid-js';
-import { createOverlay } from '../overlays/createOverlay';
+import { createEffect, onCleanup, type JSX } from "solid-js";
+import { createOverlay } from "../overlays/createOverlay";
 import {
   createOverlayPosition,
   type AriaPositionProps,
   type PlacementAxis,
-} from './createOverlayPosition';
-import { createPreventScroll } from '../overlays/createPreventScroll';
-import { ariaHideOutside, keepVisible } from '../overlays/ariaHideOutside';
-import { mergeProps } from '../utils/mergeProps';
+} from "./createOverlayPosition";
+import { createPreventScroll } from "../overlays/createPreventScroll";
+import { ariaHideOutside, keepVisible } from "../overlays/ariaHideOutside";
+import { mergeProps } from "../utils/mergeProps";
 
 export interface OverlayTriggerState {
   /** Whether the overlay is currently open. */
@@ -27,8 +27,10 @@ export interface OverlayTriggerState {
   toggle: () => void;
 }
 
-export interface AriaPopoverProps
-  extends Omit<AriaPositionProps, 'isOpen' | 'onClose' | 'targetRef' | 'overlayRef'> {
+export interface AriaPopoverProps extends Omit<
+  AriaPositionProps,
+  "isOpen" | "onClose" | "targetRef" | "overlayRef"
+> {
   /**
    * The ref for the element which the popover positions itself with respect to.
    */
@@ -94,17 +96,14 @@ export interface PopoverAria {
  * Provides the behavior and accessibility implementation for a popover component.
  * A popover is an overlay element positioned relative to a trigger.
  */
-export function createPopover(
-  props: AriaPopoverProps,
-  state: OverlayTriggerState
-): PopoverAria {
+export function createPopover(props: AriaPopoverProps, state: OverlayTriggerState): PopoverAria {
   const triggerRef = () => props.triggerRef();
   const popoverRef = () => props.popoverRef();
   const groupRef = () => props.groupRef?.() ?? null;
   const isNonModal = () => props.isNonModal ?? false;
   const isKeyboardDismissDisabled = () => props.isKeyboardDismissDisabled ?? false;
   const shouldCloseOnInteractOutside = props.shouldCloseOnInteractOutside;
-  const isSubmenu = () => props.trigger === 'SubmenuTrigger';
+  const isSubmenu = () => props.trigger === "SubmenuTrigger";
 
   // Overlay behavior (dismiss handling)
   const { overlayProps, underlayProps } = createOverlay(
@@ -124,7 +123,7 @@ export function createPopover(
         return shouldCloseOnInteractOutside;
       },
     },
-    () => groupRef() ?? popoverRef()
+    () => groupRef() ?? popoverRef(),
   );
 
   // Overlay positioning
@@ -175,7 +174,7 @@ export function createPopover(
   const merged = mergeProps(overlayProps, positionProps) as Record<string, unknown>;
   const popoverProps = new Proxy(merged, {
     get(target, key: string) {
-      if (key === 'style') return positionProps.style;
+      if (key === "style") return positionProps.style;
       return target[key];
     },
     has(target, key) {
@@ -185,7 +184,7 @@ export function createPopover(
       return Reflect.ownKeys(target);
     },
     getOwnPropertyDescriptor(target, key) {
-      if (key === 'style') {
+      if (key === "style") {
         return {
           configurable: true,
           enumerable: true,
@@ -205,4 +204,4 @@ export function createPopover(
   };
 }
 
-export { type PlacementAxis } from './createOverlayPosition';
+export { type PlacementAxis } from "./createOverlayPosition";

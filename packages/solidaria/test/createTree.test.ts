@@ -2,21 +2,16 @@
  * Tests for createTree, createTreeItem, createTreeSelectionCheckbox
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
-import {
-  createTree,
-  createTreeItem,
-  createTreeSelectionCheckbox,
-  getTreeData,
-} from '../src/tree';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot, createSignal } from "solid-js";
+import { createTree, createTreeItem, createTreeSelectionCheckbox, getTreeData } from "../src/tree";
 import {
   createTreeState,
   createTreeCollection,
   type TreeState,
   type TreeItemData,
   type TreeCollection,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 
 interface TestItem {
   name: string;
@@ -25,25 +20,23 @@ interface TestItem {
 function createTestItems(): TreeItemData<TestItem>[] {
   return [
     {
-      key: '1',
-      value: { name: 'Item 1' },
-      textValue: 'Item 1',
+      key: "1",
+      value: { name: "Item 1" },
+      textValue: "Item 1",
       children: [
-        { key: '1.1', value: { name: 'Item 1.1' }, textValue: 'Item 1.1' },
+        { key: "1.1", value: { name: "Item 1.1" }, textValue: "Item 1.1" },
         {
-          key: '1.2',
-          value: { name: 'Item 1.2' },
-          textValue: 'Item 1.2',
-          children: [
-            { key: '1.2.1', value: { name: 'Item 1.2.1' }, textValue: 'Item 1.2.1' },
-          ],
+          key: "1.2",
+          value: { name: "Item 1.2" },
+          textValue: "Item 1.2",
+          children: [{ key: "1.2.1", value: { name: "Item 1.2.1" }, textValue: "Item 1.2.1" }],
         },
       ],
     },
     {
-      key: '2',
-      value: { name: 'Item 2' },
-      textValue: 'Item 2',
+      key: "2",
+      value: { name: "Item 2" },
+      textValue: "Item 2",
     },
   ];
 }
@@ -52,38 +45,37 @@ function createState(
   options: {
     expandedKeys?: Iterable<string | number>;
     defaultExpandedKeys?: Iterable<string | number>;
-    selectionMode?: 'none' | 'single' | 'multiple';
+    selectionMode?: "none" | "single" | "multiple";
     disabledKeys?: Iterable<string | number>;
-  } = {}
+  } = {},
 ): TreeState<TestItem, TreeCollection<TestItem>> {
   const items = createTestItems();
   return createTreeState<TestItem, TreeCollection<TestItem>>(() => ({
-    collectionFactory: (expandedKeys) =>
-      createTreeCollection(items, expandedKeys),
+    collectionFactory: (expandedKeys) => createTreeCollection(items, expandedKeys),
     ...options,
   }));
 }
 
-describe('createTree', () => {
-  it('should return treeProps with correct role', () => {
+describe("createTree", () => {
+  it("should return treeProps with correct role", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
 
       const { treeProps } = createTree(
-        () => ({ 'aria-label': 'Test Tree' }),
+        () => ({ "aria-label": "Test Tree" }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(treeProps.role).toBe('treegrid');
-      expect(treeProps['aria-label']).toBe('Test Tree');
+      expect(treeProps.role).toBe("treegrid");
+      expect(treeProps["aria-label"]).toBe("Test Tree");
 
       dispose();
     });
   });
 
-  it('should have tabIndex 0 when not disabled', () => {
+  it("should have tabIndex 0 when not disabled", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
@@ -91,7 +83,7 @@ describe('createTree', () => {
       const { treeProps } = createTree(
         () => ({}),
         () => state,
-        ref
+        ref,
       );
 
       expect(treeProps.tabIndex).toBe(0);
@@ -100,7 +92,7 @@ describe('createTree', () => {
     });
   });
 
-  it('should not have tabIndex when disabled', () => {
+  it("should not have tabIndex when disabled", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
@@ -108,34 +100,34 @@ describe('createTree', () => {
       const { treeProps } = createTree(
         () => ({ isDisabled: true }),
         () => state,
-        ref
+        ref,
       );
 
       expect(treeProps.tabIndex).toBeUndefined();
-      expect(treeProps['aria-disabled']).toBe(true);
+      expect(treeProps["aria-disabled"]).toBe(true);
 
       dispose();
     });
   });
 
-  it('should have aria-multiselectable when selection mode is multiple', () => {
+  it("should have aria-multiselectable when selection mode is multiple", () => {
     createRoot((dispose) => {
-      const state = createState({ selectionMode: 'multiple' });
+      const state = createState({ selectionMode: "multiple" });
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
       const { treeProps } = createTree(
         () => ({}),
         () => state,
-        ref
+        ref,
       );
 
-      expect(treeProps['aria-multiselectable']).toBe(true);
+      expect(treeProps["aria-multiselectable"]).toBe(true);
 
       dispose();
     });
   });
 
-  it('should store tree data accessible via getTreeData', () => {
+  it("should store tree data accessible via getTreeData", () => {
     createRoot((dispose) => {
       const onAction = vi.fn();
       const state = createState();
@@ -144,7 +136,7 @@ describe('createTree', () => {
       createTree(
         () => ({ onAction }),
         () => state,
-        ref
+        ref,
       );
 
       const treeData = getTreeData(state);
@@ -155,35 +147,35 @@ describe('createTree', () => {
     });
   });
 
-  it('toggles selection with Space from focused tree container', () => {
+  it("toggles selection with Space from focused tree container", () => {
     createRoot((dispose) => {
-      const state = createState({ selectionMode: 'multiple' });
+      const state = createState({ selectionMode: "multiple" });
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
       const { treeProps } = createTree(
         () => ({}),
         () => state,
-        ref
+        ref,
       );
 
       (treeProps.onFocus as ((e: FocusEvent) => void) | undefined)?.({} as FocusEvent);
 
-      expect(state.isSelected('1')).toBe(false);
+      expect(state.isSelected("1")).toBe(false);
 
       const preventDefault = vi.fn();
       (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
-        key: ' ',
+        key: " ",
         preventDefault,
       } as unknown as KeyboardEvent);
 
       expect(preventDefault).toHaveBeenCalled();
-      expect(state.isSelected('1')).toBe(true);
+      expect(state.isSelected("1")).toBe(true);
 
       dispose();
     });
   });
 
-  it('calls onAction with Enter from focused tree container', () => {
+  it("calls onAction with Enter from focused tree container", () => {
     createRoot((dispose) => {
       const onAction = vi.fn();
       const state = createState();
@@ -192,75 +184,75 @@ describe('createTree', () => {
       const { treeProps } = createTree(
         () => ({ onAction }),
         () => state,
-        ref
+        ref,
       );
 
       (treeProps.onFocus as ((e: FocusEvent) => void) | undefined)?.({} as FocusEvent);
 
       const preventDefault = vi.fn();
       (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
-        key: 'Enter',
+        key: "Enter",
         preventDefault,
       } as unknown as KeyboardEvent);
 
       expect(preventDefault).toHaveBeenCalled();
-      expect(onAction).toHaveBeenCalledWith('1');
+      expect(onAction).toHaveBeenCalledWith("1");
 
       dispose();
     });
   });
 });
 
-describe('createTreeItem', () => {
-  it('should return rowProps with correct role', () => {
+describe("createTreeItem", () => {
+  it("should return rowProps with correct role", () => {
     createRoot((dispose) => {
-      const state = createState({ defaultExpandedKeys: ['1'] });
+      const state = createState({ defaultExpandedKeys: ["1"] });
       const [ref] = createSignal<HTMLDivElement | null>(null);
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
 
       const { rowProps } = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(rowProps.role).toBe('row');
+      expect(rowProps.role).toBe("row");
 
       dispose();
     });
   });
 
-  it('should return gridCellProps with correct role', () => {
+  it("should return gridCellProps with correct role", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
 
       const { gridCellProps } = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(gridCellProps.role).toBe('gridcell');
+      expect(gridCellProps.role).toBe("gridcell");
 
       dispose();
     });
   });
 
-  it('should have aria-expanded for expandable items', () => {
+  it("should have aria-expanded for expandable items", () => {
     createRoot((dispose) => {
-      const state = createState({ defaultExpandedKeys: ['1'] });
+      const state = createState({ defaultExpandedKeys: ["1"] });
       const [ref] = createSignal<HTMLDivElement | null>(null);
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
 
       const { rowProps, isExpanded, isExpandable } = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(rowProps['aria-expanded']).toBe(true);
+      expect(rowProps["aria-expanded"]).toBe(true);
       expect(isExpanded).toBe(true);
       expect(isExpandable).toBe(true);
 
@@ -268,19 +260,19 @@ describe('createTreeItem', () => {
     });
   });
 
-  it('should not have aria-expanded for leaf items', () => {
+  it("should not have aria-expanded for leaf items", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
-      const node = state.collection.getItem('2')!;
+      const node = state.collection.getItem("2")!;
 
       const { rowProps, isExpanded, isExpandable } = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(rowProps['aria-expanded']).toBeUndefined();
+      expect(rowProps["aria-expanded"]).toBeUndefined();
       expect(isExpanded).toBe(false);
       expect(isExpandable).toBe(false);
 
@@ -288,143 +280,143 @@ describe('createTreeItem', () => {
     });
   });
 
-  it('should have aria-level attribute', () => {
+  it("should have aria-level attribute", () => {
     createRoot((dispose) => {
-      const state = createState({ defaultExpandedKeys: ['1'] });
+      const state = createState({ defaultExpandedKeys: ["1"] });
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
-      const node1 = state.collection.getItem('1')!;
+      const node1 = state.collection.getItem("1")!;
       const item1 = createTreeItem(
         () => ({ node: node1 }),
         () => state,
-        ref
+        ref,
       );
-      expect(item1.rowProps['aria-level']).toBe(1); // level 0 + 1 = 1
+      expect(item1.rowProps["aria-level"]).toBe(1); // level 0 + 1 = 1
 
-      const node11 = state.collection.getItem('1.1')!;
+      const node11 = state.collection.getItem("1.1")!;
       const item11 = createTreeItem(
         () => ({ node: node11 }),
         () => state,
-        ref
+        ref,
       );
-      expect(item11.rowProps['aria-level']).toBe(2); // level 1 + 1 = 2
+      expect(item11.rowProps["aria-level"]).toBe(2); // level 1 + 1 = 2
 
       dispose();
     });
   });
 
-  it('should track selection state', () => {
+  it("should track selection state", () => {
     createRoot((dispose) => {
-      const state = createState({ selectionMode: 'single' });
+      const state = createState({ selectionMode: "single" });
       const [ref] = createSignal<HTMLDivElement | null>(null);
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
 
       const item = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
       expect(item.isSelected).toBe(false);
-      expect(item.rowProps['aria-selected']).toBe(false);
+      expect(item.rowProps["aria-selected"]).toBe(false);
 
-      state.toggleSelection('1');
+      state.toggleSelection("1");
 
       expect(item.isSelected).toBe(true);
-      expect(item.rowProps['aria-selected']).toBe(true);
+      expect(item.rowProps["aria-selected"]).toBe(true);
 
       dispose();
     });
   });
 
-  it('should track disabled state', () => {
+  it("should track disabled state", () => {
     createRoot((dispose) => {
-      const state = createState({ disabledKeys: ['1'] });
+      const state = createState({ disabledKeys: ["1"] });
       const [ref] = createSignal<HTMLDivElement | null>(null);
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
 
       const { isDisabled, rowProps } = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
       expect(isDisabled).toBe(true);
-      expect(rowProps['aria-disabled']).toBe(true);
+      expect(rowProps["aria-disabled"]).toBe(true);
 
       dispose();
     });
   });
 
-  it('should provide expandButtonProps', () => {
+  it("should provide expandButtonProps", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
 
       const { expandButtonProps, isExpanded } = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(expandButtonProps.type).toBe('button');
-      expect(expandButtonProps['aria-label']).toBe('Expand');
+      expect(expandButtonProps.type).toBe("button");
+      expect(expandButtonProps["aria-label"]).toBe("Expand");
       expect(isExpanded).toBe(false);
 
       dispose();
     });
   });
 
-  it('should update expandButtonProps aria-label when expanded', () => {
+  it("should update expandButtonProps aria-label when expanded", () => {
     createRoot((dispose) => {
-      const state = createState({ defaultExpandedKeys: ['1'] });
+      const state = createState({ defaultExpandedKeys: ["1"] });
       const [ref] = createSignal<HTMLDivElement | null>(null);
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
 
       const { expandButtonProps, isExpanded } = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(expandButtonProps['aria-label']).toBe('Collapse');
+      expect(expandButtonProps["aria-label"]).toBe("Collapse");
       expect(isExpanded).toBe(true);
 
       dispose();
     });
   });
 
-  it('should track level', () => {
+  it("should track level", () => {
     createRoot((dispose) => {
-      const state = createState({ defaultExpandedKeys: ['1', '1.2'] });
+      const state = createState({ defaultExpandedKeys: ["1", "1.2"] });
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
-      const node1 = state.collection.getItem('1')!;
+      const node1 = state.collection.getItem("1")!;
       expect(
         createTreeItem(
           () => ({ node: node1 }),
           () => state,
-          ref
-        ).level
+          ref,
+        ).level,
       ).toBe(0);
 
-      const node11 = state.collection.getItem('1.1')!;
+      const node11 = state.collection.getItem("1.1")!;
       expect(
         createTreeItem(
           () => ({ node: node11 }),
           () => state,
-          ref
-        ).level
+          ref,
+        ).level,
       ).toBe(1);
 
-      const node121 = state.collection.getItem('1.2.1')!;
+      const node121 = state.collection.getItem("1.2.1")!;
       expect(
         createTreeItem(
           () => ({ node: node121 }),
           () => state,
-          ref
-        ).level
+          ref,
+        ).level,
       ).toBe(2);
 
       dispose();
@@ -432,35 +424,35 @@ describe('createTreeItem', () => {
   });
 });
 
-describe('createTreeSelectionCheckbox', () => {
-  it('should return checkboxProps', () => {
+describe("createTreeSelectionCheckbox", () => {
+  it("should return checkboxProps", () => {
     createRoot((dispose) => {
-      const state = createState({ selectionMode: 'multiple' });
+      const state = createState({ selectionMode: "multiple" });
 
       const { checkboxProps } = createTreeSelectionCheckbox(
-        () => ({ key: '1' }),
-        () => state
+        () => ({ key: "1" }),
+        () => state,
       );
 
-      expect(checkboxProps.type).toBe('checkbox');
-      expect(checkboxProps['aria-label']).toBe('Select');
+      expect(checkboxProps.type).toBe("checkbox");
+      expect(checkboxProps["aria-label"]).toBe("Select");
 
       dispose();
     });
   });
 
-  it('should track checked state', () => {
+  it("should track checked state", () => {
     createRoot((dispose) => {
-      const state = createState({ selectionMode: 'multiple' });
+      const state = createState({ selectionMode: "multiple" });
 
       const checkbox = createTreeSelectionCheckbox(
-        () => ({ key: '1' }),
-        () => state
+        () => ({ key: "1" }),
+        () => state,
       );
 
       expect(checkbox.checkboxProps.checked).toBe(false);
 
-      state.toggleSelection('1');
+      state.toggleSelection("1");
 
       // Re-access the getter to get updated props
       expect(checkbox.checkboxProps.checked).toBe(true);
@@ -469,16 +461,16 @@ describe('createTreeSelectionCheckbox', () => {
     });
   });
 
-  it('should track disabled state', () => {
+  it("should track disabled state", () => {
     createRoot((dispose) => {
       const state = createState({
-        selectionMode: 'multiple',
-        disabledKeys: ['1'],
+        selectionMode: "multiple",
+        disabledKeys: ["1"],
       });
 
       const { checkboxProps } = createTreeSelectionCheckbox(
-        () => ({ key: '1' }),
-        () => state
+        () => ({ key: "1" }),
+        () => state,
       );
 
       expect(checkboxProps.disabled).toBe(true);
@@ -488,47 +480,47 @@ describe('createTreeSelectionCheckbox', () => {
   });
 });
 
-describe('createTree RTL direction parity', () => {
-  it('ArrowLeft expands and ArrowRight collapses in RTL', () => {
+describe("createTree RTL direction parity", () => {
+  it("ArrowLeft expands and ArrowRight collapses in RTL", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
       const { treeProps } = createTree(
-        () => ({ direction: 'rtl' }),
+        () => ({ direction: "rtl" }),
         () => state,
-        ref
+        ref,
       );
 
       // Focus the tree → auto-focuses first item (key '1' which is expandable)
       (treeProps.onFocus as ((e: FocusEvent) => void) | undefined)?.({} as FocusEvent);
-      expect(state.focusedKey).toBe('1');
-      expect(state.isExpanded('1')).toBe(false);
+      expect(state.focusedKey).toBe("1");
+      expect(state.isExpanded("1")).toBe(false);
 
       // ArrowLeft in RTL = expand
       const preventDefault = vi.fn();
       (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
-        key: 'ArrowLeft',
+        key: "ArrowLeft",
         preventDefault,
       } as unknown as KeyboardEvent);
 
-      expect(state.isExpanded('1')).toBe(true);
+      expect(state.isExpanded("1")).toBe(true);
       expect(preventDefault).toHaveBeenCalled();
 
       // ArrowRight in RTL = collapse
       const preventDefault2 = vi.fn();
       (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
-        key: 'ArrowRight',
+        key: "ArrowRight",
         preventDefault: preventDefault2,
       } as unknown as KeyboardEvent);
 
-      expect(state.isExpanded('1')).toBe(false);
+      expect(state.isExpanded("1")).toBe(false);
 
       dispose();
     });
   });
 
-  it('ArrowRight expands and ArrowLeft collapses in LTR (default)', () => {
+  it("ArrowRight expands and ArrowLeft collapses in LTR (default)", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
@@ -536,7 +528,7 @@ describe('createTree RTL direction parity', () => {
       const { treeProps } = createTree(
         () => ({}), // default direction = ltr
         () => state,
-        ref
+        ref,
       );
 
       (treeProps.onFocus as ((e: FocusEvent) => void) | undefined)?.({} as FocusEvent);
@@ -544,133 +536,133 @@ describe('createTree RTL direction parity', () => {
       // ArrowRight in LTR = expand
       const preventDefault = vi.fn();
       (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
-        key: 'ArrowRight',
+        key: "ArrowRight",
         preventDefault,
       } as unknown as KeyboardEvent);
 
-      expect(state.isExpanded('1')).toBe(true);
+      expect(state.isExpanded("1")).toBe(true);
 
       // ArrowLeft in LTR = collapse
       (treeProps.onKeyDown as ((e: KeyboardEvent) => void) | undefined)?.({
-        key: 'ArrowLeft',
+        key: "ArrowLeft",
         preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
-      expect(state.isExpanded('1')).toBe(false);
+      expect(state.isExpanded("1")).toBe(false);
 
       dispose();
     });
   });
 });
 
-describe('createTreeItem ARIA parity', () => {
-  it('should have aria-posinset and aria-setsize on root items', () => {
+describe("createTreeItem ARIA parity", () => {
+  it("should have aria-posinset and aria-setsize on root items", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
-      const node1 = state.collection.getItem('1')!;
+      const node1 = state.collection.getItem("1")!;
       const item1 = createTreeItem(
         () => ({ node: node1 }),
         () => state,
-        ref
+        ref,
       );
 
       // Item 1 is first of 2 root items
-      expect(item1.rowProps['aria-posinset']).toBe(1);
-      expect(item1.rowProps['aria-setsize']).toBe(2);
+      expect(item1.rowProps["aria-posinset"]).toBe(1);
+      expect(item1.rowProps["aria-setsize"]).toBe(2);
 
-      const node2 = state.collection.getItem('2')!;
+      const node2 = state.collection.getItem("2")!;
       const item2 = createTreeItem(
         () => ({ node: node2 }),
         () => state,
-        ref
+        ref,
       );
 
       // Item 2 is second of 2 root items
-      expect(item2.rowProps['aria-posinset']).toBe(2);
-      expect(item2.rowProps['aria-setsize']).toBe(2);
+      expect(item2.rowProps["aria-posinset"]).toBe(2);
+      expect(item2.rowProps["aria-setsize"]).toBe(2);
 
       dispose();
     });
   });
 
-  it('should have aria-posinset and aria-setsize on child items', () => {
+  it("should have aria-posinset and aria-setsize on child items", () => {
     createRoot((dispose) => {
-      const state = createState({ defaultExpandedKeys: ['1'] });
+      const state = createState({ defaultExpandedKeys: ["1"] });
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
       // Item 1 has 2 children: 1.1 and 1.2
-      const node11 = state.collection.getItem('1.1')!;
+      const node11 = state.collection.getItem("1.1")!;
       const item11 = createTreeItem(
         () => ({ node: node11 }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(item11.rowProps['aria-posinset']).toBe(1);
-      expect(item11.rowProps['aria-setsize']).toBe(2);
+      expect(item11.rowProps["aria-posinset"]).toBe(1);
+      expect(item11.rowProps["aria-setsize"]).toBe(2);
 
-      const node12 = state.collection.getItem('1.2')!;
+      const node12 = state.collection.getItem("1.2")!;
       const item12 = createTreeItem(
         () => ({ node: node12 }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(item12.rowProps['aria-posinset']).toBe(2);
-      expect(item12.rowProps['aria-setsize']).toBe(2);
+      expect(item12.rowProps["aria-posinset"]).toBe(2);
+      expect(item12.rowProps["aria-setsize"]).toBe(2);
 
       dispose();
     });
   });
 
-  it('should have aria-label from node textValue', () => {
+  it("should have aria-label from node textValue", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
       const item = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(item.rowProps['aria-label']).toBe('Item 1');
+      expect(item.rowProps["aria-label"]).toBe("Item 1");
 
       dispose();
     });
   });
 
-  it('should prefer explicit textValue prop for aria-label', () => {
+  it("should prefer explicit textValue prop for aria-label", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
       const item = createTreeItem(
-        () => ({ node, textValue: 'Custom Label' }),
+        () => ({ node, textValue: "Custom Label" }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(item.rowProps['aria-label']).toBe('Custom Label');
+      expect(item.rowProps["aria-label"]).toBe("Custom Label");
 
       dispose();
     });
   });
 
-  it('should have row id', () => {
+  it("should have row id", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
       const item = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
       expect(item.rowProps.id).toBeTruthy();
@@ -679,16 +671,16 @@ describe('createTreeItem ARIA parity', () => {
     });
   });
 
-  it('expand button should have aria-labelledby linking to row', () => {
+  it("expand button should have aria-labelledby linking to row", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
-      const node = state.collection.getItem('1')!;
+      const node = state.collection.getItem("1")!;
       const item = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
       const rowId = item.rowProps.id;
@@ -696,25 +688,25 @@ describe('createTreeItem ARIA parity', () => {
 
       expect(rowId).toBeTruthy();
       expect(buttonId).toBeTruthy();
-      expect(item.expandButtonProps['aria-labelledby']).toBe(`${buttonId} ${rowId}`);
+      expect(item.expandButtonProps["aria-labelledby"]).toBe(`${buttonId} ${rowId}`);
 
       dispose();
     });
   });
 
-  it('expand button should not have aria-labelledby for leaf items', () => {
+  it("expand button should not have aria-labelledby for leaf items", () => {
     createRoot((dispose) => {
       const state = createState();
       const [ref] = createSignal<HTMLDivElement | null>(null);
 
-      const node = state.collection.getItem('2')!; // leaf item
+      const node = state.collection.getItem("2")!; // leaf item
       const item = createTreeItem(
         () => ({ node }),
         () => state,
-        ref
+        ref,
       );
 
-      expect(item.expandButtonProps['aria-labelledby']).toBeUndefined();
+      expect(item.expandButtonProps["aria-labelledby"]).toBeUndefined();
 
       dispose();
     });

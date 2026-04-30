@@ -15,7 +15,7 @@ import {
   useContext,
   For,
   Show,
-} from 'solid-js';
+} from "solid-js";
 import {
   createComboBox,
   createListBox,
@@ -26,7 +26,7 @@ import {
   type AriaComboBoxProps,
   type AriaListBoxProps,
   type AriaOptionProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createComboBoxState,
   defaultContainsFilter,
@@ -35,7 +35,7 @@ import {
   type Key,
   type FilterFn,
   type MenuTriggerAction,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -43,11 +43,11 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 import {
   SelectionIndicatorContext,
   type SelectionIndicatorContextValue,
-} from './SelectionIndicator';
+} from "./SelectionIndicator";
 
 // ============================================
 // TYPES
@@ -74,9 +74,7 @@ export interface ComboBoxRenderProps {
   inputValue: string;
 }
 
-export interface ComboBoxProps<T>
-  extends Omit<AriaComboBoxProps, 'children'>,
-    SlotProps {
+export interface ComboBoxProps<T> extends Omit<AriaComboBoxProps, "children">, SlotProps {
   /** The items to render in the combobox. */
   items: T[];
   /** Function to get the key from an item. */
@@ -88,7 +86,7 @@ export interface ComboBoxProps<T>
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
   /** The selection mode for the combobox. */
-  selectionMode?: 'single' | 'multiple';
+  selectionMode?: "single" | "multiple";
   /** The currently selected key (controlled, single mode). */
   selectedKey?: Key | null;
   /** The default selected key (uncontrolled, single mode). */
@@ -120,7 +118,7 @@ export interface ComboBoxProps<T>
   /** Whether to allow an empty collection (show listbox even with no matches). */
   allowsEmptyCollection?: boolean;
   /** The trigger mechanism for the combobox menu. */
-  menuTrigger?: 'focus' | 'input' | 'manual';
+  menuTrigger?: "focus" | "input" | "manual";
   /** The name of the combobox, used when submitting an HTML form. */
   name?: string;
   /**
@@ -130,7 +128,7 @@ export interface ComboBoxProps<T>
    *
    * When allowsCustomValue is true, formValue is forced to 'text'.
    */
-  formValue?: 'key' | 'text';
+  formValue?: "key" | "text";
   /** The children of the component (compound components: ComboBoxInput, ComboBoxButton, ComboBoxListBox). */
   children: RenderChildren<ComboBoxRenderProps>;
   /** The CSS className for the element. */
@@ -259,8 +257,7 @@ export interface ComboBoxOptionRenderProps {
 }
 
 export interface ComboBoxOptionProps<T>
-  extends Omit<AriaOptionProps, 'children' | 'key'>,
-    SlotProps {
+  extends Omit<AriaOptionProps, "children" | "key">, SlotProps {
   /** The unique key for the option. */
   id: Key;
   /** The item value. */
@@ -315,37 +312,39 @@ export const ComboBoxValueContext = ComboBoxContext;
  */
 export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
   const parentContext = useContext(ComboBoxContext) as ComboBoxContextValue<T> | null;
-  const contextSlotProps = parentContext?.slots?.[props.slot ?? 'default'];
-  const mergedComboBoxProps = contextSlotProps ? mergeProps(contextSlotProps, props) as ComboBoxProps<T> : props;
+  const contextSlotProps = parentContext?.slots?.[props.slot ?? "default"];
+  const mergedComboBoxProps = contextSlotProps
+    ? (mergeProps(contextSlotProps, props) as ComboBoxProps<T>)
+    : props;
   const [local, stateProps, ariaProps] = splitProps(
     mergedComboBoxProps,
-    ['class', 'style', 'slot', 'children', 'slots'],
+    ["class", "style", "slot", "children", "slots"],
     [
-      'items',
-      'getKey',
-      'getTextValue',
-      'getDisabled',
-      'disabledKeys',
-      'selectionMode',
-      'selectedKey',
-      'defaultSelectedKey',
-      'selectedKeys',
-      'defaultSelectedKeys',
-      'onSelectionChange',
-      'onSelectionChangeMultiple',
-      'inputValue',
-      'defaultInputValue',
-      'onInputChange',
-      'isOpen',
-      'defaultOpen',
-      'onOpenChange',
-      'defaultFilter',
-      'allowsCustomValue',
-      'allowsEmptyCollection',
-      'menuTrigger',
-      'name',
-      'formValue',
-    ]
+      "items",
+      "getKey",
+      "getTextValue",
+      "getDisabled",
+      "disabledKeys",
+      "selectionMode",
+      "selectedKey",
+      "defaultSelectedKey",
+      "selectedKeys",
+      "defaultSelectedKeys",
+      "onSelectionChange",
+      "onSelectionChangeMultiple",
+      "inputValue",
+      "defaultInputValue",
+      "onInputChange",
+      "isOpen",
+      "defaultOpen",
+      "onOpenChange",
+      "defaultFilter",
+      "allowsCustomValue",
+      "allowsEmptyCollection",
+      "menuTrigger",
+      "name",
+      "formValue",
+    ],
   );
 
   // Refs
@@ -432,17 +431,17 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
     },
   });
 
-  const effectiveFormValue = createMemo<'key' | 'text'>(() => {
+  const effectiveFormValue = createMemo<"key" | "text">(() => {
     if (stateProps.allowsCustomValue) {
-      return 'text';
+      return "text";
     }
-    return stateProps.formValue ?? 'key';
+    return stateProps.formValue ?? "key";
   });
 
   const comboBoxAriaProps = createMemo(() => {
     const cleanProps: Record<string, unknown> = {};
     for (const key in ariaProps) {
-      if (!key.startsWith('data-')) {
+      if (!key.startsWith("data-")) {
         cleanProps[key] = (ariaProps as Record<string, unknown>)[key];
       }
     }
@@ -454,13 +453,13 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
     () => ({
       ...comboBoxAriaProps(),
       get name() {
-        return effectiveFormValue() === 'text' ? stateProps.name : undefined;
+        return effectiveFormValue() === "text" ? stateProps.name : undefined;
       },
     }),
     state,
     () => inputRef,
     () => buttonRef,
-    () => listBoxRef
+    () => listBoxRef,
   );
 
   // Create hover for wrapper
@@ -488,9 +487,9 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ComboBox',
+      defaultClassName: "solidaria-ComboBox",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
@@ -506,32 +505,40 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
   };
 
   const ComboBoxChildren = () =>
-    typeof local.children === 'function'
+    typeof local.children === "function"
       ? (local.children as (values: ComboBoxRenderProps) => JSX.Element)(renderValues())
       : local.children;
 
   return (
     <ComboBoxContext.Provider
-      value={{
-        state,
-        inputProps: comboBoxAria.inputProps,
-        buttonProps: comboBoxAria.buttonProps,
-        listBoxProps: comboBoxAria.listBoxProps,
-        labelProps: comboBoxAria.labelProps,
-        descriptionProps: comboBoxAria.descriptionProps,
-        errorMessageProps: comboBoxAria.errorMessageProps,
-        isOpen: comboBoxAria.isOpen,
-        isFocused: comboBoxAria.isFocused,
-        isFocusVisible: comboBoxAria.isFocusVisible,
-        items: stateProps.items,
-        inputRef: () => inputRef,
-        setInputRef: (el) => { inputRef = el; },
-        buttonRef: () => buttonRef,
-        setButtonRef: (el) => { buttonRef = el; },
-        listBoxRef: () => listBoxRef,
-        setListBoxRef: (el) => { listBoxRef = el; },
-        slots: local.slots,
-      } as ComboBoxContextValue<unknown>}
+      value={
+        {
+          state,
+          inputProps: comboBoxAria.inputProps,
+          buttonProps: comboBoxAria.buttonProps,
+          listBoxProps: comboBoxAria.listBoxProps,
+          labelProps: comboBoxAria.labelProps,
+          descriptionProps: comboBoxAria.descriptionProps,
+          errorMessageProps: comboBoxAria.errorMessageProps,
+          isOpen: comboBoxAria.isOpen,
+          isFocused: comboBoxAria.isFocused,
+          isFocusVisible: comboBoxAria.isFocusVisible,
+          items: stateProps.items,
+          inputRef: () => inputRef,
+          setInputRef: (el) => {
+            inputRef = el;
+          },
+          buttonRef: () => buttonRef,
+          setButtonRef: (el) => {
+            buttonRef = el;
+          },
+          listBoxRef: () => listBoxRef,
+          setListBoxRef: (el) => {
+            listBoxRef = el;
+          },
+          slots: local.slots,
+        } as ComboBoxContextValue<unknown>
+      }
     >
       <ComboBoxStateContext.Provider value={state}>
         <div
@@ -550,12 +557,12 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
           slot={local.slot}
         >
           {/* Hidden input for key-based form submission parity */}
-          <Show when={stateProps.name && effectiveFormValue() === 'key'}>
+          <Show when={stateProps.name && effectiveFormValue() === "key"}>
             <input
               type="hidden"
               name={stateProps.name}
               form={ariaProps.form}
-              value={state.selectedKey()?.toString() ?? ''}
+              value={state.selectedKey()?.toString() ?? ""}
             />
           </Show>
           <ComboBoxChildren />
@@ -569,11 +576,11 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
  * Label element for a combobox.
  */
 export function ComboBoxLabel(props: ComboBoxLabelProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(ComboBoxContext);
   if (!context) {
-    throw new Error('ComboBoxLabel must be used within a ComboBox');
+    throw new Error("ComboBoxLabel must be used within a ComboBox");
   }
 
   const cleanLabelProps = () => {
@@ -582,12 +589,7 @@ export function ComboBoxLabel(props: ComboBoxLabelProps): JSX.Element {
   };
 
   return (
-    <label
-      {...domProps}
-      {...cleanLabelProps()}
-      class={local.class}
-      style={local.style}
-    >
+    <label {...domProps} {...cleanLabelProps()} class={local.class} style={local.style}>
       {local.children}
     </label>
   );
@@ -597,11 +599,11 @@ export function ComboBoxLabel(props: ComboBoxLabelProps): JSX.Element {
  * Description element for a combobox.
  */
 export function ComboBoxDescription(props: ComboBoxDescriptionProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(ComboBoxContext);
   if (!context) {
-    throw new Error('ComboBoxDescription must be used within a ComboBox');
+    throw new Error("ComboBoxDescription must be used within a ComboBox");
   }
 
   const cleanDescriptionProps = () => {
@@ -610,12 +612,7 @@ export function ComboBoxDescription(props: ComboBoxDescriptionProps): JSX.Elemen
   };
 
   return (
-    <div
-      {...domProps}
-      {...cleanDescriptionProps()}
-      class={local.class}
-      style={local.style}
-    >
+    <div {...domProps} {...cleanDescriptionProps()} class={local.class} style={local.style}>
       {local.children}
     </div>
   );
@@ -625,11 +622,11 @@ export function ComboBoxDescription(props: ComboBoxDescriptionProps): JSX.Elemen
  * Error message element for a combobox.
  */
 export function ComboBoxErrorMessage(props: ComboBoxErrorMessageProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(ComboBoxContext);
   if (!context) {
-    throw new Error('ComboBoxErrorMessage must be used within a ComboBox');
+    throw new Error("ComboBoxErrorMessage must be used within a ComboBox");
   }
 
   const cleanErrorMessageProps = () => {
@@ -638,12 +635,7 @@ export function ComboBoxErrorMessage(props: ComboBoxErrorMessageProps): JSX.Elem
   };
 
   return (
-    <div
-      {...domProps}
-      {...cleanErrorMessageProps()}
-      class={local.class}
-      style={local.style}
-    >
+    <div {...domProps} {...cleanErrorMessageProps()} class={local.class} style={local.style}>
       {local.children}
     </div>
   );
@@ -653,12 +645,12 @@ export function ComboBoxErrorMessage(props: ComboBoxErrorMessageProps): JSX.Elem
  * The text input for a combobox.
  */
 export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   // Get context
   const context = useContext(ComboBoxContext);
   if (!context) {
-    throw new Error('ComboBoxInput must be used within a ComboBox');
+    throw new Error("ComboBoxInput must be used within a ComboBox");
   }
   const { inputProps, isOpen, isFocused, isFocusVisible, state, setInputRef } = context;
 
@@ -685,9 +677,9 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ComboBox-input',
+      defaultClassName: "solidaria-ComboBox-input",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -721,11 +713,11 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
 export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
   const context = useContext(ComboBoxContext);
   if (!context) {
-    throw new Error('ComboBoxValue must be used within a ComboBox');
+    throw new Error("ComboBoxValue must be used within a ComboBox");
   }
 
   const state = context.state;
-  const isMulti = createMemo(() => state.selectionMode() === 'multiple');
+  const isMulti = createMemo(() => state.selectionMode() === "multiple");
   const selectedItem = createMemo(() => state.selectedItem());
   const selectedItems = createMemo(() => {
     if (isMulti()) {
@@ -737,11 +729,11 @@ export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
   const selectedText = createMemo(() => {
     if (isMulti()) {
       const items = state.selectedItems();
-      return items.map((n) => n.textValue).join(', ');
+      return items.map((n) => n.textValue).join(", ");
     }
-    return selectedItem()?.textValue ?? '';
+    return selectedItem()?.textValue ?? "";
   });
-  const textValue = createMemo(() => selectedText() || state.inputValue() || '');
+  const textValue = createMemo(() => selectedText() || state.inputValue() || "");
   const isPlaceholder = createMemo(() => textValue().length === 0);
 
   const renderProps = useRenderProps(
@@ -749,7 +741,7 @@ export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
       children: props.children,
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-ComboBox-value',
+      defaultClassName: "solidaria-ComboBox-value",
     },
     () => ({
       textValue: textValue(),
@@ -757,7 +749,7 @@ export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
       selectedItems: selectedItems(),
       selectedText: selectedText(),
       state: state as ComboBoxState<unknown>,
-    })
+    }),
   );
 
   return (
@@ -766,7 +758,11 @@ export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
       style={renderProps.style()}
       data-placeholder={isPlaceholder() || undefined}
     >
-      {props.children ? renderProps.renderChildren() : (isPlaceholder() ? props.placeholder : textValue())}
+      {props.children
+        ? renderProps.renderChildren()
+        : isPlaceholder()
+          ? props.placeholder
+          : textValue()}
     </span>
   );
 }
@@ -775,12 +771,12 @@ export function ComboBoxValue(props: ComboBoxValueProps): JSX.Element {
  * The trigger button for a combobox.
  */
 export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   // Get context
   const context = useContext(ComboBoxContext);
   if (!context) {
-    throw new Error('ComboBoxButton must be used within a ComboBox');
+    throw new Error("ComboBoxButton must be used within a ComboBox");
   }
   const { buttonProps, isOpen, isFocused, state, setButtonRef } = context;
 
@@ -806,9 +802,9 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ComboBox-button',
+      defaultClassName: "solidaria-ComboBox-button",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -844,12 +840,12 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
  * The listbox popup for a combobox.
  */
 export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   // Get context
   const context = useContext(ComboBoxContext);
   if (!context) {
-    throw new Error('ComboBoxListBox must be used within a ComboBox');
+    throw new Error("ComboBoxListBox must be used within a ComboBox");
   }
   const {
     listBoxProps: contextListBoxProps,
@@ -890,7 +886,7 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
   // Create listbox aria props using ComboBoxState's ListState-compatible interface
   const { listBoxProps } = createListBox(
     contextListBoxProps as unknown as AriaListBoxProps,
-    createComboBoxListStateAdapter(state)
+    createComboBoxListStateAdapter(state),
   );
 
   // Render props values
@@ -903,9 +899,9 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ComboBox-listbox',
+      defaultClassName: "solidaria-ComboBox-listbox",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -939,11 +935,11 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
       const pointerHandler = (e: PointerEvent) => {
         e.preventDefault();
       };
-      el.addEventListener('mousedown', mouseHandler, true); // capture phase
-      el.addEventListener('pointerdown', pointerHandler, true); // capture phase
+      el.addEventListener("mousedown", mouseHandler, true); // capture phase
+      el.addEventListener("pointerdown", pointerHandler, true); // capture phase
       cleanupFocusGuard = () => {
-        el.removeEventListener('mousedown', mouseHandler, true);
-        el.removeEventListener('pointerdown', pointerHandler, true);
+        el.removeEventListener("mousedown", mouseHandler, true);
+        el.removeEventListener("pointerdown", pointerHandler, true);
       };
     }
   };
@@ -964,17 +960,16 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
         style={renderProps.style()}
         data-focused={state.isFocused() || undefined}
       >
-        <Show when={local.children} fallback={
+        <Show
+          when={local.children}
+          fallback={
+            <For each={items()}>
+              {(node) => <ComboBoxOption id={node.key}>{node.textValue}</ComboBoxOption>}
+            </For>
+          }
+        >
           <For each={items()}>
-            {(node) => (
-              <ComboBoxOption id={node.key}>
-                {node.textValue}
-              </ComboBoxOption>
-            )}
-          </For>
-        }>
-          <For each={items()}>
-            {(node) => node.value != null ? (local.children as Function)!(node.value) : null}
+            {(node) => (node.value != null ? (local.children as Function)!(node.value) : null)}
           </For>
         </Show>
       </ul>
@@ -987,19 +982,19 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
  */
 export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
   const [local, ariaProps] = splitProps(props, [
-    'class',
-    'style',
-    'slot',
-    'id',
-    'item',
-    'textValue',
-    'onAction',
+    "class",
+    "style",
+    "slot",
+    "id",
+    "item",
+    "textValue",
+    "onAction",
   ]);
 
   // Get state from context
   const context = useContext(ComboBoxStateContext);
   if (!context) {
-    throw new Error('ComboBoxOption must be used within a ComboBox');
+    throw new Error("ComboBoxOption must be used within a ComboBox");
   }
   const state = context as ComboBoxState<T>;
 
@@ -1010,14 +1005,14 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
       get isDisabled() {
         return ariaProps.isDisabled;
       },
-      get 'aria-label'() {
-        return ariaProps['aria-label'];
+      get "aria-label"() {
+        return ariaProps["aria-label"];
       },
       get onAction() {
         return local.onAction;
       },
     },
-    createComboBoxListStateAdapter(state)
+    createComboBoxListStateAdapter(state),
   );
 
   // Create hover
@@ -1043,9 +1038,9 @@ export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ComboBox-option',
+      defaultClassName: "solidaria-ComboBox-option",
     },
-    renderValues
+    renderValues,
   );
 
   const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
@@ -1101,7 +1096,7 @@ export interface ComboBoxTagGroupProps {
 export function ComboBoxTagGroup(props: ComboBoxTagGroupProps): JSX.Element {
   const context = useContext(ComboBoxContext);
   if (!context) {
-    throw new Error('ComboBoxTagGroup must be used within a ComboBox');
+    throw new Error("ComboBoxTagGroup must be used within a ComboBox");
   }
 
   const state = context.state;
@@ -1109,20 +1104,18 @@ export function ComboBoxTagGroup(props: ComboBoxTagGroupProps): JSX.Element {
     state.selectedItems().map((node) => ({
       key: node.key,
       label: node.textValue,
-    }))
+    })),
   );
 
   return (
     <Show when={items().length > 0}>
       <div
-        class={props.class ?? 'solidaria-ComboBox-tagGroup'}
+        class={props.class ?? "solidaria-ComboBox-tagGroup"}
         style={props.style}
         role="group"
         aria-label="Selected items"
       >
-        <For each={items()}>
-          {(item) => props.children(item)}
-        </For>
+        <For each={items()}>{(item) => props.children(item)}</For>
       </div>
     </Show>
   );
@@ -1151,7 +1144,7 @@ export interface ComboBoxTagProps {
 export function ComboBoxTag(props: ComboBoxTagProps): JSX.Element {
   const context = useContext(ComboBoxContext);
   if (!context) {
-    throw new Error('ComboBoxTag must be used within a ComboBox');
+    throw new Error("ComboBoxTag must be used within a ComboBox");
   }
 
   const state = context.state;
@@ -1166,7 +1159,7 @@ export function ComboBoxTag(props: ComboBoxTagProps): JSX.Element {
 
   return (
     <span
-      class={props.class ?? 'solidaria-ComboBox-tag'}
+      class={props.class ?? "solidaria-ComboBox-tag"}
       style={props.style}
       data-key={String(props.item.key)}
     >
@@ -1200,7 +1193,7 @@ export { defaultContainsFilter };
 
 function createComboBoxListStateAdapter<T>(state: ComboBoxState<T>): ListState<T> {
   const selectedKeys = createMemo(() => {
-    if (state.selectionMode() === 'multiple') {
+    if (state.selectionMode() === "multiple") {
       return state.selectedKeys();
     }
     const key = state.selectedKey();
@@ -1223,11 +1216,11 @@ function createComboBoxListStateAdapter<T>(state: ComboBoxState<T>): ListState<T
     setFocusedKey: (key) => state.setFocusedKey(key ?? null),
     childFocusStrategy: () => null,
     selectionMode: state.selectionMode,
-    selectionBehavior: () => 'replace',
+    selectionBehavior: () => "replace",
     disallowEmptySelection: () => true,
     selectedKeys,
     disabledKeys,
-    disabledBehavior: () => 'all',
+    disabledBehavior: () => "all",
     isEmpty: () => selectedKeys().size === 0,
     isSelectAll: () => false,
     isSelected: state.isSelected,

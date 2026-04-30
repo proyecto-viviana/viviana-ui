@@ -1,2 +1,6 @@
-export { createOverlayTriggerState, type OverlayTriggerProps, type OverlayTriggerState, } from './createOverlayTriggerState';
+export {
+  createOverlayTriggerState,
+  type OverlayTriggerProps,
+  type OverlayTriggerState,
+} from "./createOverlayTriggerState";
 //# sourceMappingURL=index.d.ts.map

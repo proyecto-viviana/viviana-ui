@@ -7,9 +7,9 @@
  * Port of @react-aria/toast useToastRegion.
  */
 
-import { type JSX, createMemo } from 'solid-js';
-import { type ToastState } from '@proyecto-viviana/solid-stately';
-import { createHover } from '../interactions/createHover';
+import { type JSX, createMemo } from "solid-js";
+import { type ToastState } from "@proyecto-viviana/solid-stately";
+import { createHover } from "../interactions/createHover";
 
 // ============================================
 // TYPES
@@ -19,7 +19,7 @@ export interface AriaToastRegionProps<T> {
   /** The toast state from createToastState. */
   state: ToastState<T>;
   /** An accessible label for the region. */
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 export interface ToastRegionAria {
@@ -86,14 +86,16 @@ export function createToastRegion<T>(props: AriaToastRegionProps<T>): ToastRegio
   // Region props
   const regionProps = createMemo<JSX.HTMLAttributes<HTMLElement>>(() => ({
     ...hoverProps,
-    role: 'region' as const,
-    'aria-label': props['aria-label'] ?? 'Notifications',
+    role: "region" as const,
+    "aria-label": props["aria-label"] ?? "Notifications",
     tabIndex: -1,
     onFocusIn: handleFocus,
     onFocusOut: handleBlur,
   }));
 
   return {
-    get regionProps() { return regionProps(); },
+    get regionProps() {
+      return regionProps();
+    },
   };
 }

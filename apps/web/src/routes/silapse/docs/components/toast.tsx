@@ -1,5 +1,13 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import { Button, ToastProvider, ToastRegion, toastSuccess, toastError, toastWarning, toastInfo } from "@proyecto-viviana/solid-spectrum";
+import {
+  Button,
+  ToastProvider,
+  ToastRegion,
+  toastSuccess,
+  toastError,
+  toastWarning,
+  toastInfo,
+} from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/toast")({
@@ -22,8 +30,8 @@ function ToastPage() {
     >
       <h2>Setup</h2>
       <p>
-        Wrap your app with <code>ToastProvider</code> and add <code>ToastRegion</code> where you want
-        toasts to appear.
+        Wrap your app with <code>ToastProvider</code> and add <code>ToastRegion</code> where you
+        want toasts to appear.
       </p>
       <pre>
         <code>{`function App() {
@@ -52,7 +60,10 @@ toastInfo('New update available');`}
             <Button variant="negative" onPress={() => toastError("Failed to save changes")}>
               Error Toast
             </Button>
-            <Button variant="secondary" onPress={() => toastWarning("Your session will expire soon")}>
+            <Button
+              variant="secondary"
+              onPress={() => toastWarning("Your session will expire soon")}
+            >
               Warning Toast
             </Button>
             <Button variant="accent" onPress={() => toastInfo("New update available")}>

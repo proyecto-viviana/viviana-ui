@@ -9,9 +9,9 @@
  * - ColorField state
  */
 
-import { describe, it, expect } from 'vitest';
-import { createRoot } from 'solid-js';
-import type { Color } from '../src/color';
+import { describe, it, expect } from "vitest";
+import { createRoot } from "solid-js";
+import type { Color } from "../src/color";
 import {
   parseColor,
   normalizeColor,
@@ -22,170 +22,170 @@ import {
   createColorAreaState,
   createColorWheelState,
   createColorFieldState,
-} from '../src/color';
+} from "../src/color";
 
-describe('Color', () => {
-  describe('parseColor', () => {
-    it('should parse hex colors', () => {
-      const color = parseColor('#ff0000');
-      expect(color.getChannelValue('red')).toBe(255);
-      expect(color.getChannelValue('green')).toBe(0);
-      expect(color.getChannelValue('blue')).toBe(0);
+describe("Color", () => {
+  describe("parseColor", () => {
+    it("should parse hex colors", () => {
+      const color = parseColor("#ff0000");
+      expect(color.getChannelValue("red")).toBe(255);
+      expect(color.getChannelValue("green")).toBe(0);
+      expect(color.getChannelValue("blue")).toBe(0);
     });
 
-    it('should parse short hex colors', () => {
-      const color = parseColor('#f00');
-      expect(color.getChannelValue('red')).toBe(255);
-      expect(color.getChannelValue('green')).toBe(0);
-      expect(color.getChannelValue('blue')).toBe(0);
+    it("should parse short hex colors", () => {
+      const color = parseColor("#f00");
+      expect(color.getChannelValue("red")).toBe(255);
+      expect(color.getChannelValue("green")).toBe(0);
+      expect(color.getChannelValue("blue")).toBe(0);
     });
 
-    it('should parse hex colors with alpha', () => {
-      const color = parseColor('#ff000080');
-      expect(color.getChannelValue('red')).toBe(255);
-      expect(color.getChannelValue('alpha')).toBeCloseTo(0.5, 1);
+    it("should parse hex colors with alpha", () => {
+      const color = parseColor("#ff000080");
+      expect(color.getChannelValue("red")).toBe(255);
+      expect(color.getChannelValue("alpha")).toBeCloseTo(0.5, 1);
     });
 
-    it('should parse rgb() colors', () => {
-      const color = parseColor('rgb(128, 64, 32)');
-      expect(color.getChannelValue('red')).toBe(128);
-      expect(color.getChannelValue('green')).toBe(64);
-      expect(color.getChannelValue('blue')).toBe(32);
+    it("should parse rgb() colors", () => {
+      const color = parseColor("rgb(128, 64, 32)");
+      expect(color.getChannelValue("red")).toBe(128);
+      expect(color.getChannelValue("green")).toBe(64);
+      expect(color.getChannelValue("blue")).toBe(32);
     });
 
-    it('should parse rgba() colors', () => {
-      const color = parseColor('rgba(255, 128, 0, 0.5)');
-      expect(color.getChannelValue('red')).toBe(255);
-      expect(color.getChannelValue('green')).toBe(128);
-      expect(color.getChannelValue('blue')).toBe(0);
-      expect(color.getChannelValue('alpha')).toBe(0.5);
+    it("should parse rgba() colors", () => {
+      const color = parseColor("rgba(255, 128, 0, 0.5)");
+      expect(color.getChannelValue("red")).toBe(255);
+      expect(color.getChannelValue("green")).toBe(128);
+      expect(color.getChannelValue("blue")).toBe(0);
+      expect(color.getChannelValue("alpha")).toBe(0.5);
     });
 
-    it('should parse hsl() colors', () => {
-      const color = parseColor('hsl(120, 100%, 50%)');
-      expect(color.getChannelValue('hue')).toBe(120);
-      expect(color.getChannelValue('saturation')).toBe(100);
-      expect(color.getChannelValue('lightness')).toBe(50);
+    it("should parse hsl() colors", () => {
+      const color = parseColor("hsl(120, 100%, 50%)");
+      expect(color.getChannelValue("hue")).toBe(120);
+      expect(color.getChannelValue("saturation")).toBe(100);
+      expect(color.getChannelValue("lightness")).toBe(50);
     });
 
-    it('should parse hsb() colors', () => {
-      const color = parseColor('hsb(240, 100%, 100%)');
-      expect(color.getChannelValue('hue')).toBe(240);
-      expect(color.getChannelValue('saturation')).toBe(100);
-      expect(color.getChannelValue('brightness')).toBe(100);
+    it("should parse hsb() colors", () => {
+      const color = parseColor("hsb(240, 100%, 100%)");
+      expect(color.getChannelValue("hue")).toBe(240);
+      expect(color.getChannelValue("saturation")).toBe(100);
+      expect(color.getChannelValue("brightness")).toBe(100);
     });
 
-    it('should throw for invalid color strings', () => {
-      expect(() => parseColor('invalid')).toThrow();
-      expect(() => parseColor('')).toThrow();
+    it("should throw for invalid color strings", () => {
+      expect(() => parseColor("invalid")).toThrow();
+      expect(() => parseColor("")).toThrow();
     });
   });
 
-  describe('normalizeColor', () => {
-    it('should return Color objects as-is', () => {
-      const color = parseColor('#ff0000');
+  describe("normalizeColor", () => {
+    it("should return Color objects as-is", () => {
+      const color = parseColor("#ff0000");
       expect(normalizeColor(color)).toBe(color);
     });
 
-    it('should parse string colors', () => {
-      const color = normalizeColor('#00ff00');
-      expect(color.getChannelValue('green')).toBe(255);
+    it("should parse string colors", () => {
+      const color = normalizeColor("#00ff00");
+      expect(color.getChannelValue("green")).toBe(255);
     });
   });
 
-  describe('createRGBColor', () => {
-    it('should create RGB color', () => {
+  describe("createRGBColor", () => {
+    it("should create RGB color", () => {
       const color = createRGBColor(100, 150, 200);
-      expect(color.getChannelValue('red')).toBe(100);
-      expect(color.getChannelValue('green')).toBe(150);
-      expect(color.getChannelValue('blue')).toBe(200);
-      expect(color.getChannelValue('alpha')).toBe(1);
+      expect(color.getChannelValue("red")).toBe(100);
+      expect(color.getChannelValue("green")).toBe(150);
+      expect(color.getChannelValue("blue")).toBe(200);
+      expect(color.getChannelValue("alpha")).toBe(1);
     });
 
-    it('should create RGB color with alpha', () => {
+    it("should create RGB color with alpha", () => {
       const color = createRGBColor(100, 150, 200, 0.5);
-      expect(color.getChannelValue('alpha')).toBe(0.5);
+      expect(color.getChannelValue("alpha")).toBe(0.5);
     });
   });
 
-  describe('createHSLColor', () => {
-    it('should create HSL color', () => {
+  describe("createHSLColor", () => {
+    it("should create HSL color", () => {
       const color = createHSLColor(180, 50, 75);
-      expect(color.getChannelValue('hue')).toBe(180);
-      expect(color.getChannelValue('saturation')).toBe(50);
-      expect(color.getChannelValue('lightness')).toBe(75);
+      expect(color.getChannelValue("hue")).toBe(180);
+      expect(color.getChannelValue("saturation")).toBe(50);
+      expect(color.getChannelValue("lightness")).toBe(75);
     });
   });
 
-  describe('createHSBColor', () => {
-    it('should create HSB color', () => {
+  describe("createHSBColor", () => {
+    it("should create HSB color", () => {
       const color = createHSBColor(270, 80, 90);
-      expect(color.getChannelValue('hue')).toBe(270);
-      expect(color.getChannelValue('saturation')).toBe(80);
-      expect(color.getChannelValue('brightness')).toBe(90);
+      expect(color.getChannelValue("hue")).toBe(270);
+      expect(color.getChannelValue("saturation")).toBe(80);
+      expect(color.getChannelValue("brightness")).toBe(90);
     });
   });
 
-  describe('Color methods', () => {
-    it('should convert formats', () => {
-      const rgb = parseColor('#ff0000');
-      const hsl = rgb.toFormat('hsl');
-      expect(hsl.getChannelValue('hue')).toBe(0);
-      expect(hsl.getChannelValue('saturation')).toBe(100);
-      expect(hsl.getChannelValue('lightness')).toBe(50);
+  describe("Color methods", () => {
+    it("should convert formats", () => {
+      const rgb = parseColor("#ff0000");
+      const hsl = rgb.toFormat("hsl");
+      expect(hsl.getChannelValue("hue")).toBe(0);
+      expect(hsl.getChannelValue("saturation")).toBe(100);
+      expect(hsl.getChannelValue("lightness")).toBe(50);
     });
 
-    it('should output string formats', () => {
+    it("should output string formats", () => {
       const color = createRGBColor(255, 0, 0);
-      expect(color.toString('hex')).toBe('#ff0000');
-      expect(color.toString('rgb')).toBe('rgb(255, 0, 0)');
+      expect(color.toString("hex")).toBe("#ff0000");
+      expect(color.toString("rgb")).toBe("rgb(255, 0, 0)");
     });
 
-    it('should update channel value', () => {
-      const color = parseColor('#ff0000');
-      const updated = color.withChannelValue('green', 128);
-      expect(updated.getChannelValue('green')).toBe(128);
-      expect(color.getChannelValue('green')).toBe(0); // Original unchanged
+    it("should update channel value", () => {
+      const color = parseColor("#ff0000");
+      const updated = color.withChannelValue("green", 128);
+      expect(updated.getChannelValue("green")).toBe(128);
+      expect(color.getChannelValue("green")).toBe(0); // Original unchanged
     });
 
-    it('should get channel range', () => {
-      const color = parseColor('#ff0000');
-      const redRange = color.getChannelRange('red');
+    it("should get channel range", () => {
+      const color = parseColor("#ff0000");
+      const redRange = color.getChannelRange("red");
       expect(redRange.minValue).toBe(0);
       expect(redRange.maxValue).toBe(255);
       expect(redRange.step).toBe(1);
     });
 
-    it('should support cross-color-space channels for RGB', () => {
-      const color = parseColor('#ff0000');
+    it("should support cross-color-space channels for RGB", () => {
+      const color = parseColor("#ff0000");
       // RGB color should support HSB channels
-      expect(color.getChannelValue('hue')).toBe(0);
-      expect(color.getChannelValue('saturation')).toBe(100);
-      expect(color.getChannelValue('brightness')).toBe(100);
+      expect(color.getChannelValue("hue")).toBe(0);
+      expect(color.getChannelValue("saturation")).toBe(100);
+      expect(color.getChannelValue("brightness")).toBe(100);
     });
 
-    it('should support cross-color-space channel updates for RGB', () => {
-      const color = parseColor('#ff0000');
-      const updated = color.withChannelValue('hue', 120);
+    it("should support cross-color-space channel updates for RGB", () => {
+      const color = parseColor("#ff0000");
+      const updated = color.withChannelValue("hue", 120);
       // Should now be greenish
-      expect(updated.getChannelValue('hue')).toBe(120);
+      expect(updated.getChannelValue("hue")).toBe(120);
     });
 
-    it('should get color name', () => {
-      const red = parseColor('#ff0000');
-      expect(red.getColorName('en-US')).toBeTruthy();
+    it("should get color name", () => {
+      const red = parseColor("#ff0000");
+      expect(red.getColorName("en-US")).toBeTruthy();
     });
 
-    it('should get color space', () => {
-      const rgb = parseColor('#ff0000');
-      expect(rgb.getColorSpace()).toBe('rgb');
+    it("should get color space", () => {
+      const rgb = parseColor("#ff0000");
+      expect(rgb.getColorSpace()).toBe("rgb");
 
-      const hsl = parseColor('hsl(0, 100%, 50%)');
-      expect(hsl.getColorSpace()).toBe('hsl');
+      const hsl = parseColor("hsl(0, 100%, 50%)");
+      expect(hsl.getColorSpace()).toBe("hsl");
     });
 
-    it('should get color space axes', () => {
-      const color = parseColor('hsb(0, 100%, 100%)');
+    it("should get color space axes", () => {
+      const color = parseColor("hsb(0, 100%, 100%)");
       const axes = color.getColorSpaceAxes({});
       expect(axes.xChannel).toBeTruthy();
       expect(axes.yChannel).toBeTruthy();
@@ -194,26 +194,26 @@ describe('Color', () => {
   });
 });
 
-describe('createColorSliderState', () => {
-  it('should initialize with default value', () => {
+describe("createColorSliderState", () => {
+  it("should initialize with default value", () => {
     createRoot((dispose) => {
       const state = createColorSliderState(() => ({
-        channel: 'hue',
-        defaultValue: 'hsb(180, 100%, 100%)',
+        channel: "hue",
+        defaultValue: "hsb(180, 100%, 100%)",
       }));
 
       expect(state.value).toBeTruthy();
-      expect(state.channel).toBe('hue');
+      expect(state.channel).toBe("hue");
       expect(state.isDragging).toBe(false);
       dispose();
     });
   });
 
-  it('should get thumb value', () => {
+  it("should get thumb value", () => {
     createRoot((dispose) => {
       const state = createColorSliderState(() => ({
-        channel: 'red',
-        defaultValue: 'rgb(128, 64, 32)',
+        channel: "red",
+        defaultValue: "rgb(128, 64, 32)",
       }));
 
       expect(state.getThumbValue()).toBe(128);
@@ -221,11 +221,11 @@ describe('createColorSliderState', () => {
     });
   });
 
-  it('should get thumb percent', () => {
+  it("should get thumb percent", () => {
     createRoot((dispose) => {
       const state = createColorSliderState(() => ({
-        channel: 'red',
-        defaultValue: 'rgb(128, 0, 0)',
+        channel: "red",
+        defaultValue: "rgb(128, 0, 0)",
       }));
 
       const percent = state.getThumbPercent();
@@ -234,12 +234,12 @@ describe('createColorSliderState', () => {
     });
   });
 
-  it('should call onChange when setting thumb value', () => {
+  it("should call onChange when setting thumb value", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorSliderState(() => ({
-        channel: 'red',
-        defaultValue: 'rgb(100, 0, 0)',
+        channel: "red",
+        defaultValue: "rgb(100, 0, 0)",
         onChange: (color) => {
           changedColor = color;
         },
@@ -247,17 +247,17 @@ describe('createColorSliderState', () => {
 
       state.setThumbValue(150);
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('red')).toBe(150);
+      expect(changedColor!.getChannelValue("red")).toBe(150);
       dispose();
     });
   });
 
-  it('should call onChange when incrementing', () => {
+  it("should call onChange when incrementing", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorSliderState(() => ({
-        channel: 'red',
-        defaultValue: 'rgb(100, 0, 0)',
+        channel: "red",
+        defaultValue: "rgb(100, 0, 0)",
         onChange: (color) => {
           changedColor = color;
         },
@@ -265,17 +265,17 @@ describe('createColorSliderState', () => {
 
       state.incrementThumb();
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('red')).toBe(101);
+      expect(changedColor!.getChannelValue("red")).toBe(101);
       dispose();
     });
   });
 
-  it('should call onChange when decrementing', () => {
+  it("should call onChange when decrementing", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorSliderState(() => ({
-        channel: 'red',
-        defaultValue: 'rgb(100, 0, 0)',
+        channel: "red",
+        defaultValue: "rgb(100, 0, 0)",
         onChange: (color) => {
           changedColor = color;
         },
@@ -283,17 +283,17 @@ describe('createColorSliderState', () => {
 
       state.decrementThumb();
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('red')).toBe(99);
+      expect(changedColor!.getChannelValue("red")).toBe(99);
       dispose();
     });
   });
 
-  it('should clamp values in onChange', () => {
+  it("should clamp values in onChange", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorSliderState(() => ({
-        channel: 'red',
-        defaultValue: 'rgb(250, 0, 0)',
+        channel: "red",
+        defaultValue: "rgb(250, 0, 0)",
         onChange: (color) => {
           changedColor = color;
         },
@@ -301,17 +301,17 @@ describe('createColorSliderState', () => {
 
       state.setThumbValue(300);
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('red')).toBe(255);
+      expect(changedColor!.getChannelValue("red")).toBe(255);
       dispose();
     });
   });
 
-  it('should call onChangeEnd when dragging ends', () => {
+  it("should call onChangeEnd when dragging ends", () => {
     createRoot((dispose) => {
       let endedColor: Color | null = null;
       const state = createColorSliderState(() => ({
-        channel: 'red',
-        defaultValue: 'rgb(100, 0, 0)',
+        channel: "red",
+        defaultValue: "rgb(100, 0, 0)",
         onChangeEnd: (color) => {
           endedColor = color;
         },
@@ -324,11 +324,11 @@ describe('createColorSliderState', () => {
     });
   });
 
-  it('should get step and page size', () => {
+  it("should get step and page size", () => {
     createRoot((dispose) => {
       const state = createColorSliderState(() => ({
-        channel: 'red',
-        defaultValue: 'rgb(100, 0, 0)',
+        channel: "red",
+        defaultValue: "rgb(100, 0, 0)",
       }));
 
       expect(state.step).toBe(1);
@@ -338,11 +338,11 @@ describe('createColorSliderState', () => {
   });
 });
 
-describe('createColorAreaState', () => {
-  it('should initialize with default value', () => {
+describe("createColorAreaState", () => {
+  it("should initialize with default value", () => {
     createRoot((dispose) => {
       const state = createColorAreaState(() => ({
-        defaultValue: 'hsb(0, 100%, 100%)',
+        defaultValue: "hsb(0, 100%, 100%)",
       }));
 
       expect(state.value).toBeTruthy();
@@ -353,12 +353,12 @@ describe('createColorAreaState', () => {
     });
   });
 
-  it('should get X and Y values', () => {
+  it("should get X and Y values", () => {
     createRoot((dispose) => {
       const state = createColorAreaState(() => ({
-        defaultValue: 'hsb(0, 50%, 75%)',
-        xChannel: 'saturation',
-        yChannel: 'brightness',
+        defaultValue: "hsb(0, 50%, 75%)",
+        xChannel: "saturation",
+        yChannel: "brightness",
       }));
 
       expect(state.getXValue()).toBe(50);
@@ -367,12 +367,12 @@ describe('createColorAreaState', () => {
     });
   });
 
-  it('should get thumb position', () => {
+  it("should get thumb position", () => {
     createRoot((dispose) => {
       const state = createColorAreaState(() => ({
-        defaultValue: 'hsb(0, 50%, 100%)',
-        xChannel: 'saturation',
-        yChannel: 'brightness',
+        defaultValue: "hsb(0, 50%, 100%)",
+        xChannel: "saturation",
+        yChannel: "brightness",
       }));
 
       const pos = state.getThumbPosition();
@@ -382,13 +382,13 @@ describe('createColorAreaState', () => {
     });
   });
 
-  it('should call onChange when setting X value', () => {
+  it("should call onChange when setting X value", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorAreaState(() => ({
-        defaultValue: 'hsb(0, 50%, 75%)',
-        xChannel: 'saturation',
-        yChannel: 'brightness',
+        defaultValue: "hsb(0, 50%, 75%)",
+        xChannel: "saturation",
+        yChannel: "brightness",
         onChange: (color) => {
           changedColor = color;
         },
@@ -396,18 +396,18 @@ describe('createColorAreaState', () => {
 
       state.setXValue(80);
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('saturation')).toBe(80);
+      expect(changedColor!.getChannelValue("saturation")).toBe(80);
       dispose();
     });
   });
 
-  it('should call onChange when setting Y value', () => {
+  it("should call onChange when setting Y value", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorAreaState(() => ({
-        defaultValue: 'hsb(0, 50%, 75%)',
-        xChannel: 'saturation',
-        yChannel: 'brightness',
+        defaultValue: "hsb(0, 50%, 75%)",
+        xChannel: "saturation",
+        yChannel: "brightness",
         onChange: (color) => {
           changedColor = color;
         },
@@ -415,18 +415,18 @@ describe('createColorAreaState', () => {
 
       state.setYValue(90);
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('brightness')).toBe(90);
+      expect(changedColor!.getChannelValue("brightness")).toBe(90);
       dispose();
     });
   });
 
-  it('should call onChange when setting color from point', () => {
+  it("should call onChange when setting color from point", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorAreaState(() => ({
-        defaultValue: 'hsb(0, 0%, 0%)',
-        xChannel: 'saturation',
-        yChannel: 'brightness',
+        defaultValue: "hsb(0, 0%, 0%)",
+        xChannel: "saturation",
+        yChannel: "brightness",
         onChange: (color) => {
           changedColor = color;
         },
@@ -435,54 +435,54 @@ describe('createColorAreaState', () => {
       // x=0.5 means 50% saturation, y=0.25 means 75% brightness (y is inverted)
       state.setColorFromPoint(0.5, 0.25);
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('saturation')).toBeCloseTo(50, 0);
-      expect(changedColor!.getChannelValue('brightness')).toBeCloseTo(75, 0);
+      expect(changedColor!.getChannelValue("saturation")).toBeCloseTo(50, 0);
+      expect(changedColor!.getChannelValue("brightness")).toBeCloseTo(75, 0);
       dispose();
     });
   });
 
-  it('should call onChange when incrementing X', () => {
+  it("should call onChange when incrementing X", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorAreaState(() => ({
-        defaultValue: 'hsb(0, 50%, 50%)',
-        xChannel: 'saturation',
-        yChannel: 'brightness',
+        defaultValue: "hsb(0, 50%, 50%)",
+        xChannel: "saturation",
+        yChannel: "brightness",
         onChange: (color) => {
           changedColor = color;
         },
       }));
 
       state.incrementX();
-      expect(changedColor!.getChannelValue('saturation')).toBe(51);
+      expect(changedColor!.getChannelValue("saturation")).toBe(51);
       dispose();
     });
   });
 
-  it('should call onChange when incrementing Y', () => {
+  it("should call onChange when incrementing Y", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorAreaState(() => ({
-        defaultValue: 'hsb(0, 50%, 50%)',
-        xChannel: 'saturation',
-        yChannel: 'brightness',
+        defaultValue: "hsb(0, 50%, 50%)",
+        xChannel: "saturation",
+        yChannel: "brightness",
         onChange: (color) => {
           changedColor = color;
         },
       }));
 
       state.incrementY();
-      expect(changedColor!.getChannelValue('brightness')).toBe(51);
+      expect(changedColor!.getChannelValue("brightness")).toBe(51);
       dispose();
     });
   });
 
-  it('should get channel step values', () => {
+  it("should get channel step values", () => {
     createRoot((dispose) => {
       const state = createColorAreaState(() => ({
-        defaultValue: 'hsb(0, 50%, 50%)',
-        xChannel: 'saturation',
-        yChannel: 'brightness',
+        defaultValue: "hsb(0, 50%, 50%)",
+        xChannel: "saturation",
+        yChannel: "brightness",
       }));
 
       expect(state.xChannelStep).toBe(1);
@@ -494,11 +494,11 @@ describe('createColorAreaState', () => {
   });
 });
 
-describe('createColorWheelState', () => {
-  it('should initialize with default value', () => {
+describe("createColorWheelState", () => {
+  it("should initialize with default value", () => {
     createRoot((dispose) => {
       const state = createColorWheelState(() => ({
-        defaultValue: 'hsb(180, 100%, 100%)',
+        defaultValue: "hsb(180, 100%, 100%)",
       }));
 
       expect(state.value).toBeTruthy();
@@ -507,10 +507,10 @@ describe('createColorWheelState', () => {
     });
   });
 
-  it('should get hue value', () => {
+  it("should get hue value", () => {
     createRoot((dispose) => {
       const state = createColorWheelState(() => ({
-        defaultValue: 'hsl(180, 100%, 50%)',
+        defaultValue: "hsl(180, 100%, 50%)",
       }));
 
       expect(state.getHue()).toBe(180);
@@ -518,10 +518,10 @@ describe('createColorWheelState', () => {
     });
   });
 
-  it('should get thumb angle', () => {
+  it("should get thumb angle", () => {
     createRoot((dispose) => {
       const state = createColorWheelState(() => ({
-        defaultValue: 'hsl(0, 100%, 50%)',
+        defaultValue: "hsl(0, 100%, 50%)",
       }));
 
       // Hue 0 = angle 2*PI (or 0)
@@ -531,11 +531,11 @@ describe('createColorWheelState', () => {
     });
   });
 
-  it('should call onChange when setting hue', () => {
+  it("should call onChange when setting hue", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorWheelState(() => ({
-        defaultValue: 'hsl(0, 100%, 50%)',
+        defaultValue: "hsl(0, 100%, 50%)",
         onChange: (color) => {
           changedColor = color;
         },
@@ -543,32 +543,32 @@ describe('createColorWheelState', () => {
 
       state.setHue(90);
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('hue')).toBe(90);
+      expect(changedColor!.getChannelValue("hue")).toBe(90);
       dispose();
     });
   });
 
-  it('should wrap hue value in onChange', () => {
+  it("should wrap hue value in onChange", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorWheelState(() => ({
-        defaultValue: 'hsl(0, 100%, 50%)',
+        defaultValue: "hsl(0, 100%, 50%)",
         onChange: (color) => {
           changedColor = color;
         },
       }));
 
       state.setHue(370);
-      expect(changedColor!.getChannelValue('hue')).toBe(10);
+      expect(changedColor!.getChannelValue("hue")).toBe(10);
       dispose();
     });
   });
 
-  it('should call onChange when setting hue from angle', () => {
+  it("should call onChange when setting hue from angle", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorWheelState(() => ({
-        defaultValue: 'hsl(0, 100%, 50%)',
+        defaultValue: "hsl(0, 100%, 50%)",
         onChange: (color) => {
           changedColor = color;
         },
@@ -576,47 +576,47 @@ describe('createColorWheelState', () => {
 
       // Angle PI = hue 180
       state.setHueFromAngle(Math.PI);
-      expect(changedColor!.getChannelValue('hue')).toBeCloseTo(180, 0);
+      expect(changedColor!.getChannelValue("hue")).toBeCloseTo(180, 0);
       dispose();
     });
   });
 
-  it('should call onChange when incrementing hue', () => {
+  it("should call onChange when incrementing hue", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorWheelState(() => ({
-        defaultValue: 'hsl(100, 100%, 50%)',
+        defaultValue: "hsl(100, 100%, 50%)",
         onChange: (color) => {
           changedColor = color;
         },
       }));
 
       state.increment();
-      expect(changedColor!.getChannelValue('hue')).toBe(101);
+      expect(changedColor!.getChannelValue("hue")).toBe(101);
       dispose();
     });
   });
 
-  it('should call onChange when decrementing hue', () => {
+  it("should call onChange when decrementing hue", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorWheelState(() => ({
-        defaultValue: 'hsl(100, 100%, 50%)',
+        defaultValue: "hsl(100, 100%, 50%)",
         onChange: (color) => {
           changedColor = color;
         },
       }));
 
       state.decrement();
-      expect(changedColor!.getChannelValue('hue')).toBe(99);
+      expect(changedColor!.getChannelValue("hue")).toBe(99);
       dispose();
     });
   });
 
-  it('should get step and page step', () => {
+  it("should get step and page step", () => {
     createRoot((dispose) => {
       const state = createColorWheelState(() => ({
-        defaultValue: 'hsl(0, 100%, 50%)',
+        defaultValue: "hsl(0, 100%, 50%)",
       }));
 
       expect(state.step).toBe(1);
@@ -626,70 +626,70 @@ describe('createColorWheelState', () => {
   });
 });
 
-describe('createColorFieldState', () => {
-  it('should initialize with default value', () => {
+describe("createColorFieldState", () => {
+  it("should initialize with default value", () => {
     createRoot((dispose) => {
       const state = createColorFieldState(() => ({
-        defaultValue: '#ff0000',
+        defaultValue: "#ff0000",
       }));
 
       expect(state.value).toBeTruthy();
-      expect(state.inputValue).toBe('#ff0000');
+      expect(state.inputValue).toBe("#ff0000");
       expect(state.isInvalid).toBe(false);
       dispose();
     });
   });
 
-  it('should work in single channel mode', () => {
+  it("should work in single channel mode", () => {
     createRoot((dispose) => {
       const state = createColorFieldState(() => ({
-        defaultValue: 'rgb(128, 64, 32)',
-        channel: 'red',
+        defaultValue: "rgb(128, 64, 32)",
+        channel: "red",
       }));
 
-      expect(state.inputValue).toBe('128');
-      expect(state.channel).toBe('red');
+      expect(state.inputValue).toBe("128");
+      expect(state.channel).toBe("red");
       dispose();
     });
   });
 
-  it('should call onChange when committing valid color', () => {
+  it("should call onChange when committing valid color", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorFieldState(() => ({
-        defaultValue: '#ff0000',
+        defaultValue: "#ff0000",
         onChange: (color) => {
           changedColor = color;
         },
       }));
 
-      state.setInputValue('#00ff00');
+      state.setInputValue("#00ff00");
       state.commit();
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('green')).toBe(255);
+      expect(changedColor!.getChannelValue("green")).toBe(255);
       dispose();
     });
   });
 
-  it('should mark invalid on bad input', () => {
+  it("should mark invalid on bad input", () => {
     createRoot((dispose) => {
       const state = createColorFieldState(() => ({
-        defaultValue: '#ff0000',
+        defaultValue: "#ff0000",
       }));
 
-      state.setInputValue('invalid');
+      state.setInputValue("invalid");
       state.commit();
       expect(state.isInvalid).toBe(true);
       dispose();
     });
   });
 
-  it('should call onChange when incrementing in single channel mode', () => {
+  it("should call onChange when incrementing in single channel mode", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorFieldState(() => ({
-        defaultValue: 'rgb(128, 64, 32)',
-        channel: 'red',
+        defaultValue: "rgb(128, 64, 32)",
+        channel: "red",
         onChange: (color) => {
           changedColor = color;
         },
@@ -697,17 +697,17 @@ describe('createColorFieldState', () => {
 
       state.increment();
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('red')).toBe(129);
+      expect(changedColor!.getChannelValue("red")).toBe(129);
       dispose();
     });
   });
 
-  it('should call onChange when decrementing in single channel mode', () => {
+  it("should call onChange when decrementing in single channel mode", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorFieldState(() => ({
-        defaultValue: 'rgb(128, 64, 32)',
-        channel: 'red',
+        defaultValue: "rgb(128, 64, 32)",
+        channel: "red",
         onChange: (color) => {
           changedColor = color;
         },
@@ -715,17 +715,17 @@ describe('createColorFieldState', () => {
 
       state.decrement();
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('red')).toBe(127);
+      expect(changedColor!.getChannelValue("red")).toBe(127);
       dispose();
     });
   });
 
-  it('should call onChange when incrementing to max', () => {
+  it("should call onChange when incrementing to max", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorFieldState(() => ({
-        defaultValue: 'rgb(200, 64, 32)',
-        channel: 'red',
+        defaultValue: "rgb(200, 64, 32)",
+        channel: "red",
         onChange: (color) => {
           changedColor = color;
         },
@@ -733,17 +733,17 @@ describe('createColorFieldState', () => {
 
       state.incrementToMax();
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('red')).toBe(255);
+      expect(changedColor!.getChannelValue("red")).toBe(255);
       dispose();
     });
   });
 
-  it('should call onChange when decrementing to min', () => {
+  it("should call onChange when decrementing to min", () => {
     createRoot((dispose) => {
       let changedColor: Color | null = null;
       const state = createColorFieldState(() => ({
-        defaultValue: 'rgb(50, 64, 32)',
-        channel: 'red',
+        defaultValue: "rgb(50, 64, 32)",
+        channel: "red",
         onChange: (color) => {
           changedColor = color;
         },
@@ -751,37 +751,37 @@ describe('createColorFieldState', () => {
 
       state.decrementToMin();
       expect(changedColor).toBeTruthy();
-      expect(changedColor!.getChannelValue('red')).toBe(0);
+      expect(changedColor!.getChannelValue("red")).toBe(0);
       dispose();
     });
   });
 
-  it('should validate input', () => {
+  it("should validate input", () => {
     createRoot((dispose) => {
       const state = createColorFieldState(() => ({
-        defaultValue: '#ff0000',
+        defaultValue: "#ff0000",
       }));
 
-      state.setInputValue('#00ff00');
+      state.setInputValue("#00ff00");
       expect(state.validate()).toBe(true);
 
-      state.setInputValue('invalid');
+      state.setInputValue("invalid");
       expect(state.validate()).toBe(false);
       dispose();
     });
   });
 
-  it('should call onChange with null for empty input', () => {
+  it("should call onChange with null for empty input", () => {
     createRoot((dispose) => {
-      let changedColor: Color | null = parseColor('#ffffff'); // Set to non-null initially
+      let changedColor: Color | null = parseColor("#ffffff"); // Set to non-null initially
       const state = createColorFieldState(() => ({
-        defaultValue: '#ff0000',
+        defaultValue: "#ff0000",
         onChange: (color) => {
           changedColor = color;
         },
       }));
 
-      state.setInputValue('');
+      state.setInputValue("");
       state.commit();
       expect(changedColor).toBeNull();
       expect(state.isInvalid).toBe(false);

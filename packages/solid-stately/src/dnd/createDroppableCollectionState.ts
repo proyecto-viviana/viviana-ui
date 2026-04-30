@@ -4,7 +4,7 @@
  * Provides reactive state for accepting drops onto a collection.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from "solid-js";
 import type {
   DropItem,
   DropTarget,
@@ -20,21 +20,21 @@ import type {
   DroppableCollectionOnItemDropEvent,
   DroppableCollectionReorderEvent,
   ItemDropTarget,
-} from './types';
+} from "./types";
 
 export interface DroppableCollectionStateOptions {
   /**
    * The drag types that the droppable collection accepts.
    * @default 'all'
    */
-  acceptedDragTypes?: 'all' | Array<string | symbol>;
+  acceptedDragTypes?: "all" | Array<string | symbol>;
   /**
    * A function returning the drop operation to be performed.
    */
   getDropOperation?: (
     target: DropTarget,
     types: DragTypes,
-    allowedOperations: DropOperation[]
+    allowedOperations: DropOperation[],
   ) => DropOperation;
   /** Handler that is called when a valid drag enters a drop target. */
   onDropEnter?: (e: DroppableCollectionEnterEvent) => void;
@@ -84,13 +84,13 @@ export interface DroppableCollectionState {
     items: DropItem[],
     dropOperation: DropOperation,
     isInternal: boolean,
-    draggingKeys?: Set<string | number>
+    draggingKeys?: Set<string | number>,
   ): void;
   /** Get the drop operation for a target. */
   getDropOperation(
     target: DropTarget,
     types: DragTypes,
-    allowedOperations: DropOperation[]
+    allowedOperations: DropOperation[],
   ): DropOperation;
   /** Check if an item drop should be accepted. */
   shouldAcceptItemDrop(target: ItemDropTarget, types: DragTypes): boolean;
@@ -99,7 +99,7 @@ export interface DroppableCollectionState {
 /**
  * Symbol for directory drag type.
  */
-export const DIRECTORY_DRAG_TYPE: symbol = Symbol('directory');
+export const DIRECTORY_DRAG_TYPE: symbol = Symbol("directory");
 
 /**
  * Creates state for accepting drops onto a collection.
@@ -108,7 +108,7 @@ export const DIRECTORY_DRAG_TYPE: symbol = Symbol('directory');
  * @returns Droppable collection state object
  */
 export function createDroppableCollectionState(
-  props: Accessor<DroppableCollectionStateOptions>
+  props: Accessor<DroppableCollectionStateOptions>,
 ): DroppableCollectionState {
   const getProps = createMemo(() => props());
 
@@ -117,9 +117,9 @@ export function createDroppableCollectionState(
 
   const isAccepted = (types: DragTypes): boolean => {
     const p = getProps();
-    const acceptedTypes = p.acceptedDragTypes ?? 'all';
+    const acceptedTypes = p.acceptedDragTypes ?? "all";
 
-    if (acceptedTypes === 'all') {
+    if (acceptedTypes === "all") {
       return true;
     }
 
@@ -139,9 +139,9 @@ export function createDroppableCollectionState(
     setIsDropTarget(true);
     setTarget(dropTarget);
 
-    if (typeof p.onDropEnter === 'function') {
+    if (typeof p.onDropEnter === "function") {
       p.onDropEnter({
-        type: 'dropenter',
+        type: "dropenter",
         x,
         y,
         target: dropTarget,
@@ -158,18 +158,18 @@ export function createDroppableCollectionState(
 
     // Fire exit/enter events if target changed
     if (prevTarget && !targetsEqual(prevTarget, dropTarget)) {
-      if (typeof p.onDropExit === 'function') {
+      if (typeof p.onDropExit === "function") {
         p.onDropExit({
-          type: 'dropexit',
+          type: "dropexit",
           x,
           y,
           target: prevTarget,
         });
       }
 
-      if (typeof p.onDropEnter === 'function') {
+      if (typeof p.onDropEnter === "function") {
         p.onDropEnter({
-          type: 'dropenter',
+          type: "dropenter",
           x,
           y,
           target: dropTarget,
@@ -185,9 +185,9 @@ export function createDroppableCollectionState(
     setIsDropTarget(false);
     setTarget(null);
 
-    if (currentTarget && typeof p.onDropExit === 'function') {
+    if (currentTarget && typeof p.onDropExit === "function") {
       p.onDropExit({
-        type: 'dropexit',
+        type: "dropexit",
         x,
         y,
         target: currentTarget,
@@ -200,9 +200,9 @@ export function createDroppableCollectionState(
     const currentTarget = target();
     if (p.isDisabled || !currentTarget) return;
 
-    if (typeof p.onDropActivate === 'function') {
+    if (typeof p.onDropActivate === "function") {
       p.onDropActivate({
-        type: 'dropactivate',
+        type: "dropactivate",
         x,
         y,
         target: currentTarget,
@@ -214,7 +214,7 @@ export function createDroppableCollectionState(
     items: DropItem[],
     dropOperation: DropOperation,
     isInternal: boolean,
-    draggingKeys?: Set<string | number>
+    draggingKeys?: Set<string | number>,
   ) => {
     const p = getProps();
     const currentTarget = target();
@@ -224,9 +224,9 @@ export function createDroppableCollectionState(
     setTarget(null);
 
     // Call the generic onDrop handler
-    if (typeof p.onDrop === 'function') {
+    if (typeof p.onDrop === "function") {
       p.onDrop({
-        type: 'drop',
+        type: "drop",
         x: 0,
         y: 0,
         items,
@@ -236,18 +236,18 @@ export function createDroppableCollectionState(
     }
 
     // Call specific handlers based on the drop type
-    if (currentTarget.type === 'root') {
-      if (typeof p.onRootDrop === 'function') {
+    if (currentTarget.type === "root") {
+      if (typeof p.onRootDrop === "function") {
         p.onRootDrop({
           items,
           dropOperation,
         });
       }
-    } else if (currentTarget.type === 'item') {
+    } else if (currentTarget.type === "item") {
       if (isInternal && draggingKeys) {
         // Reorder or move within the same collection
-        if (currentTarget.dropPosition === 'on') {
-          if (typeof p.onMove === 'function') {
+        if (currentTarget.dropPosition === "on") {
+          if (typeof p.onMove === "function") {
             p.onMove({
               keys: draggingKeys,
               dropOperation,
@@ -255,7 +255,7 @@ export function createDroppableCollectionState(
             });
           }
         } else {
-          if (typeof p.onReorder === 'function') {
+          if (typeof p.onReorder === "function") {
             p.onReorder({
               keys: draggingKeys,
               dropOperation,
@@ -265,8 +265,8 @@ export function createDroppableCollectionState(
         }
       } else {
         // External drop
-        if (currentTarget.dropPosition === 'on') {
-          if (typeof p.onItemDrop === 'function') {
+        if (currentTarget.dropPosition === "on") {
+          if (typeof p.onItemDrop === "function") {
             p.onItemDrop({
               items,
               dropOperation,
@@ -275,7 +275,7 @@ export function createDroppableCollectionState(
             });
           }
         } else {
-          if (typeof p.onInsert === 'function') {
+          if (typeof p.onInsert === "function") {
             p.onInsert({
               items,
               dropOperation,
@@ -290,32 +290,29 @@ export function createDroppableCollectionState(
   const getDropOperation = (
     dropTarget: DropTarget,
     types: DragTypes,
-    allowedOperations: DropOperation[]
+    allowedOperations: DropOperation[],
   ): DropOperation => {
     const p = getProps();
 
     if (!isAccepted(types)) {
-      return 'cancel';
+      return "cancel";
     }
 
-    if (typeof p.getDropOperation === 'function') {
+    if (typeof p.getDropOperation === "function") {
       return p.getDropOperation(dropTarget, types, allowedOperations);
     }
 
-    return allowedOperations[0] ?? 'cancel';
+    return allowedOperations[0] ?? "cancel";
   };
 
-  const shouldAcceptItemDrop = (
-    dropTarget: ItemDropTarget,
-    types: DragTypes
-  ): boolean => {
+  const shouldAcceptItemDrop = (dropTarget: ItemDropTarget, types: DragTypes): boolean => {
     const p = getProps();
 
     if (!isAccepted(types)) {
       return false;
     }
 
-    if (typeof p.shouldAcceptItemDrop === 'function') {
+    if (typeof p.shouldAcceptItemDrop === "function") {
       return p.shouldAcceptItemDrop(dropTarget, types);
     }
 
@@ -349,8 +346,8 @@ export function createDroppableCollectionState(
  */
 function targetsEqual(a: DropTarget, b: DropTarget): boolean {
   if (a.type !== b.type) return false;
-  if (a.type === 'root' && b.type === 'root') return true;
-  if (a.type === 'item' && b.type === 'item') {
+  if (a.type === "root" && b.type === "root") return true;
+  if (a.type === "item" && b.type === "item") {
     return a.key === b.key && a.dropPosition === b.dropPosition;
   }
   return false;

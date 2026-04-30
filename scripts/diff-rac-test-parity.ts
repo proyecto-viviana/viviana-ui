@@ -37,10 +37,7 @@ function unquote(value: string): string {
     return body.replace(/\$\{[^}]*\}/g, "${...}").replace(/\\`/g, "`");
   }
 
-  return body
-    .replace(/\\'/g, "'")
-    .replace(/\\"/g, '"')
-    .replace(/\\\\/g, "\\");
+  return body.replace(/\\'/g, "'").replace(/\\"/g, '"').replace(/\\\\/g, "\\");
 }
 
 function extractItBlocks(source: string): TestCase[] {
@@ -62,7 +59,8 @@ function extractItBlocks(source: string): TestCase[] {
   };
 
   const tests: TestCase[] = [];
-  const testRegex = /(?:^|[^\w$])it(?:\.(?:only|skip|todo|each\s*\([^)]*\)))?\s*\(\s*(['"`])((?:\\.|(?!\1)[\s\S])*?)\1/g;
+  const testRegex =
+    /(?:^|[^\w$])it(?:\.(?:only|skip|todo|each\s*\([^)]*\)))?\s*\(\s*(['"`])((?:\\.|(?!\1)[\s\S])*?)\1/g;
   let match: RegExpExecArray | null;
 
   while ((match = testRegex.exec(cleanSource)) !== null) {

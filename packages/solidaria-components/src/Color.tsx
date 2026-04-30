@@ -15,7 +15,7 @@ import {
   splitProps,
   useContext,
   Show,
-} from 'solid-js';
+} from "solid-js";
 import {
   createColorSlider,
   createColorArea,
@@ -31,7 +31,7 @@ import {
   type AriaColorAreaOptions,
   type AriaColorWheelOptions,
   type AriaColorFieldOptions,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createListState,
   createColorSliderState,
@@ -48,7 +48,7 @@ import {
   type ColorFieldState,
   type ListState,
   type Key,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -56,7 +56,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 interface ColorPickerChannelContextValue {
   value?: Color | string;
@@ -103,7 +103,7 @@ export interface ColorSliderRenderProps {
   color: Color;
 }
 
-export interface ColorSliderProps extends Omit<AriaColorSliderOptions, 'channel'>, SlotProps {
+export interface ColorSliderProps extends Omit<AriaColorSliderOptions, "channel">, SlotProps {
   /** The current color value (controlled). */
   value?: Color | string;
   /** The default color value (uncontrolled). */
@@ -181,9 +181,9 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
   const pickerContext = useContext(ColorPickerContextInternal);
   const [local, stateProps, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'label'],
-    ['value', 'defaultValue', 'onChange', 'onChangeEnd', 'channel'],
-    ['aria-label', 'aria-labelledby', 'aria-describedby', 'isDisabled', 'channelName']
+    ["children", "class", "style", "slot", "label"],
+    ["value", "defaultValue", "onChange", "onChangeEnd", "channel"],
+    ["aria-label", "aria-labelledby", "aria-describedby", "isDisabled", "channelName"],
   );
 
   // Create color slider state
@@ -203,22 +203,17 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
   };
 
   // Create color slider aria props
-  const {
-    trackProps,
-    thumbProps,
-    inputProps,
-    labelProps,
-  } = createColorSlider(
+  const { trackProps, thumbProps, inputProps, labelProps } = createColorSlider(
     () => ({
       channel: stateProps.channel,
-      'aria-label': ariaProps['aria-label'],
-      'aria-labelledby': ariaProps['aria-labelledby'],
-      'aria-describedby': ariaProps['aria-describedby'],
+      "aria-label": ariaProps["aria-label"],
+      "aria-labelledby": ariaProps["aria-labelledby"],
+      "aria-describedby": ariaProps["aria-describedby"],
       isDisabled: ariaProps.isDisabled,
       channelName: ariaProps.channelName,
     }),
     () => state,
-    () => trackRef ?? null
+    () => trackRef ?? null,
   );
 
   // Render props values
@@ -236,13 +231,15 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorSlider',
+      defaultClassName: "solidaria-ColorSlider",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   return (
     <ColorSliderContext.Provider
@@ -278,11 +275,11 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
  * The track element of a color slider.
  */
 export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(ColorSliderContext);
   if (!context) {
-    throw new Error('ColorSliderTrack must be used within a ColorSlider');
+    throw new Error("ColorSliderTrack must be used within a ColorSlider");
   }
 
   const { state, trackProps, setTrackRef } = context;
@@ -299,9 +296,9 @@ export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorSlider-track',
+      defaultClassName: "solidaria-ColorSlider-track",
     },
-    renderValues
+    renderValues,
   );
 
   // Clean props
@@ -336,11 +333,11 @@ export function ColorSliderTrack(props: ColorSliderTrackProps): JSX.Element {
  * The thumb element of a color slider.
  */
 export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(ColorSliderContext);
   if (!context) {
-    throw new Error('ColorSliderThumb must be used within a ColorSlider');
+    throw new Error("ColorSliderThumb must be used within a ColorSlider");
   }
 
   const { state, thumbProps, inputProps } = context;
@@ -370,9 +367,9 @@ export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorSlider-thumb',
+      defaultClassName: "solidaria-ColorSlider-thumb",
     },
-    renderValues
+    renderValues,
   );
 
   // Clean props
@@ -391,7 +388,7 @@ export function ColorSliderThumb(props: ColorSliderThumbProps): JSX.Element {
   const mergedInputProps = () => {
     return mergeProps(
       inputProps as Record<string, unknown>,
-      cleanFocusProps()
+      cleanFocusProps(),
     ) as JSX.InputHTMLAttributes<HTMLInputElement>;
   };
 
@@ -520,9 +517,9 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
   const pickerContext = useContext(ColorPickerContextInternal);
   const [local, stateProps, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
-    ['value', 'defaultValue', 'onChange', 'onChangeEnd', 'xChannel', 'yChannel'],
-    ['aria-label', 'aria-labelledby', 'aria-describedby', 'isDisabled']
+    ["children", "class", "style", "slot"],
+    ["value", "defaultValue", "onChange", "onChangeEnd", "xChannel", "yChannel"],
+    ["aria-label", "aria-labelledby", "aria-describedby", "isDisabled"],
   );
 
   // Create color area state
@@ -543,21 +540,15 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
   };
 
   // Create color area aria props
-  const {
-    colorAreaProps,
-    gradientProps,
-    thumbProps,
-    xInputProps,
-    yInputProps,
-  } = createColorArea(
+  const { colorAreaProps, gradientProps, thumbProps, xInputProps, yInputProps } = createColorArea(
     () => ({
-      'aria-label': ariaProps['aria-label'],
-      'aria-labelledby': ariaProps['aria-labelledby'],
-      'aria-describedby': ariaProps['aria-describedby'],
+      "aria-label": ariaProps["aria-label"],
+      "aria-labelledby": ariaProps["aria-labelledby"],
+      "aria-describedby": ariaProps["aria-describedby"],
       isDisabled: ariaProps.isDisabled,
     }),
     () => state,
-    () => areaRef ?? null
+    () => areaRef ?? null,
   );
 
   // Render props values
@@ -575,13 +566,15 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorArea',
+      defaultClassName: "solidaria-ColorArea",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   // Clean props
   const cleanColorAreaProps = () => {
@@ -628,11 +621,11 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
  * The gradient background of a color area.
  */
 export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(ColorAreaContext);
   if (!context) {
-    throw new Error('ColorAreaGradient must be used within a ColorArea');
+    throw new Error("ColorAreaGradient must be used within a ColorArea");
   }
 
   const { state, gradientProps } = context;
@@ -648,9 +641,9 @@ export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorArea-gradient',
+      defaultClassName: "solidaria-ColorArea-gradient",
     },
-    renderValues
+    renderValues,
   );
 
   // Clean props
@@ -683,11 +676,11 @@ export function ColorAreaGradient(props: ColorAreaGradientProps): JSX.Element {
  * The thumb element of a color area.
  */
 export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(ColorAreaContext);
   if (!context) {
-    throw new Error('ColorAreaThumb must be used within a ColorArea');
+    throw new Error("ColorAreaThumb must be used within a ColorArea");
   }
 
   const { state, thumbProps, xInputProps, yInputProps } = context;
@@ -717,9 +710,9 @@ export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorArea-thumb',
+      defaultClassName: "solidaria-ColorArea-thumb",
     },
-    renderValues
+    renderValues,
   );
 
   // Clean props
@@ -738,13 +731,13 @@ export function ColorAreaThumb(props: ColorAreaThumbProps): JSX.Element {
   const mergedXInputProps = () => {
     return mergeProps(
       xInputProps as Record<string, unknown>,
-      cleanFocusProps()
+      cleanFocusProps(),
     ) as JSX.InputHTMLAttributes<HTMLInputElement>;
   };
   const mergedYInputProps = () => {
     return mergeProps(
       yInputProps as Record<string, unknown>,
-      cleanFocusProps()
+      cleanFocusProps(),
     ) as JSX.InputHTMLAttributes<HTMLInputElement>;
   };
 
@@ -868,9 +861,9 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
   const pickerContext = useContext(ColorPickerContextInternal);
   const [local, stateProps, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
-    ['value', 'defaultValue', 'onChange', 'onChangeEnd'],
-    ['aria-label', 'aria-labelledby', 'aria-describedby', 'isDisabled']
+    ["children", "class", "style", "slot"],
+    ["value", "defaultValue", "onChange", "onChangeEnd"],
+    ["aria-label", "aria-labelledby", "aria-describedby", "isDisabled"],
   );
 
   // Create color wheel state
@@ -889,19 +882,15 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
   };
 
   // Create color wheel aria props
-  const {
-    trackProps,
-    thumbProps,
-    inputProps,
-  } = createColorWheel(
+  const { trackProps, thumbProps, inputProps } = createColorWheel(
     () => ({
-      'aria-label': ariaProps['aria-label'],
-      'aria-labelledby': ariaProps['aria-labelledby'],
-      'aria-describedby': ariaProps['aria-describedby'],
+      "aria-label": ariaProps["aria-label"],
+      "aria-labelledby": ariaProps["aria-labelledby"],
+      "aria-describedby": ariaProps["aria-describedby"],
       isDisabled: ariaProps.isDisabled,
     }),
     () => state,
-    () => wheelRef ?? null
+    () => wheelRef ?? null,
   );
 
   // Render props values
@@ -918,13 +907,15 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorWheel',
+      defaultClassName: "solidaria-ColorWheel",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   return (
     <ColorWheelContext.Provider
@@ -954,11 +945,11 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
  * The track element of a color wheel.
  */
 export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(ColorWheelContext);
   if (!context) {
-    throw new Error('ColorWheelTrack must be used within a ColorWheel');
+    throw new Error("ColorWheelTrack must be used within a ColorWheel");
   }
 
   const { state, trackProps, setWheelRef } = context;
@@ -975,9 +966,9 @@ export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorWheel-track',
+      defaultClassName: "solidaria-ColorWheel-track",
     },
-    renderValues
+    renderValues,
   );
 
   // Clean props
@@ -1012,11 +1003,11 @@ export function ColorWheelTrack(props: ColorWheelTrackProps): JSX.Element {
  * The thumb element of a color wheel.
  */
 export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(ColorWheelContext);
   if (!context) {
-    throw new Error('ColorWheelThumb must be used within a ColorWheel');
+    throw new Error("ColorWheelThumb must be used within a ColorWheel");
   }
 
   const { state, thumbProps, inputProps } = context;
@@ -1046,9 +1037,9 @@ export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorWheel-thumb',
+      defaultClassName: "solidaria-ColorWheel-thumb",
     },
-    renderValues
+    renderValues,
   );
 
   // Clean props
@@ -1067,7 +1058,7 @@ export function ColorWheelThumb(props: ColorWheelThumbProps): JSX.Element {
   const mergedInputProps = () => {
     return mergeProps(
       inputProps as Record<string, unknown>,
-      cleanFocusProps()
+      cleanFocusProps(),
     ) as JSX.InputHTMLAttributes<HTMLInputElement>;
   };
 
@@ -1179,20 +1170,22 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
   const pickerContext = useContext(ColorPickerContextInternal);
   const [local, stateProps, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'label'],
-    ['value', 'defaultValue', 'onChange', 'channel', 'colorFormat'],
-    ['aria-label', 'aria-labelledby', 'aria-describedby', 'isDisabled', 'isReadOnly']
+    ["children", "class", "style", "slot", "label"],
+    ["value", "defaultValue", "onChange", "channel", "colorFormat"],
+    ["aria-label", "aria-labelledby", "aria-describedby", "isDisabled", "isReadOnly"],
   );
 
   // Create color field state
   const state = createColorFieldState(() => ({
     value: stateProps.value ?? pickerContext?.value,
     defaultValue: stateProps.defaultValue,
-    onChange: stateProps.onChange ?? ((color) => {
-      if (color) {
-        pickerContext?.onChange?.(color);
-      }
-    }),
+    onChange:
+      stateProps.onChange ??
+      ((color) => {
+        if (color) {
+          pickerContext?.onChange?.(color);
+        }
+      }),
     channel: stateProps.channel,
     colorFormat: stateProps.colorFormat,
     isDisabled: ariaProps.isDisabled,
@@ -1203,20 +1196,17 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
   let inputRef: HTMLInputElement | undefined;
 
   // Create color field aria props
-  const {
-    inputProps,
-    labelProps,
-  } = createColorField(
+  const { inputProps, labelProps } = createColorField(
     () => ({
-      'aria-label': ariaProps['aria-label'],
-      'aria-labelledby': ariaProps['aria-labelledby'],
-      'aria-describedby': ariaProps['aria-describedby'],
+      "aria-label": ariaProps["aria-label"],
+      "aria-labelledby": ariaProps["aria-labelledby"],
+      "aria-describedby": ariaProps["aria-describedby"],
       isDisabled: ariaProps.isDisabled,
       isReadOnly: ariaProps.isReadOnly,
       channel: stateProps.channel,
     }),
     () => state,
-    () => inputRef ?? null
+    () => inputRef ?? null,
   );
 
   // Render props values
@@ -1234,13 +1224,15 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorField',
+      defaultClassName: "solidaria-ColorField",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   return (
     <ColorFieldContext.Provider
@@ -1273,11 +1265,11 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
  * The input element of a color field.
  */
 export function ColorFieldInput(props: ColorFieldInputProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(ColorFieldContext);
   if (!context) {
-    throw new Error('ColorFieldInput must be used within a ColorField');
+    throw new Error("ColorFieldInput must be used within a ColorField");
   }
 
   const { state, inputProps } = context;
@@ -1308,9 +1300,9 @@ export function ColorFieldInput(props: ColorFieldInputProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorField-input',
+      defaultClassName: "solidaria-ColorField-input",
     },
-    renderValues
+    renderValues,
   );
 
   // Clean props
@@ -1363,7 +1355,7 @@ export interface ColorSwatchProps extends SlotProps {
   /** The color to display. */
   color?: Color | string;
   /** Accessible label for the swatch. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The children of the component. */
   children?: RenderChildren<ColorSwatchRenderProps>;
   /** The CSS className for the element. */
@@ -1380,18 +1372,18 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
   const pickerContext = useContext(ColorPickerContextInternal);
   const [local, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'color'],
-    ['aria-label']
+    ["children", "class", "style", "slot", "color"],
+    ["aria-label"],
   );
 
   const resolvedColor = createMemo<Color | string>(() => {
-    return local.color ?? swatchContext?.color ?? pickerContext?.value ?? '#0000';
+    return local.color ?? swatchContext?.color ?? pickerContext?.value ?? "#0000";
   });
 
   // Create color swatch aria props
   const { swatchProps } = createColorSwatch(() => ({
     color: resolvedColor(),
-    'aria-label': ariaProps['aria-label'],
+    "aria-label": ariaProps["aria-label"],
   }));
 
   // Normalize color
@@ -1400,7 +1392,7 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
   // Render props values
   const renderValues = createMemo<ColorSwatchRenderProps>(() => ({
     color: color(),
-    colorValue: color().toString('css'),
+    colorValue: color().toString("css"),
   }));
 
   // Resolve render props
@@ -1409,13 +1401,15 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorSwatch',
+      defaultClassName: "solidaria-ColorSwatch",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   // Clean props
   const cleanSwatchProps = () => {
@@ -1431,12 +1425,7 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
   };
 
   return (
-    <div
-      {...domProps()}
-      {...cleanSwatchProps()}
-      class={renderProps.class()}
-      style={mergedStyle()}
-    >
+    <div {...domProps()} {...cleanSwatchProps()} class={renderProps.class()} style={mergedStyle()}>
       {renderProps.renderChildren()}
     </div>
   );
@@ -1481,7 +1470,7 @@ export interface ColorSwatchPickerRenderProps {
   /** The currently selected color. */
   selectedColor: Color;
   /** Item arrangement mode. */
-  layout: 'grid' | 'stack';
+  layout: "grid" | "stack";
 }
 
 export interface ColorSwatchPickerProps extends SlotProps {
@@ -1492,13 +1481,13 @@ export interface ColorSwatchPickerProps extends SlotProps {
   /** Handler called when the selected color changes. */
   onChange?: (color: Color) => void;
   /** Accessible label for the swatch picker. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ID of element that labels the swatch picker. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ID of element that describes the swatch picker. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether swatches are arranged as a grid or stack. */
-  layout?: 'grid' | 'stack';
+  layout?: "grid" | "stack";
   /** The children (ColorSwatchPickerItem elements). */
   children?: JSX.Element;
   /** The CSS className for the element. */
@@ -1528,7 +1517,7 @@ export interface ColorSwatchPickerItemProps extends SlotProps {
   /** Whether this item is disabled. */
   isDisabled?: boolean;
   /** Accessible label for this item. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The children of the swatch item. */
   children?: RenderChildren<ColorSwatchPickerItemRenderProps>;
   /** The CSS className for the element. */
@@ -1539,17 +1528,17 @@ export interface ColorSwatchPickerItemProps extends SlotProps {
 
 export function ColorPicker(props: ColorPickerProps): JSX.Element {
   const [local] = splitProps(props, [
-    'value',
-    'defaultValue',
-    'onChange',
-    'children',
-    'class',
-    'style',
-    'slot',
+    "value",
+    "defaultValue",
+    "onChange",
+    "children",
+    "class",
+    "style",
+    "slot",
   ]);
 
   const [internalColor, setInternalColor] = createSignal<Color>(
-    normalizeColor(local.defaultValue ?? '#ff0000')
+    normalizeColor(local.defaultValue ?? "#ff0000"),
   );
 
   const color = createMemo<Color>(() => {
@@ -1575,9 +1564,9 @@ export function ColorPicker(props: ColorPickerProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorPicker',
+      defaultClassName: "solidaria-ColorPicker",
     },
-    renderValues
+    renderValues,
   );
 
   return (
@@ -1606,23 +1595,23 @@ export function ColorPicker(props: ColorPickerProps): JSX.Element {
 export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
   const pickerContext = useContext(ColorPickerContextInternal);
   const [local, rest] = splitProps(props, [
-    'value',
-    'defaultValue',
-    'onChange',
-    'aria-label',
-    'aria-labelledby',
-    'aria-describedby',
-    'layout',
-    'children',
-    'class',
-    'style',
-    'slot',
+    "value",
+    "defaultValue",
+    "onChange",
+    "aria-label",
+    "aria-labelledby",
+    "aria-describedby",
+    "layout",
+    "children",
+    "class",
+    "style",
+    "slot",
   ]);
 
   const [itemMap, setItemMap] = createSignal<Map<string, ColorSwatchPickerItemData>>(new Map());
   const [itemOrder, setItemOrder] = createSignal<string[]>([]);
   const [internalColor, setInternalColor] = createSignal<Color>(
-    normalizeColor(local.defaultValue ?? pickerContext?.value ?? '#ff0000')
+    normalizeColor(local.defaultValue ?? pickerContext?.value ?? "#ff0000"),
   );
 
   const selectedColor = createMemo<Color>(() => {
@@ -1635,8 +1624,10 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
     return internalColor();
   });
 
-  const selectedKey = createMemo(() => selectedColor().toString('hexa'));
-  const isControlled = createMemo(() => local.value !== undefined || pickerContext?.value !== undefined);
+  const selectedKey = createMemo(() => selectedColor().toString("hexa"));
+  const isControlled = createMemo(
+    () => local.value !== undefined || pickerContext?.value !== undefined,
+  );
 
   const registerItem = (item: ColorSwatchPickerItemData) => {
     setItemMap((prev) => {
@@ -1677,13 +1668,13 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
     get getDisabled() {
       return (item: ColorSwatchPickerItemData) => !!item.isDisabled;
     },
-    selectionMode: 'single',
+    selectionMode: "single",
     disallowEmptySelection: true,
     get selectedKeys() {
       return [selectedKey()];
     },
     onSelectionChange(keys) {
-      if (keys === 'all') return;
+      if (keys === "all") return;
       const key = keys.values().next().value as string | undefined;
       if (!key) return;
       const item = itemMap().get(key);
@@ -1697,28 +1688,29 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
 
   const listBoxAria = createListBox(
     () => ({
-      'aria-label': local['aria-label'] ?? (!local['aria-labelledby'] ? 'Color swatch picker' : undefined),
-      'aria-labelledby': local['aria-labelledby'],
-      'aria-describedby': local['aria-describedby'],
+      "aria-label":
+        local["aria-label"] ?? (!local["aria-labelledby"] ? "Color swatch picker" : undefined),
+      "aria-labelledby": local["aria-labelledby"],
+      "aria-describedby": local["aria-describedby"],
       shouldFocusWrap: true,
     }),
-    state
+    state,
   );
 
-  const resolveDirection = (): 'ltr' | 'rtl' => {
-    if (typeof document === 'undefined') return 'ltr';
+  const resolveDirection = (): "ltr" | "rtl" => {
+    if (typeof document === "undefined") return "ltr";
     const rootDir = document.dir;
-    return rootDir === 'rtl' ? 'rtl' : 'ltr';
+    return rootDir === "rtl" ? "rtl" : "ltr";
   };
 
-  const findNextEnabledKey = (from: Key | null, direction: 'next' | 'prev') => {
+  const findNextEnabledKey = (from: Key | null, direction: "next" | "prev") => {
     const collection = state.collection();
-    const getAdjacent = direction === 'next'
-      ? (key: Key) => collection.getKeyAfter(key)
-      : (key: Key) => collection.getKeyBefore(key);
-    const getBoundary = direction === 'next'
-      ? () => collection.getFirstKey()
-      : () => collection.getLastKey();
+    const getAdjacent =
+      direction === "next"
+        ? (key: Key) => collection.getKeyAfter(key)
+        : (key: Key) => collection.getKeyBefore(key);
+    const getBoundary =
+      direction === "next" ? () => collection.getFirstKey() : () => collection.getLastKey();
 
     let key = from != null ? getAdjacent(from) : getBoundary();
     while (key != null && state.isDisabled(key)) {
@@ -1728,14 +1720,14 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
     return key;
   };
 
-  const getBoundaryEnabledKey = (direction: 'next' | 'prev') => {
+  const getBoundaryEnabledKey = (direction: "next" | "prev") => {
     const collection = state.collection();
-    const getAdjacent = direction === 'next'
-      ? (key: Key) => collection.getKeyAfter(key)
-      : (key: Key) => collection.getKeyBefore(key);
-    const getBoundary = direction === 'next'
-      ? () => collection.getFirstKey()
-      : () => collection.getLastKey();
+    const getAdjacent =
+      direction === "next"
+        ? (key: Key) => collection.getKeyAfter(key)
+        : (key: Key) => collection.getKeyBefore(key);
+    const getBoundary =
+      direction === "next" ? () => collection.getFirstKey() : () => collection.getLastKey();
 
     let key = getBoundary();
     while (key != null && state.isDisabled(key)) {
@@ -1745,7 +1737,10 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
     return key;
   };
 
-  const getOptionElementForKey = (listbox: HTMLElement | null, key: Key | null): HTMLElement | null => {
+  const getOptionElementForKey = (
+    listbox: HTMLElement | null,
+    key: Key | null,
+  ): HTMLElement | null => {
     if (!listbox || key == null) return null;
     const keyString = String(key);
     for (const optionElement of listbox.querySelectorAll<HTMLElement>('[role="option"]')) {
@@ -1760,7 +1755,7 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
     listbox: HTMLElement | null,
     key: Key,
     nextKey: (current: Key) => Key | null,
-    shouldSkip: (prevRect: DOMRect, itemRect: DOMRect) => boolean
+    shouldSkip: (prevRect: DOMRect, itemRect: DOMRect) => boolean,
   ): Key | null => {
     let candidate: Key | null = key;
     const previousRect = getOptionElementForKey(listbox, candidate)?.getBoundingClientRect();
@@ -1787,53 +1782,69 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
     return null;
   };
 
-  const isSameRow = (prevRect: DOMRect, itemRect: DOMRect) => prevRect.y === itemRect.y || prevRect.x !== itemRect.x;
+  const isSameRow = (prevRect: DOMRect, itemRect: DOMRect) =>
+    prevRect.y === itemRect.y || prevRect.x !== itemRect.x;
   const getGridKeyBelow = (listbox: HTMLElement | null, key: Key) =>
-    findGridKey(listbox, key, (current) => findNextEnabledKey(current, 'next'), isSameRow);
+    findGridKey(listbox, key, (current) => findNextEnabledKey(current, "next"), isSameRow);
   const getGridKeyAbove = (listbox: HTMLElement | null, key: Key) =>
-    findGridKey(listbox, key, (current) => findNextEnabledKey(current, 'prev'), isSameRow);
+    findGridKey(listbox, key, (current) => findNextEnabledKey(current, "prev"), isSameRow);
   const getGridKeyRightOf = (key: Key) =>
-    resolveDirection() === 'rtl' ? findNextEnabledKey(key, 'prev') : findNextEnabledKey(key, 'next');
+    resolveDirection() === "rtl"
+      ? findNextEnabledKey(key, "prev")
+      : findNextEnabledKey(key, "next");
   const getGridKeyLeftOf = (key: Key) =>
-    resolveDirection() === 'rtl' ? findNextEnabledKey(key, 'next') : findNextEnabledKey(key, 'prev');
+    resolveDirection() === "rtl"
+      ? findNextEnabledKey(key, "next")
+      : findNextEnabledKey(key, "prev");
 
   const handleGridKeyDown = (e: KeyboardEvent): boolean => {
-    if ((local.layout ?? 'grid') !== 'grid') return false;
-    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'ArrowDown' && e.key !== 'ArrowUp') {
+    if ((local.layout ?? "grid") !== "grid") return false;
+    if (
+      e.key !== "ArrowRight" &&
+      e.key !== "ArrowLeft" &&
+      e.key !== "ArrowDown" &&
+      e.key !== "ArrowUp"
+    ) {
       return false;
     }
 
     const listbox = e.currentTarget as HTMLElement | null;
     const focusedKey = state.focusedKey();
-    const initialKey = focusedKey ?? (e.key === 'ArrowUp' || e.key === 'ArrowLeft'
-      ? getBoundaryEnabledKey('prev')
-      : getBoundaryEnabledKey('next'));
+    const initialKey =
+      focusedKey ??
+      (e.key === "ArrowUp" || e.key === "ArrowLeft"
+        ? getBoundaryEnabledKey("prev")
+        : getBoundaryEnabledKey("next"));
     if (initialKey == null) return false;
 
     let nextKey: Key | null = null;
     switch (e.key) {
-      case 'ArrowDown':
-        nextKey = getGridKeyBelow(listbox, initialKey) ?? getBoundaryEnabledKey('next');
+      case "ArrowDown":
+        nextKey = getGridKeyBelow(listbox, initialKey) ?? getBoundaryEnabledKey("next");
         break;
-      case 'ArrowUp':
-        nextKey = getGridKeyAbove(listbox, initialKey) ?? getBoundaryEnabledKey('prev');
+      case "ArrowUp":
+        nextKey = getGridKeyAbove(listbox, initialKey) ?? getBoundaryEnabledKey("prev");
         break;
-      case 'ArrowRight':
-        nextKey = getGridKeyRightOf(initialKey) ?? (
-          resolveDirection() === 'rtl' ? getBoundaryEnabledKey('prev') : getBoundaryEnabledKey('next')
-        );
+      case "ArrowRight":
+        nextKey =
+          getGridKeyRightOf(initialKey) ??
+          (resolveDirection() === "rtl"
+            ? getBoundaryEnabledKey("prev")
+            : getBoundaryEnabledKey("next"));
         break;
-      case 'ArrowLeft':
-        nextKey = getGridKeyLeftOf(initialKey) ?? (
-          resolveDirection() === 'rtl' ? getBoundaryEnabledKey('next') : getBoundaryEnabledKey('prev')
-        );
+      case "ArrowLeft":
+        nextKey =
+          getGridKeyLeftOf(initialKey) ??
+          (resolveDirection() === "rtl"
+            ? getBoundaryEnabledKey("next")
+            : getBoundaryEnabledKey("prev"));
         break;
     }
 
     if (nextKey == null) return false;
 
     state.setFocusedKey(nextKey);
-    if (state.selectionMode() === 'single') {
+    if (state.selectionMode() === "single") {
       state.replaceSelection(nextKey);
     }
 
@@ -1862,25 +1873,31 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
   });
 
   const { isFocused, isFocusVisible, focusProps } = createFocusRing({ within: true });
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
   const renderValues = createMemo<ColorSwatchPickerRenderProps>(() => ({
     isFocused: state.isFocused() || isFocused(),
     isFocusVisible: isFocusVisible(),
     selectedColor: selectedColor(),
-    layout: local.layout ?? 'grid',
+    layout: local.layout ?? "grid",
   }));
 
   const renderProps = useRenderProps(
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorSwatchPicker',
+      defaultClassName: "solidaria-ColorSwatchPicker",
     },
-    renderValues
+    renderValues,
   );
 
   const cleanListBoxProps = () => {
-    const { ref: _ref, onKeyDown: _onKeyDown, ...restListBoxProps } = listBoxAria.listBoxProps as Record<string, unknown>;
+    const {
+      ref: _ref,
+      onKeyDown: _onKeyDown,
+      ...restListBoxProps
+    } = listBoxAria.listBoxProps as Record<string, unknown>;
     return restListBoxProps;
   };
   const cleanFocusProps = () => {
@@ -1897,12 +1914,14 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
       }}
     >
       <div
-        {...mergeProps(domProps(), cleanListBoxProps(), cleanFocusProps(), { onKeyDown: onColorSwatchPickerKeyDown })}
+        {...mergeProps(domProps(), cleanListBoxProps(), cleanFocusProps(), {
+          onKeyDown: onColorSwatchPickerKeyDown,
+        })}
         class={renderProps.class()}
         style={renderProps.style()}
         data-focused={state.isFocused() || undefined}
         data-focus-visible={isFocusVisible() || undefined}
-        data-layout={local.layout ?? 'grid'}
+        data-layout={local.layout ?? "grid"}
       >
         {local.children}
       </div>
@@ -1913,19 +1932,19 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps): JSX.Element {
 export function ColorSwatchPickerItem(props: ColorSwatchPickerItemProps): JSX.Element {
   const context = useContext(ColorSwatchPickerContextInternal);
   if (!context) {
-    throw new Error('ColorSwatchPickerItem must be used within a ColorSwatchPicker');
+    throw new Error("ColorSwatchPickerItem must be used within a ColorSwatchPicker");
   }
 
   const [local, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'color'],
-    ['isDisabled', 'aria-label']
+    ["children", "class", "style", "slot", "color"],
+    ["isDisabled", "aria-label"],
   );
 
   const color = createMemo(() => normalizeColor(local.color));
-  const key = createMemo(() => color().toString('hexa'));
+  const key = createMemo(() => color().toString("hexa"));
   const textValue = createMemo(() => {
-    const locale = globalThis.navigator?.language ?? 'en-US';
+    const locale = globalThis.navigator?.language ?? "en-US";
     return color().getColorName(locale);
   });
 
@@ -1944,9 +1963,9 @@ export function ColorSwatchPickerItem(props: ColorSwatchPickerItemProps): JSX.El
     () => ({
       key: key(),
       isDisabled: ariaProps.isDisabled,
-      'aria-label': ariaProps['aria-label'] ?? textValue(),
+      "aria-label": ariaProps["aria-label"] ?? textValue(),
     }),
-    context.state
+    context.state,
   );
 
   const renderValues = createMemo<ColorSwatchPickerItemRenderProps>(() => ({
@@ -1963,12 +1982,14 @@ export function ColorSwatchPickerItem(props: ColorSwatchPickerItemProps): JSX.El
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ColorSwatchPickerItem',
+      defaultClassName: "solidaria-ColorSwatchPickerItem",
     },
-    renderValues
+    renderValues,
   );
 
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
   const cleanOptionProps = () => {
     const { ref: _ref, ...restOptionProps } = optionAria.optionProps as Record<string, unknown>;
     return restOptionProps;

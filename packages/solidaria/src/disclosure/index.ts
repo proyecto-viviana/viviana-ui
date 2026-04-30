@@ -2,10 +2,10 @@ export {
   createDisclosure,
   type AriaDisclosureProps,
   type DisclosureAria,
-} from './createDisclosure';
+} from "./createDisclosure";
 
 export {
   createDisclosureGroup,
   type AriaDisclosureGroupProps,
   type DisclosureGroupAria,
-} from './createDisclosureGroup';
+} from "./createDisclosureGroup";

@@ -7,8 +7,8 @@
  * width distribution and clamping.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
-import type { Key } from '../collections/types';
+import { createSignal, createMemo, type Accessor } from "solid-js";
+import type { Key } from "../collections/types";
 
 // ============================================
 // TYPES
@@ -80,20 +80,20 @@ function parseColumnDef(col: ColumnResizeDefinition, tableWidth: number): Parsed
     return { key: col.key, fr: 1, fixedPx: 0, minWidth, maxWidth };
   }
 
-  if (typeof col.width === 'number') {
+  if (typeof col.width === "number") {
     return { key: col.key, fr: 0, fixedPx: col.width, minWidth, maxWidth };
   }
 
   const str = col.width.trim();
 
   // Fractional: '2fr', '1.5fr'
-  if (str.endsWith('fr')) {
+  if (str.endsWith("fr")) {
     const val = parseFloat(str);
     return { key: col.key, fr: isNaN(val) ? 1 : val, fixedPx: 0, minWidth, maxWidth };
   }
 
   // Percentage: '25%'
-  if (str.endsWith('%')) {
+  if (str.endsWith("%")) {
     const pct = parseFloat(str);
     const px = isNaN(pct) ? 0 : (pct / 100) * tableWidth;
     return { key: col.key, fr: 0, fixedPx: px, minWidth, maxWidth };
@@ -109,10 +109,7 @@ function parseColumnDef(col: ColumnResizeDefinition, tableWidth: number): Parsed
  *  1. Fixed-width columns get their declared width (clamped to min/max).
  *  2. Remaining space is distributed among fractional columns proportionally.
  */
-function distributeWidths(
-  columns: ColumnResizeDefinition[],
-  tableWidth: number,
-): Map<Key, number> {
+function distributeWidths(columns: ColumnResizeDefinition[], tableWidth: number): Map<Key, number> {
   const parsed = columns.map((c) => parseColumnDef(c, tableWidth));
 
   // Pass 1 — allocate fixed columns

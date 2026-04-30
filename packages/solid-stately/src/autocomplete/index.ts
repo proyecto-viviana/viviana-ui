@@ -2,4 +2,4 @@ export {
   createAutocompleteState,
   type AutocompleteState,
   type AutocompleteStateOptions,
-} from './createAutocompleteState'
+} from "./createAutocompleteState";

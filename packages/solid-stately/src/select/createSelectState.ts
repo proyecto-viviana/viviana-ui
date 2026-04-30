@@ -3,12 +3,12 @@
  * Based on @react-stately/select useSelectState.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
-import { createListState } from '../collections/createListState';
-import { createOverlayTriggerState } from '../overlays';
-import type { Key, CollectionNode, Collection } from '../collections/types';
-import type { SelectionMode, Selection } from '../collections/types';
+import { createSignal, createMemo, type Accessor } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
+import { createListState } from "../collections/createListState";
+import { createOverlayTriggerState } from "../overlays";
+import type { Key, CollectionNode, Collection } from "../collections/types";
+import type { SelectionMode, Selection } from "../collections/types";
 
 export interface SelectStateProps<T = unknown> {
   /** The items to display in the select. */
@@ -26,15 +26,15 @@ export interface SelectStateProps<T = unknown> {
   /** The default selected key (uncontrolled). */
   defaultSelectedKey?: Key | null;
   /** The selected keys (controlled, for multiple selection mode). */
-  selectedKeys?: 'all' | Iterable<Key>;
+  selectedKeys?: "all" | Iterable<Key>;
   /** Default selected keys (uncontrolled, for multiple selection mode). */
-  defaultSelectedKeys?: 'all' | Iterable<Key>;
+  defaultSelectedKeys?: "all" | Iterable<Key>;
   /** Handler called when the selection changes. */
   onSelectionChange?: (key: Key | null) => void;
   /** Handler called when selected keys change. */
   onSelectionChangeKeys?: (keys: Selection) => void;
   /** Selection mode for the select. */
-  selectionMode?: Extract<SelectionMode, 'single' | 'multiple'>;
+  selectionMode?: Extract<SelectionMode, "single" | "multiple">;
   /** Whether the select is open (controlled). */
   isOpen?: boolean;
   /** Whether the select is open by default (uncontrolled). */
@@ -85,7 +85,7 @@ export interface SelectState<T = unknown> {
   /** Whether the select is required. */
   readonly isRequired: boolean;
   /** The selection mode. */
-  readonly selectionMode: Accessor<'single' | 'multiple'>;
+  readonly selectionMode: Accessor<"single" | "multiple">;
 }
 
 /**
@@ -93,10 +93,10 @@ export interface SelectState<T = unknown> {
  * Combines list state with overlay trigger state for dropdown behavior.
  */
 export function createSelectState<T = unknown>(
-  props: MaybeAccessor<SelectStateProps<T>>
+  props: MaybeAccessor<SelectStateProps<T>>,
 ): SelectState<T> {
   const getProps = () => access(props);
-  const selectionMode: Accessor<'single' | 'multiple'> = () => getProps().selectionMode ?? 'single';
+  const selectionMode: Accessor<"single" | "multiple"> = () => getProps().selectionMode ?? "single";
 
   // Overlay trigger state for open/close
   const overlayState = createOverlayTriggerState({
@@ -115,18 +115,18 @@ export function createSelectState<T = unknown>(
   const isControlledSingle = () => getProps().selectedKey !== undefined;
   const isControlledMultiple = () => getProps().selectedKeys !== undefined;
   const [internalSelectedKey, setInternalSelectedKey] = createSignal<Key | null>(
-    getProps().defaultSelectedKey ?? null
+    getProps().defaultSelectedKey ?? null,
   );
   const [internalSelectedKeys, setInternalSelectedKeys] = createSignal<Selection>(
-    getProps().defaultSelectedKeys === 'all'
-      ? 'all'
-      : new Set(getProps().defaultSelectedKeys ?? [])
+    getProps().defaultSelectedKeys === "all"
+      ? "all"
+      : new Set(getProps().defaultSelectedKeys ?? []),
   );
 
   const selectedKey: Accessor<Key | null> = () => {
-    if (selectionMode() === 'multiple') {
+    if (selectionMode() === "multiple") {
       const keys = selectedKeys();
-      if (keys === 'all') return null;
+      if (keys === "all") return null;
       return keys.size > 0 ? Array.from(keys)[0] : null;
     }
 
@@ -134,7 +134,7 @@ export function createSelectState<T = unknown>(
   };
 
   const setSelectedKey = (key: Key | null) => {
-    if (selectionMode() === 'multiple') {
+    if (selectionMode() === "multiple") {
       if (key == null) {
         if (!isControlledMultiple()) {
           setInternalSelectedKeys(new Set<Key>());
@@ -160,10 +160,10 @@ export function createSelectState<T = unknown>(
   };
 
   const selectedKeys: Accessor<Selection> = createMemo(() => {
-    if (selectionMode() === 'multiple') {
+    if (selectionMode() === "multiple") {
       if (isControlledMultiple()) {
         const keys = getProps().selectedKeys;
-        return keys === 'all' ? 'all' : new Set<Key>(keys ?? []);
+        return keys === "all" ? "all" : new Set<Key>(keys ?? []);
       }
       return internalSelectedKeys();
     }
@@ -174,7 +174,7 @@ export function createSelectState<T = unknown>(
 
   const setSelectedKeys = (keys: Iterable<Key>) => {
     const next = new Set(keys);
-    if (selectionMode() === 'multiple') {
+    if (selectionMode() === "multiple") {
       if (!isControlledMultiple()) {
         setInternalSelectedKeys(next);
       }
@@ -210,23 +210,23 @@ export function createSelectState<T = unknown>(
     disallowEmptySelection: true,
     get selectedKeys() {
       const keys = selectedKeys();
-      if (keys === 'all') return 'all';
+      if (keys === "all") return "all";
       return keys;
     },
     onSelectionChange(keys) {
-      if (selectionMode() === 'multiple') {
+      if (selectionMode() === "multiple") {
         if (!isControlledMultiple()) {
           setInternalSelectedKeys(keys);
         }
         getProps().onSelectionChangeKeys?.(keys);
-        if (keys !== 'all') {
+        if (keys !== "all") {
           getProps().onSelectionChange?.(keys.size > 0 ? Array.from(keys)[0] : null);
         }
         return;
       }
 
       // Get the first (and only) selected key
-      if (keys === 'all') return;
+      if (keys === "all") return;
       const key = keys.size > 0 ? Array.from(keys)[0] : null;
       setSelectedKey(key);
       // Close the dropdown after selection in single mode
@@ -243,7 +243,7 @@ export function createSelectState<T = unknown>(
 
   const selectedItems: Accessor<CollectionNode<T>[]> = createMemo(() => {
     const keys = selectedKeys();
-    if (keys === 'all') {
+    if (keys === "all") {
       return Array.from(listState.collection());
     }
 

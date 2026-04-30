@@ -7,10 +7,10 @@
  * Port of react-aria's useVisuallyHidden.
  */
 
-import { type Accessor, type JSX, createMemo, createSignal } from 'solid-js';
-import { createFocusWithin } from '../interactions/createFocusWithin';
-import { access, type MaybeAccessor } from '../utils';
-import { mergeProps } from '../utils/mergeProps';
+import { type Accessor, type JSX, createMemo, createSignal } from "solid-js";
+import { createFocusWithin } from "../interactions/createFocusWithin";
+import { access, type MaybeAccessor } from "../utils";
+import { mergeProps } from "../utils/mergeProps";
 
 // ============================================
 // TYPES
@@ -37,16 +37,16 @@ export interface VisuallyHiddenAria {
  * These styles ensure the element is read by screen readers but not visible on screen.
  */
 export const visuallyHiddenStyles: JSX.CSSProperties = {
-  border: '0',
-  clip: 'rect(0 0 0 0)',
-  'clip-path': 'inset(50%)',
-  height: '1px',
-  margin: '-1px',
-  overflow: 'hidden',
-  padding: '0',
-  position: 'absolute',
-  width: '1px',
-  'white-space': 'nowrap',
+  border: "0",
+  clip: "rect(0 0 0 0)",
+  "clip-path": "inset(50%)",
+  height: "1px",
+  margin: "-1px",
+  overflow: "hidden",
+  padding: "0",
+  position: "absolute",
+  width: "1px",
+  "white-space": "nowrap",
 };
 
 // ============================================
@@ -87,7 +87,7 @@ export const visuallyHiddenStyles: JSX.CSSProperties = {
  * ```
  */
 export function createVisuallyHidden(
-  props: MaybeAccessor<AriaVisuallyHiddenProps> = {}
+  props: MaybeAccessor<AriaVisuallyHiddenProps> = {},
 ): VisuallyHiddenAria {
   const [isFocused, setIsFocused] = createSignal(false);
 
@@ -129,7 +129,7 @@ export function createVisuallyHidden(
             },
           }
         : {},
-      { style: combinedStyles() }
+      { style: combinedStyles() },
     ),
   }));
 

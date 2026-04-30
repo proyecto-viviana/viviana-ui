@@ -4,12 +4,12 @@
  * Provides accessibility props for items that can be dragged from a collection.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createMemo, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
 import type {
   DraggableCollectionState,
   DragPreviewRenderer,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   getTypes,
   writeToDataTransfer,
@@ -19,8 +19,8 @@ import {
   setGlobalAllowedDropOperations,
   setGlobalDropEffect,
   getGlobalDropEffect,
-} from './utils';
-import { setGlobalDraggingTypes } from './createDraggableCollection';
+} from "./utils";
+import { setGlobalDraggingTypes } from "./createDraggableCollection";
 
 export interface DraggableItemOptions {
   /** The unique key of the item. */
@@ -51,7 +51,7 @@ export interface DraggableItemAria {
  */
 export function createDraggableItem(
   options: Accessor<DraggableItemOptions>,
-  state: DraggableCollectionState
+  state: DraggableCollectionState,
 ): DraggableItemAria {
   const getOptions = createMemo(() => options());
 
@@ -103,15 +103,16 @@ export function createDraggableItem(
     }
 
     setGlobalAllowedDropOperations(allowed);
-    const effectAllowed = EFFECT_ALLOWED[allowed] || 'none';
+    const effectAllowed = EFFECT_ALLOWED[allowed] || "none";
     if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed =
-        (effectAllowed === 'cancel' ? 'none' : effectAllowed) as DataTransfer['effectAllowed'];
+      e.dataTransfer.effectAllowed = (
+        effectAllowed === "cancel" ? "none" : effectAllowed
+      ) as DataTransfer["effectAllowed"];
     }
 
     // Handle custom preview from item options or collection state.
     const preview = opts.preview ?? state.preview;
-    if (typeof preview?.current === 'function' && e.dataTransfer) {
+    if (typeof preview?.current === "function" && e.dataTransfer) {
       preview.current(items, (node, userX, userY) => {
         if (!node || !e.dataTransfer) return;
 
@@ -125,8 +126,8 @@ export function createDraggableItem(
           defaultY = size.height / 2;
         }
 
-        let offsetX = typeof userX === 'number' ? userX : defaultX;
-        let offsetY = typeof userY === 'number' ? userY : defaultY;
+        let offsetX = typeof userX === "number" ? userX : defaultX;
+        let offsetY = typeof userY === "number" ? userY : defaultY;
 
         offsetX = Math.max(0, Math.min(offsetX, size.width));
         offsetY = Math.max(0, Math.min(offsetY, size.height));
@@ -155,7 +156,7 @@ export function createDraggableItem(
   const onDragEnd = (e: DragEvent) => {
     e.stopPropagation();
 
-    let dropEffect: string = e.dataTransfer?.dropEffect ?? 'none';
+    let dropEffect: string = e.dataTransfer?.dropEffect ?? "none";
     // Chrome Android fix - use global drop effect
     if (getGlobalDropEffect()) {
       dropEffect = getGlobalDropEffect()!;
@@ -172,14 +173,14 @@ export function createDraggableItem(
 
   // Keyboard/screen reader drag initiation
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' && e.target === e.currentTarget) {
+    if (e.key === "Enter" && e.target === e.currentTarget) {
       e.preventDefault();
       e.stopPropagation();
     }
   };
 
   const onKeyUp = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' && e.target === e.currentTarget) {
+    if (e.key === "Enter" && e.target === e.currentTarget) {
       e.preventDefault();
       e.stopPropagation();
 
@@ -238,8 +239,8 @@ export function createDraggableItem(
     }
 
     return {
-      type: 'button' as const,
-      'aria-label': 'Drag',
+      type: "button" as const,
+      "aria-label": "Drag",
       onKeyDown,
       onKeyUp,
     };
@@ -247,10 +248,10 @@ export function createDraggableItem(
 
   return {
     get dragProps() {
-      return dragProps() as DraggableItemAria['dragProps'];
+      return dragProps() as DraggableItemAria["dragProps"];
     },
     get dragButtonProps() {
-      return dragButtonProps() as DraggableItemAria['dragButtonProps'];
+      return dragButtonProps() as DraggableItemAria["dragButtonProps"];
     },
     get isDragging() {
       return isDragging();

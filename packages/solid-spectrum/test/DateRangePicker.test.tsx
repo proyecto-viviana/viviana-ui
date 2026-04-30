@@ -1,72 +1,69 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@solidjs/testing-library';
-import { DateRangePicker } from '../src/calendar/DateRangePicker';
+import { describe, it, expect } from "vitest";
+import { render, screen, waitFor, fireEvent } from "@solidjs/testing-library";
+import { DateRangePicker } from "../src/calendar/DateRangePicker";
 
 async function waitForHydration() {
   await waitFor(() => {
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    expect(screen.getByRole("button")).toBeInTheDocument();
   });
 }
 
-describe('DateRangePicker (solid-spectrum)', () => {
-  describe('basic rendering', () => {
-    it('renders start and end date display fields', async () => {
+describe("DateRangePicker (solid-spectrum)", () => {
+  describe("basic rendering", () => {
+    it("renders start and end date display fields", async () => {
       const { container } = render(() => <DateRangePicker aria-label="Date range" />);
       await waitForHydration();
-      expect(container.textContent).toContain('Start date');
-      expect(container.textContent).toContain('End date');
+      expect(container.textContent).toContain("Start date");
+      expect(container.textContent).toContain("End date");
     });
 
-    it('renders range separator', async () => {
+    it("renders range separator", async () => {
       const { container } = render(() => <DateRangePicker aria-label="Date range" />);
       await waitForHydration();
-      expect(container.textContent).toContain('–');
+      expect(container.textContent).toContain("–");
     });
 
-    it('renders calendar trigger button', async () => {
+    it("renders calendar trigger button", async () => {
       render(() => <DateRangePicker aria-label="Date range" />);
       await waitForHydration();
-      expect(screen.getByRole('button')).toBeInTheDocument();
+      expect(screen.getByRole("button")).toBeInTheDocument();
     });
 
-    it('button contains calendar SVG icon', async () => {
+    it("button contains calendar SVG icon", async () => {
       render(() => <DateRangePicker aria-label="Date range" />);
       await waitForHydration();
-      const button = screen.getByRole('button');
-      expect(button.querySelector('svg')).toBeInTheDocument();
+      const button = screen.getByRole("button");
+      expect(button.querySelector("svg")).toBeInTheDocument();
     });
 
-    it('applies semantic labels to start/end fields', async () => {
+    it("applies semantic labels to start/end fields", async () => {
       render(() => <DateRangePicker aria-label="Date range" />);
       await waitForHydration();
 
-      expect(screen.getByLabelText('Start date')).toBeInTheDocument();
-      expect(screen.getByLabelText('End date')).toBeInTheDocument();
+      expect(screen.getByLabelText("Start date")).toBeInTheDocument();
+      expect(screen.getByLabelText("End date")).toBeInTheDocument();
     });
   });
 
-  describe('label/description/error', () => {
-    it('renders label', async () => {
+  describe("label/description/error", () => {
+    it("renders label", async () => {
       render(() => <DateRangePicker label="Trip dates" />);
       await waitForHydration();
-      expect(screen.getByText('Trip dates')).toBeInTheDocument();
+      expect(screen.getByText("Trip dates")).toBeInTheDocument();
     });
 
-    it('renders description', async () => {
+    it("renders description", async () => {
       render(() => (
-        <DateRangePicker
-          aria-label="Date range"
-          description="Select your travel dates"
-        />
+        <DateRangePicker aria-label="Date range" description="Select your travel dates" />
       ));
       await waitForHydration();
-      expect(screen.getByText('Select your travel dates')).toBeInTheDocument();
+      expect(screen.getByText("Select your travel dates")).toBeInTheDocument();
     });
 
-    it('renders error message when invalid', async () => {
+    it("renders error message when invalid", async () => {
       render(() => (
         <DateRangePicker
           aria-label="Date range"
@@ -75,79 +72,66 @@ describe('DateRangePicker (solid-spectrum)', () => {
         />
       ));
       await waitForHydration();
-      expect(screen.getByText('End date must be after start date')).toBeInTheDocument();
+      expect(screen.getByText("End date must be after start date")).toBeInTheDocument();
     });
 
-    it('shows required indicator', async () => {
-      render(() => (
-        <DateRangePicker
-          label="Trip dates"
-          isRequired
-        />
-      ));
+    it("shows required indicator", async () => {
+      render(() => <DateRangePicker label="Trip dates" isRequired />);
       await waitForHydration();
-      expect(screen.getByText('*')).toBeInTheDocument();
+      expect(screen.getByText("*")).toBeInTheDocument();
     });
   });
 
-  describe('size variants', () => {
-    it('applies sm size styles', async () => {
-      const { container } = render(() => (
-        <DateRangePicker aria-label="Date range" size="sm" />
-      ));
+  describe("size variants", () => {
+    it("applies sm size styles", async () => {
+      const { container } = render(() => <DateRangePicker aria-label="Date range" size="sm" />);
       await waitForHydration();
-      expect(container.firstElementChild!.className).toContain('text-sm');
+      expect(container.firstElementChild!.className).toContain("text-sm");
     });
 
-    it('applies md size by default', async () => {
-      const { container } = render(() => (
-        <DateRangePicker aria-label="Date range" />
-      ));
+    it("applies md size by default", async () => {
+      const { container } = render(() => <DateRangePicker aria-label="Date range" />);
       await waitForHydration();
-      expect(container.firstElementChild!.className).toContain('text-base');
+      expect(container.firstElementChild!.className).toContain("text-base");
     });
 
-    it('applies lg size styles', async () => {
-      const { container } = render(() => (
-        <DateRangePicker aria-label="Date range" size="lg" />
-      ));
+    it("applies lg size styles", async () => {
+      const { container } = render(() => <DateRangePicker aria-label="Date range" size="lg" />);
       await waitForHydration();
-      expect(container.firstElementChild!.className).toContain('text-lg');
+      expect(container.firstElementChild!.className).toContain("text-lg");
     });
   });
 
-  describe('states', () => {
-    it('renders disabled state', async () => {
+  describe("states", () => {
+    it("renders disabled state", async () => {
       render(() => <DateRangePicker aria-label="Date range" isDisabled />);
       await waitForHydration();
-      const button = screen.getByRole('button');
-      expect(button.className).toContain('cursor-not-allowed');
+      const button = screen.getByRole("button");
+      expect(button.className).toContain("cursor-not-allowed");
     });
 
-    it('opens popup from start field keyboard interaction', async () => {
+    it("opens popup from start field keyboard interaction", async () => {
       render(() => <DateRangePicker aria-label="Date range" />);
       await waitForHydration();
 
-      const startField = screen.getByLabelText('Start date');
+      const startField = screen.getByLabelText("Start date");
       startField.focus();
-      fireEvent.keyDown(startField, { key: 'Enter' });
+      fireEvent.keyDown(startField, { key: "Enter" });
 
       await waitFor(() => {
-        expect(screen.getByRole('dialog', { name: 'Range calendar' })).toBeInTheDocument();
+        expect(screen.getByRole("dialog", { name: "Range calendar" })).toBeInTheDocument();
       });
     });
   });
 
-  describe('accessibility', () => {
-    it('has a group role container', async () => {
-      const { container } = render(() => (
-        <DateRangePicker aria-label="Date range" />
-      ));
+  describe("accessibility", () => {
+    it("has a group role container", async () => {
+      const { container } = render(() => <DateRangePicker aria-label="Date range" />);
       await waitForHydration();
       expect(container.querySelector('[role="group"]')).toBeInTheDocument();
     });
 
-    it('links description and error ids via aria-describedby', async () => {
+    it("links description and error ids via aria-describedby", async () => {
       render(() => (
         <DateRangePicker
           label="Trip dates"
@@ -158,12 +142,12 @@ describe('DateRangePicker (solid-spectrum)', () => {
       ));
       await waitForHydration();
 
-      const group = screen.getByRole('group', { name: 'Trip dates' });
-      const describedby = group.getAttribute('aria-describedby') ?? '';
-      const error = screen.getByText('Invalid range');
+      const group = screen.getByRole("group", { name: "Trip dates" });
+      const describedby = group.getAttribute("aria-describedby") ?? "";
+      const error = screen.getByText("Invalid range");
 
       expect(error.id).toBeTruthy();
-      expect(describedby.split(' ')).toContain(error.id);
+      expect(describedby.split(" ")).toContain(error.id);
     });
   });
 });

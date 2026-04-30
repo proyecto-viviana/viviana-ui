@@ -9,20 +9,16 @@ import type {
   FileDropItem,
   DirectoryDropItem,
   DropOperation,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 
 // Native drag types that can be transferred between applications
-export const NATIVE_DRAG_TYPES: Set<string> = new Set([
-  'text/plain',
-  'text/uri-list',
-  'text/html',
-]);
+export const NATIVE_DRAG_TYPES: Set<string> = new Set(["text/plain", "text/uri-list", "text/html"]);
 
 // Custom drag type for serializing multiple items
-export const CUSTOM_DRAG_TYPE = 'application/vnd.solidaria.items+json';
+export const CUSTOM_DRAG_TYPE = "application/vnd.solidaria.items+json";
 
 // Generic type for unknown file types
-export const GENERIC_TYPE = 'application/octet-stream';
+export const GENERIC_TYPE = "application/octet-stream";
 
 // Drop operation bit flags
 export enum DROP_OPERATION {
@@ -49,30 +45,30 @@ export const DROP_OPERATION_ALLOWED: Record<string, number> = {
 
 // Map from DROP_OPERATION to effectAllowed
 export const EFFECT_ALLOWED: Record<number, string> = {
-  [DROP_OPERATION.none]: 'none',
-  [DROP_OPERATION.move]: 'move',
-  [DROP_OPERATION.copy]: 'copy',
-  [DROP_OPERATION.copy | DROP_OPERATION.move]: 'copyMove',
-  [DROP_OPERATION.link]: 'link',
-  [DROP_OPERATION.link | DROP_OPERATION.move]: 'linkMove',
-  [DROP_OPERATION.copy | DROP_OPERATION.link]: 'copyLink',
-  [DROP_OPERATION.all]: 'all',
+  [DROP_OPERATION.none]: "none",
+  [DROP_OPERATION.move]: "move",
+  [DROP_OPERATION.copy]: "copy",
+  [DROP_OPERATION.copy | DROP_OPERATION.move]: "copyMove",
+  [DROP_OPERATION.link]: "link",
+  [DROP_OPERATION.link | DROP_OPERATION.move]: "linkMove",
+  [DROP_OPERATION.copy | DROP_OPERATION.link]: "copyLink",
+  [DROP_OPERATION.all]: "all",
 };
 
 // Map from dropEffect to DropOperation
 export const DROP_EFFECT_TO_DROP_OPERATION: Record<string, DropOperation> = {
-  none: 'cancel',
-  link: 'link',
-  copy: 'copy',
-  move: 'move',
+  none: "cancel",
+  link: "link",
+  copy: "copy",
+  move: "move",
 };
 
 // Map from DropOperation to dropEffect
 export const DROP_OPERATION_TO_DROP_EFFECT: Record<DropOperation, string> = {
-  cancel: 'none',
-  link: 'link',
-  copy: 'copy',
-  move: 'move',
+  cancel: "none",
+  link: "link",
+  copy: "copy",
+  move: "move",
 };
 
 /**
@@ -91,10 +87,7 @@ export function getTypes(items: DragItem[]): Set<string> {
 /**
  * Write drag items to a DataTransfer object.
  */
-export function writeToDataTransfer(
-  dataTransfer: DataTransfer,
-  items: DragItem[]
-): void {
+export function writeToDataTransfer(dataTransfer: DataTransfer, items: DragItem[]): void {
   const groupedByType = new Map<string, string[]>();
   let needsCustomData = false;
   const customData: object[] = [];
@@ -126,7 +119,7 @@ export function writeToDataTransfer(
   for (const [type, typeItems] of groupedByType) {
     if (NATIVE_DRAG_TYPES.has(type)) {
       // Join all items of this type with newlines
-      const data = typeItems.join('\n');
+      const data = typeItems.join("\n");
       dataTransfer.items.add(data, type);
     } else {
       // Set first item for non-native types
@@ -158,7 +151,7 @@ export function readFromDataTransfer(dataTransfer: DataTransfer): DropItem[] {
       const parsed = JSON.parse(data);
       for (const item of parsed) {
         items.push({
-          kind: 'text',
+          kind: "text",
           types: new Set(Object.keys(item)),
           getText: (type) => Promise.resolve(item[type]),
         });
@@ -174,10 +167,10 @@ export function readFromDataTransfer(dataTransfer: DataTransfer): DropItem[] {
     const stringItems = new Map<string, string>();
 
     for (const item of dataTransfer.items) {
-      if (item.kind === 'string') {
+      if (item.kind === "string") {
         const type = item.type || GENERIC_TYPE;
         stringItems.set(type, dataTransfer.getData(item.type));
-      } else if (item.kind === 'file') {
+      } else if (item.kind === "file") {
         const file = item.getAsFile();
         if (file) {
           items.push(createFileItem(file));
@@ -187,9 +180,9 @@ export function readFromDataTransfer(dataTransfer: DataTransfer): DropItem[] {
 
     if (stringItems.size > 0) {
       items.push({
-        kind: 'text',
+        kind: "text",
         types: new Set(stringItems.keys()),
-        getText: (type) => Promise.resolve(stringItems.get(type) ?? ''),
+        getText: (type) => Promise.resolve(stringItems.get(type) ?? ""),
       });
     }
   }
@@ -202,7 +195,7 @@ export function readFromDataTransfer(dataTransfer: DataTransfer): DropItem[] {
  */
 function createFileItem(file: File): FileDropItem {
   return {
-    kind: 'file',
+    kind: "file",
     type: file.type || GENERIC_TYPE,
     name: file.name,
     getText: () => file.text(),
@@ -223,7 +216,7 @@ export class DragTypesImpl {
 
     for (const item of dataTransfer.items) {
       if (item.type !== CUSTOM_DRAG_TYPE) {
-        if (item.kind === 'file') {
+        if (item.kind === "file") {
           hasFiles = true;
         }
         if (item.type) {
@@ -235,18 +228,14 @@ export class DragTypesImpl {
     }
 
     // Safari doesn't expose file types until drop
-    this.includesUnknownTypes =
-      !hasFiles && dataTransfer.types.includes('Files');
+    this.includesUnknownTypes = !hasFiles && dataTransfer.types.includes("Files");
   }
 
   has(type: string | symbol): boolean {
-    if (
-      this.includesUnknownTypes ||
-      (typeof type === 'symbol' && this.types.has(GENERIC_TYPE))
-    ) {
+    if (this.includesUnknownTypes || (typeof type === "symbol" && this.types.has(GENERIC_TYPE))) {
       return true;
     }
-    return typeof type === 'string' && this.types.has(type);
+    return typeof type === "string" && this.types.has(type);
   }
 }
 
@@ -254,23 +243,21 @@ export class DragTypesImpl {
  * Check if a drop item is a text item.
  */
 export function isTextDropItem(dropItem: DropItem): dropItem is TextDropItem {
-  return dropItem.kind === 'text';
+  return dropItem.kind === "text";
 }
 
 /**
  * Check if a drop item is a file item.
  */
 export function isFileDropItem(dropItem: DropItem): dropItem is FileDropItem {
-  return dropItem.kind === 'file';
+  return dropItem.kind === "file";
 }
 
 /**
  * Check if a drop item is a directory item.
  */
-export function isDirectoryDropItem(
-  dropItem: DropItem
-): dropItem is DirectoryDropItem {
-  return dropItem.kind === 'directory';
+export function isDirectoryDropItem(dropItem: DropItem): dropItem is DirectoryDropItem {
+  return dropItem.kind === "directory";
 }
 
 // Global state for tracking drag operations

@@ -1,10 +1,10 @@
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
-type Framework = 'React Spectrum stack' | 'Solidaria stack';
+type Framework = "React Spectrum stack" | "Solidaria stack";
 
 async function styledSection(page: Page) {
-  const section = page.locator('#playground').filter({
-    has: page.getByRole('heading', { name: 'Playground' }),
+  const section = page.locator("#playground").filter({
+    has: page.getByRole("heading", { name: "Playground" }),
   });
   await expect(section).toHaveCount(1);
   await section.scrollIntoViewIfNeeded();
@@ -12,95 +12,95 @@ async function styledSection(page: Page) {
 }
 
 async function frameworkCard(section: Locator, framework: Framework) {
-  const card = section.locator('.framework-card').filter({ hasText: framework });
+  const card = section.locator(".framework-card").filter({ hasText: framework });
   await expect(card).toHaveCount(1);
   return card;
 }
 
-async function buttonFamilyCards(page: Page, slug: string, query = '') {
+async function buttonFamilyCards(page: Page, slug: string, query = "") {
   await page.goto(`/components/${slug}/${query}`);
-  await page.waitForLoadState('networkidle');
-  await expect(page.locator('astro-island')).toHaveCount(0);
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("astro-island")).toHaveCount(0);
 
   const section = await styledSection(page);
   return {
-    react: await frameworkCard(section, 'React Spectrum stack'),
-    solid: await frameworkCard(section, 'Solidaria stack'),
+    react: await frameworkCard(section, "React Spectrum stack"),
+    solid: await frameworkCard(section, "Solidaria stack"),
   };
 }
 
-test.describe('comparison button-family behavior contracts', () => {
-  test('Button presses update both reference roots', async ({ page }) => {
-    const cards = await buttonFamilyCards(page, 'button');
+test.describe("comparison button-family behavior contracts", () => {
+  test("Button presses update both reference roots", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "button");
 
     for (const card of [cards.react, cards.solid]) {
-      const root = card.locator('[data-comparison-action-count]').first();
-      await expect(root).toHaveAttribute('data-comparison-action-count', '0');
-      await card.getByRole('button', { name: 'Save' }).click();
-      await expect(root).toHaveAttribute('data-comparison-action-count', '1');
+      const root = card.locator("[data-comparison-action-count]").first();
+      await expect(root).toHaveAttribute("data-comparison-action-count", "0");
+      await card.getByRole("button", { name: "Save" }).click();
+      await expect(root).toHaveAttribute("data-comparison-action-count", "1");
     }
   });
 
-  test('Button pending remains focusable and suppresses press actions', async ({ page }) => {
-    const cards = await buttonFamilyCards(page, 'button', '?isPending=true');
+  test("Button pending remains focusable and suppresses press actions", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "button", "?isPending=true");
 
     for (const card of [cards.react, cards.solid]) {
-      const root = card.locator('[data-comparison-action-count]').first();
-      const button = card.getByRole('button', { name: 'Save' });
-      await expect(root).toHaveAttribute('data-comparison-action-count', '0');
+      const root = card.locator("[data-comparison-action-count]").first();
+      const button = card.getByRole("button", { name: "Save" });
+      await expect(root).toHaveAttribute("data-comparison-action-count", "0");
       await button.focus();
       await expect(button).toBeFocused();
       await button.click({ force: true });
-      await expect(root).toHaveAttribute('data-comparison-action-count', '0');
+      await expect(root).toHaveAttribute("data-comparison-action-count", "0");
     }
   });
 
-  test('ActionButton presses update both reference roots', async ({ page }) => {
-    const cards = await buttonFamilyCards(page, 'actionbutton');
+  test("ActionButton presses update both reference roots", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "actionbutton");
 
     for (const card of [cards.react, cards.solid]) {
-      const root = card.locator('[data-comparison-action-count]').first();
-      await expect(root).toHaveAttribute('data-comparison-action-count', '0');
-      await card.getByRole('button', { name: 'Inspect' }).click();
-      await expect(root).toHaveAttribute('data-comparison-action-count', '1');
+      const root = card.locator("[data-comparison-action-count]").first();
+      await expect(root).toHaveAttribute("data-comparison-action-count", "0");
+      await card.getByRole("button", { name: "Inspect" }).click();
+      await expect(root).toHaveAttribute("data-comparison-action-count", "1");
     }
   });
 
-  test('ActionButtonGroup action callbacks update both stacks', async ({ page }) => {
-    const cards = await buttonFamilyCards(page, 'actionbuttongroup');
+  test("ActionButtonGroup action callbacks update both stacks", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "actionbuttongroup");
 
     for (const card of [cards.react, cards.solid]) {
-      const root = card.locator('[data-comparison-selected-keys]').first();
-      await expect(root).toHaveAttribute('data-comparison-selected-keys', 'bold');
-      await card.getByRole('button', { name: 'Italic' }).click();
-      await expect(root).toHaveAttribute('data-comparison-selected-keys', 'italic');
-      await expect(root).toHaveAttribute('data-comparison-action-key', 'italic');
+      const root = card.locator("[data-comparison-selected-keys]").first();
+      await expect(root).toHaveAttribute("data-comparison-selected-keys", "bold");
+      await card.getByRole("button", { name: "Italic" }).click();
+      await expect(root).toHaveAttribute("data-comparison-selected-keys", "italic");
+      await expect(root).toHaveAttribute("data-comparison-action-key", "italic");
     }
   });
 
-  test('ButtonGroup buttons fire grouped actions on both stacks', async ({ page }) => {
-    const cards = await buttonFamilyCards(page, 'buttongroup');
+  test("ButtonGroup buttons fire grouped actions on both stacks", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "buttongroup");
 
     for (const card of [cards.react, cards.solid]) {
-      const root = card.locator('[data-comparison-action-key]').first();
-      await expect(root).toHaveAttribute('data-comparison-action-key', '');
-      await card.getByRole('button', { name: 'Save' }).click();
-      await expect(root).toHaveAttribute('data-comparison-action-key', 'save');
-      await card.getByRole('button', { name: 'Cancel' }).click();
-      await expect(root).toHaveAttribute('data-comparison-action-key', 'cancel');
+      const root = card.locator("[data-comparison-action-key]").first();
+      await expect(root).toHaveAttribute("data-comparison-action-key", "");
+      await card.getByRole("button", { name: "Save" }).click();
+      await expect(root).toHaveAttribute("data-comparison-action-key", "save");
+      await card.getByRole("button", { name: "Cancel" }).click();
+      await expect(root).toHaveAttribute("data-comparison-action-key", "cancel");
     }
   });
 
-  test('ToggleButton toggles selected state on both stacks', async ({ page }) => {
-    const cards = await buttonFamilyCards(page, 'togglebutton');
+  test("ToggleButton toggles selected state on both stacks", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "togglebutton");
 
     for (const card of [cards.react, cards.solid]) {
-      const root = card.locator('[data-comparison-selected]').first();
-      await expect(root).toHaveAttribute('data-comparison-selected', 'false');
-      await card.getByRole('button', { name: 'Pin' }).click();
-      await expect(root).toHaveAttribute('data-comparison-selected', 'true');
-      await card.getByRole('button', { name: 'Pin' }).click();
-      await expect(root).toHaveAttribute('data-comparison-selected', 'false');
+      const root = card.locator("[data-comparison-selected]").first();
+      await expect(root).toHaveAttribute("data-comparison-selected", "false");
+      await card.getByRole("button", { name: "Pin" }).click();
+      await expect(root).toHaveAttribute("data-comparison-selected", "true");
+      await card.getByRole("button", { name: "Pin" }).click();
+      await expect(root).toHaveAttribute("data-comparison-selected", "false");
     }
   });
 });

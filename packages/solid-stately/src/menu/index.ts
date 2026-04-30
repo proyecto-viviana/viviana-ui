@@ -12,8 +12,6 @@ export {
   type MenuState,
   type MenuTriggerStateProps,
   type MenuTriggerState,
-} from '../collections/createMenuState';
+} from "../collections/createMenuState";
 
-export {
-  createMenuTriggerState as useMenuTriggerState,
-} from '../collections/createMenuState';
+export { createMenuTriggerState as useMenuTriggerState } from "../collections/createMenuState";

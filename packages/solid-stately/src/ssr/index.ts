@@ -5,8 +5,8 @@
  * These utilities provide a consistent API matching React-Stately's patterns.
  */
 
-import { createUniqueId } from 'solid-js';
-import { isServer as _isServer } from 'solid-js/web';
+import { createUniqueId } from "solid-js";
+import { isServer as _isServer } from "solid-js/web";
 
 /**
  * Re-export isServer from solid-js/web for convenience.

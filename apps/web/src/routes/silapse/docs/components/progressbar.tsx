@@ -42,16 +42,9 @@ function ProgressBarPage() {
 <Button onPress={simulateUpload}>Start Upload</Button>`}
       >
         <div class="space-y-4 max-w-md">
-          <ProgressBar
-            label="Uploading files..."
-            value={Math.min(uploadProgress(), 100)}
-          />
+          <ProgressBar label="Uploading files..." value={Math.min(uploadProgress(), 100)} />
           <div class="flex items-center gap-3">
-            <Button
-              variant="primary"
-              onPress={simulateUpload}
-              isDisabled={isUploading()}
-            >
+            <Button variant="primary" onPress={simulateUpload} isDisabled={isUploading()}>
               {isUploading() ? "Uploading..." : "Start Upload"}
             </Button>
             {uploadProgress() >= 100 && (
@@ -115,22 +108,9 @@ function ProgressBarPage() {
 <ProgressBar label="Clean progress" value={65} showValueLabel={false} />`}
       >
         <div class="space-y-4 max-w-md">
-          <ProgressBar
-            label="Storage"
-            value={75}
-            valueLabel="750 MB of 1 GB"
-          />
-          <ProgressBar
-            label="Disk usage"
-            value={90}
-            valueLabel="9 / 10 TB"
-            variant="danger"
-          />
-          <ProgressBar
-            label="Clean progress (no value label)"
-            value={65}
-            showValueLabel={false}
-          />
+          <ProgressBar label="Storage" value={75} valueLabel="750 MB of 1 GB" />
+          <ProgressBar label="Disk usage" value={90} valueLabel="9 / 10 TB" variant="danger" />
+          <ProgressBar label="Clean progress (no value label)" value={65} showValueLabel={false} />
         </div>
       </Example>
 
@@ -148,13 +128,7 @@ function ProgressBarPage() {
             maxValue={212}
             valueLabel="72 F"
           />
-          <ProgressBar
-            label="Volume"
-            value={7}
-            minValue={0}
-            maxValue={11}
-            valueLabel="7 / 11"
-          />
+          <ProgressBar label="Volume" value={7} minValue={0} maxValue={11} valueLabel="7 / 11" />
         </div>
       </Example>
 
@@ -222,7 +196,8 @@ function ProgressBarPage() {
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
           <li>
-            Uses <code>role="progressbar"</code> with <code>aria-valuenow</code>, <code>aria-valuemin</code>, and <code>aria-valuemax</code>
+            Uses <code>role="progressbar"</code> with <code>aria-valuenow</code>,{" "}
+            <code>aria-valuemin</code>, and <code>aria-valuemax</code>
           </li>
           <li>
             Label is linked via <code>aria-labelledby</code> for screen readers

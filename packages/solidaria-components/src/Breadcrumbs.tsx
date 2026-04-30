@@ -13,8 +13,8 @@ import {
   splitProps,
   useContext,
   For,
-} from 'solid-js';
-import { Dynamic } from 'solid-js/web';
+} from "solid-js";
+import { Dynamic } from "solid-js/web";
 import {
   createBreadcrumbs,
   createBreadcrumbItem,
@@ -24,7 +24,7 @@ import {
   type AriaBreadcrumbsProps,
   type AriaBreadcrumbItemProps,
   type PressEvent,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -32,7 +32,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -43,7 +43,7 @@ export interface BreadcrumbsRenderProps {
   isDisabled: boolean;
 }
 
-export interface BreadcrumbsProps<T> extends Omit<AriaBreadcrumbsProps, 'isDisabled'>, SlotProps {
+export interface BreadcrumbsProps<T> extends Omit<AriaBreadcrumbsProps, "isDisabled">, SlotProps {
   /** The items to render in the breadcrumbs. */
   items?: T[];
   /** Function to get the key from an item. */
@@ -75,7 +75,8 @@ export interface BreadcrumbItemRenderProps {
   isHovered: boolean;
 }
 
-export interface BreadcrumbItemProps extends Omit<AriaBreadcrumbItemProps, 'isDisabled'>, SlotProps {
+export interface BreadcrumbItemProps
+  extends Omit<AriaBreadcrumbItemProps, "isDisabled">, SlotProps {
   /** The children of the breadcrumb item. */
   children?: RenderChildren<BreadcrumbItemRenderProps>;
   /** The CSS className for the element. */
@@ -119,8 +120,8 @@ function defaultItemKey(item: unknown, index: number): string | number {
 export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
   const [local, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'items', 'getKey', 'isDisabled', 'onAction'],
-    ['aria-label', 'aria-labelledby', 'aria-describedby']
+    ["children", "class", "style", "slot", "items", "getKey", "isDisabled", "onAction"],
+    ["aria-label", "aria-labelledby", "aria-describedby"],
   );
 
   const isDisabled = () => local.isDisabled ?? false;
@@ -130,14 +131,14 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
 
   // Create breadcrumbs aria props
   const { navProps } = createBreadcrumbs({
-    get 'aria-label'() {
-      return ariaProps['aria-label'];
+    get "aria-label"() {
+      return ariaProps["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return ariaProps['aria-labelledby'];
+    get "aria-labelledby"() {
+      return ariaProps["aria-labelledby"];
     },
-    get 'aria-describedby'() {
-      return ariaProps['aria-describedby'];
+    get "aria-describedby"() {
+      return ariaProps["aria-describedby"];
     },
     get isDisabled() {
       return isDisabled();
@@ -154,13 +155,15 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Breadcrumbs',
+      defaultClassName: "solidaria-Breadcrumbs",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   return (
     <BreadcrumbsContext.Provider value={{ isDisabled, onAction: local.onAction }}>
@@ -171,14 +174,22 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
         style={renderProps.style()}
         data-disabled={isDisabled() || undefined}
       >
-        <ol style={{ display: 'flex', 'align-items': 'center', 'list-style': 'none', margin: 0, padding: 0 }}>
+        <ol
+          style={{
+            display: "flex",
+            "align-items": "center",
+            "list-style": "none",
+            margin: 0,
+            padding: 0,
+          }}
+        >
           <For each={items()}>
             {(item, index) => {
               const itemKey = getItemKey(item, index());
               const isLast = () => index() === items().length - 1;
 
               return (
-                <li style={{ display: 'flex', 'align-items': 'center' }}>
+                <li style={{ display: "flex", "align-items": "center" }}>
                   <BreadcrumbItemContext.Provider value={{ itemKey, isLast }}>
                     {props.children(item)}
                   </BreadcrumbItemContext.Provider>
@@ -196,12 +207,7 @@ export function Breadcrumbs<T>(props: BreadcrumbsProps<T>): JSX.Element {
  * A BreadcrumbItem represents an individual breadcrumb in the navigation trail.
  */
 export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
-  const [local, ariaProps] = splitProps(props, [
-    'class',
-    'style',
-    'slot',
-    'isDisabled',
-  ]);
+  const [local, ariaProps] = splitProps(props, ["class", "style", "slot", "isDisabled"]);
 
   // Get context
   const context = useContext(BreadcrumbsContext);
@@ -271,17 +277,17 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     get autoFocus() {
       return ariaProps.autoFocus;
     },
-    get 'aria-label'() {
-      return ariaProps['aria-label'];
+    get "aria-label"() {
+      return ariaProps["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return ariaProps['aria-labelledby'];
+    get "aria-labelledby"() {
+      return ariaProps["aria-labelledby"];
     },
-    get 'aria-describedby'() {
-      return ariaProps['aria-describedby'];
+    get "aria-describedby"() {
+      return ariaProps["aria-describedby"];
     },
-    get 'aria-current'() {
-      return ariaProps['aria-current'];
+    get "aria-current"() {
+      return ariaProps["aria-current"];
     },
   });
 
@@ -295,10 +301,10 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
     mergeProps(
       itemProps as Record<string, unknown>,
       focusProps as Record<string, unknown>,
-      hoverProps as Record<string, unknown>
-    )
+      hoverProps as Record<string, unknown>,
+    ),
   );
-  const elementType = () => ariaProps.elementType ?? 'a';
+  const elementType = () => ariaProps.elementType ?? "a";
 
   // Render props values
   const renderValues = createMemo<BreadcrumbItemRenderProps>(() => ({
@@ -316,15 +322,15 @@ export function BreadcrumbItem(props: BreadcrumbItemProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-BreadcrumbItem',
+      defaultClassName: "solidaria-BreadcrumbItem",
     },
-    renderValues
+    renderValues,
   );
 
   // Merge inline flex styles with user styles
   const mergedStyle = () => {
     const userStyle = renderProps.style();
-    const baseStyle = { display: 'inline-flex', 'align-items': 'center' };
+    const baseStyle = { display: "inline-flex", "align-items": "center" };
     return userStyle ? { ...baseStyle, ...userStyle } : baseStyle;
   };
 

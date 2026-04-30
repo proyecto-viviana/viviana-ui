@@ -3,8 +3,8 @@
  * Based on @react-aria/table types.
  */
 
-import type { JSX } from 'solid-js';
-import type { Key, GridNode } from '@proyecto-viviana/solid-stately';
+import type { JSX } from "solid-js";
+import type { Key, GridNode } from "@proyecto-viviana/solid-stately";
 
 /**
  * Props for the createTable hook.
@@ -13,11 +13,11 @@ export interface AriaTableProps {
   /** ID for the table element. */
   id?: string;
   /** ARIA label for the table. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ARIA labelledby for the table. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ARIA describedby for the table. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the table uses virtual scrolling. */
   isVirtualized?: boolean;
   /** Handler for row actions. */
@@ -27,9 +27,9 @@ export interface AriaTableProps {
   /** Whether selection should occur on press up. */
   shouldSelectOnPressUp?: boolean;
   /** Whether Escape clears selection. */
-  escapeKeyBehavior?: 'clearSelection' | 'none';
+  escapeKeyBehavior?: "clearSelection" | "none";
   /** Focus mode: 'row' or 'cell'. */
-  focusMode?: 'row' | 'cell';
+  focusMode?: "row" | "cell";
 }
 
 /**
@@ -137,7 +137,7 @@ export interface TableCellAria {
  */
 export interface AriaTableRowGroupProps {
   /** The type of row group: 'thead', 'tbody', or 'tfoot'. */
-  type: 'thead' | 'tbody' | 'tfoot';
+  type: "thead" | "tbody" | "tfoot";
 }
 
 /**

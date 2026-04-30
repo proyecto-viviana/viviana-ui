@@ -1,38 +1,38 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
-import { FieldError } from '../src/form';
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@solidjs/testing-library";
+import { FieldError } from "../src/form";
 
-describe('FieldError (solid-spectrum)', () => {
-  it('renders validation errors with solid-spectrum styling', () => {
+describe("FieldError (solid-spectrum)", () => {
+  it("renders validation errors with solid-spectrum styling", () => {
     render(() => (
       <FieldError
         validation={{
           isInvalid: true,
-          validationErrors: ['This field is required'],
+          validationErrors: ["This field is required"],
           validationDetails: {} as ValidityState,
         }}
       />
     ));
 
-    const error = screen.getByText('This field is required');
+    const error = screen.getByText("This field is required");
     expect(error).toBeInTheDocument();
-    expect(error.className).toContain('text-danger-400');
+    expect(error.className).toContain("text-danger-400");
   });
 
-  it('does not render when validation is not invalid', () => {
+  it("does not render when validation is not invalid", () => {
     render(() => (
       <FieldError
         validation={{
           isInvalid: false,
-          validationErrors: ['Should not render'],
+          validationErrors: ["Should not render"],
           validationDetails: {} as ValidityState,
         }}
       />
     ));
 
-    expect(screen.queryByText('Should not render')).not.toBeInTheDocument();
+    expect(screen.queryByText("Should not render")).not.toBeInTheDocument();
   });
 });

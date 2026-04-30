@@ -5,20 +5,20 @@
  * A tag group displays a collection of tags that can be selected and/or removed.
  */
 
-import { type JSX, splitProps, Show, createUniqueId } from 'solid-js';
+import { type JSX, splitProps, Show, createUniqueId } from "solid-js";
 import {
   TagList as HeadlessTagList,
   Tag as HeadlessTag,
   TagRemoveButton as HeadlessTagRemoveButton,
-} from '@proyecto-viviana/solidaria-components';
-import type { Key, SelectionMode } from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solidaria-components";
+import type { Key, SelectionMode } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type TagGroupSize = 'sm' | 'md' | 'lg';
-export type TagGroupVariant = 'default' | 'outline' | 'solid';
+export type TagGroupSize = "sm" | "md" | "lg";
+export type TagGroupVariant = "default" | "outline" | "solid";
 
 export interface TagGroupProps<T> {
   /** The label for the tag group. */
@@ -42,7 +42,7 @@ export interface TagGroupProps<T> {
   /** The default selected keys (uncontrolled). */
   defaultSelectedKeys?: Iterable<Key>;
   /** Handler called when selection changes. */
-  onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  onSelectionChange?: (keys: "all" | Set<Key>) => void;
   /** Keys that are disabled. */
   disabledKeys?: Iterable<Key>;
   /** Whether all tags are disabled. */
@@ -70,37 +70,37 @@ export interface TagProps {
 
 const sizeStyles = {
   sm: {
-    tag: 'text-xs px-2 py-0.5 gap-1',
-    removeButton: 'w-3 h-3',
-    label: 'text-xs',
+    tag: "text-xs px-2 py-0.5 gap-1",
+    removeButton: "w-3 h-3",
+    label: "text-xs",
   },
   md: {
-    tag: 'text-sm px-2.5 py-1 gap-1.5',
-    removeButton: 'w-4 h-4',
-    label: 'text-sm',
+    tag: "text-sm px-2.5 py-1 gap-1.5",
+    removeButton: "w-4 h-4",
+    label: "text-sm",
   },
   lg: {
-    tag: 'text-base px-3 py-1.5 gap-2',
-    removeButton: 'w-5 h-5',
-    label: 'text-base',
+    tag: "text-base px-3 py-1.5 gap-2",
+    removeButton: "w-5 h-5",
+    label: "text-base",
   },
 };
 
 const variantStyles = {
   default: {
-    tag: 'bg-bg-400 text-primary-200 hover:bg-bg-300',
-    selected: 'bg-accent text-bg-400',
-    disabled: 'opacity-50 cursor-not-allowed',
+    tag: "bg-bg-400 text-primary-200 hover:bg-bg-300",
+    selected: "bg-accent text-bg-400",
+    disabled: "opacity-50 cursor-not-allowed",
   },
   outline: {
-    tag: 'border border-primary-600 text-primary-200 hover:border-primary-500 hover:bg-bg-400/50',
-    selected: 'border-accent bg-accent/10 text-accent',
-    disabled: 'opacity-50 cursor-not-allowed',
+    tag: "border border-primary-600 text-primary-200 hover:border-primary-500 hover:bg-bg-400/50",
+    selected: "border-accent bg-accent/10 text-accent",
+    disabled: "opacity-50 cursor-not-allowed",
   },
   solid: {
-    tag: 'bg-primary-700 text-primary-100 hover:bg-primary-600',
-    selected: 'bg-accent text-bg-400',
-    disabled: 'opacity-50 cursor-not-allowed',
+    tag: "bg-primary-700 text-primary-100 hover:bg-primary-600",
+    selected: "bg-accent text-bg-400",
+    disabled: "opacity-50 cursor-not-allowed",
   },
 };
 
@@ -136,25 +136,25 @@ const variantStyles = {
  */
 export function TagGroup<T extends { id?: Key; key?: Key }>(props: TagGroupProps<T>): JSX.Element {
   const [local] = splitProps(props, [
-    'label',
-    'items',
-    'getKey',
-    'onRemove',
-    'size',
-    'variant',
-    'selectionMode',
-    'selectedKeys',
-    'defaultSelectedKeys',
-    'onSelectionChange',
-    'disabledKeys',
-    'isDisabled',
-    'class',
-    'renderEmptyState',
+    "label",
+    "items",
+    "getKey",
+    "onRemove",
+    "size",
+    "variant",
+    "selectionMode",
+    "selectedKeys",
+    "defaultSelectedKeys",
+    "onSelectionChange",
+    "disabledKeys",
+    "isDisabled",
+    "class",
+    "renderEmptyState",
   ]);
 
   const labelId = createUniqueId();
-  const size = () => local.size ?? 'md';
-  const variant = () => local.variant ?? 'default';
+  const size = () => local.size ?? "md";
+  const variant = () => local.variant ?? "default";
   const sizeConfig = () => sizeStyles[size()];
   const variantConfig = () => variantStyles[variant()];
 
@@ -167,7 +167,7 @@ export function TagGroup<T extends { id?: Key; key?: Key }>(props: TagGroupProps
   };
 
   return (
-    <div class={`flex flex-col gap-2 ${local.class ?? ''}`}>
+    <div class={`flex flex-col gap-2 ${local.class ?? ""}`}>
       <Show when={local.label}>
         <span id={labelId} class={`font-medium text-primary-200 ${sizeConfig().label}`}>
           {local.label}
@@ -185,9 +185,10 @@ export function TagGroup<T extends { id?: Key; key?: Key }>(props: TagGroupProps
         isDisabled={local.isDisabled}
         aria-labelledby={local.label ? labelId : undefined}
         class="flex flex-wrap gap-2"
-        renderEmptyState={local.renderEmptyState ?? (() => (
-          <span class="text-primary-400 text-sm italic">No items</span>
-        ))}
+        renderEmptyState={
+          local.renderEmptyState ??
+          (() => <span class="text-primary-400 text-sm italic">No items</span>)
+        }
       >
         {(item) => (
           <HeadlessTag
@@ -199,10 +200,8 @@ export function TagGroup<T extends { id?: Key; key?: Key }>(props: TagGroupProps
                 focus:outline-none focus:ring-2 focus:ring-accent/50
                 ${sizeConfig().tag}
               `;
-              const variantClass = isSelected
-                ? variantConfig().selected
-                : variantConfig().tag;
-              const disabledClass = isDisabled ? variantConfig().disabled : '';
+              const variantClass = isSelected ? variantConfig().selected : variantConfig().tag;
+              const disabledClass = isDisabled ? variantConfig().disabled : "";
               return `${base} ${variantClass} ${disabledClass}`.trim();
             }}
           >

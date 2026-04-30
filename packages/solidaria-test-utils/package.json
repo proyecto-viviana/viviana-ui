@@ -1,9 +1,14 @@
 {
   "name": "@proyecto-viviana/solidaria-test-utils",
   "version": "0.0.8",
-  "description": "Testing utilities for solidaria patterns",
   "private": true,
+  "description": "Testing utilities for solidaria patterns",
+  "files": [
+    "dist",
+    "src"
+  ],
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,11 +19,6 @@
       "default": "./dist/index.js"
     }
   },
-  "files": [
-    "dist",
-    "src"
-  ],
-  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch"

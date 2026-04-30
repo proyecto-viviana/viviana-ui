@@ -9,17 +9,17 @@
  * - ARIA attributes
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { render, screen, cleanup, fireEvent, waitFor } from "@solidjs/testing-library";
 import {
   RangeCalendar,
   RangeCalendarHeading,
   RangeCalendarButton,
   RangeCalendarGrid,
   RangeCalendarCell,
-} from '../src/RangeCalendar';
-import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+} from "../src/RangeCalendar";
+import { CalendarDate, today, getLocalTimeZone } from "@internationalized/date";
+import { setupUser } from "@proyecto-viviana/solidaria-test-utils";
 
 // User event instance - created per test
 let user: ReturnType<typeof setupUser>;
@@ -43,14 +43,12 @@ function TestRangeCalendar(props: {
         <RangeCalendarHeading />
         <RangeCalendarButton slot="next">▶</RangeCalendarButton>
       </header>
-      <RangeCalendarGrid>
-        {(date) => <RangeCalendarCell date={date} />}
-      </RangeCalendarGrid>
+      <RangeCalendarGrid>{(date) => <RangeCalendarCell date={date} />}</RangeCalendarGrid>
     </RangeCalendar>
   );
 }
 
-describe('RangeCalendar', () => {
+describe("RangeCalendar", () => {
   beforeEach(() => {
     user = setupUser();
   });
@@ -63,73 +61,69 @@ describe('RangeCalendar', () => {
   // RENDERING
   // ============================================
 
-  describe('rendering', () => {
-    it('should render with default class', async () => {
+  describe("rendering", () => {
+    it("should render with default class", async () => {
       render(() => <TestRangeCalendar />);
       await waitForRangeCalendarHydration();
 
-      const calendar = document.querySelector('.solidaria-RangeCalendar');
+      const calendar = document.querySelector(".solidaria-RangeCalendar");
       expect(calendar).toBeInTheDocument();
     });
 
-    it('should render calendar grid', async () => {
+    it("should render calendar grid", async () => {
       render(() => <TestRangeCalendar />);
       await waitForRangeCalendarHydration();
 
-      const grid = screen.getByRole('grid');
+      const grid = screen.getByRole("grid");
       expect(grid).toBeInTheDocument();
     });
 
-    it('should render month and year header', async () => {
+    it("should render month and year header", async () => {
       render(() => (
-        <TestRangeCalendar
-          calendarProps={{ defaultFocusedValue: new CalendarDate(2024, 6, 15) }}
-        />
+        <TestRangeCalendar calendarProps={{ defaultFocusedValue: new CalendarDate(2024, 6, 15) }} />
       ));
       await waitForRangeCalendarHydration();
 
-      const heading = document.querySelector('.solidaria-RangeCalendarHeading');
+      const heading = document.querySelector(".solidaria-RangeCalendarHeading");
       expect(heading).toBeInTheDocument();
-      expect(heading?.textContent).toContain('2024');
+      expect(heading?.textContent).toContain("2024");
     });
 
-    it('should render navigation buttons', async () => {
+    it("should render navigation buttons", async () => {
       render(() => <TestRangeCalendar />);
       await waitForRangeCalendarHydration();
 
-      const prevButton = screen.getByText('◀');
-      const nextButton = screen.getByText('▶');
+      const prevButton = screen.getByText("◀");
+      const nextButton = screen.getByText("▶");
 
       expect(prevButton).toBeInTheDocument();
       expect(nextButton).toBeInTheDocument();
     });
 
-    it('should render day names in header', async () => {
+    it("should render day names in header", async () => {
       render(() => <TestRangeCalendar />);
       await waitForRangeCalendarHydration();
 
-      const headerCells = document.querySelectorAll('.solidaria-RangeCalendarHeaderCell');
+      const headerCells = document.querySelectorAll(".solidaria-RangeCalendarHeaderCell");
       expect(headerCells.length).toBe(7);
     });
 
-    it('should render with custom class', async () => {
-      render(() => <TestRangeCalendar calendarProps={{ class: 'my-range-calendar' }} />);
+    it("should render with custom class", async () => {
+      render(() => <TestRangeCalendar calendarProps={{ class: "my-range-calendar" }} />);
       await waitForRangeCalendarHydration();
 
-      const calendar = document.querySelector('.my-range-calendar');
+      const calendar = document.querySelector(".my-range-calendar");
       expect(calendar).toBeInTheDocument();
     });
 
-    it('should mark trailing dates as outside month in an offset grid', async () => {
+    it("should mark trailing dates as outside month in an offset grid", async () => {
       render(() => (
         <RangeCalendar
           aria-label="Dual month range calendar"
           visibleMonths={2}
           defaultFocusedValue={new CalendarDate(2024, 1, 15)}
         >
-          <RangeCalendarGrid>
-            {(date) => <RangeCalendarCell date={date} />}
-          </RangeCalendarGrid>
+          <RangeCalendarGrid>{(date) => <RangeCalendarCell date={date} />}</RangeCalendarGrid>
           <RangeCalendarGrid offset={{ months: 1 }}>
             {(date) => <RangeCalendarCell date={date} />}
           </RangeCalendarGrid>
@@ -142,11 +136,11 @@ describe('RangeCalendar', () => {
 
       const secondGridButtons = grids[1]?.querySelectorAll('div[role="button"]') ?? [];
       const januaryButton = Array.from(secondGridButtons).find((button) =>
-        button.getAttribute('aria-label')?.includes('January')
+        button.getAttribute("aria-label")?.includes("January"),
       );
 
       expect(januaryButton).toBeTruthy();
-      expect(januaryButton).toHaveAttribute('data-outside-month');
+      expect(januaryButton).toHaveAttribute("data-outside-month");
     });
   });
 
@@ -154,50 +148,46 @@ describe('RangeCalendar', () => {
   // NAVIGATION
   // ============================================
 
-  describe('navigation', () => {
-    it('should navigate to previous month on prev button click', async () => {
+  describe("navigation", () => {
+    it("should navigate to previous month on prev button click", async () => {
       render(() => (
-        <TestRangeCalendar
-          calendarProps={{ defaultFocusedValue: new CalendarDate(2024, 6, 15) }}
-        />
+        <TestRangeCalendar calendarProps={{ defaultFocusedValue: new CalendarDate(2024, 6, 15) }} />
       ));
       await waitForRangeCalendarHydration();
 
-      const prevButton = screen.getByText('◀');
-      const heading = document.querySelector('.solidaria-RangeCalendarHeading');
+      const prevButton = screen.getByText("◀");
+      const heading = document.querySelector(".solidaria-RangeCalendarHeading");
 
-      expect(heading?.textContent).toContain('June');
+      expect(heading?.textContent).toContain("June");
 
       await user.click(prevButton);
 
       await waitFor(() => {
-        expect(heading?.textContent).toContain('May');
+        expect(heading?.textContent).toContain("May");
       });
     });
 
-    it('should navigate to next month on next button click', async () => {
+    it("should navigate to next month on next button click", async () => {
       render(() => (
-        <TestRangeCalendar
-          calendarProps={{ defaultFocusedValue: new CalendarDate(2024, 6, 15) }}
-        />
+        <TestRangeCalendar calendarProps={{ defaultFocusedValue: new CalendarDate(2024, 6, 15) }} />
       ));
       await waitForRangeCalendarHydration();
 
-      const nextButton = screen.getByText('▶');
-      const heading = document.querySelector('.solidaria-RangeCalendarHeading');
+      const nextButton = screen.getByText("▶");
+      const heading = document.querySelector(".solidaria-RangeCalendarHeading");
 
-      expect(heading?.textContent).toContain('June');
+      expect(heading?.textContent).toContain("June");
 
       await user.click(nextButton);
 
       await waitFor(() => {
-        expect(heading?.textContent).toContain('July');
+        expect(heading?.textContent).toContain("July");
       });
     });
 
-    it('should follow RTL arrow direction for day navigation', async () => {
-      const previousDir = document.documentElement.getAttribute('dir');
-      document.documentElement.setAttribute('dir', 'rtl');
+    it("should follow RTL arrow direction for day navigation", async () => {
+      const previousDir = document.documentElement.getAttribute("dir");
+      document.documentElement.setAttribute("dir", "rtl");
 
       try {
         render(() => (
@@ -207,19 +197,19 @@ describe('RangeCalendar', () => {
         ));
         await waitForRangeCalendarHydration();
 
-        const day15 = screen.getByRole('button', { name: /June 15, 2024/i });
+        const day15 = screen.getByRole("button", { name: /June 15, 2024/i });
         day15.focus();
-        fireEvent.keyDown(day15, { key: 'ArrowRight' });
+        fireEvent.keyDown(day15, { key: "ArrowRight" });
 
         await waitFor(() => {
-          const day14 = screen.getByRole('button', { name: /June 14, 2024/i });
+          const day14 = screen.getByRole("button", { name: /June 14, 2024/i });
           expect(day14).toHaveFocus();
         });
       } finally {
         if (previousDir) {
-          document.documentElement.setAttribute('dir', previousDir);
+          document.documentElement.setAttribute("dir", previousDir);
         } else {
-          document.documentElement.removeAttribute('dir');
+          document.documentElement.removeAttribute("dir");
         }
       }
     });
@@ -229,8 +219,8 @@ describe('RangeCalendar', () => {
   // RANGE SELECTION
   // ============================================
 
-  describe('range selection', () => {
-    it('should have clickable cells', async () => {
+  describe("range selection", () => {
+    it("should have clickable cells", async () => {
       render(() => (
         <TestRangeCalendar
           calendarProps={{
@@ -240,17 +230,17 @@ describe('RangeCalendar', () => {
       ));
       await waitForRangeCalendarHydration();
 
-      const cells = document.querySelectorAll('.solidaria-RangeCalendarCell');
-      const cell = Array.from(cells).find(c => c.textContent === '10');
+      const cells = document.querySelectorAll(".solidaria-RangeCalendarCell");
+      const cell = Array.from(cells).find((c) => c.textContent === "10");
 
       expect(cell).toBeInTheDocument();
-      expect(cell).toHaveAttribute('role', 'button');
+      expect(cell).toHaveAttribute("role", "button");
 
       // Click should not throw
       await user.click(cell!);
     });
 
-    it('should show controlled value', async () => {
+    it("should show controlled value", async () => {
       render(() => (
         <TestRangeCalendar
           calendarProps={{
@@ -265,11 +255,11 @@ describe('RangeCalendar', () => {
       await waitForRangeCalendarHydration();
 
       // Find cells with selection attributes
-      const selectedCells = document.querySelectorAll('[data-selected]');
+      const selectedCells = document.querySelectorAll("[data-selected]");
       expect(selectedCells.length).toBeGreaterThan(0);
     });
 
-    it('should show defaultValue', async () => {
+    it("should show defaultValue", async () => {
       render(() => (
         <TestRangeCalendar
           calendarProps={{
@@ -283,11 +273,11 @@ describe('RangeCalendar', () => {
       ));
       await waitForRangeCalendarHydration();
 
-      const selectedCells = document.querySelectorAll('[data-selected]');
+      const selectedCells = document.querySelectorAll("[data-selected]");
       expect(selectedCells.length).toBeGreaterThan(0);
     });
 
-    it('should fire onChange once after completing a range selection', async () => {
+    it("should fire onChange once after completing a range selection", async () => {
       const onChange = vi.fn();
       render(() => (
         <TestRangeCalendar
@@ -299,10 +289,10 @@ describe('RangeCalendar', () => {
       ));
       await waitForRangeCalendarHydration();
 
-      const start = screen.getByRole('button', { name: /June 10, 2024/i });
+      const start = screen.getByRole("button", { name: /June 10, 2024/i });
       fireEvent.pointerDown(start);
       fireEvent.pointerUp(start);
-      const end = screen.getByRole('button', { name: /June 15, 2024/i });
+      const end = screen.getByRole("button", { name: /June 15, 2024/i });
       fireEvent.pointerDown(end);
       fireEvent.pointerUp(end);
 
@@ -315,7 +305,7 @@ describe('RangeCalendar', () => {
       });
     });
 
-    it('should mark selection start and end', async () => {
+    it("should mark selection start and end", async () => {
       render(() => (
         <TestRangeCalendar
           calendarProps={{
@@ -329,8 +319,8 @@ describe('RangeCalendar', () => {
       ));
       await waitForRangeCalendarHydration();
 
-      const startCell = document.querySelector('[data-selection-start]');
-      const endCell = document.querySelector('[data-selection-end]');
+      const startCell = document.querySelector("[data-selection-start]");
+      const endCell = document.querySelector("[data-selection-end]");
 
       expect(startCell).toBeInTheDocument();
       expect(endCell).toBeInTheDocument();
@@ -341,27 +331,27 @@ describe('RangeCalendar', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('should support isDisabled', async () => {
+  describe("disabled state", () => {
+    it("should support isDisabled", async () => {
       render(() => <TestRangeCalendar calendarProps={{ isDisabled: true }} />);
       await waitForRangeCalendarHydration();
 
-      const calendar = document.querySelector('.solidaria-RangeCalendar');
-      expect(calendar).toHaveAttribute('data-disabled');
+      const calendar = document.querySelector(".solidaria-RangeCalendar");
+      expect(calendar).toHaveAttribute("data-disabled");
     });
 
-    it('should disable navigation buttons when disabled', async () => {
+    it("should disable navigation buttons when disabled", async () => {
       render(() => <TestRangeCalendar calendarProps={{ isDisabled: true }} />);
       await waitForRangeCalendarHydration();
 
-      const prevButton = screen.getByText('◀');
-      const nextButton = screen.getByText('▶');
+      const prevButton = screen.getByText("◀");
+      const nextButton = screen.getByText("▶");
 
       expect(prevButton).toBeDisabled();
       expect(nextButton).toBeDisabled();
     });
 
-    it('should support isDateDisabled', async () => {
+    it("should support isDateDisabled", async () => {
       const isDateDisabled = (date: CalendarDate) => date.day === 15;
       render(() => (
         <TestRangeCalendar
@@ -373,7 +363,7 @@ describe('RangeCalendar', () => {
       ));
       await waitForRangeCalendarHydration();
 
-      const disabledCell = document.querySelector('[data-disabled]');
+      const disabledCell = document.querySelector("[data-disabled]");
       expect(disabledCell).toBeInTheDocument();
     });
   });
@@ -382,13 +372,13 @@ describe('RangeCalendar', () => {
   // READ ONLY STATE
   // ============================================
 
-  describe('read only state', () => {
-    it('should support isReadOnly', async () => {
+  describe("read only state", () => {
+    it("should support isReadOnly", async () => {
       render(() => <TestRangeCalendar calendarProps={{ isReadOnly: true }} />);
       await waitForRangeCalendarHydration();
 
-      const calendar = document.querySelector('.solidaria-RangeCalendar');
-      expect(calendar).toHaveAttribute('data-readonly');
+      const calendar = document.querySelector(".solidaria-RangeCalendar");
+      expect(calendar).toHaveAttribute("data-readonly");
     });
   });
 
@@ -396,37 +386,37 @@ describe('RangeCalendar', () => {
   // ARIA ATTRIBUTES
   // ============================================
 
-  describe('aria attributes', () => {
-    it('should have aria-label', async () => {
+  describe("aria attributes", () => {
+    it("should have aria-label", async () => {
       render(() => <TestRangeCalendar />);
       await waitForRangeCalendarHydration();
 
-      const calendar = document.querySelector('.solidaria-RangeCalendar');
-      expect(calendar).toHaveAttribute('aria-label', 'Test Range Calendar');
+      const calendar = document.querySelector(".solidaria-RangeCalendar");
+      expect(calendar).toHaveAttribute("aria-label", "Test Range Calendar");
     });
 
-    it('should have grid role', async () => {
+    it("should have grid role", async () => {
       render(() => <TestRangeCalendar />);
       await waitForRangeCalendarHydration();
 
-      const grid = screen.getByRole('grid');
+      const grid = screen.getByRole("grid");
       expect(grid).toBeInTheDocument();
     });
 
-    it('should have column headers', async () => {
+    it("should have column headers", async () => {
       render(() => <TestRangeCalendar />);
       await waitForRangeCalendarHydration();
 
-      const columnHeaders = screen.getAllByRole('columnheader');
+      const columnHeaders = screen.getAllByRole("columnheader");
       expect(columnHeaders.length).toBe(7);
     });
 
-    it('should have aria-live on heading', async () => {
+    it("should have aria-live on heading", async () => {
       render(() => <TestRangeCalendar />);
       await waitForRangeCalendarHydration();
 
-      const heading = document.querySelector('.solidaria-RangeCalendarHeading');
-      expect(heading).toHaveAttribute('aria-live', 'polite');
+      const heading = document.querySelector(".solidaria-RangeCalendarHeading");
+      expect(heading).toHaveAttribute("aria-live", "polite");
     });
   });
 
@@ -434,38 +424,32 @@ describe('RangeCalendar', () => {
   // CELL ATTRIBUTES
   // ============================================
 
-  describe('cell attributes', () => {
-    it('should mark today', async () => {
+  describe("cell attributes", () => {
+    it("should mark today", async () => {
       const todayDate = today(getLocalTimeZone());
-      render(() => (
-        <TestRangeCalendar
-          calendarProps={{ defaultFocusedValue: todayDate }}
-        />
-      ));
+      render(() => <TestRangeCalendar calendarProps={{ defaultFocusedValue: todayDate }} />);
       await waitForRangeCalendarHydration();
 
-      const todayCell = document.querySelector('[data-today]');
+      const todayCell = document.querySelector("[data-today]");
       expect(todayCell).toBeInTheDocument();
     });
 
-    it('should mark outside month cells', async () => {
+    it("should mark outside month cells", async () => {
       render(() => (
-        <TestRangeCalendar
-          calendarProps={{ defaultFocusedValue: new CalendarDate(2024, 6, 15) }}
-        />
+        <TestRangeCalendar calendarProps={{ defaultFocusedValue: new CalendarDate(2024, 6, 15) }} />
       ));
       await waitForRangeCalendarHydration();
 
       // Depending on the month layout, there might be outside-month cells
-      const cells = document.querySelectorAll('.solidaria-RangeCalendarCell');
+      const cells = document.querySelectorAll(".solidaria-RangeCalendarCell");
       expect(cells.length).toBeGreaterThan(0);
     });
 
-    it('should have default class on cells', async () => {
+    it("should have default class on cells", async () => {
       render(() => <TestRangeCalendar />);
       await waitForRangeCalendarHydration();
 
-      const cells = document.querySelectorAll('.solidaria-RangeCalendarCell');
+      const cells = document.querySelectorAll(".solidaria-RangeCalendarCell");
       expect(cells.length).toBeGreaterThan(0);
     });
   });
@@ -474,8 +458,8 @@ describe('RangeCalendar', () => {
   // MIN/MAX DATES
   // ============================================
 
-  describe('min/max dates', () => {
-    it('should disable dates before minValue', async () => {
+  describe("min/max dates", () => {
+    it("should disable dates before minValue", async () => {
       render(() => (
         <TestRangeCalendar
           calendarProps={{
@@ -486,11 +470,11 @@ describe('RangeCalendar', () => {
       ));
       await waitForRangeCalendarHydration();
 
-      const disabledCells = document.querySelectorAll('[data-disabled]');
+      const disabledCells = document.querySelectorAll("[data-disabled]");
       expect(disabledCells.length).toBeGreaterThan(0);
     });
 
-    it('should disable dates after maxValue', async () => {
+    it("should disable dates after maxValue", async () => {
       render(() => (
         <TestRangeCalendar
           calendarProps={{
@@ -501,7 +485,7 @@ describe('RangeCalendar', () => {
       ));
       await waitForRangeCalendarHydration();
 
-      const disabledCells = document.querySelectorAll('[data-disabled]');
+      const disabledCells = document.querySelectorAll("[data-disabled]");
       expect(disabledCells.length).toBeGreaterThan(0);
     });
   });

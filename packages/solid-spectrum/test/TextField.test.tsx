@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@solidjs/testing-library';
-import { TextField } from '../src/textfield';
-import { setupUser } from '@proyecto-viviana/solid-spectrum-test-utils';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent } from "@solidjs/testing-library";
+import { TextField } from "../src/textfield";
+import { setupUser } from "@proyecto-viviana/solid-spectrum-test-utils";
 
 // setupUser is consolidated in solid-spectrum-test-utils.
 
-describe('TextField', () => {
+describe("TextField", () => {
   let onChangeSpy = vi.fn();
   let onFocusSpy = vi.fn();
   let onBlurSpy = vi.fn();
@@ -21,105 +21,107 @@ describe('TextField', () => {
     onBlurSpy.mockClear();
   });
 
-  describe('basic functionality', () => {
+  describe("basic functionality", () => {
     it('renders with role="textbox"', () => {
       render(() => <TextField aria-label="Test input" />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       expect(input).toBeInTheDocument();
     });
 
-    it('renders with default empty value', () => {
+    it("renders with default empty value", () => {
       render(() => <TextField aria-label="Test input" />);
-      const input = screen.getByRole('textbox') as HTMLInputElement;
-      expect(input.value).toBe('');
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      expect(input.value).toBe("");
     });
 
-    it('accepts text input', async () => {
+    it("accepts text input", async () => {
       render(() => <TextField aria-label="Test input" onChange={onChangeSpy} />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
 
       // Use fireEvent.change to simulate input change
-      fireEvent.change(input, { target: { value: 'hello' } });
+      fireEvent.change(input, { target: { value: "hello" } });
 
-      expect(onChangeSpy).toHaveBeenCalledWith('hello');
-      expect((input as HTMLInputElement).value).toBe('hello');
+      expect(onChangeSpy).toHaveBeenCalledWith("hello");
+      expect((input as HTMLInputElement).value).toBe("hello");
     });
 
-    it('supports defaultValue', () => {
+    it("supports defaultValue", () => {
       render(() => <TextField aria-label="Test input" defaultValue="initial" />);
-      const input = screen.getByRole('textbox') as HTMLInputElement;
-      expect(input.value).toBe('initial');
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      expect(input.value).toBe("initial");
     });
   });
 
-  describe('controlled mode', () => {
-    it('reflects controlled value', () => {
+  describe("controlled mode", () => {
+    it("reflects controlled value", () => {
       render(() => <TextField aria-label="Test input" value="controlled" />);
-      const input = screen.getByRole('textbox') as HTMLInputElement;
-      expect(input.value).toBe('controlled');
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      expect(input.value).toBe("controlled");
     });
 
-    it('calls onChange in controlled mode', async () => {
+    it("calls onChange in controlled mode", async () => {
       render(() => <TextField aria-label="Test input" value="" onChange={onChangeSpy} />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
 
-      fireEvent.change(input, { target: { value: 'new value' } });
-      expect(onChangeSpy).toHaveBeenCalledWith('new value');
+      fireEvent.change(input, { target: { value: "new value" } });
+      expect(onChangeSpy).toHaveBeenCalledWith("new value");
     });
   });
 
-  describe('disabled state', () => {
-    it('does not accept input when disabled', async () => {
+  describe("disabled state", () => {
+    it("does not accept input when disabled", async () => {
       render(() => <TextField aria-label="Test input" isDisabled />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
 
       expect(input).toBeDisabled();
     });
   });
 
-  describe('readonly state', () => {
-    it('sets readonly attribute when isReadOnly is true', () => {
+  describe("readonly state", () => {
+    it("sets readonly attribute when isReadOnly is true", () => {
       render(() => <TextField aria-label="Test input" isReadOnly />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('readonly');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("readonly");
     });
 
-    it('can focus readonly input', async () => {
+    it("can focus readonly input", async () => {
       render(() => <TextField aria-label="Test input" isReadOnly />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       const field = input.parentElement as HTMLElement;
 
       input.focus();
-      expect(field).toHaveAttribute('data-focused', 'true');
+      expect(field).toHaveAttribute("data-focused", "true");
     });
   });
 
-  describe('required state', () => {
-    it('sets aria-required when isRequired is true', () => {
+  describe("required state", () => {
+    it("sets aria-required when isRequired is true", () => {
       render(() => <TextField aria-label="Test input" isRequired />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('aria-required', 'true');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("aria-required", "true");
     });
 
-    it('shows required indicator when label is present', () => {
+    it("shows required indicator when label is present", () => {
       render(() => <TextField label="Name" isRequired />);
-      expect(screen.getByText('*')).toBeInTheDocument();
+      expect(screen.getByText("*")).toBeInTheDocument();
     });
   });
 
-  describe('invalid state', () => {
-    it('sets aria-invalid when isInvalid is true', () => {
+  describe("invalid state", () => {
+    it("sets aria-invalid when isInvalid is true", () => {
       render(() => <TextField aria-label="Test input" isInvalid />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('aria-invalid', 'true');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("aria-invalid", "true");
     });
 
-    it('shows error message when invalid and errorMessage is provided', () => {
-      render(() => <TextField aria-label="Test input" isInvalid errorMessage="This field is required" />);
-      expect(screen.getByText('This field is required')).toBeInTheDocument();
+    it("shows error message when invalid and errorMessage is provided", () => {
+      render(() => (
+        <TextField aria-label="Test input" isInvalid errorMessage="This field is required" />
+      ));
+      expect(screen.getByText("This field is required")).toBeInTheDocument();
     });
 
-    it('hides description when invalid', () => {
+    it("hides description when invalid", () => {
       render(() => (
         <TextField
           aria-label="Test input"
@@ -128,197 +130,197 @@ describe('TextField', () => {
           errorMessage="This field is required"
         />
       ));
-      expect(screen.queryByText('Enter your name')).not.toBeInTheDocument();
-      expect(screen.getByText('This field is required')).toBeInTheDocument();
+      expect(screen.queryByText("Enter your name")).not.toBeInTheDocument();
+      expect(screen.getByText("This field is required")).toBeInTheDocument();
     });
   });
 
-  describe('label and description', () => {
-    it('renders with label', () => {
+  describe("label and description", () => {
+    it("renders with label", () => {
       render(() => <TextField label="Email" />);
-      expect(screen.getByText('Email')).toBeInTheDocument();
+      expect(screen.getByText("Email")).toBeInTheDocument();
     });
 
-    it('renders with description', () => {
+    it("renders with description", () => {
       render(() => <TextField aria-label="Test input" description="Enter your email address" />);
-      expect(screen.getByText('Enter your email address')).toBeInTheDocument();
+      expect(screen.getByText("Enter your email address")).toBeInTheDocument();
     });
 
     // Note: The label association is done via aria-labelledby in the input props.
     // The explicit `for` attribute requires passing label ref to createTextField.
     // This test verifies the input has an id for potential label association.
-    it('input has accessible id for label association', () => {
+    it("input has accessible id for label association", () => {
       render(() => <TextField label="Email" />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       // Input has id for accessibility
-      expect(input).toHaveAttribute('id');
+      expect(input).toHaveAttribute("id");
     });
   });
 
-  describe('sizes', () => {
-    it('renders with default md size', () => {
+  describe("sizes", () => {
+    it("renders with default md size", () => {
       render(() => <TextField aria-label="Test input" />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       expect(input).toBeInTheDocument();
     });
 
-    it('renders with sm size', () => {
+    it("renders with sm size", () => {
       render(() => <TextField aria-label="Test input" size="sm" />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       expect(input).toBeInTheDocument();
     });
 
-    it('renders with lg size', () => {
+    it("renders with lg size", () => {
       render(() => <TextField aria-label="Test input" size="lg" />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       expect(input).toBeInTheDocument();
     });
   });
 
-  describe('variants', () => {
-    it('renders with default outline variant', () => {
+  describe("variants", () => {
+    it("renders with default outline variant", () => {
       render(() => <TextField aria-label="Test input" />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       expect(input).toBeInTheDocument();
     });
 
-    it('renders with filled variant', () => {
+    it("renders with filled variant", () => {
       render(() => <TextField aria-label="Test input" variant="filled" />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       expect(input).toBeInTheDocument();
     });
   });
 
-  describe('focus events', () => {
+  describe("focus events", () => {
     // Focus state tracking works by using userEvent.click which properly triggers
     // focus handlers, unlike fireEvent.focus which doesn't fully simulate browser behavior.
-    it('sets data-focused when input is focused', async () => {
+    it("sets data-focused when input is focused", async () => {
       render(() => <TextField aria-label="Test input" />);
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       const field = input.parentElement as HTMLElement;
 
       input.focus();
-      expect(field).toHaveAttribute('data-focused', 'true');
+      expect(field).toHaveAttribute("data-focused", "true");
     });
 
-    it('removes data-focused when input loses focus', async () => {
+    it("removes data-focused when input loses focus", async () => {
       render(() => (
         <>
           <TextField aria-label="Test input" />
           <button>Other</button>
         </>
       ));
-      const input = screen.getByRole('textbox');
-      const otherButton = screen.getByRole('button');
+      const input = screen.getByRole("textbox");
+      const otherButton = screen.getByRole("button");
       const field = input.parentElement as HTMLElement;
 
       input.focus();
-      expect(field).toHaveAttribute('data-focused', 'true');
+      expect(field).toHaveAttribute("data-focused", "true");
 
       fireEvent.blur(input);
-      expect(field).not.toHaveAttribute('data-focused');
+      expect(field).not.toHaveAttribute("data-focused");
     });
   });
 
-  describe('aria attributes', () => {
-    it('supports aria-label', () => {
+  describe("aria attributes", () => {
+    it("supports aria-label", () => {
       render(() => <TextField aria-label="Custom label" />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('aria-label', 'Custom label');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("aria-label", "Custom label");
     });
 
-    it('supports aria-labelledby', () => {
+    it("supports aria-labelledby", () => {
       render(() => (
         <>
           <span id="label">Label text</span>
           <TextField aria-labelledby="label" />
         </>
       ));
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('aria-labelledby', 'label');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("aria-labelledby", "label");
     });
 
-    it('supports aria-describedby', () => {
+    it("supports aria-describedby", () => {
       render(() => (
         <>
           <span id="desc">Description text</span>
           <TextField aria-label="Test" aria-describedby="desc" />
         </>
       ));
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('aria-describedby', 'desc');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("aria-describedby", "desc");
     });
   });
 
-  describe('input types', () => {
+  describe("input types", () => {
     it('defaults to type="text"', () => {
       render(() => <TextField aria-label="Test input" />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('type', 'text');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("type", "text");
     });
 
     it('supports type="email"', () => {
       render(() => <TextField aria-label="Email" type="email" />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('type', 'email');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("type", "email");
     });
 
     it('supports type="password"', () => {
       render(() => <TextField aria-label="Password" type="password" />);
       // Password fields are not accessible via getByRole('textbox')
       const input = document.querySelector('input[type="password"]');
-      expect(input).toHaveAttribute('type', 'password');
+      expect(input).toHaveAttribute("type", "password");
     });
 
     it('supports type="tel"', () => {
       render(() => <TextField aria-label="Phone" type="tel" />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('type', 'tel');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("type", "tel");
     });
 
     it('supports type="url"', () => {
       render(() => <TextField aria-label="Website" type="url" />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('type', 'url');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("type", "url");
     });
   });
 
-  describe('input attributes', () => {
-    it('supports placeholder', () => {
+  describe("input attributes", () => {
+    it("supports placeholder", () => {
       render(() => <TextField aria-label="Test input" placeholder="Enter text..." />);
-      const input = screen.getByPlaceholderText('Enter text...');
+      const input = screen.getByPlaceholderText("Enter text...");
       expect(input).toBeInTheDocument();
     });
 
-    it('supports maxLength', () => {
+    it("supports maxLength", () => {
       render(() => <TextField aria-label="Test input" maxLength={10} />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('maxLength', '10');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("maxLength", "10");
     });
 
-    it('supports minLength', () => {
+    it("supports minLength", () => {
       render(() => <TextField aria-label="Test input" minLength={5} />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('minLength', '5');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("minLength", "5");
     });
 
-    it('supports pattern', () => {
+    it("supports pattern", () => {
       render(() => <TextField aria-label="Test input" pattern="[A-Za-z]+" />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('pattern', '[A-Za-z]+');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("pattern", "[A-Za-z]+");
     });
 
-    it('supports name attribute', () => {
+    it("supports name attribute", () => {
       render(() => <TextField aria-label="Test input" name="username" />);
-      const input = screen.getByRole('textbox');
-      expect(input).toHaveAttribute('name', 'username');
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("name", "username");
     });
   });
 
-  describe('custom props', () => {
-    it('allows custom data attributes to be passed through', () => {
+  describe("custom props", () => {
+    it("allows custom data attributes to be passed through", () => {
       render(() => <TextField aria-label="Test input" data-testid="custom-textfield" />);
-      const elements = screen.getAllByTestId('custom-textfield');
+      const elements = screen.getAllByTestId("custom-textfield");
       expect(elements.length).toBeGreaterThan(0);
     });
   });

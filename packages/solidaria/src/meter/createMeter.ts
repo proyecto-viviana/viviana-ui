@@ -8,13 +8,13 @@
  * This is a port of @react-aria/meter's useMeter hook.
  */
 
-import { createProgressBar, type AriaProgressBarProps } from '../progress/createProgressBar';
+import { createProgressBar, type AriaProgressBarProps } from "../progress/createProgressBar";
 
 // ============================================
 // TYPES
 // ============================================
 
-export interface AriaMeterProps extends Omit<AriaProgressBarProps, 'isIndeterminate'> {
+export interface AriaMeterProps extends Omit<AriaProgressBarProps, "isIndeterminate"> {
   /** The current value (controlled). */
   value?: number;
   /** The smallest value allowed for the input. @default 0 */
@@ -28,13 +28,13 @@ export interface AriaMeterProps extends Omit<AriaProgressBarProps, 'isIndetermin
   /** The content to display as the label. */
   label?: string;
   /** An accessibility label for this item. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element (or elements) that labels the current element. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Identifies the element (or elements) that describes the object. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Identifies the element (or elements) that provide a detailed, extended description for the object. */
-  'aria-details'?: string;
+  "aria-details"?: string;
 }
 
 export interface MeterAria {
@@ -60,7 +60,7 @@ export function createMeter(props: AriaMeterProps = {}): MeterAria {
     get meterProps() {
       return {
         ...progressBarProps,
-        role: 'meter',
+        role: "meter",
       };
     },
     get labelProps() {

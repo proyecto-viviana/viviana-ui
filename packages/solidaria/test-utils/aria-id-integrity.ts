@@ -7,13 +7,13 @@
 
 /** Attributes that reference element IDs (space-separated ID lists) */
 const ARIA_ID_ATTRIBUTES = [
-  'aria-labelledby',
-  'aria-controls',
-  'aria-describedby',
-  'aria-owns',
-  'aria-activedescendant',
-  'aria-errormessage',
-  'for',
+  "aria-labelledby",
+  "aria-controls",
+  "aria-describedby",
+  "aria-owns",
+  "aria-activedescendant",
+  "aria-errormessage",
+  "for",
 ] as const;
 
 export interface DanglingRef {
@@ -37,9 +37,7 @@ export interface AriaIdIntegrityResult {
  * expect(result.ok).toBe(true);
  * ```
  */
-export function checkAriaIdIntegrity(
-  container: Element = document.body,
-): AriaIdIntegrityResult {
+export function checkAriaIdIntegrity(container: Element = document.body): AriaIdIntegrityResult {
   const danglingRefs: DanglingRef[] = [];
   let totalRefsChecked = 0;
 
@@ -52,7 +50,7 @@ export function checkAriaIdIntegrity(
       if (!value) continue;
 
       // aria-activedescendant is a single ID; others can be space-separated lists
-      const ids = attr === 'aria-activedescendant' ? [value] : value.split(/\s+/).filter(Boolean);
+      const ids = attr === "aria-activedescendant" ? [value] : value.split(/\s+/).filter(Boolean);
 
       for (const id of ids) {
         totalRefsChecked++;
@@ -74,12 +72,12 @@ function formatDanglingRefs(refs: DanglingRef[]): string {
   const lines: string[] = [`${refs.length} dangling ARIA ID reference(s):\n`];
   for (const ref of refs) {
     const tag = ref.element.tagName.toLowerCase();
-    const id = ref.element.id ? `#${ref.element.id}` : '';
-    const role = ref.element.getAttribute('role') || '';
-    const desc = [tag, id, role ? `[role="${role}"]` : ''].filter(Boolean).join('');
+    const id = ref.element.id ? `#${ref.element.id}` : "";
+    const role = ref.element.getAttribute("role") || "";
+    const desc = [tag, id, role ? `[role="${role}"]` : ""].filter(Boolean).join("");
     lines.push(`  ${desc} → ${ref.attribute}="${ref.missingId}" (missing)`);
   }
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 /**
@@ -91,9 +89,7 @@ function formatDanglingRefs(refs: DanglingRef[]): string {
  * assertAriaIdIntegrity(container);
  * ```
  */
-export function assertAriaIdIntegrity(
-  container: Element = document.body,
-): void {
+export function assertAriaIdIntegrity(container: Element = document.body): void {
   const result = checkAriaIdIntegrity(container);
   if (!result.ok) {
     throw new Error(formatDanglingRefs(result.danglingRefs));

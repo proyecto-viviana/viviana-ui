@@ -2,9 +2,9 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, cleanup } from '@solidjs/testing-library';
-import { createSignal } from 'solid-js';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { render, screen, cleanup } from "@solidjs/testing-library";
+import { createSignal } from "solid-js";
 
 // Import test utilities
 import {
@@ -15,7 +15,7 @@ import {
   createHoverSequence,
   createLeaveSequence,
   createTouchEvent,
-} from '../test-utils/pointer';
+} from "../test-utils/pointer";
 
 import {
   // Interaction utilities
@@ -29,7 +29,7 @@ import {
   pressKeys,
   pressKeyCombo,
   createVirtualClick,
-} from '../test-utils/interactions';
+} from "../test-utils/interactions";
 
 import {
   // ARIA utilities
@@ -49,7 +49,7 @@ import {
   getAriaState,
   assertAriaRole,
   assertAccessible,
-} from '../test-utils/aria';
+} from "../test-utils/aria";
 
 import {
   // Focus utilities
@@ -63,7 +63,7 @@ import {
   waitForFocus,
   assertFocused,
   assertFocusWithin,
-} from '../test-utils/focus';
+} from "../test-utils/focus";
 
 import {
   // Setup utilities
@@ -71,54 +71,54 @@ import {
   cleanupTestEnvironment,
   wait,
   waitFor,
-} from '../test-utils/setup';
+} from "../test-utils/setup";
 
 // ============================================
 // POINTER UTILITIES
 // ============================================
 
-describe('pointer utilities', () => {
-  describe('pointerMap', () => {
-    it('should contain mouse entries', () => {
-      const mouseLeft = pointerMap.find((p) => p.name === 'MouseLeft');
+describe("pointer utilities", () => {
+  describe("pointerMap", () => {
+    it("should contain mouse entries", () => {
+      const mouseLeft = pointerMap.find((p) => p.name === "MouseLeft");
       expect(mouseLeft).toBeDefined();
-      expect(mouseLeft?.pointerType).toBe('mouse');
-      expect(mouseLeft?.button).toBe('primary');
+      expect(mouseLeft?.pointerType).toBe("mouse");
+      expect(mouseLeft?.button).toBe("primary");
     });
 
-    it('should contain touch entries', () => {
-      const touchA = pointerMap.find((p) => p.name === 'TouchA');
+    it("should contain touch entries", () => {
+      const touchA = pointerMap.find((p) => p.name === "TouchA");
       expect(touchA).toBeDefined();
-      expect(touchA?.pointerType).toBe('touch');
+      expect(touchA?.pointerType).toBe("touch");
     });
 
-    it('should contain pen entries', () => {
-      const penA = pointerMap.find((p) => p.name === 'PenA');
+    it("should contain pen entries", () => {
+      const penA = pointerMap.find((p) => p.name === "PenA");
       expect(penA).toBeDefined();
-      expect(penA?.pointerType).toBe('pen');
+      expect(penA?.pointerType).toBe("pen");
     });
   });
 
-  describe('createPointerEvent', () => {
-    it('should create a pointer event with defaults', () => {
-      const event = createPointerEvent('pointerdown');
-      expect(event.type).toBe('pointerdown');
-      expect(event.pointerType).toBe('mouse');
+  describe("createPointerEvent", () => {
+    it("should create a pointer event with defaults", () => {
+      const event = createPointerEvent("pointerdown");
+      expect(event.type).toBe("pointerdown");
+      expect(event.pointerType).toBe("mouse");
       expect(event.pointerId).toBe(1);
       expect(event.bubbles).toBe(true);
     });
 
-    it('should create a touch pointer event', () => {
-      const event = createPointerEvent('pointerdown', {
-        pointerType: 'touch',
+    it("should create a touch pointer event", () => {
+      const event = createPointerEvent("pointerdown", {
+        pointerType: "touch",
         pointerId: 2,
       });
-      expect(event.pointerType).toBe('touch');
+      expect(event.pointerType).toBe("touch");
       expect(event.pointerId).toBe(2);
     });
 
-    it('should set coordinates', () => {
-      const event = createPointerEvent('pointermove', {
+    it("should set coordinates", () => {
+      const event = createPointerEvent("pointermove", {
         clientX: 100,
         clientY: 200,
       });
@@ -127,46 +127,46 @@ describe('pointer utilities', () => {
     });
   });
 
-  describe('createPressSequence', () => {
-    it('should create pointerdown and pointerup events', () => {
-      const button = document.createElement('button');
+  describe("createPressSequence", () => {
+    it("should create pointerdown and pointerup events", () => {
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       const events = createPressSequence(button);
       expect(events).toHaveLength(2);
-      expect(events[0].type).toBe('pointerdown');
-      expect(events[1].type).toBe('pointerup');
+      expect(events[0].type).toBe("pointerdown");
+      expect(events[1].type).toBe("pointerup");
 
       button.remove();
     });
   });
 
-  describe('createHoverSequence', () => {
-    it('should create hover events', () => {
-      const button = document.createElement('button');
+  describe("createHoverSequence", () => {
+    it("should create hover events", () => {
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       const events = createHoverSequence(button);
       expect(events.length).toBeGreaterThanOrEqual(2);
-      expect(events[0].type).toBe('pointerenter');
+      expect(events[0].type).toBe("pointerenter");
 
       button.remove();
     });
   });
 
-  describe('createTouchEvent', () => {
-    it('should create touch events', () => {
-      const event = createTouchEvent('touchstart', {
+  describe("createTouchEvent", () => {
+    it("should create touch events", () => {
+      const event = createTouchEvent("touchstart", {
         identifier: 1,
         clientX: 50,
         clientY: 50,
       });
-      expect(event.type).toBe('touchstart');
+      expect(event.type).toBe("touchstart");
       expect(event.touches).toHaveLength(1);
     });
 
-    it('should create touchend with empty touches', () => {
-      const event = createTouchEvent('touchend', { identifier: 1 });
+    it("should create touchend with empty touches", () => {
+      const event = createTouchEvent("touchend", { identifier: 1 });
       expect(event.touches).toHaveLength(0);
       expect(event.changedTouches).toHaveLength(1);
     });
@@ -177,26 +177,26 @@ describe('pointer utilities', () => {
 // INTERACTION UTILITIES
 // ============================================
 
-describe('interaction utilities', () => {
+describe("interaction utilities", () => {
   afterEach(() => {
     cleanup();
   });
 
-  describe('setupUser', () => {
-    it('should create a userEvent instance', () => {
+  describe("setupUser", () => {
+    it("should create a userEvent instance", () => {
       const user = setupUser();
       expect(user).toBeDefined();
-      expect(typeof user.click).toBe('function');
-      expect(typeof user.keyboard).toBe('function');
+      expect(typeof user.click).toBe("function");
+      expect(typeof user.keyboard).toBe("function");
     });
   });
 
-  describe('press', () => {
-    it('should click an element', async () => {
+  describe("press", () => {
+    it("should click an element", async () => {
       const onClick = vi.fn();
       render(() => <button onClick={onClick}>Click me</button>);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       const user = setupUser();
 
       await press(user, button);
@@ -204,12 +204,12 @@ describe('interaction utilities', () => {
     });
   });
 
-  describe('hover', () => {
-    it('should hover an element', async () => {
+  describe("hover", () => {
+    it("should hover an element", async () => {
       const onMouseEnter = vi.fn();
       render(() => <button onMouseEnter={onMouseEnter}>Hover me</button>);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       const user = setupUser();
 
       await hover(user, button);
@@ -217,8 +217,8 @@ describe('interaction utilities', () => {
     });
   });
 
-  describe('tabTo', () => {
-    it('should tab to next element', async () => {
+  describe("tabTo", () => {
+    it("should tab to next element", async () => {
       render(() => (
         <div>
           <button>Button 1</button>
@@ -226,7 +226,7 @@ describe('interaction utilities', () => {
         </div>
       ));
 
-      const [button1, button2] = screen.getAllByRole('button');
+      const [button1, button2] = screen.getAllByRole("button");
       button1.focus();
 
       const user = setupUser();
@@ -235,7 +235,7 @@ describe('interaction utilities', () => {
       expect(document.activeElement).toBe(button2);
     });
 
-    it('should shift+tab to previous element', async () => {
+    it("should shift+tab to previous element", async () => {
       render(() => (
         <div>
           <button>Button 1</button>
@@ -243,7 +243,7 @@ describe('interaction utilities', () => {
         </div>
       ));
 
-      const [button1, button2] = screen.getAllByRole('button');
+      const [button1, button2] = screen.getAllByRole("button");
       button2.focus();
 
       const user = setupUser();
@@ -253,56 +253,54 @@ describe('interaction utilities', () => {
     });
   });
 
-  describe('typeText', () => {
-    it('should type text into an input', async () => {
+  describe("typeText", () => {
+    it("should type text into an input", async () => {
       render(() => <input type="text" />);
 
-      const input = screen.getByRole('textbox') as HTMLInputElement;
+      const input = screen.getByRole("textbox") as HTMLInputElement;
       const user = setupUser();
 
-      await typeText(user, input, 'Hello');
-      expect(input.value).toBe('Hello');
+      await typeText(user, input, "Hello");
+      expect(input.value).toBe("Hello");
     });
   });
 
-  describe('pressKey', () => {
-    it('should press a key', async () => {
+  describe("pressKey", () => {
+    it("should press a key", async () => {
       const onKeyDown = vi.fn();
       render(() => <input onKeyDown={onKeyDown} />);
 
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       input.focus();
 
       const user = setupUser();
-      await pressKey(user, 'Enter');
+      await pressKey(user, "Enter");
 
-      expect(onKeyDown).toHaveBeenCalledWith(
-        expect.objectContaining({ key: 'Enter' })
-      );
+      expect(onKeyDown).toHaveBeenCalledWith(expect.objectContaining({ key: "Enter" }));
     });
   });
 
-  describe('pressKeys', () => {
-    it('should press multiple keys in sequence', async () => {
+  describe("pressKeys", () => {
+    it("should press multiple keys in sequence", async () => {
       const onKeyDown = vi.fn();
       render(() => <input onKeyDown={onKeyDown} />);
 
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole("textbox");
       input.focus();
 
       const user = setupUser();
-      await pressKeys(user, ['ArrowDown', 'ArrowDown', 'Enter']);
+      await pressKeys(user, ["ArrowDown", "ArrowDown", "Enter"]);
 
       expect(onKeyDown).toHaveBeenCalledTimes(3);
     });
   });
 
-  describe('createVirtualClick', () => {
-    it('should create a virtual click event', () => {
-      const button = document.createElement('button');
+  describe("createVirtualClick", () => {
+    it("should create a virtual click event", () => {
+      const button = document.createElement("button");
       const event = createVirtualClick(button);
 
-      expect(event.type).toBe('click');
+      expect(event.type).toBe("click");
       expect(event.detail).toBe(0);
     });
   });
@@ -312,255 +310,255 @@ describe('interaction utilities', () => {
 // ARIA UTILITIES
 // ============================================
 
-describe('ARIA utilities', () => {
+describe("ARIA utilities", () => {
   afterEach(() => {
     cleanup();
   });
 
-  describe('getAriaRole', () => {
-    it('should get explicit role', () => {
-      const div = document.createElement('div');
-      div.setAttribute('role', 'button');
-      expect(getAriaRole(div)).toBe('button');
+  describe("getAriaRole", () => {
+    it("should get explicit role", () => {
+      const div = document.createElement("div");
+      div.setAttribute("role", "button");
+      expect(getAriaRole(div)).toBe("button");
     });
 
-    it('should get implicit role from button', () => {
-      const button = document.createElement('button');
-      expect(getAriaRole(button)).toBe('button');
+    it("should get implicit role from button", () => {
+      const button = document.createElement("button");
+      expect(getAriaRole(button)).toBe("button");
     });
 
-    it('should get implicit role from link', () => {
-      const link = document.createElement('a');
-      link.href = '#';
-      expect(getAriaRole(link)).toBe('link');
+    it("should get implicit role from link", () => {
+      const link = document.createElement("a");
+      link.href = "#";
+      expect(getAriaRole(link)).toBe("link");
     });
 
-    it('should get implicit role from input types', () => {
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      expect(getAriaRole(checkbox)).toBe('checkbox');
+    it("should get implicit role from input types", () => {
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      expect(getAriaRole(checkbox)).toBe("checkbox");
 
-      const radio = document.createElement('input');
-      radio.type = 'radio';
-      expect(getAriaRole(radio)).toBe('radio');
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      expect(getAriaRole(radio)).toBe("radio");
     });
   });
 
-  describe('hasAriaLabel / getAriaLabel', () => {
-    it('should detect aria-label', () => {
-      const button = document.createElement('button');
-      button.setAttribute('aria-label', 'Close');
+  describe("hasAriaLabel / getAriaLabel", () => {
+    it("should detect aria-label", () => {
+      const button = document.createElement("button");
+      button.setAttribute("aria-label", "Close");
 
       expect(hasAriaLabel(button)).toBe(true);
-      expect(getAriaLabel(button)).toBe('Close');
+      expect(getAriaLabel(button)).toBe("Close");
     });
 
-    it('should detect aria-labelledby', () => {
+    it("should detect aria-labelledby", () => {
       document.body.innerHTML = `
         <span id="label">My Label</span>
         <button aria-labelledby="label"></button>
       `;
-      const button = document.querySelector('button')!;
+      const button = document.querySelector("button")!;
 
       expect(hasAriaLabel(button)).toBe(true);
-      expect(getAriaLabel(button)).toBe('My Label');
+      expect(getAriaLabel(button)).toBe("My Label");
 
-      document.body.innerHTML = '';
+      document.body.innerHTML = "";
     });
 
-    it('should detect button text content', () => {
-      const button = document.createElement('button');
-      button.textContent = 'Click me';
+    it("should detect button text content", () => {
+      const button = document.createElement("button");
+      button.textContent = "Click me";
 
       expect(hasAriaLabel(button)).toBe(true);
-      expect(getAriaLabel(button)).toBe('Click me');
+      expect(getAriaLabel(button)).toBe("Click me");
     });
   });
 
-  describe('isAriaDisabled', () => {
-    it('should detect aria-disabled', () => {
-      const button = document.createElement('button');
+  describe("isAriaDisabled", () => {
+    it("should detect aria-disabled", () => {
+      const button = document.createElement("button");
       expect(isAriaDisabled(button)).toBe(false);
 
-      button.setAttribute('aria-disabled', 'true');
+      button.setAttribute("aria-disabled", "true");
       expect(isAriaDisabled(button)).toBe(true);
     });
 
-    it('should detect native disabled', () => {
-      const button = document.createElement('button');
+    it("should detect native disabled", () => {
+      const button = document.createElement("button");
       button.disabled = true;
       expect(isAriaDisabled(button)).toBe(true);
     });
   });
 
-  describe('isAriaExpanded', () => {
-    it('should return null when not set', () => {
-      const button = document.createElement('button');
+  describe("isAriaExpanded", () => {
+    it("should return null when not set", () => {
+      const button = document.createElement("button");
       expect(isAriaExpanded(button)).toBe(null);
     });
 
-    it('should return boolean when set', () => {
-      const button = document.createElement('button');
-      button.setAttribute('aria-expanded', 'true');
+    it("should return boolean when set", () => {
+      const button = document.createElement("button");
+      button.setAttribute("aria-expanded", "true");
       expect(isAriaExpanded(button)).toBe(true);
 
-      button.setAttribute('aria-expanded', 'false');
+      button.setAttribute("aria-expanded", "false");
       expect(isAriaExpanded(button)).toBe(false);
     });
   });
 
-  describe('isAriaPressed', () => {
-    it('should return null when not set', () => {
-      const button = document.createElement('button');
+  describe("isAriaPressed", () => {
+    it("should return null when not set", () => {
+      const button = document.createElement("button");
       expect(isAriaPressed(button)).toBe(null);
     });
 
-    it('should return boolean or mixed', () => {
-      const button = document.createElement('button');
+    it("should return boolean or mixed", () => {
+      const button = document.createElement("button");
 
-      button.setAttribute('aria-pressed', 'true');
+      button.setAttribute("aria-pressed", "true");
       expect(isAriaPressed(button)).toBe(true);
 
-      button.setAttribute('aria-pressed', 'false');
+      button.setAttribute("aria-pressed", "false");
       expect(isAriaPressed(button)).toBe(false);
 
-      button.setAttribute('aria-pressed', 'mixed');
-      expect(isAriaPressed(button)).toBe('mixed');
+      button.setAttribute("aria-pressed", "mixed");
+      expect(isAriaPressed(button)).toBe("mixed");
     });
   });
 
-  describe('isAriaChecked', () => {
-    it('should detect aria-checked', () => {
-      const checkbox = document.createElement('div');
-      checkbox.setAttribute('role', 'checkbox');
+  describe("isAriaChecked", () => {
+    it("should detect aria-checked", () => {
+      const checkbox = document.createElement("div");
+      checkbox.setAttribute("role", "checkbox");
 
-      checkbox.setAttribute('aria-checked', 'true');
+      checkbox.setAttribute("aria-checked", "true");
       expect(isAriaChecked(checkbox)).toBe(true);
 
-      checkbox.setAttribute('aria-checked', 'mixed');
-      expect(isAriaChecked(checkbox)).toBe('mixed');
+      checkbox.setAttribute("aria-checked", "mixed");
+      expect(isAriaChecked(checkbox)).toBe("mixed");
     });
 
-    it('should detect native checked', () => {
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
+    it("should detect native checked", () => {
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
       checkbox.checked = true;
 
       expect(isAriaChecked(checkbox)).toBe(true);
     });
   });
 
-  describe('isAriaSelected', () => {
-    it('should detect aria-selected', () => {
-      const option = document.createElement('div');
+  describe("isAriaSelected", () => {
+    it("should detect aria-selected", () => {
+      const option = document.createElement("div");
       expect(isAriaSelected(option)).toBe(false);
 
-      option.setAttribute('aria-selected', 'true');
+      option.setAttribute("aria-selected", "true");
       expect(isAriaSelected(option)).toBe(true);
     });
   });
 
-  describe('isAriaRequired', () => {
-    it('should detect aria-required', () => {
-      const input = document.createElement('input');
+  describe("isAriaRequired", () => {
+    it("should detect aria-required", () => {
+      const input = document.createElement("input");
       expect(isAriaRequired(input)).toBe(false);
 
-      input.setAttribute('aria-required', 'true');
+      input.setAttribute("aria-required", "true");
       expect(isAriaRequired(input)).toBe(true);
     });
 
-    it('should detect native required', () => {
-      const input = document.createElement('input');
+    it("should detect native required", () => {
+      const input = document.createElement("input");
       input.required = true;
       expect(isAriaRequired(input)).toBe(true);
     });
   });
 
-  describe('isAriaInvalid', () => {
-    it('should detect aria-invalid states', () => {
-      const input = document.createElement('input');
+  describe("isAriaInvalid", () => {
+    it("should detect aria-invalid states", () => {
+      const input = document.createElement("input");
       expect(isAriaInvalid(input)).toBe(false);
 
-      input.setAttribute('aria-invalid', 'true');
+      input.setAttribute("aria-invalid", "true");
       expect(isAriaInvalid(input)).toBe(true);
 
-      input.setAttribute('aria-invalid', 'grammar');
-      expect(isAriaInvalid(input)).toBe('grammar');
+      input.setAttribute("aria-invalid", "grammar");
+      expect(isAriaInvalid(input)).toBe("grammar");
 
-      input.setAttribute('aria-invalid', 'spelling');
-      expect(isAriaInvalid(input)).toBe('spelling');
+      input.setAttribute("aria-invalid", "spelling");
+      expect(isAriaInvalid(input)).toBe("spelling");
     });
   });
 
-  describe('isAriaHidden', () => {
-    it('should detect aria-hidden', () => {
-      const div = document.createElement('div');
+  describe("isAriaHidden", () => {
+    it("should detect aria-hidden", () => {
+      const div = document.createElement("div");
       expect(isAriaHidden(div)).toBe(false);
 
-      div.setAttribute('aria-hidden', 'true');
+      div.setAttribute("aria-hidden", "true");
       expect(isAriaHidden(div)).toBe(true);
     });
   });
 
-  describe('getAriaActiveDescendant', () => {
-    it('should get aria-activedescendant', () => {
-      const listbox = document.createElement('div');
+  describe("getAriaActiveDescendant", () => {
+    it("should get aria-activedescendant", () => {
+      const listbox = document.createElement("div");
       expect(getAriaActiveDescendant(listbox)).toBe(null);
 
-      listbox.setAttribute('aria-activedescendant', 'option-1');
-      expect(getAriaActiveDescendant(listbox)).toBe('option-1');
+      listbox.setAttribute("aria-activedescendant", "option-1");
+      expect(getAriaActiveDescendant(listbox)).toBe("option-1");
     });
   });
 
-  describe('getAriaValueNow', () => {
-    it('should get aria-valuenow as number', () => {
-      const slider = document.createElement('div');
+  describe("getAriaValueNow", () => {
+    it("should get aria-valuenow as number", () => {
+      const slider = document.createElement("div");
       expect(getAriaValueNow(slider)).toBe(null);
 
-      slider.setAttribute('aria-valuenow', '50');
+      slider.setAttribute("aria-valuenow", "50");
       expect(getAriaValueNow(slider)).toBe(50);
     });
   });
 
-  describe('getAriaState', () => {
-    it('should return complete ARIA state', () => {
-      const button = document.createElement('button');
-      button.setAttribute('aria-pressed', 'true');
-      button.setAttribute('aria-disabled', 'true');
-      button.textContent = 'Toggle';
+  describe("getAriaState", () => {
+    it("should return complete ARIA state", () => {
+      const button = document.createElement("button");
+      button.setAttribute("aria-pressed", "true");
+      button.setAttribute("aria-disabled", "true");
+      button.textContent = "Toggle";
 
       const state = getAriaState(button);
 
-      expect(state.role).toBe('button');
+      expect(state.role).toBe("button");
       expect(state.pressed).toBe(true);
       expect(state.disabled).toBe(true);
-      expect(state.label).toBe('Toggle');
+      expect(state.label).toBe("Toggle");
     });
   });
 
-  describe('assertAriaRole', () => {
-    it('should pass for matching role', () => {
-      const button = document.createElement('button');
-      expect(() => assertAriaRole(button, 'button')).not.toThrow();
+  describe("assertAriaRole", () => {
+    it("should pass for matching role", () => {
+      const button = document.createElement("button");
+      expect(() => assertAriaRole(button, "button")).not.toThrow();
     });
 
-    it('should throw for non-matching role', () => {
-      const button = document.createElement('button');
-      expect(() => assertAriaRole(button, 'link')).toThrow();
+    it("should throw for non-matching role", () => {
+      const button = document.createElement("button");
+      expect(() => assertAriaRole(button, "link")).toThrow();
     });
   });
 
-  describe('assertAccessible', () => {
-    it('should pass for accessible button', () => {
-      const button = document.createElement('button');
-      button.textContent = 'Click me';
+  describe("assertAccessible", () => {
+    it("should pass for accessible button", () => {
+      const button = document.createElement("button");
+      button.textContent = "Click me";
       expect(() => assertAccessible(button)).not.toThrow();
     });
 
-    it('should throw for unlabeled interactive element', () => {
+    it("should throw for unlabeled interactive element", () => {
       // A div with role="button" but no label - this is a common accessibility issue
-      const div = document.createElement('div');
-      div.setAttribute('role', 'slider');
+      const div = document.createElement("div");
+      div.setAttribute("role", "slider");
       expect(() => assertAccessible(div)).toThrow();
     });
   });
@@ -570,15 +568,15 @@ describe('ARIA utilities', () => {
 // FOCUS UTILITIES
 // ============================================
 
-describe('focus utilities', () => {
+describe("focus utilities", () => {
   afterEach(() => {
     cleanup();
     cleanupTestEnvironment();
   });
 
-  describe('getFocusedElement', () => {
-    it('should return the focused element', () => {
-      const button = document.createElement('button');
+  describe("getFocusedElement", () => {
+    it("should return the focused element", () => {
+      const button = document.createElement("button");
       document.body.appendChild(button);
       button.focus();
 
@@ -588,9 +586,9 @@ describe('focus utilities', () => {
     });
   });
 
-  describe('isFocused', () => {
-    it('should check if element is focused', () => {
-      const button = document.createElement('button');
+  describe("isFocused", () => {
+    it("should check if element is focused", () => {
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       expect(isFocused(button)).toBe(false);
@@ -601,10 +599,10 @@ describe('focus utilities', () => {
     });
   });
 
-  describe('isFocusWithin', () => {
-    it('should check if focus is within container', () => {
-      const container = document.createElement('div');
-      const button = document.createElement('button');
+  describe("isFocusWithin", () => {
+    it("should check if focus is within container", () => {
+      const container = document.createElement("div");
+      const button = document.createElement("button");
       container.appendChild(button);
       document.body.appendChild(container);
 
@@ -616,9 +614,9 @@ describe('focus utilities', () => {
     });
   });
 
-  describe('getFocusableElements', () => {
-    it('should return all focusable elements', () => {
-      const container = document.createElement('div');
+  describe("getFocusableElements", () => {
+    it("should return all focusable elements", () => {
+      const container = document.createElement("div");
       container.innerHTML = `
         <button>Button</button>
         <input type="text" />
@@ -635,9 +633,9 @@ describe('focus utilities', () => {
     });
   });
 
-  describe('getTabbableElements', () => {
-    it('should return tabbable elements in order', () => {
-      const container = document.createElement('div');
+  describe("getTabbableElements", () => {
+    it("should return tabbable elements in order", () => {
+      const container = document.createElement("div");
       container.innerHTML = `
         <button>Button 1</button>
         <button tabindex="-1">Not tabbable</button>
@@ -652,9 +650,9 @@ describe('focus utilities', () => {
     });
   });
 
-  describe('getFirstFocusable / getLastFocusable', () => {
-    it('should return first and last focusable elements', () => {
-      const container = document.createElement('div');
+  describe("getFirstFocusable / getLastFocusable", () => {
+    it("should return first and last focusable elements", () => {
+      const container = document.createElement("div");
       container.innerHTML = `
         <button>First</button>
         <input type="text" />
@@ -665,16 +663,16 @@ describe('focus utilities', () => {
       const first = getFirstFocusable(container);
       const last = getLastFocusable(container);
 
-      expect(first?.textContent).toBe('First');
-      expect(last?.textContent).toBe('Last');
+      expect(first?.textContent).toBe("First");
+      expect(last?.textContent).toBe("Last");
 
       container.remove();
     });
   });
 
-  describe('waitForFocus', () => {
-    it('should resolve when element receives focus', async () => {
-      const button = document.createElement('button');
+  describe("waitForFocus", () => {
+    it("should resolve when element receives focus", async () => {
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       setTimeout(() => button.focus(), 10);
@@ -685,8 +683,8 @@ describe('focus utilities', () => {
       button.remove();
     });
 
-    it('should resolve immediately if already focused', async () => {
-      const button = document.createElement('button');
+    it("should resolve immediately if already focused", async () => {
+      const button = document.createElement("button");
       document.body.appendChild(button);
       button.focus();
 
@@ -696,8 +694,8 @@ describe('focus utilities', () => {
       button.remove();
     });
 
-    it('should reject on timeout', async () => {
-      const button = document.createElement('button');
+    it("should reject on timeout", async () => {
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       await expect(waitForFocus(button, { timeout: 50 })).rejects.toThrow();
@@ -706,9 +704,9 @@ describe('focus utilities', () => {
     });
   });
 
-  describe('assertFocused', () => {
-    it('should pass when element is focused', () => {
-      const button = document.createElement('button');
+  describe("assertFocused", () => {
+    it("should pass when element is focused", () => {
+      const button = document.createElement("button");
       document.body.appendChild(button);
       button.focus();
 
@@ -717,8 +715,8 @@ describe('focus utilities', () => {
       button.remove();
     });
 
-    it('should throw when element is not focused', () => {
-      const button = document.createElement('button');
+    it("should throw when element is not focused", () => {
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       expect(() => assertFocused(button)).toThrow();
@@ -727,10 +725,10 @@ describe('focus utilities', () => {
     });
   });
 
-  describe('assertFocusWithin', () => {
-    it('should pass when focus is within container', () => {
-      const container = document.createElement('div');
-      const button = document.createElement('button');
+  describe("assertFocusWithin", () => {
+    it("should pass when focus is within container", () => {
+      const container = document.createElement("div");
+      const button = document.createElement("button");
       container.appendChild(button);
       document.body.appendChild(container);
       button.focus();
@@ -746,24 +744,24 @@ describe('focus utilities', () => {
 // SETUP UTILITIES
 // ============================================
 
-describe('setup utilities', () => {
-  describe('setupTestEnvironment', () => {
-    it('should install all polyfills', () => {
+describe("setup utilities", () => {
+  describe("setupTestEnvironment", () => {
+    it("should install all polyfills", () => {
       setupTestEnvironment();
 
       // Check that PointerEvent is available
-      expect(typeof PointerEvent).toBe('function');
+      expect(typeof PointerEvent).toBe("function");
 
       // Check that ResizeObserver is available
-      expect(typeof ResizeObserver).toBe('function');
+      expect(typeof ResizeObserver).toBe("function");
 
       // Check that IntersectionObserver is available
-      expect(typeof IntersectionObserver).toBe('function');
+      expect(typeof IntersectionObserver).toBe("function");
     });
   });
 
-  describe('wait', () => {
-    it('should wait for specified duration', async () => {
+  describe("wait", () => {
+    it("should wait for specified duration", async () => {
       const start = Date.now();
       await wait(50);
       const duration = Date.now() - start;
@@ -772,8 +770,8 @@ describe('setup utilities', () => {
     });
   });
 
-  describe('waitFor', () => {
-    it('should wait for condition to be true', async () => {
+  describe("waitFor", () => {
+    it("should wait for condition to be true", async () => {
       let value = false;
       setTimeout(() => {
         value = true;
@@ -783,10 +781,8 @@ describe('setup utilities', () => {
       expect(value).toBe(true);
     });
 
-    it('should reject on timeout', async () => {
-      await expect(
-        waitFor(() => false, { timeout: 50 })
-      ).rejects.toThrow('Timeout');
+    it("should reject on timeout", async () => {
+      await expect(waitFor(() => false, { timeout: 50 })).rejects.toThrow("Timeout");
     });
   });
 });

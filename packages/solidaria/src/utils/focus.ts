@@ -3,7 +3,7 @@
  * Based on @react-aria/utils focus utilities.
  */
 
-import { getOwnerDocument } from './dom';
+import { getOwnerDocument } from "./dom";
 
 /**
  * Focuses an element without scrolling the page.
@@ -48,10 +48,10 @@ function getScrollableAncestors(element: Element): Element[] {
     const overflowX = style.overflowX;
 
     if (
-      overflowY === 'auto' ||
-      overflowY === 'scroll' ||
-      overflowX === 'auto' ||
-      overflowX === 'scroll'
+      overflowY === "auto" ||
+      overflowY === "scroll" ||
+      overflowX === "auto" ||
+      overflowX === "scroll"
     ) {
       ancestors.push(parent);
     }
@@ -105,10 +105,10 @@ export function preventFocus(target: Element): void {
   // Use capturing to intercept focus before it reaches elements
   // Cast to HTMLElement to access focus event listeners
   const el = focusableAncestor as HTMLElement;
-  el.addEventListener('focus', onFocus, true);
-  el.addEventListener('blur', onBlur, true);
-  el.addEventListener('focusin', onFocus, true);
-  el.addEventListener('focusout', onBlur, true);
+  el.addEventListener("focus", onFocus, true);
+  el.addEventListener("blur", onBlur, true);
+  el.addEventListener("focusin", onFocus, true);
+  el.addEventListener("focusout", onBlur, true);
 
   // Clean up after the current event cycle
   if (preventFocusTimeout != null) {
@@ -117,10 +117,10 @@ export function preventFocus(target: Element): void {
 
   preventFocusTimeout = setTimeout(() => {
     ignoreFocus = false;
-    el.removeEventListener('focus', onFocus, true);
-    el.removeEventListener('blur', onBlur, true);
-    el.removeEventListener('focusin', onFocus, true);
-    el.removeEventListener('focusout', onBlur, true);
+    el.removeEventListener("focus", onFocus, true);
+    el.removeEventListener("blur", onBlur, true);
+    el.removeEventListener("focusin", onFocus, true);
+    el.removeEventListener("focusout", onBlur, true);
     preventFocusTimeout = null;
   }, 0);
 }
@@ -133,8 +133,8 @@ function findFocusableAncestor(element: Element): Element | null {
 
   while (current) {
     if (
-      current.hasAttribute('tabindex') ||
-      ['INPUT', 'BUTTON', 'SELECT', 'TEXTAREA', 'A'].includes(current.tagName)
+      current.hasAttribute("tabindex") ||
+      ["INPUT", "BUTTON", "SELECT", "TEXTAREA", "A"].includes(current.tagName)
     ) {
       return current;
     }

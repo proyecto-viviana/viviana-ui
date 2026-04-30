@@ -4,15 +4,15 @@
  * Based on @react-aria/slider useSlider.
  */
 
-import { type JSX, onCleanup, onMount } from 'solid-js';
-import { createLabel } from '../label/createLabel';
-import { createFocusRing } from '../interactions/createFocusRing';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { mergeProps } from '../utils/mergeProps';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { SliderState, SliderOrientation } from '@proyecto-viviana/solid-stately';
-import { useLocale } from '../i18n';
+import { type JSX, onCleanup, onMount } from "solid-js";
+import { createLabel } from "../label/createLabel";
+import { createFocusRing } from "../interactions/createFocusRing";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { mergeProps } from "../utils/mergeProps";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import type { SliderState, SliderOrientation } from "@proyecto-viviana/solid-stately";
+import { useLocale } from "../i18n";
 
 export interface AriaSliderProps {
   /** An ID for the slider. */
@@ -22,11 +22,11 @@ export interface AriaSliderProps {
   /** The label for the slider. */
   label?: JSX.Element;
   /** An accessible label for the slider when no visible label is provided. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The ID of an element that labels the slider. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The ID of an element that describes the slider. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** The orientation of the slider. */
   orientation?: SliderOrientation;
 }
@@ -52,7 +52,7 @@ export interface SliderAria {
 export function createSlider(
   props: MaybeAccessor<AriaSliderProps>,
   state: SliderState,
-  trackRef?: () => HTMLElement | null
+  trackRef?: () => HTMLElement | null,
 ): SliderAria {
   const getProps = () => access(props);
   const id = createId(getProps().id);
@@ -74,13 +74,13 @@ export function createSlider(
     get label() {
       return getProps().label;
     },
-    get 'aria-label'() {
-      return getProps()['aria-label'];
+    get "aria-label"() {
+      return getProps()["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return getProps()['aria-labelledby'];
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
     },
-    labelElementType: 'span',
+    labelElementType: "span",
   });
 
   // Focus ring for keyboard focus styling
@@ -97,7 +97,7 @@ export function createSlider(
     if (!track) return 0;
 
     const rect = track.getBoundingClientRect();
-    const isVertical = state.orientation === 'vertical';
+    const isVertical = state.orientation === "vertical";
 
     let position: number;
     if (isVertical) {
@@ -151,49 +151,49 @@ export function createSlider(
   const onThumbKeyDown = (e: KeyboardEvent) => {
     if (state.isDisabled) return;
 
-    const isVertical = state.orientation === 'vertical';
-    const isRTL = locale().direction === 'rtl';
+    const isVertical = state.orientation === "vertical";
+    const isRTL = locale().direction === "rtl";
     const shouldIncrementOnArrowRight = !isVertical && !isRTL;
     const shouldIncrementOnArrowLeft = !isVertical && isRTL;
 
     switch (e.key) {
-      case 'ArrowRight':
-      case 'ArrowUp':
+      case "ArrowRight":
+      case "ArrowUp":
         e.preventDefault();
         if (
-          (e.key === 'ArrowRight' && shouldIncrementOnArrowRight) ||
-          (e.key === 'ArrowUp' && isVertical)
+          (e.key === "ArrowRight" && shouldIncrementOnArrowRight) ||
+          (e.key === "ArrowUp" && isVertical)
         ) {
           state.increment();
         } else {
           state.decrement();
         }
         break;
-      case 'ArrowLeft':
-      case 'ArrowDown':
+      case "ArrowLeft":
+      case "ArrowDown":
         e.preventDefault();
         if (
-          (e.key === 'ArrowLeft' && shouldIncrementOnArrowLeft) ||
-          (e.key === 'ArrowDown' && isVertical)
+          (e.key === "ArrowLeft" && shouldIncrementOnArrowLeft) ||
+          (e.key === "ArrowDown" && isVertical)
         ) {
           state.increment();
         } else {
           state.decrement();
         }
         break;
-      case 'PageUp':
+      case "PageUp":
         e.preventDefault();
         state.increment(state.pageStep / state.step);
         break;
-      case 'PageDown':
+      case "PageDown":
         e.preventDefault();
         state.decrement(state.pageStep / state.step);
         break;
-      case 'Home':
+      case "Home":
         e.preventDefault();
         state.setValue(state.minValue);
         break;
-      case 'End':
+      case "End":
         e.preventDefault();
         state.setValue(state.maxValue);
         break;
@@ -246,22 +246,22 @@ export function createSlider(
 
   // Set up global listeners on mount (client-side only)
   onMount(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === "undefined") return;
 
-    document.addEventListener('pointermove', onDocumentPointerMove);
-    document.addEventListener('pointerup', onDocumentPointerUp);
-    document.addEventListener('pointercancel', onDocumentPointerUp);
+    document.addEventListener("pointermove", onDocumentPointerMove);
+    document.addEventListener("pointerup", onDocumentPointerUp);
+    document.addEventListener("pointercancel", onDocumentPointerUp);
 
     // Cleanup when component unmounts
     onCleanup(() => {
-      document.removeEventListener('pointermove', onDocumentPointerMove);
-      document.removeEventListener('pointerup', onDocumentPointerUp);
-      document.removeEventListener('pointercancel', onDocumentPointerUp);
+      document.removeEventListener("pointermove", onDocumentPointerMove);
+      document.removeEventListener("pointerup", onDocumentPointerUp);
+      document.removeEventListener("pointercancel", onDocumentPointerUp);
     });
   });
 
-  const labelledBy = () => (fieldProps as { 'aria-labelledby'?: string })['aria-labelledby'];
-  const ariaLabel = () => (fieldProps as { 'aria-label'?: string })['aria-label'];
+  const labelledBy = () => (fieldProps as { "aria-labelledby"?: string })["aria-labelledby"];
+  const ariaLabel = () => (fieldProps as { "aria-label"?: string })["aria-label"];
 
   return {
     get labelProps() {
@@ -272,10 +272,10 @@ export function createSlider(
         domProps(),
         fieldProps as Record<string, unknown>,
         {
-          role: 'group',
-          'data-disabled': state.isDisabled || undefined,
-          'data-orientation': state.orientation,
-        } as Record<string, unknown>
+          role: "group",
+          "data-disabled": state.isDisabled || undefined,
+          "data-orientation": state.orientation,
+        } as Record<string, unknown>,
       ) as JSX.HTMLAttributes<HTMLElement>;
     },
     get trackProps() {
@@ -285,67 +285,67 @@ export function createSlider(
         onPointerUp: onTrackPointerUp,
         onPointerCancel: onTrackPointerUp,
         style: {
-          position: 'relative',
-          'touch-action': 'none',
+          position: "relative",
+          "touch-action": "none",
         },
-        'data-disabled': state.isDisabled || undefined,
-        'data-orientation': state.orientation,
-        'data-dragging': state.isDragging() || undefined,
+        "data-disabled": state.isDisabled || undefined,
+        "data-orientation": state.orientation,
+        "data-dragging": state.isDragging() || undefined,
       } as JSX.HTMLAttributes<HTMLElement>;
     },
     get thumbProps() {
       const percent = state.getValuePercent();
-      const isVertical = state.orientation === 'vertical';
+      const isVertical = state.orientation === "vertical";
 
       return mergeProps(
         focusProps as Record<string, unknown>,
         {
-          role: 'slider',
+          role: "slider",
           tabIndex: state.isDisabled ? undefined : 0,
-          'aria-valuemin': state.minValue,
-          'aria-valuemax': state.maxValue,
-          'aria-valuenow': state.value(),
-          'aria-valuetext': state.getFormattedValue(),
-          'aria-orientation': state.orientation,
-          'aria-disabled': state.isDisabled || undefined,
-          'aria-labelledby': labelledBy(),
-          'aria-label': labelledBy() ? undefined : ariaLabel(),
+          "aria-valuemin": state.minValue,
+          "aria-valuemax": state.maxValue,
+          "aria-valuenow": state.value(),
+          "aria-valuetext": state.getFormattedValue(),
+          "aria-orientation": state.orientation,
+          "aria-disabled": state.isDisabled || undefined,
+          "aria-labelledby": labelledBy(),
+          "aria-label": labelledBy() ? undefined : ariaLabel(),
           onPointerDown: onThumbPointerDown,
           onKeyDown: onThumbKeyDown,
           onFocus,
           onBlur,
           style: {
-            position: 'absolute',
-            [isVertical ? 'bottom' : 'left']: `${percent * 100}%`,
-            transform: isVertical ? 'translateY(50%)' : 'translateX(-50%)',
+            position: "absolute",
+            [isVertical ? "bottom" : "left"]: `${percent * 100}%`,
+            transform: isVertical ? "translateY(50%)" : "translateX(-50%)",
           },
-          'data-disabled': state.isDisabled || undefined,
-          'data-dragging': state.isDragging() || undefined,
-          'data-focus-visible': isFocusVisible() || undefined,
-        } as Record<string, unknown>
+          "data-disabled": state.isDisabled || undefined,
+          "data-dragging": state.isDragging() || undefined,
+          "data-focus-visible": isFocusVisible() || undefined,
+        } as Record<string, unknown>,
       ) as JSX.HTMLAttributes<HTMLElement>;
     },
     get inputProps() {
       return {
-        type: 'range',
+        type: "range",
         id: inputId,
         min: state.minValue,
         max: state.maxValue,
         step: state.step,
         value: state.value(),
         disabled: state.isDisabled,
-        'aria-hidden': true,
+        "aria-hidden": true,
         tabIndex: -1,
         style: {
-          position: 'absolute',
-          width: '1px',
-          height: '1px',
-          padding: '0',
-          margin: '-1px',
-          overflow: 'hidden',
-          clip: 'rect(0, 0, 0, 0)',
-          'white-space': 'nowrap',
-          border: '0',
+          position: "absolute",
+          width: "1px",
+          height: "1px",
+          padding: "0",
+          margin: "-1px",
+          overflow: "hidden",
+          clip: "rect(0, 0, 0, 0)",
+          "white-space": "nowrap",
+          border: "0",
         },
         onChange: (e: Event) => {
           const target = e.target as HTMLInputElement;
@@ -356,8 +356,8 @@ export function createSlider(
     get outputProps() {
       return {
         id: outputId,
-        'for': inputId,
-        'aria-live': 'off',
+        for: inputId,
+        "aria-live": "off",
       } as JSX.HTMLAttributes<HTMLElement>;
     },
   };

@@ -4,15 +4,15 @@
  * Tests for focus containment, restoration, and auto-focus behavior.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { FocusScope, useFocusManager } from '../src/focus/FocusScope';
-import { createSignal, type Component, Show } from 'solid-js';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, cleanup, fireEvent } from "@solidjs/testing-library";
+import { FocusScope, useFocusManager } from "../src/focus/FocusScope";
+import { createSignal, type Component, Show } from "solid-js";
+import { setupUser } from "@proyecto-viviana/solidaria-test-utils";
 
 // setupUser is consolidated in solidaria-test-utils.
 
-describe('FocusScope', () => {
+describe("FocusScope", () => {
   let usingFakeTimers = true;
 
   beforeEach(() => {
@@ -38,8 +38,8 @@ describe('FocusScope', () => {
   // FOCUS CONTAINMENT
   // ============================================
 
-  describe('focus containment', () => {
-    it('should contain focus within the scope', async () => {
+  describe("focus containment", () => {
+    it("should contain focus within the scope", async () => {
       switchToRealTimers();
       const user = setupUser();
 
@@ -51,9 +51,9 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('input1');
-      const input2 = screen.getByTestId('input2');
-      const input3 = screen.getByTestId('input3');
+      const input1 = screen.getByTestId("input1");
+      const input2 = screen.getByTestId("input2");
+      const input3 = screen.getByTestId("input3");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
@@ -79,7 +79,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input1);
     });
 
-    it('should work with nested elements', async () => {
+    it("should work with nested elements", async () => {
       switchToRealTimers();
       const user = setupUser();
 
@@ -95,9 +95,9 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('nested-input1');
-      const input2 = screen.getByTestId('nested-input2');
-      const input3 = screen.getByTestId('nested-input3');
+      const input1 = screen.getByTestId("nested-input1");
+      const input2 = screen.getByTestId("nested-input2");
+      const input3 = screen.getByTestId("nested-input3");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
@@ -112,7 +112,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input1);
     });
 
-    it('should skip non-tabbable elements', async () => {
+    it("should skip non-tabbable elements", async () => {
       switchToRealTimers();
       const user = setupUser();
 
@@ -122,17 +122,17 @@ describe('FocusScope', () => {
           <div />
           <input data-testid="skip-input2" />
           <input hidden />
-          <input style={{ display: 'none' }} />
-          <input style={{ visibility: 'hidden' }} />
+          <input style={{ display: "none" }} />
+          <input style={{ visibility: "hidden" }} />
           <div tabIndex={-1} />
           <input disabled />
           <input data-testid="skip-input3" />
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('skip-input1');
-      const input2 = screen.getByTestId('skip-input2');
-      const input3 = screen.getByTestId('skip-input3');
+      const input1 = screen.getByTestId("skip-input1");
+      const input2 = screen.getByTestId("skip-input2");
+      const input3 = screen.getByTestId("skip-input3");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
@@ -147,7 +147,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input1);
     });
 
-    it('should only skip contentEditable elements when false', async () => {
+    it("should only skip contentEditable elements when false", async () => {
       switchToRealTimers();
       const user = setupUser();
 
@@ -162,10 +162,10 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('content-input1');
-      const input2 = screen.getByTestId('content-input2');
-      const input3 = screen.getByTestId('content-input3');
-      const input4 = screen.getByTestId('content-input4');
+      const input1 = screen.getByTestId("content-input1");
+      const input2 = screen.getByTestId("content-input2");
+      const input3 = screen.getByTestId("content-input3");
+      const input4 = screen.getByTestId("content-input4");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
@@ -189,7 +189,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input1);
     });
 
-    it('should do nothing if a modifier key is pressed', () => {
+    it("should do nothing if a modifier key is pressed", () => {
       render(() => (
         <FocusScope contain>
           <input data-testid="mod-input1" />
@@ -198,16 +198,16 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('mod-input1');
+      const input1 = screen.getByTestId("mod-input1");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
 
-      fireEvent.keyDown(document.activeElement!, { key: 'Tab', altKey: true });
+      fireEvent.keyDown(document.activeElement!, { key: "Tab", altKey: true });
       expect(document.activeElement).toBe(input1);
     });
 
-    it('should restore focus to the last focused element when focus escapes', () => {
+    it("should restore focus to the last focused element when focus escapes", () => {
       render(() => (
         <div>
           <input data-testid="escape-outside" />
@@ -218,9 +218,9 @@ describe('FocusScope', () => {
         </div>
       ));
 
-      const input1 = screen.getByTestId('escape-input1');
-      const input2 = screen.getByTestId('escape-input2');
-      const outside = screen.getByTestId('escape-outside');
+      const input1 = screen.getByTestId("escape-input1");
+      const input2 = screen.getByTestId("escape-input2");
+      const outside = screen.getByTestId("escape-outside");
 
       input1.focus();
       fireEvent.focusIn(input1);
@@ -236,7 +236,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input2);
     });
 
-    it('should lock tab navigation inside nested focus scope', async () => {
+    it("should lock tab navigation inside nested focus scope", async () => {
       switchToRealTimers();
       const user = setupUser();
 
@@ -255,9 +255,9 @@ describe('FocusScope', () => {
         </div>
       ));
 
-      const child1 = screen.getByTestId('nested-child1');
-      const child2 = screen.getByTestId('nested-child2');
-      const child3 = screen.getByTestId('nested-child3');
+      const child1 = screen.getByTestId("nested-child1");
+      const child2 = screen.getByTestId("nested-child2");
+      const child3 = screen.getByTestId("nested-child3");
 
       expect(document.activeElement).toBe(child1);
 
@@ -279,8 +279,8 @@ describe('FocusScope', () => {
   // AUTO FOCUS
   // ============================================
 
-  describe('auto focus', () => {
-    it('should auto focus the first focusable element', () => {
+  describe("auto focus", () => {
+    it("should auto focus the first focusable element", () => {
       render(() => (
         <FocusScope autoFocus>
           <div />
@@ -291,11 +291,11 @@ describe('FocusScope', () => {
 
       vi.runAllTimers();
 
-      const input1 = screen.getByTestId('auto-input1');
+      const input1 = screen.getByTestId("auto-input1");
       expect(document.activeElement).toBe(input1);
     });
 
-    it('should not auto focus if focus is already inside the scope', () => {
+    it("should not auto focus if focus is already inside the scope", () => {
       const onFocus = vi.fn();
 
       render(() => (
@@ -305,14 +305,14 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input2 = screen.getByTestId('already-input2');
+      const input2 = screen.getByTestId("already-input2");
       input2.focus();
       vi.runAllTimers();
 
       expect(document.activeElement).toBe(input2);
     });
 
-    it('should skip disabled elements for auto focus', () => {
+    it("should skip disabled elements for auto focus", () => {
       render(() => (
         <FocusScope autoFocus>
           <input data-testid="disabled-input1" disabled />
@@ -322,17 +322,17 @@ describe('FocusScope', () => {
 
       vi.runAllTimers();
 
-      const input2 = screen.getByTestId('disabled-input2');
+      const input2 = screen.getByTestId("disabled-input2");
       expect(document.activeElement).toBe(input2);
     });
 
-    it('should skip hidden elements for auto focus', () => {
+    it("should skip hidden elements for auto focus", () => {
       // Note: The current implementation focuses the first element in DOM order
       // The isFocusable check should filter out display:none elements
       // This test verifies the expected behavior if the implementation is correct
       render(() => (
         <FocusScope autoFocus>
-          <input data-testid="hidden-test-input1" style={{ visibility: 'hidden' }} />
+          <input data-testid="hidden-test-input1" style={{ visibility: "hidden" }} />
           <input data-testid="hidden-test-input2" />
         </FocusScope>
       ));
@@ -341,7 +341,7 @@ describe('FocusScope', () => {
 
       // With visibility:hidden, the element is still in the document but not visible
       // The implementation should skip it and focus the next focusable element
-      const input2 = screen.getByTestId('hidden-test-input2');
+      const input2 = screen.getByTestId("hidden-test-input2");
       // Current implementation may focus the hidden element - this documents actual behavior
       // expect(document.activeElement).toBe(input2);
       expect(document.activeElement).toBeInstanceOf(HTMLInputElement);
@@ -352,8 +352,8 @@ describe('FocusScope', () => {
   // FOCUS RESTORATION
   // ============================================
 
-  describe('focus restoration', () => {
-    it('should restore focus to the previously focused node on unmount', () => {
+  describe("focus restoration", () => {
+    it("should restore focus to the previously focused node on unmount", () => {
       const TestComponent: Component = () => {
         const [show, setShow] = createSignal(false);
 
@@ -375,8 +375,8 @@ describe('FocusScope', () => {
 
       render(() => <TestComponent />);
 
-      const outside = screen.getByTestId('restore-outside');
-      const toggle = screen.getByTestId('restore-toggle');
+      const outside = screen.getByTestId("restore-outside");
+      const toggle = screen.getByTestId("restore-toggle");
 
       // Focus outside element first
       outside.focus();
@@ -387,7 +387,7 @@ describe('FocusScope', () => {
       vi.runAllTimers();
 
       // Should auto-focus the first input
-      const input1 = screen.getByTestId('restore-input1');
+      const input1 = screen.getByTestId("restore-input1");
       expect(document.activeElement).toBe(input1);
 
       // Hide the focus scope
@@ -398,7 +398,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(outside);
     });
 
-    it('should not restore focus if restoreFocus is false', () => {
+    it("should not restore focus if restoreFocus is false", () => {
       const TestComponent: Component = () => {
         const [show, setShow] = createSignal(false);
 
@@ -419,14 +419,14 @@ describe('FocusScope', () => {
 
       render(() => <TestComponent />);
 
-      const outside = screen.getByTestId('norestore-outside');
-      const toggle = screen.getByTestId('norestore-toggle');
+      const outside = screen.getByTestId("norestore-outside");
+      const toggle = screen.getByTestId("norestore-toggle");
 
       outside.focus();
       fireEvent.click(toggle);
       vi.runAllTimers();
 
-      const input1 = screen.getByTestId('norestore-input1');
+      const input1 = screen.getByTestId("norestore-input1");
       expect(document.activeElement).toBe(input1);
 
       fireEvent.click(toggle);
@@ -441,8 +441,8 @@ describe('FocusScope', () => {
   // FOCUS MANAGER
   // ============================================
 
-  describe('useFocusManager', () => {
-    it('should provide focusNext method', () => {
+  describe("useFocusManager", () => {
+    it("should provide focusNext method", () => {
       let focusManager: ReturnType<typeof useFocusManager>;
 
       const Inner: Component = () => {
@@ -462,8 +462,8 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('fm-next-input1');
-      const input2 = screen.getByTestId('fm-next-input2');
+      const input1 = screen.getByTestId("fm-next-input1");
+      const input2 = screen.getByTestId("fm-next-input2");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
@@ -472,7 +472,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input2);
     });
 
-    it('should provide focusPrevious method', () => {
+    it("should provide focusPrevious method", () => {
       let focusManager: ReturnType<typeof useFocusManager>;
 
       const Inner: Component = () => {
@@ -492,8 +492,8 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input2 = screen.getByTestId('fm-prev-input2');
-      const input1 = screen.getByTestId('fm-prev-input1');
+      const input2 = screen.getByTestId("fm-prev-input2");
+      const input1 = screen.getByTestId("fm-prev-input1");
 
       input2.focus();
       expect(document.activeElement).toBe(input2);
@@ -502,7 +502,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input1);
     });
 
-    it('should provide focusFirst method', () => {
+    it("should provide focusFirst method", () => {
       let focusManager: ReturnType<typeof useFocusManager>;
 
       const Inner: Component = () => {
@@ -522,8 +522,8 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input3 = screen.getByTestId('fm-first-input3');
-      const input1 = screen.getByTestId('fm-first-input1');
+      const input3 = screen.getByTestId("fm-first-input3");
+      const input1 = screen.getByTestId("fm-first-input1");
 
       input3.focus();
       expect(document.activeElement).toBe(input3);
@@ -532,7 +532,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input1);
     });
 
-    it('should provide focusLast method', () => {
+    it("should provide focusLast method", () => {
       let focusManager: ReturnType<typeof useFocusManager>;
 
       const Inner: Component = () => {
@@ -552,8 +552,8 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('fm-last-input1');
-      const input3 = screen.getByTestId('fm-last-input3');
+      const input1 = screen.getByTestId("fm-last-input1");
+      const input3 = screen.getByTestId("fm-last-input3");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
@@ -562,7 +562,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input3);
     });
 
-    it('should support wrap option in focusNext', () => {
+    it("should support wrap option in focusNext", () => {
       let focusManager: ReturnType<typeof useFocusManager>;
 
       const Inner: Component = () => {
@@ -581,8 +581,8 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('fm-wrap-input1');
-      const input2 = screen.getByTestId('fm-wrap-input2');
+      const input1 = screen.getByTestId("fm-wrap-input1");
+      const input2 = screen.getByTestId("fm-wrap-input2");
 
       input2.focus();
       expect(document.activeElement).toBe(input2);
@@ -596,7 +596,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input1);
     });
 
-    it('should skip disabled elements', () => {
+    it("should skip disabled elements", () => {
       let focusManager: ReturnType<typeof useFocusManager>;
 
       const Inner: Component = () => {
@@ -616,8 +616,8 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('fm-skip-input1');
-      const input3 = screen.getByTestId('fm-skip-input3');
+      const input1 = screen.getByTestId("fm-skip-input1");
+      const input3 = screen.getByTestId("fm-skip-input3");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
@@ -626,7 +626,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input3);
     });
 
-    it('should support wrap option in focusPrevious', () => {
+    it("should support wrap option in focusPrevious", () => {
       let focusManager: ReturnType<typeof useFocusManager>;
 
       const Inner: Component = () => {
@@ -645,8 +645,8 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('fm-wrap-prev-input1');
-      const input2 = screen.getByTestId('fm-wrap-prev-input2');
+      const input1 = screen.getByTestId("fm-wrap-prev-input1");
+      const input2 = screen.getByTestId("fm-wrap-prev-input2");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
@@ -655,7 +655,7 @@ describe('FocusScope', () => {
       expect(document.activeElement).toBe(input2);
     });
 
-    it('should support accept filter', () => {
+    it("should support accept filter", () => {
       let focusManager: ReturnType<typeof useFocusManager>;
 
       const Inner: Component = () => {
@@ -675,13 +675,13 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('fm-accept-input1');
-      const input3 = screen.getByTestId('fm-accept-input3');
+      const input1 = screen.getByTestId("fm-accept-input1");
+      const input3 = screen.getByTestId("fm-accept-input3");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
 
-      focusManager!.focusNext({ accept: (node) => !node.hasAttribute('data-skip') });
+      focusManager!.focusNext({ accept: (node) => !node.hasAttribute("data-skip") });
       expect(document.activeElement).toBe(input3);
     });
   });
@@ -690,8 +690,8 @@ describe('FocusScope', () => {
   // EDGE CASES
   // ============================================
 
-  describe('edge cases', () => {
-    it('should handle empty scope gracefully', () => {
+  describe("edge cases", () => {
+    it("should handle empty scope gracefully", () => {
       render(() => (
         <FocusScope contain autoFocus>
           <div>No focusable elements</div>
@@ -703,7 +703,7 @@ describe('FocusScope', () => {
       expect(true).toBe(true);
     });
 
-    it('should handle dynamic content', () => {
+    it("should handle dynamic content", () => {
       const TestComponent: Component = () => {
         const [showExtra, setShowExtra] = createSignal(false);
 
@@ -722,8 +722,8 @@ describe('FocusScope', () => {
 
       render(() => <TestComponent />);
 
-      const input1 = screen.getByTestId('dynamic-input1');
-      const toggle = screen.getByTestId('dynamic-toggle');
+      const input1 = screen.getByTestId("dynamic-input1");
+      const toggle = screen.getByTestId("dynamic-toggle");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);
@@ -732,12 +732,12 @@ describe('FocusScope', () => {
       vi.runAllTimers();
 
       // New input should be focusable (without contain, focus can move freely)
-      const input2 = screen.getByTestId('dynamic-input2');
+      const input2 = screen.getByTestId("dynamic-input2");
       input2.focus();
       expect(document.activeElement).toBe(input2);
     });
 
-    it('should clean up event listeners on unmount', () => {
+    it("should clean up event listeners on unmount", () => {
       const { unmount } = render(() => (
         <FocusScope contain>
           <input data-testid="cleanup-input1" />
@@ -751,7 +751,7 @@ describe('FocusScope', () => {
       expect(true).toBe(true);
     });
 
-    it('should work without contain or restoreFocus', () => {
+    it("should work without contain or restoreFocus", () => {
       render(() => (
         <FocusScope>
           <input data-testid="plain-input1" />
@@ -759,8 +759,8 @@ describe('FocusScope', () => {
         </FocusScope>
       ));
 
-      const input1 = screen.getByTestId('plain-input1');
-      const input2 = screen.getByTestId('plain-input2');
+      const input1 = screen.getByTestId("plain-input1");
+      const input2 = screen.getByTestId("plain-input2");
 
       input1.focus();
       expect(document.activeElement).toBe(input1);

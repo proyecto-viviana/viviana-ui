@@ -2,8 +2,8 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { createRoot, createSignal, createEffect } from 'solid-js';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { createRoot, createSignal, createEffect } from "solid-js";
 import {
   // Basic utilities
   createIsSSR,
@@ -23,28 +23,28 @@ import {
   getOwnerDocument,
   getOwnerWindow,
   getPortalContainer,
-} from '../src/ssr';
+} from "../src/ssr";
 
 // ============================================
 // BASIC UTILITIES
 // ============================================
 
-describe('createIsSSR', () => {
-  it('should return false in jsdom (browser environment)', () => {
+describe("createIsSSR", () => {
+  it("should return false in jsdom (browser environment)", () => {
     // In jsdom, we're simulating a browser environment
     const isSSR = createIsSSR();
     expect(isSSR).toBe(false);
   });
 });
 
-describe('canUseDOM', () => {
-  it('should be true in jsdom environment', () => {
+describe("canUseDOM", () => {
+  it("should be true in jsdom environment", () => {
     expect(canUseDOM).toBe(true);
   });
 });
 
-describe('createId', () => {
-  it('should generate unique IDs', () => {
+describe("createId", () => {
+  it("should generate unique IDs", () => {
     createRoot((dispose) => {
       const id1 = createId();
       const id2 = createId();
@@ -59,9 +59,9 @@ describe('createId', () => {
     });
   });
 
-  it('should return provided default ID', () => {
+  it("should return provided default ID", () => {
     createRoot((dispose) => {
-      const customId = 'my-custom-id';
+      const customId = "my-custom-id";
       const id = createId(customId);
 
       expect(id).toBe(customId);
@@ -70,7 +70,7 @@ describe('createId', () => {
     });
   });
 
-  it('should generate different IDs on each call', () => {
+  it("should generate different IDs on each call", () => {
     createRoot((dispose) => {
       const ids = new Set<string>();
       for (let i = 0; i < 100; i++) {
@@ -88,8 +88,8 @@ describe('createId', () => {
 // SSR PROVIDER
 // ============================================
 
-describe('SSRProvider', () => {
-  it('should provide context to children', () => {
+describe("SSRProvider", () => {
+  it("should provide context to children", () => {
     createRoot((dispose) => {
       let capturedId: string | undefined;
 
@@ -109,7 +109,7 @@ describe('SSRProvider', () => {
     });
   });
 
-  it('should support custom prefix', () => {
+  it("should support custom prefix", () => {
     createRoot((dispose) => {
       let capturedId: string | undefined;
 
@@ -129,7 +129,7 @@ describe('SSRProvider', () => {
     });
   });
 
-  it('should support nested providers with combined prefixes', () => {
+  it("should support nested providers with combined prefixes", () => {
     createRoot((dispose) => {
       let outerId: string | undefined;
       let innerId: string | undefined;
@@ -162,8 +162,8 @@ describe('SSRProvider', () => {
 // HYDRATION STATE
 // ============================================
 
-describe('createHydrationState', () => {
-  it('should return false after mount in browser', async () => {
+describe("createHydrationState", () => {
+  it("should return false after mount in browser", async () => {
     await new Promise<void>((resolve) => {
       createRoot((dispose) => {
         const isHydrating = createHydrationState();
@@ -180,8 +180,8 @@ describe('createHydrationState', () => {
   });
 });
 
-describe('useIsSSR', () => {
-  it('should return false after hydration in browser', async () => {
+describe("useIsSSR", () => {
+  it("should return false after hydration in browser", async () => {
     await new Promise<void>((resolve) => {
       createRoot((dispose) => {
         const isSSR = useIsSSR();
@@ -200,8 +200,8 @@ describe('useIsSSR', () => {
 // BROWSER-SAFE UTILITIES
 // ============================================
 
-describe('createBrowserEffect', () => {
-  it('should run effect in browser', async () => {
+describe("createBrowserEffect", () => {
+  it("should run effect in browser", async () => {
     await new Promise<void>((resolve) => {
       createRoot((dispose) => {
         let effectRan = false;
@@ -219,7 +219,7 @@ describe('createBrowserEffect', () => {
     });
   });
 
-  it('should support cleanup function', async () => {
+  it("should support cleanup function", async () => {
     await new Promise<void>((resolve) => {
       createRoot((dispose) => {
         let cleanupRan = false;
@@ -241,8 +241,8 @@ describe('createBrowserEffect', () => {
   });
 });
 
-describe('createBrowserValue', () => {
-  it('should compute value in browser after mount', async () => {
+describe("createBrowserValue", () => {
+  it("should compute value in browser after mount", async () => {
     await new Promise<void>((resolve) => {
       createRoot((dispose) => {
         const value = createBrowserValue(() => 42, 0);
@@ -260,27 +260,24 @@ describe('createBrowserValue', () => {
     });
   });
 
-  it('should return fallback value initially', () => {
+  it("should return fallback value initially", () => {
     createRoot((dispose) => {
-      const value = createBrowserValue(() => 'computed', 'fallback');
+      const value = createBrowserValue(() => "computed", "fallback");
 
       // Before mount
-      expect(value()).toBe('fallback');
+      expect(value()).toBe("fallback");
 
       dispose();
     });
   });
 
-  it('should work with window properties', async () => {
+  it("should work with window properties", async () => {
     await new Promise<void>((resolve) => {
       createRoot((dispose) => {
-        const width = createBrowserValue(
-          () => window.innerWidth,
-          0
-        );
+        const width = createBrowserValue(() => window.innerWidth, 0);
 
         setTimeout(() => {
-          expect(typeof width()).toBe('number');
+          expect(typeof width()).toBe("number");
           expect(width()).toBeGreaterThan(0);
           dispose();
           resolve();
@@ -294,23 +291,23 @@ describe('createBrowserValue', () => {
 // SAFE DOM ACCESS
 // ============================================
 
-describe('getWindow', () => {
-  it('should return window in browser', () => {
+describe("getWindow", () => {
+  it("should return window in browser", () => {
     const win = getWindow();
     expect(win).toBe(window);
   });
 });
 
-describe('getDocument', () => {
-  it('should return document in browser', () => {
+describe("getDocument", () => {
+  it("should return document in browser", () => {
     const doc = getDocument();
     expect(doc).toBe(document);
   });
 });
 
-describe('getOwnerDocument', () => {
-  it('should return document for element', () => {
-    const element = document.createElement('div');
+describe("getOwnerDocument", () => {
+  it("should return document for element", () => {
+    const element = document.createElement("div");
     document.body.appendChild(element);
 
     const doc = getOwnerDocument(element);
@@ -319,20 +316,20 @@ describe('getOwnerDocument', () => {
     element.remove();
   });
 
-  it('should return document for null element', () => {
+  it("should return document for null element", () => {
     const doc = getOwnerDocument(null);
     expect(doc).toBe(document);
   });
 
-  it('should return document for undefined element', () => {
+  it("should return document for undefined element", () => {
     const doc = getOwnerDocument(undefined);
     expect(doc).toBe(document);
   });
 });
 
-describe('getOwnerWindow', () => {
-  it('should return window for element', () => {
-    const element = document.createElement('div');
+describe("getOwnerWindow", () => {
+  it("should return window for element", () => {
+    const element = document.createElement("div");
     document.body.appendChild(element);
 
     const win = getOwnerWindow(element);
@@ -341,21 +338,21 @@ describe('getOwnerWindow', () => {
     element.remove();
   });
 
-  it('should return window for null element', () => {
+  it("should return window for null element", () => {
     const win = getOwnerWindow(null);
     expect(win).toBe(window);
   });
 });
 
-describe('getPortalContainer', () => {
-  it('should return custom container if provided', () => {
-    const container = document.createElement('div');
+describe("getPortalContainer", () => {
+  it("should return custom container if provided", () => {
+    const container = document.createElement("div");
     const result = getPortalContainer(container);
 
     expect(result).toBe(container);
   });
 
-  it('should return document.body if no container provided', () => {
+  it("should return document.body if no container provided", () => {
     const result = getPortalContainer();
     expect(result).toBe(document.body);
   });
@@ -365,8 +362,8 @@ describe('getPortalContainer', () => {
 // INTEGRATION TESTS
 // ============================================
 
-describe('SSR Integration', () => {
-  it('should work with SolidJS components', () => {
+describe("SSR Integration", () => {
+  it("should work with SolidJS components", () => {
     createRoot((dispose) => {
       let labelId: string | undefined;
       let inputId: string | undefined;
@@ -391,7 +388,7 @@ describe('SSR Integration', () => {
     });
   });
 
-  it('should handle multiple SSR providers in parallel', () => {
+  it("should handle multiple SSR providers in parallel", () => {
     createRoot((dispose) => {
       let widget1Id: string | undefined;
       let widget2Id: string | undefined;

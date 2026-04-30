@@ -1,28 +1,28 @@
 /**
  * Tests for Popover component
  */
-import { describe, it, expect, afterEach } from 'vitest'
-import { render, screen, cleanup, waitFor } from '@solidjs/testing-library'
-import { UNSAFE_PortalProvider } from '@proyecto-viviana/solidaria'
-import { Popover, PopoverTrigger, usePopoverTrigger } from '../src/Popover'
-import { Button } from '../src/Button'
-import { createSignal } from 'solid-js'
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils'
+import { describe, it, expect, afterEach } from "vitest";
+import { render, screen, cleanup, waitFor } from "@solidjs/testing-library";
+import { UNSAFE_PortalProvider } from "@proyecto-viviana/solidaria";
+import { Popover, PopoverTrigger, usePopoverTrigger } from "../src/Popover";
+import { Button } from "../src/Button";
+import { createSignal } from "solid-js";
+import { setupUser } from "@proyecto-viviana/solidaria-test-utils";
 
 // setupUser is consolidated in solidaria-test-utils.
 
-describe('Popover', () => {
+describe("Popover", () => {
   afterEach(() => {
-    cleanup()
-  })
+    cleanup();
+  });
 
-  describe('PopoverTrigger', () => {
-    it('should provide context to children', () => {
-      let capturedContext: any = null
+  describe("PopoverTrigger", () => {
+    it("should provide context to children", () => {
+      let capturedContext: any = null;
 
       function ContextCapture() {
-        capturedContext = usePopoverTrigger()
-        return <div data-testid="capture">Context: {capturedContext ? 'found' : 'null'}</div>
+        capturedContext = usePopoverTrigger();
+        return <div data-testid="capture">Context: {capturedContext ? "found" : "null"}</div>;
       }
 
       render(() => (
@@ -30,24 +30,24 @@ describe('Popover', () => {
           <ContextCapture />
           <Popover>Content</Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      expect(capturedContext).not.toBeNull()
-      expect(capturedContext.state).toBeDefined()
-      expect(typeof capturedContext.state.toggle).toBe('function')
-      expect(typeof capturedContext.state.isOpen).toBe('function')
-    })
+      expect(capturedContext).not.toBeNull();
+      expect(capturedContext.state).toBeDefined();
+      expect(typeof capturedContext.state.toggle).toBe("function");
+      expect(typeof capturedContext.state.isOpen).toBe("function");
+    });
 
-    it('should toggle state when toggle is called directly', () => {
-      let capturedContext: any = null
+    it("should toggle state when toggle is called directly", () => {
+      let capturedContext: any = null;
 
       function ContextCapture() {
-        capturedContext = usePopoverTrigger()
+        capturedContext = usePopoverTrigger();
         return (
           <button data-testid="toggle-btn" onClick={() => capturedContext?.state.toggle()}>
             Toggle
           </button>
-        )
+        );
       }
 
       render(() => (
@@ -55,20 +55,20 @@ describe('Popover', () => {
           <ContextCapture />
           <Popover>Content</Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      expect(capturedContext.state.isOpen()).toBe(false)
+      expect(capturedContext.state.isOpen()).toBe(false);
 
-      const btn = screen.getByTestId('toggle-btn')
-      btn.click()
+      const btn = screen.getByTestId("toggle-btn");
+      btn.click();
 
-      expect(capturedContext.state.isOpen()).toBe(true)
-    })
-  })
+      expect(capturedContext.state.isOpen()).toBe(true);
+    });
+  });
 
-  describe('Popover component', () => {
-    it('should render popover content when open', async () => {
-      const user = setupUser()
+  describe("Popover component", () => {
+    it("should render popover content when open", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
@@ -77,73 +77,73 @@ describe('Popover', () => {
             <div data-testid="popover-content">Popover Content</div>
           </Popover>
         </PopoverTrigger>
-      ))
+      ));
 
       // Popover should not be visible initially
-      expect(screen.queryByTestId('popover-content')).not.toBeInTheDocument()
+      expect(screen.queryByTestId("popover-content")).not.toBeInTheDocument();
 
       // Click to open
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
 
       // Now popover should be visible
-      expect(screen.getByTestId('popover-content')).toBeInTheDocument()
-    })
+      expect(screen.getByTestId("popover-content")).toBeInTheDocument();
+    });
 
     it('should have role="dialog" when modal', async () => {
-      const user = setupUser()
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
           <Button>Open</Button>
           <Popover>Content</Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
 
       // Wait for requestAnimationFrame to complete (positioning sets visibility)
       await waitFor(() => {
-        expect(screen.getByRole('dialog')).toBeInTheDocument()
-      })
-    })
+        expect(screen.getByRole("dialog")).toBeInTheDocument();
+      });
+    });
 
-    it('should expose an accessible name when labelled', async () => {
-      const user = setupUser()
+    it("should expose an accessible name when labelled", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
           <Button>Open</Button>
           <Popover aria-label="Quick audit note">Content</Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      await user.click(screen.getByRole('button', { name: 'Open' }))
+      await user.click(screen.getByRole("button", { name: "Open" }));
 
       await waitFor(() => {
-        expect(screen.getByRole('dialog', { name: 'Quick audit note' })).toBeInTheDocument()
-      })
-    })
+        expect(screen.getByRole("dialog", { name: "Quick audit note" })).toBeInTheDocument();
+      });
+    });
 
-    it('should support isNonModal (no dialog role)', async () => {
-      const user = setupUser()
+    it("should support isNonModal (no dialog role)", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
           <Button>Open</Button>
           <Popover isNonModal>Content</Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
 
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    })
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
 
-    it('should support controlled isOpen', () => {
-      const [isOpen, setIsOpen] = createSignal(false)
+    it("should support controlled isOpen", () => {
+      const [isOpen, setIsOpen] = createSignal(false);
 
       render(() => (
         <>
@@ -157,43 +157,43 @@ describe('Popover', () => {
             </Popover>
           </PopoverTrigger>
         </>
-      ))
+      ));
 
-      expect(screen.queryByTestId('popover-content')).not.toBeInTheDocument()
+      expect(screen.queryByTestId("popover-content")).not.toBeInTheDocument();
 
       // Toggle from outside
-      screen.getByTestId('external-toggle').click()
-      expect(screen.getByTestId('popover-content')).toBeInTheDocument()
+      screen.getByTestId("external-toggle").click();
+      expect(screen.getByTestId("popover-content")).toBeInTheDocument();
 
       // Toggle again to close
-      screen.getByTestId('external-toggle').click()
-      expect(screen.queryByTestId('popover-content')).not.toBeInTheDocument()
-    })
+      screen.getByTestId("external-toggle").click();
+      expect(screen.queryByTestId("popover-content")).not.toBeInTheDocument();
+    });
 
-    it('should support placement prop', async () => {
-      const user = setupUser()
+    it("should support placement prop", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
           <Button>Open</Button>
           <Popover placement="top">Content</Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
 
       // Wait for requestAnimationFrame to complete (positioning sets visibility)
       await waitFor(() => {
-        const dialog = screen.getByRole('dialog')
+        const dialog = screen.getByRole("dialog");
         // The data-placement should eventually be set based on actual positioning
         // In tests without real positioning, it may start as null
-        expect(dialog).toBeInTheDocument()
-      })
-    })
+        expect(dialog).toBeInTheDocument();
+      });
+    });
 
-    it('should expose trigger width as a CSS variable', async () => {
-      const trigger = document.createElement('button')
+    it("should expose trigger width as a CSS variable", async () => {
+      const trigger = document.createElement("button");
       trigger.getBoundingClientRect = () => ({
         x: 0,
         y: 0,
@@ -204,24 +204,24 @@ describe('Popover', () => {
         width: 144,
         height: 32,
         toJSON: () => {},
-      })
-      document.body.appendChild(trigger)
+      });
+      document.body.appendChild(trigger);
 
       render(() => (
         <Popover defaultOpen triggerRef={() => trigger}>
           Content
         </Popover>
-      ))
+      ));
 
       await waitFor(() => {
-        expect(screen.getByRole('dialog').style.getPropertyValue('--trigger-width')).toBe('144px')
-      })
+        expect(screen.getByRole("dialog").style.getPropertyValue("--trigger-width")).toBe("144px");
+      });
 
-      document.body.removeChild(trigger)
-    })
+      document.body.removeChild(trigger);
+    });
 
-    it('should preserve an explicit trigger width CSS variable', async () => {
-      const trigger = document.createElement('button')
+    it("should preserve an explicit trigger width CSS variable", async () => {
+      const trigger = document.createElement("button");
       trigger.getBoundingClientRect = () => ({
         x: 0,
         y: 0,
@@ -232,50 +232,50 @@ describe('Popover', () => {
         width: 144,
         height: 32,
         toJSON: () => {},
-      })
-      document.body.appendChild(trigger)
+      });
+      document.body.appendChild(trigger);
 
       render(() => (
         <Popover
           defaultOpen
           triggerRef={() => trigger}
-          style={{ '--trigger-width': '88px' } as any}
+          style={{ "--trigger-width": "88px" } as any}
         >
           Content
         </Popover>
-      ))
+      ));
 
       await waitFor(() => {
-        expect(screen.getByRole('dialog').style.getPropertyValue('--trigger-width')).toBe('88px')
-      })
+        expect(screen.getByRole("dialog").style.getPropertyValue("--trigger-width")).toBe("88px");
+      });
 
-      document.body.removeChild(trigger)
-    })
+      document.body.removeChild(trigger);
+    });
 
-    it('should render with custom trigger name', async () => {
-      const user = setupUser()
+    it("should render with custom trigger name", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
           <Button>Open</Button>
           <Popover trigger="CustomTrigger">Content</Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
 
       // Wait for requestAnimationFrame to complete (positioning sets visibility)
       await waitFor(() => {
-        const dialog = screen.getByRole('dialog')
-        expect(dialog.getAttribute('data-trigger')).toBe('CustomTrigger')
-      })
-    })
+        const dialog = screen.getByRole("dialog");
+        expect(dialog.getAttribute("data-trigger")).toBe("CustomTrigger");
+      });
+    });
 
-    it('should render into the scoped portal container when provided', async () => {
-      const user = setupUser()
-      const portalRoot = document.createElement('div')
-      document.body.appendChild(portalRoot)
+    it("should render into the scoped portal container when provided", async () => {
+      const user = setupUser();
+      const portalRoot = document.createElement("div");
+      document.body.appendChild(portalRoot);
 
       render(() => (
         <UNSAFE_PortalProvider getContainer={() => portalRoot}>
@@ -284,21 +284,21 @@ describe('Popover', () => {
             <Popover>Scoped Content</Popover>
           </PopoverTrigger>
         </UNSAFE_PortalProvider>
-      ))
+      ));
 
-      await user.click(screen.getByRole('button', { name: 'Open' }))
+      await user.click(screen.getByRole("button", { name: "Open" }));
 
       await waitFor(() => {
-        expect(portalRoot.querySelector('[role=\"dialog\"]')).toBeTruthy()
-      })
+        expect(portalRoot.querySelector('[role="dialog"]')).toBeTruthy();
+      });
 
-      document.body.removeChild(portalRoot)
-    })
-  })
+      document.body.removeChild(portalRoot);
+    });
+  });
 
-  describe('Popover with render function children', () => {
-    it('should pass render props to children', async () => {
-      const user = setupUser()
+  describe("Popover with render function children", () => {
+    it("should pass render props to children", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
@@ -306,24 +306,24 @@ describe('Popover', () => {
           <Popover>
             {(renderProps) => (
               <div data-testid="content">
-                Trigger: {renderProps.trigger ?? 'none'}
-                Placement: {renderProps.placement ?? 'pending'}
+                Trigger: {renderProps.trigger ?? "none"}
+                Placement: {renderProps.placement ?? "pending"}
               </div>
             )}
           </Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
 
-      expect(screen.getByTestId('content')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByTestId("content")).toBeInTheDocument();
+    });
+  });
 
-  describe('Keyboard interactions', () => {
-    it('should close popover when Escape key is pressed', async () => {
-      const user = setupUser()
+  describe("Keyboard interactions", () => {
+    it("should close popover when Escape key is pressed", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
@@ -332,22 +332,22 @@ describe('Popover', () => {
             <div data-testid="popover-content">Content</div>
           </Popover>
         </PopoverTrigger>
-      ))
+      ));
 
       // Open popover
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
-      expect(screen.getByTestId('popover-content')).toBeInTheDocument()
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
+      expect(screen.getByTestId("popover-content")).toBeInTheDocument();
 
       // Press Escape to close
-      await user.keyboard('{Escape}')
+      await user.keyboard("{Escape}");
 
       // Popover should be closed
-      expect(screen.queryByTestId('popover-content')).not.toBeInTheDocument()
-    })
+      expect(screen.queryByTestId("popover-content")).not.toBeInTheDocument();
+    });
 
-    it('should not close when isKeyboardDismissDisabled is true', async () => {
-      const user = setupUser()
+    it("should not close when isKeyboardDismissDisabled is true", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
@@ -356,44 +356,44 @@ describe('Popover', () => {
             <div data-testid="popover-content">Content</div>
           </Popover>
         </PopoverTrigger>
-      ))
+      ));
 
       // Open popover
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
-      expect(screen.getByTestId('popover-content')).toBeInTheDocument()
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
+      expect(screen.getByTestId("popover-content")).toBeInTheDocument();
 
       // Press Escape - should NOT close
-      await user.keyboard('{Escape}')
+      await user.keyboard("{Escape}");
 
       // Popover should still be visible
-      expect(screen.getByTestId('popover-content')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByTestId("popover-content")).toBeInTheDocument();
+    });
+  });
 
-  describe('Focus management', () => {
-    it('should have tabIndex=-1 on dialog for focus management', async () => {
-      const user = setupUser()
+  describe("Focus management", () => {
+    it("should have tabIndex=-1 on dialog for focus management", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
           <Button>Open</Button>
           <Popover>Content</Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
 
       // Wait for requestAnimationFrame to complete (positioning sets visibility)
       await waitFor(() => {
-        const dialog = screen.getByRole('dialog')
-        expect(dialog.getAttribute('tabindex')).toBe('-1')
-      })
-    })
+        const dialog = screen.getByRole("dialog");
+        expect(dialog.getAttribute("tabindex")).toBe("-1");
+      });
+    });
 
-    it('should contain focus within popover when modal', async () => {
-      const user = setupUser()
+    it("should contain focus within popover when modal", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
@@ -403,30 +403,30 @@ describe('Popover', () => {
             <button data-testid="second-btn">Second</button>
           </Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const triggerButton = screen.getByRole('button', { name: 'Open' })
-      await user.click(triggerButton)
+      const triggerButton = screen.getByRole("button", { name: "Open" });
+      await user.click(triggerButton);
 
       // Wait for requestAnimationFrame to complete (positioning sets visibility)
       await waitFor(() => {
         // The popover dialog should exist
-        const dialog = screen.getByRole('dialog')
-        expect(dialog).toBeInTheDocument()
-      })
+        const dialog = screen.getByRole("dialog");
+        expect(dialog).toBeInTheDocument();
+      });
 
       // Tab through elements inside popover
-      const firstBtn = screen.getByTestId('first-btn')
-      const secondBtn = screen.getByTestId('second-btn')
+      const firstBtn = screen.getByTestId("first-btn");
+      const secondBtn = screen.getByTestId("second-btn");
 
-      expect(firstBtn).toBeInTheDocument()
-      expect(secondBtn).toBeInTheDocument()
-    })
-  })
+      expect(firstBtn).toBeInTheDocument();
+      expect(secondBtn).toBeInTheDocument();
+    });
+  });
 
-  describe('Outside click handling', () => {
-    it('should close popover when clicking outside', async () => {
-      const user = setupUser()
+  describe("Outside click handling", () => {
+    it("should close popover when clicking outside", async () => {
+      const user = setupUser();
 
       render(() => (
         <div>
@@ -438,26 +438,26 @@ describe('Popover', () => {
             </Popover>
           </PopoverTrigger>
         </div>
-      ))
+      ));
 
       // Open popover
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
-      expect(screen.getByTestId('popover-content')).toBeInTheDocument()
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
+      expect(screen.getByTestId("popover-content")).toBeInTheDocument();
 
       // Click outside
-      const outsideArea = screen.getByTestId('outside')
-      await user.click(outsideArea)
+      const outsideArea = screen.getByTestId("outside");
+      await user.click(outsideArea);
 
       await waitFor(() => {
-        expect(screen.queryByTestId('popover-content')).not.toBeInTheDocument()
-      })
-    })
-  })
+        expect(screen.queryByTestId("popover-content")).not.toBeInTheDocument();
+      });
+    });
+  });
 
-  describe('Animation states', () => {
-    it('should apply data-entering attribute when isEntering is true', async () => {
-      const user = setupUser()
+  describe("Animation states", () => {
+    it("should apply data-entering attribute when isEntering is true", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
@@ -466,21 +466,21 @@ describe('Popover', () => {
             <div data-testid="popover-content">Content</div>
           </Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
 
       // Wait for requestAnimationFrame to complete (positioning sets visibility)
       await waitFor(() => {
-        const dialog = screen.getByRole('dialog')
+        const dialog = screen.getByRole("dialog");
         // dataAttr returns '' (empty string) for true values - standard HTML boolean attribute
-        expect(dialog.hasAttribute('data-entering')).toBe(true)
-      })
-    })
+        expect(dialog.hasAttribute("data-entering")).toBe(true);
+      });
+    });
 
-    it('should apply data-exiting attribute when isExiting is true', async () => {
-      const user = setupUser()
+    it("should apply data-exiting attribute when isExiting is true", async () => {
+      const user = setupUser();
 
       render(() => (
         <PopoverTrigger>
@@ -489,66 +489,70 @@ describe('Popover', () => {
             <div data-testid="popover-content">Content</div>
           </Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
 
       // Wait for requestAnimationFrame to complete (positioning sets visibility)
       await waitFor(() => {
-        const dialog = screen.getByRole('dialog')
+        const dialog = screen.getByRole("dialog");
         // dataAttr returns '' (empty string) for true values - standard HTML boolean attribute
-        expect(dialog.hasAttribute('data-exiting')).toBe(true)
-      })
-    })
-  })
+        expect(dialog.hasAttribute("data-exiting")).toBe(true);
+      });
+    });
+  });
 
-  describe('Callbacks', () => {
-    it('should call onOpenChange when popover opens', async () => {
-      const user = setupUser()
-      let openChangeCalled = false
-      let lastOpenState: boolean | null = null
+  describe("Callbacks", () => {
+    it("should call onOpenChange when popover opens", async () => {
+      const user = setupUser();
+      let openChangeCalled = false;
+      let lastOpenState: boolean | null = null;
 
       render(() => (
-        <PopoverTrigger onOpenChange={(isOpen) => {
-          openChangeCalled = true
-          lastOpenState = isOpen
-        }}>
+        <PopoverTrigger
+          onOpenChange={(isOpen) => {
+            openChangeCalled = true;
+            lastOpenState = isOpen;
+          }}
+        >
           <Button>Open</Button>
           <Popover>Content</Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
 
-      expect(openChangeCalled).toBe(true)
-      expect(lastOpenState).toBe(true)
-    })
+      expect(openChangeCalled).toBe(true);
+      expect(lastOpenState).toBe(true);
+    });
 
-    it('should call onOpenChange when popover closes via Escape', async () => {
-      const user = setupUser()
-      const openChangeStates: boolean[] = []
+    it("should call onOpenChange when popover closes via Escape", async () => {
+      const user = setupUser();
+      const openChangeStates: boolean[] = [];
 
       render(() => (
-        <PopoverTrigger onOpenChange={(isOpen) => {
-          openChangeStates.push(isOpen)
-        }}>
+        <PopoverTrigger
+          onOpenChange={(isOpen) => {
+            openChangeStates.push(isOpen);
+          }}
+        >
           <Button>Open</Button>
           <Popover>Content</Popover>
         </PopoverTrigger>
-      ))
+      ));
 
-      const button = screen.getByRole('button', { name: 'Open' })
-      await user.click(button)
-      await user.keyboard('{Escape}')
+      const button = screen.getByRole("button", { name: "Open" });
+      await user.click(button);
+      await user.keyboard("{Escape}");
 
-      expect(openChangeStates).toEqual([true, false])
-    })
-  })
+      expect(openChangeStates).toEqual([true, false]);
+    });
+  });
 
-  describe('defaultOpen prop', () => {
-    it('should start open when defaultOpen is true', () => {
+  describe("defaultOpen prop", () => {
+    it("should start open when defaultOpen is true", () => {
       render(() => (
         <PopoverTrigger defaultOpen>
           <Button>Open</Button>
@@ -556,10 +560,10 @@ describe('Popover', () => {
             <div data-testid="popover-content">Content</div>
           </Popover>
         </PopoverTrigger>
-      ))
+      ));
 
       // Popover should be visible immediately
-      expect(screen.getByTestId('popover-content')).toBeInTheDocument()
-    })
-  })
-})
+      expect(screen.getByTestId("popover-content")).toBeInTheDocument();
+    });
+  });
+});

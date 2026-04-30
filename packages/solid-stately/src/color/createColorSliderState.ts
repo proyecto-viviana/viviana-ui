@@ -3,9 +3,9 @@
  * Based on @react-stately/color useColorSliderState.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
-import type { Color, ColorChannel } from './types';
-import { normalizeColor } from './Color';
+import { createSignal, createMemo, type Accessor } from "solid-js";
+import type { Color, ColorChannel } from "./types";
+import { normalizeColor } from "./Color";
 
 export interface ColorSliderStateOptions {
   /** The current color value (controlled). */
@@ -70,7 +70,7 @@ export interface ColorSliderState {
  * Creates state for a color slider.
  */
 export function createColorSliderState(
-  options: Accessor<ColorSliderStateOptions>
+  options: Accessor<ColorSliderStateOptions>,
 ): ColorSliderState {
   const getOptions = () => options();
 
@@ -101,12 +101,12 @@ export function createColorSliderState(
     if (opts.value !== undefined) {
       return normalizeColor(opts.value);
     }
-    return internalValue() ?? normalizeColor('#ff0000');
+    return internalValue() ?? normalizeColor("#ff0000");
   });
 
   const channel = createMemo(() => getOptions().channel);
   const isDisabled = createMemo(() => getOptions().isDisabled ?? false);
-  const locale = createMemo(() => getOptions().locale ?? 'en-US');
+  const locale = createMemo(() => getOptions().locale ?? "en-US");
 
   // Get channel range
   const channelRange = createMemo(() => value().getChannelRange(channel()));
@@ -190,7 +190,7 @@ export function createColorSliderState(
   // Get display color (alpha = 1)
   const getDisplayColor = () => {
     const v = value();
-    return v.withChannelValue('alpha', 1);
+    return v.withChannelValue("alpha", 1);
   };
 
   // Get formatted value label

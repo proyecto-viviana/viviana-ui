@@ -3,13 +3,13 @@
  * Based on @react-aria/grid/useGrid.
  */
 
-import { createMemo, createSignal, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { createId } from '@proyecto-viviana/solid-stately';
-import type { GridState, GridCollection, Key } from '@proyecto-viviana/solid-stately';
-import type { GridProps, GridAria, KeyboardDelegate } from './types';
-import { GridKeyboardDelegate } from './GridKeyboardDelegate';
-import { useLocale } from '../i18n';
+import { createMemo, createSignal, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import { createId } from "@proyecto-viviana/solid-stately";
+import type { GridState, GridCollection, Key } from "@proyecto-viviana/solid-stately";
+import type { GridProps, GridAria, KeyboardDelegate } from "./types";
+import { GridKeyboardDelegate } from "./GridKeyboardDelegate";
+import { useLocale } from "../i18n";
 
 // Global map to store grid metadata for child components
 const gridMap = new WeakMap<
@@ -35,7 +35,7 @@ export function getGridData<T>(state: GridState<T, GridCollection<T>>) {
 export function createGrid<T extends object>(
   props: Accessor<GridProps>,
   state: Accessor<GridState<T, GridCollection<T>>>,
-  ref: Accessor<HTMLElement | null>
+  ref: Accessor<HTMLElement | null>,
 ): GridAria {
   const id = createId(props().id);
   const locale = useLocale();
@@ -56,7 +56,7 @@ export function createGrid<T extends object>(
       collection: s.collection,
       disabledKeys: s.disabledKeys,
       ref,
-      focusMode: p.focusMode ?? 'row',
+      focusMode: p.focusMode ?? "row",
       direction: locale().direction,
     });
   });
@@ -93,7 +93,7 @@ export function createGrid<T extends object>(
     const focusedKey = s.focusedKey;
     if (focusedKey == null) {
       // If nothing is focused, focus the first item
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Home' || e.key === 'End') {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Home" || e.key === "End") {
         const firstKey = delegate.getFirstKey?.();
         if (firstKey != null) {
           e.preventDefault();
@@ -106,19 +106,19 @@ export function createGrid<T extends object>(
     let nextKey: Key | null = null;
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         nextKey = delegate.getKeyBelow?.(focusedKey) ?? null;
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         nextKey = delegate.getKeyAbove?.(focusedKey) ?? null;
         break;
-      case 'ArrowLeft':
+      case "ArrowLeft":
         nextKey = delegate.getKeyLeftOf?.(focusedKey) ?? null;
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         nextKey = delegate.getKeyRightOf?.(focusedKey) ?? null;
         break;
-      case 'Home':
+      case "Home":
         if (e.ctrlKey) {
           nextKey = delegate.getFirstKey?.() ?? null;
         } else {
@@ -126,7 +126,7 @@ export function createGrid<T extends object>(
           nextKey = delegate.getFirstKey?.(focusedKey) ?? null;
         }
         break;
-      case 'End':
+      case "End":
         if (e.ctrlKey) {
           nextKey = delegate.getLastKey?.() ?? null;
         } else {
@@ -134,31 +134,31 @@ export function createGrid<T extends object>(
           nextKey = delegate.getLastKey?.(focusedKey) ?? null;
         }
         break;
-      case 'PageDown':
+      case "PageDown":
         nextKey = delegate.getKeyPageBelow?.(focusedKey) ?? null;
         break;
-      case 'PageUp':
+      case "PageUp":
         nextKey = delegate.getKeyPageAbove?.(focusedKey) ?? null;
         break;
-      case 'Escape':
-        if (p.escapeKeyBehavior !== 'none') {
+      case "Escape":
+        if (p.escapeKeyBehavior !== "none") {
           s.clearSelection();
         }
         return;
-      case 'a':
+      case "a":
         if (e.ctrlKey || e.metaKey) {
           e.preventDefault();
-          if (s.selectionMode === 'multiple') {
+          if (s.selectionMode === "multiple") {
             s.selectAll();
           }
         }
         return;
-      case ' ':
-      case 'Enter':
+      case " ":
+      case "Enter":
         e.preventDefault();
         // Toggle selection or trigger action
-        if (s.selectionMode !== 'none') {
-          if (e.shiftKey && s.selectionMode === 'multiple') {
+        if (s.selectionMode !== "none") {
+          if (e.shiftKey && s.selectionMode === "multiple") {
             s.extendSelection(focusedKey);
           } else {
             s.toggleSelection(focusedKey);
@@ -182,7 +182,7 @@ export function createGrid<T extends object>(
       s.setFocusedKey(nextKey);
 
       // Handle shift+arrow for range selection
-      if (e.shiftKey && s.selectionMode === 'multiple') {
+      if (e.shiftKey && s.selectionMode === "multiple") {
         s.extendSelection(nextKey);
       }
     }
@@ -225,8 +225,8 @@ export function createGrid<T extends object>(
   // Warn if no label is provided
   createMemo(() => {
     const p = props();
-    if (!p['aria-label'] && !p['aria-labelledby']) {
-      console.warn('Grid: An aria-label or aria-labelledby prop is required for accessibility.');
+    if (!p["aria-label"] && !p["aria-labelledby"]) {
+      console.warn("Grid: An aria-label or aria-labelledby prop is required for accessibility.");
     }
   });
 
@@ -235,12 +235,12 @@ export function createGrid<T extends object>(
     const s = state();
 
     const baseProps: Record<string, unknown> = {
-      role: 'grid',
+      role: "grid",
       id,
-      'aria-label': p['aria-label'],
-      'aria-labelledby': p['aria-labelledby'],
-      'aria-describedby': p['aria-describedby'],
-      'aria-multiselectable': s.selectionMode === 'multiple' ? 'true' : undefined,
+      "aria-label": p["aria-label"],
+      "aria-labelledby": p["aria-labelledby"],
+      "aria-describedby": p["aria-describedby"],
+      "aria-multiselectable": s.selectionMode === "multiple" ? "true" : undefined,
       tabIndex: s.collection.size === 0 ? 0 : -1,
       onKeyDown,
       onFocus,
@@ -248,8 +248,8 @@ export function createGrid<T extends object>(
     };
 
     if (p.isVirtualized) {
-      baseProps['aria-rowcount'] = s.collection.rowCount;
-      baseProps['aria-colcount'] = s.collection.columnCount;
+      baseProps["aria-rowcount"] = s.collection.rowCount;
+      baseProps["aria-colcount"] = s.collection.columnCount;
     }
 
     return baseProps as JSX.HTMLAttributes<HTMLElement>;

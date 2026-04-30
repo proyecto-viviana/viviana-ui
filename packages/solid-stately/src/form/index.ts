@@ -12,4 +12,4 @@ export {
   type ValidationFunction,
   type ValidationBehavior,
   type ValidityState,
-} from './createFormValidationState';
+} from "./createFormValidationState";

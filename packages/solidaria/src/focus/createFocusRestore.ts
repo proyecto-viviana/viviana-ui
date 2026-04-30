@@ -5,10 +5,10 @@
  * and safe restoration patterns.
  */
 
-import { createEffect, onCleanup, onMount } from 'solid-js';
-import { isServer } from 'solid-js/web';
-import { getOwnerDocument } from '../utils';
-import { focusSafely } from '../utils/focus';
+import { createEffect, onCleanup, onMount } from "solid-js";
+import { isServer } from "solid-js/web";
+import { getOwnerDocument } from "../utils";
+import { focusSafely } from "../utils/focus";
 
 // ============================================
 // TYPES
@@ -120,9 +120,9 @@ function getActiveElement(doc: Document): HTMLElement | null {
 function isValidForRestore(element: HTMLElement | null): boolean {
   if (!element) return false;
   if (!document.body.contains(element)) return false;
-  if (element.hasAttribute('disabled')) return false;
-  if (element.getAttribute('aria-disabled') === 'true') return false;
-  if (element.getAttribute('aria-hidden') === 'true') return false;
+  if (element.hasAttribute("disabled")) return false;
+  if (element.getAttribute("aria-disabled") === "true") return false;
+  if (element.getAttribute("aria-hidden") === "true") return false;
   return true;
 }
 
@@ -131,7 +131,12 @@ function isValidForRestore(element: HTMLElement | null): boolean {
  */
 function tryRestoreFocus(
   element: HTMLElement | null,
-  options: Required<Pick<FocusRestoreOptions, 'maxRetries' | 'retryDelay' | 'preventScroll' | 'onRestore' | 'onRestoreFailed'>>
+  options: Required<
+    Pick<
+      FocusRestoreOptions,
+      "maxRetries" | "retryDelay" | "preventScroll" | "onRestore" | "onRestoreFailed"
+    >
+  >,
 ): void {
   const { maxRetries, retryDelay, preventScroll, onRestore, onRestoreFailed } = options;
   let attempts = 0;
@@ -212,9 +217,7 @@ function tryRestoreFocus(
  * }
  * ```
  */
-export function createFocusRestore(
-  options: FocusRestoreOptions = {}
-): FocusRestoreResult {
+export function createFocusRestore(options: FocusRestoreOptions = {}): FocusRestoreResult {
   const {
     restoreOnUnmount = true,
     maxRetries = 3,
@@ -255,7 +258,7 @@ export function createFocusRestore(
   });
 
   function saveCurrentFocus(): void {
-    const doc = typeof document !== 'undefined' ? document : null;
+    const doc = typeof document !== "undefined" ? document : null;
     if (!doc) return;
 
     const active = getActiveElement(doc);

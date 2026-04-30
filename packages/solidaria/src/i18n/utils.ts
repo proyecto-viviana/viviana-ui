@@ -8,38 +8,38 @@
 
 // https://en.wikipedia.org/wiki/Right-to-left
 const RTL_SCRIPTS = new Set([
-  'Arab',
-  'Syrc',
-  'Samr',
-  'Mand',
-  'Thaa',
-  'Mend',
-  'Nkoo',
-  'Adlm',
-  'Rohg',
-  'Hebr',
+  "Arab",
+  "Syrc",
+  "Samr",
+  "Mand",
+  "Thaa",
+  "Mend",
+  "Nkoo",
+  "Adlm",
+  "Rohg",
+  "Hebr",
 ]);
 
 const RTL_LANGS = new Set([
-  'ae',
-  'ar',
-  'arc',
-  'bcc',
-  'bqi',
-  'ckb',
-  'dv',
-  'fa',
-  'glk',
-  'he',
-  'ku',
-  'mzn',
-  'nqo',
-  'pnb',
-  'ps',
-  'sd',
-  'ug',
-  'ur',
-  'yi',
+  "ae",
+  "ar",
+  "arc",
+  "bcc",
+  "bqi",
+  "ckb",
+  "dv",
+  "fa",
+  "glk",
+  "he",
+  "ku",
+  "mzn",
+  "nqo",
+  "pnb",
+  "ps",
+  "sd",
+  "ug",
+  "ur",
+  "yi",
 ]);
 
 /**
@@ -48,7 +48,7 @@ const RTL_LANGS = new Set([
  */
 export function isRTL(localeString: string): boolean {
   // If the Intl.Locale API is available, use it to get the locale's text direction.
-  if (typeof Intl !== 'undefined' && Intl.Locale) {
+  if (typeof Intl !== "undefined" && Intl.Locale) {
     try {
       const locale = new Intl.Locale(localeString).maximize();
 
@@ -58,12 +58,11 @@ export function isRTL(localeString: string): boolean {
         getTextInfo?: () => { direction: string };
         textInfo?: { direction: string };
       };
-      const textInfo = typeof localeAny.getTextInfo === 'function'
-        ? localeAny.getTextInfo()
-        : localeAny.textInfo;
+      const textInfo =
+        typeof localeAny.getTextInfo === "function" ? localeAny.getTextInfo() : localeAny.textInfo;
 
       if (textInfo) {
-        return textInfo.direction === 'rtl';
+        return textInfo.direction === "rtl";
       }
 
       // Fallback: guess using the script.
@@ -76,17 +75,14 @@ export function isRTL(localeString: string): boolean {
   }
 
   // If not, just guess by the language (first part of the locale)
-  const lang = localeString.split('-')[0];
+  const lang = localeString.split("-")[0];
   return RTL_LANGS.has(lang);
 }
 
 /**
  * Creates a cache key for formatter options.
  */
-export function createCacheKey(
-  locale: string,
-  options?: Record<string, unknown>
-): string {
+export function createCacheKey(locale: string, options?: Record<string, unknown>): string {
   if (!options) {
     return locale;
   }

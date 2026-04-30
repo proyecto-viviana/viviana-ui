@@ -3,8 +3,8 @@
  * Based on @react-stately/overlays useOverlayTriggerState.
  */
 
-import { createSignal, type Accessor } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
+import { createSignal, type Accessor } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
 
 export interface OverlayTriggerProps {
   /** Whether the overlay is open by default (uncontrolled). */
@@ -33,7 +33,7 @@ export interface OverlayTriggerState {
  * methods to toggle this state.
  */
 export function createOverlayTriggerState(
-  props: MaybeAccessor<OverlayTriggerProps> = {}
+  props: MaybeAccessor<OverlayTriggerProps> = {},
 ): OverlayTriggerState {
   const propsAccessor = () => access(props);
 

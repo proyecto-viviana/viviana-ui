@@ -7,8 +7,8 @@
  * This is a 1:1 port of @react-stately/checkbox's useCheckboxGroupState.
  */
 
-import { createSignal, Accessor } from 'solid-js';
-import { type MaybeAccessor, access } from '../utils/reactivity';
+import { createSignal, Accessor } from "solid-js";
+import { type MaybeAccessor, access } from "../utils/reactivity";
 
 // ============================================
 // TYPES
@@ -80,7 +80,7 @@ export interface CheckboxGroupState {
  * Provides a name for the group, and manages selection and focus state.
  */
 export function createCheckboxGroupState(
-  props: MaybeAccessor<CheckboxGroupProps> = {}
+  props: MaybeAccessor<CheckboxGroupProps> = {},
 ): CheckboxGroupState {
   const getProps = () => access(props);
 

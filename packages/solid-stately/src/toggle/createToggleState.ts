@@ -6,8 +6,8 @@
  * This is a 1:1 port of @react-stately/toggle's useToggleState.
  */
 
-import { createSignal, Accessor } from 'solid-js';
-import { type MaybeAccessor, access } from '../utils';
+import { createSignal, Accessor } from "solid-js";
+import { type MaybeAccessor, access } from "../utils";
 
 // ============================================
 // TYPES

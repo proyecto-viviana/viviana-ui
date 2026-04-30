@@ -19,7 +19,7 @@ import {
   useContext,
   For,
   Show,
-} from 'solid-js';
+} from "solid-js";
 import {
   createTree,
   createTreeItem,
@@ -28,7 +28,7 @@ import {
   createHover,
   mergeProps,
   type AriaTreeProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createTreeState,
   createTreeCollection,
@@ -39,7 +39,7 @@ import {
   type Key,
   type DropTarget,
   type ItemDropTarget,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -47,15 +47,15 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
-import { SharedElementTransition } from './SharedElementTransition';
-import { type DragAndDropHooks } from './useDragAndDrop';
+} from "./utils";
+import { SharedElementTransition } from "./SharedElementTransition";
+import { type DragAndDropHooks } from "./useDragAndDrop";
 import {
   getNormalizedDropTargetKey,
   mergePersistedKeysIntoVirtualRange,
   useDndPersistedKeys,
   useRenderDropIndicator,
-} from './DragAndDrop';
+} from "./DragAndDrop";
 import {
   CollectionRendererContext,
   flattenCollectionEntries,
@@ -67,8 +67,8 @@ import {
   type SectionProps,
   type HeaderProps,
   useCollectionRenderer,
-} from './Collection';
-import { useVirtualizerContext } from './Virtualizer';
+} from "./Collection";
+import { useVirtualizerContext } from "./Virtualizer";
 
 // ============================================
 // TYPES
@@ -85,23 +85,23 @@ export interface TreeRenderProps {
   isEmpty: boolean;
 }
 
-export interface TreeProps<T extends object> extends Omit<AriaTreeProps, 'children'>, SlotProps {
+export interface TreeProps<T extends object> extends Omit<AriaTreeProps, "children">, SlotProps {
   /** The hierarchical items to render in the tree. */
   items: CollectionEntry<TreeItemData<T>>[];
   /** The selection mode. */
-  selectionMode?: 'none' | 'single' | 'multiple';
+  selectionMode?: "none" | "single" | "multiple";
   /** The selection behavior (toggle vs replace). */
-  selectionBehavior?: 'toggle' | 'replace';
+  selectionBehavior?: "toggle" | "replace";
   /** Whether disabled items can still receive focus. */
-  disabledBehavior?: 'selection' | 'all';
+  disabledBehavior?: "selection" | "all";
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
   /** Currently selected keys (controlled). */
-  selectedKeys?: 'all' | Iterable<Key>;
+  selectedKeys?: "all" | Iterable<Key>;
   /** Default selected keys (uncontrolled). */
-  defaultSelectedKeys?: 'all' | Iterable<Key>;
+  defaultSelectedKeys?: "all" | Iterable<Key>;
   /** Handler called when selection changes. */
-  onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  onSelectionChange?: (keys: "all" | Set<Key>) => void;
   /** Currently expanded keys (controlled). */
   expandedKeys?: Iterable<Key>;
   /** Default expanded keys (uncontrolled). */
@@ -156,7 +156,10 @@ export interface TreeItemRenderProps {
   level: number;
 }
 
-export interface TreeItemProps<T extends object> extends SlotProps, Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'style' | 'children' | 'id'> {
+export interface TreeItemProps<T extends object>
+  extends
+    SlotProps,
+    Omit<JSX.HTMLAttributes<HTMLDivElement>, "class" | "style" | "children" | "id"> {
   /** The unique key for the item. */
   id: Key;
   /** The item value. */
@@ -213,25 +216,25 @@ interface TreeDropTargetDelegate {
   getDropTargetFromPoint: (
     x: number,
     y: number,
-    isValidDropTarget: (target: DropTarget) => boolean
+    isValidDropTarget: (target: DropTarget) => boolean,
   ) => DropTarget | null;
   getKeyboardNavigationTarget?: (
     target: DropTarget | null,
-    direction: 'next' | 'previous',
-    isValidDropTarget: (target: DropTarget) => boolean
+    direction: "next" | "previous",
+    isValidDropTarget: (target: DropTarget) => boolean,
   ) => DropTarget | null;
   getKeyboardPageNavigationTarget?: (
     target: DropTarget | null,
-    direction: 'next' | 'previous',
-    isValidDropTarget: (target: DropTarget) => boolean
+    direction: "next" | "previous",
+    isValidDropTarget: (target: DropTarget) => boolean,
   ) => DropTarget | null;
 }
 
 interface PointerTrackingState {
   lastY: number;
   lastX: number;
-  yDirection: 'up' | 'down' | null;
-  xDirection: 'left' | 'right' | null;
+  yDirection: "up" | "down" | null;
+  xDirection: "left" | "right" | null;
   boundaryContext: {
     parentKey: Key;
     lastSwitchY: number;
@@ -243,36 +246,36 @@ interface PointerTrackingState {
 const X_SWITCH_THRESHOLD = 10;
 const Y_SWITCH_THRESHOLD = 5;
 const EXPANSION_KEYS = {
-  expand: { ltr: 'ArrowRight', rtl: 'ArrowLeft' },
-  collapse: { ltr: 'ArrowLeft', rtl: 'ArrowRight' },
+  expand: { ltr: "ArrowRight", rtl: "ArrowLeft" },
+  collapse: { ltr: "ArrowLeft", rtl: "ArrowRight" },
 } as const;
 
-function resolveTreeDirection(element: HTMLElement | null): 'ltr' | 'rtl' {
+function resolveTreeDirection(element: HTMLElement | null): "ltr" | "rtl" {
   if (element) {
-    const dir = element.closest('[dir]')?.getAttribute('dir');
-    if (dir === 'rtl') return 'rtl';
-    if (dir === 'ltr') return 'ltr';
-    if (typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
+    const dir = element.closest("[dir]")?.getAttribute("dir");
+    if (dir === "rtl") return "rtl";
+    if (dir === "ltr") return "ltr";
+    if (typeof window !== "undefined" && typeof window.getComputedStyle === "function") {
       const computedDirection = window.getComputedStyle(element).direction;
-      if (computedDirection === 'rtl') return 'rtl';
-      if (computedDirection === 'ltr') return 'ltr';
+      if (computedDirection === "rtl") return "rtl";
+      if (computedDirection === "ltr") return "ltr";
     }
   }
-  if (typeof document !== 'undefined') {
-    return document.dir === 'rtl' ? 'rtl' : 'ltr';
+  if (typeof document !== "undefined") {
+    return document.dir === "rtl" ? "rtl" : "ltr";
   }
-  return 'ltr';
+  return "ltr";
 }
 
 function createTreeDropTargetDelegate<T extends object>(
   delegate: TreeDropTargetDelegate,
   state: TreeState<T, TreeCollection<T>>,
-  direction: 'ltr' | 'rtl',
+  direction: "ltr" | "rtl",
   baseKeyboardNav?: (
     target: DropTarget | null,
-    direction: 'next' | 'previous',
-    isValidDropTarget: (target: DropTarget) => boolean
-  ) => DropTarget | null
+    direction: "next" | "previous",
+    isValidDropTarget: (target: DropTarget) => boolean,
+  ) => DropTarget | null,
 ): TreeDropTargetDelegate {
   const pointerTracking: PointerTrackingState = {
     lastY: 0,
@@ -284,9 +287,9 @@ function createTreeDropTargetDelegate<T extends object>(
 
   const getPotentialTargets = (
     originalTarget: ItemDropTarget,
-    isValidDropTarget: (target: DropTarget) => boolean
+    isValidDropTarget: (target: DropTarget) => boolean,
   ): ItemDropTarget[] => {
-    if (originalTarget.dropPosition === 'on') return [originalTarget];
+    if (originalTarget.dropPosition === "on") return [originalTarget];
 
     const collection = state.collection;
     const getNodeNextKey = (node: TreeNode<T> | null | undefined): Key | null => {
@@ -296,7 +299,7 @@ function createTreeDropTargetDelegate<T extends object>(
     };
     const target: ItemDropTarget = { ...originalTarget };
     let currentItem = collection.getItem(target.key);
-    while (currentItem && currentItem.type !== 'item') {
+    while (currentItem && currentItem.type !== "item") {
       const nextKey = getNodeNextKey(currentItem);
       if (nextKey == null) break;
       target.key = nextKey;
@@ -309,11 +312,11 @@ function createTreeDropTargetDelegate<T extends object>(
       currentItem &&
       currentItem.hasChildNodes &&
       state.expandedKeys.has(currentItem.key) &&
-      target.dropPosition === 'after'
+      target.dropPosition === "after"
     ) {
       let firstChildItemNode: TreeNode<T> | null = null;
       for (const child of collection.getChildren(currentItem.key)) {
-        if (child.type === 'item') {
+        if (child.type === "item") {
           firstChildItemNode = child;
           break;
         }
@@ -321,9 +324,9 @@ function createTreeDropTargetDelegate<T extends object>(
 
       if (firstChildItemNode) {
         const beforeFirstChildTarget: ItemDropTarget = {
-          type: 'item',
+          type: "item",
           key: firstChildItemNode.key,
-          dropPosition: 'before',
+          dropPosition: "before",
         };
 
         if (isValidDropTarget(beforeFirstChildTarget)) {
@@ -347,9 +350,9 @@ function createTreeDropTargetDelegate<T extends object>(
 
       if (isLastChildAtLevel) {
         const afterParentTarget: ItemDropTarget = {
-          type: 'item',
+          type: "item",
           key: parentKey,
-          dropPosition: 'after',
+          dropPosition: "after",
         };
 
         if (isValidDropTarget(afterParentTarget)) {
@@ -377,9 +380,9 @@ function createTreeDropTargetDelegate<T extends object>(
         nextNode.level > currentItem.level
       ) {
         const beforeTarget: ItemDropTarget = {
-          type: 'item',
+          type: "item",
           key: nextKey,
-          dropPosition: 'before',
+          dropPosition: "before",
         };
         if (isValidDropTarget(beforeTarget)) return [beforeTarget];
       }
@@ -393,8 +396,8 @@ function createTreeDropTargetDelegate<T extends object>(
     originalTarget: ItemDropTarget,
     x: number,
     y: number,
-    currentYMovement: 'up' | 'down' | null,
-    currentXMovement: 'left' | 'right' | null
+    currentYMovement: "up" | "down" | null,
+    currentXMovement: "left" | "right" | null,
   ): ItemDropTarget => {
     if (potentialTargets.length < 2) return potentialTargets[0];
 
@@ -402,8 +405,12 @@ function createTreeDropTargetDelegate<T extends object>(
     const parentKey = currentItem?.parentKey;
     if (parentKey == null) return potentialTargets[0];
 
-    if (!pointerTracking.boundaryContext || pointerTracking.boundaryContext.parentKey !== parentKey) {
-      const initialTargetIndex = pointerTracking.yDirection === 'up' ? potentialTargets.length - 1 : 0;
+    if (
+      !pointerTracking.boundaryContext ||
+      pointerTracking.boundaryContext.parentKey !== parentKey
+    ) {
+      const initialTargetIndex =
+        pointerTracking.yDirection === "up" ? potentialTargets.length - 1 : 0;
       pointerTracking.boundaryContext = {
         parentKey,
         preferredTargetIndex: initialTargetIndex,
@@ -418,9 +425,9 @@ function createTreeDropTargetDelegate<T extends object>(
 
     if (distanceFromLastYSwitch > Y_SWITCH_THRESHOLD && currentYMovement) {
       const currentIndex = boundaryContext.preferredTargetIndex ?? 0;
-      if (currentYMovement === 'down' && currentIndex === 0) {
+      if (currentYMovement === "down" && currentIndex === 0) {
         boundaryContext.preferredTargetIndex = potentialTargets.length - 1;
-      } else if (currentYMovement === 'up' && currentIndex === potentialTargets.length - 1) {
+      } else if (currentYMovement === "up" && currentIndex === potentialTargets.length - 1) {
         boundaryContext.preferredTargetIndex = 0;
       }
       pointerTracking.xDirection = null;
@@ -429,8 +436,8 @@ function createTreeDropTargetDelegate<T extends object>(
     if (distanceFromLastXSwitch > X_SWITCH_THRESHOLD && currentXMovement) {
       const currentTargetIndex = boundaryContext.preferredTargetIndex ?? 0;
 
-      if (currentXMovement === 'left') {
-        if (direction === 'ltr') {
+      if (currentXMovement === "left") {
+        if (direction === "ltr") {
           if (currentTargetIndex < potentialTargets.length - 1) {
             boundaryContext.preferredTargetIndex = currentTargetIndex + 1;
             boundaryContext.lastSwitchX = x;
@@ -439,8 +446,8 @@ function createTreeDropTargetDelegate<T extends object>(
           boundaryContext.preferredTargetIndex = currentTargetIndex - 1;
           boundaryContext.lastSwitchX = x;
         }
-      } else if (currentXMovement === 'right') {
-        if (direction === 'ltr') {
+      } else if (currentXMovement === "right") {
+        if (direction === "ltr") {
           if (currentTargetIndex > 0) {
             boundaryContext.preferredTargetIndex = currentTargetIndex - 1;
             boundaryContext.lastSwitchX = x;
@@ -456,7 +463,7 @@ function createTreeDropTargetDelegate<T extends object>(
 
     const targetIndex = Math.max(
       0,
-      Math.min(boundaryContext.preferredTargetIndex ?? 0, potentialTargets.length - 1)
+      Math.min(boundaryContext.preferredTargetIndex ?? 0, potentialTargets.length - 1),
     );
     return potentialTargets[targetIndex];
   };
@@ -464,25 +471,25 @@ function createTreeDropTargetDelegate<T extends object>(
   // --- Tree-aware keyboard DnD navigation (RAC parity) ---
   const getKeyboardNavigationTarget = (
     target: DropTarget | null,
-    dir: 'next' | 'previous',
-    isValidDropTarget: (target: DropTarget) => boolean
+    dir: "next" | "previous",
+    isValidDropTarget: (target: DropTarget) => boolean,
   ): DropTarget | null => {
     const collection = state.collection;
 
     // If the target key is not a visible row (e.g. collapsed/hidden child node),
     // fall back to the base (non-override) index-based navigation to avoid infinite recursion.
     // The collection keyMap contains ALL nodes (even collapsed), so check visible rows instead.
-    if (target && target.type === 'item') {
+    if (target && target.type === "item") {
       const node = collection.getItem(target.key);
-      const isVisibleRow = node != null && (node as TreeNode<T> & { rowIndex?: number }).rowIndex != null;
+      const isVisibleRow =
+        node != null && (node as TreeNode<T> & { rowIndex?: number }).rowIndex != null;
       if (!isVisibleRow) {
         return baseKeyboardNav?.(target, dir, isValidDropTarget) ?? null;
       }
     }
 
     // Helpers
-    const tryValid = (t: DropTarget): DropTarget | null =>
-      isValidDropTarget(t) ? t : null;
+    const tryValid = (t: DropTarget): DropTarget | null => (isValidDropTarget(t) ? t : null);
 
     const getNodeNextKey = (node: TreeNode<T> | null | undefined): Key | null => {
       if (!node) return null;
@@ -497,7 +504,7 @@ function createTreeDropTargetDelegate<T extends object>(
 
     const getFirstChildItemKey = (key: Key): Key | null => {
       for (const child of collection.getChildren(key)) {
-        if (child.type === 'item') return child.key;
+        if (child.type === "item") return child.key;
       }
       return null;
     };
@@ -505,7 +512,7 @@ function createTreeDropTargetDelegate<T extends object>(
     const getLastChildItemKey = (key: Key): Key | null => {
       let lastKey: Key | null = null;
       for (const child of collection.getChildren(key)) {
-        if (child.type === 'item') lastKey = child.key;
+        if (child.type === "item") lastKey = child.key;
       }
       return lastKey;
     };
@@ -521,50 +528,64 @@ function createTreeDropTargetDelegate<T extends object>(
       return current;
     };
 
-    if (dir === 'next') {
+    if (dir === "next") {
       // From null → root
       if (!target) {
-        return tryValid({ type: 'root' });
+        return tryValid({ type: "root" });
       }
       // From root → first item 'before'
-      if (target.type === 'root') {
+      if (target.type === "root") {
         const firstKey = collection.getFirstKey();
         if (firstKey != null) {
-          return tryValid({ type: 'item', key: firstKey, dropPosition: 'before' });
+          return tryValid({ type: "item", key: firstKey, dropPosition: "before" });
         }
         return null;
       }
-      if (target.type === 'item') {
+      if (target.type === "item") {
         switch (target.dropPosition) {
-          case 'before':
-            return tryValid({ type: 'item', key: target.key, dropPosition: 'on' })
-              ?? tryValid({ type: 'item', key: target.key, dropPosition: 'after' });
-          case 'on': {
+          case "before":
+            return (
+              tryValid({ type: "item", key: target.key, dropPosition: "on" }) ??
+              tryValid({ type: "item", key: target.key, dropPosition: "after" })
+            );
+          case "on": {
             // If item is expanded and has children, go to first child 'before'
             if (isExpanded(target.key)) {
               const firstChild = getFirstChildItemKey(target.key);
               if (firstChild != null) {
-                return tryValid({ type: 'item', key: firstChild, dropPosition: 'before' })
-                  ?? tryValid({ type: 'item', key: firstChild, dropPosition: 'on' });
+                return (
+                  tryValid({ type: "item", key: firstChild, dropPosition: "before" }) ??
+                  tryValid({ type: "item", key: firstChild, dropPosition: "on" })
+                );
               }
             }
             // Otherwise, next item in collection or 'after'
             const nextKey = collection.getKeyAfter(target.key);
             const targetNode = collection.getItem(target.key);
             const nextNode = nextKey != null ? collection.getItem(nextKey) : null;
-            if (targetNode && nextNode && nextNode.level != null && targetNode.level != null && nextNode.level >= targetNode.level) {
-              return tryValid({ type: 'item', key: nextNode.key, dropPosition: 'before' })
-                ?? tryValid({ type: 'item', key: target.key, dropPosition: 'after' });
+            if (
+              targetNode &&
+              nextNode &&
+              nextNode.level != null &&
+              targetNode.level != null &&
+              nextNode.level >= targetNode.level
+            ) {
+              return (
+                tryValid({ type: "item", key: nextNode.key, dropPosition: "before" }) ??
+                tryValid({ type: "item", key: target.key, dropPosition: "after" })
+              );
             }
-            return tryValid({ type: 'item', key: target.key, dropPosition: 'after' });
+            return tryValid({ type: "item", key: target.key, dropPosition: "after" });
           }
-          case 'after': {
+          case "after": {
             // If item is expanded (and we're at 'after'), first child
             if (isExpanded(target.key)) {
               const firstChild = getFirstChildItemKey(target.key);
               if (firstChild != null) {
-                return tryValid({ type: 'item', key: firstChild, dropPosition: 'before' })
-                  ?? tryValid({ type: 'item', key: firstChild, dropPosition: 'on' });
+                return (
+                  tryValid({ type: "item", key: firstChild, dropPosition: "before" }) ??
+                  tryValid({ type: "item", key: firstChild, dropPosition: "on" })
+                );
               }
             }
             // Check if this is the last sibling at its level
@@ -572,31 +593,36 @@ function createTreeDropTargetDelegate<T extends object>(
             const nextSiblingKey = getNodeNextKey(targetNode);
             if (nextSiblingKey != null) {
               const nextSibling = collection.getItem(nextSiblingKey);
-              if (nextSibling?.type === 'item') {
-                return tryValid({ type: 'item', key: nextSibling.key, dropPosition: 'before' })
-                  ?? tryValid({ type: 'item', key: nextSibling.key, dropPosition: 'on' });
+              if (nextSibling?.type === "item") {
+                return (
+                  tryValid({ type: "item", key: nextSibling.key, dropPosition: "before" }) ??
+                  tryValid({ type: "item", key: nextSibling.key, dropPosition: "on" })
+                );
               }
             }
             // Traverse up to parent when at last sibling
             if (targetNode?.parentKey != null) {
               const parentNode = collection.getItem(targetNode.parentKey);
               const parentNextKey = getNodeNextKey(parentNode);
-              const parentNextNode = parentNextKey != null ? collection.getItem(parentNextKey) : null;
-              if (parentNextNode?.type === 'item') {
-                return tryValid({ type: 'item', key: parentNextNode.key, dropPosition: 'before' });
+              const parentNextNode =
+                parentNextKey != null ? collection.getItem(parentNextKey) : null;
+              if (parentNextNode?.type === "item") {
+                return tryValid({ type: "item", key: parentNextNode.key, dropPosition: "before" });
               }
-              if (parentNode?.type === 'item') {
-                return tryValid({ type: 'item', key: parentNode.key, dropPosition: 'after' });
+              if (parentNode?.type === "item") {
+                return tryValid({ type: "item", key: parentNode.key, dropPosition: "after" });
               }
             }
             // Reached end — try next item in flat collection
             const nextKey = collection.getKeyAfter(target.key);
             if (nextKey != null) {
-              return tryValid({ type: 'item', key: nextKey, dropPosition: 'before' })
-                ?? tryValid({ type: 'item', key: nextKey, dropPosition: 'on' });
+              return (
+                tryValid({ type: "item", key: nextKey, dropPosition: "before" }) ??
+                tryValid({ type: "item", key: nextKey, dropPosition: "on" })
+              );
             }
             // Wrap to root
-            return tryValid({ type: 'root' });
+            return tryValid({ type: "root" });
           }
         }
       }
@@ -605,7 +631,7 @@ function createTreeDropTargetDelegate<T extends object>(
 
     // dir === 'previous'
     // From null or root → last root-level item 'after'
-    if (!target || target.type === 'root') {
+    if (!target || target.type === "root") {
       const lastKey = collection.getLastKey();
       if (lastKey != null) {
         // Find root-level ancestor of last key
@@ -615,34 +641,38 @@ function createTreeDropTargetDelegate<T extends object>(
           rootKey = node.parentKey;
           node = collection.getItem(rootKey);
         }
-        return tryValid({ type: 'item', key: rootKey, dropPosition: 'after' });
+        return tryValid({ type: "item", key: rootKey, dropPosition: "after" });
       }
       return null;
     }
 
-    if (target.type === 'item') {
+    if (target.type === "item") {
       switch (target.dropPosition) {
-        case 'after': {
+        case "after": {
           // If expanded with children, go to deepest last child 'after'
           const deepest = getDeepestLastChild(target.key);
           if (deepest !== target.key) {
-            return tryValid({ type: 'item', key: deepest, dropPosition: 'after' })
-              ?? tryValid({ type: 'item', key: target.key, dropPosition: 'on' });
+            return (
+              tryValid({ type: "item", key: deepest, dropPosition: "after" }) ??
+              tryValid({ type: "item", key: target.key, dropPosition: "on" })
+            );
           }
-          return tryValid({ type: 'item', key: target.key, dropPosition: 'on' });
+          return tryValid({ type: "item", key: target.key, dropPosition: "on" });
         }
-        case 'on':
-          return tryValid({ type: 'item', key: target.key, dropPosition: 'before' });
-        case 'before': {
+        case "on":
+          return tryValid({ type: "item", key: target.key, dropPosition: "before" });
+        case "before": {
           // Move to the previous sibling's deepest last child 'after'
           const prevKey = collection.getKeyBefore(target.key);
           if (prevKey != null) {
             const deepest = getDeepestLastChild(prevKey);
-            return tryValid({ type: 'item', key: deepest, dropPosition: 'after' })
-              ?? tryValid({ type: 'item', key: prevKey, dropPosition: 'on' });
+            return (
+              tryValid({ type: "item", key: deepest, dropPosition: "after" }) ??
+              tryValid({ type: "item", key: prevKey, dropPosition: "on" })
+            );
           }
           // No previous — go to root
-          return tryValid({ type: 'root' });
+          return tryValid({ type: "root" });
         }
       }
     }
@@ -653,40 +683,40 @@ function createTreeDropTargetDelegate<T extends object>(
   return {
     getDropTargetFromPoint(x, y, isValidDropTarget) {
       const baseTarget = delegate.getDropTargetFromPoint(x, y, isValidDropTarget);
-      if (!baseTarget || baseTarget.type === 'root') return baseTarget;
+      if (!baseTarget || baseTarget.type === "root") return baseTarget;
 
       const deltaY = y - pointerTracking.lastY;
       const deltaX = x - pointerTracking.lastX;
-      let currentYMovement: 'up' | 'down' | null = pointerTracking.yDirection;
-      let currentXMovement: 'left' | 'right' | null = pointerTracking.xDirection;
+      let currentYMovement: "up" | "down" | null = pointerTracking.yDirection;
+      let currentXMovement: "left" | "right" | null = pointerTracking.xDirection;
 
       if (Math.abs(deltaY) > Y_SWITCH_THRESHOLD) {
-        currentYMovement = deltaY > 0 ? 'down' : 'up';
+        currentYMovement = deltaY > 0 ? "down" : "up";
         pointerTracking.yDirection = currentYMovement;
         pointerTracking.lastY = y;
       }
 
       if (Math.abs(deltaX) > X_SWITCH_THRESHOLD) {
-        currentXMovement = deltaX > 0 ? 'right' : 'left';
+        currentXMovement = deltaX > 0 ? "right" : "left";
         pointerTracking.xDirection = currentXMovement;
         pointerTracking.lastX = x;
       }
 
       let target: ItemDropTarget = baseTarget;
-      if (target.dropPosition === 'before') {
+      if (target.dropPosition === "before") {
         const keyBefore = state.collection.getKeyBefore(target.key);
         if (keyBefore != null) {
           const normalized: ItemDropTarget = {
-            type: 'item',
+            type: "item",
             key: keyBefore,
-            dropPosition: 'after',
+            dropPosition: "after",
           };
           if (isValidDropTarget(normalized)) target = normalized;
         }
       }
 
       const potentialTargets = getPotentialTargets(target, isValidDropTarget);
-      if (potentialTargets.length === 0) return { type: 'root' };
+      if (potentialTargets.length === 0) return { type: "root" };
 
       if (potentialTargets.length > 1) {
         return selectTarget(potentialTargets, target, x, y, currentYMovement, currentXMovement);
@@ -708,7 +738,9 @@ interface TreeItemContextValue<T extends object> {
 }
 
 export const TreeContext = createContext<TreeContextValue<object> | null>(null);
-export const TreeStateContext = createContext<TreeState<object, TreeCollection<object>> | null>(null);
+export const TreeStateContext = createContext<TreeState<object, TreeCollection<object>> | null>(
+  null,
+);
 export const TreeItemContext = createContext<TreeItemContextValue<object> | null>(null);
 const TreeItemContentContext = createContext<TreeItemRenderProps | null>(null);
 
@@ -723,26 +755,37 @@ const TreeItemContentContext = createContext<TreeItemRenderProps | null>(null);
 export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['class', 'style', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore', 'dragAndDropHooks'],
     [
-      'items',
-      'disabledKeys',
-      'disabledBehavior',
-      'selectionMode',
-      'selectionBehavior',
-      'selectedKeys',
-      'defaultSelectedKeys',
-      'onSelectionChange',
-      'expandedKeys',
-      'defaultExpandedKeys',
-      'onExpandedChange',
-    ]
+      "class",
+      "style",
+      "slot",
+      "renderEmptyState",
+      "hasMore",
+      "isLoading",
+      "onLoadMore",
+      "dragAndDropHooks",
+    ],
+    [
+      "items",
+      "disabledKeys",
+      "disabledBehavior",
+      "selectionMode",
+      "selectionBehavior",
+      "selectedKeys",
+      "defaultSelectedKeys",
+      "onSelectionChange",
+      "expandedKeys",
+      "defaultExpandedKeys",
+      "onExpandedChange",
+    ],
   );
 
   // Create ref signal
   const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
   const flatItems = createMemo<TreeItemData<T>[]>(() => flattenCollectionEntries(stateProps.items));
-  const hasSections = createMemo(() => stateProps.items.some((entry) => isCollectionSection(entry)));
+  const hasSections = createMemo(() =>
+    stateProps.items.some((entry) => isCollectionSection(entry)),
+  );
 
   // Create tree state
   const state = createTreeState<T, TreeCollection<T>>(() => ({
@@ -780,16 +823,16 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   const { treeProps } = createTree<T, TreeCollection<T>>(
     () => ({
       id: ariaProps.id,
-      'aria-label': ariaProps['aria-label'],
-      'aria-labelledby': ariaProps['aria-labelledby'],
-      'aria-describedby': ariaProps['aria-describedby'],
+      "aria-label": ariaProps["aria-label"],
+      "aria-labelledby": ariaProps["aria-labelledby"],
+      "aria-describedby": ariaProps["aria-describedby"],
       isVirtualized: ariaProps.isVirtualized,
       onAction: ariaProps.onAction,
       isDisabled: ariaProps.isDisabled,
       direction: treeDirection(),
     }),
     () => state,
-    ref
+    ref,
   );
 
   // Create focus ring
@@ -808,9 +851,9 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Tree',
+      defaultClassName: "solidaria-Tree",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
@@ -838,17 +881,22 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   });
   const virtualizer = useVirtualizerContext();
   const parentCollectionRenderer = useCollectionRenderer<TreeItemData<T>>();
-  const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
+  const getDropTargetByIndex = (
+    index: number,
+    position: "before" | "after" | "on",
+  ): DropTarget | null => {
     const node = visibleRows()[index];
     if (!node) return null;
-    return { type: 'item', key: node.key, dropPosition: position };
+    return { type: "item", key: node.key, dropPosition: position };
   };
   const hasDroppableDnd = createMemo(() => {
     const hooks = local.dragAndDropHooks;
     return Boolean(
       hooks?.useDroppableCollectionState &&
       hooks.useDroppableCollection &&
-      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate || hooks.ListDropTargetDelegate)
+      (hooks.dropTargetDelegate ||
+        parentCollectionRenderer?.dropTargetDelegate ||
+        hooks.ListDropTargetDelegate),
     );
   });
   const hasDraggableDnd = createMemo(() => {
@@ -872,9 +920,9 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
 
     activeDropState.getDropOperation = (target, types, allowedOperations) => {
       const currentDraggingKeys = dragState()?.draggingKeys ?? new Set<string | number>();
-      if (target.type === 'item' && currentDraggingKeys.size > 0) {
-        if (currentDraggingKeys.has(target.key) && target.dropPosition === 'on') {
-          return 'cancel';
+      if (target.type === "item" && currentDraggingKeys.size > 0) {
+        if (currentDraggingKeys.has(target.key) && target.dropPosition === "on") {
+          return "cancel";
         }
 
         let currentKey: Key | null = target.key;
@@ -882,7 +930,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
           const item = state.collection.getItem(currentKey);
           const parentKey = item?.parentKey;
           if (parentKey != null && currentDraggingKeys.has(parentKey)) {
-            return 'cancel';
+            return "cancel";
           }
           currentKey = parentKey ?? null;
         }
@@ -917,21 +965,22 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const activeDropState = dropState();
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
     const direction = resolveTreeDirection(ref());
-    const baseDropTargetDelegate = hooks.dropTargetDelegate
-      ?? parentCollectionRenderer?.dropTargetDelegate
-      ?? (hooks.ListDropTargetDelegate
+    const baseDropTargetDelegate =
+      hooks.dropTargetDelegate ??
+      parentCollectionRenderer?.dropTargetDelegate ??
+      (hooks.ListDropTargetDelegate
         ? new hooks.ListDropTargetDelegate(
-          () => state.collection,
-          () => ref(),
-          { layout: 'stack', orientation: 'vertical', direction }
-        )
+            () => state.collection,
+            () => ref(),
+            { layout: "stack", orientation: "vertical", direction },
+          )
         : undefined);
     if (!baseDropTargetDelegate) return undefined;
     const dropTargetDelegate = createTreeDropTargetDelegate(
       baseDropTargetDelegate as TreeDropTargetDelegate,
       state,
       direction,
-      virtualizer?.getBaseKeyboardNavigationTarget
+      virtualizer?.getBaseKeyboardNavigationTarget,
     );
     return hooks.useDroppableCollection(
       {
@@ -951,7 +1000,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
           return state.selectedKeys;
         },
         setSelectedKeys: (keys: Set<Key>) => {
-          if (state.selectionMode === 'none') return;
+          if (state.selectionMode === "none") return;
           state.clearSelection();
           for (const key of keys) {
             state.toggleSelection(key);
@@ -959,7 +1008,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
         },
         setFocusedKey: (key) => state.setFocusedKey(key),
         onDropActivate: (event) => {
-          if (event.target.type !== 'item') return;
+          if (event.target.type !== "item") return;
           const key = event.target.key;
           const item = state.collection.getItem(key);
           const isExpanded = state.isExpanded(key);
@@ -969,7 +1018,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
         },
         onKeyDown: (event) => {
           const target = activeDropState.target;
-          if (!target || target.type !== 'item' || target.dropPosition !== 'on') return;
+          if (!target || target.type !== "item" || target.dropPosition !== "on") return;
           const item = state.collection.getItem(target.key);
           if (!item?.hasChildNodes) return;
           const expandKey = EXPANSION_KEYS.expand[direction];
@@ -982,23 +1031,25 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
         },
       },
       activeDropState,
-      () => ref()
+      () => ref(),
     );
   });
   const isRootDropTarget = createMemo(() => {
-    return Boolean(dropState()?.target?.type === 'root');
+    return Boolean(dropState()?.target?.type === "root");
   });
-  const dndRenderDropIndicator = createMemo(() => useRenderDropIndicator(local.dragAndDropHooks, dropState()));
-  const dndDropIndicator = (index: number, position: 'before' | 'after' | 'on') => {
+  const dndRenderDropIndicator = createMemo(() =>
+    useRenderDropIndicator(local.dragAndDropHooks, dropState()),
+  );
+  const dndDropIndicator = (index: number, position: "before" | "after" | "on") => {
     const target = getDropTargetByIndex(index, position);
-    if (!target || target.type !== 'item') return undefined;
+    if (!target || target.type !== "item") return undefined;
     return dndRenderDropIndicator()?.(target);
   };
   const persistedKeys = useDndPersistedKeys(
     { focusedKey: () => state.focusedKey },
     local.dragAndDropHooks,
     dropState(),
-    state.collection
+    state.collection,
   );
   const virtualRange = createMemo(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return null;
@@ -1010,16 +1061,24 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     const dropTarget = dropState()?.target;
     const normalizedDropKey = getNormalizedDropTargetKey(dropTarget, state.collection);
     const focusedKey = state.focusedKey;
-    const focusedIndex = focusedKey != null ? rows.findIndex((node) => node.key === focusedKey) : -1;
+    const focusedIndex =
+      focusedKey != null ? rows.findIndex((node) => node.key === focusedKey) : -1;
     const forceIncludeIndexes = [
-      dropTarget?.type === 'item' ? rows.findIndex((node) => node.key === dropTarget.key) : -1,
+      dropTarget?.type === "item" ? rows.findIndex((node) => node.key === dropTarget.key) : -1,
       normalizedDropKey != null ? rows.findIndex((node) => node.key === normalizedDropKey) : -1,
-      dropTarget?.type === 'item' ? -1 : focusedIndex,
+      dropTarget?.type === "item" ? -1 : focusedIndex,
     ].filter((index) => index >= 0);
-    return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rows.length, virtualizer, 80, {
-      forceIncludeIndexes,
-      forceIncludeMaxSpan: 320,
-    });
+    return mergePersistedKeysIntoVirtualRange(
+      baseRange,
+      persistedIndexes,
+      rows.length,
+      virtualizer,
+      80,
+      {
+        forceIncludeIndexes,
+        forceIncludeMaxSpan: 320,
+      },
+    );
   });
   const virtualizedVisibleRows = createMemo(() => {
     const range = virtualRange();
@@ -1039,14 +1098,14 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
       if (!node) return target;
       return {
         ...target,
-        key: typeof node.key === 'string' || typeof node.key === 'number' ? node.key : undefined,
+        key: typeof node.key === "string" || typeof node.key === "number" ? node.key : undefined,
         parentKey:
-          typeof node.parentKey === 'string' || typeof node.parentKey === 'number'
+          typeof node.parentKey === "string" || typeof node.parentKey === "number"
             ? node.parentKey
             : node.parentKey == null
               ? null
               : undefined,
-        level: typeof node.level === 'number' ? node.level : undefined,
+        level: typeof node.level === "number" ? node.level : undefined,
       };
     });
     onCleanup(() => {
@@ -1065,7 +1124,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   });
   const getAfterIndicatorIndexes = (
     absoluteIndex: number,
-    renderRange?: { start: number; end: number } | null
+    renderRange?: { start: number; end: number } | null,
   ): number[] => {
     const rows = visibleRows();
     const current = rows[absoluteIndex];
@@ -1100,19 +1159,24 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
     if (!virtualizer) return;
     const direction = resolveTreeDirection(ref());
     const parentDelegate: TreeDropTargetDelegate = {
-      getDropTargetFromPoint: parentCollectionRenderer?.dropTargetDelegate?.getDropTargetFromPoint
-        ?? ((_x, _y, _v) => null),
-      getKeyboardNavigationTarget: parentCollectionRenderer?.dropTargetDelegate?.getKeyboardNavigationTarget,
-      getKeyboardPageNavigationTarget: parentCollectionRenderer?.dropTargetDelegate?.getKeyboardPageNavigationTarget,
+      getDropTargetFromPoint:
+        parentCollectionRenderer?.dropTargetDelegate?.getDropTargetFromPoint ??
+        ((_x, _y, _v) => null),
+      getKeyboardNavigationTarget:
+        parentCollectionRenderer?.dropTargetDelegate?.getKeyboardNavigationTarget,
+      getKeyboardPageNavigationTarget:
+        parentCollectionRenderer?.dropTargetDelegate?.getKeyboardPageNavigationTarget,
     };
     const treeDelegate = createTreeDropTargetDelegate(
-      parentDelegate, state, direction,
-      virtualizer.getBaseKeyboardNavigationTarget
+      parentDelegate,
+      state,
+      direction,
+      virtualizer.getBaseKeyboardNavigationTarget,
     );
     virtualizer.setKeyboardNavigationOverride(
       treeDelegate.getKeyboardNavigationTarget
         ? (target, dir, isValid) => treeDelegate.getKeyboardNavigationTarget!(target, dir, isValid)
-        : undefined
+        : undefined,
     );
     onCleanup(() => {
       virtualizer.setKeyboardNavigationOverride(undefined);
@@ -1121,8 +1185,9 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     ...parentCollectionRenderer,
     renderItem: (item) => item as JSX.Element,
-    renderDropIndicator: (index: number, position: 'before' | 'after' | 'on') =>
-      dndDropIndicator(index, position) ?? parentCollectionRenderer?.renderDropIndicator?.(index, position),
+    renderDropIndicator: (index: number, position: "before" | "after" | "on") =>
+      dndDropIndicator(index, position) ??
+      parentCollectionRenderer?.renderDropIndicator?.(index, position),
   }));
   const rootKeyByNodeKey = createMemo(() => {
     const rootMap = new Map<Key, Key>();
@@ -1157,7 +1222,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
       if (!isCollectionSection(entry)) {
         const matching = rows.filter((row) => rootMap.get(row.node.key) === entry.key);
         return {
-          type: 'single' as const,
+          type: "single" as const,
           item: entry,
           rows: matching,
         };
@@ -1168,15 +1233,15 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
         return rootKey != null && sectionRootKeys.has(rootKey);
       });
       return {
-        type: 'section' as const,
+        type: "section" as const,
         section: entry,
         rows: sectionRows,
       };
     });
   });
   const renderTreeRow = (node: TreeNode<T>, itemIndex: number) => {
-    const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex, 'before');
-    const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex, 'on');
+    const beforeIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex, "before");
+    const onIndicator = () => collectionRenderer().renderDropIndicator?.(itemIndex, "on");
     const afterIndicatorIndexes = () => getAfterIndicatorIndexes(itemIndex, renderRange());
     // Find the original item data to pass to render function
     const itemData: TreeItemData<T> = {
@@ -1202,7 +1267,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
         {onIndicator()}
         {props.children(itemData, itemState)}
         <For each={afterIndicatorIndexes()}>
-          {(afterIndex) => collectionRenderer().renderDropIndicator?.(afterIndex, 'after')}
+          {(afterIndex) => collectionRenderer().renderDropIndicator?.(afterIndex, "after")}
         </For>
       </>
     );
@@ -1210,7 +1275,9 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
 
   return (
     <TreeContext.Provider value={contextValue() as unknown as TreeContextValue<object>}>
-      <TreeStateContext.Provider value={state as unknown as TreeState<object, TreeCollection<object>>}>
+      <TreeStateContext.Provider
+        value={state as unknown as TreeState<object, TreeCollection<object>>}
+      >
         <CollectionRendererContext.Provider value={collectionRenderer()}>
           <div
             ref={setRef}
@@ -1218,7 +1285,7 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
               domProps(),
               cleanTreeProps(),
               cleanFocusProps(),
-              (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
+              (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {},
             )}
             class={renderProps.class()}
             style={renderProps.style()}
@@ -1227,58 +1294,70 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
             data-disabled={ariaProps.isDisabled || undefined}
             data-empty={isEmpty() || undefined}
             data-drop-target={isRootDropTarget() || undefined}
-            data-selection-mode={stateProps.selectionMode !== 'none' ? stateProps.selectionMode : undefined}
+            data-selection-mode={
+              stateProps.selectionMode !== "none" ? stateProps.selectionMode : undefined
+            }
             data-allows-dragging={hasDraggableDnd() || undefined}
           >
             <SharedElementTransition>
-            {isEmpty() && local.renderEmptyState ? (
-              <div role="row" aria-level={1} style={{ display: 'contents' }}>
-                <div role="gridcell" style={{ display: 'contents' }}>
-                  {local.renderEmptyState()}
+              {isEmpty() && local.renderEmptyState ? (
+                <div role="row" aria-level={1} style={{ display: "contents" }}>
+                  <div role="gridcell" style={{ display: "contents" }}>
+                    {local.renderEmptyState()}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <>
-                {virtualRange()?.offsetTop
-                  ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetTop}px` }} data-virtualizer-spacer="top" />
-                  : null}
-                <Show
-                  when={hasSections()}
-                  fallback={(
-                    <For each={renderableRows()}>
-                      {(row) => renderTreeRow(row.node, row.globalIndex)}
-                    </For>
-                  )}
-                >
-                  <For each={sectionedRenderableRows() ?? []}>
-                    {(entry) => (
-                      <Show when={entry.rows.length > 0}>
-                        <Show
-                          when={entry.type === 'section'}
-                          fallback={(
-                            <For each={entry.rows}>
-                              {(row) => renderTreeRow(row.node, row.globalIndex)}
-                            </For>
-                          )}
-                        >
-                          <TreeSection>
-                            {entry.type === 'section' && entry.section.title
-                              ? <TreeHeader>{entry.section.title}</TreeHeader>
-                              : null}
-                            <For each={entry.rows}>
-                              {(row) => renderTreeRow(row.node, row.globalIndex)}
-                            </For>
-                          </TreeSection>
+              ) : (
+                <>
+                  {virtualRange()?.offsetTop ? (
+                    <div
+                      role="presentation"
+                      aria-hidden="true"
+                      style={{ height: `${virtualRange()!.offsetTop}px` }}
+                      data-virtualizer-spacer="top"
+                    />
+                  ) : null}
+                  <Show
+                    when={hasSections()}
+                    fallback={
+                      <For each={renderableRows()}>
+                        {(row) => renderTreeRow(row.node, row.globalIndex)}
+                      </For>
+                    }
+                  >
+                    <For each={sectionedRenderableRows() ?? []}>
+                      {(entry) => (
+                        <Show when={entry.rows.length > 0}>
+                          <Show
+                            when={entry.type === "section"}
+                            fallback={
+                              <For each={entry.rows}>
+                                {(row) => renderTreeRow(row.node, row.globalIndex)}
+                              </For>
+                            }
+                          >
+                            <TreeSection>
+                              {entry.type === "section" && entry.section.title ? (
+                                <TreeHeader>{entry.section.title}</TreeHeader>
+                              ) : null}
+                              <For each={entry.rows}>
+                                {(row) => renderTreeRow(row.node, row.globalIndex)}
+                              </For>
+                            </TreeSection>
+                          </Show>
                         </Show>
-                      </Show>
-                    )}
-                  </For>
-                </Show>
-                {virtualRange()?.offsetBottom
-                  ? <div role="presentation" aria-hidden="true" style={{ height: `${virtualRange()!.offsetBottom}px` }} data-virtualizer-spacer="bottom" />
-                  : null}
-              </>
-            )}
+                      )}
+                    </For>
+                  </Show>
+                  {virtualRange()?.offsetBottom ? (
+                    <div
+                      role="presentation"
+                      aria-hidden="true"
+                      style={{ height: `${virtualRange()!.offsetBottom}px` }}
+                      data-virtualizer-spacer="bottom"
+                    />
+                  ) : null}
+                </>
+              )}
             </SharedElementTransition>
             {local.hasMore && local.onLoadMore && (
               <TreeLoadMoreItem onLoadMore={local.onLoadMore} isLoading={local.isLoading} />
@@ -1295,20 +1374,20 @@ export function Tree<T extends object>(props: TreeProps<T>): JSX.Element {
  */
 export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element {
   const [local, domProps] = splitProps(props, [
-    'class',
-    'style',
-    'slot',
-    'id',
-    'item',
-    'textValue',
-    'onAction',
-    'children',
+    "class",
+    "style",
+    "slot",
+    "id",
+    "item",
+    "textValue",
+    "onAction",
+    "children",
   ]);
 
   // Get state from context
   const context = useContext(TreeStateContext);
   if (!context) {
-    throw new Error('TreeItem must be used within a Tree');
+    throw new Error("TreeItem must be used within a Tree");
   }
   const state = context as TreeState<T, TreeCollection<T>>;
   const treeContext = useContext(TreeContext) as TreeContextValue<T> | null;
@@ -1322,7 +1401,7 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
     if (!node) {
       // Create a simple node for the item
       return {
-        type: 'item' as const,
+        type: "item" as const,
         key: local.id,
         value: local.item?.value ?? null,
         textValue: local.textValue ?? String(local.id),
@@ -1345,7 +1424,7 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
       textValue: local.textValue,
     }),
     () => state,
-    ref
+    ref,
   );
   const isSelected = () => treeItemAria.isSelected;
   const isDisabled = () => treeItemAria.isDisabled;
@@ -1367,22 +1446,24 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
   // Check if focused
   const isFocused = createMemo(() => state.focusedKey === local.id);
   const draggableItem = createMemo(() => {
-    if (!treeContext?.dragAndDropHooks?.useDraggableItem || !treeContext.dragState) return undefined;
+    if (!treeContext?.dragAndDropHooks?.useDraggableItem || !treeContext.dragState)
+      return undefined;
     return treeContext.dragAndDropHooks.useDraggableItem(
       {
         key: local.id as string | number,
       },
-      treeContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>['useDraggableItem']>>[1]
+      treeContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>["useDraggableItem"]>>[1],
     );
   });
   const droppableItem = createMemo(() => {
-    if (!treeContext?.dragAndDropHooks?.useDroppableItem || !treeContext.dropState) return undefined;
+    if (!treeContext?.dragAndDropHooks?.useDroppableItem || !treeContext.dropState)
+      return undefined;
     return treeContext.dragAndDropHooks.useDroppableItem(
       {
         key: local.id as string | number,
       },
-      treeContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>['useDroppableItem']>>[1],
-      () => ref()
+      treeContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>["useDroppableItem"]>>[1],
+      () => ref(),
     );
   });
 
@@ -1405,9 +1486,9 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Tree-item',
+      defaultClassName: "solidaria-Tree-item",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -1442,10 +1523,16 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
           cleanHoverProps(),
           cleanFocusProps(),
           (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
-          (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
+          (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {},
         )}
         class={renderProps.class()}
-        style={{ '--tree-item-level': String(level()), ...((typeof renderProps.style() === 'object' ? renderProps.style() : {}) as Record<string, string>) }}
+        style={{
+          "--tree-item-level": String(level()),
+          ...((typeof renderProps.style() === "object" ? renderProps.style() : {}) as Record<
+            string,
+            string
+          >),
+        }}
         data-selected={isSelected() || undefined}
         data-focused={isFocused() || undefined}
         data-focus-visible={(isFocusVisible() && isFocused()) || undefined}
@@ -1456,7 +1543,9 @@ export function TreeItem<T extends object>(props: TreeItemProps<T>): JSX.Element
         data-expandable={isExpandable() || undefined}
         data-has-child-items={isExpandable() || undefined}
         data-level={level()}
-        data-selection-mode={treeContext?.state.selectionMode !== 'none' ? treeContext?.state.selectionMode : undefined}
+        data-selection-mode={
+          treeContext?.state.selectionMode !== "none" ? treeContext?.state.selectionMode : undefined
+        }
         data-dragging={draggableItem()?.isDragging || undefined}
         data-drop-target={droppableItem()?.isDropTarget || undefined}
       >
@@ -1477,13 +1566,13 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
   // Get item context
   const itemContext = useContext(TreeItemContext);
   if (!itemContext) {
-    throw new Error('TreeExpandButton must be used within a Tree');
+    throw new Error("TreeExpandButton must be used within a Tree");
   }
 
   // Get state context
   const stateContext = useContext(TreeStateContext);
   if (!stateContext) {
-    throw new Error('TreeExpandButton must be used within a Tree');
+    throw new Error("TreeExpandButton must be used within a Tree");
   }
 
   const state = stateContext as TreeState<object, TreeCollection<object>>;
@@ -1492,7 +1581,7 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
   const treeItemAria = createTreeItem(
     () => ({ node: itemContext.node }),
     () => state,
-    () => null
+    () => null,
   );
 
   // Remove ref and add custom handling
@@ -1505,7 +1594,7 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
 
   // Render children
   const renderChildren = () => {
-    if (typeof props.children === 'function') {
+    if (typeof props.children === "function") {
       return props.children({ isExpanded: isExpanded() });
     }
     return props.children;
@@ -1515,7 +1604,7 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
     <Show when={itemContext.isExpandable}>
       <button
         {...cleanExpandProps()}
-        class={props.class ?? 'solidaria-Tree-expand-button'}
+        class={props.class ?? "solidaria-Tree-expand-button"}
         style={props.style}
         data-expanded={isExpanded() || undefined}
       >
@@ -1531,14 +1620,14 @@ export function TreeExpandButton(props: TreeExpandButtonProps): JSX.Element {
 export function TreeSelectionCheckbox(props: { itemKey: Key }): JSX.Element {
   const context = useContext(TreeStateContext);
   if (!context) {
-    throw new Error('TreeSelectionCheckbox must be used within a Tree');
+    throw new Error("TreeSelectionCheckbox must be used within a Tree");
   }
 
   const state = context as TreeState<object, TreeCollection<object>>;
 
   const treeSelectionCheckboxAria = createTreeSelectionCheckbox<object, TreeCollection<object>>(
     () => ({ key: props.itemKey }),
-    () => state
+    () => state,
   );
 
   return <input {...treeSelectionCheckboxAria.checkboxProps} class="solidaria-Tree-checkbox" />;
@@ -1560,7 +1649,7 @@ export function TreeLoadMoreItem(props: TreeLoadMoreItemProps): JSX.Element {
   };
 
   createEffect(() => {
-    if (!sentinelRef || typeof IntersectionObserver !== 'function') return;
+    if (!sentinelRef || typeof IntersectionObserver !== "function") return;
     const offset = props.scrollOffset ?? 1;
     const margin = `0px 0px ${100 * offset}% 0px`;
     const observer = new IntersectionObserver(
@@ -1569,7 +1658,7 @@ export function TreeLoadMoreItem(props: TreeLoadMoreItemProps): JSX.Element {
           void triggerLoadMore();
         }
       },
-      { rootMargin: margin }
+      { rootMargin: margin },
     );
     observer.observe(sentinelRef);
     return () => observer.disconnect();
@@ -1577,18 +1666,18 @@ export function TreeLoadMoreItem(props: TreeLoadMoreItemProps): JSX.Element {
 
   const renderProps = useRenderProps(
     {
-      children: props.children ?? (() => (isLoading() ? 'Loading more...' : 'Load more')),
+      children: props.children ?? (() => (isLoading() ? "Loading more..." : "Load more")),
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-Tree-loadMore',
+      defaultClassName: "solidaria-Tree-loadMore",
     },
-    () => ({ isLoading: isLoading() })
+    () => ({ isLoading: isLoading() }),
   );
 
   return (
     <>
-      <div style={{ position: 'relative', width: 0, height: 0, overflow: 'hidden' }} inert>
-        <div ref={sentinelRef} style={{ position: 'absolute', height: '1px', width: '1px' }} />
+      <div style={{ position: "relative", width: 0, height: 0, overflow: "hidden" }} inert>
+        <div ref={sentinelRef} style={{ position: "absolute", height: "1px", width: "1px" }} />
       </div>
       <div
         role="treeitem"
@@ -1615,14 +1704,14 @@ export type TreeItemContentRenderProps = TreeItemRenderProps;
 export function TreeItemContent(props: TreeItemContentProps): JSX.Element {
   const context = useContext(TreeItemContentContext);
   if (!context) {
-    throw new Error('TreeItemContent must be used within a TreeItem');
+    throw new Error("TreeItemContent must be used within a TreeItem");
   }
 
   const renderProps = useRenderProps(
     {
       children: props.children,
     },
-    () => context
+    () => context,
   );
 
   return <>{renderProps.renderChildren()}</>;

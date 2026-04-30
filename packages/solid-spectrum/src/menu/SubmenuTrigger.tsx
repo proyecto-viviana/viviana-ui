@@ -4,11 +4,11 @@
  * Styled wrapper of headless SubmenuTrigger.
  */
 
-import { type JSX } from 'solid-js';
+import { type JSX } from "solid-js";
 import {
   SubmenuTrigger as HeadlessSubmenuTrigger,
   type SubmenuTriggerProps as HeadlessSubmenuTriggerProps,
-} from '@proyecto-viviana/solidaria-components';
+} from "@proyecto-viviana/solidaria-components";
 
 // ============================================
 // TYPES

@@ -6,7 +6,7 @@
  * is provided by the headless Checkbox from solidaria-components.
  */
 
-import { type JSX, splitProps, mergeProps as solidMergeProps, Show } from 'solid-js'
+import { type JSX, splitProps, mergeProps as solidMergeProps, Show } from "solid-js";
 import {
   Checkbox as HeadlessCheckbox,
   CheckboxGroup as HeadlessCheckboxGroup,
@@ -14,35 +14,38 @@ import {
   type CheckboxGroupProps as HeadlessCheckboxGroupProps,
   type CheckboxRenderProps,
   type CheckboxGroupRenderProps,
-} from '@proyecto-viviana/solidaria-components'
-import { useProviderProps } from '../provider'
+} from "@proyecto-viviana/solidaria-components";
+import { useProviderProps } from "../provider";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type CheckboxSize = 'sm' | 'md' | 'lg'
+export type CheckboxSize = "sm" | "md" | "lg";
 
-export interface CheckboxProps extends Omit<HeadlessCheckboxProps, 'class' | 'children' | 'style'> {
+export interface CheckboxProps extends Omit<HeadlessCheckboxProps, "class" | "children" | "style"> {
   /** The size of the checkbox. */
-  size?: CheckboxSize
+  size?: CheckboxSize;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Label text for the checkbox. */
-  children?: JSX.Element
+  children?: JSX.Element;
 }
 
-export interface CheckboxGroupProps extends Omit<HeadlessCheckboxGroupProps, 'class' | 'children' | 'style'> {
+export interface CheckboxGroupProps extends Omit<
+  HeadlessCheckboxGroupProps,
+  "class" | "children" | "style"
+> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Children checkboxes. */
-  children?: JSX.Element
+  children?: JSX.Element;
   /** Label for the group. */
-  label?: string
+  label?: string;
   /** Description for the group. */
-  description?: string
+  description?: string;
   /** Error message when invalid. */
-  errorMessage?: string
+  errorMessage?: string;
 }
 
 // ============================================
@@ -51,21 +54,21 @@ export interface CheckboxGroupProps extends Omit<HeadlessCheckboxGroupProps, 'cl
 
 const sizeStyles = {
   sm: {
-    box: 'h-4 w-4',
-    icon: 'h-3 w-3',
-    label: 'text-sm',
+    box: "h-4 w-4",
+    icon: "h-3 w-3",
+    label: "text-sm",
   },
   md: {
-    box: 'h-5 w-5',
-    icon: 'h-3.5 w-3.5',
-    label: 'text-base',
+    box: "h-5 w-5",
+    icon: "h-3.5 w-3.5",
+    label: "text-base",
   },
   lg: {
-    box: 'h-6 w-6',
-    icon: 'h-4 w-4',
-    label: 'text-lg',
+    box: "h-6 w-6",
+    icon: "h-4 w-4",
+    label: "text-lg",
   },
-}
+};
 
 // ============================================
 // ICONS
@@ -75,7 +78,7 @@ function CheckIcon(props: { class?: string }) {
   return (
     <svg
       class={props.class}
-      style={{ 'pointer-events': 'none' }}
+      style={{ "pointer-events": "none" }}
       viewBox="0 0 12 10"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -88,26 +91,21 @@ function CheckIcon(props: { class?: string }) {
         stroke-linejoin="round"
       />
     </svg>
-  )
+  );
 }
 
 function IndeterminateIcon(props: { class?: string }) {
   return (
     <svg
       class={props.class}
-      style={{ 'pointer-events': 'none' }}
+      style={{ "pointer-events": "none" }}
       viewBox="0 0 12 2"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path
-        d="M1 1H11"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-      />
+      <path d="M1 1H11" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
     </svg>
-  )
+  );
 }
 
 // ============================================
@@ -120,77 +118,70 @@ function IndeterminateIcon(props: { class?: string }) {
  * Built on solidaria-components Checkbox for full accessibility support.
  */
 export function Checkbox(props: CheckboxProps): JSX.Element {
-  const providerProps = useProviderProps(props)
+  const providerProps = useProviderProps(props);
   const defaultProps: Partial<CheckboxProps> = {
-    size: 'md',
-  }
+    size: "md",
+  };
 
-  const merged = solidMergeProps(defaultProps, providerProps)
+  const merged = solidMergeProps(defaultProps, providerProps);
 
-  const [local, headlessProps] = splitProps(merged, [
-    'size',
-    'class',
-    'children',
-  ])
+  const [local, headlessProps] = splitProps(merged, ["size", "class", "children"]);
 
-  const size = () => sizeStyles[local.size!]
+  const size = () => sizeStyles[local.size!];
 
   // Generate class based on render props
   const getClassName = (renderProps: CheckboxRenderProps): string => {
-    const base = 'inline-flex items-center gap-2 cursor-pointer'
-    const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed opacity-50' : ''
-    const custom = local.class || ''
-    return [base, disabledClass, custom].filter(Boolean).join(' ')
-  }
+    const base = "inline-flex items-center gap-2 cursor-pointer";
+    const disabledClass = renderProps.isDisabled ? "cursor-not-allowed opacity-50" : "";
+    const custom = local.class || "";
+    return [base, disabledClass, custom].filter(Boolean).join(" ");
+  };
 
   return (
-    <HeadlessCheckbox
-      {...headlessProps}
-      class={getClassName}
-    >
+    <HeadlessCheckbox {...headlessProps} class={getClassName}>
       {(renderProps: CheckboxRenderProps) => {
         const boxClasses = () => {
-          const base = 'relative flex items-center justify-center rounded border-2 transition-all duration-200 pointer-events-none'
-          const sizeClass = size().box
+          const base =
+            "relative flex items-center justify-center rounded border-2 transition-all duration-200 pointer-events-none";
+          const sizeClass = size().box;
 
-          let colorClass: string
+          let colorClass: string;
           if (renderProps.isDisabled) {
-            colorClass = 'border-bg-300 bg-bg-200'
+            colorClass = "border-bg-300 bg-bg-200";
           } else if (renderProps.isSelected || renderProps.isIndeterminate) {
-            colorClass = 'border-accent bg-accent'
+            colorClass = "border-accent bg-accent";
           } else {
-            colorClass = 'border-primary-600 bg-transparent hover:border-accent-300'
+            colorClass = "border-primary-600 bg-transparent hover:border-accent-300";
           }
 
           const focusClass = renderProps.isFocusVisible
-            ? 'ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400'
-            : ''
-          const cursorClass = renderProps.isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'
+            ? "ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400"
+            : "";
+          const cursorClass = renderProps.isDisabled ? "cursor-not-allowed" : "cursor-pointer";
 
-          return [base, sizeClass, colorClass, focusClass, cursorClass].filter(Boolean).join(' ')
-        }
+          return [base, sizeClass, colorClass, focusClass, cursorClass].filter(Boolean).join(" ");
+        };
 
         const iconClasses = () => {
-          const base = 'text-on-color transition-opacity duration-200 pointer-events-none'
-          const sizeClass = size().icon
-          const visibilityClass = (renderProps.isSelected || renderProps.isIndeterminate)
-            ? 'opacity-100'
-            : 'opacity-0'
+          const base = "text-on-color transition-opacity duration-200 pointer-events-none";
+          const sizeClass = size().icon;
+          const visibilityClass =
+            renderProps.isSelected || renderProps.isIndeterminate ? "opacity-100" : "opacity-0";
 
-          return [base, sizeClass, visibilityClass].filter(Boolean).join(' ')
-        }
+          return [base, sizeClass, visibilityClass].filter(Boolean).join(" ");
+        };
 
         const labelClasses = () => {
-          const base = 'text-primary-200'
-          const sizeClass = size().label
-          const disabledClass = renderProps.isDisabled ? 'opacity-50' : ''
+          const base = "text-primary-200";
+          const sizeClass = size().label;
+          const disabledClass = renderProps.isDisabled ? "opacity-50" : "";
 
-          return [base, sizeClass, disabledClass].filter(Boolean).join(' ')
-        }
+          return [base, sizeClass, disabledClass].filter(Boolean).join(" ");
+        };
 
         return (
           <>
-            <span class={boxClasses()} style={{ 'pointer-events': 'none' }}>
+            <span class={boxClasses()} style={{ "pointer-events": "none" }}>
               <Show
                 when={!renderProps.isIndeterminate}
                 fallback={<IndeterminateIcon class={iconClasses()} />}
@@ -202,10 +193,10 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
               <span class={labelClasses()}>{props.children}</span>
             </Show>
           </>
-        )
+        );
       }}
     </HeadlessCheckbox>
-  )
+  );
 }
 
 // ============================================
@@ -218,21 +209,21 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
  * Built on solidaria-components CheckboxGroup for full accessibility support.
  */
 export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
-  const mergedProps = useProviderProps(props)
+  const mergedProps = useProviderProps(props);
   const [local, headlessProps] = splitProps(mergedProps, [
-    'class',
-    'label',
-    'description',
-    'errorMessage',
-  ])
+    "class",
+    "label",
+    "description",
+    "errorMessage",
+  ]);
 
   // Generate class based on render props
   const getClassName = (renderProps: CheckboxGroupRenderProps): string => {
-    const base = 'flex flex-col gap-2'
-    const disabledClass = renderProps.isDisabled ? 'opacity-50' : ''
-    const custom = local.class || ''
-    return [base, disabledClass, custom].filter(Boolean).join(' ')
-  }
+    const base = "flex flex-col gap-2";
+    const disabledClass = renderProps.isDisabled ? "opacity-50" : "";
+    const custom = local.class || "";
+    return [base, disabledClass, custom].filter(Boolean).join(" ");
+  };
 
   // Render children function for the headless component
   const renderChildren = (renderProps: CheckboxGroupRenderProps) => (
@@ -240,9 +231,7 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
       <Show when={local.label}>
         <span class="text-sm font-medium text-primary-200">{local.label}</span>
       </Show>
-      <div class="flex flex-col gap-2">
-        {props.children}
-      </div>
+      <div class="flex flex-col gap-2">{props.children}</div>
       <Show when={local.description && !renderProps.isInvalid}>
         <span class="text-sm text-primary-400">{local.description}</span>
       </Show>
@@ -250,12 +239,8 @@ export function CheckboxGroup(props: CheckboxGroupProps): JSX.Element {
         <span class="text-sm text-danger-400">{local.errorMessage}</span>
       </Show>
     </>
-  )
+  );
   return (
-    <HeadlessCheckboxGroup
-      {...headlessProps}
-      class={getClassName}
-      children={renderChildren}
-    />
-  )
+    <HeadlessCheckboxGroup {...headlessProps} class={getClassName} children={renderChildren} />
+  );
 }

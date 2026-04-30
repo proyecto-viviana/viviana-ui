@@ -2,11 +2,11 @@
  * Tests for overlay hooks and utilities
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createRoot } from 'solid-js';
-import { render, fireEvent, screen, cleanup } from '@solidjs/testing-library';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { createRoot } from "solid-js";
+import { render, fireEvent, screen, cleanup } from "@solidjs/testing-library";
 // Import from source path for proper module resolution in tests
-import { createOverlayTriggerState } from '../../solid-stately/src';
+import { createOverlayTriggerState } from "../../solid-stately/src";
 import {
   createOverlayTrigger,
   createOverlay,
@@ -17,13 +17,13 @@ import {
   OverlayContainer,
   UNSAFE_PortalProvider,
   useModalProvider,
-} from '../src/overlays';
+} from "../src/overlays";
 
 // ============================================
 // createOverlayTriggerState tests
 // ============================================
-describe('createOverlayTriggerState', () => {
-  it('starts closed by default', () => {
+describe("createOverlayTriggerState", () => {
+  it("starts closed by default", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
       expect(state.isOpen()).toBe(false);
@@ -31,7 +31,7 @@ describe('createOverlayTriggerState', () => {
     });
   });
 
-  it('respects defaultOpen', () => {
+  it("respects defaultOpen", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState({ defaultOpen: true });
       expect(state.isOpen()).toBe(true);
@@ -39,7 +39,7 @@ describe('createOverlayTriggerState', () => {
     });
   });
 
-  it('can open and close', () => {
+  it("can open and close", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
       expect(state.isOpen()).toBe(false);
@@ -53,7 +53,7 @@ describe('createOverlayTriggerState', () => {
     });
   });
 
-  it('can toggle', () => {
+  it("can toggle", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
       expect(state.isOpen()).toBe(false);
@@ -67,7 +67,7 @@ describe('createOverlayTriggerState', () => {
     });
   });
 
-  it('supports controlled mode', () => {
+  it("supports controlled mode", () => {
     createRoot((dispose) => {
       const onOpenChange = vi.fn();
       const state = createOverlayTriggerState({
@@ -85,7 +85,7 @@ describe('createOverlayTriggerState', () => {
     });
   });
 
-  it('calls onOpenChange when state changes', () => {
+  it("calls onOpenChange when state changes", () => {
     createRoot((dispose) => {
       const onOpenChange = vi.fn();
       const state = createOverlayTriggerState({ onOpenChange });
@@ -103,14 +103,11 @@ describe('createOverlayTriggerState', () => {
 // ============================================
 // createOverlayTrigger tests
 // ============================================
-describe('createOverlayTrigger', () => {
-  it('returns trigger and overlay props', () => {
+describe("createOverlayTrigger", () => {
+  it("returns trigger and overlay props", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
-      const { triggerProps, overlayProps } = createOverlayTrigger(
-        { type: 'dialog' },
-        state
-      );
+      const { triggerProps, overlayProps } = createOverlayTrigger({ type: "dialog" }, state);
 
       expect(triggerProps).toBeDefined();
       expect(overlayProps).toBeDefined();
@@ -119,41 +116,38 @@ describe('createOverlayTrigger', () => {
     });
   });
 
-  it('sets aria-expanded based on state', () => {
+  it("sets aria-expanded based on state", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
-      const { triggerProps } = createOverlayTrigger({ type: 'dialog' }, state);
+      const { triggerProps } = createOverlayTrigger({ type: "dialog" }, state);
 
-      expect(triggerProps['aria-expanded']).toBe(false);
+      expect(triggerProps["aria-expanded"]).toBe(false);
 
       state.open();
-      expect(triggerProps['aria-expanded']).toBe(true);
+      expect(triggerProps["aria-expanded"]).toBe(true);
       dispose();
     });
   });
 
-  it('sets aria-controls when open', () => {
+  it("sets aria-controls when open", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
-      const { triggerProps, overlayProps } = createOverlayTrigger(
-        { type: 'dialog' },
-        state
-      );
+      const { triggerProps, overlayProps } = createOverlayTrigger({ type: "dialog" }, state);
 
-      expect(triggerProps['aria-controls']).toBeUndefined();
+      expect(triggerProps["aria-controls"]).toBeUndefined();
 
       state.open();
-      expect(triggerProps['aria-controls']).toBe(overlayProps.id);
+      expect(triggerProps["aria-controls"]).toBe(overlayProps.id);
       dispose();
     });
   });
 
-  it('sets aria-haspopup for menu type', () => {
+  it("sets aria-haspopup for menu type", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
-      const { triggerProps } = createOverlayTrigger({ type: 'menu' }, state);
+      const { triggerProps } = createOverlayTrigger({ type: "menu" }, state);
 
-      expect(triggerProps['aria-haspopup']).toBe(true);
+      expect(triggerProps["aria-haspopup"]).toBe(true);
       dispose();
     });
   });
@@ -161,27 +155,27 @@ describe('createOverlayTrigger', () => {
   it('sets aria-haspopup="listbox" for listbox type', () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
-      const { triggerProps } = createOverlayTrigger({ type: 'listbox' }, state);
+      const { triggerProps } = createOverlayTrigger({ type: "listbox" }, state);
 
-      expect(triggerProps['aria-haspopup']).toBe('listbox');
+      expect(triggerProps["aria-haspopup"]).toBe("listbox");
       dispose();
     });
   });
 
-  it('does not set aria-haspopup for dialog type', () => {
+  it("does not set aria-haspopup for dialog type", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
-      const { triggerProps } = createOverlayTrigger({ type: 'dialog' }, state);
+      const { triggerProps } = createOverlayTrigger({ type: "dialog" }, state);
 
-      expect(triggerProps['aria-haspopup']).toBeUndefined();
+      expect(triggerProps["aria-haspopup"]).toBeUndefined();
       dispose();
     });
   });
 
-  it('has onPress that toggles state', () => {
+  it("has onPress that toggles state", () => {
     createRoot((dispose) => {
       const state = createOverlayTriggerState();
-      const { triggerProps } = createOverlayTrigger({ type: 'dialog' }, state);
+      const { triggerProps } = createOverlayTrigger({ type: "dialog" }, state);
 
       expect(state.isOpen()).toBe(false);
 
@@ -198,12 +192,12 @@ describe('createOverlayTrigger', () => {
 // ============================================
 // createInteractOutside tests
 // ============================================
-describe('createInteractOutside', () => {
+describe("createInteractOutside", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it('does not call onInteractOutside when clicking inside', async () => {
+  it("does not call onInteractOutside when clicking inside", async () => {
     const onInteractOutside = vi.fn();
     let overlayRef: HTMLDivElement | undefined;
 
@@ -224,15 +218,15 @@ describe('createInteractOutside', () => {
       });
 
       // Simulate click inside
-      fireEvent.pointerDown(screen.getByTestId('inside'), { button: 0 });
-      fireEvent.pointerUp(screen.getByTestId('inside'), { button: 0 });
+      fireEvent.pointerDown(screen.getByTestId("inside"), { button: 0 });
+      fireEvent.pointerUp(screen.getByTestId("inside"), { button: 0 });
 
       expect(onInteractOutside).not.toHaveBeenCalled();
       dispose();
     });
   });
 
-  it('does not call onInteractOutside when disabled', async () => {
+  it("does not call onInteractOutside when disabled", async () => {
     const onInteractOutside = vi.fn();
     let overlayRef: HTMLDivElement | undefined;
 
@@ -252,8 +246,8 @@ describe('createInteractOutside', () => {
         isDisabled: true,
       });
 
-      fireEvent.pointerDown(screen.getByTestId('outside'), { button: 0 });
-      fireEvent.pointerUp(screen.getByTestId('outside'), { button: 0 });
+      fireEvent.pointerDown(screen.getByTestId("outside"), { button: 0 });
+      fireEvent.pointerUp(screen.getByTestId("outside"), { button: 0 });
 
       expect(onInteractOutside).not.toHaveBeenCalled();
       dispose();
@@ -264,17 +258,14 @@ describe('createInteractOutside', () => {
 // ============================================
 // createOverlay tests
 // ============================================
-describe('createOverlay', () => {
+describe("createOverlay", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it('returns overlay and underlay props', () => {
+  it("returns overlay and underlay props", () => {
     createRoot((dispose) => {
-      const { overlayProps, underlayProps } = createOverlay(
-        { isOpen: true },
-        () => null
-      );
+      const { overlayProps, underlayProps } = createOverlay({ isOpen: true }, () => null);
 
       expect(overlayProps).toBeDefined();
       expect(underlayProps).toBeDefined();
@@ -282,7 +273,7 @@ describe('createOverlay', () => {
     });
   });
 
-  it('does not call onClose when isKeyboardDismissDisabled is true', () => {
+  it("does not call onClose when isKeyboardDismissDisabled is true", () => {
     const onClose = vi.fn();
     let overlayRef: HTMLDivElement | undefined;
 
@@ -295,15 +286,15 @@ describe('createOverlay', () => {
     createRoot((dispose) => {
       const { overlayProps } = createOverlay(
         { isOpen: true, onClose, isKeyboardDismissDisabled: true },
-        () => overlayRef ?? null
+        () => overlayRef ?? null,
       );
 
       // Manually call the keydown handler
       const keyDownHandler = overlayProps.onKeyDown as (e: KeyboardEvent) => void;
       keyDownHandler({
-        key: 'Escape',
+        key: "Escape",
         stopPropagation: vi.fn(),
-        preventDefault: vi.fn()
+        preventDefault: vi.fn(),
       } as unknown as KeyboardEvent);
 
       expect(onClose).not.toHaveBeenCalled();
@@ -311,17 +302,14 @@ describe('createOverlay', () => {
     });
   });
 
-  it('calls onClose when Escape is pressed', async () => {
+  it("calls onClose when Escape is pressed", async () => {
     const onClose = vi.fn();
     let overlayRef: HTMLDivElement | undefined;
     let keyDownHandler: ((e: KeyboardEvent) => void) | undefined;
 
     render(() => {
       // Create the overlay inside the render context so effects run properly
-      const { overlayProps } = createOverlay(
-        { isOpen: true, onClose },
-        () => overlayRef ?? null
-      );
+      const { overlayProps } = createOverlay({ isOpen: true, onClose }, () => overlayRef ?? null);
       keyDownHandler = overlayProps.onKeyDown as (e: KeyboardEvent) => void;
 
       return (
@@ -336,9 +324,9 @@ describe('createOverlay', () => {
 
     // Manually call the keydown handler
     keyDownHandler!({
-      key: 'Escape',
+      key: "Escape",
       stopPropagation: vi.fn(),
-      preventDefault: vi.fn()
+      preventDefault: vi.fn(),
     } as unknown as KeyboardEvent);
 
     expect(onClose).toHaveBeenCalled();
@@ -348,11 +336,11 @@ describe('createOverlay', () => {
 // ============================================
 // ariaHideOutside tests
 // ============================================
-describe('ariaHideOutside', () => {
+describe("ariaHideOutside", () => {
   let container: HTMLDivElement;
 
   beforeEach(() => {
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
   });
 
@@ -360,63 +348,63 @@ describe('ariaHideOutside', () => {
     document.body.removeChild(container);
   });
 
-  it('hides elements outside the target', () => {
-    const outside = document.createElement('div');
-    outside.id = 'outside';
+  it("hides elements outside the target", () => {
+    const outside = document.createElement("div");
+    outside.id = "outside";
     container.appendChild(outside);
 
-    const target = document.createElement('div');
-    target.id = 'target';
+    const target = document.createElement("div");
+    target.id = "target";
     container.appendChild(target);
 
     const revert = ariaHideOutside([target]);
 
-    expect(outside.getAttribute('aria-hidden')).toBe('true');
-    expect(target.getAttribute('aria-hidden')).toBeNull();
+    expect(outside.getAttribute("aria-hidden")).toBe("true");
+    expect(target.getAttribute("aria-hidden")).toBeNull();
 
     revert();
-    expect(outside.getAttribute('aria-hidden')).toBeNull();
+    expect(outside.getAttribute("aria-hidden")).toBeNull();
   });
 
-  it('preserves existing aria-hidden values', () => {
-    const alreadyHidden = document.createElement('div');
-    alreadyHidden.setAttribute('aria-hidden', 'true');
+  it("preserves existing aria-hidden values", () => {
+    const alreadyHidden = document.createElement("div");
+    alreadyHidden.setAttribute("aria-hidden", "true");
     container.appendChild(alreadyHidden);
 
-    const outside = document.createElement('div');
+    const outside = document.createElement("div");
     container.appendChild(outside);
 
-    const target = document.createElement('div');
+    const target = document.createElement("div");
     container.appendChild(target);
 
     const revert = ariaHideOutside([target]);
 
     // Both should be hidden now
-    expect(alreadyHidden.getAttribute('aria-hidden')).toBe('true');
-    expect(outside.getAttribute('aria-hidden')).toBe('true');
+    expect(alreadyHidden.getAttribute("aria-hidden")).toBe("true");
+    expect(outside.getAttribute("aria-hidden")).toBe("true");
 
     revert();
     // Originally hidden should still be hidden
-    expect(alreadyHidden.getAttribute('aria-hidden')).toBe('true');
+    expect(alreadyHidden.getAttribute("aria-hidden")).toBe("true");
     // Outside should be restored to not hidden
-    expect(outside.getAttribute('aria-hidden')).toBeNull();
+    expect(outside.getAttribute("aria-hidden")).toBeNull();
   });
 
-  it('handles multiple targets', () => {
-    const outside = document.createElement('div');
+  it("handles multiple targets", () => {
+    const outside = document.createElement("div");
     container.appendChild(outside);
 
-    const target1 = document.createElement('div');
+    const target1 = document.createElement("div");
     container.appendChild(target1);
 
-    const target2 = document.createElement('div');
+    const target2 = document.createElement("div");
     container.appendChild(target2);
 
     const revert = ariaHideOutside([target1, target2]);
 
-    expect(outside.getAttribute('aria-hidden')).toBe('true');
-    expect(target1.getAttribute('aria-hidden')).toBeNull();
-    expect(target2.getAttribute('aria-hidden')).toBeNull();
+    expect(outside.getAttribute("aria-hidden")).toBe("true");
+    expect(target1.getAttribute("aria-hidden")).toBeNull();
+    expect(target2.getAttribute("aria-hidden")).toBeNull();
 
     revert();
   });
@@ -425,12 +413,12 @@ describe('ariaHideOutside', () => {
 // ============================================
 // createModal tests
 // ============================================
-describe('createModal', () => {
+describe("createModal", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it('ModalProvider provides context', () => {
+  it("ModalProvider provides context", () => {
     let providerAria: any;
 
     render(() => (
@@ -446,7 +434,7 @@ describe('createModal', () => {
     expect(providerAria.modalProviderProps).toBeDefined();
   });
 
-  it('returns modalProps when used within ModalProvider', () => {
+  it("returns modalProps when used within ModalProvider", () => {
     let modalAria: any;
 
     render(() => (
@@ -462,8 +450,8 @@ describe('createModal', () => {
     expect(modalAria.modalProps).toBeDefined();
   });
 
-  it('OverlayContainer uses the portal provider container by default', () => {
-    const portalRoot = document.createElement('div');
+  it("OverlayContainer uses the portal provider container by default", () => {
+    const portalRoot = document.createElement("div");
     document.body.appendChild(portalRoot);
 
     render(() => (
@@ -474,15 +462,15 @@ describe('createModal', () => {
       </UNSAFE_PortalProvider>
     ));
 
-    expect(portalRoot.querySelector('[data-overlay-container]')).toBeTruthy();
-    expect(portalRoot.querySelector('[data-testid=\"overlay-content\"]')).toBeTruthy();
+    expect(portalRoot.querySelector("[data-overlay-container]")).toBeTruthy();
+    expect(portalRoot.querySelector('[data-testid="overlay-content"]')).toBeTruthy();
 
     document.body.removeChild(portalRoot);
   });
 
-  it('OverlayContainer portalContainer prop overrides inherited portal context', () => {
-    const inheritedRoot = document.createElement('div');
-    const explicitRoot = document.createElement('div');
+  it("OverlayContainer portalContainer prop overrides inherited portal context", () => {
+    const inheritedRoot = document.createElement("div");
+    const explicitRoot = document.createElement("div");
     document.body.appendChild(inheritedRoot);
     document.body.appendChild(explicitRoot);
 
@@ -494,8 +482,8 @@ describe('createModal', () => {
       </UNSAFE_PortalProvider>
     ));
 
-    expect(inheritedRoot.querySelector('[data-overlay-container]')).toBeNull();
-    expect(explicitRoot.querySelector('[data-overlay-container]')).toBeTruthy();
+    expect(inheritedRoot.querySelector("[data-overlay-container]")).toBeNull();
+    expect(explicitRoot.querySelector("[data-overlay-container]")).toBeTruthy();
 
     document.body.removeChild(inheritedRoot);
     document.body.removeChild(explicitRoot);

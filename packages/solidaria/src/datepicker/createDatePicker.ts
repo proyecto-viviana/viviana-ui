@@ -5,13 +5,13 @@
  * Based on @react-aria/datepicker useDatePicker
  */
 
-import { createMemo } from 'solid-js';
-import { createId } from '../ssr';
-import { createLabel } from '../label/createLabel';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { mergeProps } from '../utils/mergeProps';
-import { useLocale } from '../i18n';
-import type { DateFieldState, CalendarState } from '@proyecto-viviana/solid-stately';
+import { createMemo } from "solid-js";
+import { createId } from "../ssr";
+import { createLabel } from "../label/createLabel";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { mergeProps } from "../utils/mergeProps";
+import { useLocale } from "../i18n";
+import type { DateFieldState, CalendarState } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
@@ -23,11 +23,11 @@ export interface AriaDatePickerProps {
   /** A visible label for the date picker. */
   label?: string;
   /** An accessible label for the date picker. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The ID of an element that labels the date picker. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The ID of an element that describes the date picker. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the date picker is disabled. */
   isDisabled?: boolean;
   /** Whether the date picker is read-only. */
@@ -89,7 +89,7 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
   props: MaybeAccessor<AriaDatePickerProps>,
   state: T,
   overlayState: DatePickerState,
-  _calendarState?: C
+  _calendarState?: C,
 ): DatePickerAria {
   const locale = useLocale();
   const getProps = () => access(props);
@@ -100,18 +100,24 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
 
   // Create label handling
   const { labelProps, fieldProps: labelFieldProps } = createLabel({
-    get label() { return getProps().label; },
-    get 'aria-label'() { return getProps()['aria-label']; },
-    get 'aria-labelledby'() { return getProps()['aria-labelledby']; },
-    labelElementType: 'span',
+    get label() {
+      return getProps().label;
+    },
+    get "aria-label"() {
+      return getProps()["aria-label"];
+    },
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
+    },
+    labelElementType: "span",
   });
 
   // Build aria-describedby
   const getAriaDescribedBy = () => {
     const p = getProps();
     const ids: string[] = [];
-    if (p['aria-describedby']) {
-      ids.push(p['aria-describedby']);
+    if (p["aria-describedby"]) {
+      ids.push(p["aria-describedby"]);
     }
     if (p.description) {
       ids.push(descriptionId);
@@ -119,7 +125,7 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
     if (p.isInvalid && p.errorMessage) {
       ids.push(errorMessageId);
     }
-    return ids.length > 0 ? ids.join(' ') : undefined;
+    return ids.length > 0 ? ids.join(" ") : undefined;
   };
 
   // Group props
@@ -129,12 +135,12 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
 
     return mergeProps(labelFieldProps as Record<string, unknown>, {
       id,
-      role: 'group',
-      'aria-disabled': p.isDisabled || state.isDisabled() || undefined,
-      'aria-readonly': p.isReadOnly || state.isReadOnly() || undefined,
-      'aria-required': p.isRequired || state.isRequired() || undefined,
-      'aria-invalid': isInvalid || undefined,
-      'aria-describedby': getAriaDescribedBy(),
+      role: "group",
+      "aria-disabled": p.isDisabled || state.isDisabled() || undefined,
+      "aria-readonly": p.isReadOnly || state.isReadOnly() || undefined,
+      "aria-required": p.isRequired || state.isRequired() || undefined,
+      "aria-invalid": isInvalid || undefined,
+      "aria-describedby": getAriaDescribedBy(),
     });
   });
 
@@ -149,10 +155,10 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
     const defaults = getDatePickerLabelDefaults(locale().locale);
 
     return {
-      'aria-label': p.buttonAriaLabel ?? defaults.button,
-      'aria-haspopup': 'dialog' as const,
-      'aria-expanded': overlayState.isOpen,
-      'aria-controls': overlayState.isOpen ? dialogId : undefined,
+      "aria-label": p.buttonAriaLabel ?? defaults.button,
+      "aria-haspopup": "dialog" as const,
+      "aria-expanded": overlayState.isOpen,
+      "aria-controls": overlayState.isOpen ? dialogId : undefined,
       disabled: isDisabled,
       tabIndex: -1,
       onClick: () => {
@@ -168,9 +174,9 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
     const defaults = getDatePickerLabelDefaults(locale().locale);
     return {
       id: dialogId,
-      role: 'dialog',
-      'aria-modal': true,
-      'aria-label': getProps().dialogAriaLabel ?? defaults.dialog,
+      role: "dialog",
+      "aria-modal": true,
+      "aria-label": getProps().dialogAriaLabel ?? defaults.dialog,
     };
   });
 
@@ -178,7 +184,7 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
   const calendarProps = createMemo(() => {
     const defaults = getDatePickerLabelDefaults(locale().locale);
     return {
-      'aria-label': getProps().calendarAriaLabel ?? getProps().dialogAriaLabel ?? defaults.calendar,
+      "aria-label": getProps().calendarAriaLabel ?? getProps().dialogAriaLabel ?? defaults.calendar,
     };
   });
 
@@ -190,7 +196,7 @@ export function createDatePicker<T extends DateFieldState, C extends CalendarSta
   // Error message props
   const errorMessageProps = createMemo(() => ({
     id: errorMessageId,
-    role: 'alert',
+    role: "alert",
   }));
 
   return {
@@ -226,19 +232,19 @@ function getDatePickerLabelDefaults(locale: string): {
   dialog: string;
   calendar: string;
 } {
-  const language = locale.toLowerCase().split('-')[0] ?? 'en';
+  const language = locale.toLowerCase().split("-")[0] ?? "en";
 
-  if (language === 'es') {
+  if (language === "es") {
     return {
-      button: 'Abrir calendario',
-      dialog: 'Calendario',
-      calendar: 'Calendario',
+      button: "Abrir calendario",
+      dialog: "Calendario",
+      calendar: "Calendario",
     };
   }
 
   return {
-    button: 'Open calendar',
-    dialog: 'Calendar',
-    calendar: 'Calendar',
+    button: "Open calendar",
+    dialog: "Calendar",
+    calendar: "Calendar",
   };
 }

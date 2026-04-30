@@ -111,7 +111,12 @@ function MeterPage() {
         <div class="space-y-4 max-w-md">
           <div>
             <p class="text-sm text-bg-600 mb-1">Password strength:</p>
-            <Meter aria-label="Password strength" value={60} variant="warning" showValueLabel={false} />
+            <Meter
+              aria-label="Password strength"
+              value={60}
+              variant="warning"
+              showValueLabel={false}
+            />
           </div>
           <div>
             <p class="text-sm text-bg-600 mb-1">Battery level:</p>
@@ -119,7 +124,12 @@ function MeterPage() {
           </div>
           <div>
             <p class="text-sm text-bg-600 mb-1">Signal strength:</p>
-            <Meter aria-label="Signal strength" value={30} variant="danger" showValueLabel={false} />
+            <Meter
+              aria-label="Signal strength"
+              value={30}
+              variant="danger"
+              showValueLabel={false}
+            />
           </div>
         </div>
       </Example>
@@ -219,7 +229,8 @@ function MeterPage() {
             Uses <code>role="meter"</code>
           </li>
           <li>
-            Exposes <code>aria-valuenow</code>, <code>aria-valuemin</code>, and <code>aria-valuemax</code>
+            Exposes <code>aria-valuenow</code>, <code>aria-valuemin</code>, and{" "}
+            <code>aria-valuemax</code>
           </li>
           <li>
             Label is linked via <code>aria-labelledby</code> for screen reader association

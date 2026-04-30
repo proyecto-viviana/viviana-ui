@@ -1,5 +1,1 @@
-export {
-  createTextField,
-  type AriaTextFieldProps,
-  type TextFieldAria,
-} from './createTextField';
+export { createTextField, type AriaTextFieldProps, type TextFieldAria } from "./createTextField";

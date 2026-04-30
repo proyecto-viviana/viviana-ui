@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
 import { DatePicker } from "@proyecto-viviana/solid-spectrum";
-import {
-  CalendarDateClass as CalendarDate,
-  type DateValue,
-} from "@proyecto-viviana/solid-stately";
+import { CalendarDateClass as CalendarDate, type DateValue } from "@proyecto-viviana/solid-stately";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/datepicker")({
@@ -39,13 +36,12 @@ import { CalendarDateClass as CalendarDate } from '@proyecto-viviana/solid-state
 <p>Selected: {selectedDate()?.toString() ?? "None"}</p>`}
       >
         <div class="flex flex-col gap-4 max-w-xs">
-          <DatePicker
-            label="Event date"
-            value={selectedDate()}
-            onChange={setSelectedDate}
-          />
+          <DatePicker label="Event date" value={selectedDate()} onChange={setSelectedDate} />
           <p class="text-sm text-bg-500">
-            Selected: {selectedDate() ? `${selectedDate()!.month}/${selectedDate()!.day}/${selectedDate()!.year}` : "None"}
+            Selected:{" "}
+            {selectedDate()
+              ? `${selectedDate()!.month}/${selectedDate()!.day}/${selectedDate()!.year}`
+              : "None"}
           </p>
         </div>
       </Example>
@@ -75,7 +71,10 @@ const maxDate = new CalendarDate(2026, 6, 30);
             description="Select a date between Jan 1 and Jun 30, 2026"
           />
           <p class="text-sm text-bg-500">
-            Selected: {constrainedDate() ? `${constrainedDate()!.month}/${constrainedDate()!.day}/${constrainedDate()!.year}` : "None"}
+            Selected:{" "}
+            {constrainedDate()
+              ? `${constrainedDate()!.month}/${constrainedDate()!.day}/${constrainedDate()!.year}`
+              : "None"}
           </p>
         </div>
       </Example>
@@ -190,7 +189,8 @@ const maxDate = new CalendarDate(2026, 6, 30);
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
           <li>
-            Date segments are individually focusable with <code>spinbutton</code> role for screen readers
+            Date segments are individually focusable with <code>spinbutton</code> role for screen
+            readers
           </li>
           <li>Arrow Up/Down increments or decrements the focused segment value</li>
           <li>Tab moves between date segments (month, day, year)</li>
@@ -198,7 +198,8 @@ const maxDate = new CalendarDate(2026, 6, 30);
             The calendar popup button has an <code>aria-label</code> describing its purpose
           </li>
           <li>
-            Error messages are associated via <code>aria-describedby</code> for screen reader announcement
+            Error messages are associated via <code>aria-describedby</code> for screen reader
+            announcement
           </li>
           <li>
             Required state is communicated through <code>aria-required</code>

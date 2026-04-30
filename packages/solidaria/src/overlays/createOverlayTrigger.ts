@@ -3,22 +3,22 @@
  * Based on @react-aria/overlays useOverlayTrigger.
  */
 
-import { createEffect } from 'solid-js';
-import type { OverlayTriggerState } from '@proyecto-viviana/solid-stately';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils';
+import { createEffect } from "solid-js";
+import type { OverlayTriggerState } from "@proyecto-viviana/solid-stately";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils";
 
 export interface OverlayTriggerProps {
   /** Type of overlay that is opened by the trigger. */
-  type: 'dialog' | 'menu' | 'listbox' | 'tree' | 'grid';
+  type: "dialog" | "menu" | "listbox" | "tree" | "grid";
 }
 
 export interface OverlayTriggerAria {
   /** Props for the trigger element. */
   triggerProps: {
-    'aria-haspopup'?: boolean | 'listbox';
-    'aria-expanded': boolean;
-    'aria-controls'?: string;
+    "aria-haspopup"?: boolean | "listbox";
+    "aria-expanded": boolean;
+    "aria-controls"?: string;
     onPress: () => void;
   };
   /** Props for the overlay container element. */
@@ -37,7 +37,7 @@ export const onCloseMap = new WeakMap<Element, () => void>();
 export function createOverlayTrigger(
   props: MaybeAccessor<OverlayTriggerProps>,
   state: OverlayTriggerState,
-  ref?: () => Element | null
+  ref?: () => Element | null,
 ): OverlayTriggerAria {
   const propsAccessor = () => access(props);
   const overlayId = createId();
@@ -55,25 +55,25 @@ export function createOverlayTrigger(
   // https://www.w3.org/TR/wai-aria-1.1/#aria-haspopup
   // However, we only add it for menus for now because screen readers often
   // announce it as a menu even for other values.
-  const getAriaHasPopup = (): boolean | 'listbox' | undefined => {
+  const getAriaHasPopup = (): boolean | "listbox" | undefined => {
     const type = propsAccessor().type;
-    if (type === 'menu') {
+    if (type === "menu") {
       return true;
-    } else if (type === 'listbox') {
-      return 'listbox';
+    } else if (type === "listbox") {
+      return "listbox";
     }
     return undefined;
   };
 
   return {
     triggerProps: {
-      get 'aria-haspopup'() {
+      get "aria-haspopup"() {
         return getAriaHasPopup();
       },
-      get 'aria-expanded'() {
+      get "aria-expanded"() {
         return state.isOpen();
       },
-      get 'aria-controls'() {
+      get "aria-controls"() {
         return state.isOpen() ? overlayId : undefined;
       },
       onPress: state.toggle,

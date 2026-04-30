@@ -4,25 +4,25 @@
  * Based on @react-aria/searchfield useSearchField.
  */
 
-import { type JSX } from 'solid-js';
-import { createTextField, type AriaTextFieldProps, type TextFieldAria } from '../textfield';
-import { mergeProps } from '../utils';
-import { type MaybeAccessor, access } from '../utils/reactivity';
-import type { SearchFieldState } from '@proyecto-viviana/solid-stately';
+import { type JSX } from "solid-js";
+import { createTextField, type AriaTextFieldProps, type TextFieldAria } from "../textfield";
+import { mergeProps } from "../utils";
+import { type MaybeAccessor, access } from "../utils/reactivity";
+import type { SearchFieldState } from "@proyecto-viviana/solid-stately";
 
-export interface AriaSearchFieldProps extends Omit<AriaTextFieldProps, 'type'> {
+export interface AriaSearchFieldProps extends Omit<AriaTextFieldProps, "type"> {
   /** Handler that is called when the user submits the search (pressing Enter). */
   onSubmit?: (value: string) => void;
   /** Handler that is called when the clear button is pressed or Escape clears the field. */
   onClear?: () => void;
 }
 
-export interface SearchFieldAria extends Omit<TextFieldAria, 'inputProps'> {
+export interface SearchFieldAria extends Omit<TextFieldAria, "inputProps"> {
   /** Props for the input element. */
   inputProps: JSX.InputHTMLAttributes<HTMLInputElement>;
   /** Props for the clear button. */
   clearButtonProps: {
-    'aria-label': string;
+    "aria-label": string;
     tabIndex: number;
     disabled?: boolean;
     onMouseDown: (e: MouseEvent) => void;
@@ -36,7 +36,7 @@ export interface SearchFieldAria extends Omit<TextFieldAria, 'inputProps'> {
 export function createSearchField(
   props: MaybeAccessor<AriaSearchFieldProps>,
   state: SearchFieldState,
-  inputRef?: () => HTMLInputElement | null
+  inputRef?: () => HTMLInputElement | null,
 ): SearchFieldAria {
   const getProps = () => access(props);
 
@@ -69,14 +69,14 @@ export function createSearchField(
     get label() {
       return getProps().label;
     },
-    get 'aria-label'() {
-      return getProps()['aria-label'];
+    get "aria-label"() {
+      return getProps()["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return getProps()['aria-labelledby'];
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
     },
-    get 'aria-describedby'() {
-      return getProps()['aria-describedby'];
+    get "aria-describedby"() {
+      return getProps()["aria-describedby"];
     },
     get description() {
       return getProps().description;
@@ -159,7 +159,7 @@ export function createSearchField(
     get onInput() {
       return getProps().onInput;
     },
-    type: 'search',
+    type: "search",
     onChange: setValue,
   });
 
@@ -168,30 +168,30 @@ export function createSearchField(
     const p = getProps();
 
     if (p.isDisabled || p.isReadOnly) {
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         e.preventDefault();
       }
       return;
     }
 
-    if (e.key === 'Enter' && p.onSubmit) {
+    if (e.key === "Enter" && p.onSubmit) {
       e.preventDefault();
       p.onSubmit(state.value());
     }
 
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       const currentValue = state.value();
-      const inputValue = inputRef?.()?.value ?? '';
+      const inputValue = inputRef?.()?.value ?? "";
 
       // Only clear if there's a value
-      if (currentValue !== '' || inputValue !== '') {
+      if (currentValue !== "" || inputValue !== "") {
         e.preventDefault();
         e.stopPropagation();
         const input = inputRef?.();
         if (input) {
-          input.value = '';
+          input.value = "";
         }
-        setValue('');
+        setValue("");
         p.onClear?.();
       }
     }
@@ -203,9 +203,9 @@ export function createSearchField(
     if (p.isDisabled || p.isReadOnly) return;
     const input = inputRef?.();
     if (input) {
-      input.value = '';
+      input.value = "";
     }
-    setValue('');
+    setValue("");
     p.onClear?.();
     // Focus the input after clearing
     inputRef?.()?.focus();
@@ -227,7 +227,7 @@ export function createSearchField(
           // Clear defaultValue since it's handled by state
           defaultValue: undefined,
         } as Record<string, unknown>,
-        textFieldAria.inputProps as Record<string, unknown>
+        textFieldAria.inputProps as Record<string, unknown>,
       ) as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
     get clearButtonProps() {
@@ -235,7 +235,7 @@ export function createSearchField(
       const isDisabled = p.isDisabled || p.isReadOnly;
 
       return {
-        'aria-label': 'Clear search',
+        "aria-label": "Clear search",
         tabIndex: -1, // Exclude from tab order
         disabled: isDisabled,
         onMouseDown: onClearButtonMouseDown,

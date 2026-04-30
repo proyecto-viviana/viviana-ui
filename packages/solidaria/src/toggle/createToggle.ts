@@ -6,15 +6,15 @@
  * This is a 1:1 port of @react-aria/toggle's useToggle hook.
  */
 
-import { JSX, Accessor, createEffect } from 'solid-js';
-import { createPress } from '../interactions/createPress';
-import { createFocusable } from '../interactions/createFocusable';
-import { mergeProps } from '../utils/mergeProps';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { type MaybeAccessor, access } from '../utils/reactivity';
-import { isDevEnv } from '../utils/env';
-import { type ToggleState } from '@proyecto-viviana/solid-stately';
-import { type PressEvent } from '../interactions/PressEvent';
+import { JSX, Accessor, createEffect } from "solid-js";
+import { createPress } from "../interactions/createPress";
+import { createFocusable } from "../interactions/createFocusable";
+import { mergeProps } from "../utils/mergeProps";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { type MaybeAccessor, access } from "../utils/reactivity";
+import { isDevEnv } from "../utils/env";
+import { type ToggleState } from "@proyecto-viviana/solid-stately";
+import { type PressEvent } from "../interactions/PressEvent";
 
 // ============================================
 // TYPES
@@ -44,15 +44,15 @@ export interface AriaToggleProps {
   /** The element's children. */
   children?: JSX.Element;
   /** Defines a string value that labels the current element. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element (or elements) that labels the current element. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Identifies the element (or elements) that describes the object. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Identifies the element (or elements) that provide an error message for the object. */
-  'aria-errormessage'?: string;
+  "aria-errormessage"?: string;
   /** Identifies the element (or elements) whose contents or presence are controlled by the current element. */
-  'aria-controls'?: string;
+  "aria-controls"?: string;
   /** The element's unique identifier. */
   id?: string;
   /** Handler that is called when the press is released over the target. */
@@ -110,7 +110,7 @@ export interface ToggleAria {
 export function createToggle(
   props: MaybeAccessor<AriaToggleProps>,
   state: ToggleState,
-  ref: () => HTMLInputElement | null
+  ref: () => HTMLInputElement | null,
 ): ToggleAria {
   const getProps = () => access(props);
 
@@ -122,45 +122,87 @@ export function createToggle(
 
   // Handle press state for keyboard interactions and cases where labelProps is not used.
   const { pressProps, isPressed } = createPress({
-    get onPressStart() { return getProps().onPressStart; },
-    get onPressEnd() { return getProps().onPressEnd; },
-    get onPressChange() { return getProps().onPressChange; },
-    get onPress() { return getProps().onPress; },
-    get onPressUp() { return getProps().onPressUp; },
-    get isDisabled() { return isDisabled(); },
+    get onPressStart() {
+      return getProps().onPressStart;
+    },
+    get onPressEnd() {
+      return getProps().onPressEnd;
+    },
+    get onPressChange() {
+      return getProps().onPressChange;
+    },
+    get onPress() {
+      return getProps().onPress;
+    },
+    get onPressUp() {
+      return getProps().onPressUp;
+    },
+    get isDisabled() {
+      return isDisabled();
+    },
   });
 
   // Handle press state on the label.
   const { pressProps: labelPressProps, isPressed: isLabelPressed } = createPress({
-    get onPressStart() { return getProps().onPressStart; },
-    get onPressEnd() { return getProps().onPressEnd; },
-    get onPressChange() { return getProps().onPressChange; },
-    get onPressUp() { return getProps().onPressUp; },
+    get onPressStart() {
+      return getProps().onPressStart;
+    },
+    get onPressEnd() {
+      return getProps().onPressEnd;
+    },
+    get onPressChange() {
+      return getProps().onPressChange;
+    },
+    get onPressUp() {
+      return getProps().onPressUp;
+    },
     onPress(e: PressEvent) {
       getProps().onPress?.(e);
       state.toggle();
       ref()?.focus();
     },
-    get isDisabled() { return isDisabled() || isReadOnly(); },
+    get isDisabled() {
+      return isDisabled() || isReadOnly();
+    },
   });
 
   // Handle focusable - extract the relevant props for createFocusable
-  const { focusableProps } = createFocusable({
-    get isDisabled() { return isDisabled(); },
-    get autoFocus() { return getProps().autoFocus; },
-    get onFocus() { return getProps().onFocus; },
-    get onBlur() { return getProps().onBlur; },
-    get onFocusChange() { return getProps().onFocusChange; },
-    get onKeyDown() { return getProps().onKeyDown; },
-    get onKeyUp() { return getProps().onKeyUp; },
-    get excludeFromTabOrder() { return getProps().excludeFromTabOrder; },
-  }, ref as unknown as (el: HTMLElement) => void);
+  const { focusableProps } = createFocusable(
+    {
+      get isDisabled() {
+        return isDisabled();
+      },
+      get autoFocus() {
+        return getProps().autoFocus;
+      },
+      get onFocus() {
+        return getProps().onFocus;
+      },
+      get onBlur() {
+        return getProps().onBlur;
+      },
+      get onFocusChange() {
+        return getProps().onFocusChange;
+      },
+      get onKeyDown() {
+        return getProps().onKeyDown;
+      },
+      get onKeyUp() {
+        return getProps().onKeyUp;
+      },
+      get excludeFromTabOrder() {
+        return getProps().excludeFromTabOrder;
+      },
+    },
+    ref as unknown as (el: HTMLElement) => void,
+  );
 
   // Combine press and focusable props for input
   const interactions = mergeProps(pressProps, focusableProps);
 
   // Filter DOM props
-  const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
+  const domProps = () =>
+    filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
   // Handle input change
   const onChange: JSX.EventHandler<HTMLInputElement, Event> = (e) => {
@@ -182,9 +224,11 @@ export function createToggle(
   createEffect(() => {
     const p = getProps();
     const hasChildren = p.children != null;
-    const hasAriaLabel = p['aria-label'] != null || p['aria-labelledby'] != null;
+    const hasAriaLabel = p["aria-label"] != null || p["aria-labelledby"] != null;
     if (!hasChildren && !hasAriaLabel && isDevEnv()) {
-      console.warn('If you do not provide children, you must specify an aria-label for accessibility');
+      console.warn(
+        "If you do not provide children, you must specify an aria-label for accessibility",
+      );
     }
   });
 
@@ -198,16 +242,16 @@ export function createToggle(
     get inputProps() {
       const p = getProps();
       return mergeProps(domProps(), {
-        'aria-invalid': isInvalid() || undefined,
-        'aria-errormessage': p['aria-errormessage'],
-        'aria-controls': p['aria-controls'],
-        'aria-readonly': isReadOnly() || undefined,
+        "aria-invalid": isInvalid() || undefined,
+        "aria-errormessage": p["aria-errormessage"],
+        "aria-controls": p["aria-controls"],
+        "aria-readonly": isReadOnly() || undefined,
         onChange,
         disabled: isDisabled(),
         ...(p.value == null ? {} : { value: p.value }),
         name: p.name,
         form: p.form,
-        type: 'checkbox' as const,
+        type: "checkbox" as const,
         ...interactions,
         // Stop click propagation to prevent labelProps.onClick from calling preventDefault
         // which would prevent the checkbox from toggling in JSDOM/testing-library environments

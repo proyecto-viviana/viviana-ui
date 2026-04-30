@@ -8,13 +8,13 @@
  * Based on @react-aria/tag useTagGroup
  */
 
-import { createEffect, onCleanup } from 'solid-js';
-import { createLabel } from '../label/createLabel';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { mergeProps } from '../utils/mergeProps';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { ListState, Key } from '@proyecto-viviana/solid-stately';
+import { createEffect, onCleanup } from "solid-js";
+import { createLabel } from "../label/createLabel";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { mergeProps } from "../utils/mergeProps";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import type { ListState, Key } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
@@ -28,11 +28,11 @@ export interface AriaTagGroupProps {
   /** The label for the tag group. */
   label?: string;
   /** An accessible label for the tag group when no visible label is provided. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The ID of an element that labels the tag group. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The ID of an element that describes the tag group. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** A description of the tag group. */
   description?: string;
   /** An error message for the tag group. */
@@ -76,7 +76,7 @@ export function getTagGroupData(state: ListState): TagGroupData | undefined {
 export function createTagGroup<T>(
   props: MaybeAccessor<AriaTagGroupProps>,
   state: ListState<T>,
-  _ref?: () => HTMLElement | null
+  _ref?: () => HTMLElement | null,
 ): TagGroupAria {
   const getProps = () => access(props);
   const id = createId(getProps().id);
@@ -84,18 +84,25 @@ export function createTagGroup<T>(
   const errorMessageId = createId();
   const getFallbackAriaLabel = () => {
     const p = getProps();
-    return !p.label && !p['aria-label'] && !p['aria-labelledby'] ? 'Tag list' : undefined;
+    return !p.label && !p["aria-label"] && !p["aria-labelledby"] ? "Tag list" : undefined;
   };
 
   // Filter DOM props
-  const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
+  const domProps = () =>
+    filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
   // Create label handling
   const { labelProps, fieldProps } = createLabel({
-    get label() { return getProps().label; },
-    get 'aria-label'() { return getProps()['aria-label'] ?? getFallbackAriaLabel(); },
-    get 'aria-labelledby'() { return getProps()['aria-labelledby']; },
-    labelElementType: 'span',
+    get label() {
+      return getProps().label;
+    },
+    get "aria-label"() {
+      return getProps()["aria-label"] ?? getFallbackAriaLabel();
+    },
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
+    },
+    labelElementType: "span",
   });
 
   // Share data with child tags
@@ -115,8 +122,8 @@ export function createTagGroup<T>(
   const getAriaDescribedBy = () => {
     const p = getProps();
     const ids: string[] = [];
-    if (p['aria-describedby']) {
-      ids.push(p['aria-describedby']);
+    if (p["aria-describedby"]) {
+      ids.push(p["aria-describedby"]);
     }
     if (p.description) {
       ids.push(descriptionId);
@@ -124,7 +131,7 @@ export function createTagGroup<T>(
     if (p.errorMessage) {
       ids.push(errorMessageId);
     }
-    return ids.length > 0 ? ids.join(' ') : undefined;
+    return ids.length > 0 ? ids.join(" ") : undefined;
   };
 
   return {
@@ -134,12 +141,12 @@ export function createTagGroup<T>(
 
       return mergeProps(domProps(), fieldProps as Record<string, unknown>, {
         id,
-        role: hasItems ? 'listbox' : 'group',
-        'aria-multiselectable': hasItems && state.selectionMode() === 'multiple' ? true : undefined,
-        'aria-atomic': false,
-        'aria-relevant': 'additions',
-        'aria-describedby': getAriaDescribedBy(),
-        'aria-disabled': p.isDisabled || undefined,
+        role: hasItems ? "listbox" : "group",
+        "aria-multiselectable": hasItems && state.selectionMode() === "multiple" ? true : undefined,
+        "aria-atomic": false,
+        "aria-relevant": "additions",
+        "aria-describedby": getAriaDescribedBy(),
+        "aria-disabled": p.isDisabled || undefined,
       });
     },
     get labelProps() {

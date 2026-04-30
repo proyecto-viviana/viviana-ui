@@ -2,12 +2,12 @@
  * createMove tests - Port of React Aria's useMove.test.js
  */
 
-import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { createMove } from '../src/interactions/createMove';
-import type { Component } from 'solid-js';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
+import { render, screen, cleanup, fireEvent } from "@solidjs/testing-library";
+import { createMove } from "../src/interactions/createMove";
+import type { Component } from "solid-js";
 
-const EXAMPLE_ELEMENT_TESTID = 'example';
+const EXAMPLE_ELEMENT_TESTID = "example";
 
 interface ExampleProps {
   onMoveStart?: (e: any) => void;
@@ -30,7 +30,7 @@ const Example: Component<ExampleProps> = (props) => {
   );
 };
 
-describe('createMove', () => {
+describe("createMove", () => {
   beforeAll(() => {
     vi.useFakeTimers();
   });
@@ -47,8 +47,8 @@ describe('createMove', () => {
     shiftKey: false,
   };
 
-  describe('mouse events', () => {
-    it('responds to mouse events', () => {
+  describe("mouse events", () => {
+    it("responds to mouse events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
@@ -56,65 +56,95 @@ describe('createMove', () => {
       const el = screen.getByTestId(EXAMPLE_ELEMENT_TESTID);
 
       // In our jsdom environment we have PointerEvent, so simulate mouse via pointer events.
-      fireEvent.pointerDown(el, { pointerType: 'mouse', pointerId: 1, button: 0, pageX: 1, pageY: 30 });
+      fireEvent.pointerDown(el, {
+        pointerType: "mouse",
+        pointerId: 1,
+        button: 0,
+        pageX: 1,
+        pageY: 30,
+      });
       expect(events).toStrictEqual([]);
-      fireEvent.pointerMove(window, { pointerType: 'mouse', pointerId: 1, pageX: 10, pageY: 25 });
+      fireEvent.pointerMove(window, { pointerType: "mouse", pointerId: 1, pageX: 10, pageY: 25 });
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'mouse', ...defaultModifiers },
-        { type: 'move', pointerType: 'mouse', deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "movestart", pointerType: "mouse", ...defaultModifiers },
+        { type: "move", pointerType: "mouse", deltaX: 9, deltaY: -5, ...defaultModifiers },
       ]);
-      fireEvent.pointerUp(window, { pointerType: 'mouse', pointerId: 1 });
+      fireEvent.pointerUp(window, { pointerType: "mouse", pointerId: 1 });
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'mouse', ...defaultModifiers },
-        { type: 'move', pointerType: 'mouse', deltaX: 9, deltaY: -5, ...defaultModifiers },
-        { type: 'moveend', pointerType: 'mouse', ...defaultModifiers },
+        { type: "movestart", pointerType: "mouse", ...defaultModifiers },
+        { type: "move", pointerType: "mouse", deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "moveend", pointerType: "mouse", ...defaultModifiers },
       ]);
     });
 
-    it('does not respond to right click', () => {
+    it("does not respond to right click", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
 
       const el = screen.getByTestId(EXAMPLE_ELEMENT_TESTID);
 
-      fireEvent.pointerDown(el, { pointerType: 'mouse', pointerId: 1, button: 2, pageX: 1, pageY: 30 });
-      fireEvent.pointerMove(window, { pointerType: 'mouse', pointerId: 1, button: 2, pageX: 10, pageY: 25 });
-      fireEvent.pointerUp(window, { pointerType: 'mouse', pointerId: 1, button: 2, pageX: 10, pageY: 25 });
+      fireEvent.pointerDown(el, {
+        pointerType: "mouse",
+        pointerId: 1,
+        button: 2,
+        pageX: 1,
+        pageY: 30,
+      });
+      fireEvent.pointerMove(window, {
+        pointerType: "mouse",
+        pointerId: 1,
+        button: 2,
+        pageX: 10,
+        pageY: 25,
+      });
+      fireEvent.pointerUp(window, {
+        pointerType: "mouse",
+        pointerId: 1,
+        button: 2,
+        pageX: 10,
+        pageY: 25,
+      });
       expect(events).toStrictEqual([]);
     });
 
-    it('does not fire anything when clicking', () => {
+    it("does not fire anything when clicking", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
 
       const el = screen.getByTestId(EXAMPLE_ELEMENT_TESTID);
 
-      fireEvent.pointerDown(el, { pointerType: 'mouse', pointerId: 1, button: 0, pageX: 1, pageY: 30 });
-      fireEvent.pointerUp(window, { pointerType: 'mouse', pointerId: 1, pageX: 1, pageY: 30 });
+      fireEvent.pointerDown(el, {
+        pointerType: "mouse",
+        pointerId: 1,
+        button: 0,
+        pageX: 1,
+        pageY: 30,
+      });
+      fireEvent.pointerUp(window, { pointerType: "mouse", pointerId: 1, pageX: 1, pageY: 30 });
       expect(events).toStrictEqual([]);
     });
   });
 
-  describe('touch events', () => {
+  describe("touch events", () => {
     let originalPointerEvent: PropertyDescriptor | undefined;
 
     beforeEach(() => {
-      originalPointerEvent = Object.getOwnPropertyDescriptor(window, 'PointerEvent');
-      Object.defineProperty(window, 'PointerEvent', { value: undefined, configurable: true });
+      originalPointerEvent = Object.getOwnPropertyDescriptor(window, "PointerEvent");
+      Object.defineProperty(window, "PointerEvent", { value: undefined, configurable: true });
     });
 
     afterEach(() => {
       if (originalPointerEvent) {
-        Object.defineProperty(window, 'PointerEvent', originalPointerEvent);
+        Object.defineProperty(window, "PointerEvent", originalPointerEvent);
       } else {
         // @ts-expect-error - cleanup
         delete (window as any).PointerEvent;
       }
     });
 
-    it('responds to touch events', () => {
+    it("responds to touch events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
@@ -125,18 +155,18 @@ describe('createMove', () => {
       expect(events).toStrictEqual([]);
       fireEvent.touchMove(el, { changedTouches: [{ identifier: 1, pageX: 10, pageY: 25 }] });
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'touch', ...defaultModifiers },
-        { type: 'move', pointerType: 'touch', deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "movestart", pointerType: "touch", ...defaultModifiers },
+        { type: "move", pointerType: "touch", deltaX: 9, deltaY: -5, ...defaultModifiers },
       ]);
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, pageX: 10, pageY: 25 }] });
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'touch', ...defaultModifiers },
-        { type: 'move', pointerType: 'touch', deltaX: 9, deltaY: -5, ...defaultModifiers },
-        { type: 'moveend', pointerType: 'touch', ...defaultModifiers },
+        { type: "movestart", pointerType: "touch", ...defaultModifiers },
+        { type: "move", pointerType: "touch", deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "moveend", pointerType: "touch", ...defaultModifiers },
       ]);
     });
 
-    it('ends with touchcancel', () => {
+    it("ends with touchcancel", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
@@ -148,13 +178,13 @@ describe('createMove', () => {
       fireEvent.touchCancel(el, { changedTouches: [{ identifier: 1, pageX: 10, pageY: 25 }] });
 
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'touch', ...defaultModifiers },
-        { type: 'move', pointerType: 'touch', deltaX: 9, deltaY: -5, ...defaultModifiers },
-        { type: 'moveend', pointerType: 'touch', ...defaultModifiers },
+        { type: "movestart", pointerType: "touch", ...defaultModifiers },
+        { type: "move", pointerType: "touch", deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "moveend", pointerType: "touch", ...defaultModifiers },
       ]);
     });
 
-    it('does not fire anything when tapping', () => {
+    it("does not fire anything when tapping", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
@@ -166,7 +196,7 @@ describe('createMove', () => {
       expect(events).toStrictEqual([]);
     });
 
-    it('ignores additional touches', () => {
+    it("ignores additional touches", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
@@ -180,25 +210,25 @@ describe('createMove', () => {
       expect(events).toStrictEqual([]);
       fireEvent.touchMove(el, { changedTouches: [{ identifier: 1, pageX: 10, pageY: 25 }] });
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'touch', ...defaultModifiers },
-        { type: 'move', pointerType: 'touch', deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "movestart", pointerType: "touch", ...defaultModifiers },
+        { type: "move", pointerType: "touch", deltaX: 9, deltaY: -5, ...defaultModifiers },
       ]);
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, pageX: 10, pageY: 25 }] });
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'touch', ...defaultModifiers },
-        { type: 'move', pointerType: 'touch', deltaX: 9, deltaY: -5, ...defaultModifiers },
-        { type: 'moveend', pointerType: 'touch', ...defaultModifiers },
+        { type: "movestart", pointerType: "touch", ...defaultModifiers },
+        { type: "move", pointerType: "touch", deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "moveend", pointerType: "touch", ...defaultModifiers },
       ]);
     });
   });
 
-  describe('user-select: none', () => {
-    const mockUserSelect = 'contain';
+  describe("user-select: none", () => {
+    const mockUserSelect = "contain";
     const oldUserSelect = document.documentElement.style.webkitUserSelect;
     let platformGetter: ReturnType<typeof vi.spyOn> | undefined;
 
     beforeAll(() => {
-      platformGetter = vi.spyOn(window.navigator, 'platform', 'get');
+      platformGetter = vi.spyOn(window.navigator, "platform", "get");
     });
 
     afterEach(() => {
@@ -206,8 +236,8 @@ describe('createMove', () => {
       document.documentElement.style.webkitUserSelect = oldUserSelect;
     });
 
-    it('adds and removes user-select: none to the body (iOS)', () => {
-      platformGetter?.mockReturnValue('iPhone');
+    it("adds and removes user-select: none to the body (iOS)", () => {
+      platformGetter?.mockReturnValue("iPhone");
       document.documentElement.style.webkitUserSelect = mockUserSelect;
 
       render(() => <Example onMoveStart={() => {}} onMove={() => {}} onMoveEnd={() => {}} />);
@@ -215,17 +245,17 @@ describe('createMove', () => {
 
       expect(document.documentElement.style.webkitUserSelect).toBe(mockUserSelect);
       fireEvent.touchStart(el, { changedTouches: [{ identifier: 1, pageX: 1, pageY: 30 }] });
-      expect(document.documentElement.style.webkitUserSelect).toBe('none');
+      expect(document.documentElement.style.webkitUserSelect).toBe("none");
       fireEvent.touchMove(el, { changedTouches: [{ identifier: 1, pageX: 10, pageY: 25 }] });
-      expect(document.documentElement.style.webkitUserSelect).toBe('none');
+      expect(document.documentElement.style.webkitUserSelect).toBe("none");
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, pageX: 10, pageY: 25 }] });
-      expect(document.documentElement.style.webkitUserSelect).toBe('none');
+      expect(document.documentElement.style.webkitUserSelect).toBe("none");
       vi.advanceTimersByTime(316);
       expect(document.documentElement.style.webkitUserSelect).toBe(mockUserSelect);
     });
 
-    it('does not add user-select: none to the body (non-iOS)', () => {
-      platformGetter?.mockReturnValue('Android');
+    it("does not add user-select: none to the body (non-iOS)", () => {
+      platformGetter?.mockReturnValue("Android");
       document.documentElement.style.webkitUserSelect = mockUserSelect;
 
       render(() => <Example onMoveStart={() => {}} onMove={() => {}} onMoveEnd={() => {}} />);
@@ -241,7 +271,7 @@ describe('createMove', () => {
     });
   });
 
-  it('does not bubble to createMove on parent elements', () => {
+  it("does not bubble to createMove on parent elements", () => {
     const eventsChild: any[] = [];
     const eventsParent: any[] = [];
     const addEventChild = (e: any) => eventsChild.push(e);
@@ -259,18 +289,18 @@ describe('createMove', () => {
     fireEvent.touchMove(el, { changedTouches: [{ identifier: 1, pageX: 10, pageY: 25 }] });
     fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, pageX: 10, pageY: 25 }] });
 
-    expect(eventsChild.map((event) => event.type)).toEqual(['movestart', 'move', 'moveend']);
+    expect(eventsChild.map((event) => event.type)).toEqual(["movestart", "move", "moveend"]);
     expect(eventsParent).toStrictEqual([]);
   });
 
-  describe('keypresses', () => {
+  describe("keypresses", () => {
     it.each`
-      key            | result
-      ${'ArrowUp'}   | ${{ deltaX: 0, deltaY: -1 }}
-      ${'ArrowDown'} | ${{ deltaX: 0, deltaY: 1 }}
-      ${'ArrowLeft'} | ${{ deltaX: -1, deltaY: 0 }}
-      ${'ArrowRight'}| ${{ deltaX: 1, deltaY: 0 }}
-    `('responds to keypresses: $key', ({ key, result }) => {
+      key             | result
+      ${"ArrowUp"}    | ${{ deltaX: 0, deltaY: -1 }}
+      ${"ArrowDown"}  | ${{ deltaX: 0, deltaY: 1 }}
+      ${"ArrowLeft"}  | ${{ deltaX: -1, deltaY: 0 }}
+      ${"ArrowRight"} | ${{ deltaX: 1, deltaY: 0 }}
+    `("responds to keypresses: $key", ({ key, result }) => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
@@ -279,13 +309,13 @@ describe('createMove', () => {
       fireEvent.keyDown(el, { key });
 
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'keyboard', ...defaultModifiers },
-        { type: 'move', pointerType: 'keyboard', ...defaultModifiers, ...result },
-        { type: 'moveend', pointerType: 'keyboard', ...defaultModifiers },
+        { type: "movestart", pointerType: "keyboard", ...defaultModifiers },
+        { type: "move", pointerType: "keyboard", ...defaultModifiers, ...result },
+        { type: "moveend", pointerType: "keyboard", ...defaultModifiers },
       ]);
     });
 
-    it('allows handling other key events', () => {
+    it("allows handling other key events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => (
@@ -295,35 +325,35 @@ describe('createMove', () => {
       ));
 
       const el = screen.getByTestId(EXAMPLE_ELEMENT_TESTID);
-      fireEvent.keyDown(el, { key: 'PageUp' });
+      fireEvent.keyDown(el, { key: "PageUp" });
 
-      expect(events).toStrictEqual([{ type: 'keydown', key: 'PageUp' }]);
+      expect(events).toStrictEqual([{ type: "keydown", key: "PageUp" }]);
     });
   });
 
-  describe('pointer events', () => {
-    it('responds to pointer events', () => {
+  describe("pointer events", () => {
+    it("responds to pointer events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
 
       const el = screen.getByTestId(EXAMPLE_ELEMENT_TESTID);
 
-      fireEvent.pointerDown(el, { pointerType: 'pen', pointerId: 1, pageX: 1, pageY: 30 });
-      fireEvent.pointerMove(window, { pointerType: 'pen', pointerId: 1, pageX: 10, pageY: 25 });
+      fireEvent.pointerDown(el, { pointerType: "pen", pointerId: 1, pageX: 1, pageY: 30 });
+      fireEvent.pointerMove(window, { pointerType: "pen", pointerId: 1, pageX: 10, pageY: 25 });
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'pen', ...defaultModifiers },
-        { type: 'move', pointerType: 'pen', deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "movestart", pointerType: "pen", ...defaultModifiers },
+        { type: "move", pointerType: "pen", deltaX: 9, deltaY: -5, ...defaultModifiers },
       ]);
-      fireEvent.pointerUp(window, { pointerType: 'pen', pointerId: 1 });
+      fireEvent.pointerUp(window, { pointerType: "pen", pointerId: 1 });
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'pen', ...defaultModifiers },
-        { type: 'move', pointerType: 'pen', deltaX: 9, deltaY: -5, ...defaultModifiers },
-        { type: 'moveend', pointerType: 'pen', ...defaultModifiers },
+        { type: "movestart", pointerType: "pen", ...defaultModifiers },
+        { type: "move", pointerType: "pen", deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "moveend", pointerType: "pen", ...defaultModifiers },
       ]);
     });
 
-    it('does not respond to right click', () => {
+    it("does not respond to right click", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
@@ -331,21 +361,21 @@ describe('createMove', () => {
       const el = screen.getByTestId(EXAMPLE_ELEMENT_TESTID);
 
       fireEvent.pointerDown(el, {
-        pointerType: 'pen',
+        pointerType: "pen",
         pointerId: 1,
         pageX: 1,
         pageY: 30,
         button: 2,
       });
       fireEvent.pointerMove(window, {
-        pointerType: 'pen',
+        pointerType: "pen",
         pointerId: 1,
         pageX: 10,
         pageY: 25,
         button: 2,
       });
       fireEvent.pointerUp(window, {
-        pointerType: 'pen',
+        pointerType: "pen",
         pointerId: 1,
         pageX: 10,
         pageY: 25,
@@ -355,58 +385,58 @@ describe('createMove', () => {
       expect(events).toStrictEqual([]);
     });
 
-    it('ends with pointercancel', () => {
+    it("ends with pointercancel", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
 
       const el = screen.getByTestId(EXAMPLE_ELEMENT_TESTID);
 
-      fireEvent.pointerDown(el, { pointerType: 'pen', pointerId: 1, pageX: 1, pageY: 30 });
-      fireEvent.pointerMove(window, { pointerType: 'pen', pointerId: 1, pageX: 10, pageY: 25 });
-      fireEvent.pointerCancel(window, { pointerType: 'pen', pointerId: 1 });
+      fireEvent.pointerDown(el, { pointerType: "pen", pointerId: 1, pageX: 1, pageY: 30 });
+      fireEvent.pointerMove(window, { pointerType: "pen", pointerId: 1, pageX: 10, pageY: 25 });
+      fireEvent.pointerCancel(window, { pointerType: "pen", pointerId: 1 });
 
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'pen', ...defaultModifiers },
-        { type: 'move', pointerType: 'pen', deltaX: 9, deltaY: -5, ...defaultModifiers },
-        { type: 'moveend', pointerType: 'pen', ...defaultModifiers },
+        { type: "movestart", pointerType: "pen", ...defaultModifiers },
+        { type: "move", pointerType: "pen", deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "moveend", pointerType: "pen", ...defaultModifiers },
       ]);
     });
 
-    it('does not fire anything when tapping', () => {
+    it("does not fire anything when tapping", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
 
       const el = screen.getByTestId(EXAMPLE_ELEMENT_TESTID);
 
-      fireEvent.pointerDown(el, { pointerType: 'pen', pointerId: 1, pageX: 1, pageY: 30 });
-      fireEvent.pointerUp(window, { pointerType: 'pen', pointerId: 1, pageX: 1, pageY: 30 });
+      fireEvent.pointerDown(el, { pointerType: "pen", pointerId: 1, pageX: 1, pageY: 30 });
+      fireEvent.pointerUp(window, { pointerType: "pen", pointerId: 1, pageX: 1, pageY: 30 });
       expect(events).toStrictEqual([]);
     });
 
-    it('ignores any additional pointers', () => {
+    it("ignores any additional pointers", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       render(() => <Example onMoveStart={addEvent} onMove={addEvent} onMoveEnd={addEvent} />);
 
       const el = screen.getByTestId(EXAMPLE_ELEMENT_TESTID);
 
-      fireEvent.pointerDown(el, { pointerType: 'pen', pointerId: 1, pageX: 1, pageY: 30 });
-      fireEvent.pointerDown(el, { pointerType: 'pen', pointerId: 2, pageX: 1, pageY: 30 });
-      fireEvent.pointerMove(window, { pointerType: 'pen', pointerId: 2, pageX: 10, pageY: 40 });
-      fireEvent.pointerUp(window, { pointerType: 'pen', pointerId: 2, pageX: 10, pageY: 40 });
+      fireEvent.pointerDown(el, { pointerType: "pen", pointerId: 1, pageX: 1, pageY: 30 });
+      fireEvent.pointerDown(el, { pointerType: "pen", pointerId: 2, pageX: 1, pageY: 30 });
+      fireEvent.pointerMove(window, { pointerType: "pen", pointerId: 2, pageX: 10, pageY: 40 });
+      fireEvent.pointerUp(window, { pointerType: "pen", pointerId: 2, pageX: 10, pageY: 40 });
       expect(events).toStrictEqual([]);
-      fireEvent.pointerMove(window, { pointerType: 'pen', pointerId: 1, pageX: 10, pageY: 25 });
+      fireEvent.pointerMove(window, { pointerType: "pen", pointerId: 1, pageX: 10, pageY: 25 });
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'pen', ...defaultModifiers },
-        { type: 'move', pointerType: 'pen', deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "movestart", pointerType: "pen", ...defaultModifiers },
+        { type: "move", pointerType: "pen", deltaX: 9, deltaY: -5, ...defaultModifiers },
       ]);
-      fireEvent.pointerUp(window, { pointerType: 'pen', pointerId: 1, pageX: 10, pageY: 25 });
+      fireEvent.pointerUp(window, { pointerType: "pen", pointerId: 1, pageX: 10, pageY: 25 });
       expect(events).toStrictEqual([
-        { type: 'movestart', pointerType: 'pen', ...defaultModifiers },
-        { type: 'move', pointerType: 'pen', deltaX: 9, deltaY: -5, ...defaultModifiers },
-        { type: 'moveend', pointerType: 'pen', ...defaultModifiers },
+        { type: "movestart", pointerType: "pen", ...defaultModifiers },
+        { type: "move", pointerType: "pen", deltaX: 9, deltaY: -5, ...defaultModifiers },
+        { type: "moveend", pointerType: "pen", ...defaultModifiers },
       ]);
     });
   });

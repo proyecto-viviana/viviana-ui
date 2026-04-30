@@ -5,13 +5,7 @@
  * Port direction: react-aria-components/src/ToggleButton.tsx
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-  useContext,
-} from 'solid-js';
+import { type JSX, createContext, createMemo, splitProps, useContext } from "solid-js";
 import {
   createToggleButton,
   createToggleButtonGroupItem,
@@ -19,8 +13,8 @@ import {
   createHover,
   mergeProps,
   type AriaToggleButtonProps,
-} from '@proyecto-viviana/solidaria';
-import type { Key } from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solidaria";
+import type { Key } from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -28,8 +22,8 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
-import { useToggleButtonGroupStateContext } from './ToggleButtonGroup';
+} from "./utils";
+import { useToggleButtonGroupStateContext } from "./ToggleButtonGroup";
 
 export interface ToggleButtonRenderProps {
   isHovered: boolean;
@@ -40,9 +34,7 @@ export interface ToggleButtonRenderProps {
   isSelected: boolean;
 }
 
-export interface ToggleButtonProps
-  extends Omit<AriaToggleButtonProps, 'children'>,
-    SlotProps {
+export interface ToggleButtonProps extends Omit<AriaToggleButtonProps, "children">, SlotProps {
   /** Key used when inside ToggleButtonGroup selection state. */
   toggleKey?: Key;
   /** Preferred group key prop, parity with RAC item id usage. */
@@ -54,10 +46,8 @@ export interface ToggleButtonProps
 
 export const ToggleButtonContext = createContext<ToggleButtonProps | null>(null);
 
-function resolveDisabledValue(
-  isDisabled: AriaToggleButtonProps['isDisabled']
-): boolean {
-  if (typeof isDisabled === 'function') {
+function resolveDisabledValue(isDisabled: AriaToggleButtonProps["isDisabled"]): boolean {
+  if (typeof isDisabled === "function") {
     return isDisabled();
   }
   return !!isDisabled;
@@ -68,28 +58,28 @@ export function ToggleButton(props: ToggleButtonProps): JSX.Element {
   const mergedProps = (contextProps ? mergeProps(contextProps, props) : props) as ToggleButtonProps;
 
   const [local, ariaProps] = splitProps(mergedProps, [
-    'children',
-    'class',
-    'style',
-    'slot',
-    'toggleKey',
-    'id',
+    "children",
+    "class",
+    "style",
+    "slot",
+    "toggleKey",
+    "id",
   ]);
   const groupState = useToggleButtonGroupStateContext();
   const groupKey = local.id ?? local.toggleKey;
 
-  const toggleAria = groupState && groupKey != null
-    ? createToggleButtonGroupItem(
-      {
-        ...ariaProps,
-        id: groupKey,
-      },
-      groupState
-    )
-    : createToggleButton(ariaProps);
+  const toggleAria =
+    groupState && groupKey != null
+      ? createToggleButtonGroupItem(
+          {
+            ...ariaProps,
+            id: groupKey,
+          },
+          groupState,
+        )
+      : createToggleButton(ariaProps);
 
-  const isDisabled = () =>
-    resolveDisabledValue(ariaProps.isDisabled) || !!groupState?.isDisabled;
+  const isDisabled = () => resolveDisabledValue(ariaProps.isDisabled) || !!groupState?.isDisabled;
 
   const { isFocused, isFocusVisible, focusProps } = createFocusRing();
   const { isHovered, hoverProps } = createHover({
@@ -112,9 +102,9 @@ export function ToggleButton(props: ToggleButtonProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ToggleButton',
+      defaultClassName: "solidaria-ToggleButton",
     },
-    renderValues
+    renderValues,
   );
 
   const domProps = createMemo(() => {

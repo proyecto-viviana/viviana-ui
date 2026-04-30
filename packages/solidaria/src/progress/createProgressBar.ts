@@ -8,10 +8,10 @@
  * This is a 1:1 port of @react-aria/progress's useProgressBar hook.
  */
 
-import { createLabel } from '../label/createLabel';
-import { mergeProps } from '../utils/mergeProps';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { type MaybeAccessor, access } from '../utils/reactivity';
+import { createLabel } from "../label/createLabel";
+import { mergeProps } from "../utils/mergeProps";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { type MaybeAccessor, access } from "../utils/reactivity";
 
 // ============================================
 // TYPES
@@ -33,13 +33,13 @@ export interface AriaProgressBarProps {
   /** The content to display as the label. */
   label?: string;
   /** An accessibility label for this item. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element (or elements) that labels the current element. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Identifies the element (or elements) that describes the object. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Identifies the element (or elements) that provide a detailed, extended description for the object. */
-  'aria-details'?: string;
+  "aria-details"?: string;
 }
 
 export interface ProgressBarAria {
@@ -72,18 +72,24 @@ function getSafeRange(min: number, max: number): number {
  * over time.
  */
 export function createProgressBar(
-  props: MaybeAccessor<AriaProgressBarProps> = {}
+  props: MaybeAccessor<AriaProgressBarProps> = {},
 ): ProgressBarAria {
   const getProps = () => access(props);
 
   // Create label handling
   const { labelProps, fieldProps } = createLabel({
-    get label() { return getProps().label; },
-    get 'aria-label'() { return getProps()['aria-label']; },
-    get 'aria-labelledby'() { return getProps()['aria-labelledby']; },
+    get label() {
+      return getProps().label;
+    },
+    get "aria-label"() {
+      return getProps()["aria-label"];
+    },
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
+    },
     // Progress bar is not an HTML input element so it
     // shouldn't be labeled by a <label> element.
-    labelElementType: 'span',
+    labelElementType: "span",
   });
 
   // Build progress bar props
@@ -93,7 +99,7 @@ export function createProgressBar(
     const minValue = p.minValue ?? 0;
     const maxValue = p.maxValue ?? 100;
     const isIndeterminate = p.isIndeterminate ?? false;
-    const formatOptions = p.formatOptions ?? { style: 'percent' as const };
+    const formatOptions = p.formatOptions ?? { style: "percent" as const };
 
     const clampedValue = clamp(value, minValue, maxValue);
     const percentage = (clampedValue - minValue) / getSafeRange(minValue, maxValue);
@@ -101,7 +107,7 @@ export function createProgressBar(
     // Format value label
     let valueLabel = p.valueLabel;
     if (!isIndeterminate && !valueLabel) {
-      const valueToFormat = formatOptions.style === 'percent' ? percentage : clampedValue;
+      const valueToFormat = formatOptions.style === "percent" ? percentage : clampedValue;
       try {
         const formatter = new Intl.NumberFormat(undefined, formatOptions);
         valueLabel = formatter.format(valueToFormat);
@@ -114,11 +120,11 @@ export function createProgressBar(
     const domProps = filterDOMProps(p as Record<string, unknown>, { labelable: true });
 
     return mergeProps(domProps, fieldProps as Record<string, unknown>, {
-      'aria-valuenow': isIndeterminate ? undefined : clampedValue,
-      'aria-valuemin': minValue,
-      'aria-valuemax': maxValue,
-      'aria-valuetext': isIndeterminate ? undefined : valueLabel,
-      role: 'progressbar',
+      "aria-valuenow": isIndeterminate ? undefined : clampedValue,
+      "aria-valuemin": minValue,
+      "aria-valuemax": maxValue,
+      "aria-valuetext": isIndeterminate ? undefined : valueLabel,
+      role: "progressbar",
     });
   };
 

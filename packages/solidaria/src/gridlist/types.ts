@@ -3,8 +3,8 @@
  * Based on @react-aria/gridlist types.
  */
 
-import type { JSX } from 'solid-js';
-import type { Key, GridNode } from '@proyecto-viviana/solid-stately';
+import type { JSX } from "solid-js";
+import type { Key, GridNode } from "@proyecto-viviana/solid-stately";
 
 /**
  * Props for the createGridList hook.
@@ -13,11 +13,11 @@ export interface AriaGridListProps {
   /** ID for the grid list element. */
   id?: string;
   /** ARIA label for the grid list. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ARIA labelledby for the grid list. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ARIA describedby for the grid list. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the grid list uses virtual scrolling. */
   isVirtualized?: boolean;
   /** Handler for item actions. */

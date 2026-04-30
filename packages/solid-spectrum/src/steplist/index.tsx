@@ -5,34 +5,37 @@
  * Horizontal layout with numbered indicators, connector lines, and visual states.
  */
 
-import { type JSX, splitProps, createContext, useContext } from 'solid-js';
+import { type JSX, splitProps, createContext, useContext } from "solid-js";
 import {
   StepList as HeadlessStepList,
   Step as HeadlessStep,
   type StepListProps as HeadlessStepListProps,
   type StepListItemRenderProps,
   type StepProps as HeadlessStepProps,
-} from '@proyecto-viviana/solidaria-components';
-import type { Key } from '@proyecto-viviana/solid-stately';
-import { useProviderProps } from '../provider';
+} from "@proyecto-viviana/solidaria-components";
+import type { Key } from "@proyecto-viviana/solid-stately";
+import { useProviderProps } from "../provider";
 
 // ============================================
 // SIZE CONTEXT
 // ============================================
 
-export type StepListSize = 'sm' | 'md' | 'lg';
+export type StepListSize = "sm" | "md" | "lg";
 
 interface StepListContextValue {
   size: StepListSize;
 }
 
-const StepListSizeContext = createContext<StepListContextValue>({ size: 'md' });
+const StepListSizeContext = createContext<StepListContextValue>({ size: "md" });
 
 // ============================================
 // TYPES
 // ============================================
 
-export interface StepListProps<T extends { key: Key; label: string }> extends Omit<HeadlessStepListProps<T>, 'class' | 'style' | 'children'> {
+export interface StepListProps<T extends { key: Key; label: string }> extends Omit<
+  HeadlessStepListProps<T>,
+  "class" | "style" | "children"
+> {
   /** The size of the step list. */
   size?: StepListSize;
   /** Additional CSS class name. */
@@ -41,7 +44,7 @@ export interface StepListProps<T extends { key: Key; label: string }> extends Om
   children?: (item: T, state: StepListItemRenderProps) => JSX.Element;
 }
 
-export interface StepProps extends Omit<HeadlessStepProps, 'class' | 'style'> {
+export interface StepProps extends Omit<HeadlessStepProps, "class" | "style"> {
   /** Additional CSS class name. */
   class?: string;
 }
@@ -52,25 +55,25 @@ export interface StepProps extends Omit<HeadlessStepProps, 'class' | 'style'> {
 
 const sizeStyles = {
   sm: {
-    indicator: 'h-6 w-6 text-xs',
-    text: 'text-xs',
-    connector: 'h-0.5',
-    gap: 'gap-1',
-    listGap: 'gap-0',
+    indicator: "h-6 w-6 text-xs",
+    text: "text-xs",
+    connector: "h-0.5",
+    gap: "gap-1",
+    listGap: "gap-0",
   },
   md: {
-    indicator: 'h-8 w-8 text-sm',
-    text: 'text-sm',
-    connector: 'h-0.5',
-    gap: 'gap-1.5',
-    listGap: 'gap-0',
+    indicator: "h-8 w-8 text-sm",
+    text: "text-sm",
+    connector: "h-0.5",
+    gap: "gap-1.5",
+    listGap: "gap-0",
   },
   lg: {
-    indicator: 'h-10 w-10 text-base',
-    text: 'text-base',
-    connector: 'h-0.5',
-    gap: 'gap-2',
-    listGap: 'gap-0',
+    indicator: "h-10 w-10 text-base",
+    text: "text-base",
+    connector: "h-0.5",
+    gap: "gap-2",
+    listGap: "gap-0",
   },
 };
 
@@ -83,12 +86,14 @@ const sizeStyles = {
  *
  * Built on solidaria-components StepList for full accessibility support.
  */
-export function StepList<T extends { key: Key; label: string }>(props: StepListProps<T>): JSX.Element {
+export function StepList<T extends { key: Key; label: string }>(
+  props: StepListProps<T>,
+): JSX.Element {
   const mergedProps = useProviderProps(props);
-  const [local, headlessProps] = splitProps(mergedProps, ['size', 'class', 'children']);
+  const [local, headlessProps] = splitProps(mergedProps, ["size", "class", "children"]);
 
-  const size = () => local.size ?? 'md';
-  const customClass = () => local.class ?? '';
+  const size = () => local.size ?? "md";
+  const customClass = () => local.class ?? "";
 
   const renderStep = (item: T, renderProps: StepListItemRenderProps): JSX.Element => {
     if (local.children) {
@@ -97,16 +102,18 @@ export function StepList<T extends { key: Key; label: string }>(props: StepListP
 
     // Default rendering with indicator + label + connector
     return (
-      <DefaultStep
-        item={item}
-        stepNumber={renderProps.stepNumber}
-        renderProps={renderProps}
-      />
+      <DefaultStep item={item} stepNumber={renderProps.stepNumber} renderProps={renderProps} />
     );
   };
 
   return (
-    <StepListSizeContext.Provider value={{ get size() { return size(); } }}>
+    <StepListSizeContext.Provider
+      value={{
+        get size() {
+          return size();
+        },
+      }}
+    >
       <HeadlessStepList
         {...headlessProps}
         class={`flex items-start ${sizeStyles[size()].listGap} ${customClass()}`}
@@ -167,8 +174,8 @@ function DefaultStep<T extends { key: Key; label: string }>(props: {
   };
 
   const cursorClass = (): string => {
-    if (props.renderProps.isSelectable) return 'cursor-pointer';
-    return 'cursor-default';
+    if (props.renderProps.isSelectable) return "cursor-pointer";
+    return "cursor-default";
   };
 
   return (
@@ -180,7 +187,7 @@ function DefaultStep<T extends { key: Key; label: string }>(props: {
     >
       <a
         role="link"
-        aria-current={props.renderProps.isSelected ? 'step' : undefined}
+        aria-current={props.renderProps.isSelected ? "step" : undefined}
         aria-disabled={!props.renderProps.isSelectable ? true : undefined}
         aria-label={`Step ${props.stepNumber}: ${props.item.label}, ${props.renderProps.stepStateText}`}
         tabIndex={props.renderProps.isSelectable ? 0 : undefined}
@@ -190,15 +197,9 @@ function DefaultStep<T extends { key: Key; label: string }>(props: {
         }}
       >
         <span class={indicatorClasses()}>
-          {props.renderProps.isCompleted ? (
-            <CheckIcon />
-          ) : (
-            props.stepNumber
-          )}
+          {props.renderProps.isCompleted ? <CheckIcon /> : props.stepNumber}
         </span>
-        <span class={labelClasses()}>
-          {props.item.label}
-        </span>
+        <span class={labelClasses()}>{props.item.label}</span>
       </a>
       {/* Connector line — hidden on the last step */}
       <div
@@ -218,13 +219,8 @@ function DefaultStep<T extends { key: Key; label: string }>(props: {
  * Use this when providing custom step rendering via StepList children.
  */
 export function Step(props: StepProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class']);
-  return (
-    <HeadlessStep
-      {...headlessProps}
-      class={local.class}
-    />
-  );
+  const [local, headlessProps] = splitProps(props, ["class"]);
+  return <HeadlessStep {...headlessProps} class={local.class} />;
 }
 
 // ============================================

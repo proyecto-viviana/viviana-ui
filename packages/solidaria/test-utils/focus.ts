@@ -8,9 +8,9 @@
  * Selector for focusable elements
  */
 export type FocusableSelector =
-  | 'all' // All focusable elements
-  | 'tabbable' // Elements in tab order (tabindex >= 0)
-  | 'programmatic'; // All elements that can receive programmatic focus
+  | "all" // All focusable elements
+  | "tabbable" // Elements in tab order (tabindex >= 0)
+  | "programmatic"; // All elements that can receive programmatic focus
 
 /**
  * Get the currently focused element.
@@ -39,18 +39,18 @@ export function isFocusWithin(element: Element): boolean {
  * Default selectors for focusable elements
  */
 const FOCUSABLE_SELECTORS = [
-  'a[href]',
-  'area[href]',
+  "a[href]",
+  "area[href]",
   'input:not([disabled]):not([type="hidden"])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  'button:not([disabled])',
-  'iframe',
-  'object',
-  'embed',
-  '[contenteditable]',
-  '[tabindex]',
-].join(',');
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  "button:not([disabled])",
+  "iframe",
+  "object",
+  "embed",
+  "[contenteditable]",
+  "[tabindex]",
+].join(",");
 
 /**
  * Check if an element is focusable.
@@ -65,7 +65,7 @@ export function isFocusable(element: Element): boolean {
   if (isHidden(element)) return false;
 
   // Check tabindex (negative tabindex is programmatically focusable but not tabbable)
-  const tabIndex = element.getAttribute('tabindex');
+  const tabIndex = element.getAttribute("tabindex");
   if (tabIndex !== null && parseInt(tabIndex, 10) < 0) {
     // Still focusable, just not tabbable
     return true;
@@ -80,7 +80,7 @@ export function isFocusable(element: Element): boolean {
 export function isTabbable(element: Element): boolean {
   if (!isFocusable(element)) return false;
 
-  const tabIndex = element.getAttribute('tabindex');
+  const tabIndex = element.getAttribute("tabindex");
   if (tabIndex !== null && parseInt(tabIndex, 10) < 0) {
     return false;
   }
@@ -96,20 +96,20 @@ export function isTabbable(element: Element): boolean {
  */
 function isHidden(element: HTMLElement): boolean {
   // Check aria-hidden first (works in both environments)
-  if (element.getAttribute('aria-hidden') === 'true') return true;
+  if (element.getAttribute("aria-hidden") === "true") return true;
 
   // Check computed styles
   const style = getComputedStyle(element);
-  if (style.display === 'none') return true;
-  if (style.visibility === 'hidden') return true;
+  if (style.display === "none") return true;
+  if (style.visibility === "hidden") return true;
 
   // Check if any ancestor is hidden
   let parent = element.parentElement;
   while (parent) {
-    if (parent.getAttribute('aria-hidden') === 'true') return true;
+    if (parent.getAttribute("aria-hidden") === "true") return true;
     const parentStyle = getComputedStyle(parent);
-    if (parentStyle.display === 'none') return true;
-    if (parentStyle.visibility === 'hidden') return true;
+    if (parentStyle.display === "none") return true;
+    if (parentStyle.visibility === "hidden") return true;
     parent = parent.parentElement;
   }
 
@@ -127,14 +127,14 @@ function isHidden(element: HTMLElement): boolean {
  */
 export function getFocusableElements(
   container: Element,
-  selector: FocusableSelector = 'all'
+  selector: FocusableSelector = "all",
 ): HTMLElement[] {
   const elements = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTORS));
 
   return elements.filter((element) => {
     if (isHidden(element)) return false;
 
-    if (selector === 'tabbable') {
+    if (selector === "tabbable") {
       return isTabbable(element);
     }
 
@@ -146,12 +146,12 @@ export function getFocusableElements(
  * Get all tabbable elements within a container, in tab order.
  */
 export function getTabbableElements(container: Element): HTMLElement[] {
-  const elements = getFocusableElements(container, 'tabbable');
+  const elements = getFocusableElements(container, "tabbable");
 
   // Sort by tabindex
   return elements.sort((a, b) => {
-    const aIndex = parseInt(a.getAttribute('tabindex') || '0', 10);
-    const bIndex = parseInt(b.getAttribute('tabindex') || '0', 10);
+    const aIndex = parseInt(a.getAttribute("tabindex") || "0", 10);
+    const bIndex = parseInt(b.getAttribute("tabindex") || "0", 10);
 
     // Elements with tabindex > 0 come first, in order
     if (aIndex > 0 && bIndex > 0) return aIndex - bIndex;
@@ -167,7 +167,7 @@ export function getTabbableElements(container: Element): HTMLElement[] {
  * Get the first focusable element within a container.
  */
 export function getFirstFocusable(container: Element): HTMLElement | null {
-  const elements = getFocusableElements(container, 'tabbable');
+  const elements = getFocusableElements(container, "tabbable");
   return elements[0] || null;
 }
 
@@ -175,7 +175,7 @@ export function getFirstFocusable(container: Element): HTMLElement | null {
  * Get the last focusable element within a container.
  */
 export function getLastFocusable(container: Element): HTMLElement | null {
-  const elements = getFocusableElements(container, 'tabbable');
+  const elements = getFocusableElements(container, "tabbable");
   return elements[elements.length - 1] || null;
 }
 
@@ -187,12 +187,12 @@ export function getLastFocusable(container: Element): HTMLElement | null {
 export function simulateFocusVisible(element: HTMLElement): void {
   // Simulate keyboard interaction to trigger focus-visible
   element.dispatchEvent(
-    new KeyboardEvent('keydown', {
+    new KeyboardEvent("keydown", {
       bubbles: true,
       cancelable: true,
-      key: 'Tab',
-      code: 'Tab',
-    })
+      key: "Tab",
+      code: "Tab",
+    }),
   );
 
   element.focus();
@@ -207,10 +207,7 @@ export function simulateFocusVisible(element: HTMLElement): void {
  * await waitForFocus(dialog);
  * ```
  */
-export function waitForFocus(
-  element: Element,
-  options: { timeout?: number } = {}
-): Promise<void> {
+export function waitForFocus(element: Element, options: { timeout?: number } = {}): Promise<void> {
   const { timeout = 1000 } = options;
 
   return new Promise((resolve, reject) => {
@@ -233,10 +230,10 @@ export function waitForFocus(
 
     const cleanup = () => {
       clearTimeout(timeoutId);
-      element.removeEventListener('focus', handleFocus);
+      element.removeEventListener("focus", handleFocus);
     };
 
-    element.addEventListener('focus', handleFocus);
+    element.addEventListener("focus", handleFocus);
   });
 }
 
@@ -245,7 +242,7 @@ export function waitForFocus(
  */
 export function waitForFocusWithin(
   container: Element,
-  options: { timeout?: number } = {}
+  options: { timeout?: number } = {},
 ): Promise<Element> {
   const { timeout = 1000 } = options;
 
@@ -267,10 +264,10 @@ export function waitForFocusWithin(
 
     const cleanup = () => {
       clearTimeout(timeoutId);
-      container.removeEventListener('focusin', handleFocusIn);
+      container.removeEventListener("focusin", handleFocusIn);
     };
 
-    container.addEventListener('focusin', handleFocusIn);
+    container.addEventListener("focusin", handleFocusIn);
   });
 }
 
@@ -281,8 +278,7 @@ export function assertFocused(element: Element, message?: string): void {
   if (!isFocused(element)) {
     const actual = document.activeElement;
     throw new Error(
-      message ||
-        `Expected element to be focused, but focus is on ${actual?.tagName || 'nothing'}`
+      message || `Expected element to be focused, but focus is on ${actual?.tagName || "nothing"}`,
     );
   }
 }
@@ -295,7 +291,7 @@ export function assertFocusWithin(container: Element, message?: string): void {
     const actual = document.activeElement;
     throw new Error(
       message ||
-        `Expected focus to be within container, but focus is on ${actual?.tagName || 'nothing'}`
+        `Expected focus to be within container, but focus is on ${actual?.tagName || "nothing"}`,
     );
   }
 }
@@ -306,11 +302,11 @@ export function assertFocusWithin(container: Element, message?: string): void {
  */
 export async function assertFocusTrap(
   container: Element,
-  user: { tab: (options?: { shift?: boolean }) => Promise<void> }
+  user: { tab: (options?: { shift?: boolean }) => Promise<void> },
 ): Promise<void> {
   const tabbable = getTabbableElements(container);
   if (tabbable.length === 0) {
-    throw new Error('No tabbable elements found in container');
+    throw new Error("No tabbable elements found in container");
   }
 
   // Focus first element
@@ -321,7 +317,7 @@ export async function assertFocusTrap(
     await user.tab();
     if (document.activeElement !== tabbable[i]) {
       throw new Error(
-        `Expected focus on element ${i}, but focus is on ${document.activeElement?.tagName}`
+        `Expected focus on element ${i}, but focus is on ${document.activeElement?.tagName}`,
       );
     }
   }
@@ -329,12 +325,12 @@ export async function assertFocusTrap(
   // Tab should wrap to first element
   await user.tab();
   if (document.activeElement !== tabbable[0]) {
-    throw new Error('Focus did not wrap to first element');
+    throw new Error("Focus did not wrap to first element");
   }
 
   // Shift+Tab should wrap to last element
   await user.tab({ shift: true });
   if (document.activeElement !== tabbable[tabbable.length - 1]) {
-    throw new Error('Focus did not wrap to last element on Shift+Tab');
+    throw new Error("Focus did not wrap to last element on Shift+Tab");
   }
 }

@@ -6,7 +6,7 @@
  * this provides API compatibility with React Aria's RouterProvider.
  */
 
-import { type JSX, createContext, useContext } from 'solid-js';
+import { type JSX, createContext, useContext } from "solid-js";
 
 // ============================================
 // TYPES
@@ -29,7 +29,7 @@ export interface RouterContextValue {
     target: Element,
     modifiers: RouterClickModifiers,
     href: string,
-    routerOptions?: RouterOptions
+    routerOptions?: RouterOptions,
   ) => void;
   /** Transform an href for the router. */
   useHref: (href: string) => string;
@@ -77,24 +77,27 @@ export interface LinkDOMProps {
   download?: string | boolean;
   ping?: string;
   referrerPolicy?:
-    | ''
-    | 'no-referrer'
-    | 'no-referrer-when-downgrade'
-    | 'origin'
-    | 'origin-when-cross-origin'
-    | 'same-origin'
-    | 'strict-origin'
-    | 'strict-origin-when-cross-origin'
-    | 'unsafe-url';
+    | ""
+    | "no-referrer"
+    | "no-referrer-when-downgrade"
+    | "origin"
+    | "origin-when-cross-origin"
+    | "same-origin"
+    | "strict-origin"
+    | "strict-origin-when-cross-origin"
+    | "unsafe-url";
 }
 
-export function shouldClientNavigate(link: HTMLAnchorElement, modifiers: RouterClickModifiers): boolean {
-  const target = link.getAttribute('target');
-  const sameOrigin = typeof location === 'undefined' ? true : link.origin === location.origin;
+export function shouldClientNavigate(
+  link: HTMLAnchorElement,
+  modifiers: RouterClickModifiers,
+): boolean {
+  const target = link.getAttribute("target");
+  const sameOrigin = typeof location === "undefined" ? true : link.origin === location.origin;
   return (
-    (!target || target === '_self') &&
+    (!target || target === "_self") &&
     sameOrigin &&
-    !link.hasAttribute('download') &&
+    !link.hasAttribute("download") &&
     !modifiers.metaKey &&
     !modifiers.ctrlKey &&
     !modifiers.altKey &&
@@ -103,7 +106,7 @@ export function shouldClientNavigate(link: HTMLAnchorElement, modifiers: RouterC
 }
 
 export function openLink(target: HTMLAnchorElement, modifiers: RouterClickModifiers): void {
-  const event = new MouseEvent('click', {
+  const event = new MouseEvent("click", {
     metaKey: modifiers.metaKey,
     ctrlKey: modifiers.ctrlKey,
     altKey: modifiers.altKey,
@@ -121,27 +124,27 @@ function getSyntheticLink(target: Element, open: (link: HTMLAnchorElement) => vo
     return;
   }
 
-  const href = target.getAttribute('data-href');
+  const href = target.getAttribute("data-href");
   if (!href) {
     return;
   }
 
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = href;
 
-  const targetValue = target.getAttribute('data-target');
+  const targetValue = target.getAttribute("data-target");
   if (targetValue) link.target = targetValue;
 
-  const rel = target.getAttribute('data-rel');
+  const rel = target.getAttribute("data-rel");
   if (rel) link.rel = rel;
 
-  const download = target.getAttribute('data-download');
+  const download = target.getAttribute("data-download");
   if (download) link.download = download;
 
-  const ping = target.getAttribute('data-ping');
+  const ping = target.getAttribute("data-ping");
   if (ping) link.ping = ping;
 
-  const referrerPolicy = target.getAttribute('data-referrer-policy');
+  const referrerPolicy = target.getAttribute("data-referrer-policy");
   if (referrerPolicy) {
     link.referrerPolicy = referrerPolicy;
   }
@@ -157,7 +160,7 @@ function openSyntheticLink(target: Element, modifiers: RouterClickModifiers): vo
 
 export function useLinkProps(props?: LinkDOMProps): LinkDOMProps {
   const router = useRouter();
-  const href = props?.href ?? '';
+  const href = props?.href ?? "";
   return {
     href: props?.href ? router.useHref(href) : undefined,
     target: props?.target,
@@ -172,7 +175,7 @@ export function handleLinkClick(
   event: MouseEvent,
   router: RouterContextValue,
   href: string | undefined,
-  routerOptions?: RouterOptions
+  routerOptions?: RouterOptions,
 ): void {
   if (
     !router.isNative &&
@@ -225,11 +228,7 @@ export function RouterProvider(props: RouterProviderProps): JSX.Element {
     useHref: props.useHref ?? ((href: string) => href),
   };
 
-  return (
-    <RouterContext.Provider value={ctx}>
-      {props.children}
-    </RouterContext.Provider>
-  );
+  return <RouterContext.Provider value={ctx}>{props.children}</RouterContext.Provider>;
 }
 
 /**

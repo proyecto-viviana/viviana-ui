@@ -26,7 +26,9 @@
       "@proyecto-viviana/solidaria-components": ["./packages/solidaria-components/src/index.ts"],
       "@proyecto-viviana/solid-spectrum": ["./packages/solid-spectrum/src/index.ts"],
       "@proyecto-viviana/solidaria-test-utils": ["./packages/solidaria-test-utils/src/index.ts"],
-      "@proyecto-viviana/solid-spectrum-test-utils": ["./packages/solid-spectrum-test-utils/src/index.ts"]
+      "@proyecto-viviana/solid-spectrum-test-utils": [
+        "./packages/solid-spectrum-test-utils/src/index.ts"
+      ]
     }
   },
   "include": ["packages/*/src/**/*", "packages/*/build.ts", "scripts/**/*"],

@@ -40,11 +40,7 @@ function NumberFieldPage() {
 <p>Current quantity: {quantity()}</p>`}
       >
         <div class="max-w-xs">
-          <NumberField
-            label="Items"
-            value={quantity()}
-            onChange={setQuantity}
-          />
+          <NumberField label="Items" value={quantity()} onChange={setQuantity} />
           <p class="mt-2 text-sm text-bg-500">Current quantity: {quantity()}</p>
         </div>
       </Example>
@@ -66,18 +62,8 @@ function NumberFieldPage() {
 />`}
       >
         <div class="max-w-xs space-y-4">
-          <NumberField
-            label="Age"
-            minValue={0}
-            maxValue={120}
-            defaultValue={25}
-          />
-          <NumberField
-            label="Rating (1-5)"
-            minValue={1}
-            maxValue={5}
-            defaultValue={3}
-          />
+          <NumberField label="Age" minValue={0} maxValue={120} defaultValue={25} />
+          <NumberField label="Rating (1-5)" minValue={1} maxValue={5} defaultValue={3} />
         </div>
       </Example>
 
@@ -98,18 +84,8 @@ function NumberFieldPage() {
 />`}
       >
         <div class="max-w-xs space-y-4">
-          <NumberField
-            label="Opacity"
-            minValue={0}
-            maxValue={1}
-            step={0.1}
-            defaultValue={0.5}
-          />
-          <NumberField
-            label="Quantity (step 5)"
-            step={5}
-            defaultValue={10}
-          />
+          <NumberField label="Opacity" minValue={0} maxValue={1} step={0.1} defaultValue={0.5} />
+          <NumberField label="Quantity (step 5)" step={5} defaultValue={10} />
         </div>
       </Example>
 
@@ -194,11 +170,7 @@ function NumberFieldPage() {
 />`}
       >
         <div class="max-w-xs">
-          <NumberField
-            label="Score"
-            hideStepper
-            defaultValue={85}
-          />
+          <NumberField label="Score" hideStepper defaultValue={85} />
         </div>
       </Example>
 
@@ -331,11 +303,10 @@ function NumberFieldPage() {
             Increment and decrement buttons have <code>aria-label</code> for screen readers
           </li>
           <li>
-            Supports keyboard interaction: Arrow Up/Down to increment/decrement, Home/End for min/max
+            Supports keyboard interaction: Arrow Up/Down to increment/decrement, Home/End for
+            min/max
           </li>
-          <li>
-            Stepper buttons are automatically disabled at min/max boundaries
-          </li>
+          <li>Stepper buttons are automatically disabled at min/max boundaries</li>
           <li>
             Invalid state is communicated via <code>aria-invalid</code> and linked error message
           </li>

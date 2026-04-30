@@ -4,21 +4,20 @@
  * Styled separator component built on top of solidaria-components.
  */
 
-import { type JSX, splitProps, createMemo } from 'solid-js';
+import { type JSX, splitProps, createMemo } from "solid-js";
 import {
   Separator as HeadlessSeparator,
   type SeparatorProps as HeadlessSeparatorProps,
-} from '@proyecto-viviana/solidaria-components';
+} from "@proyecto-viviana/solidaria-components";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type SeparatorVariant = 'default' | 'subtle' | 'strong';
-export type SeparatorSize = 'sm' | 'md' | 'lg';
+export type SeparatorVariant = "default" | "subtle" | "strong";
+export type SeparatorSize = "sm" | "md" | "lg";
 
-export interface SeparatorProps
-  extends Omit<HeadlessSeparatorProps, 'class' | 'style'> {
+export interface SeparatorProps extends Omit<HeadlessSeparatorProps, "class" | "style"> {
   /** The visual style variant. @default 'default' */
   variant?: SeparatorVariant;
   /** The size/thickness of the separator. @default 'md' */
@@ -32,21 +31,21 @@ export interface SeparatorProps
 // ============================================
 
 const variantStyles = {
-  default: 'bg-bg-100',
-  subtle: 'bg-bg-200',
-  strong: 'bg-primary-600',
+  default: "bg-bg-100",
+  subtle: "bg-bg-200",
+  strong: "bg-primary-600",
 };
 
 const horizontalSizeStyles = {
-  sm: 'h-px',
-  md: 'h-0.5',
-  lg: 'h-1',
+  sm: "h-px",
+  md: "h-0.5",
+  lg: "h-1",
 };
 
 const verticalSizeStyles = {
-  sm: 'w-px',
-  md: 'w-0.5',
-  lg: 'w-1',
+  sm: "w-px",
+  md: "w-0.5",
+  lg: "w-1",
 };
 
 // ============================================
@@ -73,38 +72,27 @@ const verticalSizeStyles = {
  * ```
  */
 export function Separator(props: SeparatorProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, [
-    'orientation',
-    'variant',
-    'size',
-    'class',
-  ]);
+  const [local, headlessProps] = splitProps(props, ["orientation", "variant", "size", "class"]);
 
-  const orientation = () => local.orientation ?? 'horizontal';
-  const variant = () => local.variant ?? 'default';
-  const size = () => local.size ?? 'md';
+  const orientation = () => local.orientation ?? "horizontal";
+  const variant = () => local.variant ?? "default";
+  const size = () => local.size ?? "md";
 
   // Build class string
   const className = createMemo(() => {
-    const isVertical = orientation() === 'vertical';
+    const isVertical = orientation() === "vertical";
     const sizeStyles = isVertical ? verticalSizeStyles : horizontalSizeStyles;
 
     const base = [
       variantStyles[variant()],
       sizeStyles[size()],
-      isVertical ? 'h-full self-stretch' : 'w-full',
-      'border-0', // Reset hr default border
-      local.class ?? '',
+      isVertical ? "h-full self-stretch" : "w-full",
+      "border-0", // Reset hr default border
+      local.class ?? "",
     ];
 
-    return base.filter(Boolean).join(' ');
+    return base.filter(Boolean).join(" ");
   });
 
-  return (
-    <HeadlessSeparator
-      {...headlessProps}
-      orientation={orientation()}
-      class={className()}
-    />
-  );
+  return <HeadlessSeparator {...headlessProps} orientation={orientation()} class={className()} />;
 }

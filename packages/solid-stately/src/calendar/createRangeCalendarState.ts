@@ -5,7 +5,7 @@
  * Based on @react-stately/calendar useRangeCalendarState
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from "solid-js";
 import {
   type CalendarDate,
   type DateValue,
@@ -20,9 +20,9 @@ import {
   getDayOfWeek,
   DateFormatter,
   toCalendarDate as intlToCalendarDate,
-} from '@internationalized/date';
-import { access, type MaybeAccessor } from '../utils';
-import type { ValidationState } from './createCalendarState';
+} from "@internationalized/date";
+import { access, type MaybeAccessor } from "../utils";
+import type { ValidationState } from "./createCalendarState";
 
 // ============================================
 // TYPES
@@ -168,10 +168,10 @@ export interface RangeCalendarState<T extends DateValue = DateValue> {
  * Provides state management for a range calendar component.
  */
 export function createRangeCalendarState<T extends DateValue = CalendarDate>(
-  props: RangeCalendarStateProps<T> = {}
+  props: RangeCalendarStateProps<T> = {},
 ): RangeCalendarState<T> {
   const timeZone = getLocalTimeZone();
-  const locale = props.locale ?? 'en-US';
+  const locale = props.locale ?? "en-US";
   const visibleMonths = props.visibleMonths ?? 1;
 
   // Determine the initially focused date
@@ -195,11 +195,9 @@ export function createRangeCalendarState<T extends DateValue = CalendarDate>(
 
   // State signals
   const [internalValue, setInternalValue] = createSignal<RangeValue<T> | null>(
-    props.defaultValue ?? null
+    props.defaultValue ?? null,
   );
-  const [focusedDate, setFocusedDateInternal] = createSignal<CalendarDate>(
-    getInitialFocusedDate()
-  );
+  const [focusedDate, setFocusedDateInternal] = createSignal<CalendarDate>(getInitialFocusedDate());
   const [anchorDate, setAnchorDate] = createSignal<CalendarDate | null>(null);
   const [isFocused, setFocused] = createSignal(false);
   const [isDragging, setDragging] = createSignal(false);
@@ -251,7 +249,7 @@ export function createRangeCalendarState<T extends DateValue = CalendarDate>(
 
   // Format week days for headers
   const weekDays = createMemo(() => {
-    const formatter = new DateFormatter(locale, { weekday: 'short' });
+    const formatter = new DateFormatter(locale, { weekday: "short" });
     const startDay = props.firstDayOfWeek ?? 0;
     const days: string[] = [];
     const base = today(timeZone);
@@ -270,8 +268,8 @@ export function createRangeCalendarState<T extends DateValue = CalendarDate>(
   // Title (formatted month/year)
   const title = createMemo(() => {
     const formatter = new DateFormatter(locale, {
-      month: 'long',
-      year: 'numeric',
+      month: "long",
+      year: "numeric",
     });
     return formatter.format(focusedDate().toDate(timeZone));
   });
@@ -314,9 +312,7 @@ export function createRangeCalendarState<T extends DateValue = CalendarDate>(
     if (!range) return false;
 
     const calDate = toCalendarDate(date);
-    return (
-      calDate.compare(range.start) >= 0 && calDate.compare(range.end) <= 0
-    );
+    return calDate.compare(range.start) >= 0 && calDate.compare(range.end) <= 0;
   };
 
   // Check if a date is the start of the selection
@@ -454,7 +450,7 @@ export function createRangeCalendarState<T extends DateValue = CalendarDate>(
   // Get dates in a specific week
   const getDatesInWeek = (
     weekIndex: number,
-    monthStartDate?: CalendarDate
+    monthStartDate?: CalendarDate,
   ): (CalendarDate | null)[] => {
     const startDate = monthStartDate ?? visibleRange().start;
 

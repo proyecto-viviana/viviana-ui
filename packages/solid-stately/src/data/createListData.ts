@@ -5,16 +5,16 @@
  * convenience methods to update the data over time.
  */
 
-import { createSignal, createMemo } from 'solid-js';
+import { createSignal, createMemo } from "solid-js";
 
 export type Key = string | number;
-export type Selection = 'all' | Set<Key>;
+export type Selection = "all" | Set<Key>;
 
 export interface ListOptions<T> {
   /** Initial items in the list. */
   initialItems?: T[];
   /** The keys for the initially selected items. */
-  initialSelectedKeys?: 'all' | Iterable<Key>;
+  initialSelectedKeys?: "all" | Iterable<Key>;
   /** The initial text to filter the list by. */
   initialFilterText?: string;
   /** A function that returns a unique key for an item object. */
@@ -85,43 +85,48 @@ export function createListData<T>(options: ListOptions<T>): ListData<T> {
     initialSelectedKeys,
     getKey = defaultGetKey,
     filter,
-    initialFilterText = '',
+    initialFilterText = "",
   } = options;
 
   const [state, setState] = createSignal<ListState<T>>({
     items: initialItems,
-    selectedKeys: initialSelectedKeys === 'all' ? 'all' : new Set(initialSelectedKeys || []),
+    selectedKeys: initialSelectedKeys === "all" ? "all" : new Set(initialSelectedKeys || []),
     filterText: initialFilterText,
   });
 
   const filteredItems = createMemo(() => {
     const s = state();
-    return filter ? s.items.filter(item => filter(item, s.filterText)) : s.items;
+    return filter ? s.items.filter((item) => filter(item, s.filterText)) : s.items;
   });
 
   return {
-    get items() { return filteredItems(); },
-    get selectedKeys() { return state().selectedKeys; },
-    get filterText() { return state().filterText; },
+    get items() {
+      return filteredItems();
+    },
+    get selectedKeys() {
+      return state().selectedKeys;
+    },
+    get filterText() {
+      return state().filterText;
+    },
 
     setSelectedKeys(selectedKeys: Selection) {
-      setState(s => ({ ...s, selectedKeys }));
+      setState((s) => ({ ...s, selectedKeys }));
     },
 
     addKeysToSelection(selectedKeys: Selection) {
-      setState(s => {
-        if (s.selectedKeys === 'all') return s;
-        if (selectedKeys === 'all') return { ...s, selectedKeys: 'all' };
+      setState((s) => {
+        if (s.selectedKeys === "all") return s;
+        if (selectedKeys === "all") return { ...s, selectedKeys: "all" };
         return { ...s, selectedKeys: new Set([...s.selectedKeys, ...selectedKeys]) };
       });
     },
 
     removeKeysFromSelection(selectedKeys: Selection) {
-      setState(s => {
-        if (selectedKeys === 'all') return { ...s, selectedKeys: new Set() };
-        const selection: Set<Key> = s.selectedKeys === 'all'
-          ? new Set(s.items.map(getKey))
-          : new Set(s.selectedKeys);
+      setState((s) => {
+        if (selectedKeys === "all") return { ...s, selectedKeys: new Set() };
+        const selection: Set<Key> =
+          s.selectedKeys === "all" ? new Set(s.items.map(getKey)) : new Set(s.selectedKeys);
         for (const key of selectedKeys) {
           selection.delete(key);
         }
@@ -130,28 +135,28 @@ export function createListData<T>(options: ListOptions<T>): ListData<T> {
     },
 
     setFilterText(filterText: string) {
-      setState(s => ({ ...s, filterText }));
+      setState((s) => ({ ...s, filterText }));
     },
 
     getItem(key: Key) {
-      return state().items.find(item => getKey(item) === key);
+      return state().items.find((item) => getKey(item) === key);
     },
 
     insert(index: number, ...values: T[]) {
-      setState(s => insertItems(s, index, ...values));
+      setState((s) => insertItems(s, index, ...values));
     },
 
     insertBefore(key: Key, ...values: T[]) {
-      setState(s => {
-        const index = s.items.findIndex(item => getKey(item) === key);
+      setState((s) => {
+        const index = s.items.findIndex((item) => getKey(item) === key);
         if (index === -1) return s;
         return insertItems(s, index, ...values);
       });
     },
 
     insertAfter(key: Key, ...values: T[]) {
-      setState(s => {
-        let index = s.items.findIndex(item => getKey(item) === key);
+      setState((s) => {
+        let index = s.items.findIndex((item) => getKey(item) === key);
         if (index === -1) {
           if (s.items.length === 0) {
             index = 0;
@@ -164,19 +169,19 @@ export function createListData<T>(options: ListOptions<T>): ListData<T> {
     },
 
     prepend(...values: T[]) {
-      setState(s => insertItems(s, 0, ...values));
+      setState((s) => insertItems(s, 0, ...values));
     },
 
     append(...values: T[]) {
-      setState(s => insertItems(s, s.items.length, ...values));
+      setState((s) => insertItems(s, s.items.length, ...values));
     },
 
     remove(...keys: Key[]) {
-      setState(s => {
+      setState((s) => {
         const keySet = new Set(keys);
-        const items = s.items.filter(item => !keySet.has(getKey(item)));
-        let selection: Selection = 'all';
-        if (s.selectedKeys !== 'all') {
+        const items = s.items.filter((item) => !keySet.has(getKey(item)));
+        let selection: Selection = "all";
+        if (s.selectedKeys !== "all") {
           selection = new Set(s.selectedKeys);
           for (const key of keys) {
             (selection as Set<Key>).delete(key);
@@ -188,19 +193,19 @@ export function createListData<T>(options: ListOptions<T>): ListData<T> {
     },
 
     removeSelectedItems() {
-      setState(s => {
-        if (s.selectedKeys === 'all') {
+      setState((s) => {
+        if (s.selectedKeys === "all") {
           return { ...s, items: [], selectedKeys: new Set() };
         }
         const selectedKeys = s.selectedKeys;
-        const items = s.items.filter(item => !selectedKeys.has(getKey(item)));
+        const items = s.items.filter((item) => !selectedKeys.has(getKey(item)));
         return { ...s, items, selectedKeys: new Set() };
       });
     },
 
     move(key: Key, toIndex: number) {
-      setState(s => {
-        const index = s.items.findIndex(item => getKey(item) === key);
+      setState((s) => {
+        const index = s.items.findIndex((item) => getKey(item) === key);
         if (index === -1) return s;
         const copy = s.items.slice();
         const [item] = copy.splice(index, 1);
@@ -210,43 +215,38 @@ export function createListData<T>(options: ListOptions<T>): ListData<T> {
     },
 
     moveBefore(key: Key, keys: Iterable<Key>) {
-      setState(s => {
-        const toIndex = s.items.findIndex(item => getKey(item) === key);
+      setState((s) => {
+        const toIndex = s.items.findIndex((item) => getKey(item) === key);
         if (toIndex === -1) return s;
         const keyArray = Array.isArray(keys) ? keys : [...keys];
         const indices = keyArray
-          .map(k => s.items.findIndex(item => getKey(item) === k))
+          .map((k) => s.items.findIndex((item) => getKey(item) === k))
           .sort((a, b) => a - b);
         return moveItems(s, indices, toIndex);
       });
     },
 
     moveAfter(key: Key, keys: Iterable<Key>) {
-      setState(s => {
-        const toIndex = s.items.findIndex(item => getKey(item) === key);
+      setState((s) => {
+        const toIndex = s.items.findIndex((item) => getKey(item) === key);
         if (toIndex === -1) return s;
         const keyArray = Array.isArray(keys) ? keys : [...keys];
         const indices = keyArray
-          .map(k => s.items.findIndex(item => getKey(item) === k))
+          .map((k) => s.items.findIndex((item) => getKey(item) === k))
           .sort((a, b) => a - b);
         return moveItems(s, indices, toIndex + 1);
       });
     },
 
     update(key: Key, newValue: T | ((prev: T) => T)) {
-      setState(s => {
-        const index = s.items.findIndex(item => getKey(item) === key);
+      setState((s) => {
+        const index = s.items.findIndex((item) => getKey(item) === key);
         if (index === -1) return s;
-        const updatedValue = typeof newValue === 'function'
-          ? (newValue as (prev: T) => T)(s.items[index])
-          : newValue;
+        const updatedValue =
+          typeof newValue === "function" ? (newValue as (prev: T) => T)(s.items[index]) : newValue;
         return {
           ...s,
-          items: [
-            ...s.items.slice(0, index),
-            updatedValue,
-            ...s.items.slice(index + 1),
-          ],
+          items: [...s.items.slice(0, index), updatedValue, ...s.items.slice(index + 1)],
         };
       });
     },
@@ -256,18 +256,14 @@ export function createListData<T>(options: ListOptions<T>): ListData<T> {
 function insertItems<T>(state: ListState<T>, index: number, ...values: T[]): ListState<T> {
   return {
     ...state,
-    items: [
-      ...state.items.slice(0, index),
-      ...values,
-      ...state.items.slice(index),
-    ],
+    items: [...state.items.slice(0, index), ...values, ...state.items.slice(index)],
   };
 }
 
 function moveItems<T>(state: ListState<T>, indices: number[], toIndex: number): ListState<T> {
-  toIndex -= indices.filter(index => index < toIndex).length;
+  toIndex -= indices.filter((index) => index < toIndex).length;
 
-  const moves = indices.map(from => ({
+  const moves = indices.map((from) => ({
     from,
     to: toIndex++,
   }));

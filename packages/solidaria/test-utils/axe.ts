@@ -5,7 +5,7 @@
  * versions between unit tests and Playwright e2e scans.
  */
 
-import axe, { type RunOptions, type AxeResults, type Result } from 'axe-core';
+import axe, { type RunOptions, type AxeResults, type Result } from "axe-core";
 
 export interface CheckA11yOptions {
   /** WCAG tags to test against. Default: ['wcag2a', 'wcag2aa'] */
@@ -26,14 +26,11 @@ export interface CheckA11yResult {
  * Rules that don't work reliably in jsdom (no layout engine).
  * These are disabled by default — callers can override via `disableRules: []`.
  */
-const JSDOM_INCOMPATIBLE_RULES = [
-  'color-contrast',
-  'scrollable-region-focusable',
-];
+const JSDOM_INCOMPATIBLE_RULES = ["color-contrast", "scrollable-region-focusable"];
 
 function buildRunOptions(options: CheckA11yOptions = {}): RunOptions {
   const {
-    tags = ['wcag2a', 'wcag2aa'],
+    tags = ["wcag2a", "wcag2aa"],
     disableRules = JSDOM_INCOMPATIBLE_RULES,
     axeOptions,
   } = options;
@@ -44,28 +41,28 @@ function buildRunOptions(options: CheckA11yOptions = {}): RunOptions {
   }
 
   return {
-    runOnly: { type: 'tag', values: tags },
+    runOnly: { type: "tag", values: tags },
     rules,
     ...axeOptions,
   };
 }
 
 function formatViolations(violations: Result[]): string {
-  if (violations.length === 0) return '';
+  if (violations.length === 0) return "";
 
   const lines: string[] = [`${violations.length} accessibility violation(s):\n`];
   for (const v of violations) {
     lines.push(`  [${v.impact}] ${v.id}: ${v.help}`);
     lines.push(`    ${v.helpUrl}`);
     for (const node of v.nodes) {
-      const target = node.target?.join(' > ') ?? '<unknown>';
+      const target = node.target?.join(" > ") ?? "<unknown>";
       lines.push(`    → ${target}`);
       if (node.failureSummary) {
-        lines.push(`      ${node.failureSummary.replace(/\n+/g, ' ')}`);
+        lines.push(`      ${node.failureSummary.replace(/\n+/g, " ")}`);
       }
     }
   }
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 /**

@@ -6,9 +6,9 @@
  * Port of @react-aria/i18n useCollator.
  */
 
-import { createMemo } from 'solid-js';
-import { useLocale } from './locale';
-import { createCacheKey } from './utils';
+import { createMemo } from "solid-js";
+import { useLocale } from "./locale";
+import { createCacheKey } from "./utils";
 
 // ============================================
 // CACHE
@@ -19,10 +19,7 @@ const collatorCache = new Map<string, Intl.Collator>();
 /**
  * Gets or creates a cached collator.
  */
-function getCachedCollator(
-  locale: string,
-  options?: Intl.CollatorOptions
-): Intl.Collator {
+function getCachedCollator(locale: string, options?: Intl.CollatorOptions): Intl.Collator {
   const cacheKey = createCacheKey(locale, options as Record<string, unknown>);
 
   if (collatorCache.has(cacheKey)) {
@@ -70,9 +67,7 @@ function getCachedCollator(
  * // ['a1', 'a10', 'a2'].sort(numericCollator().compare) -> ['a1', 'a2', 'a10']
  * ```
  */
-export function createCollator(
-  options?: Intl.CollatorOptions
-): () => Intl.Collator {
+export function createCollator(options?: Intl.CollatorOptions): () => Intl.Collator {
   const locale = useLocale();
 
   return createMemo(() => getCachedCollator(locale().locale, options));

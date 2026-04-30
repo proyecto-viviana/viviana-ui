@@ -13,7 +13,7 @@ import {
   mergeProps,
   splitProps,
   useContext,
-} from 'solid-js';
+} from "solid-js";
 import {
   I18nProvider,
   ModalProvider,
@@ -21,18 +21,18 @@ import {
   useLocale,
   useModalProvider,
   type Direction,
-} from '@proyecto-viviana/solidaria';
-import type { Theme } from '../theme/types';
-import { lightTheme } from '../theme-light';
-import { darkTheme } from '../theme-dark';
+} from "@proyecto-viviana/solidaria";
+import type { Theme } from "../theme/types";
+import { lightTheme } from "../theme-light";
+import { darkTheme } from "../theme-dark";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type ColorScheme = 'light' | 'dark';
-export type Scale = 'medium' | 'large';
-export type ValidationState = 'valid' | 'invalid';
+export type ColorScheme = "light" | "dark";
+export type Scale = "medium" | "large";
+export type ValidationState = "valid" | "invalid";
 
 export interface ProviderInheritedProps {
   /** Whether controls should render in their quiet/subtle style. */
@@ -91,8 +91,8 @@ interface InternalProviderContextValue extends ProviderContextValue {
 // ============================================
 
 const defaultThemeContext: ThemeContextValue = {
-  colorScheme: 'light',
-  scale: 'medium',
+  colorScheme: "light",
+  scale: "medium",
   themeClass: lightTheme.className,
   theme: lightTheme,
 };
@@ -119,7 +119,7 @@ export function useProvider(): ProviderContextValue {
   const context = useContext(ProviderContext);
 
   if (!context) {
-    throw new Error('No root provider found. Wrap this subtree in <Provider>.');
+    throw new Error("No root provider found. Wrap this subtree in <Provider>.");
   }
 
   return context;
@@ -136,15 +136,15 @@ export function useProviderProps<T extends object>(props: T): T {
   }
 
   return mergeProps(
-    ({
+    {
       isQuiet: context.isQuiet,
       isEmphasized: context.isEmphasized,
       isDisabled: context.isDisabled,
       isRequired: context.isRequired,
       isReadOnly: context.isReadOnly,
       validationState: context.validationState,
-    } as unknown as Partial<T>),
-    props
+    } as unknown as Partial<T>,
+    props,
   ) as T;
 }
 
@@ -153,15 +153,15 @@ export function useProviderProps<T extends object>(props: T): T {
 // ============================================
 
 function getBuiltInTheme(colorScheme: ColorScheme): Theme {
-  return colorScheme === 'dark' ? darkTheme : lightTheme;
+  return colorScheme === "dark" ? darkTheme : lightTheme;
 }
 
 function resolveTheme(
   themeInput: string | Theme | undefined,
   colorScheme: ColorScheme,
-  inheritedThemeClass?: string
+  inheritedThemeClass?: string,
 ): { className: string; properties: Record<string, string>; themeObj: Theme } {
-  if (themeInput && typeof themeInput === 'object') {
+  if (themeInput && typeof themeInput === "object") {
     return {
       className: themeInput.className,
       properties: themeInput.properties,
@@ -171,7 +171,7 @@ function resolveTheme(
 
   const builtIn = getBuiltInTheme(colorScheme);
 
-  if (typeof themeInput === 'string') {
+  if (typeof themeInput === "string") {
     return {
       className: themeInput,
       properties: builtIn.properties,
@@ -240,24 +240,28 @@ export function Provider(props: ProviderProps): JSX.Element {
   const inheritedLocale = useLocale();
 
   const [local, rest] = splitProps(props, [
-    'locale',
-    'colorScheme',
-    'scale',
-    'theme',
-    'class',
-    'style',
-    'children',
-    'isQuiet',
-    'isEmphasized',
-    'isDisabled',
-    'isRequired',
-    'isReadOnly',
-    'validationState',
+    "locale",
+    "colorScheme",
+    "scale",
+    "theme",
+    "class",
+    "style",
+    "children",
+    "isQuiet",
+    "isEmphasized",
+    "isDisabled",
+    "isRequired",
+    "isReadOnly",
+    "validationState",
   ]);
 
-  const colorScheme = createMemo<ColorScheme>(() => local.colorScheme ?? parentProvider?.colorScheme ?? 'light');
-  const scale = createMemo<Scale>(() => local.scale ?? parentProvider?.scale ?? 'medium');
-  const locale = createMemo(() => local.locale ?? parentProvider?.locale ?? inheritedLocale().locale);
+  const colorScheme = createMemo<ColorScheme>(
+    () => local.colorScheme ?? parentProvider?.colorScheme ?? "light",
+  );
+  const scale = createMemo<Scale>(() => local.scale ?? parentProvider?.scale ?? "medium");
+  const locale = createMemo(
+    () => local.locale ?? parentProvider?.locale ?? inheritedLocale().locale,
+  );
 
   const inheritedThemeClass = createMemo(() => {
     if (!parentProvider) {
@@ -265,15 +269,13 @@ export function Provider(props: ProviderProps): JSX.Element {
     }
 
     const builtInParentTheme = getBuiltInTheme(parentProvider.colorScheme);
-    return parentProvider.themeClass !== builtInParentTheme.className ? parentProvider.themeClass : undefined;
+    return parentProvider.themeClass !== builtInParentTheme.className
+      ? parentProvider.themeClass
+      : undefined;
   });
 
   const resolvedTheme = createMemo(() =>
-    resolveTheme(
-      local.theme ?? parentProvider?.themeSource,
-      colorScheme(),
-      inheritedThemeClass()
-    )
+    resolveTheme(local.theme ?? parentProvider?.themeSource, colorScheme(), inheritedThemeClass()),
   );
 
   const providerValue: InternalProviderContextValue = {
@@ -281,7 +283,7 @@ export function Provider(props: ProviderProps): JSX.Element {
       return locale();
     },
     get direction() {
-      return local.locale ? (isRTL(local.locale) ? 'rtl' : 'ltr') : inheritedLocale().direction;
+      return local.locale ? (isRTL(local.locale) ? "rtl" : "ltr") : inheritedLocale().direction;
     },
     get colorScheme() {
       return colorScheme();
@@ -320,21 +322,21 @@ export function Provider(props: ProviderProps): JSX.Element {
 
   const classes = createMemo(() => {
     const parts = [
-      'vui-provider',
+      "vui-provider",
       `vui-provider--${colorScheme()}`,
       `vui-provider--${scale()}`,
       resolvedTheme().className,
       local.class,
     ];
 
-    return parts.filter(Boolean).join(' ');
+    return parts.filter(Boolean).join(" ");
   });
 
   const mergedStyle = createMemo<JSX.CSSProperties>(() => ({
     ...resolvedTheme().properties,
-    'color-scheme': colorScheme(),
-    isolation: parentProvider ? undefined : 'isolate',
-    ...(local.style ?? {}),
+    "color-scheme": colorScheme(),
+    isolation: parentProvider ? undefined : "isolate",
+    ...local.style,
   }));
 
   return (

@@ -38,13 +38,13 @@
   --color-accent-highlight: #ffc9e9;
 
   /* Semantic colors from Solid Spectrum */
-  --color-success-100: #E5FFF3;
+  --color-success-100: #e5fff3;
   --color-success-400: #3fb950;
   --color-success-600: #238636;
-  --color-warning-100: #FFFBE5;
+  --color-warning-100: #fffbe5;
   --color-warning-400: #d29922;
   --color-warning-600: #966a13;
-  --color-danger-100: #FFE5E5;
+  --color-danger-100: #ffe5e5;
   --color-danger-400: #f85149;
   --color-danger-600: #da3633;
 
@@ -55,19 +55,19 @@
   --color-incorrect: #f85149;
 
   /* Typography */
-  --font-sen: 'Sen', sans-serif;
-  --font-jost: 'Jost', sans-serif;
-  --font-sans: 'Sen', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sen: "Sen", sans-serif;
+  --font-jost: "Jost", sans-serif;
+  --font-sans: "Sen", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
 /* ===== FONT UTILITIES ===== */
 .font-sen {
-  font-family: 'Sen', sans-serif;
+  font-family: "Sen", sans-serif;
 }
 
 .font-jost {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
 }
 
 /* ===== CUSTOM SHADOWS ===== */
@@ -101,7 +101,9 @@
 
 .vui-button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-bg-400), 0 0 0 4px var(--color-accent-300);
+  box-shadow:
+    0 0 0 2px var(--color-bg-400),
+    0 0 0 4px var(--color-accent-300);
 }
 
 .vui-button:disabled {
@@ -410,7 +412,7 @@
 }
 
 .prose h1 {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0 0 1rem 0;
@@ -424,7 +426,7 @@
 }
 
 .prose h2 {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 1.25rem;
   font-weight: 600;
   margin-top: 2rem;
@@ -435,7 +437,7 @@
 }
 
 .prose h3 {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 0.8125rem;
   font-weight: 600;
   margin-top: 1.5rem;
@@ -481,7 +483,8 @@
   clip-path: none;
 }
 
-.prose ul, .prose ol {
+.prose ul,
+.prose ol {
   padding-left: 1.25rem;
   margin-bottom: 1rem;
 }
@@ -506,7 +509,7 @@
   border-left: 3px solid transparent;
   color: var(--color-primary-400);
   font-size: 0.8125rem;
-  font-family: 'Sen', sans-serif;
+  font-family: "Sen", sans-serif;
   text-decoration: none;
   transition: all 0.1s ease;
 }

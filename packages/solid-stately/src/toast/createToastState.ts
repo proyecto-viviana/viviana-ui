@@ -3,7 +3,7 @@
  * Based on @react-stately/toast useToastState
  */
 
-import { createSignal, onCleanup, type Accessor } from 'solid-js';
+import { createSignal, onCleanup, type Accessor } from "solid-js";
 
 // ============================================
 // TYPES
@@ -26,7 +26,7 @@ export interface QueuedToast<T> {
   /** The timer for the toast. */
   timer: Timer | null;
   /** Whether the toast should be animated. */
-  animation?: 'entering' | 'exiting' | 'queued';
+  animation?: "entering" | "exiting" | "queued";
   /** The priority of the toast. */
   priority: number;
   /** Handler called when the toast is closed. */
@@ -164,7 +164,7 @@ export class ToastQueue<T> {
       priority: options.priority ?? 0,
       onClose: options.onClose,
       timeout: options.timeout,
-      animation: 'entering',
+      animation: "entering",
     };
 
     // Find insertion point based on priority
@@ -180,11 +180,7 @@ export class ToastQueue<T> {
     }
 
     // Insert at the correct position
-    this.queue = [
-      ...this.queue.slice(0, low),
-      toast,
-      ...this.queue.slice(low),
-    ];
+    this.queue = [...this.queue.slice(0, low), toast, ...this.queue.slice(low)];
 
     // Start timer for visible toasts
     this.updateVisibility();
@@ -202,11 +198,11 @@ export class ToastQueue<T> {
     // Cancel any existing timer
     toast.timer?.cancel();
 
-    if (this.hasExitAnimation && toast.animation !== 'queued') {
+    if (this.hasExitAnimation && toast.animation !== "queued") {
       // Mark as exiting for animation
-      this.queue = this.queue.map((t) => (
-        t.key === key ? { ...t, timer: null, animation: 'exiting' } : t
-      ));
+      this.queue = this.queue.map((t) =>
+        t.key === key ? { ...t, timer: null, animation: "exiting" } : t,
+      );
       this.notify();
     } else {
       // Remove immediately
@@ -249,21 +245,25 @@ export class ToastQueue<T> {
   private updateVisibility(): void {
     // Mark toasts as visible or queued based on maxVisibleToasts
     const visibleCount = this.queue.filter(
-      (t) => t.animation !== 'queued' && t.animation !== 'exiting'
+      (t) => t.animation !== "queued" && t.animation !== "exiting",
     ).length;
 
     let promoted = 0;
     this.queue = this.queue.map((toast) => {
       let nextToast = toast;
 
-      if (nextToast.animation === 'queued' && visibleCount + promoted < this.maxVisibleToasts) {
-        nextToast = { ...nextToast, animation: 'entering' };
+      if (nextToast.animation === "queued" && visibleCount + promoted < this.maxVisibleToasts) {
+        nextToast = { ...nextToast, animation: "entering" };
         promoted++;
       }
-      if (nextToast.animation === 'queued') return nextToast;
+      if (nextToast.animation === "queued") return nextToast;
 
       // Start timer for visible toasts
-      if (nextToast.timeout != null && nextToast.timer === null && nextToast.animation !== 'exiting') {
+      if (
+        nextToast.timeout != null &&
+        nextToast.timer === null &&
+        nextToast.animation !== "exiting"
+      ) {
         nextToast = {
           ...nextToast,
           timer: new Timer(() => {
@@ -324,7 +324,9 @@ export function createToastState<T>(props: ToastStateProps<T>): ToastState<T> {
  * Creates a new ToastQueue and returns reactive state.
  * Use this if you don't need a global queue.
  */
-export function createToastQueue<T>(options?: ToastQueueOptions): ToastState<T> & { queue: ToastQueue<T> } {
+export function createToastQueue<T>(
+  options?: ToastQueueOptions,
+): ToastState<T> & { queue: ToastQueue<T> } {
   const queue = new ToastQueue<T>(options);
   const state = createToastState({ queue });
   return { ...state, queue };

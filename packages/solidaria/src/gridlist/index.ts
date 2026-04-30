@@ -2,9 +2,9 @@
  * GridList ARIA hooks for solidaria.
  */
 
-export { createGridList, getGridListData } from './createGridList';
-export { createGridListItem } from './createGridListItem';
-export { createGridListSelectionCheckbox } from './createGridListSelectionCheckbox';
+export { createGridList, getGridListData } from "./createGridList";
+export { createGridListItem } from "./createGridListItem";
+export { createGridListSelectionCheckbox } from "./createGridListSelectionCheckbox";
 
 export type {
   AriaGridListProps,
@@ -13,4 +13,4 @@ export type {
   GridListItemAria,
   AriaGridListSelectionCheckboxProps,
   GridListSelectionCheckboxAria,
-} from './types';
+} from "./types";

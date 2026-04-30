@@ -18,94 +18,94 @@ This package is the foundation layer of the Proyecto Viviana component library, 
 
 ### Toggle & Selection
 
-| Hook | Description |
-|------|-------------|
-| `createToggleState` | Boolean toggle state for checkboxes, switches |
-| `createCheckboxGroupState` | Multi-selection checkbox group |
-| `createRadioGroupState` | Single-selection radio group |
+| Hook                       | Description                                   |
+| -------------------------- | --------------------------------------------- |
+| `createToggleState`        | Boolean toggle state for checkboxes, switches |
+| `createCheckboxGroupState` | Multi-selection checkbox group                |
+| `createRadioGroupState`    | Single-selection radio group                  |
 
 ### Overlays
 
-| Hook | Description |
-|------|-------------|
+| Hook                        | Description                                  |
+| --------------------------- | -------------------------------------------- |
 | `createOverlayTriggerState` | Open/close state for modals, popovers, menus |
 
 ### Collections & Lists
 
-| Hook | Description |
-|------|-------------|
-| `createListState` | List with selection and keyboard focus |
+| Hook                          | Description                                        |
+| ----------------------------- | -------------------------------------------------- |
+| `createListState`             | List with selection and keyboard focus             |
 | `createSingleSelectListState` | Single-selection list (e.g., for select dropdowns) |
-| `createSelectionState` | Low-level selection management |
-| `createMenuState` | Menu state with action support |
-| `createMenuTriggerState` | Menu trigger open/close state |
-| `createSelectState` | Select dropdown state |
-| `ListCollection` | Collection data structure for lists |
-| `createListCollection` | Create a list collection from items |
+| `createSelectionState`        | Low-level selection management                     |
+| `createMenuState`             | Menu state with action support                     |
+| `createMenuTriggerState`      | Menu trigger open/close state                      |
+| `createSelectState`           | Select dropdown state                              |
+| `ListCollection`              | Collection data structure for lists                |
+| `createListCollection`        | Create a list collection from items                |
 
 ### Navigation
 
-| Hook | Description |
-|------|-------------|
+| Hook                 | Description                                |
+| -------------------- | ------------------------------------------ |
 | `createTabListState` | Tab navigation state with keyboard support |
 
 ### Form Controls
 
-| Hook | Description |
-|------|-------------|
-| `createTextFieldState` | Text input state |
-| `createNumberFieldState` | Numeric input with validation |
-| `createSearchFieldState` | Search input with clear functionality |
-| `createSliderState` | Range slider state |
+| Hook                        | Description                                      |
+| --------------------------- | ------------------------------------------------ |
+| `createTextFieldState`      | Text input state                                 |
+| `createNumberFieldState`    | Numeric input with validation                    |
+| `createSearchFieldState`    | Search input with clear functionality            |
+| `createSliderState`         | Range slider state                               |
 | `createFormValidationState` | Form validation state with realtime/native modes |
 
 ### Grid & Table
 
-| Hook | Description |
-|------|-------------|
-| `createGridState` | Grid state with keyboard navigation |
+| Hook               | Description                            |
+| ------------------ | -------------------------------------- |
+| `createGridState`  | Grid state with keyboard navigation    |
 | `createTableState` | Table state with sorting and selection |
-| `TableCollection` | Collection data structure for tables |
+| `TableCollection`  | Collection data structure for tables   |
 
 ### Tree
 
-| Hook | Description |
-|------|-------------|
-| `createTreeState` | Tree state with expand/collapse |
-| `TreeCollection` | Collection data structure for trees |
+| Hook              | Description                         |
+| ----------------- | ----------------------------------- |
+| `createTreeState` | Tree state with expand/collapse     |
+| `TreeCollection`  | Collection data structure for trees |
 
 ### Color
 
-| Hook | Description |
-|------|-------------|
+| Hook                     | Description                |
+| ------------------------ | -------------------------- |
 | `createColorSliderState` | Color channel slider state |
-| `createColorAreaState` | 2D color area picker state |
-| `createColorWheelState` | Circular hue wheel state |
-| `createColorFieldState` | Color text input state |
+| `createColorAreaState`   | 2D color area picker state |
+| `createColorWheelState`  | Circular hue wheel state   |
+| `createColorFieldState`  | Color text input state     |
 
 ### Drag & Drop
 
-| Hook | Description |
-|------|-------------|
-| `createDragState` | Drag operation state |
-| `createDropState` | Drop target state |
+| Hook                             | Description                 |
+| -------------------------------- | --------------------------- |
+| `createDragState`                | Drag operation state        |
+| `createDropState`                | Drop target state           |
 | `createDraggableCollectionState` | Collection-level drag state |
 | `createDroppableCollectionState` | Collection-level drop state |
 
 ### Utilities
 
-| Hook | Description |
-|------|-------------|
-| `createId` | Generate unique IDs (SSR-safe) |
-| `createIsSSR` | Detect server-side rendering |
-| `canUseDOM` | Check if DOM is available |
+| Hook          | Description                    |
+| ------------- | ------------------------------ |
+| `createId`    | Generate unique IDs (SSR-safe) |
+| `createIsSSR` | Detect server-side rendering   |
+| `canUseDOM`   | Check if DOM is available      |
 
 ## Usage Examples
 
 ### Toggle State
 
 ```tsx
-import { createToggleState } from '@proyecto-viviana/solid-stately';
+import { createToggleState } from "@proyecto-viviana/solid-stately";
 
 function Checkbox(props) {
   const state = createToggleState({
@@ -116,11 +116,7 @@ function Checkbox(props) {
 
   return (
     <label>
-      <input
-        type="checkbox"
-        checked={state.isSelected()}
-        onChange={() => state.toggle()}
-      />
+      <input type="checkbox" checked={state.isSelected()} onChange={() => state.toggle()} />
       {props.children}
     </label>
   );
@@ -130,14 +126,14 @@ function Checkbox(props) {
 ### List State with Selection
 
 ```tsx
-import { createListState } from '@proyecto-viviana/solid-stately';
+import { createListState } from "@proyecto-viviana/solid-stately";
 
 function ListBox(props) {
   const state = createListState({
     items: props.items,
     getKey: (item) => item.id,
     getTextValue: (item) => item.name,
-    selectionMode: 'single',
+    selectionMode: "single",
     onSelectionChange: props.onSelectionChange,
   });
 
@@ -147,11 +143,11 @@ function ListBox(props) {
         {(item) => {
           const key = item.id;
           const isSelected = () => state.selectionManager.isSelected(key);
-          
+
           return (
             <li
               onClick={() => state.selectionManager.toggleSelection(key)}
-              style={{ background: isSelected() ? 'blue' : 'white' }}
+              style={{ background: isSelected() ? "blue" : "white" }}
             >
               {item.name}
             </li>
@@ -166,7 +162,7 @@ function ListBox(props) {
 ### Overlay State
 
 ```tsx
-import { createOverlayTriggerState } from '@proyecto-viviana/solid-stately';
+import { createOverlayTriggerState } from "@proyecto-viviana/solid-stately";
 
 function Modal(props) {
   const state = createOverlayTriggerState({
@@ -192,7 +188,7 @@ function Modal(props) {
 ### Tab State
 
 ```tsx
-import { createTabListState } from '@proyecto-viviana/solid-stately';
+import { createTabListState } from "@proyecto-viviana/solid-stately";
 
 function Tabs(props) {
   const state = createTabListState({
@@ -217,9 +213,7 @@ function Tabs(props) {
           )}
         </For>
       </div>
-      <div role="tabpanel">
-        {props.tabs.find(t => t.id === state.selectedKey())?.content}
-      </div>
+      <div role="tabpanel">{props.tabs.find((t) => t.id === state.selectedKey())?.content}</div>
     </div>
   );
 }
@@ -228,7 +222,7 @@ function Tabs(props) {
 ### Slider State
 
 ```tsx
-import { createSliderState } from '@proyecto-viviana/solid-stately';
+import { createSliderState } from "@proyecto-viviana/solid-stately";
 
 function Slider(props) {
   const state = createSliderState({
@@ -268,7 +262,7 @@ All state hooks support both controlled and uncontrolled patterns:
 // Uncontrolled - uses internal state
 const state = createToggleState({
   defaultSelected: false,
-  onChange: (isSelected) => console.log('Changed:', isSelected),
+  onChange: (isSelected) => console.log("Changed:", isSelected),
 });
 
 // Controlled - uses external state
@@ -288,8 +282,10 @@ Props can be passed as values or accessors for reactive updates:
 createToggleState({ defaultSelected: true });
 
 // Reactive accessor
-createToggleState({ 
-  get isDisabled() { return props.isDisabled; } 
+createToggleState({
+  get isDisabled() {
+    return props.isDisabled;
+  },
 });
 ```
 
@@ -298,13 +294,13 @@ createToggleState({
 All hooks are fully typed. Import types as needed:
 
 ```tsx
-import { 
+import {
   createListState,
   type ListState,
   type ListStateProps,
   type Key,
   type Selection,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 ```
 
 ## License

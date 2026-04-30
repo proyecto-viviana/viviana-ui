@@ -6,16 +6,16 @@
  * provides focus-visible state and listeners.
  */
 
-import { type Accessor, createSignal, createEffect, onCleanup } from 'solid-js';
-import { isServer } from 'solid-js/web';
-import { getOwnerDocument, getOwnerWindow, isMac, isVirtualClick, openLink } from '../utils';
+import { type Accessor, createSignal, createEffect, onCleanup } from "solid-js";
+import { isServer } from "solid-js/web";
+import { getOwnerDocument, getOwnerWindow, isMac, isVirtualClick, openLink } from "../utils";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type Modality = 'keyboard' | 'pointer' | 'virtual';
-export type PointerType = 'mouse' | 'pen' | 'touch' | 'keyboard' | 'virtual';
+export type Modality = "keyboard" | "pointer" | "virtual";
+export type PointerType = "mouse" | "pen" | "touch" | "keyboard" | "virtual";
 type HandlerEvent = PointerEvent | MouseEvent | KeyboardEvent | FocusEvent | null;
 type Handler = (modality: Modality, e: HandlerEvent) => void;
 
@@ -43,7 +43,7 @@ export interface InteractionModalityResult {
 // ============================================
 
 let currentModality: Modality | null = null;
-let currentPointerType: PointerType = 'keyboard';
+let currentPointerType: PointerType = "keyboard";
 const changeHandlers = new Set<Handler>();
 
 export let hasSetupGlobalListeners: Map<
@@ -70,9 +70,9 @@ function isValidKey(e: KeyboardEvent) {
     e.metaKey ||
     (!isMac() && e.altKey) ||
     e.ctrlKey ||
-    e.key === 'Control' ||
-    e.key === 'Shift' ||
-    e.key === 'Meta'
+    e.key === "Control" ||
+    e.key === "Shift" ||
+    e.key === "Meta"
   );
 }
 
@@ -80,18 +80,18 @@ function handleKeyboardEvent(e: KeyboardEvent) {
   hasEventBeforeFocus = true;
   const isOpening = (openLink as { isOpening?: boolean }).isOpening;
   if (!isOpening && isValidKey(e)) {
-    currentModality = 'keyboard';
-    currentPointerType = 'keyboard';
-    triggerChangeHandlers('keyboard', e);
+    currentModality = "keyboard";
+    currentPointerType = "keyboard";
+    triggerChangeHandlers("keyboard", e);
   }
 }
 
 function handlePointerEvent(e: PointerEvent | MouseEvent) {
-  currentModality = 'pointer';
-  currentPointerType = 'pointerType' in e ? (e.pointerType as PointerType) : 'mouse';
-  if (e.type === 'mousedown' || e.type === 'pointerdown') {
+  currentModality = "pointer";
+  currentPointerType = "pointerType" in e ? (e.pointerType as PointerType) : "mouse";
+  if (e.type === "mousedown" || e.type === "pointerdown") {
     hasEventBeforeFocus = true;
-    triggerChangeHandlers('pointer', e);
+    triggerChangeHandlers("pointer", e);
   }
 }
 
@@ -99,8 +99,8 @@ function handleClickEvent(e: MouseEvent) {
   const isOpening = (openLink as { isOpening?: boolean }).isOpening;
   if (!isOpening && isVirtualClick(e)) {
     hasEventBeforeFocus = true;
-    currentModality = 'virtual';
-    currentPointerType = 'virtual';
+    currentModality = "virtual";
+    currentPointerType = "virtual";
   }
 }
 
@@ -119,9 +119,9 @@ function handleFocusEvent(e: FocusEvent) {
   }
 
   if (!hasEventBeforeFocus && !hasBlurredWindowRecently) {
-    currentModality = 'virtual';
-    currentPointerType = 'virtual';
-    triggerChangeHandlers('virtual', e);
+    currentModality = "virtual";
+    currentPointerType = "virtual";
+    triggerChangeHandlers("virtual", e);
   }
 
   hasEventBeforeFocus = false;
@@ -138,7 +138,7 @@ function handleWindowBlur() {
 }
 
 function setupGlobalFocusEvents(element?: HTMLElement | null) {
-  if (typeof window === 'undefined' || typeof document === 'undefined') {
+  if (typeof window === "undefined" || typeof document === "undefined") {
     return;
   }
 
@@ -160,36 +160,36 @@ function setupGlobalFocusEvents(element?: HTMLElement | null) {
     canOverride = false;
   }
 
-  documentObject.addEventListener('keydown', handleKeyboardEvent, true);
-  documentObject.addEventListener('keyup', handleKeyboardEvent, true);
-  documentObject.addEventListener('click', handleClickEvent, true);
+  documentObject.addEventListener("keydown", handleKeyboardEvent, true);
+  documentObject.addEventListener("keyup", handleKeyboardEvent, true);
+  documentObject.addEventListener("click", handleClickEvent, true);
 
-  windowObject.addEventListener('focus', handleFocusEvent, true);
-  windowObject.addEventListener('blur', handleWindowBlur, false);
+  windowObject.addEventListener("focus", handleFocusEvent, true);
+  windowObject.addEventListener("blur", handleWindowBlur, false);
 
-  if (typeof windowObject.PointerEvent !== 'undefined') {
-    documentObject.addEventListener('pointerdown', handlePointerEvent, true);
-    documentObject.addEventListener('pointermove', handlePointerEvent, true);
-    documentObject.addEventListener('pointerup', handlePointerEvent, true);
+  if (typeof windowObject.PointerEvent !== "undefined") {
+    documentObject.addEventListener("pointerdown", handlePointerEvent, true);
+    documentObject.addEventListener("pointermove", handlePointerEvent, true);
+    documentObject.addEventListener("pointerup", handlePointerEvent, true);
   } else {
-    documentObject.addEventListener('mousedown', handlePointerEvent, true);
-    documentObject.addEventListener('mousemove', handlePointerEvent, true);
-    documentObject.addEventListener('mouseup', handlePointerEvent, true);
+    documentObject.addEventListener("mousedown", handlePointerEvent, true);
+    documentObject.addEventListener("mousemove", handlePointerEvent, true);
+    documentObject.addEventListener("mouseup", handlePointerEvent, true);
   }
 
   windowObject.addEventListener(
-    'beforeunload',
+    "beforeunload",
     () => {
       tearDownWindowFocusTracking(element);
     },
-    { once: true }
+    { once: true },
   );
 
   hasSetupGlobalListeners.set(windowObject, { focus: originalFocus, canOverride });
 }
 
 function tearDownWindowFocusTracking(element?: HTMLElement | null, loadListener?: () => void) {
-  if (typeof window === 'undefined' || typeof document === 'undefined') {
+  if (typeof window === "undefined" || typeof document === "undefined") {
     return;
   }
 
@@ -197,7 +197,7 @@ function tearDownWindowFocusTracking(element?: HTMLElement | null, loadListener?
   const documentObject = getOwnerDocument(element);
 
   if (loadListener) {
-    documentObject.removeEventListener('DOMContentLoaded', loadListener);
+    documentObject.removeEventListener("DOMContentLoaded", loadListener);
   }
 
   if (!hasSetupGlobalListeners.has(windowObject)) {
@@ -209,21 +209,21 @@ function tearDownWindowFocusTracking(element?: HTMLElement | null, loadListener?
     windowObject.HTMLElement.prototype.focus = entry.focus;
   }
 
-  documentObject.removeEventListener('keydown', handleKeyboardEvent, true);
-  documentObject.removeEventListener('keyup', handleKeyboardEvent, true);
-  documentObject.removeEventListener('click', handleClickEvent, true);
+  documentObject.removeEventListener("keydown", handleKeyboardEvent, true);
+  documentObject.removeEventListener("keyup", handleKeyboardEvent, true);
+  documentObject.removeEventListener("click", handleClickEvent, true);
 
-  windowObject.removeEventListener('focus', handleFocusEvent, true);
-  windowObject.removeEventListener('blur', handleWindowBlur, false);
+  windowObject.removeEventListener("focus", handleFocusEvent, true);
+  windowObject.removeEventListener("blur", handleWindowBlur, false);
 
-  if (typeof windowObject.PointerEvent !== 'undefined') {
-    documentObject.removeEventListener('pointerdown', handlePointerEvent, true);
-    documentObject.removeEventListener('pointermove', handlePointerEvent, true);
-    documentObject.removeEventListener('pointerup', handlePointerEvent, true);
+  if (typeof windowObject.PointerEvent !== "undefined") {
+    documentObject.removeEventListener("pointerdown", handlePointerEvent, true);
+    documentObject.removeEventListener("pointermove", handlePointerEvent, true);
+    documentObject.removeEventListener("pointerup", handlePointerEvent, true);
   } else {
-    documentObject.removeEventListener('mousedown', handlePointerEvent, true);
-    documentObject.removeEventListener('mousemove', handlePointerEvent, true);
-    documentObject.removeEventListener('mouseup', handlePointerEvent, true);
+    documentObject.removeEventListener("mousedown", handlePointerEvent, true);
+    documentObject.removeEventListener("mousemove", handlePointerEvent, true);
+    documentObject.removeEventListener("mouseup", handlePointerEvent, true);
   }
 
   hasSetupGlobalListeners.delete(windowObject);
@@ -236,13 +236,13 @@ export function addWindowFocusTracking(element?: HTMLElement | null): () => void
   const documentObject = getOwnerDocument(element);
   let loadListener: (() => void) | undefined;
 
-  if (documentObject.readyState !== 'loading') {
+  if (documentObject.readyState !== "loading") {
     setupGlobalFocusEvents(element);
   } else {
     loadListener = () => {
       setupGlobalFocusEvents(element);
     };
-    documentObject.addEventListener('DOMContentLoaded', loadListener);
+    documentObject.addEventListener("DOMContentLoaded", loadListener);
   }
 
   return () => tearDownWindowFocusTracking(element, loadListener);
@@ -252,7 +252,7 @@ export function setupGlobalFocusListeners(): void {
   addWindowFocusTracking();
 }
 
-if (typeof document !== 'undefined') {
+if (typeof document !== "undefined") {
   addWindowFocusTracking();
 }
 
@@ -260,7 +260,7 @@ if (typeof document !== 'undefined') {
  * If true, keyboard focus is visible.
  */
 export function isFocusVisible(): boolean {
-  return currentModality !== 'pointer';
+  return currentModality !== "pointer";
 }
 
 /**
@@ -275,7 +275,7 @@ export function getInteractionModality(): Modality | null {
  */
 export function setInteractionModality(modality: Modality): void {
   currentModality = modality;
-  currentPointerType = modality === 'pointer' ? 'mouse' : modality;
+  currentPointerType = modality === "pointer" ? "mouse" : modality;
   triggerChangeHandlers(modality, null);
 }
 
@@ -286,16 +286,12 @@ export function getPointerType(): PointerType {
   return currentPointerType;
 }
 
-function isKeyboardFocusEvent(
-  isTextInput: boolean,
-  modality: Modality,
-  e: HandlerEvent
-): boolean {
+function isKeyboardFocusEvent(isTextInput: boolean, modality: Modality, e: HandlerEvent): boolean {
   if (!e) {
     return true;
   }
 
-  const target = 'target' in e ? (e.target as Element | null) : null;
+  const target = "target" in e ? (e.target as Element | null) : null;
   const ownerDocument = target ? getOwnerDocument(target) : document;
   const ownerWindow = target ? getOwnerWindow(target) : window;
 
@@ -305,15 +301,15 @@ function isKeyboardFocusEvent(
   const IKeyboardEvent = ownerWindow.KeyboardEvent;
 
   const nonTextInputTypes = new Set([
-    'checkbox',
-    'radio',
-    'range',
-    'color',
-    'file',
-    'image',
-    'button',
-    'submit',
-    'reset',
+    "checkbox",
+    "radio",
+    "range",
+    "color",
+    "file",
+    "image",
+    "button",
+    "submit",
+    "reset",
   ]);
 
   isTextInput =
@@ -321,11 +317,12 @@ function isKeyboardFocusEvent(
     (ownerDocument.activeElement instanceof IHTMLInputElement &&
       !nonTextInputTypes.has(ownerDocument.activeElement.type)) ||
     ownerDocument.activeElement instanceof IHTMLTextAreaElement ||
-    (ownerDocument.activeElement instanceof IHTMLElement && ownerDocument.activeElement.isContentEditable);
+    (ownerDocument.activeElement instanceof IHTMLElement &&
+      ownerDocument.activeElement.isContentEditable);
 
   return !(
     isTextInput &&
-    modality === 'keyboard' &&
+    modality === "keyboard" &&
     e instanceof IKeyboardEvent &&
     !FOCUS_VISIBLE_INPUT_KEYS[e.key]
   );
@@ -336,7 +333,7 @@ function isKeyboardFocusEvent(
  */
 export function createFocusVisibleListener(
   handler: FocusVisibleHandler,
-  opts?: { isTextInput?: boolean }
+  opts?: { isTextInput?: boolean },
 ): () => void {
   setupGlobalFocusEvents();
   const listener: Handler = (modality: Modality, e: HandlerEvent) => {
@@ -420,5 +417,5 @@ export function useIsKeyboardFocused(): Accessor<boolean> {
   }
 
   const { modality } = createInteractionModality();
-  return () => modality() === 'keyboard';
+  return () => modality() === "keyboard";
 }

@@ -3,7 +3,7 @@
  * Provides a Collection interface over an array of nodes.
  */
 
-import type { Collection, CollectionItemLike, CollectionNode, Key } from './types';
+import type { Collection, CollectionItemLike, CollectionNode, Key } from "./types";
 
 /**
  * A basic implementation of Collection for list-based components.
@@ -87,7 +87,7 @@ export class ListCollection<T = unknown> implements Collection<T> {
   }
 
   getTextValue(key: Key): string {
-    return this.getItem(key)?.textValue ?? '';
+    return this.getItem(key)?.textValue ?? "";
   }
 
   /**
@@ -98,9 +98,9 @@ export class ListCollection<T = unknown> implements Collection<T> {
 
     const addItems = (nodes: CollectionNode<T>[]) => {
       for (const node of nodes) {
-        if (node.type === 'item') {
+        if (node.type === "item") {
           items.push(node);
-        } else if (node.type === 'section' && node.childNodes) {
+        } else if (node.type === "section" && node.childNodes) {
           addItems(node.childNodes);
         }
       }
@@ -120,7 +120,7 @@ export function createListCollection<T>(
     getKey?: (item: T, index: number) => Key;
     getTextValue?: (item: T) => string;
     getDisabled?: (item: T) => boolean;
-  } = {}
+  } = {},
 ): ListCollection<T> {
   const {
     getKey = (item: T, index: number) => {
@@ -135,7 +135,7 @@ export function createListCollection<T>(
   } = options;
 
   const nodes: CollectionNode<T>[] = items.map((item, index) => ({
-    type: 'item' as const,
+    type: "item" as const,
     key: getKey(item, index),
     value: item,
     textValue: getTextValue(item),

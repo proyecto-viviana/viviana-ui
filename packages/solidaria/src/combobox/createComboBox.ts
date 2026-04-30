@@ -4,23 +4,23 @@
  * Based on @react-aria/combobox useComboBox.
  */
 
-import { type JSX, type Accessor, createEffect, onCleanup } from 'solid-js';
-import { isServer } from 'solid-js/web';
-import { createPress } from '../interactions/createPress';
-import { createFocusRing } from '../interactions/createFocusRing';
-import { createLabel } from '../label/createLabel';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { mergeProps } from '../utils/mergeProps';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { isAppleDevice } from '../utils/platform';
-import { openLink } from '../utils/dom';
-import { ariaHideOutside } from '../overlays/ariaHideOutside';
-import { announce } from '../live-announcer';
-import { createStringFormatter } from '../i18n';
-import { comboBoxIntlStrings } from './intl';
-import { isDevEnv } from '../utils/env';
-import type { ComboBoxState, CollectionNode, Key } from '@proyecto-viviana/solid-stately';
+import { type JSX, type Accessor, createEffect, onCleanup } from "solid-js";
+import { isServer } from "solid-js/web";
+import { createPress } from "../interactions/createPress";
+import { createFocusRing } from "../interactions/createFocusRing";
+import { createLabel } from "../label/createLabel";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { mergeProps } from "../utils/mergeProps";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { isAppleDevice } from "../utils/platform";
+import { openLink } from "../utils/dom";
+import { ariaHideOutside } from "../overlays/ariaHideOutside";
+import { announce } from "../live-announcer";
+import { createStringFormatter } from "../i18n";
+import { comboBoxIntlStrings } from "./intl";
+import { isDevEnv } from "../utils/env";
+import type { ComboBoxState, CollectionNode, Key } from "@proyecto-viviana/solid-stately";
 
 /**
  * Helper to count items in a collection
@@ -45,11 +45,11 @@ export interface AriaComboBoxProps {
   /** The label for the combobox. */
   label?: JSX.Element;
   /** An accessible label for the combobox when no visible label is provided. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The ID of an element that labels the combobox. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The ID of an element that describes the combobox. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Description text for assistive technology and form help. */
   description?: string;
   /** Error message text for assistive technology and validation feedback. */
@@ -74,7 +74,7 @@ export interface AriaComboBoxProps {
    * Describes the type of autocomplete functionality the input should provide.
    * @default 'list'
    */
-  autoComplete?: 'list' | 'none' | 'inline' | 'both';
+  autoComplete?: "list" | "none" | "inline" | "both";
   /** Whether focus should wrap from the last item to the first. */
   shouldFocusWrap?: boolean;
 }
@@ -121,7 +121,7 @@ export function createComboBox<T>(
   state: ComboBoxState<T>,
   inputRef: () => HTMLInputElement | null,
   buttonRef?: () => HTMLElement | null,
-  listBoxRef?: () => HTMLElement | null
+  listBoxRef?: () => HTMLElement | null,
 ): ComboBoxAria<T> {
   const getProps = () => access(props);
   const id = createId(getProps().id);
@@ -129,9 +129,9 @@ export function createComboBox<T>(
   // Development-time warning for missing accessibility labels
   if (isDevEnv()) {
     const p = getProps();
-    if (!p.label && !p['aria-label'] && !p['aria-labelledby']) {
+    if (!p.label && !p["aria-label"] && !p["aria-labelledby"]) {
       console.warn(
-        '[solidaria] A ComboBox requires a label, aria-label, or aria-labelledby attribute for accessibility.'
+        "[solidaria] A ComboBox requires a label, aria-label, or aria-labelledby attribute for accessibility.",
       );
     }
   }
@@ -149,8 +149,8 @@ export function createComboBox<T>(
   const getAriaDescribedBy = () => {
     const p = getProps();
     const ids: string[] = [];
-    if (p['aria-describedby']) {
-      ids.push(p['aria-describedby']);
+    if (p["aria-describedby"]) {
+      ids.push(p["aria-describedby"]);
     }
     if (p.description) {
       ids.push(descriptionId);
@@ -158,13 +158,13 @@ export function createComboBox<T>(
     if (p.isInvalid && p.errorMessage) {
       ids.push(errorMessageId);
     }
-    return ids.length > 0 ? ids.join(' ') : undefined;
+    return ids.length > 0 ? ids.join(" ") : undefined;
   };
 
   // Set up global pointerdown listener to track clicks inside listbox
   // This is needed because the option's createPress stops propagation
   createEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === "undefined") return;
 
     const handleGlobalPointerDown = (e: PointerEvent) => {
       const target = e.target as HTMLElement;
@@ -174,10 +174,10 @@ export function createComboBox<T>(
       }
     };
 
-    document.addEventListener('pointerdown', handleGlobalPointerDown, true);
+    document.addEventListener("pointerdown", handleGlobalPointerDown, true);
 
     onCleanup(() => {
-      document.removeEventListener('pointerdown', handleGlobalPointerDown, true);
+      document.removeEventListener("pointerdown", handleGlobalPointerDown, true);
     });
   });
 
@@ -185,7 +185,7 @@ export function createComboBox<T>(
   const domProps = () =>
     filterDOMProps(getProps() as unknown as Record<string, unknown>, {
       labelable: true,
-      propNames: new Set(['form']),
+      propNames: new Set(["form"]),
     });
 
   // Share data with child options
@@ -205,13 +205,13 @@ export function createComboBox<T>(
     get label() {
       return getProps().label;
     },
-    get 'aria-label'() {
-      return getProps()['aria-label'];
+    get "aria-label"() {
+      return getProps()["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return getProps()['aria-labelledby'];
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
     },
-    labelElementType: 'label',
+    labelElementType: "label",
   });
 
   // Focus ring for keyboard focus styling
@@ -245,25 +245,23 @@ export function createComboBox<T>(
     const collection = state.collection();
 
     // Get the focused item
-    const focusedItem = focusedKey != null && isOpen
-      ? collection.getItem(focusedKey)
-      : null;
+    const focusedItem = focusedKey != null && isOpen ? collection.getItem(focusedKey) : null;
 
     // Announce focus changes on Apple devices
     if (isAppleDevice() && focusedItem != null && focusedKey !== lastFocusedKey) {
       const isSelected = state.selectedKey() === focusedKey;
-      const optionText = focusedItem.textValue || '';
+      const optionText = focusedItem.textValue || "";
 
       // For now, we don't support sections, so isGroupChange is always false
-      const announcement = stringFormatter().format('focusAnnouncement', {
+      const announcement = stringFormatter().format("focusAnnouncement", {
         isGroupChange: false,
-        groupTitle: '',
+        groupTitle: "",
         groupCount: 0,
         optionText,
         isSelected,
       });
 
-      announce(announcement, 'polite');
+      announce(announcement, "polite");
     }
 
     lastFocusedKey = focusedKey;
@@ -282,12 +280,11 @@ export function createComboBox<T>(
     // focused item, otherwise screen readers will typically read e.g. "1 of 6".
     // The exception is VoiceOver since this isn't included in the message above.
     const didOpenWithoutFocusedItem =
-      isOpen !== lastIsOpen &&
-      (focusedKey == null || isAppleDevice());
+      isOpen !== lastIsOpen && (focusedKey == null || isAppleDevice());
 
     if (isOpen && (didOpenWithoutFocusedItem || optionCount !== lastOptionCount)) {
-      const announcement = stringFormatter().format('countAnnouncement', { optionCount });
-      announce(announcement, 'polite');
+      const announcement = stringFormatter().format("countAnnouncement", { optionCount });
+      announce(announcement, "polite");
     }
 
     lastOptionCount = optionCount;
@@ -302,9 +299,9 @@ export function createComboBox<T>(
     const selectedItem = state.selectedItem();
 
     if (isAppleDevice() && state.isFocused() && selectedItem && selectedKey !== lastSelectedKey) {
-      const optionText = selectedItem.textValue || '';
-      const announcement = stringFormatter().format('selectedAnnouncement', { optionText });
-      announce(announcement, 'polite');
+      const optionText = selectedItem.textValue || "";
+      const announcement = stringFormatter().format("selectedAnnouncement", { optionText });
+      announce(announcement, "polite");
     }
 
     lastSelectedKey = selectedKey;
@@ -335,7 +332,7 @@ export function createComboBox<T>(
       return getProps().isDisabled ?? state.isDisabled;
     },
     onPress() {
-      state.toggle(null, 'manual');
+      state.toggle(null, "manual");
       // Focus input after toggling
       inputRef()?.focus();
     },
@@ -357,21 +354,21 @@ export function createComboBox<T>(
     const shouldWrap = p.shouldFocusWrap ?? false;
 
     switch (e.key) {
-      case 'Enter':
+      case "Enter":
         if (state.isOpen() && focusedKey != null) {
           e.preventDefault();
 
           // Check if the focused item is a link
           // Link href can be in props (for components) or value (for dynamic items)
           const collectionItem = collection.getItem(focusedKey);
-          const itemHref = collectionItem?.props?.href ?? (collectionItem?.value as Record<string, unknown> | null)?.href;
+          const itemHref =
+            collectionItem?.props?.href ??
+            (collectionItem?.value as Record<string, unknown> | null)?.href;
           if (itemHref) {
             // Find the actual anchor element in the DOM and trigger navigation
             const listBox = listBoxRef?.();
             if (listBox) {
-              const item = listBox.querySelector(
-                `[data-key="${CSS.escape(String(focusedKey))}"]`
-              );
+              const item = listBox.querySelector(`[data-key="${CSS.escape(String(focusedKey))}"]`);
               if (item instanceof HTMLAnchorElement) {
                 openLink(item, e);
               }
@@ -383,7 +380,7 @@ export function createComboBox<T>(
         }
         break;
 
-      case 'Escape':
+      case "Escape":
         if (state.isOpen()) {
           e.preventDefault();
           e.stopPropagation();
@@ -391,10 +388,10 @@ export function createComboBox<T>(
         }
         break;
 
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         if (!state.isOpen()) {
-          state.open('first', 'manual');
+          state.open("first", "manual");
         } else {
           // Move to next item
           if (focusedKey == null) {
@@ -424,10 +421,10 @@ export function createComboBox<T>(
         }
         break;
 
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         if (!state.isOpen()) {
-          state.open('last', 'manual');
+          state.open("last", "manual");
         } else {
           // Move to previous item
           if (focusedKey == null) {
@@ -457,7 +454,7 @@ export function createComboBox<T>(
         }
         break;
 
-      case 'Home':
+      case "Home":
         if (state.isOpen()) {
           e.preventDefault();
           let firstKey = collection.getFirstKey();
@@ -470,7 +467,7 @@ export function createComboBox<T>(
         }
         break;
 
-      case 'End':
+      case "End":
         if (state.isOpen()) {
           e.preventDefault();
           let lastKey = collection.getLastKey();
@@ -483,9 +480,9 @@ export function createComboBox<T>(
         }
         break;
 
-      case 'Backspace':
+      case "Backspace":
         // In multiple mode, remove last selected key when input is empty
-        if (state.selectionMode() === 'multiple' && state.inputValue() === '') {
+        if (state.selectionMode() === "multiple" && state.inputValue() === "") {
           const keys = state.selectedKeys();
           if (keys.size > 0) {
             const lastKey = Array.from(keys).pop()!;
@@ -494,7 +491,7 @@ export function createComboBox<T>(
         }
         break;
 
-      case 'Tab':
+      case "Tab":
         // Commit on Tab if menu is open
         if (state.isOpen() && focusedKey != null) {
           state.commit();
@@ -573,7 +570,7 @@ export function createComboBox<T>(
     if (touch.clientX === centerX && touch.clientY === centerY) {
       e.preventDefault();
       inputRef()?.focus();
-      state.toggle(null, 'manual');
+      state.toggle(null, "manual");
       lastEventTime = e.timeStamp;
     }
   };
@@ -595,8 +592,8 @@ export function createComboBox<T>(
         fieldProps as Record<string, unknown>,
         {
           id: inputId,
-          type: 'text',
-          role: 'combobox',
+          type: "text",
+          role: "combobox",
           get value() {
             return state.inputValue();
           },
@@ -604,29 +601,28 @@ export function createComboBox<T>(
           disabled: isDisabled || undefined,
           readOnly: isReadOnly || undefined,
           placeholder: p.placeholder,
-          autoComplete: 'off',
-          'aria-autocomplete': p.autoComplete ?? 'list',
-          'aria-haspopup': 'listbox',
-          'aria-expanded': isOpen,
-          'aria-controls': isOpen ? listBoxId : undefined,
-          'aria-activedescendant': isOpen && focusedKey != null
-            ? `${listBoxId}-option-${focusedKey}`
-            : undefined,
-          'aria-disabled': isDisabled || undefined,
-          'aria-required': p.isRequired || undefined,
-          'aria-invalid': p.isInvalid || undefined,
-          'aria-describedby': getAriaDescribedBy(),
+          autoComplete: "off",
+          "aria-autocomplete": p.autoComplete ?? "list",
+          "aria-haspopup": "listbox",
+          "aria-expanded": isOpen,
+          "aria-controls": isOpen ? listBoxId : undefined,
+          "aria-activedescendant":
+            isOpen && focusedKey != null ? `${listBoxId}-option-${focusedKey}` : undefined,
+          "aria-disabled": isDisabled || undefined,
+          "aria-required": p.isRequired || undefined,
+          "aria-invalid": p.isInvalid || undefined,
+          "aria-describedby": getAriaDescribedBy(),
           name: p.name,
           onInput: onInputChange,
           onKeyDown: onInputKeyDown,
           onFocus: handleFocus,
           onBlur: handleBlur,
           onTouchEnd: handleTouchEnd,
-          'data-open': isOpen || undefined,
-          'data-disabled': isDisabled || undefined,
-          'data-readonly': isReadOnly || undefined,
-          'data-focus-visible': isFocusVisible() || undefined,
-        } as Record<string, unknown>
+          "data-open": isOpen || undefined,
+          "data-disabled": isDisabled || undefined,
+          "data-readonly": isReadOnly || undefined,
+          "data-focus-visible": isFocusVisible() || undefined,
+        } as Record<string, unknown>,
       ) as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
     get buttonProps() {
@@ -638,25 +634,25 @@ export function createComboBox<T>(
         pressProps as Record<string, unknown>,
         {
           id: buttonId,
-          type: 'button',
+          type: "button",
           tabIndex: -1,
-          'aria-haspopup': 'listbox',
-          'aria-expanded': isOpen,
-          'aria-controls': isOpen ? listBoxId : undefined,
-          'aria-disabled': isDisabled || undefined,
-          'aria-label': stringFormatter?.().format('buttonLabel') ?? 'Show suggestions',
-          'data-open': isOpen || undefined,
-          'data-disabled': isDisabled || undefined,
-        } as Record<string, unknown>
+          "aria-haspopup": "listbox",
+          "aria-expanded": isOpen,
+          "aria-controls": isOpen ? listBoxId : undefined,
+          "aria-disabled": isDisabled || undefined,
+          "aria-label": stringFormatter?.().format("buttonLabel") ?? "Show suggestions",
+          "data-open": isOpen || undefined,
+          "data-disabled": isDisabled || undefined,
+        } as Record<string, unknown>,
       ) as JSX.HTMLAttributes<HTMLElement>;
     },
     get listBoxProps() {
-      const isMulti = state.selectionMode() === 'multiple';
+      const isMulti = state.selectionMode() === "multiple";
       return {
         id: listBoxId,
-        role: 'listbox',
-        'aria-labelledby': inputId,
-        'aria-multiselectable': isMulti || undefined,
+        role: "listbox",
+        "aria-labelledby": inputId,
+        "aria-multiselectable": isMulti || undefined,
         tabIndex: -1,
         // Track pointerdown inside listbox to prevent blur from closing
         // Use capture phase because createPress calls stopPropagation on pointerdown
@@ -677,7 +673,7 @@ export function createComboBox<T>(
     get errorMessageProps() {
       return {
         id: errorMessageId,
-        role: 'alert',
+        role: "alert",
       } as JSX.HTMLAttributes<HTMLElement>;
     },
     isFocused,

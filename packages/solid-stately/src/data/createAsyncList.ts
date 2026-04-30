@@ -6,17 +6,17 @@
  * states, pagination, and sorting.
  */
 
-import { createSignal, untrack } from 'solid-js';
+import { createSignal, untrack } from "solid-js";
 
 export type Key = string | number;
-export type Selection = 'all' | Set<Key>;
-export type LoadingState = 'idle' | 'loading' | 'loadingMore' | 'sorting' | 'filtering' | 'error';
+export type Selection = "all" | Set<Key>;
+export type LoadingState = "idle" | "loading" | "loadingMore" | "sorting" | "filtering" | "error";
 
 export interface SortDescriptor {
   /** The key of the column to sort by. */
   column?: Key;
   /** The direction to sort by. */
-  direction?: 'ascending' | 'descending';
+  direction?: "ascending" | "descending";
 }
 
 export interface AsyncListLoadOptions<T, C> {
@@ -50,12 +50,12 @@ export interface AsyncListStateUpdate<T, C> {
 }
 
 export type AsyncListLoadFunction<T, C> = (
-  state: AsyncListLoadOptions<T, C>
+  state: AsyncListLoadOptions<T, C>,
 ) => AsyncListStateUpdate<T, C> | Promise<AsyncListStateUpdate<T, C>>;
 
 export interface AsyncListOptions<T, C> {
   /** The keys for the initially selected items. */
-  initialSelectedKeys?: 'all' | Iterable<Key>;
+  initialSelectedKeys?: "all" | Iterable<Key>;
   /** The initial sort descriptor. */
   initialSortDescriptor?: SortDescriptor;
   /** The initial filter text. */
@@ -146,19 +146,19 @@ export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>):
     initialSelectedKeys,
     initialSortDescriptor,
     getKey = defaultGetKey,
-    initialFilterText = '',
+    initialFilterText = "",
   } = options;
 
   const [state, setState] = createSignal<InternalState<T, C>>({
-    loadingState: 'idle',
+    loadingState: "idle",
     items: [],
-    selectedKeys: initialSelectedKeys === 'all' ? 'all' : new Set(initialSelectedKeys || []),
+    selectedKeys: initialSelectedKeys === "all" ? "all" : new Set(initialSelectedKeys || []),
     sortDescriptor: initialSortDescriptor,
     filterText: initialFilterText,
   });
 
   async function dispatchFetch(
-    type: 'loading' | 'loadingMore' | 'sorting' | 'filtering',
+    type: "loading" | "loadingMore" | "sorting" | "filtering",
     fn: AsyncListLoadFunction<T, C>,
     opts?: { sortDescriptor?: SortDescriptor; filterText?: string },
   ) {
@@ -166,7 +166,7 @@ export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>):
     const currentState = untrack(state);
 
     // Update to loading state
-    setState(s => {
+    setState((s) => {
       // Abort previous request if one is in progress
       if (s.abortController) {
         s.abortController.abort();
@@ -174,7 +174,7 @@ export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>):
       return {
         ...s,
         loadingState: type,
-        items: type === 'loading' ? [] : s.items,
+        items: type === "loading" ? [] : s.items,
         sortDescriptor: opts?.sortDescriptor ?? s.sortDescriptor,
         filterText: opts?.filterText ?? s.filterText,
         abortController,
@@ -188,37 +188,35 @@ export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>):
         selectedKeys: currentState.selectedKeys,
         sortDescriptor: opts?.sortDescriptor ?? currentState.sortDescriptor,
         signal: abortController.signal,
-        cursor: type === 'loadingMore' ? currentState.cursor : undefined,
+        cursor: type === "loadingMore" ? currentState.cursor : undefined,
         filterText: previousFilterText,
         loadingState: currentState.loadingState,
       });
 
-      setState(s => {
+      setState((s) => {
         // Ignore stale response
         if (s.abortController !== abortController) return s;
 
         const newItems = [...(response.items ?? [])];
-        const items = type === 'loadingMore'
-          ? [...s.items, ...newItems]
-          : newItems;
+        const items = type === "loadingMore" ? [...s.items, ...newItems] : newItems;
 
         let selectedKeys: Selection;
-        if (type === 'loadingMore') {
-          selectedKeys = (s.selectedKeys === 'all' || response.selectedKeys === 'all')
-            ? 'all'
-            : new Set([
-                ...(s.selectedKeys as Set<Key>),
-                ...(response.selectedKeys ?? []),
-              ]);
+        if (type === "loadingMore") {
+          selectedKeys =
+            s.selectedKeys === "all" || response.selectedKeys === "all"
+              ? "all"
+              : new Set([...(s.selectedKeys as Set<Key>), ...(response.selectedKeys ?? [])]);
         } else {
           selectedKeys = response.selectedKeys
-            ? (response.selectedKeys === 'all' ? 'all' : new Set(response.selectedKeys))
+            ? response.selectedKeys === "all"
+              ? "all"
+              : new Set(response.selectedKeys)
             : s.selectedKeys;
         }
 
         return {
           ...s,
-          loadingState: 'idle',
+          loadingState: "idle",
           items,
           selectedKeys,
           sortDescriptor: response.sortDescriptor ?? s.sortDescriptor,
@@ -231,15 +229,19 @@ export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>):
 
       // Trigger another filter if filterText changed in the response
       const responseFilterText = response.filterText ?? previousFilterText;
-      if (responseFilterText && responseFilterText !== previousFilterText && !abortController.signal.aborted) {
-        dispatchFetch('filtering', load, { filterText: responseFilterText });
+      if (
+        responseFilterText &&
+        responseFilterText !== previousFilterText &&
+        !abortController.signal.aborted
+      ) {
+        dispatchFetch("filtering", load, { filterText: responseFilterText });
       }
     } catch (e) {
-      setState(s => {
+      setState((s) => {
         if (s.abortController !== abortController) return s;
         return {
           ...s,
-          loadingState: 'error',
+          loadingState: "error",
           error: e as Error,
           abortController: undefined,
         };
@@ -248,58 +250,77 @@ export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>):
   }
 
   // Trigger initial load immediately
-  dispatchFetch('loading', load);
+  dispatchFetch("loading", load);
 
   return {
-    get items() { return state().items; },
-    get selectedKeys() { return state().selectedKeys; },
-    get sortDescriptor() { return state().sortDescriptor; },
+    get items() {
+      return state().items;
+    },
+    get selectedKeys() {
+      return state().selectedKeys;
+    },
+    get sortDescriptor() {
+      return state().sortDescriptor;
+    },
     get isLoading() {
       const ls = state().loadingState;
-      return ls === 'loading' || ls === 'loadingMore' || ls === 'sorting' || ls === 'filtering';
+      return ls === "loading" || ls === "loadingMore" || ls === "sorting" || ls === "filtering";
     },
-    get error() { return state().error; },
-    get filterText() { return state().filterText; },
-    get loadingState() { return state().loadingState; },
+    get error() {
+      return state().error;
+    },
+    get filterText() {
+      return state().filterText;
+    },
+    get loadingState() {
+      return state().loadingState;
+    },
 
     reload() {
-      dispatchFetch('loading', load);
+      dispatchFetch("loading", load);
     },
 
     loadMore() {
       const s = state();
-      if (s.loadingState === 'loading' || s.loadingState === 'loadingMore' || s.loadingState === 'filtering' || s.cursor == null) {
+      if (
+        s.loadingState === "loading" ||
+        s.loadingState === "loadingMore" ||
+        s.loadingState === "filtering" ||
+        s.cursor == null
+      ) {
         return;
       }
-      dispatchFetch('loadingMore', load);
+      dispatchFetch("loadingMore", load);
     },
 
     sort(descriptor: SortDescriptor) {
-      dispatchFetch('sorting', (sortFn || load) as AsyncListLoadFunction<T, C>, { sortDescriptor: descriptor });
+      dispatchFetch("sorting", (sortFn || load) as AsyncListLoadFunction<T, C>, {
+        sortDescriptor: descriptor,
+      });
     },
 
     setSelectedKeys(keys: Selection) {
-      setState(s => ({ ...s, selectedKeys: keys }));
+      setState((s) => ({ ...s, selectedKeys: keys }));
     },
 
     setFilterText(filterText: string) {
-      dispatchFetch('filtering', load, { filterText });
+      dispatchFetch("filtering", load, { filterText });
     },
 
     getItem(key: Key) {
-      return state().items.find(item => getKey(item) === key);
+      return state().items.find((item) => getKey(item) === key);
     },
 
     insert(index: number, ...values: T[]) {
-      setState(s => ({
+      setState((s) => ({
         ...s,
         items: [...s.items.slice(0, index), ...values, ...s.items.slice(index)],
       }));
     },
 
     insertBefore(key: Key, ...values: T[]) {
-      setState(s => {
-        const index = s.items.findIndex(item => getKey(item) === key);
+      setState((s) => {
+        const index = s.items.findIndex((item) => getKey(item) === key);
         if (index === -1) return s;
         return {
           ...s,
@@ -309,8 +330,8 @@ export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>):
     },
 
     insertAfter(key: Key, ...values: T[]) {
-      setState(s => {
-        const index = s.items.findIndex(item => getKey(item) === key);
+      setState((s) => {
+        const index = s.items.findIndex((item) => getKey(item) === key);
         if (index === -1) return s;
         return {
           ...s,
@@ -320,19 +341,19 @@ export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>):
     },
 
     append(...values: T[]) {
-      setState(s => ({ ...s, items: [...s.items, ...values] }));
+      setState((s) => ({ ...s, items: [...s.items, ...values] }));
     },
 
     prepend(...values: T[]) {
-      setState(s => ({ ...s, items: [...values, ...s.items] }));
+      setState((s) => ({ ...s, items: [...values, ...s.items] }));
     },
 
     remove(...keys: Key[]) {
-      setState(s => {
+      setState((s) => {
         const keySet = new Set(keys);
-        const items = s.items.filter(item => !keySet.has(getKey(item)));
+        const items = s.items.filter((item) => !keySet.has(getKey(item)));
         let selectedKeys = s.selectedKeys;
-        if (selectedKeys !== 'all') {
+        if (selectedKeys !== "all") {
           const newSelection = new Set(selectedKeys);
           for (const key of keys) {
             newSelection.delete(key);
@@ -344,22 +365,22 @@ export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>):
     },
 
     removeSelectedItems() {
-      setState(s => {
-        if (s.selectedKeys === 'all') {
+      setState((s) => {
+        if (s.selectedKeys === "all") {
           return { ...s, items: [], selectedKeys: new Set() };
         }
         const sel = s.selectedKeys;
         return {
           ...s,
-          items: s.items.filter(item => !sel.has(getKey(item))),
+          items: s.items.filter((item) => !sel.has(getKey(item))),
           selectedKeys: new Set(),
         };
       });
     },
 
     move(key: Key, toIndex: number) {
-      setState(s => {
-        const index = s.items.findIndex(item => getKey(item) === key);
+      setState((s) => {
+        const index = s.items.findIndex((item) => getKey(item) === key);
         if (index === -1) return s;
         const copy = s.items.slice();
         const [item] = copy.splice(index, 1);
@@ -369,8 +390,8 @@ export function createAsyncList<T, C = string>(options: AsyncListOptions<T, C>):
     },
 
     update(key: Key, newValue: T) {
-      setState(s => {
-        const index = s.items.findIndex(item => getKey(item) === key);
+      setState((s) => {
+        const index = s.items.findIndex((item) => getKey(item) === key);
         if (index === -1) return s;
         return {
           ...s,

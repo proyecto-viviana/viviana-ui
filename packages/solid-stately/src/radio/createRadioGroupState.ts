@@ -7,15 +7,15 @@
  * This is a 1:1 port of @react-stately/radio's useRadioGroupState.
  */
 
-import { createSignal, Accessor, untrack } from 'solid-js';
-import { type MaybeAccessor, access } from '../utils';
-import { createId } from '../ssr';
+import { createSignal, Accessor, untrack } from "solid-js";
+import { type MaybeAccessor, access } from "../utils";
+import { createId } from "../ssr";
 import {
   createFormValidationState,
   type FormValidationState,
   type ValidationFunction,
   type ValidationResult,
-} from '../form';
+} from "../form";
 
 // ============================================
 // TYPES
@@ -43,7 +43,7 @@ export interface RadioGroupProps {
   /** The label for the radio group. */
   label?: string;
   /** Orientation of the radio group. */
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   /** Handler that is called when the radio group receives focus. */
   onFocus?: (e: FocusEvent) => void;
   /** Handler that is called when the radio group loses focus. */
@@ -51,14 +51,21 @@ export interface RadioGroupProps {
   /** Handler that is called when the radio group's focus status changes. */
   onFocusChange?: (isFocused: boolean) => void;
   /** Backward-compatible controlled validation state. */
-  validationState?: 'valid' | 'invalid';
+  validationState?: "valid" | "invalid";
   /** Custom validation function. */
   validate?: ValidationFunction<string | null>;
   /** Validation behavior for the radio group. */
-  validationBehavior?: 'aria' | 'native';
+  validationBehavior?: "aria" | "native";
 }
 
-export interface RadioGroupState extends Pick<FormValidationState, 'realtimeValidation' | 'displayValidation' | 'updateValidation' | 'resetValidation' | 'commitValidation'> {
+export interface RadioGroupState extends Pick<
+  FormValidationState,
+  | "realtimeValidation"
+  | "displayValidation"
+  | "updateValidation"
+  | "resetValidation"
+  | "commitValidation"
+> {
   /** The name for the group, used for native form submission. */
   readonly name: string;
 
@@ -115,9 +122,7 @@ export const radioGroupSyncVersion: WeakMap<RadioGroupState, Accessor<number>> =
  * Provides state management for a radio group component.
  * Provides a name for the group, and manages selection and focus state.
  */
-export function createRadioGroupState(
-  props: MaybeAccessor<RadioGroupProps> = {}
-): RadioGroupState {
+export function createRadioGroupState(props: MaybeAccessor<RadioGroupProps> = {}): RadioGroupState {
   const getProps = () => access(props);
 
   // Get initial props using untrack to avoid setting up dependencies
@@ -131,7 +136,7 @@ export function createRadioGroupState(
   // Create internal signal for uncontrolled mode
   // Initialize with defaultValue only (not value, which is for controlled mode)
   const [internalValue, setInternalValue] = createSignal<string | null>(
-    initialProps.defaultValue ?? null
+    initialProps.defaultValue ?? null,
   );
   const [lastFocusedValue, setLastFocusedValueInternal] = createSignal<string | null>(null);
 
@@ -168,7 +173,7 @@ export function createRadioGroupState(
       return getProps().validate;
     },
     get validationBehavior() {
-      return getProps().validationBehavior ?? 'native';
+      return getProps().validationBehavior ?? "native";
     },
     get name() {
       return getProps().name;

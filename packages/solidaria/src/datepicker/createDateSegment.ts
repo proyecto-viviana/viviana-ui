@@ -5,10 +5,10 @@
  * Based on @react-aria/datepicker useDateSegment
  */
 
-import { createSignal, createMemo } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { DateFieldState, DateSegment, DateSegmentType } from '@proyecto-viviana/solid-stately';
-import { useLocale } from '../i18n';
+import { createSignal, createMemo } from "solid-js";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import type { DateFieldState, DateSegment, DateSegmentType } from "@proyecto-viviana/solid-stately";
+import { useLocale } from "../i18n";
 
 // ============================================
 // TYPES
@@ -42,11 +42,11 @@ export interface DateSegmentAria {
 export function createDateSegment<T extends DateFieldState>(
   props: MaybeAccessor<AriaDateSegmentProps>,
   state: T,
-  ref?: () => HTMLElement | null
+  ref?: () => HTMLElement | null,
 ): DateSegmentAria {
   const getProps = () => access(props);
   const [isFocused, setIsFocused] = createSignal(false);
-  const [enteredKeys, setEnteredKeys] = createSignal('');
+  const [enteredKeys, setEnteredKeys] = createSignal("");
   const [isComposing, setIsComposing] = createSignal(false);
   const locale = useLocale();
 
@@ -59,25 +59,23 @@ export function createDateSegment<T extends DateFieldState>(
     return seg.isEditable && !state.isDisabled() && !state.isReadOnly();
   });
 
-  const focusSegment = (target: 'first' | 'last' | 'prev' | 'next') => {
+  const focusSegment = (target: "first" | "last" | "prev" | "next") => {
     const el = ref?.();
     if (!el) return;
 
     const container = el.parentElement;
     if (!container) return;
 
-    const segments = Array.from(
-      container.querySelectorAll<HTMLElement>('[role="spinbutton"]')
-    );
+    const segments = Array.from(container.querySelectorAll<HTMLElement>('[role="spinbutton"]'));
 
     if (segments.length === 0) return;
 
-    if (target === 'first') {
+    if (target === "first") {
       segments[0]?.focus();
       return;
     }
 
-    if (target === 'last') {
+    if (target === "last") {
       segments[segments.length - 1]?.focus();
       return;
     }
@@ -85,7 +83,7 @@ export function createDateSegment<T extends DateFieldState>(
     const currentIndex = segments.indexOf(el);
     if (currentIndex < 0) return;
 
-    const nextIndex = target === 'next' ? currentIndex + 1 : currentIndex - 1;
+    const nextIndex = target === "next" ? currentIndex + 1 : currentIndex - 1;
     if (nextIndex >= 0 && nextIndex < segments.length) {
       segments[nextIndex]?.focus();
     }
@@ -93,7 +91,7 @@ export function createDateSegment<T extends DateFieldState>(
 
   const clearCurrentSegment = (type: DateSegmentType) => {
     state.clearSegment(type);
-    setEnteredKeys('');
+    setEnteredKeys("");
   };
 
   // Handle keyboard input
@@ -104,43 +102,43 @@ export function createDateSegment<T extends DateFieldState>(
     const seg = segment();
     const type = seg.type;
 
-    if (type === 'literal') return;
+    if (type === "literal") return;
 
     switch (e.key) {
-      case 'ArrowRight':
+      case "ArrowRight":
         e.preventDefault();
-        focusSegment(locale().direction === 'rtl' ? 'prev' : 'next');
+        focusSegment(locale().direction === "rtl" ? "prev" : "next");
         break;
-      case 'ArrowLeft':
+      case "ArrowLeft":
         e.preventDefault();
-        focusSegment(locale().direction === 'rtl' ? 'next' : 'prev');
+        focusSegment(locale().direction === "rtl" ? "next" : "prev");
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         state.incrementSegment(type);
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         state.decrementSegment(type);
         break;
-      case 'Home':
+      case "Home":
         e.preventDefault();
-        focusSegment('first');
+        focusSegment("first");
         break;
-      case 'End':
+      case "End":
         e.preventDefault();
-        focusSegment('last');
+        focusSegment("last");
         break;
-      case 'Backspace':
+      case "Backspace":
         e.preventDefault();
         // Match common date-field UX: backspace on an empty placeholder moves to previous segment.
         if (seg.isPlaceholder) {
-          focusSegment('prev');
+          focusSegment("prev");
         } else {
           clearCurrentSegment(type);
         }
         break;
-      case 'Delete':
+      case "Delete":
         e.preventDefault();
         clearCurrentSegment(type);
         break;
@@ -156,11 +154,7 @@ export function createDateSegment<T extends DateFieldState>(
   };
 
   // Handle numeric input
-  const handleNumericInput = (
-    key: string,
-    type: DateSegmentType,
-    seg: DateSegment
-  ) => {
+  const handleNumericInput = (key: string, type: DateSegmentType, seg: DateSegment) => {
     const newKeys = enteredKeys() + key;
     const numValue = parseInt(newKeys, 10);
     const maxValue = seg.maxValue ?? 99;
@@ -172,10 +166,10 @@ export function createDateSegment<T extends DateFieldState>(
       state.setSegment(type, numValue);
 
       // If entering more digits wouldn't make sense, clear entered keys
-      const potentialNextValue = parseInt(newKeys + '0', 10);
+      const potentialNextValue = parseInt(newKeys + "0", 10);
       if (potentialNextValue > maxValue || newKeys.length >= maxDigits) {
-        setEnteredKeys('');
-        focusSegment('next');
+        setEnteredKeys("");
+        focusSegment("next");
       } else {
         setEnteredKeys(newKeys);
       }
@@ -184,15 +178,15 @@ export function createDateSegment<T extends DateFieldState>(
       const singleValue = parseInt(key, 10);
       if (singleValue >= minValue && singleValue <= maxValue) {
         state.setSegment(type, singleValue);
-        const potentialNextValue = parseInt(key + '0', 10);
+        const potentialNextValue = parseInt(key + "0", 10);
         if (potentialNextValue > maxValue || key.length >= maxDigits) {
-          setEnteredKeys('');
-          focusSegment('next');
+          setEnteredKeys("");
+          focusSegment("next");
         } else {
           setEnteredKeys(key);
         }
       } else {
-        setEnteredKeys('');
+        setEnteredKeys("");
       }
     }
   };
@@ -202,15 +196,15 @@ export function createDateSegment<T extends DateFieldState>(
     if (isComposing()) return;
 
     const seg = segment();
-    if (seg.type === 'literal') return;
+    if (seg.type === "literal") return;
 
-    if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
+    if (e.inputType === "deleteContentBackward" || e.inputType === "deleteContentForward") {
       e.preventDefault();
       clearCurrentSegment(seg.type);
       return;
     }
 
-    if (e.inputType === 'insertText' && e.data) {
+    if (e.inputType === "insertText" && e.data) {
       const normalizedDigit = normalizeDigit(e.data);
       if (!normalizedDigit) return;
       e.preventDefault();
@@ -221,7 +215,7 @@ export function createDateSegment<T extends DateFieldState>(
   const handleCompositionStart = () => {
     if (!isEditable()) return;
     setIsComposing(true);
-    setEnteredKeys('');
+    setEnteredKeys("");
   };
 
   const handleCompositionEnd = (e: CompositionEvent) => {
@@ -229,9 +223,9 @@ export function createDateSegment<T extends DateFieldState>(
     setIsComposing(false);
 
     const seg = segment();
-    if (seg.type === 'literal') return;
+    if (seg.type === "literal") return;
 
-    const digits = extractNormalizedDigits(e.data ?? '');
+    const digits = extractNormalizedDigits(e.data ?? "");
     if (digits.length === 0) return;
 
     for (const digit of digits) {
@@ -242,12 +236,12 @@ export function createDateSegment<T extends DateFieldState>(
   // Handle focus
   const handleFocus = () => {
     setIsFocused(true);
-    setEnteredKeys('');
+    setEnteredKeys("");
   };
 
   const handleBlur = () => {
     setIsFocused(false);
-    setEnteredKeys('');
+    setEnteredKeys("");
     state.confirmPlaceholder();
   };
 
@@ -257,28 +251,28 @@ export function createDateSegment<T extends DateFieldState>(
     const type = seg.type;
 
     // Literal segments don't need interaction props
-    if (type === 'literal') {
+    if (type === "literal") {
       return {
-        'aria-hidden': true,
+        "aria-hidden": true,
       };
     }
 
     return {
-      role: 'spinbutton',
+      role: "spinbutton",
       tabIndex: isEditable() ? 0 : -1,
-      'aria-label': getSegmentLabel(type, locale().locale),
-      'aria-valuenow': seg.value,
-      'aria-valuemin': seg.minValue,
-      'aria-valuemax': seg.maxValue,
-      'aria-valuetext': seg.isPlaceholder ? seg.placeholder : seg.text,
-      'aria-readonly': state.isReadOnly() || undefined,
-      'aria-disabled': state.isDisabled() || undefined,
-      'aria-invalid': state.isInvalid() || undefined,
+      "aria-label": getSegmentLabel(type, locale().locale),
+      "aria-valuenow": seg.value,
+      "aria-valuemin": seg.minValue,
+      "aria-valuemax": seg.maxValue,
+      "aria-valuetext": seg.isPlaceholder ? seg.placeholder : seg.text,
+      "aria-readonly": state.isReadOnly() || undefined,
+      "aria-disabled": state.isDisabled() || undefined,
+      "aria-invalid": state.isInvalid() || undefined,
       contentEditable: isEditable(),
       suppressContentEditableWarning: true,
-      inputMode: 'numeric' as const,
-      autoCorrect: 'off',
-      enterKeyHint: 'next' as const,
+      inputMode: "numeric" as const,
+      autoCorrect: "off",
+      enterKeyHint: "next" as const,
       spellCheck: false,
       onKeyDown: handleKeyDown,
       onFocus: handleFocus,
@@ -322,35 +316,35 @@ export function createDateSegment<T extends DateFieldState>(
 // HELPER FUNCTIONS
 // ============================================
 
-const SEGMENT_LABELS: Record<string, Record<Exclude<DateSegmentType, 'literal'>, string>> = {
+const SEGMENT_LABELS: Record<string, Record<Exclude<DateSegmentType, "literal">, string>> = {
   en: {
-    year: 'Year',
-    month: 'Month',
-    day: 'Day',
-    hour: 'Hour',
-    minute: 'Minute',
-    second: 'Second',
-    dayPeriod: 'AM/PM',
-    era: 'Era',
-    timeZoneName: 'Time zone',
+    year: "Year",
+    month: "Month",
+    day: "Day",
+    hour: "Hour",
+    minute: "Minute",
+    second: "Second",
+    dayPeriod: "AM/PM",
+    era: "Era",
+    timeZoneName: "Time zone",
   },
   es: {
-    year: 'Año',
-    month: 'Mes',
-    day: 'Día',
-    hour: 'Hora',
-    minute: 'Minuto',
-    second: 'Segundo',
-    dayPeriod: 'AM/PM',
-    era: 'Era',
-    timeZoneName: 'Zona horaria',
+    year: "Año",
+    month: "Mes",
+    day: "Día",
+    hour: "Hora",
+    minute: "Minuto",
+    second: "Segundo",
+    dayPeriod: "AM/PM",
+    era: "Era",
+    timeZoneName: "Zona horaria",
   },
 };
 
 function getSegmentLabel(type: DateSegmentType, locale: string): string {
-  if (type === 'literal') return '';
+  if (type === "literal") return "";
 
-  const language = locale.toLowerCase().split('-')[0] ?? 'en';
+  const language = locale.toLowerCase().split("-")[0] ?? "en";
   const labels = SEGMENT_LABELS[language] ?? SEGMENT_LABELS.en;
   return labels[type];
 }

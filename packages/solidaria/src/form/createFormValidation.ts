@@ -7,23 +7,17 @@
  * Port of react-aria's useFormValidation.
  */
 
-import { type Accessor, createEffect, onCleanup } from 'solid-js';
-import {
-  type FormValidationState,
-  type ValidationResult,
-} from '@proyecto-viviana/solid-stately';
-import { setInteractionModality } from '../interactions/createInteractionModality';
+import { type Accessor, createEffect, onCleanup } from "solid-js";
+import { type FormValidationState, type ValidationResult } from "@proyecto-viviana/solid-stately";
+import { setInteractionModality } from "../interactions/createInteractionModality";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type ValidatableElement =
-  | HTMLInputElement
-  | HTMLTextAreaElement
-  | HTMLSelectElement;
+export type ValidatableElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
-export type ValidationBehavior = 'aria' | 'native';
+export type ValidationBehavior = "aria" | "native";
 
 export interface FormValidationProps {
   /** Validation behavior: 'aria' for realtime, 'native' for on submit. */
@@ -115,9 +109,9 @@ function getFirstInvalidInput(form: HTMLFormElement): ValidatableElement | null 
 export function createFormValidation(
   props: FormValidationProps,
   state: FormValidationState,
-  ref: Accessor<ValidatableElement | undefined>
+  ref: Accessor<ValidatableElement | undefined>,
 ): void {
-  const validationBehavior = () => props.validationBehavior ?? 'aria';
+  const validationBehavior = () => props.validationBehavior ?? "aria";
   const focus = () => props.focus;
 
   // Track whether we should ignore form reset (for React-like programmatic resets)
@@ -126,20 +120,16 @@ export function createFormValidation(
   // Set custom validity on the native input
   createEffect(() => {
     const input = ref();
-    if (
-      validationBehavior() === 'native' &&
-      input &&
-      !input.disabled
-    ) {
+    if (validationBehavior() === "native" && input && !input.disabled) {
       const realtimeValidation = state.realtimeValidation();
       const errorMessage = realtimeValidation.isInvalid
-        ? realtimeValidation.validationErrors.join(' ') || 'Invalid value.'
-        : '';
+        ? realtimeValidation.validationErrors.join(" ") || "Invalid value."
+        : "";
       input.setCustomValidity(errorMessage);
 
       // Prevent default tooltip for validation message
-      if (!input.hasAttribute('title')) {
-        input.title = '';
+      if (!input.hasAttribute("title")) {
+        input.title = "";
       }
 
       // Update validation with native validity if not already invalid
@@ -174,7 +164,7 @@ export function createFormValidation(
           input.focus();
         }
         // Always show focus ring
-        setInteractionModality('keyboard');
+        setInteractionModality("keyboard");
       }
 
       // Prevent default browser error UI
@@ -201,21 +191,20 @@ export function createFormValidation(
         // Ignore programmatic resets outside user events
         isIgnoredReset =
           !window.event ||
-          (window.event.type === 'message' &&
-            window.event.target instanceof MessagePort);
+          (window.event.type === "message" && window.event.target instanceof MessagePort);
         originalReset?.();
         isIgnoredReset = false;
       };
     }
 
-    input.addEventListener('invalid', onInvalid);
-    input.addEventListener('change', onChange);
-    form?.addEventListener('reset', onReset);
+    input.addEventListener("invalid", onInvalid);
+    input.addEventListener("change", onChange);
+    form?.addEventListener("reset", onReset);
 
     onCleanup(() => {
-      input.removeEventListener('invalid', onInvalid);
-      input.removeEventListener('change', onChange);
-      form?.removeEventListener('reset', onReset);
+      input.removeEventListener("invalid", onInvalid);
+      input.removeEventListener("change", onChange);
+      form?.removeEventListener("reset", onReset);
       if (form && originalReset) {
         form.reset = originalReset;
       }

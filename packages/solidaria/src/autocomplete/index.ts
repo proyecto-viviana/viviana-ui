@@ -6,4 +6,4 @@ export {
   type AutocompleteAria,
   type AutocompleteInputProps,
   type CollectionOptions,
-} from './createAutocomplete'
+} from "./createAutocomplete";

@@ -14,7 +14,7 @@ import {
   splitProps,
   useContext,
   Show,
-} from 'solid-js';
+} from "solid-js";
 import {
   createRadio,
   createRadioGroup,
@@ -23,20 +23,20 @@ import {
   mergeProps,
   type AriaRadioProps,
   type AriaRadioGroupProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createRadioGroupState,
   VALID_VALIDITY_STATE,
   type RadioGroupState,
   type RadioGroupProps as RadioGroupStateProps,
   type ValidationResult,
-} from '@proyecto-viviana/solid-stately';
-import { FieldErrorContext, type FieldErrorContextValue } from './FieldError';
-import { VisuallyHidden } from './VisuallyHidden';
+} from "@proyecto-viviana/solid-stately";
+import { FieldErrorContext, type FieldErrorContextValue } from "./FieldError";
+import { VisuallyHidden } from "./VisuallyHidden";
 import {
   SelectionIndicatorContext,
   type SelectionIndicatorContextValue,
-} from './SelectionIndicator';
+} from "./SelectionIndicator";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -44,7 +44,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -54,7 +54,7 @@ type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
 
 function assignRef<T>(ref: RefLike<T>, el: T): void {
   if (!ref) return;
-  if (typeof ref === 'function') {
+  if (typeof ref === "function") {
     ref(el);
   } else {
     ref.current = el;
@@ -87,7 +87,7 @@ function getNativeValidation(input: HTMLInputElement): ValidationResult {
   };
 }
 
-export type Orientation = 'horizontal' | 'vertical';
+export type Orientation = "horizontal" | "vertical";
 
 export interface RadioGroupRenderProps {
   /** The orientation of the radio group. */
@@ -126,8 +126,9 @@ export interface RadioRenderProps {
 }
 
 export interface RadioGroupProps
-  extends Omit<AriaRadioGroupProps, 'children' | 'label' | 'description' | 'errorMessage'>,
-    Pick<RadioGroupStateProps, 'value' | 'defaultValue' | 'onChange'>,
+  extends
+    Omit<AriaRadioGroupProps, "children" | "label" | "description" | "errorMessage">,
+    Pick<RadioGroupStateProps, "value" | "defaultValue" | "onChange">,
     SlotProps {
   /** The children of the component. A function may be provided to receive render props. */
   children?: RenderChildren<RadioGroupRenderProps>;
@@ -138,7 +139,7 @@ export interface RadioGroupProps
   /** Custom renderer for the outer radio group element. */
   render?: (
     props: JSX.HTMLAttributes<HTMLDivElement>,
-    renderProps: RadioGroupRenderProps
+    renderProps: RadioGroupRenderProps,
   ) => JSX.Element;
   /** Ref for the radio group element. */
   ref?: RefLike<HTMLDivElement>;
@@ -148,9 +149,7 @@ export interface RadioGroupProps
   errorMessage?: JSX.Element;
 }
 
-export interface RadioProps
-  extends Omit<AriaRadioProps, 'children'>,
-    SlotProps {
+export interface RadioProps extends Omit<AriaRadioProps, "children">, SlotProps {
   /** The children of the component. A function may be provided to receive render props. */
   children?: RenderChildren<RadioRenderProps>;
   /** The CSS className for the element. */
@@ -160,7 +159,7 @@ export interface RadioProps
   /** Custom renderer for the outer radio label element. */
   render?: (
     props: JSX.LabelHTMLAttributes<HTMLLabelElement>,
-    renderProps: RadioRenderProps
+    renderProps: RadioRenderProps,
   ) => JSX.Element;
   /** Ref for the outer label element. */
   ref?: RefLike<HTMLLabelElement>;
@@ -209,41 +208,58 @@ export const RadioContext = createContext<RadioContextValue | null>(null);
  */
 export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   const contextProps = useContext(RadioGroupContext);
-  const contextSlotProps = contextProps?.slots?.[props.slot ?? 'default'];
+  const contextSlotProps = contextProps?.slots?.[props.slot ?? "default"];
   const contextBaseProps = createMemo<RadioGroupProps>(() => {
     if (!contextProps) return {};
     const { slots: _slots, ...rest } = contextProps;
     return rest;
   });
-  const mergedProps = contextProps ? mergeProps(contextBaseProps(), contextSlotProps ?? {}, props) as ParentProps<RadioGroupProps> : props;
-  const [local, ariaProps] = splitProps(mergedProps, [
-    'class',
-    'style',
-    'render',
-    'ref',
-    'slot',
-  ]);
+  const mergedProps = contextProps
+    ? (mergeProps(
+        contextBaseProps(),
+        contextSlotProps ?? {},
+        props,
+      ) as ParentProps<RadioGroupProps>)
+    : props;
+  const [local, ariaProps] = splitProps(mergedProps, ["class", "style", "render", "ref", "slot"]);
 
   // Create radio group state
   // We pass a function that returns props so that createRadioGroupState
   // can access props reactively. The props object itself is a proxy in SolidJS,
   // so accessing props.value inside a reactive context will track changes.
   const state = createRadioGroupState({
-    get value() { return mergedProps.value; },
-    get defaultValue() { return mergedProps.defaultValue; },
-    get onChange() { return mergedProps.onChange; },
-    get isDisabled() { return mergedProps.isDisabled; },
-    get isReadOnly() { return mergedProps.isReadOnly; },
-    get isRequired() { return mergedProps.isRequired; },
-    get isInvalid() { return mergedProps.isInvalid; },
+    get value() {
+      return mergedProps.value;
+    },
+    get defaultValue() {
+      return mergedProps.defaultValue;
+    },
+    get onChange() {
+      return mergedProps.onChange;
+    },
+    get isDisabled() {
+      return mergedProps.isDisabled;
+    },
+    get isReadOnly() {
+      return mergedProps.isReadOnly;
+    },
+    get isRequired() {
+      return mergedProps.isRequired;
+    },
+    get isInvalid() {
+      return mergedProps.isInvalid;
+    },
   });
 
   // Create radio group aria props
-  const groupAria = createRadioGroup(() => ({
-    ...ariaProps,
-    description: mergedProps.description,
-    errorMessage: mergedProps.errorMessage,
-  }), state);
+  const groupAria = createRadioGroup(
+    () => ({
+      ...ariaProps,
+      description: mergedProps.description,
+      errorMessage: mergedProps.errorMessage,
+    }),
+    state,
+  );
   const isInvalid = createMemo(() => state.isInvalid);
   const validation = createMemo(() => state.displayValidation());
   const fallbackErrorMessageId = createUniqueId();
@@ -251,7 +267,7 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
 
   // Render props values
   const renderValues = createMemo<RadioGroupRenderProps>(() => ({
-    orientation: (ariaProps.orientation as Orientation) ?? 'vertical',
+    orientation: (ariaProps.orientation as Orientation) ?? "vertical",
     isDisabled: state.isDisabled,
     isReadOnly: state.isReadOnly,
     isRequired: state.isRequired,
@@ -265,9 +281,9 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-RadioGroup',
+      defaultClassName: "solidaria-RadioGroup",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
@@ -279,14 +295,22 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
     return rest;
   };
   const handleGroupFocusIn: JSX.EventHandler<HTMLDivElement, FocusEvent> = (event) => {
-    (groupAria.radioGroupProps as unknown as { onFocus?: JSX.EventHandler<HTMLDivElement, FocusEvent> }).onFocus?.(event);
+    (
+      groupAria.radioGroupProps as unknown as {
+        onFocus?: JSX.EventHandler<HTMLDivElement, FocusEvent>;
+      }
+    ).onFocus?.(event);
   };
   const handleGroupFocusOut: JSX.EventHandler<HTMLDivElement, FocusEvent> = (event) => {
-    (groupAria.radioGroupProps as unknown as { onBlur?: JSX.EventHandler<HTMLDivElement, FocusEvent> }).onBlur?.(event);
+    (
+      groupAria.radioGroupProps as unknown as {
+        onBlur?: JSX.EventHandler<HTMLDivElement, FocusEvent>;
+      }
+    ).onBlur?.(event);
   };
   const handleGroupInvalidCapture: JSX.EventHandler<HTMLDivElement, Event> = (event) => {
     const target = event.target;
-    if (!(target instanceof HTMLInputElement) || target.type !== 'radio') {
+    if (!(target instanceof HTMLInputElement) || target.type !== "radio") {
       return;
     }
 
@@ -297,7 +321,7 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   };
   const handleGroupChangeCapture: JSX.EventHandler<HTMLDivElement, Event> = (event) => {
     const target = event.target;
-    if (!(target instanceof HTMLInputElement) || target.type !== 'radio') {
+    if (!(target instanceof HTMLInputElement) || target.type !== "radio") {
       return;
     }
 
@@ -309,11 +333,17 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   };
   const groupDescribedBy = () => {
     const ids = [
-      (cleanGroupProps() as { 'aria-describedby'?: string })['aria-describedby'],
+      (cleanGroupProps() as { "aria-describedby"?: string })["aria-describedby"],
       mergedProps.description ? groupAria.descriptionProps.id : undefined,
-      isInvalid() && (mergedProps.errorMessage || validation().validationErrors.length > 0) ? errorMessageId() : undefined,
-    ].filter(Boolean).join(' ').split(' ').filter(Boolean);
-    return ids.length ? Array.from(new Set(ids)).join(' ') : undefined;
+      isInvalid() && (mergedProps.errorMessage || validation().validationErrors.length > 0)
+        ? errorMessageId()
+        : undefined,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .split(" ")
+      .filter(Boolean);
+    return ids.length ? Array.from(new Set(ids)).join(" ") : undefined;
   };
   const fieldErrorContext: FieldErrorContextValue = {
     get validation() {
@@ -332,7 +362,7 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
   // to preserve SolidJS context propagation for nested components like Radio
   const resolvedChildren = () => {
     const children = props.children;
-    if (typeof children === 'function') {
+    if (typeof children === "function") {
       return children(renderValues());
     }
     return children;
@@ -341,10 +371,14 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
     <>
       {resolvedChildren()}
       <Show when={mergedProps.description}>
-        <div {...groupAria.descriptionProps as unknown as JSX.HTMLAttributes<HTMLDivElement>}>{mergedProps.description}</div>
+        <div {...(groupAria.descriptionProps as unknown as JSX.HTMLAttributes<HTMLDivElement>)}>
+          {mergedProps.description}
+        </div>
       </Show>
       <Show when={isInvalid() && mergedProps.errorMessage}>
-        <div {...groupAria.errorMessageProps as unknown as JSX.HTMLAttributes<HTMLDivElement>}>{mergedProps.errorMessage}</div>
+        <div {...(groupAria.errorMessageProps as unknown as JSX.HTMLAttributes<HTMLDivElement>)}>
+          {mergedProps.errorMessage}
+        </div>
       </Show>
     </>
   );
@@ -352,51 +386,52 @@ export function RadioGroup(props: ParentProps<RadioGroupProps>): JSX.Element {
     onInvalidCapture: handleGroupInvalidCapture,
     onChangeCapture: handleGroupChangeCapture,
   } as unknown as JSX.HTMLAttributes<HTMLDivElement>;
-  const customRootProps = () => ({
-    ...domProps(),
-    ...cleanGroupProps(),
-    ...groupEventProps,
-    ref: setGroupRef,
-    onFocusIn: handleGroupFocusIn,
-    onFocusOut: handleGroupFocusOut,
-    'aria-describedby': groupDescribedBy(),
-    class: renderProps.class(),
-    style: renderProps.style(),
-    slot: local.slot,
-    'data-orientation': ariaProps.orientation ?? 'vertical',
-    'data-disabled': state.isDisabled || undefined,
-    'data-readonly': state.isReadOnly || undefined,
-    'data-required': state.isRequired || undefined,
-    'data-invalid': isInvalid() || undefined,
-    children: groupChildren(),
-  }) as unknown as JSX.HTMLAttributes<HTMLDivElement>;
+  const customRootProps = () =>
+    ({
+      ...domProps(),
+      ...cleanGroupProps(),
+      ...groupEventProps,
+      ref: setGroupRef,
+      onFocusIn: handleGroupFocusIn,
+      onFocusOut: handleGroupFocusOut,
+      "aria-describedby": groupDescribedBy(),
+      class: renderProps.class(),
+      style: renderProps.style(),
+      slot: local.slot,
+      "data-orientation": ariaProps.orientation ?? "vertical",
+      "data-disabled": state.isDisabled || undefined,
+      "data-readonly": state.isReadOnly || undefined,
+      "data-required": state.isRequired || undefined,
+      "data-invalid": isInvalid() || undefined,
+      children: groupChildren(),
+    }) as unknown as JSX.HTMLAttributes<HTMLDivElement>;
 
   return (
     <RadioGroupStateContext.Provider value={state}>
       <FieldErrorContext.Provider value={fieldErrorContext}>
-        {local.render
-          ? local.render(customRootProps(), renderValues())
-          : (
-            <div
-              {...domProps()}
-              {...cleanGroupProps()}
-              {...groupEventProps}
-              ref={setGroupRef}
-              onFocusIn={handleGroupFocusIn}
-              onFocusOut={handleGroupFocusOut}
-              aria-describedby={groupDescribedBy()}
-              class={renderProps.class()}
-              style={renderProps.style()}
-              slot={local.slot}
-              data-orientation={ariaProps.orientation ?? 'vertical'}
-              data-disabled={state.isDisabled || undefined}
-              data-readonly={state.isReadOnly || undefined}
-              data-required={state.isRequired || undefined}
-              data-invalid={isInvalid() || undefined}
-            >
-              {groupChildren()}
-            </div>
-          )}
+        {local.render ? (
+          local.render(customRootProps(), renderValues())
+        ) : (
+          <div
+            {...domProps()}
+            {...cleanGroupProps()}
+            {...groupEventProps}
+            ref={setGroupRef}
+            onFocusIn={handleGroupFocusIn}
+            onFocusOut={handleGroupFocusOut}
+            aria-describedby={groupDescribedBy()}
+            class={renderProps.class()}
+            style={renderProps.style()}
+            slot={local.slot}
+            data-orientation={ariaProps.orientation ?? "vertical"}
+            data-disabled={state.isDisabled || undefined}
+            data-readonly={state.isReadOnly || undefined}
+            data-required={state.isRequired || undefined}
+            data-invalid={isInvalid() || undefined}
+          >
+            {groupChildren()}
+          </div>
+        )}
       </FieldErrorContext.Provider>
     </RadioGroupStateContext.Provider>
   );
@@ -414,34 +449,49 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
   let inputRef: HTMLInputElement | null = null;
   const { state } = props;
   const contextProps = useContext(RadioContext);
-  const contextSlotProps = contextProps?.slots?.[props.radioProps.slot ?? 'default'];
+  const contextSlotProps = contextProps?.slots?.[props.radioProps.slot ?? "default"];
   const contextBaseProps = createMemo<RadioProps>(() => {
     if (!contextProps) return {} as RadioProps;
     const { slots: _slots, ...rest } = contextProps;
     return rest as RadioProps;
   });
-  const radioProps = contextProps ? mergeProps(contextBaseProps(), contextSlotProps ?? {}, props.radioProps) as RadioProps : props.radioProps;
-  const inputRefs = createMemo(() => [
-    contextBaseProps().inputRef,
-    contextSlotProps?.inputRef,
-    props.radioProps.inputRef,
-  ].filter(Boolean) as RefLike<HTMLInputElement>[]);
+  const radioProps = contextProps
+    ? (mergeProps(contextBaseProps(), contextSlotProps ?? {}, props.radioProps) as RadioProps)
+    : props.radioProps;
+  const inputRefs = createMemo(
+    () =>
+      [contextBaseProps().inputRef, contextSlotProps?.inputRef, props.radioProps.inputRef].filter(
+        Boolean,
+      ) as RefLike<HTMLInputElement>[],
+  );
 
-  const [local, ariaProps] = splitProps(radioProps, ['class', 'style', 'render', 'ref', 'inputRef', 'slot', 'description', 'errorMessage', 'onHoverStart', 'onHoverEnd', 'onHoverChange']);
+  const [local, ariaProps] = splitProps(radioProps, [
+    "class",
+    "style",
+    "render",
+    "ref",
+    "inputRef",
+    "slot",
+    "description",
+    "errorMessage",
+    "onHoverStart",
+    "onHoverEnd",
+    "onHoverChange",
+  ]);
   const descriptionId = createUniqueId();
   const errorMessageId = createUniqueId();
   const describedBy = () => {
     const ids = [
-      ariaProps['aria-describedby'],
+      ariaProps["aria-describedby"],
       local.description ? descriptionId : undefined,
       state.isInvalid && local.errorMessage ? errorMessageId : undefined,
     ].filter(Boolean);
-    return ids.length ? ids.join(' ') : undefined;
+    return ids.length ? ids.join(" ") : undefined;
   };
   const inputAriaProps = createMemo(() => {
     const clean: Record<string, unknown> = {};
     for (const key in ariaProps as Record<string, unknown>) {
-      if (!key.startsWith('data-')) {
+      if (!key.startsWith("data-")) {
         clean[key] = (ariaProps as Record<string, unknown>)[key];
       }
     }
@@ -452,11 +502,11 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
   const radioAria = createRadio(
     () => ({
       ...inputAriaProps(),
-      'aria-describedby': describedBy(),
-      children: typeof radioProps.children === 'function' ? true : radioProps.children,
+      "aria-describedby": describedBy(),
+      children: typeof radioProps.children === "function" ? true : radioProps.children,
     }),
     state,
-    () => inputRef
+    () => inputRef,
   );
 
   // Create focus ring
@@ -491,9 +541,9 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
       children: radioProps.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Radio',
+      defaultClassName: "solidaria-Radio",
     },
-    renderValues
+    renderValues,
   );
 
   const selectionIndicatorContext = createMemo<SelectionIndicatorContextValue>(() => ({
@@ -518,30 +568,62 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
     return rest;
   };
   const cleanInputProps = () => {
-    const { ref: _ref3, onFocus: _onFocus, onBlur: _onBlur, ...rest } = radioAria.inputProps as Record<string, unknown>;
+    const {
+      ref: _ref3,
+      onFocus: _onFocus,
+      onBlur: _onBlur,
+      ...rest
+    } = radioAria.inputProps as Record<string, unknown>;
     return rest;
   };
   const cleanFocusProps = () => {
-    const { ref: _ref4, onFocus: _onFocus, onBlur: _onBlur, ...rest } = focusProps as Record<string, unknown>;
+    const {
+      ref: _ref4,
+      onFocus: _onFocus,
+      onBlur: _onBlur,
+      ...rest
+    } = focusProps as Record<string, unknown>;
     return rest;
   };
   const handleInputFocus: JSX.EventHandler<HTMLInputElement, FocusEvent> = (event) => {
-    (radioAria.inputProps as unknown as { onFocus?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onFocus?.(event);
-    (focusProps as unknown as { onFocus?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onFocus?.(event);
+    (
+      radioAria.inputProps as unknown as {
+        onFocus?: JSX.EventHandler<HTMLInputElement, FocusEvent>;
+      }
+    ).onFocus?.(event);
+    (
+      focusProps as unknown as { onFocus?: JSX.EventHandler<HTMLInputElement, FocusEvent> }
+    ).onFocus?.(event);
   };
   const handleInputBlur: JSX.EventHandler<HTMLInputElement, FocusEvent> = (event) => {
-    (radioAria.inputProps as unknown as { onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onBlur?.(event);
-    (focusProps as unknown as { onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onBlur?.(event);
+    (
+      radioAria.inputProps as unknown as { onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent> }
+    ).onBlur?.(event);
+    (focusProps as unknown as { onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent> }).onBlur?.(
+      event,
+    );
   };
   const handleLabelClick: JSX.EventHandler<HTMLLabelElement, MouseEvent> = (event) => {
-    (ariaProps as unknown as { onClickCapture?: (event: MouseEvent) => void }).onClickCapture?.(event as unknown as MouseEvent);
-    (radioAria.labelProps as unknown as { onClick?: JSX.EventHandler<HTMLLabelElement, MouseEvent> }).onClick?.(event);
+    (ariaProps as unknown as { onClickCapture?: (event: MouseEvent) => void }).onClickCapture?.(
+      event as unknown as MouseEvent,
+    );
+    (
+      radioAria.labelProps as unknown as {
+        onClick?: JSX.EventHandler<HTMLLabelElement, MouseEvent>;
+      }
+    ).onClick?.(event);
   };
   const handleLabelClickCapture: JSX.EventHandler<HTMLLabelElement, MouseEvent> = (event) => {
-    (ariaProps as unknown as { onClickCapture?: (event: MouseEvent) => void }).onClickCapture?.(event as unknown as MouseEvent);
+    (ariaProps as unknown as { onClickCapture?: (event: MouseEvent) => void }).onClickCapture?.(
+      event as unknown as MouseEvent,
+    );
   };
   const handleInputClick: JSX.EventHandler<HTMLInputElement, MouseEvent> = (event) => {
-    (radioAria.inputProps as unknown as { onClick?: JSX.EventHandler<HTMLInputElement, MouseEvent> }).onClick?.(event);
+    (
+      radioAria.inputProps as unknown as {
+        onClick?: JSX.EventHandler<HTMLInputElement, MouseEvent>;
+      }
+    ).onClick?.(event);
   };
   const handleInputInvalid: JSX.EventHandler<HTMLInputElement, Event> = (event) => {
     state.updateValidation(getNativeValidation(event.currentTarget));
@@ -550,8 +632,14 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
     event.preventDefault();
   };
   const handleInputChange: JSX.EventHandler<HTMLInputElement, Event> = (event) => {
-    (radioAria.inputProps as unknown as { onChange?: JSX.EventHandler<HTMLInputElement, Event> }).onChange?.(event);
-    state.updateValidation(event.currentTarget.validity.valid ? validValidation : getNativeValidation(event.currentTarget));
+    (
+      radioAria.inputProps as unknown as { onChange?: JSX.EventHandler<HTMLInputElement, Event> }
+    ).onChange?.(event);
+    state.updateValidation(
+      event.currentTarget.validity.valid
+        ? validValidation
+        : getNativeValidation(event.currentTarget),
+    );
     state.commitValidation();
   };
   const setLabelRef = (el: HTMLLabelElement) => {
@@ -559,13 +647,13 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
   };
   const setInputRef = (el: HTMLInputElement) => {
     inputRef = el;
-    el.addEventListener('invalid', (event) => {
+    el.addEventListener("invalid", (event) => {
       state.updateValidation(getNativeValidation(el));
       state.commitValidation();
       el.focus();
       event.preventDefault();
     });
-    el.addEventListener('change', () => {
+    el.addEventListener("change", () => {
       state.updateValidation(el.validity.valid ? validValidation : getNativeValidation(el));
       state.commitValidation();
     });
@@ -600,59 +688,60 @@ function RadioImpl(props: { radioProps: RadioProps; state: RadioGroupState }): J
       </Show>
     </>
   );
-  const customLabelProps = () => ({
-    ...domProps(),
-    ...cleanLabelProps(),
-    ...cleanHoverProps(),
-    ref: setLabelRef,
-    class: renderProps.class(),
-    style: renderProps.style(),
-    slot: local.slot,
-    onClick: handleLabelClick,
-    onClickCapture: handleLabelClickCapture,
-    'data-selected': radioAria.isSelected() || undefined,
-    'data-pressed': radioAria.isPressed() || undefined,
-    'data-hovered': isHovered() || undefined,
-    'data-focused': isFocused() || undefined,
-    'data-focus-visible': isFocusVisible() || undefined,
-    'data-disabled': radioAria.isDisabled || undefined,
-    'data-readonly': state.isReadOnly || undefined,
-    'data-invalid': state.isInvalid || undefined,
-    'data-required': state.isRequired || undefined,
-    children: labelChildren(),
-  }) as unknown as JSX.LabelHTMLAttributes<HTMLLabelElement>;
+  const customLabelProps = () =>
+    ({
+      ...domProps(),
+      ...cleanLabelProps(),
+      ...cleanHoverProps(),
+      ref: setLabelRef,
+      class: renderProps.class(),
+      style: renderProps.style(),
+      slot: local.slot,
+      onClick: handleLabelClick,
+      onClickCapture: handleLabelClickCapture,
+      "data-selected": radioAria.isSelected() || undefined,
+      "data-pressed": radioAria.isPressed() || undefined,
+      "data-hovered": isHovered() || undefined,
+      "data-focused": isFocused() || undefined,
+      "data-focus-visible": isFocusVisible() || undefined,
+      "data-disabled": radioAria.isDisabled || undefined,
+      "data-readonly": state.isReadOnly || undefined,
+      "data-invalid": state.isInvalid || undefined,
+      "data-required": state.isRequired || undefined,
+      children: labelChildren(),
+    }) as unknown as JSX.LabelHTMLAttributes<HTMLLabelElement>;
   const labelCaptureProps = {
     onClickCapture: handleLabelClickCapture,
   } as unknown as JSX.LabelHTMLAttributes<HTMLLabelElement>;
 
   return (
     <SelectionIndicatorContext.Provider value={selectionIndicatorContext()}>
-      {local.render
-        ? local.render(customLabelProps(), renderValues())
-        : (
-          <label
-            {...domProps()}
-            {...cleanLabelProps()}
-            {...cleanHoverProps()}
-            ref={setLabelRef}
-            class={renderProps.class()}
-            style={renderProps.style()}
-            slot={local.slot}
-            onClick={handleLabelClick}
-            {...labelCaptureProps}
-            data-selected={radioAria.isSelected() || undefined}
-            data-pressed={radioAria.isPressed() || undefined}
-            data-hovered={isHovered() || undefined}
-            data-focused={isFocused() || undefined}
-            data-focus-visible={isFocusVisible() || undefined}
-            data-disabled={radioAria.isDisabled || undefined}
-            data-readonly={state.isReadOnly || undefined}
-            data-invalid={state.isInvalid || undefined}
-            data-required={state.isRequired || undefined}
-          >
-            {labelChildren()}
-          </label>
-        )}
+      {local.render ? (
+        local.render(customLabelProps(), renderValues())
+      ) : (
+        <label
+          {...domProps()}
+          {...cleanLabelProps()}
+          {...cleanHoverProps()}
+          ref={setLabelRef}
+          class={renderProps.class()}
+          style={renderProps.style()}
+          slot={local.slot}
+          onClick={handleLabelClick}
+          {...labelCaptureProps}
+          data-selected={radioAria.isSelected() || undefined}
+          data-pressed={radioAria.isPressed() || undefined}
+          data-hovered={isHovered() || undefined}
+          data-focused={isFocused() || undefined}
+          data-focus-visible={isFocusVisible() || undefined}
+          data-disabled={radioAria.isDisabled || undefined}
+          data-readonly={state.isReadOnly || undefined}
+          data-invalid={state.isInvalid || undefined}
+          data-required={state.isRequired || undefined}
+        >
+          {labelChildren()}
+        </label>
+      )}
     </SelectionIndicatorContext.Provider>
   );
 }
@@ -680,11 +769,7 @@ export function Radio(props: RadioProps): JSX.Element {
   const getState = createMemo(() => useContext(RadioGroupStateContext));
 
   return (
-    <Show
-      when={getState()}
-      fallback={null}
-      keyed
-    >
+    <Show when={getState()} fallback={null} keyed>
       {(state) => <RadioImpl radioProps={props} state={state} />}
     </Show>
   );

@@ -1,16 +1,12 @@
-import type { JSX } from 'solid-js';
-import type {
-  Key,
-  ToggleGroupProps,
-  ToggleGroupState,
-} from '@proyecto-viviana/solid-stately';
-import { createToolbar, type Orientation } from '../toolbar';
-import { mergeProps } from '../utils';
+import type { JSX } from "solid-js";
+import type { Key, ToggleGroupProps, ToggleGroupState } from "@proyecto-viviana/solid-stately";
+import { createToolbar, type Orientation } from "../toolbar";
+import { mergeProps } from "../utils";
 import {
   createToggleButton,
   type AriaToggleButtonProps,
   type ToggleButtonAria,
-} from './createToggleButton';
+} from "./createToggleButton";
 
 export interface AriaToggleButtonGroupProps extends ToggleGroupProps {
   /**
@@ -19,9 +15,9 @@ export interface AriaToggleButtonGroupProps extends ToggleGroupProps {
    */
   orientation?: Orientation;
   /** Accessible label. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Labelled-by id. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
 }
 
 export interface ToggleButtonGroupAria {
@@ -29,16 +25,13 @@ export interface ToggleButtonGroupAria {
   groupProps: JSX.HTMLAttributes<HTMLElement>;
 }
 
-export interface AriaToggleButtonGroupItemProps
-  extends Omit<AriaToggleButtonProps, 'children'> {
+export interface AriaToggleButtonGroupItemProps extends Omit<AriaToggleButtonProps, "children"> {
   /** Key used in the group selection state. */
   id: Key;
 }
 
-function isDisabledValue(
-  isDisabled: AriaToggleButtonProps['isDisabled']
-): boolean {
-  if (typeof isDisabled === 'function') {
+function isDisabledValue(isDisabled: AriaToggleButtonProps["isDisabled"]): boolean {
+  if (typeof isDisabled === "function") {
     return isDisabled();
   }
   return !!isDisabled;
@@ -49,25 +42,25 @@ function isDisabledValue(
  */
 export function createToggleButtonGroup(
   props: AriaToggleButtonGroupProps,
-  state: ToggleGroupState
+  state: ToggleGroupState,
 ): ToggleButtonGroupAria {
   const { toolbarProps } = createToolbar({
     get orientation() {
       return props.orientation;
     },
-    get 'aria-label'() {
-      return props['aria-label'];
+    get "aria-label"() {
+      return props["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return props['aria-labelledby'];
+    get "aria-labelledby"() {
+      return props["aria-labelledby"];
     },
   });
 
   const groupProps = mergeProps(toolbarProps as Record<string, unknown>, {
     get role() {
-      return state.selectionMode === 'single' ? 'radiogroup' : toolbarProps.role;
+      return state.selectionMode === "single" ? "radiogroup" : toolbarProps.role;
     },
-    get 'aria-disabled'() {
+    get "aria-disabled"() {
       return props.isDisabled || undefined;
     },
   }) as JSX.HTMLAttributes<HTMLElement>;
@@ -80,7 +73,7 @@ export function createToggleButtonGroup(
  */
 export function createToggleButtonGroupItem(
   props: AriaToggleButtonGroupItemProps,
-  state: ToggleGroupState
+  state: ToggleGroupState,
 ): ToggleButtonAria {
   const { id: _id, ...toggleProps } = props;
 
@@ -102,22 +95,22 @@ export function createToggleButtonGroupItem(
   const buttonProps: Record<string, unknown> = {
     ...baseButtonProps,
     get role() {
-      if (state.selectionMode === 'single') {
-        return 'radio';
+      if (state.selectionMode === "single") {
+        return "radio";
       }
       return baseButtonProps.role as string | undefined;
     },
-    get 'aria-checked'() {
-      if (state.selectionMode !== 'single') {
+    get "aria-checked"() {
+      if (state.selectionMode !== "single") {
         return undefined;
       }
       return state.selectedKeys.has(props.id);
     },
-    get 'aria-pressed'() {
-      if (state.selectionMode === 'single') {
+    get "aria-pressed"() {
+      if (state.selectionMode === "single") {
         return undefined;
       }
-      return baseButtonProps['aria-pressed'];
+      return baseButtonProps["aria-pressed"];
     },
   };
 

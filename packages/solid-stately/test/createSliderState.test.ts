@@ -3,13 +3,13 @@
  *
  * Ported from @react-stately/slider useSliderState.
  */
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
-import { createSliderState } from '../src/slider/createSliderState';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot, createSignal } from "solid-js";
+import { createSliderState } from "../src/slider/createSliderState";
 
-describe('createSliderState', () => {
-  describe('basic state management', () => {
-    it('should return default min value when no value provided', () => {
+describe("createSliderState", () => {
+  describe("basic state management", () => {
+    it("should return default min value when no value provided", () => {
       createRoot((dispose) => {
         const state = createSliderState({});
 
@@ -19,10 +19,10 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should use defaultValue for initial uncontrolled value', () => {
+    it("should use defaultValue for initial uncontrolled value", () => {
       createRoot((dispose) => {
         const state = createSliderState({
-          defaultValue: 50
+          defaultValue: 50,
         });
 
         expect(state.value()).toBe(50);
@@ -31,10 +31,10 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should use value for controlled mode', () => {
+    it("should use value for controlled mode", () => {
       createRoot((dispose) => {
         const state = createSliderState({
-          value: 75
+          value: 75,
         });
 
         expect(state.value()).toBe(75);
@@ -43,11 +43,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should respect min and max bounds', () => {
+    it("should respect min and max bounds", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           minValue: 10,
-          maxValue: 90
+          maxValue: 90,
         });
 
         expect(state.minValue).toBe(10);
@@ -57,7 +57,7 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should use default min (0) and max (100)', () => {
+    it("should use default min (0) and max (100)", () => {
       createRoot((dispose) => {
         const state = createSliderState({});
 
@@ -68,7 +68,7 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should use default step (1)', () => {
+    it("should use default step (1)", () => {
       createRoot((dispose) => {
         const state = createSliderState({});
 
@@ -78,10 +78,10 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should use custom step', () => {
+    it("should use custom step", () => {
       createRoot((dispose) => {
         const state = createSliderState({
-          step: 5
+          step: 5,
         });
 
         expect(state.step).toBe(5);
@@ -91,8 +91,8 @@ describe('createSliderState', () => {
     });
   });
 
-  describe('value setting', () => {
-    it('should set value in uncontrolled mode', () => {
+  describe("value setting", () => {
+    it("should set value in uncontrolled mode", () => {
       createRoot((dispose) => {
         const state = createSliderState({});
 
@@ -103,7 +103,7 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should call onChange when value changes', () => {
+    it("should call onChange when value changes", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createSliderState({ onChange });
@@ -115,11 +115,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should clamp value to min', () => {
+    it("should clamp value to min", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           minValue: 10,
-          maxValue: 100
+          maxValue: 100,
         });
 
         state.setValue(-5);
@@ -129,11 +129,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should clamp value to max', () => {
+    it("should clamp value to max", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           minValue: 0,
-          maxValue: 50
+          maxValue: 50,
         });
 
         state.setValue(75);
@@ -143,10 +143,10 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should snap value to step', () => {
+    it("should snap value to step", () => {
       createRoot((dispose) => {
         const state = createSliderState({
-          step: 10
+          step: 10,
         });
 
         state.setValue(23);
@@ -159,11 +159,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should not change value when disabled', () => {
+    it("should not change value when disabled", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 50,
-          isDisabled: true
+          isDisabled: true,
         });
 
         state.setValue(75);
@@ -174,11 +174,11 @@ describe('createSliderState', () => {
     });
   });
 
-  describe('percent value', () => {
-    it('should return correct percent for value', () => {
+  describe("percent value", () => {
+    it("should return correct percent for value", () => {
       createRoot((dispose) => {
         const state = createSliderState({
-          defaultValue: 50
+          defaultValue: 50,
         });
 
         expect(state.getValuePercent()).toBe(0.5);
@@ -187,10 +187,10 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should return 0 percent for min value', () => {
+    it("should return 0 percent for min value", () => {
       createRoot((dispose) => {
         const state = createSliderState({
-          defaultValue: 0
+          defaultValue: 0,
         });
 
         expect(state.getValuePercent()).toBe(0);
@@ -199,10 +199,10 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should return 1 percent for max value', () => {
+    it("should return 1 percent for max value", () => {
       createRoot((dispose) => {
         const state = createSliderState({
-          defaultValue: 100
+          defaultValue: 100,
         });
 
         expect(state.getValuePercent()).toBe(1);
@@ -211,12 +211,12 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should calculate percent with custom min/max', () => {
+    it("should calculate percent with custom min/max", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           minValue: 50,
           maxValue: 150,
-          defaultValue: 100
+          defaultValue: 100,
         });
 
         expect(state.getValuePercent()).toBe(0.5);
@@ -225,7 +225,7 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should set value by percent', () => {
+    it("should set value by percent", () => {
       createRoot((dispose) => {
         const state = createSliderState({});
 
@@ -236,7 +236,7 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should clamp percent to 0-1 range', () => {
+    it("should clamp percent to 0-1 range", () => {
       createRoot((dispose) => {
         const state = createSliderState({});
 
@@ -251,12 +251,12 @@ describe('createSliderState', () => {
     });
   });
 
-  describe('increment and decrement', () => {
-    it('should increment by step', () => {
+  describe("increment and decrement", () => {
+    it("should increment by step", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 50,
-          step: 5
+          step: 5,
         });
 
         state.increment();
@@ -266,11 +266,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should decrement by step', () => {
+    it("should decrement by step", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 50,
-          step: 5
+          step: 5,
         });
 
         state.decrement();
@@ -280,11 +280,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should increment by step multiplier', () => {
+    it("should increment by step multiplier", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 50,
-          step: 5
+          step: 5,
         });
 
         state.increment(2);
@@ -294,11 +294,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should decrement by step multiplier', () => {
+    it("should decrement by step multiplier", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 50,
-          step: 5
+          step: 5,
         });
 
         state.decrement(2);
@@ -308,11 +308,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should not increment past max', () => {
+    it("should not increment past max", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 98,
-          step: 5
+          step: 5,
         });
 
         state.increment();
@@ -322,11 +322,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should not decrement past min', () => {
+    it("should not decrement past min", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 2,
-          step: 5
+          step: 5,
         });
 
         state.decrement();
@@ -336,11 +336,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should not increment when disabled', () => {
+    it("should not increment when disabled", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 50,
-          isDisabled: true
+          isDisabled: true,
         });
 
         state.increment();
@@ -350,11 +350,11 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should not decrement when disabled', () => {
+    it("should not decrement when disabled", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 50,
-          isDisabled: true
+          isDisabled: true,
         });
 
         state.decrement();
@@ -365,8 +365,8 @@ describe('createSliderState', () => {
     });
   });
 
-  describe('dragging state', () => {
-    it('should track dragging state', () => {
+  describe("dragging state", () => {
+    it("should track dragging state", () => {
       createRoot((dispose) => {
         const state = createSliderState({});
 
@@ -382,12 +382,12 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should call onChangeEnd when dragging stops', () => {
+    it("should call onChangeEnd when dragging stops", () => {
       createRoot((dispose) => {
         const onChangeEnd = vi.fn();
         const state = createSliderState({
           defaultValue: 50,
-          onChangeEnd
+          onChangeEnd,
         });
 
         state.setDragging(true);
@@ -401,8 +401,8 @@ describe('createSliderState', () => {
     });
   });
 
-  describe('focus state', () => {
-    it('should track focus state', () => {
+  describe("focus state", () => {
+    it("should track focus state", () => {
       createRoot((dispose) => {
         const state = createSliderState({});
 
@@ -419,81 +419,81 @@ describe('createSliderState', () => {
     });
   });
 
-  describe('orientation', () => {
-    it('should default to horizontal orientation', () => {
+  describe("orientation", () => {
+    it("should default to horizontal orientation", () => {
       createRoot((dispose) => {
         const state = createSliderState({});
 
-        expect(state.orientation).toBe('horizontal');
+        expect(state.orientation).toBe("horizontal");
 
         dispose();
       });
     });
 
-    it('should use vertical orientation', () => {
+    it("should use vertical orientation", () => {
       createRoot((dispose) => {
         const state = createSliderState({
-          orientation: 'vertical'
+          orientation: "vertical",
         });
 
-        expect(state.orientation).toBe('vertical');
+        expect(state.orientation).toBe("vertical");
 
         dispose();
       });
     });
   });
 
-  describe('formatted value', () => {
-    it('should format value as string', () => {
+  describe("formatted value", () => {
+    it("should format value as string", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 50,
-          locale: 'en-US'
+          locale: "en-US",
         });
 
-        expect(state.getFormattedValue()).toBe('50');
+        expect(state.getFormattedValue()).toBe("50");
 
         dispose();
       });
     });
 
-    it('should format with custom options', () => {
+    it("should format with custom options", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 0.5,
           minValue: 0,
           maxValue: 1,
           step: 0.01,
-          locale: 'en-US',
-          formatOptions: { style: 'percent' }
+          locale: "en-US",
+          formatOptions: { style: "percent" },
         });
 
-        expect(state.getFormattedValue()).toBe('50%');
+        expect(state.getFormattedValue()).toBe("50%");
 
         dispose();
       });
     });
 
-    it('should format with currency', () => {
+    it("should format with currency", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           defaultValue: 100,
-          locale: 'en-US',
-          formatOptions: { style: 'currency', currency: 'USD' }
+          locale: "en-US",
+          formatOptions: { style: "currency", currency: "USD" },
         });
 
-        expect(state.getFormattedValue()).toBe('$100.00');
+        expect(state.getFormattedValue()).toBe("$100.00");
 
         dispose();
       });
     });
   });
 
-  describe('page step', () => {
-    it('should calculate page step as 10% of range', () => {
+  describe("page step", () => {
+    it("should calculate page step as 10% of range", () => {
       createRoot((dispose) => {
         const state = createSliderState({
-          step: 1
+          step: 1,
         });
 
         // 10% of 100 = 10, snapped to step of 1
@@ -503,10 +503,10 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should snap page step to regular step', () => {
+    it("should snap page step to regular step", () => {
       createRoot((dispose) => {
         const state = createSliderState({
-          step: 7
+          step: 7,
         });
 
         // 10% of 100 = 10, snapped to step of 7 = 7
@@ -517,13 +517,13 @@ describe('createSliderState', () => {
     });
   });
 
-  describe('controlled mode', () => {
-    it('should not update internal state in controlled mode', () => {
+  describe("controlled mode", () => {
+    it("should not update internal state in controlled mode", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createSliderState({
           value: 50,
-          onChange
+          onChange,
         });
 
         state.setValue(75);
@@ -537,11 +537,13 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should be possible to control the value', () => {
+    it("should be possible to control the value", () => {
       createRoot((dispose) => {
         const [value, setValue] = createSignal(50);
         const state = createSliderState({
-          get value() { return value(); }
+          get value() {
+            return value();
+          },
         });
 
         expect(state.value()).toBe(50);
@@ -554,14 +556,14 @@ describe('createSliderState', () => {
     });
   });
 
-  describe('decimal step handling', () => {
-    it('should handle decimal steps correctly', () => {
+  describe("decimal step handling", () => {
+    it("should handle decimal steps correctly", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           minValue: 0,
           maxValue: 1,
           step: 0.1,
-          defaultValue: 0
+          defaultValue: 0,
         });
 
         state.increment();
@@ -578,12 +580,12 @@ describe('createSliderState', () => {
       });
     });
 
-    it('should snap decimal values to step', () => {
+    it("should snap decimal values to step", () => {
       createRoot((dispose) => {
         const state = createSliderState({
           minValue: 0,
           maxValue: 1,
-          step: 0.1
+          step: 0.1,
         });
 
         state.setValue(0.23);

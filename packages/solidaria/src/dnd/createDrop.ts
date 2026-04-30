@@ -5,9 +5,9 @@
  * mouse, touch, and keyboard interactions.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import { createDropState } from '@proyecto-viviana/solid-stately';
-import type { AriaDropOptions, DropAria } from './types';
+import { createMemo, type Accessor } from "solid-js";
+import { createDropState } from "@proyecto-viviana/solid-stately";
+import type { AriaDropOptions, DropAria } from "./types";
 import {
   readFromDataTransfer,
   DragTypesImpl,
@@ -17,8 +17,8 @@ import {
   DROP_EFFECT_TO_DROP_OPERATION,
   setGlobalDropEffect,
   getGlobalAllowedDropOperations,
-} from './utils';
-import type { DropOperation } from '@proyecto-viviana/solid-stately';
+} from "./utils";
+import type { DropOperation } from "@proyecto-viviana/solid-stately";
 
 const DROP_ACTIVATE_TIMEOUT = 800;
 
@@ -47,7 +47,7 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
   let x = 0;
   let y = 0;
   let dragOverElements = new Set<Element>();
-  let dropEffect: DataTransfer['dropEffect'] = 'none';
+  let dropEffect: DataTransfer["dropEffect"] = "none";
   let allowedOperations = DROP_OPERATION.all;
   let dropActivateTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -62,7 +62,8 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
   };
 
   const getAllowedOperations = (e: DragEvent): number => {
-    let allowed = DROP_OPERATION_ALLOWED[e.dataTransfer?.effectAllowed ?? 'none'] ?? DROP_OPERATION.none;
+    let allowed =
+      DROP_OPERATION_ALLOWED[e.dataTransfer?.effectAllowed ?? "none"] ?? DROP_OPERATION.none;
 
     // Use global allowed operations if set (for internal drags)
     const globalAllowed = getGlobalAllowedDropOperations();
@@ -75,7 +76,7 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
 
     // macOS: Alt=copy, Ctrl=link, Cmd=move
     // Windows/Linux: Alt=link, Shift=move, Ctrl=copy
-    const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform);
+    const isMac = typeof navigator !== "undefined" && /mac/i.test(navigator.platform);
 
     if (isMac) {
       if (e.altKey) modifierAllowed |= DROP_OPERATION.copy;
@@ -96,15 +97,15 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
 
   const allowedOperationsToArray = (ops: number): DropOperation[] => {
     const result: DropOperation[] = [];
-    if (ops & DROP_OPERATION.move) result.push('move');
-    if (ops & DROP_OPERATION.copy) result.push('copy');
-    if (ops & DROP_OPERATION.link) result.push('link');
+    if (ops & DROP_OPERATION.move) result.push("move");
+    if (ops & DROP_OPERATION.copy) result.push("copy");
+    if (ops & DROP_OPERATION.link) result.push("link");
     return result;
   };
 
   const getDropOperationForAllowed = (allowed: number, operation: DropOperation): DropOperation => {
     const op = DROP_OPERATION[operation];
-    return allowed & op ? operation : 'cancel';
+    return allowed & op ? operation : "cancel";
   };
 
   const onDragEnter = (e: DragEvent) => {
@@ -119,35 +120,32 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
     const p = getProps();
     const allowedOpsBits = getAllowedOperations(e);
     const allowedOps = allowedOperationsToArray(allowedOpsBits);
-    let dropOp: DropOperation = allowedOps[0] ?? 'cancel';
+    let dropOp: DropOperation = allowedOps[0] ?? "cancel";
 
-    if (typeof p.getDropOperation === 'function' && e.dataTransfer) {
+    if (typeof p.getDropOperation === "function" && e.dataTransfer) {
       const types = new DragTypesImpl(e.dataTransfer);
-      dropOp = getDropOperationForAllowed(
-        allowedOpsBits,
-        p.getDropOperation(types, allowedOps)
-      );
+      dropOp = getDropOperationForAllowed(allowedOpsBits, p.getDropOperation(types, allowedOps));
     }
 
-    if (typeof p.getDropOperationForPoint === 'function' && e.dataTransfer) {
+    if (typeof p.getDropOperationForPoint === "function" && e.dataTransfer) {
       const types = new DragTypesImpl(e.dataTransfer);
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
       dropOp = getDropOperationForAllowed(
         allowedOpsBits,
-        p.getDropOperationForPoint(types, allowedOps, e.clientX - rect.x, e.clientY - rect.y)
+        p.getDropOperationForPoint(types, allowedOps, e.clientX - rect.x, e.clientY - rect.y),
       );
     }
 
     x = e.clientX;
     y = e.clientY;
     allowedOperations = allowedOpsBits;
-    dropEffect = (DROP_OPERATION_TO_DROP_EFFECT[dropOp] || 'none') as DataTransfer['dropEffect'];
+    dropEffect = (DROP_OPERATION_TO_DROP_EFFECT[dropOp] || "none") as DataTransfer["dropEffect"];
 
     if (e.dataTransfer) {
       e.dataTransfer.dropEffect = dropEffect;
     }
 
-    if (dropOp !== 'cancel') {
+    if (dropOp !== "cancel") {
       fireDropEnter(e);
     }
   };
@@ -175,27 +173,29 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
     // Update drop effect if allowed operations changed
     if (allowedOpsBits !== allowedOperations) {
       const allowedOps = allowedOperationsToArray(allowedOpsBits);
-      let dropOp: DropOperation = allowedOps[0] ?? 'cancel';
+      let dropOp: DropOperation = allowedOps[0] ?? "cancel";
 
-      if (typeof p.getDropOperation === 'function' && e.dataTransfer) {
+      if (typeof p.getDropOperation === "function" && e.dataTransfer) {
         const types = new DragTypesImpl(e.dataTransfer);
-        dropOp = getDropOperationForAllowed(
-          allowedOpsBits,
-          p.getDropOperation(types, allowedOps)
-        );
+        dropOp = getDropOperationForAllowed(allowedOpsBits, p.getDropOperation(types, allowedOps));
       }
-      dropEffect = (DROP_OPERATION_TO_DROP_EFFECT[dropOp] || 'none') as DataTransfer['dropEffect'];
+      dropEffect = (DROP_OPERATION_TO_DROP_EFFECT[dropOp] || "none") as DataTransfer["dropEffect"];
     }
 
     // Check point-specific operation
-    if (typeof p.getDropOperationForPoint === 'function' && e.dataTransfer) {
+    if (typeof p.getDropOperationForPoint === "function" && e.dataTransfer) {
       const types = new DragTypesImpl(e.dataTransfer);
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
       const dropOp = getDropOperationForAllowed(
         allowedOpsBits,
-        p.getDropOperationForPoint(types, allowedOperationsToArray(allowedOpsBits), x - rect.x, y - rect.y)
+        p.getDropOperationForPoint(
+          types,
+          allowedOperationsToArray(allowedOpsBits),
+          x - rect.x,
+          y - rect.y,
+        ),
       );
-      dropEffect = (DROP_OPERATION_TO_DROP_EFFECT[dropOp] || 'none') as DataTransfer['dropEffect'];
+      dropEffect = (DROP_OPERATION_TO_DROP_EFFECT[dropOp] || "none") as DataTransfer["dropEffect"];
     }
 
     allowedOperations = allowedOpsBits;
@@ -205,14 +205,14 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
     }
 
     // Fire enter/exit events on drop effect change
-    if (dropEffect === 'none' && prevDropEffect !== 'none') {
+    if (dropEffect === "none" && prevDropEffect !== "none") {
       fireDropExit(e);
-    } else if (dropEffect !== 'none' && prevDropEffect === 'none') {
+    } else if (dropEffect !== "none" && prevDropEffect === "none") {
       fireDropEnter(e);
     }
 
     // Fire move event
-    if (dropEffect !== 'none') {
+    if (dropEffect !== "none") {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
       state.moveInTarget(x - rect.x, y - rect.y);
     }
@@ -220,7 +220,7 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
     // Handle drop activate timer
     clearTimeout(dropActivateTimer);
 
-    if (typeof p.onDropActivate === 'function' && dropEffect !== 'none') {
+    if (typeof p.onDropActivate === "function" && dropEffect !== "none") {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
       const activateX = x - rect.x;
       const activateY = y - rect.y;
@@ -248,7 +248,7 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
       return;
     }
 
-    if (dropEffect !== 'none') {
+    if (dropEffect !== "none") {
       fireDropExit(e);
     }
 
@@ -263,7 +263,7 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
     setGlobalDropEffect(dropEffect);
 
     const p = getProps();
-    if (typeof p.onDrop === 'function' && e.dataTransfer) {
+    if (typeof p.onDrop === "function" && e.dataTransfer) {
       const items = readFromDataTransfer(e.dataTransfer);
       const dropOperation = DROP_EFFECT_TO_DROP_OPERATION[dropEffect];
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -303,20 +303,20 @@ export function createDrop(props: Accessor<AriaDropOptions>): DropAria {
     }
 
     return {
-      type: 'button' as const,
-      'aria-label': 'Drop',
+      type: "button" as const,
+      "aria-label": "Drop",
     };
   });
 
   return {
     get dropProps() {
-      return dropProps() as DropAria['dropProps'];
+      return dropProps() as DropAria["dropProps"];
     },
     get isDropTarget() {
       return state.isDropTarget;
     },
     get dropButtonProps() {
-      return dropButtonProps() as DropAria['dropButtonProps'];
+      return dropButtonProps() as DropAria["dropButtonProps"];
     },
   };
 }

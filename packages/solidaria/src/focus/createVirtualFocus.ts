@@ -12,8 +12,8 @@
  * - Grid/table navigation
  */
 
-import { type Accessor, createSignal, createEffect, onCleanup } from 'solid-js';
-import { isServer } from 'solid-js/web';
+import { type Accessor, createSignal, createEffect, onCleanup } from "solid-js";
+import { isServer } from "solid-js/web";
 
 // ============================================
 // TYPES
@@ -58,7 +58,7 @@ export interface VirtualFocusOptions<T> {
    * Orientation for keyboard navigation.
    * @default 'vertical'
    */
-  orientation?: 'horizontal' | 'vertical' | 'both';
+  orientation?: "horizontal" | "vertical" | "both";
 }
 
 export interface VirtualFocusResult<T> {
@@ -106,7 +106,7 @@ export interface VirtualFocusResult<T> {
    * Props to spread on the container element.
    */
   containerProps: {
-    'aria-activedescendant': Accessor<string | undefined>;
+    "aria-activedescendant": Accessor<string | undefined>;
     onKeyDown: (e: KeyboardEvent) => void;
   };
   /**
@@ -114,7 +114,7 @@ export interface VirtualFocusResult<T> {
    */
   getItemProps: (key: string) => {
     id: string;
-    'aria-selected'?: boolean;
+    "aria-selected"?: boolean;
   };
 }
 
@@ -185,9 +185,7 @@ const DEFAULT_PAGE_SIZE = 10;
  * }
  * ```
  */
-export function createVirtualFocus<T>(
-  options: VirtualFocusOptions<T>
-): VirtualFocusResult<T> {
+export function createVirtualFocus<T>(options: VirtualFocusOptions<T>): VirtualFocusResult<T> {
   const {
     items,
     getKey,
@@ -197,7 +195,7 @@ export function createVirtualFocus<T>(
     onFocusChange,
     wrap = true,
     skipDisabled = true,
-    orientation = 'vertical',
+    orientation = "vertical",
   } = options;
 
   // During SSR, return minimal implementation
@@ -215,7 +213,7 @@ export function createVirtualFocus<T>(
       focusPageUp: () => {},
       isFocused: () => false,
       containerProps: {
-        'aria-activedescendant': () => undefined,
+        "aria-activedescendant": () => undefined,
         onKeyDown: () => {},
       },
       getItemProps: (key: string) => ({ id: `item-${key}` }),
@@ -223,9 +221,7 @@ export function createVirtualFocus<T>(
   }
 
   // Internal state for uncontrolled mode
-  const [internalKey, setInternalKey] = createSignal<string | null>(
-    defaultFocusedKey ?? null
-  );
+  const [internalKey, setInternalKey] = createSignal<string | null>(defaultFocusedKey ?? null);
 
   // Use controlled or uncontrolled value
   const focusedKey = controlledFocusedKey ?? internalKey;
@@ -320,47 +316,47 @@ export function createVirtualFocus<T>(
 
   // Keyboard handler
   const onKeyDown = (e: KeyboardEvent): void => {
-    const isVertical = orientation === 'vertical' || orientation === 'both';
-    const isHorizontal = orientation === 'horizontal' || orientation === 'both';
+    const isVertical = orientation === "vertical" || orientation === "both";
+    const isHorizontal = orientation === "horizontal" || orientation === "both";
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         if (isVertical) {
           e.preventDefault();
           focusNext();
         }
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         if (isVertical) {
           e.preventDefault();
           focusPrevious();
         }
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         if (isHorizontal) {
           e.preventDefault();
           focusNext();
         }
         break;
-      case 'ArrowLeft':
+      case "ArrowLeft":
         if (isHorizontal) {
           e.preventDefault();
           focusPrevious();
         }
         break;
-      case 'Home':
+      case "Home":
         e.preventDefault();
         focusFirst();
         break;
-      case 'End':
+      case "End":
         e.preventDefault();
         focusLast();
         break;
-      case 'PageDown':
+      case "PageDown":
         e.preventDefault();
         focusPageDown();
         break;
-      case 'PageUp':
+      case "PageUp":
         e.preventDefault();
         focusPageUp();
         break;
@@ -368,7 +364,7 @@ export function createVirtualFocus<T>(
   };
 
   const containerProps = {
-    'aria-activedescendant': () => {
+    "aria-activedescendant": () => {
       const key = focusedKey();
       return key ? `item-${key}` : undefined;
     },

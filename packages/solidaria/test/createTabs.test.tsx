@@ -3,9 +3,9 @@
  * Based on @react-spectrum/tabs tests.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, fireEvent, screen } from '@solidjs/testing-library';
-import { createRoot, createSignal, For, Show, type Accessor } from 'solid-js';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { render, fireEvent, screen } from "@solidjs/testing-library";
+import { createRoot, createSignal, For, Show, type Accessor } from "solid-js";
 import {
   createTabList,
   createTab,
@@ -14,29 +14,29 @@ import {
   type AriaTabProps,
   type AriaTabPanelProps,
   type TabListState,
-} from '../src/tabs';
-import { createTabListState, type TabListStateProps } from '@proyecto-viviana/solid-stately';
-import { I18nProvider } from '../src/i18n';
+} from "../src/tabs";
+import { createTabListState, type TabListStateProps } from "@proyecto-viviana/solid-stately";
+import { I18nProvider } from "../src/i18n";
 
 // Default tab items for tests
 const defaultItems = [
-  { key: 'tab1', label: 'Tab 1', content: 'Tab 1 body' },
-  { key: 'tab2', label: 'Tab 2', content: 'Tab 2 body' },
-  { key: 'tab3', label: 'Tab 3', content: 'Tab 3 body' },
+  { key: "tab1", label: "Tab 1", content: "Tab 1 body" },
+  { key: "tab2", label: "Tab 2", content: "Tab 2 body" },
+  { key: "tab3", label: "Tab 3", content: "Tab 3 body" },
 ];
 
 // Test component that renders a complete tabs implementation
 function TestTabs<T extends { key: string; label: string; content: string }>(props: {
   items?: T[];
-  orientation?: 'horizontal' | 'vertical';
-  keyboardActivation?: 'automatic' | 'manual';
+  orientation?: "horizontal" | "vertical";
+  keyboardActivation?: "automatic" | "manual";
   isDisabled?: boolean;
   disabledKeys?: string[];
   selectedKey?: string;
   defaultSelectedKey?: string;
   onSelectionChange?: (key: string) => void;
-  'aria-label'?: string;
-  'aria-labelledby'?: string;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
 }) {
   const items = () => props.items ?? (defaultItems as T[]);
 
@@ -59,8 +59,8 @@ function TestTabs<T extends { key: string; label: string; content: string }>(pro
     orientation: props.orientation,
     keyboardActivation: props.keyboardActivation,
     isDisabled: props.isDisabled,
-    'aria-label': props['aria-label'],
-    'aria-labelledby': props['aria-labelledby'],
+    "aria-label": props["aria-label"],
+    "aria-labelledby": props["aria-labelledby"],
   };
 
   const { tabListProps: listProps } = createTabList(tabListProps, state);
@@ -91,11 +91,11 @@ function TestTab<T>(props: { key: string; state: TabListState<T>; label: string 
     key: props.key,
   };
 
-  const { tabProps: ariaTabProps, isSelected, isDisabled } = createTab(
-    tabProps,
-    props.state,
-    () => tabRef ?? null
-  );
+  const {
+    tabProps: ariaTabProps,
+    isSelected,
+    isDisabled,
+  } = createTab(tabProps, props.state, () => tabRef ?? null);
 
   return (
     <button
@@ -111,11 +111,7 @@ function TestTab<T>(props: { key: string; state: TabListState<T>; label: string 
 }
 
 // Tab panel component
-function TestTabPanel<T>(props: {
-  id: string;
-  state: TabListState<T>;
-  children: string;
-}) {
+function TestTabPanel<T>(props: { id: string; state: TabListState<T>; children: string }) {
   const panelProps: AriaTabPanelProps = {
     id: props.id,
   };
@@ -131,7 +127,7 @@ function TestTabPanel<T>(props: {
   );
 }
 
-describe('createTabs', () => {
+describe("createTabs", () => {
   beforeEach(() => {
     // Mock scrollIntoView
     window.HTMLElement.prototype.scrollIntoView = vi.fn();
@@ -142,64 +138,64 @@ describe('createTabs', () => {
     vi.restoreAllMocks();
   });
 
-  describe('renders properly', () => {
-    it('renders tablist with correct role and orientation', () => {
+  describe("renders properly", () => {
+    it("renders tablist with correct role and orientation", () => {
       render(() => <TestTabs aria-label="Test Tabs" />);
 
-      const tablist = screen.getByRole('tablist');
+      const tablist = screen.getByRole("tablist");
       expect(tablist).toBeInTheDocument();
-      expect(tablist).toHaveAttribute('aria-orientation', 'horizontal');
+      expect(tablist).toHaveAttribute("aria-orientation", "horizontal");
     });
 
-    it('renders tabs with correct roles and attributes', () => {
+    it("renders tabs with correct roles and attributes", () => {
       render(() => <TestTabs aria-label="Test Tabs" />);
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       expect(tabs).toHaveLength(3);
 
       for (const tab of tabs) {
-        expect(tab).toHaveAttribute('tabindex');
-        expect(tab).toHaveAttribute('aria-selected');
+        expect(tab).toHaveAttribute("tabindex");
+        expect(tab).toHaveAttribute("aria-selected");
       }
     });
 
-    it('renders selected tab with aria-controls pointing to tabpanel', () => {
+    it("renders selected tab with aria-controls pointing to tabpanel", () => {
       render(() => <TestTabs aria-label="Test Tabs" />);
 
-      const tabs = screen.getAllByRole('tab');
-      const selectedTab = tabs.find((t) => t.getAttribute('aria-selected') === 'true');
+      const tabs = screen.getAllByRole("tab");
+      const selectedTab = tabs.find((t) => t.getAttribute("aria-selected") === "true");
       expect(selectedTab).toBeTruthy();
-      expect(selectedTab).toHaveAttribute('aria-controls');
+      expect(selectedTab).toHaveAttribute("aria-controls");
 
-      const panelId = selectedTab!.getAttribute('aria-controls');
+      const panelId = selectedTab!.getAttribute("aria-controls");
       const panel = document.getElementById(panelId!);
       expect(panel).toBeTruthy();
-      expect(panel).toHaveAttribute('role', 'tabpanel');
-      expect(panel).toHaveAttribute('aria-labelledby', selectedTab!.id);
+      expect(panel).toHaveAttribute("role", "tabpanel");
+      expect(panel).toHaveAttribute("aria-labelledby", selectedTab!.id);
     });
 
-    it('renders tabpanel with correct content', () => {
+    it("renders tabpanel with correct content", () => {
       render(() => <TestTabs aria-label="Test Tabs" />);
 
-      const panel = screen.getByRole('tabpanel');
-      expect(panel).toHaveTextContent('Tab 1 body');
+      const panel = screen.getByRole("tabpanel");
+      expect(panel).toHaveTextContent("Tab 1 body");
     });
 
-    it('supports vertical orientation', () => {
+    it("supports vertical orientation", () => {
       render(() => <TestTabs aria-label="Test Tabs" orientation="vertical" />);
 
-      const tablist = screen.getByRole('tablist');
-      expect(tablist).toHaveAttribute('aria-orientation', 'vertical');
+      const tablist = screen.getByRole("tablist");
+      expect(tablist).toHaveAttribute("aria-orientation", "vertical");
     });
 
-    it('supports aria-label', () => {
+    it("supports aria-label", () => {
       render(() => <TestTabs aria-label="My Tabs" />);
 
-      const tablist = screen.getByRole('tablist');
-      expect(tablist).toHaveAttribute('aria-label', 'My Tabs');
+      const tablist = screen.getByRole("tablist");
+      expect(tablist).toHaveAttribute("aria-label", "My Tabs");
     });
 
-    it('supports aria-labelledby', () => {
+    it("supports aria-labelledby", () => {
       render(() => (
         <div>
           <h2 id="tabs-heading">Tabs Heading</h2>
@@ -207,13 +203,13 @@ describe('createTabs', () => {
         </div>
       ));
 
-      const tablist = screen.getByRole('tablist');
-      expect(tablist).toHaveAttribute('aria-labelledby', 'tabs-heading');
+      const tablist = screen.getByRole("tablist");
+      expect(tablist).toHaveAttribute("aria-labelledby", "tabs-heading");
     });
   });
 
-  describe('keyboard navigation - horizontal', () => {
-    it('ArrowRight moves to next tab', () => {
+  describe("keyboard navigation - horizontal", () => {
+    it("ArrowRight moves to next tab", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -223,39 +219,39 @@ describe('createTabs', () => {
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[0].focus();
-      expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+      expect(tabs[0]).toHaveAttribute("aria-selected", "true");
 
-      fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
+      fireEvent.keyDown(tabs[0], { key: "ArrowRight" });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab2");
     });
 
-    it('ArrowRight moves DOM focus to the next tab', () => {
+    it("ArrowRight moves DOM focus to the next tab", () => {
       render(() => <TestTabs aria-label="Test Tabs" orientation="horizontal" />);
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[0].focus();
 
-      fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
+      fireEvent.keyDown(tabs[0], { key: "ArrowRight" });
       expect(document.activeElement).toBe(tabs[1]);
     });
 
-    it('Arrow navigation emits one selection change in automatic mode', () => {
+    it("Arrow navigation emits one selection change in automatic mode", () => {
       const onSelectionChange = vi.fn();
       render(() => <TestTabs aria-label="Test Tabs" onSelectionChange={onSelectionChange} />);
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[0].focus();
 
-      fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
+      fireEvent.keyDown(tabs[0], { key: "ArrowRight" });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab2");
       expect(onSelectionChange).toHaveBeenCalledTimes(1);
     });
 
-    it('ArrowLeft moves to previous tab', () => {
+    it("ArrowLeft moves to previous tab", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -266,15 +262,15 @@ describe('createTabs', () => {
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[1].focus();
 
-      fireEvent.keyDown(tabs[1], { key: 'ArrowLeft' });
+      fireEvent.keyDown(tabs[1], { key: "ArrowLeft" });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab1');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab1");
     });
 
-    it('reverses ArrowLeft/ArrowRight behavior in RTL', () => {
+    it("reverses ArrowLeft/ArrowRight behavior in RTL", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <I18nProvider locale="he-IL">
@@ -287,17 +283,17 @@ describe('createTabs', () => {
         </I18nProvider>
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[1].focus();
 
-      fireEvent.keyDown(tabs[1], { key: 'ArrowLeft' });
-      expect(onSelectionChange).toHaveBeenCalledWith('tab3');
+      fireEvent.keyDown(tabs[1], { key: "ArrowLeft" });
+      expect(onSelectionChange).toHaveBeenCalledWith("tab3");
 
-      fireEvent.keyDown(tabs[2], { key: 'ArrowRight' });
-      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      fireEvent.keyDown(tabs[2], { key: "ArrowRight" });
+      expect(onSelectionChange).toHaveBeenCalledWith("tab2");
     });
 
-    it('ArrowUp/ArrowDown do not change selection in horizontal mode', () => {
+    it("ArrowUp/ArrowDown do not change selection in horizontal mode", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -308,20 +304,20 @@ describe('createTabs', () => {
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[1].focus();
 
       // Clear any calls from initial selection
       onSelectionChange.mockClear();
 
-      fireEvent.keyDown(tabs[1], { key: 'ArrowUp' });
-      fireEvent.keyDown(tabs[1], { key: 'ArrowDown' });
+      fireEvent.keyDown(tabs[1], { key: "ArrowUp" });
+      fireEvent.keyDown(tabs[1], { key: "ArrowDown" });
 
       // Should not change selection (ArrowUp/Down ignored in horizontal)
       expect(onSelectionChange).not.toHaveBeenCalled();
     });
 
-    it('wraps from last to first tab', () => {
+    it("wraps from last to first tab", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -332,15 +328,15 @@ describe('createTabs', () => {
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[2].focus();
 
-      fireEvent.keyDown(tabs[2], { key: 'ArrowRight' });
+      fireEvent.keyDown(tabs[2], { key: "ArrowRight" });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab1');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab1");
     });
 
-    it('wraps from first to last tab', () => {
+    it("wraps from first to last tab", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -350,17 +346,17 @@ describe('createTabs', () => {
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[0].focus();
 
-      fireEvent.keyDown(tabs[0], { key: 'ArrowLeft' });
+      fireEvent.keyDown(tabs[0], { key: "ArrowLeft" });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab3');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab3");
     });
   });
 
-  describe('keyboard navigation - vertical', () => {
-    it('ArrowDown moves to next tab in vertical mode', () => {
+  describe("keyboard navigation - vertical", () => {
+    it("ArrowDown moves to next tab in vertical mode", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -370,15 +366,15 @@ describe('createTabs', () => {
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[0].focus();
 
-      fireEvent.keyDown(tabs[0], { key: 'ArrowDown' });
+      fireEvent.keyDown(tabs[0], { key: "ArrowDown" });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab2");
     });
 
-    it('ArrowUp moves to previous tab in vertical mode', () => {
+    it("ArrowUp moves to previous tab in vertical mode", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -389,17 +385,17 @@ describe('createTabs', () => {
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[1].focus();
 
-      fireEvent.keyDown(tabs[1], { key: 'ArrowUp' });
+      fireEvent.keyDown(tabs[1], { key: "ArrowUp" });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab1');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab1");
     });
   });
 
-  describe('Home and End keys', () => {
-    it('Home key selects first tab', () => {
+  describe("Home and End keys", () => {
+    it("Home key selects first tab", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -409,29 +405,29 @@ describe('createTabs', () => {
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[2].focus();
 
-      fireEvent.keyDown(tabs[2], { key: 'Home' });
+      fireEvent.keyDown(tabs[2], { key: "Home" });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab1');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab1");
     });
 
-    it('End key selects last tab', () => {
+    it("End key selects last tab", () => {
       const onSelectionChange = vi.fn();
       render(() => <TestTabs aria-label="Test Tabs" onSelectionChange={onSelectionChange} />);
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[0].focus();
 
-      fireEvent.keyDown(tabs[0], { key: 'End' });
+      fireEvent.keyDown(tabs[0], { key: "End" });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab3');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab3");
     });
   });
 
-  describe('manual keyboard activation', () => {
-    it('arrow keys move focus but do not select in manual mode', () => {
+  describe("manual keyboard activation", () => {
+    it("arrow keys move focus but do not select in manual mode", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -441,16 +437,16 @@ describe('createTabs', () => {
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[0].focus();
 
-      fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
+      fireEvent.keyDown(tabs[0], { key: "ArrowRight" });
 
       // Selection should not change until Enter/Space
       expect(onSelectionChange).not.toHaveBeenCalled();
     });
 
-    it('Enter key selects focused tab in manual mode', () => {
+    it("Enter key selects focused tab in manual mode", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -460,19 +456,19 @@ describe('createTabs', () => {
         />
       ));
 
-      const tablist = screen.getByRole('tablist');
+      const tablist = screen.getByRole("tablist");
       tablist.focus();
 
       // Move focus to second tab (which sets focusedKey)
-      fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+      fireEvent.keyDown(tablist, { key: "ArrowRight" });
 
       // Now press Enter to select the focused tab
-      fireEvent.keyDown(tablist, { key: 'Enter' });
+      fireEvent.keyDown(tablist, { key: "Enter" });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab2");
     });
 
-    it('Space key selects focused tab in manual mode', () => {
+    it("Space key selects focused tab in manual mode", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
@@ -482,106 +478,106 @@ describe('createTabs', () => {
         />
       ));
 
-      const tablist = screen.getByRole('tablist');
+      const tablist = screen.getByRole("tablist");
       tablist.focus();
 
       // Move focus to second tab
-      fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+      fireEvent.keyDown(tablist, { key: "ArrowRight" });
 
       // Now press Space to select
-      fireEvent.keyDown(tablist, { key: ' ' });
+      fireEvent.keyDown(tablist, { key: " " });
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab2");
     });
   });
 
-  describe('mouse interactions', () => {
-    it('clicking a tab selects it', () => {
+  describe("mouse interactions", () => {
+    it("clicking a tab selects it", () => {
       const onSelectionChange = vi.fn();
       render(() => <TestTabs aria-label="Test Tabs" onSelectionChange={onSelectionChange} />);
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       fireEvent.click(tabs[1]);
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab2");
       expect(onSelectionChange).toHaveBeenCalledTimes(1);
     });
 
-    it('clicking the already selected tab does not emit onSelectionChange', () => {
+    it("clicking the already selected tab does not emit onSelectionChange", () => {
       const onSelectionChange = vi.fn();
       render(() => <TestTabs aria-label="Test Tabs" onSelectionChange={onSelectionChange} />);
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       // First tab is already selected
       fireEvent.click(tabs[0]);
 
       expect(onSelectionChange).not.toHaveBeenCalled();
     });
 
-    it('updates tabpanel content when tab changes', () => {
+    it("updates tabpanel content when tab changes", () => {
       render(() => <TestTabs aria-label="Test Tabs" />);
 
-      expect(screen.getByRole('tabpanel')).toHaveTextContent('Tab 1 body');
+      expect(screen.getByRole("tabpanel")).toHaveTextContent("Tab 1 body");
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       fireEvent.click(tabs[1]);
 
-      expect(screen.getByRole('tabpanel')).toHaveTextContent('Tab 2 body');
+      expect(screen.getByRole("tabpanel")).toHaveTextContent("Tab 2 body");
     });
   });
 
-  describe('disabled state', () => {
-    it('disabled tabs cannot be selected via click', () => {
+  describe("disabled state", () => {
+    it("disabled tabs cannot be selected via click", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
           aria-label="Test Tabs"
-          disabledKeys={['tab2']}
+          disabledKeys={["tab2"]}
           onSelectionChange={onSelectionChange}
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       fireEvent.click(tabs[1]);
 
       expect(onSelectionChange).not.toHaveBeenCalled();
     });
 
-    it('disabled tabs are skipped during keyboard navigation', () => {
+    it("disabled tabs are skipped during keyboard navigation", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs
           aria-label="Test Tabs"
-          disabledKeys={['tab2']}
+          disabledKeys={["tab2"]}
           onSelectionChange={onSelectionChange}
         />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[0].focus();
 
-      fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
+      fireEvent.keyDown(tabs[0], { key: "ArrowRight" });
 
       // Should skip tab2 and go to tab3
-      expect(onSelectionChange).toHaveBeenCalledWith('tab3');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab3");
     });
 
-    it('disabled tabs have aria-disabled attribute', () => {
-      render(() => <TestTabs aria-label="Test Tabs" disabledKeys={['tab2']} />);
+    it("disabled tabs have aria-disabled attribute", () => {
+      render(() => <TestTabs aria-label="Test Tabs" disabledKeys={["tab2"]} />);
 
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs[0]).not.toHaveAttribute('aria-disabled');
-      expect(tabs[1]).toHaveAttribute('aria-disabled', 'true');
-      expect(tabs[2]).not.toHaveAttribute('aria-disabled');
+      const tabs = screen.getAllByRole("tab");
+      expect(tabs[0]).not.toHaveAttribute("aria-disabled");
+      expect(tabs[1]).toHaveAttribute("aria-disabled", "true");
+      expect(tabs[2]).not.toHaveAttribute("aria-disabled");
     });
 
-    it('all tabs are disabled when isDisabled is true', () => {
+    it("all tabs are disabled when isDisabled is true", () => {
       const onSelectionChange = vi.fn();
       render(() => (
         <TestTabs aria-label="Test Tabs" isDisabled onSelectionChange={onSelectionChange} />
       ));
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
 
       // Try clicking second tab
       fireEvent.click(tabs[1]);
@@ -589,85 +585,81 @@ describe('createTabs', () => {
 
       // Try keyboard navigation
       tabs[0].focus();
-      fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
+      fireEvent.keyDown(tabs[0], { key: "ArrowRight" });
       expect(onSelectionChange).not.toHaveBeenCalled();
     });
   });
 
-  describe('selection', () => {
-    it('selects first tab by default', () => {
+  describe("selection", () => {
+    it("selects first tab by default", () => {
       render(() => <TestTabs aria-label="Test Tabs" />);
 
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
-      expect(tabs[1]).toHaveAttribute('aria-selected', 'false');
-      expect(tabs[2]).toHaveAttribute('aria-selected', 'false');
+      const tabs = screen.getAllByRole("tab");
+      expect(tabs[0]).toHaveAttribute("aria-selected", "true");
+      expect(tabs[1]).toHaveAttribute("aria-selected", "false");
+      expect(tabs[2]).toHaveAttribute("aria-selected", "false");
     });
 
-    it('supports defaultSelectedKey', () => {
+    it("supports defaultSelectedKey", () => {
       render(() => <TestTabs aria-label="Test Tabs" defaultSelectedKey="tab2" />);
 
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs[0]).toHaveAttribute('aria-selected', 'false');
-      expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
-      expect(tabs[2]).toHaveAttribute('aria-selected', 'false');
+      const tabs = screen.getAllByRole("tab");
+      expect(tabs[0]).toHaveAttribute("aria-selected", "false");
+      expect(tabs[1]).toHaveAttribute("aria-selected", "true");
+      expect(tabs[2]).toHaveAttribute("aria-selected", "false");
     });
 
-    it('supports controlled selectedKey', () => {
+    it("supports controlled selectedKey", () => {
       const onSelectionChange = vi.fn();
 
       render(() => (
-        <TestTabs
-          aria-label="Test Tabs"
-          selectedKey="tab1"
-          onSelectionChange={onSelectionChange}
-        />
+        <TestTabs aria-label="Test Tabs" selectedKey="tab1" onSelectionChange={onSelectionChange} />
       ));
 
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+      const tabs = screen.getAllByRole("tab");
+      expect(tabs[0]).toHaveAttribute("aria-selected", "true");
 
       // Click second tab - should call onSelectionChange
       fireEvent.click(tabs[1]);
 
-      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab2");
     });
 
-    it('selects first non-disabled tab if default is disabled', () => {
-      render(() => <TestTabs aria-label="Test Tabs" disabledKeys={['tab1']} />);
+    it("selects first non-disabled tab if default is disabled", () => {
+      render(() => <TestTabs aria-label="Test Tabs" disabledKeys={["tab1"]} />);
 
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs[0]).toHaveAttribute('aria-selected', 'false');
-      expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
+      const tabs = screen.getAllByRole("tab");
+      expect(tabs[0]).toHaveAttribute("aria-selected", "false");
+      expect(tabs[1]).toHaveAttribute("aria-selected", "true");
     });
   });
 
-  describe('tabIndex management', () => {
-    it('selected tab has tabIndex 0, others have tabIndex -1', () => {
+  describe("tabIndex management", () => {
+    it("selected tab has tabIndex 0, others have tabIndex -1", () => {
       render(() => <TestTabs aria-label="Test Tabs" />);
 
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs[0]).toHaveAttribute('tabindex', '0');
-      expect(tabs[1]).toHaveAttribute('tabindex', '-1');
-      expect(tabs[2]).toHaveAttribute('tabindex', '-1');
+      const tabs = screen.getAllByRole("tab");
+      expect(tabs[0]).toHaveAttribute("tabindex", "0");
+      expect(tabs[1]).toHaveAttribute("tabindex", "-1");
+      expect(tabs[2]).toHaveAttribute("tabindex", "-1");
     });
 
-    it('tabIndex is 0 for selected tab, -1 for others', () => {
+    it("tabIndex is 0 for selected tab, -1 for others", () => {
       // Test that initial tabIndex values are correct
       render(() => <TestTabs aria-label="Test Tabs" defaultSelectedKey="tab2" />);
 
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs[0]).toHaveAttribute('tabindex', '-1');
-      expect(tabs[1]).toHaveAttribute('tabindex', '0');
-      expect(tabs[2]).toHaveAttribute('tabindex', '-1');
+      const tabs = screen.getAllByRole("tab");
+      expect(tabs[0]).toHaveAttribute("tabindex", "-1");
+      expect(tabs[1]).toHaveAttribute("tabindex", "0");
+      expect(tabs[2]).toHaveAttribute("tabindex", "-1");
     });
   });
 
-  describe('unique IDs', () => {
-    it('generates unique IDs for tabs and panels', () => {
+  describe("unique IDs", () => {
+    it("generates unique IDs for tabs and panels", () => {
       render(() => <TestTabs aria-label="Test Tabs" />);
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       const ids = tabs.map((t) => t.id);
 
       // All IDs should be unique
@@ -679,140 +671,140 @@ describe('createTabs', () => {
       }
     });
 
-    it('tab and panel IDs are related', () => {
+    it("tab and panel IDs are related", () => {
       render(() => <TestTabs aria-label="Test Tabs" />);
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       const selectedTab = tabs[0];
 
-      const panelId = selectedTab.getAttribute('aria-controls');
+      const panelId = selectedTab.getAttribute("aria-controls");
       const panel = document.getElementById(panelId!);
 
-      expect(panel).toHaveAttribute('aria-labelledby', selectedTab.id);
+      expect(panel).toHaveAttribute("aria-labelledby", selectedTab.id);
     });
   });
 
-  describe('focus behavior', () => {
-    it('focuses selected tab when tabbing into tablist', () => {
+  describe("focus behavior", () => {
+    it("focuses selected tab when tabbing into tablist", () => {
       render(() => <TestTabs aria-label="Test Tabs" defaultSelectedKey="tab2" />);
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
 
       // Simulate tab into tablist by focusing the selected tab
       tabs[1].focus();
       expect(document.activeElement).toBe(tabs[1]);
     });
 
-    it('arrow key navigation changes selection', () => {
+    it("arrow key navigation changes selection", () => {
       const onSelectionChange = vi.fn();
       render(() => <TestTabs aria-label="Test Tabs" onSelectionChange={onSelectionChange} />);
 
-      const tablist = screen.getByRole('tablist');
+      const tablist = screen.getByRole("tablist");
       tablist.focus();
 
-      fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+      fireEvent.keyDown(tablist, { key: "ArrowRight" });
 
       // Selection should change to next tab
-      expect(onSelectionChange).toHaveBeenCalledWith('tab2');
+      expect(onSelectionChange).toHaveBeenCalledWith("tab2");
     });
 
-    it('focusing the selected tab does not emit selection change', () => {
+    it("focusing the selected tab does not emit selection change", () => {
       const onSelectionChange = vi.fn();
       render(() => <TestTabs aria-label="Test Tabs" onSelectionChange={onSelectionChange} />);
 
-      const tabs = screen.getAllByRole('tab');
+      const tabs = screen.getAllByRole("tab");
       tabs[0].focus();
 
       expect(onSelectionChange).not.toHaveBeenCalled();
     });
   });
 
-  describe('dynamic updates', () => {
-    it('handles adding tabs', () => {
+  describe("dynamic updates", () => {
+    it("handles adding tabs", () => {
       const [items, setItems] = createSignal(defaultItems.slice(0, 2));
 
       render(() => <TestTabs aria-label="Test Tabs" items={items()} />);
 
-      expect(screen.getAllByRole('tab')).toHaveLength(2);
+      expect(screen.getAllByRole("tab")).toHaveLength(2);
 
       setItems([...defaultItems]);
 
-      expect(screen.getAllByRole('tab')).toHaveLength(3);
+      expect(screen.getAllByRole("tab")).toHaveLength(3);
     });
 
-    it('handles removing tabs', () => {
+    it("handles removing tabs", () => {
       const [items, setItems] = createSignal(defaultItems);
 
       render(() => <TestTabs aria-label="Test Tabs" items={items()} />);
 
-      expect(screen.getAllByRole('tab')).toHaveLength(3);
+      expect(screen.getAllByRole("tab")).toHaveLength(3);
 
       setItems(defaultItems.slice(0, 2));
 
-      expect(screen.getAllByRole('tab')).toHaveLength(2);
+      expect(screen.getAllByRole("tab")).toHaveLength(2);
     });
 
-    it('maintains selection when non-selected tabs are removed', () => {
+    it("maintains selection when non-selected tabs are removed", () => {
       const [items, setItems] = createSignal(defaultItems);
 
       render(() => <TestTabs aria-label="Test Tabs" items={items()} defaultSelectedKey="tab1" />);
 
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+      const tabs = screen.getAllByRole("tab");
+      expect(tabs[0]).toHaveAttribute("aria-selected", "true");
 
       // Remove the last tab (which was NOT selected)
       setItems(defaultItems.slice(0, 2));
 
-      const remainingTabs = screen.getAllByRole('tab');
+      const remainingTabs = screen.getAllByRole("tab");
       expect(remainingTabs).toHaveLength(2);
       // First tab should still be selected
-      expect(remainingTabs[0]).toHaveAttribute('aria-selected', 'true');
+      expect(remainingTabs[0]).toHaveAttribute("aria-selected", "true");
     });
 
-    it('reselects first enabled tab when the selected tab is removed', () => {
+    it("reselects first enabled tab when the selected tab is removed", () => {
       const [items, setItems] = createSignal(defaultItems);
 
       render(() => <TestTabs aria-label="Test Tabs" items={items()} defaultSelectedKey="tab2" />);
 
-      let tabs = screen.getAllByRole('tab');
-      expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
+      let tabs = screen.getAllByRole("tab");
+      expect(tabs[1]).toHaveAttribute("aria-selected", "true");
 
-      setItems(defaultItems.filter((item) => item.key !== 'tab2'));
+      setItems(defaultItems.filter((item) => item.key !== "tab2"));
 
-      tabs = screen.getAllByRole('tab');
+      tabs = screen.getAllByRole("tab");
       expect(tabs).toHaveLength(2);
-      expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
-      expect(screen.getByRole('tabpanel')).toHaveTextContent('Tab 1 body');
+      expect(tabs[0]).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByRole("tabpanel")).toHaveTextContent("Tab 1 body");
     });
   });
 });
 
-describe('createTabPanel', () => {
-  it('renders with correct role', () => {
+describe("createTabPanel", () => {
+  it("renders with correct role", () => {
     render(() => <TestTabs aria-label="Test Tabs" />);
 
-    const panel = screen.getByRole('tabpanel');
-    expect(panel).toHaveAttribute('role', 'tabpanel');
+    const panel = screen.getByRole("tabpanel");
+    expect(panel).toHaveAttribute("role", "tabpanel");
   });
 
-  it('has tabIndex for keyboard accessibility', () => {
+  it("has tabIndex for keyboard accessibility", () => {
     render(() => <TestTabs aria-label="Test Tabs" />);
 
-    const panel = screen.getByRole('tabpanel');
-    expect(panel).toHaveAttribute('tabindex', '0');
+    const panel = screen.getByRole("tabpanel");
+    expect(panel).toHaveAttribute("tabindex", "0");
   });
 
-  it('is labeled by its associated tab', () => {
+  it("is labeled by its associated tab", () => {
     render(() => <TestTabs aria-label="Test Tabs" />);
 
-    const tabs = screen.getAllByRole('tab');
+    const tabs = screen.getAllByRole("tab");
     const selectedTab = tabs[0];
-    const panel = screen.getByRole('tabpanel');
+    const panel = screen.getByRole("tabpanel");
 
-    expect(panel).toHaveAttribute('aria-labelledby', selectedTab.id);
+    expect(panel).toHaveAttribute("aria-labelledby", selectedTab.id);
   });
 
-  it('supports aria-label override', () => {
+  it("supports aria-label override", () => {
     createRoot((dispose) => {
       const state = createTabListState({
         items: defaultItems,
@@ -820,16 +812,16 @@ describe('createTabPanel', () => {
       });
 
       const { tabPanelProps } = createTabPanel(
-        { id: 'tab1', 'aria-label': 'Custom Panel Label' },
-        state
+        { id: "tab1", "aria-label": "Custom Panel Label" },
+        state,
       );
 
-      expect(tabPanelProps['aria-label']).toBe('Custom Panel Label');
+      expect(tabPanelProps["aria-label"]).toBe("Custom Panel Label");
       dispose();
     });
   });
 
-  it('supports aria-describedby', () => {
+  it("supports aria-describedby", () => {
     createRoot((dispose) => {
       const state = createTabListState({
         items: defaultItems,
@@ -837,11 +829,11 @@ describe('createTabPanel', () => {
       });
 
       const { tabPanelProps } = createTabPanel(
-        { id: 'tab1', 'aria-describedby': 'description-id' },
-        state
+        { id: "tab1", "aria-describedby": "description-id" },
+        state,
       );
 
-      expect(tabPanelProps['aria-describedby']).toBe('description-id');
+      expect(tabPanelProps["aria-describedby"]).toBe("description-id");
       dispose();
     });
   });

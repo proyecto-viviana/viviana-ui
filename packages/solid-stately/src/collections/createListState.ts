@@ -4,10 +4,10 @@
  * Based on @react-stately/list.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
-import { ListCollection } from './ListCollection';
-import { createSelectionState, type SelectionState } from './createSelectionState';
+import { createSignal, createMemo, type Accessor } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
+import { ListCollection } from "./ListCollection";
+import { createSelectionState, type SelectionState } from "./createSelectionState";
 import type {
   Collection,
   CollectionItemLike,
@@ -17,7 +17,7 @@ import type {
   Key,
   SelectionBehavior,
   SelectionMode,
-} from './types';
+} from "./types";
 
 export interface ListStateProps<T = unknown> {
   /** The items in the list (for dynamic rendering). */
@@ -39,11 +39,11 @@ export interface ListStateProps<T = unknown> {
   /** Whether empty selection is disallowed. */
   disallowEmptySelection?: boolean;
   /** Currently selected keys (controlled). */
-  selectedKeys?: 'all' | Iterable<Key>;
+  selectedKeys?: "all" | Iterable<Key>;
   /** Default selected keys (uncontrolled). */
-  defaultSelectedKeys?: 'all' | Iterable<Key>;
+  defaultSelectedKeys?: "all" | Iterable<Key>;
   /** Handler for selection changes. */
-  onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  onSelectionChange?: (keys: "all" | Set<Key>) => void;
   /** Whether to allow duplicate selection events. */
   allowDuplicateSelectionEvents?: boolean;
 }
@@ -67,7 +67,7 @@ export interface ListState<T = unknown> extends SelectionState {
  * Creates state for a list component with selection.
  */
 export function createListState<T = unknown>(
-  props: MaybeAccessor<ListStateProps<T>>
+  props: MaybeAccessor<ListStateProps<T>>,
 ): ListState<T> {
   const getProps = () => access(props);
 
@@ -79,12 +79,11 @@ export function createListState<T = unknown>(
     const nodes: CollectionNode<T>[] = items.map((item, index) => {
       const o = item as CollectionItemLike;
       const key = p.getKey?.(item) ?? o.key ?? o.id ?? index;
-      const textValue =
-        p.getTextValue?.(item) ?? o.textValue ?? o.label ?? String(item);
+      const textValue = p.getTextValue?.(item) ?? o.textValue ?? o.label ?? String(item);
       const isDisabled = p.getDisabled?.(item) ?? o.isDisabled ?? false;
 
       return {
-        type: 'item' as const,
+        type: "item" as const,
         key,
         value: item,
         textValue,
@@ -172,8 +171,10 @@ export function createListState<T = unknown>(
 /**
  * Props for single selection list state.
  */
-export interface SingleSelectListStateProps<T = unknown>
-  extends Omit<ListStateProps<T>, 'selectionMode' | 'selectedKeys' | 'defaultSelectedKeys' | 'onSelectionChange'> {
+export interface SingleSelectListStateProps<T = unknown> extends Omit<
+  ListStateProps<T>,
+  "selectionMode" | "selectedKeys" | "defaultSelectedKeys" | "onSelectionChange"
+> {
   /** The currently selected key (controlled). */
   selectedKey?: Key | null;
   /** The default selected key (uncontrolled). */
@@ -195,7 +196,7 @@ export interface SingleSelectListState<T = unknown> extends ListState<T> {
  * Creates state for a single-select list component.
  */
 export function createSingleSelectListState<T = unknown>(
-  props: MaybeAccessor<SingleSelectListStateProps<T>>
+  props: MaybeAccessor<SingleSelectListStateProps<T>>,
 ): SingleSelectListState<T> {
   const getProps = () => access(props);
 
@@ -219,7 +220,7 @@ export function createSingleSelectListState<T = unknown>(
     get disabledBehavior() {
       return getProps().disabledBehavior;
     },
-    selectionMode: 'single',
+    selectionMode: "single",
     disallowEmptySelection: true,
     allowDuplicateSelectionEvents: true,
     get selectedKeys() {
@@ -231,7 +232,7 @@ export function createSingleSelectListState<T = unknown>(
       return key != null ? [key] : undefined;
     },
     onSelectionChange(keys) {
-      if (keys === 'all') return;
+      if (keys === "all") return;
       const key = keys.values().next().value ?? null;
       getProps().onSelectionChange?.(key);
     },
@@ -239,7 +240,7 @@ export function createSingleSelectListState<T = unknown>(
 
   const selectedKey: Accessor<Key | null> = () => {
     const keys = listState.selectedKeys();
-    if (keys === 'all') return null;
+    if (keys === "all") return null;
     return keys.values().next().value ?? null;
   };
 

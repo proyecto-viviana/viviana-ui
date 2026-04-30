@@ -18,25 +18,25 @@ import {
   splitProps,
   useContext,
   For,
-} from 'solid-js';
+} from "solid-js";
 import {
   createActionGroup,
   createActionGroupItem,
   type AriaActionGroupProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createListState,
   type ListState,
   type Key,
   type SelectionMode,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -44,7 +44,7 @@ import {
 
 export interface ActionGroupRenderProps {
   /** The orientation of the action group. */
-  orientation: 'horizontal' | 'vertical';
+  orientation: "horizontal" | "vertical";
   /** Whether the entire group is disabled. */
   isDisabled: boolean;
   /** The selection mode. */
@@ -67,26 +67,25 @@ export interface ActionGroupItem {
   [key: string]: unknown;
 }
 
-export interface ActionGroupProps<T extends ActionGroupItem = ActionGroupItem>
-  extends SlotProps {
+export interface ActionGroupProps<T extends ActionGroupItem = ActionGroupItem> extends SlotProps {
   /** The items in the action group. */
   items: T[];
   /** The selection mode. @default 'none' */
   selectionMode?: SelectionMode;
   /** Orientation of the group. @default 'horizontal' */
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   /** Whether the entire group is disabled. */
   isDisabled?: boolean;
   /** Accessible label. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Labelled-by id. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Currently selected keys (controlled). */
   selectedKeys?: Iterable<Key>;
   /** Default selected keys (uncontrolled). */
   defaultSelectedKeys?: Iterable<Key>;
   /** Handler called when selection changes. */
-  onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  onSelectionChange?: (keys: "all" | Set<Key>) => void;
   /** Handler called when an item action is triggered. */
   onAction?: (key: Key) => void;
   /** Keys of disabled items. */
@@ -115,26 +114,26 @@ export const ActionGroupStateContext = createContext<ListState<ActionGroupItem> 
 // ============================================
 
 export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
-  props: ActionGroupProps<T>
+  props: ActionGroupProps<T>,
 ): JSX.Element {
   const [local, ariaGroupProps, domProps] = splitProps(
     props,
     [
-      'items',
-      'selectionMode',
-      'orientation',
-      'isDisabled',
-      'selectedKeys',
-      'defaultSelectedKeys',
-      'onSelectionChange',
-      'onAction',
-      'disabledKeys',
-      'children',
-      'class',
-      'style',
-      'slot',
+      "items",
+      "selectionMode",
+      "orientation",
+      "isDisabled",
+      "selectedKeys",
+      "defaultSelectedKeys",
+      "onSelectionChange",
+      "onAction",
+      "disabledKeys",
+      "children",
+      "class",
+      "style",
+      "slot",
     ],
-    ['aria-label', 'aria-labelledby']
+    ["aria-label", "aria-labelledby"],
   );
 
   const state = createListState<T>({
@@ -142,7 +141,7 @@ export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
       return local.items;
     },
     get selectionMode() {
-      return local.selectionMode ?? 'none';
+      return local.selectionMode ?? "none";
     },
     get selectedKeys() {
       return local.selectedKeys;
@@ -171,11 +170,11 @@ export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
     get orientation() {
       return local.orientation;
     },
-    get 'aria-label'() {
-      return ariaGroupProps['aria-label'];
+    get "aria-label"() {
+      return ariaGroupProps["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return ariaGroupProps['aria-labelledby'];
+    get "aria-labelledby"() {
+      return ariaGroupProps["aria-labelledby"];
     },
     get onAction() {
       return local.onAction;
@@ -184,23 +183,25 @@ export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
 
   const { actionGroupProps } = createActionGroup(groupAriaProps, state as ListState<T>);
 
-  const orientation = () => local.orientation ?? 'horizontal';
+  const orientation = () => local.orientation ?? "horizontal";
 
   const renderProps = useRenderProps(
     {
       children: undefined,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ActionGroup',
+      defaultClassName: "solidaria-ActionGroup",
     },
     () => ({
       orientation: orientation(),
       isDisabled: !!local.isDisabled,
-      selectionMode: (local.selectionMode ?? 'none') as SelectionMode,
-    })
+      selectionMode: (local.selectionMode ?? "none") as SelectionMode,
+    }),
   );
 
-  const filteredDOMProps = createMemo(() => filterDOMProps(domProps as Record<string, unknown>, { global: true }));
+  const filteredDOMProps = createMemo(() =>
+    filterDOMProps(domProps as Record<string, unknown>, { global: true }),
+  );
 
   return (
     <ActionGroupContext.Provider value={{ state: state as ListState<ActionGroupItem> }}>
@@ -223,7 +224,12 @@ export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
               <ActionGroupItemWrapper
                 item={item}
                 state={state as ListState<ActionGroupItem>}
-                renderChild={local.children as (item: ActionGroupItem, rp: ActionGroupItemRenderProps) => JSX.Element}
+                renderChild={
+                  local.children as (
+                    item: ActionGroupItem,
+                    rp: ActionGroupItemRenderProps,
+                  ) => JSX.Element
+                }
               />
             )}
           </For>
@@ -245,14 +251,18 @@ interface ActionGroupItemWrapperProps {
 
 function ActionGroupItemWrapper(props: ActionGroupItemWrapperProps): JSX.Element {
   const { buttonProps } = createActionGroupItem(
-    { get key() { return props.item.id; } },
-    props.state
+    {
+      get key() {
+        return props.item.id;
+      },
+    },
+    props.state,
   );
 
   const isFocused = () => props.state.focusedKey() === props.item.id;
   const isSelected = () => {
     const keys = props.state.selectedKeys();
-    return keys === 'all' || (keys instanceof Set && keys.has(props.item.id));
+    return keys === "all" || (keys instanceof Set && keys.has(props.item.id));
   };
   const isDisabled = () => props.state.isDisabled(props.item.id);
 
@@ -262,7 +272,9 @@ function ActionGroupItemWrapper(props: ActionGroupItemWrapperProps): JSX.Element
     isFocused: isFocused(),
   }));
 
-  const { ref: _ref, ...restButtonProps } = buttonProps as Record<string, unknown> & { ref?: unknown };
+  const { ref: _ref, ...restButtonProps } = buttonProps as Record<string, unknown> & {
+    ref?: unknown;
+  };
 
   return (
     <button

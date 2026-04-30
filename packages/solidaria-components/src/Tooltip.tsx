@@ -15,19 +15,19 @@ import {
   createEffect,
   onCleanup,
   Show,
-} from 'solid-js';
-import { isServer } from 'solid-js/web';
+} from "solid-js";
+import { isServer } from "solid-js/web";
 import {
   createTooltipTriggerState,
   type TooltipTriggerState,
   type TooltipTriggerProps as StateProps,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   createTooltip,
   createTooltipTrigger,
   type TooltipTriggerProps as AriaProps,
   OverlayContainer,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -35,7 +35,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -47,7 +47,7 @@ export interface TooltipRenderProps {
   /** Whether the tooltip is currently exiting (for animations). */
   isExiting: boolean;
   /** The placement of the tooltip relative to the trigger. */
-  placement: 'top' | 'bottom' | 'left' | 'right' | null;
+  placement: "top" | "bottom" | "left" | "right" | null;
 }
 
 export interface TooltipTriggerComponentProps extends StateProps, AriaProps {
@@ -67,7 +67,7 @@ export interface TooltipProps extends SlotProps {
   /** Whether the tooltip is open by default (uncontrolled). */
   defaultOpen?: boolean;
   /** The placement of the tooltip relative to the trigger. */
-  placement?: 'top' | 'bottom' | 'left' | 'right';
+  placement?: "top" | "bottom" | "left" | "right";
   /** Whether to render the tooltip in a portal. */
   shouldFlip?: boolean;
 }
@@ -107,21 +107,37 @@ export const TooltipTrigger: ParentComponent<TooltipTriggerComponentProps> = (pr
   let triggerRef: HTMLElement | null = null;
 
   const state = createTooltipTriggerState({
-    get delay() { return props.delay; },
-    get closeDelay() { return props.closeDelay; },
-    get isOpen() { return props.isOpen; },
-    get defaultOpen() { return props.defaultOpen; },
-    get onOpenChange() { return props.onOpenChange; },
+    get delay() {
+      return props.delay;
+    },
+    get closeDelay() {
+      return props.closeDelay;
+    },
+    get isOpen() {
+      return props.isOpen;
+    },
+    get defaultOpen() {
+      return props.defaultOpen;
+    },
+    get onOpenChange() {
+      return props.onOpenChange;
+    },
   });
 
   const { triggerProps, tooltipProps } = createTooltipTrigger(
     {
-      get isDisabled() { return props.isDisabled; },
-      get trigger() { return props.trigger; },
-      get shouldCloseOnPress() { return props.shouldCloseOnPress; },
+      get isDisabled() {
+        return props.isDisabled;
+      },
+      get trigger() {
+        return props.trigger;
+      },
+      get shouldCloseOnPress() {
+        return props.shouldCloseOnPress;
+      },
     },
     state,
-    () => triggerRef
+    () => triggerRef,
   );
 
   const context: TooltipTriggerContextValue = {
@@ -140,7 +156,9 @@ export const TooltipTrigger: ParentComponent<TooltipTriggerComponentProps> = (pr
         <>
           <TriggerWrapper
             triggerProps={triggerProps}
-            ref={(el) => { triggerRef = el; }}
+            ref={(el) => {
+              triggerRef = el;
+            }}
           >
             {trigger}
           </TriggerWrapper>
@@ -213,11 +231,7 @@ const TriggerWrapper: ParentComponent<{
   };
 
   return (
-    <span
-      {...props.triggerProps}
-      ref={handleRef}
-      style={{ display: 'contents' }}
-    >
+    <span {...props.triggerProps} ref={handleRef} style={{ display: "contents" }}>
       {child()}
     </span>
   );
@@ -239,28 +253,32 @@ export function Tooltip(props: TooltipProps): JSX.Element {
 
   // Support standalone usage
   const localState = createTooltipTriggerState({
-    get isOpen() { return props.isOpen; },
-    get defaultOpen() { return props.defaultOpen; },
+    get isOpen() {
+      return props.isOpen;
+    },
+    get defaultOpen() {
+      return props.defaultOpen;
+    },
   });
 
   const state = () => context?.state ?? localState;
-  const placement = () => props.placement ?? 'top';
+  const placement = () => props.placement ?? "top";
 
   const isOpen = () => state().isOpen();
 
   // Exit animation state machine: 'closed' | 'open' | 'exiting'
   // Keeps the tooltip mounted during exit animation so CSS transitions can play.
-  const [exitState, setExitState] = createSignal<'closed' | 'open' | 'exiting'>(
-    isOpen() ? 'open' : 'closed'
+  const [exitState, setExitState] = createSignal<"closed" | "open" | "exiting">(
+    isOpen() ? "open" : "closed",
   );
 
   createEffect(() => {
     const open = isOpen();
     const current = exitState();
-    if (current === 'open' && !open) {
-      setExitState('exiting');
-    } else if ((current === 'closed' || current === 'exiting') && open) {
-      setExitState('open');
+    if (current === "open" && !open) {
+      setExitState("exiting");
+    } else if ((current === "closed" || current === "exiting") && open) {
+      setExitState("open");
     }
   });
 
@@ -269,26 +287,32 @@ export function Tooltip(props: TooltipProps): JSX.Element {
 
   // When exiting, wait for CSS animations to finish, then set state to closed
   createEffect(() => {
-    if (exitState() !== 'exiting') return;
+    if (exitState() !== "exiting") return;
     const el = tooltipEl();
-    if (!el || !('getAnimations' in el)) {
-      setExitState('closed');
+    if (!el || !("getAnimations" in el)) {
+      setExitState("closed");
       return;
     }
     const animations = el.getAnimations();
     if (animations.length === 0) {
-      setExitState('closed');
+      setExitState("closed");
       return;
     }
     let canceled = false;
     Promise.all(animations.map((a) => a.finished))
-      .then(() => { if (!canceled) setExitState((s) => s === 'exiting' ? 'closed' : s); })
-      .catch(() => { if (!canceled) setExitState((s) => s === 'exiting' ? 'closed' : s); });
-    onCleanup(() => { canceled = true; });
+      .then(() => {
+        if (!canceled) setExitState((s) => (s === "exiting" ? "closed" : s));
+      })
+      .catch(() => {
+        if (!canceled) setExitState((s) => (s === "exiting" ? "closed" : s));
+      });
+    onCleanup(() => {
+      canceled = true;
+    });
   });
 
-  const shouldRender = () => isOpen() || exitState() === 'exiting';
-  const isExiting = () => exitState() === 'exiting';
+  const shouldRender = () => isOpen() || exitState() === "exiting";
+  const isExiting = () => exitState() === "exiting";
 
   return (
     <Show when={shouldRender()}>
@@ -312,11 +336,11 @@ function TooltipContent(
   props: TooltipProps & {
     state: TooltipTriggerState;
     contextTooltipProps: { id?: string };
-    placement: 'top' | 'bottom' | 'left' | 'right';
+    placement: "top" | "bottom" | "left" | "right";
     triggerRef: () => HTMLElement | null | undefined;
     isExiting: boolean;
     onTooltipRef: (el: HTMLDivElement | null) => void;
-  }
+  },
 ): JSX.Element {
   if (isServer) {
     return null as unknown as JSX.Element;
@@ -330,9 +354,9 @@ function TooltipContent(
   // This ensures the tooltip is immediately accessible (for screen readers and tests)
   // while the visual position gets calculated
   const [positionStyles, setPositionStyles] = createSignal({
-    top: '0px',
-    left: '0px',
-    visibility: 'visible' as 'hidden' | 'visible',
+    top: "0px",
+    left: "0px",
+    visibility: "visible" as "hidden" | "visible",
   });
 
   // Enter animation state: starts true on mount, clears after first animation frame.
@@ -342,7 +366,7 @@ function TooltipContent(
 
   createEffect(() => {
     if (!isEntering()) return;
-    if (!tooltipRef || !('getAnimations' in tooltipRef)) {
+    if (!tooltipRef || !("getAnimations" in tooltipRef)) {
       setIsEntering(false);
       return;
     }
@@ -359,9 +383,15 @@ function TooltipContent(
     }
     let canceled = false;
     Promise.all(animations.map((a) => a.finished))
-      .then(() => { if (!canceled) setIsEntering(false); })
-      .catch(() => { if (!canceled) setIsEntering(false); });
-    onCleanup(() => { canceled = true; });
+      .then(() => {
+        if (!canceled) setIsEntering(false);
+      })
+      .catch(() => {
+        if (!canceled) setIsEntering(false);
+      });
+    onCleanup(() => {
+      canceled = true;
+    });
   });
 
   const values = createMemo<TooltipRenderProps>(() => ({
@@ -375,9 +405,9 @@ function TooltipContent(
       class: props.class,
       style: props.style,
       children: props.children,
-      defaultClassName: 'solidaria-Tooltip',
+      defaultClassName: "solidaria-Tooltip",
     },
-    values
+    values,
   );
 
   // Calculate position based on trigger element
@@ -405,19 +435,19 @@ function TooltipContent(
 
     // Using viewport coordinates for position: fixed
     switch (props.placement) {
-      case 'top':
+      case "top":
         top = triggerRect.top - tooltipHeight - offset;
         left = triggerRect.left + (triggerRect.width - tooltipWidth) / 2;
         break;
-      case 'bottom':
+      case "bottom":
         top = triggerRect.bottom + offset;
         left = triggerRect.left + (triggerRect.width - tooltipWidth) / 2;
         break;
-      case 'left':
+      case "left":
         top = triggerRect.top + (triggerRect.height - tooltipHeight) / 2;
         left = triggerRect.left - tooltipWidth - offset;
         break;
-      case 'right':
+      case "right":
         top = triggerRect.top + (triggerRect.height - tooltipHeight) / 2;
         left = triggerRect.right + offset;
         break;
@@ -426,7 +456,7 @@ function TooltipContent(
     setPositionStyles({
       top: `${top}px`,
       left: `${left}px`,
-      visibility: 'visible',
+      visibility: "visible",
     });
 
     return true;
@@ -456,14 +486,14 @@ function TooltipContent(
     pendingRaf = requestAnimationFrame(tryUpdatePosition);
 
     // Update on scroll/resize
-    window.addEventListener('scroll', updatePosition, true);
-    window.addEventListener('resize', updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
 
     onCleanup(() => {
       if (pendingRaf) cancelAnimationFrame(pendingRaf);
       if (pendingTimeout) clearTimeout(pendingTimeout);
-      window.removeEventListener('scroll', updatePosition, true);
-      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
     });
   });
 
@@ -493,8 +523,8 @@ function TooltipContent(
         ref={setRef}
         class={renderProps.class()}
         style={{
-          position: 'fixed',
-          'z-index': 100000,
+          position: "fixed",
+          "z-index": 100000,
           ...positionStyles(),
           ...renderProps.style(),
         }}

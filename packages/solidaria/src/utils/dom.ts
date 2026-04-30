@@ -54,7 +54,7 @@ export function nodeContains(parent: Node | null, child: Node | null): boolean {
  */
 export function getEventTarget<T extends EventTarget>(event: Event): T | null {
   // Use composedPath to get the real target when using Shadow DOM
-  if (typeof event.composedPath === 'function') {
+  if (typeof event.composedPath === "function") {
     const path = event.composedPath();
     if (path.length > 0) {
       return path[0] as T;
@@ -74,22 +74,25 @@ export function isFocusable(element: Element): boolean {
 
   // Check native focusable elements
   const tagName = element.tagName.toLowerCase();
-  if (['input', 'select', 'textarea', 'button', 'a', 'area'].includes(tagName)) {
+  if (["input", "select", "textarea", "button", "a", "area"].includes(tagName)) {
     // For anchor elements, they must have href to be focusable
-    if (tagName === 'a' || tagName === 'area') {
-      return element.hasAttribute('href');
+    if (tagName === "a" || tagName === "area") {
+      return element.hasAttribute("href");
     }
     return true;
   }
 
   // Check for tabIndex
-  const tabIndex = element.getAttribute('tabindex');
-  if (tabIndex != null && tabIndex !== '-1') {
+  const tabIndex = element.getAttribute("tabindex");
+  if (tabIndex != null && tabIndex !== "-1") {
     return true;
   }
 
   // Check for contenteditable
-  if (element.hasAttribute('contenteditable') && element.getAttribute('contenteditable') !== 'false') {
+  if (
+    element.hasAttribute("contenteditable") &&
+    element.getAttribute("contenteditable") !== "false"
+  ) {
     return true;
   }
 
@@ -103,16 +106,16 @@ export function isValidKeyboardEvent(event: KeyboardEvent, currentTarget: Elemen
   const { key, code } = event;
   const element = currentTarget as HTMLElement;
   const tagName = element.tagName.toLowerCase();
-  const role = element.getAttribute('role');
+  const role = element.getAttribute("role");
 
   // Only accept Enter and Space
-  const isActivationKey = key === 'Enter' || key === ' ' || key === 'Spacebar' || code === 'Space';
+  const isActivationKey = key === "Enter" || key === " " || key === "Spacebar" || code === "Space";
   if (!isActivationKey) {
     return false;
   }
 
   // Text inputs should handle their own keyboard events
-  if (tagName === 'textarea') {
+  if (tagName === "textarea") {
     return false;
   }
 
@@ -122,13 +125,13 @@ export function isValidKeyboardEvent(event: KeyboardEvent, currentTarget: Elemen
   }
 
   // Links should only respond to Enter, not Space
-  const isLink = role === 'link' || (!role && isHTMLAnchorLink(element));
-  if (isLink && key !== 'Enter') {
+  const isLink = role === "link" || (!role && isHTMLAnchorLink(element));
+  if (isLink && key !== "Enter") {
     return false;
   }
 
   // Input elements have specific key handling
-  if (tagName === 'input') {
+  if (tagName === "input") {
     return isValidInputKey(element as HTMLInputElement, key);
   }
 
@@ -142,14 +145,24 @@ export function isValidInputKey(target: HTMLInputElement, key: string): boolean 
   const type = target.type.toLowerCase();
 
   // Checkbox and radio only respond to Space
-  if (type === 'checkbox' || type === 'radio') {
-    return key === ' ' || key === 'Spacebar';
+  if (type === "checkbox" || type === "radio") {
+    return key === " " || key === "Spacebar";
   }
 
   // Text-like inputs handle their own keyboard events
   const textInputTypes = [
-    'text', 'search', 'url', 'tel', 'email', 'password',
-    'date', 'month', 'week', 'time', 'datetime-local', 'number'
+    "text",
+    "search",
+    "url",
+    "tel",
+    "email",
+    "password",
+    "date",
+    "month",
+    "week",
+    "time",
+    "datetime-local",
+    "number",
   ];
   if (textInputTypes.includes(type)) {
     return false;
@@ -162,7 +175,7 @@ export function isValidInputKey(target: HTMLInputElement, key: string): boolean 
  * Checks if an element is an HTML anchor link (has href attribute).
  */
 export function isHTMLAnchorLink(target: Element): boolean {
-  return target.tagName === 'A' && target.hasAttribute('href');
+  return target.tagName === "A" && target.hasAttribute("href");
 }
 
 /**
@@ -172,19 +185,19 @@ export function shouldPreventDefaultKeyboard(target: Element, key: string): bool
   const tagName = target.tagName.toLowerCase();
 
   // Never prevent default on inputs - they handle their own behavior
-  if (tagName === 'input' || tagName === 'textarea' || tagName === 'select') {
+  if (tagName === "input" || tagName === "textarea" || tagName === "select") {
     return false;
   }
 
   // Don't prevent default on links for Enter (native navigation)
-  if ((tagName === 'a' || target.getAttribute('role') === 'link') && key === 'Enter') {
+  if ((tagName === "a" || target.getAttribute("role") === "link") && key === "Enter") {
     return false;
   }
 
   // Buttons with submit/reset type should not prevent default
-  if (tagName === 'button') {
+  if (tagName === "button") {
     const type = (target as HTMLButtonElement).type;
-    if (type === 'submit' || type === 'reset') {
+    if (type === "submit" || type === "reset") {
       return false;
     }
   }
@@ -199,19 +212,19 @@ export function shouldPreventDefaultUp(target: Element): boolean {
   const tagName = target.tagName.toLowerCase();
 
   // Never prevent default on form elements
-  if (tagName === 'input' || tagName === 'textarea' || tagName === 'select') {
+  if (tagName === "input" || tagName === "textarea" || tagName === "select") {
     return false;
   }
 
   // Don't prevent default on links
-  if (tagName === 'a' || target.getAttribute('role') === 'link') {
+  if (tagName === "a" || target.getAttribute("role") === "link") {
     return false;
   }
 
   // Buttons with submit/reset type should not prevent default
-  if (tagName === 'button') {
+  if (tagName === "button") {
     const type = (target as HTMLButtonElement).type;
-    if (type === 'submit' || type === 'reset') {
+    if (type === "submit" || type === "reset") {
       return false;
     }
   }
@@ -230,15 +243,15 @@ export function openLink(target: HTMLAnchorElement, event: Event, allowOpener = 
   // Handle modifier keys for open-in-new-tab behavior
   const keyEvent = event as KeyboardEvent;
   const shouldOpenInNewTab =
-    linkTarget === '_blank' ||
+    linkTarget === "_blank" ||
     keyEvent?.metaKey ||
     keyEvent?.ctrlKey ||
     keyEvent?.shiftKey ||
     keyEvent?.altKey;
 
   if (shouldOpenInNewTab) {
-    const features = !allowOpener && rel?.includes('noopener') ? 'noopener' : undefined;
-    window.open(href, linkTarget || '_blank', features);
+    const features = !allowOpener && rel?.includes("noopener") ? "noopener" : undefined;
+    window.open(href, linkTarget || "_blank", features);
   } else {
     window.location.href = href;
   }
@@ -303,23 +316,36 @@ export function willOpenKeyboard(target: Element | null): boolean {
   const tagName = target.tagName.toLowerCase();
 
   // Inputs that open keyboard (not all input types do)
-  if (tagName === 'input') {
+  if (tagName === "input") {
     const type = (target as HTMLInputElement).type.toLowerCase();
     // These input types open the keyboard
     const keyboardTypes = [
-      'text', 'search', 'url', 'tel', 'email', 'password',
-      'date', 'month', 'week', 'time', 'datetime-local', 'number'
+      "text",
+      "search",
+      "url",
+      "tel",
+      "email",
+      "password",
+      "date",
+      "month",
+      "week",
+      "time",
+      "datetime-local",
+      "number",
     ];
     return keyboardTypes.includes(type);
   }
 
   // Textareas always open keyboard
-  if (tagName === 'textarea') {
+  if (tagName === "textarea") {
     return true;
   }
 
   // Contenteditable elements open keyboard
-  if (target.hasAttribute('contenteditable') && target.getAttribute('contenteditable') !== 'false') {
+  if (
+    target.hasAttribute("contenteditable") &&
+    target.getAttribute("contenteditable") !== "false"
+  ) {
     return true;
   }
 

@@ -4,7 +4,7 @@
  * A dialog variant with role="alertdialog" and confirm/cancel buttons.
  */
 
-import { type JSX, splitProps, Show } from 'solid-js';
+import { type JSX, splitProps, Show } from "solid-js";
 import {
   Dialog as HeadlessDialog,
   DialogTrigger as HeadlessDialogTrigger,
@@ -12,14 +12,19 @@ import {
   Modal as HeadlessModal,
   ModalOverlay as HeadlessModalOverlay,
   type DialogRenderProps,
-} from '@proyecto-viviana/solidaria-components';
-import { Button } from '../button';
+} from "@proyecto-viviana/solidaria-components";
+import { Button } from "../button";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type AlertDialogVariant = 'confirmation' | 'information' | 'destructive' | 'error' | 'warning';
+export type AlertDialogVariant =
+  | "confirmation"
+  | "information"
+  | "destructive"
+  | "error"
+  | "warning";
 
 export interface AlertDialogProps {
   /** The title of the alert dialog. */
@@ -43,7 +48,7 @@ export interface AlertDialogProps {
   /** Handler called when open state changes. */
   onOpenChange?: (isOpen: boolean) => void;
   /** Whether the primary action button should auto-focus. @default true */
-  autoFocusButton?: 'primary' | 'cancel';
+  autoFocusButton?: "primary" | "cancel";
   /** Additional CSS class name. */
   class?: string;
   /** Whether the dialog is dismissable by clicking outside. @default false */
@@ -55,11 +60,11 @@ export interface AlertDialogProps {
 // ============================================
 
 const variantStyles: Record<AlertDialogVariant, { icon: string; buttonVariant: string }> = {
-  confirmation: { icon: 'text-accent', buttonVariant: '' },
-  information: { icon: 'text-blue-400', buttonVariant: '' },
-  destructive: { icon: 'text-red-400', buttonVariant: 'destructive' },
-  error: { icon: 'text-red-400', buttonVariant: '' },
-  warning: { icon: 'text-yellow-400', buttonVariant: '' },
+  confirmation: { icon: "text-accent", buttonVariant: "" },
+  information: { icon: "text-blue-400", buttonVariant: "" },
+  destructive: { icon: "text-red-400", buttonVariant: "destructive" },
+  error: { icon: "text-red-400", buttonVariant: "" },
+  warning: { icon: "text-yellow-400", buttonVariant: "" },
 };
 
 // ============================================
@@ -72,12 +77,22 @@ const variantStyles: Record<AlertDialogVariant, { icon: string; buttonVariant: s
  */
 export function AlertDialog(props: AlertDialogProps): JSX.Element {
   const [local] = splitProps(props, [
-    'title', 'children', 'trigger', 'variant', 'primaryActionLabel', 'cancelLabel',
-    'onPrimaryAction', 'onCancel', 'isOpen', 'onOpenChange', 'autoFocusButton',
-    'class', 'isDismissable',
+    "title",
+    "children",
+    "trigger",
+    "variant",
+    "primaryActionLabel",
+    "cancelLabel",
+    "onPrimaryAction",
+    "onCancel",
+    "isOpen",
+    "onOpenChange",
+    "autoFocusButton",
+    "class",
+    "isDismissable",
   ]);
 
-  const variant = () => local.variant ?? 'confirmation';
+  const variant = () => local.variant ?? "confirmation";
   const styles = () => variantStyles[variant()];
 
   return (
@@ -90,7 +105,7 @@ export function AlertDialog(props: AlertDialogProps): JSX.Element {
         <HeadlessModal class="w-full max-w-md">
           <HeadlessDialog
             role="alertdialog"
-            class={`bg-bg-300 rounded-lg shadow-xl border border-primary-700 p-6 ${local.class ?? ''}`}
+            class={`bg-bg-300 rounded-lg shadow-xl border border-primary-700 p-6 ${local.class ?? ""}`}
           >
             {({ close }: DialogRenderProps) => (
               <>
@@ -101,9 +116,7 @@ export function AlertDialog(props: AlertDialogProps): JSX.Element {
                   {local.title}
                 </HeadlessHeading>
 
-                <div class="text-primary-300 text-sm mb-6">
-                  {local.children}
-                </div>
+                <div class="text-primary-300 text-sm mb-6">{local.children}</div>
 
                 <div class="flex justify-end gap-3">
                   <Show when={local.cancelLabel !== undefined || local.onCancel}>
@@ -113,21 +126,21 @@ export function AlertDialog(props: AlertDialogProps): JSX.Element {
                         local.onCancel?.();
                         close();
                       }}
-                      autoFocus={local.autoFocusButton === 'cancel'}
+                      autoFocus={local.autoFocusButton === "cancel"}
                     >
-                      {local.cancelLabel ?? 'Cancel'}
+                      {local.cancelLabel ?? "Cancel"}
                     </Button>
                   </Show>
 
                   <Button
-                    variant={variant() === 'destructive' ? 'negative' : 'accent'}
+                    variant={variant() === "destructive" ? "negative" : "accent"}
                     onPress={() => {
                       local.onPrimaryAction?.();
                       close();
                     }}
-                    autoFocus={local.autoFocusButton !== 'cancel'}
+                    autoFocus={local.autoFocusButton !== "cancel"}
                   >
-                    {local.primaryActionLabel ?? 'Confirm'}
+                    {local.primaryActionLabel ?? "Confirm"}
                   </Button>
                 </div>
               </>

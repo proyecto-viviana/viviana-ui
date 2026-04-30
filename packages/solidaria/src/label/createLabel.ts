@@ -7,11 +7,11 @@
  * This is a 1:1 port of @react-aria/label's useLabel hook.
  */
 
-import { JSX } from 'solid-js';
-import { createId } from '../ssr';
-import { createLabels } from './createLabels';
-import { type MaybeAccessor, access } from '../utils/reactivity';
-import { isDevEnv } from '../utils/env';
+import { JSX } from "solid-js";
+import { createId } from "../ssr";
+import { createLabels } from "./createLabels";
+import { type MaybeAccessor, access } from "../utils/reactivity";
+import { isDevEnv } from "../utils/env";
 
 // ============================================
 // TYPES
@@ -19,13 +19,13 @@ import { isDevEnv } from '../utils/env';
 
 export interface AriaLabelingProps {
   /** Defines a string value that labels the current element. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element (or elements) that labels the current element. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Identifies the element (or elements) that describes the object. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Identifies the element (or elements) that provide a detailed, extended description for the object. */
-  'aria-details'?: string;
+  "aria-details"?: string;
 }
 
 export interface LabelableProps {
@@ -43,7 +43,7 @@ export interface LabelAriaProps extends LabelableProps, DOMProps, AriaLabelingPr
    * The HTML element used to render the label, e.g. 'label', or 'span'.
    * @default 'label'
    */
-  labelElementType?: 'label' | 'span' | 'div';
+  labelElementType?: "label" | "span" | "div";
 }
 
 export interface LabelAria {
@@ -69,8 +69,8 @@ export function createLabel(props: MaybeAccessor<LabelAriaProps>): LabelAria {
   const id = createId(getProps().id);
   const labelId = createId();
 
-  const getLabelProps = (): LabelAria['labelProps'] => {
-    const { label, labelElementType = 'label' } = getProps();
+  const getLabelProps = (): LabelAria["labelProps"] => {
+    const { label, labelElementType = "label" } = getProps();
 
     if (!label) {
       return {};
@@ -78,16 +78,12 @@ export function createLabel(props: MaybeAccessor<LabelAriaProps>): LabelAria {
 
     return {
       id: labelId,
-      ...(labelElementType === 'label' ? { for: id } : {}),
+      ...(labelElementType === "label" ? { for: id } : {}),
     };
   };
 
-  const getFieldProps = (): LabelAria['fieldProps'] => {
-    const {
-      label,
-      'aria-labelledby': ariaLabelledby,
-      'aria-label': ariaLabel,
-    } = getProps();
+  const getFieldProps = (): LabelAria["fieldProps"] => {
+    const { label, "aria-labelledby": ariaLabelledby, "aria-label": ariaLabel } = getProps();
 
     let labelledBy = ariaLabelledby;
 
@@ -95,14 +91,14 @@ export function createLabel(props: MaybeAccessor<LabelAriaProps>): LabelAria {
       labelledBy = ariaLabelledby ? `${labelId} ${ariaLabelledby}` : labelId;
     } else if (!ariaLabelledby && !ariaLabel && isDevEnv()) {
       console.warn(
-        'If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility'
+        "If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility",
       );
     }
 
     return createLabels({
       id,
-      'aria-label': ariaLabel,
-      'aria-labelledby': labelledBy,
+      "aria-label": ariaLabel,
+      "aria-labelledby": labelledBy,
     });
   };
 

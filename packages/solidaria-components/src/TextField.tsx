@@ -13,20 +13,20 @@ import {
   createSignal,
   createEffect,
   splitProps,
-} from 'solid-js';
+} from "solid-js";
 import {
   createTextField,
   createFocusRing,
   createHover,
   mergeProps,
   type AriaTextFieldProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createTextFieldState,
   VALID_VALIDITY_STATE,
   type ValidationResult,
-} from '@proyecto-viviana/solid-stately';
-import { FieldErrorContext, type FieldErrorContextValue } from './FieldError';
+} from "@proyecto-viviana/solid-stately";
+import { FieldErrorContext, type FieldErrorContextValue } from "./FieldError";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -34,7 +34,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -57,9 +57,7 @@ export interface TextFieldRenderProps {
   isFocusVisible: boolean;
 }
 
-export interface TextFieldProps
-  extends Omit<AriaTextFieldProps, 'children'>,
-    SlotProps {
+export interface TextFieldProps extends Omit<AriaTextFieldProps, "children">, SlotProps {
   /** The children of the component. A function may be provided to receive render props. */
   children?: RenderChildren<TextFieldRenderProps>;
   /** The CSS className for the element. */
@@ -69,7 +67,7 @@ export interface TextFieldProps
   /** Custom renderer for the outer text field element. */
   render?: (
     props: JSX.HTMLAttributes<HTMLDivElement>,
-    renderProps: TextFieldRenderProps
+    renderProps: TextFieldRenderProps,
   ) => JSX.Element;
 }
 
@@ -112,24 +110,27 @@ export function Label(props: LabelProps): JSX.Element {
   // Merge context labelProps with local props (local props take precedence)
   const mergedProps = () => {
     if (context) {
-      const { ref: _ref, ...contextLabelProps } = (context.labelProps ?? {}) as Record<string, unknown>;
+      const { ref: _ref, ...contextLabelProps } = (context.labelProps ?? {}) as Record<
+        string,
+        unknown
+      >;
       const merged = {
         ...contextLabelProps,
         ...(context.inputId ? { for: context.inputId } : {}),
         ...props,
       } as Record<string, unknown>;
       if (merged.class == null) {
-        merged.class = 'solidaria-Label';
+        merged.class = "solidaria-Label";
       }
       return merged;
     }
-    return props.class == null ? { ...props, class: 'solidaria-Label' } : props;
+    return props.class == null ? { ...props, class: "solidaria-Label" } : props;
   };
 
   return <label {...mergedProps()}>{props.children}</label>;
 }
 
-export interface InputProps extends Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'children'> {}
+export interface InputProps extends Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "children"> {}
 
 /**
  * An input element that automatically wires up to the parent TextField context.
@@ -147,20 +148,26 @@ export function Input(props: InputProps): JSX.Element {
   const mergedProps = () => {
     if (context) {
       // Remove ref from context props to avoid conflicts
-      const { ref: _ref, ...contextInputProps } = (context.inputProps ?? {}) as Record<string, unknown>;
+      const { ref: _ref, ...contextInputProps } = (context.inputProps ?? {}) as Record<
+        string,
+        unknown
+      >;
       const merged = { ...contextInputProps, ...props } as Record<string, unknown>;
       if (merged.class == null) {
-        merged.class = 'solidaria-Input';
+        merged.class = "solidaria-Input";
       }
       return merged;
     }
-    return props.class == null ? { ...props, class: 'solidaria-Input' } : props;
+    return props.class == null ? { ...props, class: "solidaria-Input" } : props;
   };
 
   return <input {...mergedProps()} />;
 }
 
-export interface TextAreaProps extends Omit<JSX.TextareaHTMLAttributes<HTMLTextAreaElement>, 'children'> {}
+export interface TextAreaProps extends Omit<
+  JSX.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  "children"
+> {}
 
 /**
  * A textarea element that automatically wires up to the parent TextField context.
@@ -174,14 +181,18 @@ export function TextArea(props: TextAreaProps): JSX.Element {
   // Note: TextArea uses inputProps from context since it's an input variant
   const mergedProps = () => {
     if (context) {
-      const { ref: _ref, type: _type, ...contextInputProps } = (context.inputProps ?? {}) as Record<string, unknown>;
+      const {
+        ref: _ref,
+        type: _type,
+        ...contextInputProps
+      } = (context.inputProps ?? {}) as Record<string, unknown>;
       const merged = { ...contextInputProps, ...props } as Record<string, unknown>;
       if (merged.class == null) {
-        merged.class = 'solidaria-TextArea';
+        merged.class = "solidaria-TextArea";
       }
       return merged;
     }
-    return props.class == null ? { ...props, class: 'solidaria-TextArea' } : props;
+    return props.class == null ? { ...props, class: "solidaria-TextArea" } : props;
   };
 
   return <textarea {...mergedProps()} />;
@@ -212,7 +223,7 @@ export function TextArea(props: TextAreaProps): JSX.Element {
 export function TextField(props: TextFieldProps): JSX.Element {
   const [inputId, setInputId] = createSignal<string | undefined>();
   const contextProps = useContext(TextFieldContext);
-  const contextSlotProps = contextProps?.slots?.[props.slot ?? 'default'];
+  const contextSlotProps = contextProps?.slots?.[props.slot ?? "default"];
   const contextBaseProps = createMemo<TextFieldProps>(() => {
     if (!contextProps) return {};
     const {
@@ -226,29 +237,37 @@ export function TextField(props: TextFieldProps): JSX.Element {
     } = contextProps;
     return rest as TextFieldProps;
   });
-  const mergedProps = (contextProps ? mergeProps(contextBaseProps(), contextSlotProps ?? {}, props) : props) as TextFieldProps;
+  const mergedProps = (
+    contextProps ? mergeProps(contextBaseProps(), contextSlotProps ?? {}, props) : props
+  ) as TextFieldProps;
 
   // Split props
   const [local, ariaProps] = splitProps(mergedProps, [
-    'children',
-    'class',
-    'style',
-    'render',
-    'slot',
+    "children",
+    "class",
+    "style",
+    "render",
+    "slot",
   ]);
 
   // Create text field state
   // Use getters to ensure props are read lazily inside reactive contexts
   const state = createTextFieldState({
-    get value() { return ariaProps.value; },
-    get defaultValue() { return ariaProps.defaultValue; },
-    get onChange() { return ariaProps.onChange; },
+    get value() {
+      return ariaProps.value;
+    },
+    get defaultValue() {
+      return ariaProps.defaultValue;
+    },
+    get onChange() {
+      return ariaProps.onChange;
+    },
   });
 
   const inputAriaProps = createMemo(() => {
     const clean: Record<string, unknown> = {};
     for (const key in ariaProps as Record<string, unknown>) {
-      if (!key.startsWith('data-')) {
+      if (!key.startsWith("data-")) {
         clean[key] = (ariaProps as Record<string, unknown>)[key];
       }
     }
@@ -289,9 +308,9 @@ export function TextField(props: TextFieldProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-TextField',
+      defaultClassName: "solidaria-TextField",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
@@ -312,7 +331,7 @@ export function TextField(props: TextFieldProps): JSX.Element {
   const fieldValidation = createMemo<ValidationResult>(() => {
     const isInvalid = textFieldAria.isInvalid;
     const errorMessage = ariaProps.errorMessage;
-    const validationErrors = isInvalid && typeof errorMessage === 'string' ? [errorMessage] : [];
+    const validationErrors = isInvalid && typeof errorMessage === "string" ? [errorMessage] : [];
 
     return {
       isInvalid,
@@ -337,7 +356,7 @@ export function TextField(props: TextFieldProps): JSX.Element {
     get inputProps() {
       return mergeProps(
         textFieldAria.inputProps as Record<string, unknown>,
-        focusProps as Record<string, unknown>
+        focusProps as Record<string, unknown>,
       ) as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
     get descriptionProps() {
@@ -355,37 +374,35 @@ export function TextField(props: TextFieldProps): JSX.Element {
     setInputId,
   };
   const fieldChildren = () => renderProps.renderChildren();
-  const rootProps = () => ({
-    ...domProps(),
-    ...cleanHoverProps(),
-    class: renderProps.class(),
-    style: renderProps.style(),
-    slot: local.slot,
-    'data-disabled': ariaProps.isDisabled || undefined,
-    'data-invalid': textFieldAria.isInvalid || undefined,
-    'data-readonly': ariaProps.isReadOnly || undefined,
-    'data-required': ariaProps.isRequired || undefined,
-    'data-hovered': isHovered() || undefined,
-    'data-focused': isFocused() || undefined,
-    'data-focus-visible': isFocusVisible() || undefined,
-  }) as JSX.HTMLAttributes<HTMLDivElement>;
-  const customRootProps = () => ({
-    ...rootProps(),
-    children: fieldChildren(),
-  }) as JSX.HTMLAttributes<HTMLDivElement>;
+  const rootProps = () =>
+    ({
+      ...domProps(),
+      ...cleanHoverProps(),
+      class: renderProps.class(),
+      style: renderProps.style(),
+      slot: local.slot,
+      "data-disabled": ariaProps.isDisabled || undefined,
+      "data-invalid": textFieldAria.isInvalid || undefined,
+      "data-readonly": ariaProps.isReadOnly || undefined,
+      "data-required": ariaProps.isRequired || undefined,
+      "data-hovered": isHovered() || undefined,
+      "data-focused": isFocused() || undefined,
+      "data-focus-visible": isFocusVisible() || undefined,
+    }) as JSX.HTMLAttributes<HTMLDivElement>;
+  const customRootProps = () =>
+    ({
+      ...rootProps(),
+      children: fieldChildren(),
+    }) as JSX.HTMLAttributes<HTMLDivElement>;
 
   return (
     <FieldErrorContext.Provider value={fieldErrorContext}>
       <TextFieldContext.Provider value={contextValue}>
-        {local.render
-          ? local.render(customRootProps(), renderValues())
-          : (
-            <div
-              {...rootProps()}
-            >
-              {fieldChildren()}
-            </div>
-          )}
+        {local.render ? (
+          local.render(customRootProps(), renderValues())
+        ) : (
+          <div {...rootProps()}>{fieldChildren()}</div>
+        )}
       </TextFieldContext.Provider>
     </FieldErrorContext.Provider>
   );

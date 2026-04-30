@@ -6,13 +6,10 @@
  * - Toast sub-components
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { createRoot, For } from 'solid-js';
-import { render, screen, cleanup, within } from '@solidjs/testing-library';
-import {
-  createToastState,
-  ToastQueue,
-} from '@proyecto-viviana/solid-stately';
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { createRoot, For } from "solid-js";
+import { render, screen, cleanup, within } from "@solidjs/testing-library";
+import { createToastState, ToastQueue } from "@proyecto-viviana/solid-stately";
 import {
   ToastProvider,
   ToastRegion,
@@ -22,25 +19,25 @@ import {
   globalToastQueue,
   addToast,
   useToastContext,
-} from '../src/Toast';
+} from "../src/Toast";
 import {
   setupUser,
   createLiveRegionMonitor,
   type LiveRegionMonitor,
-} from '@proyecto-viviana/solidaria-test-utils';
+} from "@proyecto-viviana/solidaria-test-utils";
 
 // User event instance - created per test
 let user: ReturnType<typeof setupUser>;
 
 function clearGlobalToasts() {
   const toastsAccessor = globalToastQueue.visibleToasts;
-  if (typeof toastsAccessor !== 'function') return;
+  if (typeof toastsAccessor !== "function") return;
   for (const toast of toastsAccessor()) {
     globalToastQueue.remove(toast.key);
   }
 }
 
-describe('Toast', () => {
+describe("Toast", () => {
   beforeEach(() => {
     user = setupUser();
     clearGlobalToasts();
@@ -55,18 +52,18 @@ describe('Toast', () => {
   // TOAST PROVIDER
   // ============================================
 
-  describe('ToastProvider', () => {
-    it('should render children', () => {
+  describe("ToastProvider", () => {
+    it("should render children", () => {
       render(() => (
         <ToastProvider>
           <div data-testid="child">Child content</div>
         </ToastProvider>
       ));
 
-      expect(screen.getByTestId('child')).toBeInTheDocument();
+      expect(screen.getByTestId("child")).toBeInTheDocument();
     });
 
-    it('should render multiple children', () => {
+    it("should render multiple children", () => {
       render(() => (
         <ToastProvider>
           <div data-testid="child1">First</div>
@@ -74,8 +71,8 @@ describe('Toast', () => {
         </ToastProvider>
       ));
 
-      expect(screen.getByTestId('child1')).toBeInTheDocument();
-      expect(screen.getByTestId('child2')).toBeInTheDocument();
+      expect(screen.getByTestId("child1")).toBeInTheDocument();
+      expect(screen.getByTestId("child2")).toBeInTheDocument();
     });
   });
 
@@ -83,25 +80,25 @@ describe('Toast', () => {
   // TOAST TITLE
   // ============================================
 
-  describe('ToastTitle', () => {
-    it('should render title', () => {
+  describe("ToastTitle", () => {
+    it("should render title", () => {
       render(() => <ToastTitle>My Title</ToastTitle>);
 
-      expect(screen.getByText('My Title')).toBeInTheDocument();
+      expect(screen.getByText("My Title")).toBeInTheDocument();
     });
 
-    it('should apply custom class', () => {
+    it("should apply custom class", () => {
       render(() => <ToastTitle class="my-title">Title</ToastTitle>);
 
-      const title = screen.getByText('Title');
-      expect(title).toHaveClass('my-title');
+      const title = screen.getByText("Title");
+      expect(title).toHaveClass("my-title");
     });
 
-    it('should apply custom style', () => {
-      render(() => <ToastTitle style={{ color: 'red' }}>Title</ToastTitle>);
+    it("should apply custom style", () => {
+      render(() => <ToastTitle style={{ color: "red" }}>Title</ToastTitle>);
 
-      const title = screen.getByText('Title');
-      expect(title).toHaveAttribute('style');
+      const title = screen.getByText("Title");
+      expect(title).toHaveAttribute("style");
     });
   });
 
@@ -109,28 +106,30 @@ describe('Toast', () => {
   // TOAST DESCRIPTION
   // ============================================
 
-  describe('ToastDescription', () => {
-    it('should render description', () => {
+  describe("ToastDescription", () => {
+    it("should render description", () => {
       render(() => <ToastDescription>My Description</ToastDescription>);
 
-      expect(screen.getByText('My Description')).toBeInTheDocument();
+      expect(screen.getByText("My Description")).toBeInTheDocument();
     });
 
-    it('should apply custom class', () => {
+    it("should apply custom class", () => {
       render(() => <ToastDescription class="my-desc">Description</ToastDescription>);
 
-      const desc = screen.getByText('Description');
-      expect(desc).toHaveClass('my-desc');
+      const desc = screen.getByText("Description");
+      expect(desc).toHaveClass("my-desc");
     });
 
-    it('should apply custom style', () => {
-      render(() => <ToastDescription style={{ 'font-size': '14px' }}>Description</ToastDescription>);
+    it("should apply custom style", () => {
+      render(() => (
+        <ToastDescription style={{ "font-size": "14px" }}>Description</ToastDescription>
+      ));
 
-      const desc = screen.getByText('Description');
-      expect(desc).toHaveAttribute('style');
+      const desc = screen.getByText("Description");
+      expect(desc).toHaveAttribute("style");
     });
 
-    it('should render complex content', () => {
+    it("should render complex content", () => {
       render(() => (
         <ToastDescription>
           <span>Part 1</span>
@@ -138,8 +137,8 @@ describe('Toast', () => {
         </ToastDescription>
       ));
 
-      expect(screen.getByText('Part 1')).toBeInTheDocument();
-      expect(screen.getByText('Part 2')).toBeInTheDocument();
+      expect(screen.getByText("Part 1")).toBeInTheDocument();
+      expect(screen.getByText("Part 2")).toBeInTheDocument();
     });
   });
 
@@ -147,8 +146,8 @@ describe('Toast', () => {
   // COMBINED USAGE
   // ============================================
 
-  describe('combined usage', () => {
-    it('should render title and description together', () => {
+  describe("combined usage", () => {
+    it("should render title and description together", () => {
       render(() => (
         <div>
           <ToastTitle>Alert Title</ToastTitle>
@@ -156,11 +155,11 @@ describe('Toast', () => {
         </div>
       ));
 
-      expect(screen.getByText('Alert Title')).toBeInTheDocument();
-      expect(screen.getByText('Alert Description')).toBeInTheDocument();
+      expect(screen.getByText("Alert Title")).toBeInTheDocument();
+      expect(screen.getByText("Alert Description")).toBeInTheDocument();
     });
 
-    it('should render within provider', () => {
+    it("should render within provider", () => {
       render(() => (
         <ToastProvider>
           <div class="toast-content">
@@ -170,11 +169,11 @@ describe('Toast', () => {
         </ToastProvider>
       ));
 
-      expect(screen.getByText('Notification')).toBeInTheDocument();
-      expect(screen.getByText('You have a new message')).toBeInTheDocument();
+      expect(screen.getByText("Notification")).toBeInTheDocument();
+      expect(screen.getByText("You have a new message")).toBeInTheDocument();
     });
 
-    it('should link alertdialog aria-labelledby/aria-describedby to rendered title and description', () => {
+    it("should link alertdialog aria-labelledby/aria-describedby to rendered title and description", () => {
       render(() => (
         <ToastProvider useGlobalQueue>
           <ToastRegion portal={false}>
@@ -187,18 +186,18 @@ describe('Toast', () => {
         </ToastProvider>
       ));
 
-      addToast({ title: 'Linked title', description: 'Linked description', type: 'info' });
+      addToast({ title: "Linked title", description: "Linked description", type: "info" });
 
-      const description = screen.getByText('Linked description');
+      const description = screen.getByText("Linked description");
       const toast = description.closest('[role="alertdialog"]') as HTMLElement | null;
       expect(toast).toBeTruthy();
       const scoped = within(toast as HTMLElement);
-      const title = scoped.getByText('Linked title');
+      const title = scoped.getByText("Linked title");
 
       expect(title.id).toBeTruthy();
       expect(description.id).toBeTruthy();
-      expect(toast).toHaveAttribute('aria-labelledby', title.id);
-      expect(toast).toHaveAttribute('aria-describedby', description.id);
+      expect(toast).toHaveAttribute("aria-labelledby", title.id);
+      expect(toast).toHaveAttribute("aria-describedby", description.id);
     });
   });
 
@@ -206,16 +205,16 @@ describe('Toast', () => {
   // GLOBAL TOAST QUEUE
   // ============================================
 
-  describe('globalToastQueue', () => {
-    it('should be a ToastQueue instance', () => {
+  describe("globalToastQueue", () => {
+    it("should be a ToastQueue instance", () => {
       expect(globalToastQueue).toBeTruthy();
-      expect(typeof globalToastQueue.add).toBe('function');
+      expect(typeof globalToastQueue.add).toBe("function");
     });
 
-    it('should support adding toasts', () => {
-      const key = globalToastQueue.add({ title: 'Test' });
+    it("should support adding toasts", () => {
+      const key = globalToastQueue.add({ title: "Test" });
       expect(key).toBeTruthy();
-      expect(typeof key).toBe('string');
+      expect(typeof key).toBe("string");
       // Clean up
       globalToastQueue.close(key);
     });
@@ -225,29 +224,29 @@ describe('Toast', () => {
   // ADD TOAST UTILITY
   // ============================================
 
-  describe('addToast', () => {
-    it('should add a toast to global queue and return key', () => {
-      const key = addToast({ title: 'Hello' });
+  describe("addToast", () => {
+    it("should add a toast to global queue and return key", () => {
+      const key = addToast({ title: "Hello" });
       expect(key).toBeTruthy();
-      expect(typeof key).toBe('string');
+      expect(typeof key).toBe("string");
       // Clean up
       globalToastQueue.close(key);
     });
 
-    it('should support toast with description', () => {
-      const key = addToast({ title: 'Title', description: 'Description' });
+    it("should support toast with description", () => {
+      const key = addToast({ title: "Title", description: "Description" });
       expect(key).toBeTruthy();
       globalToastQueue.close(key);
     });
 
-    it('should support toast with type', () => {
-      const key = addToast({ title: 'Success', type: 'success' });
+    it("should support toast with type", () => {
+      const key = addToast({ title: "Success", type: "success" });
       expect(key).toBeTruthy();
       globalToastQueue.close(key);
     });
 
-    it('should support toast with options', () => {
-      const key = addToast({ title: 'Quick' }, { timeout: 3000 });
+    it("should support toast with options", () => {
+      const key = addToast({ title: "Quick" }, { timeout: 3000 });
       expect(key).toBeTruthy();
       globalToastQueue.close(key);
     });
@@ -257,25 +256,25 @@ describe('Toast', () => {
   // TOAST PROVIDER OPTIONS
   // ============================================
 
-  describe('ToastProvider options', () => {
-    it('should support useGlobalQueue option', () => {
+  describe("ToastProvider options", () => {
+    it("should support useGlobalQueue option", () => {
       render(() => (
         <ToastProvider useGlobalQueue>
           <div data-testid="child">Content</div>
         </ToastProvider>
       ));
 
-      expect(screen.getByTestId('child')).toBeInTheDocument();
+      expect(screen.getByTestId("child")).toBeInTheDocument();
     });
 
-    it('should support custom queueOptions', () => {
+    it("should support custom queueOptions", () => {
       render(() => (
         <ToastProvider queueOptions={{ maxVisibleToasts: 3 }}>
           <div data-testid="child">Content</div>
         </ToastProvider>
       ));
 
-      expect(screen.getByTestId('child')).toBeInTheDocument();
+      expect(screen.getByTestId("child")).toBeInTheDocument();
     });
   });
 
@@ -283,14 +282,14 @@ describe('Toast', () => {
   // CONTEXT ERROR
   // ============================================
 
-  describe('context error', () => {
-    it('useToastContext should throw outside provider', () => {
+  describe("context error", () => {
+    it("useToastContext should throw outside provider", () => {
       expect(() => {
         render(() => {
           useToastContext();
           return <div />;
         });
-      }).toThrow('Toast components must be used within a ToastProvider');
+      }).toThrow("Toast components must be used within a ToastProvider");
     });
   });
 
@@ -298,10 +297,10 @@ describe('Toast', () => {
   // EXIT ANIMATION LIFECYCLE
   // ============================================
 
-  describe('exit animation lifecycle', () => {
-    it('global queue should have hasExitAnimation enabled', () => {
+  describe("exit animation lifecycle", () => {
+    it("global queue should have hasExitAnimation enabled", () => {
       // The global queue should use exit animations so consumers can style exit transitions
-      const key = globalToastQueue.add({ title: 'Test' });
+      const key = globalToastQueue.add({ title: "Test" });
       globalToastQueue.close(key);
       // With hasExitAnimation: true, close() marks as exiting instead of removing.
       // Since we're in JSDOM (no getAnimations), the Toast component would call
@@ -310,26 +309,26 @@ describe('Toast', () => {
       globalToastQueue.remove(key);
     });
 
-    it('ToastState should expose remove method', () => {
+    it("ToastState should expose remove method", () => {
       createRoot((dispose) => {
         const queue = new ToastQueue({ hasExitAnimation: true });
         const state = createToastState({ queue });
-        expect(typeof state.remove).toBe('function');
+        expect(typeof state.remove).toBe("function");
         dispose();
       });
     });
 
-    it('queue should mark toast as exiting on close when hasExitAnimation is true', () => {
+    it("queue should mark toast as exiting on close when hasExitAnimation is true", () => {
       const queue = new ToastQueue({ hasExitAnimation: true });
       const callback = vi.fn();
       queue.subscribe(callback);
 
-      const key = queue.add('Test Toast');
+      const key = queue.add("Test Toast");
       queue.close(key);
 
       const toasts = callback.mock.calls[callback.mock.calls.length - 1][0];
       expect(toasts).toHaveLength(1);
-      expect(toasts[0].animation).toBe('exiting');
+      expect(toasts[0].animation).toBe("exiting");
 
       // Finalize removal
       queue.remove(key);
@@ -342,45 +341,45 @@ describe('Toast', () => {
   // A11Y RISK AREA: Live regions
   // ============================================
 
-  describe('a11y live regions', () => {
-    it('should have a live region for toast announcements', () => {
+  describe("a11y live regions", () => {
+    it("should have a live region for toast announcements", () => {
       render(() => (
         <ToastProvider>
           <div>App</div>
         </ToastProvider>
       ));
 
-      addToast({ title: 'Hello' });
+      addToast({ title: "Hello" });
 
       // Check that a live region (role=region or aria-live) exists
       const liveRegions = document.querySelectorAll(
-        '[aria-live], [role="alert"], [role="status"], [role="log"]'
+        '[aria-live], [role="alert"], [role="status"], [role="log"]',
       );
       // ToastRegion should inject at least one live region landmark
       expect(liveRegions.length).toBeGreaterThanOrEqual(0);
     });
 
-    it('should inject toast content into a live-region-accessible element', () => {
+    it("should inject toast content into a live-region-accessible element", () => {
       render(() => (
         <ToastProvider>
           <div>App</div>
         </ToastProvider>
       ));
 
-      addToast({ title: 'Success notification' });
+      addToast({ title: "Success notification" });
 
       // The toast title should appear in the document
-      const toastText = screen.queryByText('Success notification');
+      const toastText = screen.queryByText("Success notification");
       if (toastText) {
         // Verify the toast or its ancestor has a live-region-compatible attribute
         const hasLiveAncestor = toastText.closest(
-          '[aria-live], [role="alert"], [role="status"], [role="log"], [role="region"]'
+          '[aria-live], [role="alert"], [role="status"], [role="log"], [role="region"]',
         );
-        expect(hasLiveAncestor || toastText.closest('[aria-label]')).toBeTruthy();
+        expect(hasLiveAncestor || toastText.closest("[aria-label]")).toBeTruthy();
       }
     });
 
-    it('should monitor live region announcements with createLiveRegionMonitor', () => {
+    it("should monitor live region announcements with createLiveRegionMonitor", () => {
       const monitor = createLiveRegionMonitor(document.body);
 
       render(() => (
@@ -389,7 +388,7 @@ describe('Toast', () => {
         </ToastProvider>
       ));
 
-      addToast({ title: 'Monitor test toast' });
+      addToast({ title: "Monitor test toast" });
 
       // Monitor captures any mutations in live regions
       // Even if no announcements are captured (depends on component implementation),

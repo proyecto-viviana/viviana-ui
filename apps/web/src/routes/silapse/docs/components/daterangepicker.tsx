@@ -48,14 +48,8 @@ import {
 <p>Selected: {formatRange(range())}</p>`}
       >
         <div class="flex flex-col gap-4 max-w-sm">
-          <DateRangePicker
-            label="Trip dates"
-            value={range()}
-            onChange={setRange}
-          />
-          <p class="text-sm text-bg-500">
-            Selected range: {formatRange(range())}
-          </p>
+          <DateRangePicker label="Trip dates" value={range()} onChange={setRange} />
+          <p class="text-sm text-bg-500">Selected range: {formatRange(range())}</p>
         </div>
       </Example>
 
@@ -91,10 +85,7 @@ const maxDate = new CalendarDate(2026, 12, 31);
 />`}
       >
         <div class="max-w-sm">
-          <DateRangePicker
-            label="Unavailable range"
-            isDisabled
-          />
+          <DateRangePicker label="Unavailable range" isDisabled />
         </div>
       </Example>
 
@@ -107,10 +98,7 @@ const maxDate = new CalendarDate(2026, 12, 31);
 />`}
       >
         <div class="max-w-sm">
-          <DateRangePicker
-            label="Booking dates"
-            isRequired
-          />
+          <DateRangePicker label="Booking dates" isRequired />
         </div>
       </Example>
 
@@ -181,11 +169,10 @@ const maxDate = new CalendarDate(2026, 12, 31);
             Each date display is labelled with <code>aria-label</code> for screen readers
           </li>
           <li>
-            The calendar popup uses a range selection mode with <code>aria-selected</code> on range cells
+            The calendar popup uses a range selection mode with <code>aria-selected</code> on range
+            cells
           </li>
-          <li>
-            Range endpoints are visually and programmatically distinct (start and end)
-          </li>
+          <li>Range endpoints are visually and programmatically distinct (start and end)</li>
           <li>Calendar popup traps focus and can be dismissed with Escape</li>
           <li>
             Required state is communicated through <code>aria-required</code>

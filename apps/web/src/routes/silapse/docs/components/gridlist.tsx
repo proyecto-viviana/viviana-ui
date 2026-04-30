@@ -53,9 +53,9 @@ function GridListPage() {
   };
 
   const statusIcon: Record<string, string> = {
-    "Todo": "[ ]",
+    Todo: "[ ]",
     "In Progress": "[~]",
-    "Done": "[x]",
+    Done: "[x]",
   };
 
   return (
@@ -193,7 +193,8 @@ function GridListPage() {
             )}
           </GridList>
           <p class="mt-2 text-sm text-bg-500">
-            Selected ({multiSelected().size}): {multiSelected().size > 0 ? [...multiSelected()].join(", ") : "None"}
+            Selected ({multiSelected().size}):{" "}
+            {multiSelected().size > 0 ? [...multiSelected()].join(", ") : "None"}
           </p>
         </div>
       </Example>

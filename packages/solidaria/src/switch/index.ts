@@ -1,1 +1,1 @@
-export { createSwitch, type AriaSwitchProps, type SwitchAria } from './createSwitch';
+export { createSwitch, type AriaSwitchProps, type SwitchAria } from "./createSwitch";

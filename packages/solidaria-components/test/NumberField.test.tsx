@@ -10,8 +10,8 @@
  * - ARIA attributes
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { render, screen, cleanup, fireEvent, waitFor } from "@solidjs/testing-library";
 import {
   NumberField,
   NumberFieldLabel,
@@ -19,15 +19,17 @@ import {
   NumberFieldInput,
   NumberFieldIncrementButton,
   NumberFieldDecrementButton,
-} from '../src/NumberField';
-import { setupUser, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
+} from "../src/NumberField";
+import {
+  setupUser,
+  assertNoA11yViolations,
+  assertAriaIdIntegrity,
+} from "@proyecto-viviana/solidaria-test-utils";
 
 // setupUser is consolidated in solidaria-test-utils.
 
 // Helper component for testing - NumberField uses render props pattern
-function TestNumberField(props: {
-  fieldProps?: Partial<Parameters<typeof NumberField>[0]>;
-}) {
+function TestNumberField(props: { fieldProps?: Partial<Parameters<typeof NumberField>[0]> }) {
   return (
     <NumberField aria-label="Test Number" {...props.fieldProps}>
       {() => (
@@ -41,7 +43,7 @@ function TestNumberField(props: {
   );
 }
 
-describe('NumberField', () => {
+describe("NumberField", () => {
   let user: ReturnType<typeof setupUser>;
 
   beforeEach(() => {
@@ -56,30 +58,30 @@ describe('NumberField', () => {
   // RENDERING
   // ============================================
 
-  describe('rendering', () => {
-    it('should render with default class', () => {
+  describe("rendering", () => {
+    it("should render with default class", () => {
       render(() => <TestNumberField />);
 
-      const field = document.querySelector('.solidaria-NumberField');
+      const field = document.querySelector(".solidaria-NumberField");
       expect(field).toBeInTheDocument();
     });
 
-    it('should render input with spinbutton role', () => {
+    it("should render input with spinbutton role", () => {
       render(() => <TestNumberField />);
 
-      const input = screen.getByRole('spinbutton');
+      const input = screen.getByRole("spinbutton");
       expect(input).toBeInTheDocument();
     });
 
-    it('should render increment and decrement buttons', () => {
+    it("should render increment and decrement buttons", () => {
       render(() => <TestNumberField />);
 
       // Buttons have aria-labels like "Increase Test Number" and "Decrease Test Number"
-      expect(screen.getByRole('button', { name: /increase/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /decrease/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /increase/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /decrease/i })).toBeInTheDocument();
     });
 
-    it('should render with label', () => {
+    it("should render with label", () => {
       render(() => (
         <NumberField aria-label="Quantity">
           {() => (
@@ -93,13 +95,13 @@ describe('NumberField', () => {
         </NumberField>
       ));
 
-      expect(screen.getByText('Quantity')).toBeInTheDocument();
+      expect(screen.getByText("Quantity")).toBeInTheDocument();
     });
 
-    it('should render with custom class', () => {
-      render(() => <TestNumberField fieldProps={{ class: 'my-number-field' }} />);
+    it("should render with custom class", () => {
+      render(() => <TestNumberField fieldProps={{ class: "my-number-field" }} />);
 
-      const field = document.querySelector('.my-number-field');
+      const field = document.querySelector(".my-number-field");
       expect(field).toBeInTheDocument();
     });
   });
@@ -108,19 +110,19 @@ describe('NumberField', () => {
   // VALUE DISPLAY
   // ============================================
 
-  describe('value display', () => {
-    it('should display defaultValue', () => {
+  describe("value display", () => {
+    it("should display defaultValue", () => {
       render(() => <TestNumberField fieldProps={{ defaultValue: 5 }} />);
 
-      const input = screen.getByRole('spinbutton');
-      expect(input).toHaveValue('5');
+      const input = screen.getByRole("spinbutton");
+      expect(input).toHaveValue("5");
     });
 
-    it('should display controlled value', () => {
+    it("should display controlled value", () => {
       render(() => <TestNumberField fieldProps={{ value: 10 }} />);
 
-      const input = screen.getByRole('spinbutton');
-      expect(input).toHaveValue('10');
+      const input = screen.getByRole("spinbutton");
+      expect(input).toHaveValue("10");
     });
   });
 
@@ -128,62 +130,62 @@ describe('NumberField', () => {
   // INCREMENT/DECREMENT BUTTONS
   // ============================================
 
-  describe('increment/decrement buttons', () => {
-    it('should increment on increment button click', async () => {
+  describe("increment/decrement buttons", () => {
+    it("should increment on increment button click", async () => {
       const onChange = vi.fn();
       render(() => <TestNumberField fieldProps={{ defaultValue: 5, onChange }} />);
 
-      const incrementButton = screen.getByRole('button', { name: /increase/i });
+      const incrementButton = screen.getByRole("button", { name: /increase/i });
       await user.click(incrementButton);
 
       expect(onChange).toHaveBeenCalledWith(6);
     });
 
-    it('should decrement on decrement button click', async () => {
+    it("should decrement on decrement button click", async () => {
       const onChange = vi.fn();
       render(() => <TestNumberField fieldProps={{ defaultValue: 5, onChange }} />);
 
-      const decrementButton = screen.getByRole('button', { name: /decrease/i });
+      const decrementButton = screen.getByRole("button", { name: /decrease/i });
       await user.click(decrementButton);
 
       expect(onChange).toHaveBeenCalledWith(4);
     });
 
-    it('should respect step value', async () => {
+    it("should respect step value", async () => {
       const onChange = vi.fn();
       render(() => <TestNumberField fieldProps={{ defaultValue: 5, step: 5, onChange }} />);
 
-      const incrementButton = screen.getByRole('button', { name: /increase/i });
+      const incrementButton = screen.getByRole("button", { name: /increase/i });
       await user.click(incrementButton);
 
       expect(onChange).toHaveBeenCalledWith(10);
     });
 
-    it('should return focus to input after increment button click', async () => {
+    it("should return focus to input after increment button click", async () => {
       render(() => <TestNumberField fieldProps={{ defaultValue: 5 }} />);
 
-      const input = screen.getByRole('spinbutton');
-      const incrementButton = screen.getByRole('button', { name: /increase/i });
+      const input = screen.getByRole("spinbutton");
+      const incrementButton = screen.getByRole("button", { name: /increase/i });
       input.focus();
       expect(input).toHaveFocus();
 
       await user.click(incrementButton);
 
-      expect(screen.getByRole('spinbutton')).toHaveFocus();
+      expect(screen.getByRole("spinbutton")).toHaveFocus();
     });
 
-    it('should disable increment button at maxValue', () => {
+    it("should disable increment button at maxValue", () => {
       render(() => <TestNumberField fieldProps={{ value: 10, maxValue: 10 }} />);
 
-      const incrementButton = screen.getByRole('button', { name: /increase/i });
-      expect(incrementButton).toHaveAttribute('data-disabled');
+      const incrementButton = screen.getByRole("button", { name: /increase/i });
+      expect(incrementButton).toHaveAttribute("data-disabled");
     });
 
-    it('should disable decrement button at minValue', () => {
+    it("should disable decrement button at minValue", () => {
       render(() => <TestNumberField fieldProps={{ value: 0, minValue: 0 }} />);
 
-      const decrementButton = screen.getByRole('button', { name: /decrease/i });
-      expect(decrementButton).toHaveAttribute('data-disabled');
+      const decrementButton = screen.getByRole("button", { name: /decrease/i });
+      expect(decrementButton).toHaveAttribute("data-disabled");
     });
   });
 
@@ -191,40 +193,40 @@ describe('NumberField', () => {
   // KEYBOARD INTERACTIONS
   // ============================================
 
-  describe('keyboard interactions', () => {
-    it('should increment on Arrow Up', async () => {
+  describe("keyboard interactions", () => {
+    it("should increment on Arrow Up", async () => {
       const onChange = vi.fn();
       render(() => <TestNumberField fieldProps={{ defaultValue: 5, onChange }} />);
 
-      const input = screen.getByRole('spinbutton');
+      const input = screen.getByRole("spinbutton");
       input.focus();
-      fireEvent.keyDown(input, { key: 'ArrowUp' });
+      fireEvent.keyDown(input, { key: "ArrowUp" });
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(6);
       });
     });
 
-    it('should decrement on Arrow Down', async () => {
+    it("should decrement on Arrow Down", async () => {
       const onChange = vi.fn();
       render(() => <TestNumberField fieldProps={{ defaultValue: 5, onChange }} />);
 
-      const input = screen.getByRole('spinbutton');
+      const input = screen.getByRole("spinbutton");
       input.focus();
-      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      fireEvent.keyDown(input, { key: "ArrowDown" });
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(4);
       });
     });
 
-    it('should forward onKeyDown and onKeyUp from props', async () => {
+    it("should forward onKeyDown and onKeyUp from props", async () => {
       const onKeyDown = vi.fn();
       const onKeyUp = vi.fn();
       render(() => <TestNumberField fieldProps={{ onKeyDown, onKeyUp }} />);
 
-      const input = screen.getByRole('spinbutton');
-      await user.type(input, '1');
+      const input = screen.getByRole("spinbutton");
+      await user.type(input, "1");
 
       expect(onKeyDown).toHaveBeenCalled();
       expect(onKeyUp).toHaveBeenCalled();
@@ -235,35 +237,35 @@ describe('NumberField', () => {
   // MIN/MAX CONSTRAINTS
   // ============================================
 
-  describe('min/max constraints', () => {
-    it('should respect minValue', async () => {
+  describe("min/max constraints", () => {
+    it("should respect minValue", async () => {
       const onChange = vi.fn();
       render(() => <TestNumberField fieldProps={{ value: 0, minValue: 0, onChange }} />);
 
-      const decrementButton = screen.getByRole('button', { name: /decrease/i });
+      const decrementButton = screen.getByRole("button", { name: /decrease/i });
       await user.click(decrementButton);
 
       // Should not call onChange since already at min
       expect(onChange).not.toHaveBeenCalled();
     });
 
-    it('should respect maxValue', async () => {
+    it("should respect maxValue", async () => {
       const onChange = vi.fn();
       render(() => <TestNumberField fieldProps={{ value: 10, maxValue: 10, onChange }} />);
 
-      const incrementButton = screen.getByRole('button', { name: /increase/i });
+      const incrementButton = screen.getByRole("button", { name: /increase/i });
       await user.click(incrementButton);
 
       // Should not call onChange since already at max
       expect(onChange).not.toHaveBeenCalled();
     });
 
-    it('should have aria-valuemin and aria-valuemax', () => {
+    it("should have aria-valuemin and aria-valuemax", () => {
       render(() => <TestNumberField fieldProps={{ minValue: 0, maxValue: 100 }} />);
 
-      const input = screen.getByRole('spinbutton');
-      expect(input).toHaveAttribute('aria-valuemin', '0');
-      expect(input).toHaveAttribute('aria-valuemax', '100');
+      const input = screen.getByRole("spinbutton");
+      expect(input).toHaveAttribute("aria-valuemin", "0");
+      expect(input).toHaveAttribute("aria-valuemax", "100");
     });
   });
 
@@ -271,29 +273,29 @@ describe('NumberField', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('should support isDisabled', () => {
+  describe("disabled state", () => {
+    it("should support isDisabled", () => {
       render(() => <TestNumberField fieldProps={{ isDisabled: true }} />);
 
-      const input = screen.getByRole('spinbutton');
+      const input = screen.getByRole("spinbutton");
       expect(input).toBeDisabled();
     });
 
-    it('should disable all buttons when disabled', () => {
+    it("should disable all buttons when disabled", () => {
       render(() => <TestNumberField fieldProps={{ isDisabled: true }} />);
 
-      const incrementButton = screen.getByRole('button', { name: /increase/i });
-      const decrementButton = screen.getByRole('button', { name: /decrease/i });
+      const incrementButton = screen.getByRole("button", { name: /increase/i });
+      const decrementButton = screen.getByRole("button", { name: /decrease/i });
 
-      expect(incrementButton).toHaveAttribute('data-disabled');
-      expect(decrementButton).toHaveAttribute('data-disabled');
+      expect(incrementButton).toHaveAttribute("data-disabled");
+      expect(decrementButton).toHaveAttribute("data-disabled");
     });
 
-    it('should have data-disabled attribute on field', () => {
+    it("should have data-disabled attribute on field", () => {
       render(() => <TestNumberField fieldProps={{ isDisabled: true }} />);
 
-      const field = document.querySelector('.solidaria-NumberField');
-      expect(field).toHaveAttribute('data-disabled');
+      const field = document.querySelector(".solidaria-NumberField");
+      expect(field).toHaveAttribute("data-disabled");
     });
   });
 
@@ -301,32 +303,33 @@ describe('NumberField', () => {
   // READ ONLY STATE
   // ============================================
 
-  describe('read only state', () => {
-    it('should support isReadOnly', () => {
+  describe("read only state", () => {
+    it("should support isReadOnly", () => {
       render(() => <TestNumberField fieldProps={{ isReadOnly: true }} />);
 
-      const input = screen.getByRole('spinbutton');
-      expect(input).toHaveAttribute('readonly');
+      const input = screen.getByRole("spinbutton");
+      expect(input).toHaveAttribute("readonly");
     });
 
-    it('should have data-readonly attribute on field', () => {
+    it("should have data-readonly attribute on field", () => {
       render(() => <TestNumberField fieldProps={{ isReadOnly: true }} />);
 
-      const field = document.querySelector('.solidaria-NumberField');
-      expect(field).toHaveAttribute('data-readonly');
+      const field = document.querySelector(".solidaria-NumberField");
+      expect(field).toHaveAttribute("data-readonly");
     });
 
-    it('should expose isReadOnly in render props', () => {
+    it("should expose isReadOnly in render props", () => {
       render(() => (
         <TestNumberField
           fieldProps={{
             isReadOnly: true,
-            class: (renderProps) => renderProps.isReadOnly ? 'readonly-numberfield' : 'editable-numberfield',
+            class: (renderProps) =>
+              renderProps.isReadOnly ? "readonly-numberfield" : "editable-numberfield",
           }}
         />
       ));
 
-      expect(document.querySelector('.readonly-numberfield')).toBeInTheDocument();
+      expect(document.querySelector(".readonly-numberfield")).toBeInTheDocument();
     });
   });
 
@@ -334,19 +337,19 @@ describe('NumberField', () => {
   // REQUIRED STATE
   // ============================================
 
-  describe('required state', () => {
-    it('should support isRequired', () => {
+  describe("required state", () => {
+    it("should support isRequired", () => {
       render(() => <TestNumberField fieldProps={{ isRequired: true }} />);
 
-      const input = screen.getByRole('spinbutton');
-      expect(input).toHaveAttribute('aria-required', 'true');
+      const input = screen.getByRole("spinbutton");
+      expect(input).toHaveAttribute("aria-required", "true");
     });
 
-    it('should have data-required attribute on field', () => {
+    it("should have data-required attribute on field", () => {
       render(() => <TestNumberField fieldProps={{ isRequired: true }} />);
 
-      const field = document.querySelector('.solidaria-NumberField');
-      expect(field).toHaveAttribute('data-required');
+      const field = document.querySelector(".solidaria-NumberField");
+      expect(field).toHaveAttribute("data-required");
     });
   });
 
@@ -354,19 +357,19 @@ describe('NumberField', () => {
   // INVALID STATE
   // ============================================
 
-  describe('invalid state', () => {
-    it('should support isInvalid', () => {
+  describe("invalid state", () => {
+    it("should support isInvalid", () => {
       render(() => <TestNumberField fieldProps={{ isInvalid: true }} />);
 
-      const input = screen.getByRole('spinbutton');
-      expect(input).toHaveAttribute('aria-invalid', 'true');
+      const input = screen.getByRole("spinbutton");
+      expect(input).toHaveAttribute("aria-invalid", "true");
     });
 
-    it('should have data-invalid attribute on field', () => {
+    it("should have data-invalid attribute on field", () => {
       render(() => <TestNumberField fieldProps={{ isInvalid: true }} />);
 
-      const field = document.querySelector('.solidaria-NumberField');
-      expect(field).toHaveAttribute('data-invalid');
+      const field = document.querySelector(".solidaria-NumberField");
+      expect(field).toHaveAttribute("data-invalid");
     });
   });
 
@@ -374,26 +377,26 @@ describe('NumberField', () => {
   // ARIA ATTRIBUTES
   // ============================================
 
-  describe('aria attributes', () => {
-    it('should have spinbutton role on input', () => {
+  describe("aria attributes", () => {
+    it("should have spinbutton role on input", () => {
       render(() => <TestNumberField />);
 
-      const input = screen.getByRole('spinbutton');
+      const input = screen.getByRole("spinbutton");
       expect(input).toBeInTheDocument();
     });
 
-    it('should have aria-valuenow', () => {
+    it("should have aria-valuenow", () => {
       render(() => <TestNumberField fieldProps={{ value: 5 }} />);
 
-      const input = screen.getByRole('spinbutton');
-      expect(input).toHaveAttribute('aria-valuenow', '5');
+      const input = screen.getByRole("spinbutton");
+      expect(input).toHaveAttribute("aria-valuenow", "5");
     });
 
-    it('should have aria-label when provided', () => {
+    it("should have aria-label when provided", () => {
       render(() => <TestNumberField />);
 
-      const input = screen.getByRole('spinbutton');
-      expect(input).toHaveAttribute('aria-label', 'Test Number');
+      const input = screen.getByRole("spinbutton");
+      expect(input).toHaveAttribute("aria-label", "Test Number");
     });
   });
 
@@ -401,63 +404,65 @@ describe('NumberField', () => {
   // CONTROLLED/UNCONTROLLED
   // ============================================
 
-  describe('controlled/uncontrolled', () => {
-    it('should fire onChange for uncontrolled field', async () => {
+  describe("controlled/uncontrolled", () => {
+    it("should fire onChange for uncontrolled field", async () => {
       const onChange = vi.fn();
       render(() => <TestNumberField fieldProps={{ defaultValue: 0, onChange }} />);
 
-      const incrementButton = screen.getByRole('button', { name: /increase/i });
+      const incrementButton = screen.getByRole("button", { name: /increase/i });
       await user.click(incrementButton);
 
       expect(onChange).toHaveBeenCalledWith(1);
     });
 
-    it('should fire onChange for controlled field', async () => {
+    it("should fire onChange for controlled field", async () => {
       const onChange = vi.fn();
       render(() => <TestNumberField fieldProps={{ value: 0, onChange }} />);
 
-      const incrementButton = screen.getByRole('button', { name: /increase/i });
+      const incrementButton = screen.getByRole("button", { name: /increase/i });
       await user.click(incrementButton);
 
       expect(onChange).toHaveBeenCalledWith(1);
     });
   });
 
-  describe('a11y validation', () => {
-    it('axe: default', async () => {
+  describe("a11y validation", () => {
+    it("axe: default", async () => {
       const { container } = render(() => <TestNumberField />);
       await assertNoA11yViolations(container);
     });
 
-    it('axe: with value', async () => {
+    it("axe: with value", async () => {
       const { container } = render(() => <TestNumberField fieldProps={{ defaultValue: 42 }} />);
       await assertNoA11yViolations(container);
     });
 
-    it('axe: disabled', async () => {
+    it("axe: disabled", async () => {
       const { container } = render(() => <TestNumberField fieldProps={{ isDisabled: true }} />);
       await assertNoA11yViolations(container);
     });
 
-    it('axe: invalid', async () => {
+    it("axe: invalid", async () => {
       const { container } = render(() => <TestNumberField fieldProps={{ isInvalid: true }} />);
       await assertNoA11yViolations(container);
     });
 
-    it('axe: with min/max', async () => {
-      const { container } = render(() => <TestNumberField fieldProps={{ minValue: 0, maxValue: 100, defaultValue: 50 }} />);
+    it("axe: with min/max", async () => {
+      const { container } = render(() => (
+        <TestNumberField fieldProps={{ minValue: 0, maxValue: 100, defaultValue: 50 }} />
+      ));
       await assertNoA11yViolations(container);
     });
 
-    it('ARIA ID: no dangling refs', () => {
+    it("ARIA ID: no dangling refs", () => {
       render(() => <TestNumberField fieldProps={{ defaultValue: 5 }} />);
       assertAriaIdIntegrity(document.body);
     });
 
-    it('DOM: data-testid forwards', () => {
-      render(() => <TestNumberField fieldProps={{ 'data-testid': 'qty' } as any} />);
-      const field = document.querySelector('.solidaria-NumberField');
-      expect(field).toHaveAttribute('data-testid', 'qty');
+    it("DOM: data-testid forwards", () => {
+      render(() => <TestNumberField fieldProps={{ "data-testid": "qty" } as any} />);
+      const field = document.querySelector(".solidaria-NumberField");
+      expect(field).toHaveAttribute("data-testid", "qty");
     });
   });
 });

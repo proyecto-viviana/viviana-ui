@@ -3,13 +3,13 @@
  * Based on @react-aria/table/useTable.
  */
 
-import { createMemo, createEffect, on, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { createId } from '@proyecto-viviana/solid-stately';
-import type { TableState, TableCollection, Key, GridNode } from '@proyecto-viviana/solid-stately';
-import type { AriaTableProps, TableAria } from './types';
-import { useLocale } from '../i18n';
-import { announce } from '../live-announcer';
+import { createMemo, createEffect, on, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import { createId } from "@proyecto-viviana/solid-stately";
+import type { TableState, TableCollection, Key, GridNode } from "@proyecto-viviana/solid-stately";
+import type { AriaTableProps, TableAria } from "./types";
+import { useLocale } from "../i18n";
+import { announce } from "../live-announcer";
 
 // Global map to store table metadata for child components
 const tableMap = new WeakMap<
@@ -18,7 +18,7 @@ const tableMap = new WeakMap<
     tableId: string;
     actions: { onRowAction?: (key: Key) => void; onCellAction?: (key: Key) => void };
     shouldSelectOnPressUp?: boolean;
-    focusMode?: 'row' | 'cell';
+    focusMode?: "row" | "cell";
   }
 >();
 
@@ -34,13 +34,17 @@ export function getTableData<T>(state: TableState<T, TableCollection<T>>) {
  */
 function getChildCells<T>(collection: TableCollection<T>, rowKey: Key): GridNode<T>[] {
   const children = collection.getChildren(rowKey);
-  return [...children].filter(node => node.type === 'cell' || node.type === 'rowheader');
+  return [...children].filter((node) => node.type === "cell" || node.type === "rowheader");
 }
 
 /**
  * Helper to get cell at specific index in a row
  */
-function getCellAtIndex<T>(collection: TableCollection<T>, rowKey: Key, index: number): GridNode<T> | null {
+function getCellAtIndex<T>(
+  collection: TableCollection<T>,
+  rowKey: Key,
+  index: number,
+): GridNode<T> | null {
   const cells = getChildCells(collection, rowKey);
   return cells[index] ?? null;
 }
@@ -49,19 +53,19 @@ function getCellAtIndex<T>(collection: TableCollection<T>, rowKey: Key, index: n
  * Helper to check if a node is a cell
  */
 function isCell<T>(node: GridNode<T> | null): boolean {
-  return node?.type === 'cell' || node?.type === 'rowheader';
+  return node?.type === "cell" || node?.type === "rowheader";
 }
 
 /**
  * Helper to check if a node is a row
  */
 function isRow<T>(node: GridNode<T> | null): boolean {
-  return node?.type === 'item';
+  return node?.type === "item";
 }
 
 function focusCurrentElement(el: HTMLElement | null | undefined) {
   const target = el?.querySelector<HTMLElement>(
-    '[role="row"][tabindex="0"], [role="rowheader"][tabindex="0"], [role="gridcell"][tabindex="0"], [role="columnheader"][tabindex="0"]'
+    '[role="row"][tabindex="0"], [role="rowheader"][tabindex="0"], [role="gridcell"][tabindex="0"], [role="columnheader"][tabindex="0"]',
   );
   target?.focus();
 }
@@ -72,15 +76,15 @@ function focusCurrentElement(el: HTMLElement | null | undefined) {
 export function createTable<T extends object>(
   props: Accessor<AriaTableProps>,
   state: Accessor<TableState<T, TableCollection<T>>>,
-  ref: Accessor<HTMLTableElement | null>
+  ref: Accessor<HTMLTableElement | null>,
 ): TableAria {
   const id = createId(props().id);
   const locale = useLocale();
 
   // Track previous sort descriptor for announcements
-  let prevSortDescriptor: { column: Key; direction: 'ascending' | 'descending' } | null = null;
+  let prevSortDescriptor: { column: Key; direction: "ascending" | "descending" } | null = null;
   let isFirstRender = true;
-  let typeaheadBuffer = '';
+  let typeaheadBuffer = "";
   let typeaheadTimeout: ReturnType<typeof setTimeout> | undefined;
 
   // Store metadata for child components
@@ -104,38 +108,42 @@ export function createTable<T extends object>(
   });
 
   // Announce sort changes (only after initial render)
-  createEffect(on(
-    () => state().sortDescriptor,
-    (sortDescriptor) => {
-      if (isFirstRender) {
-        isFirstRender = false;
+  createEffect(
+    on(
+      () => state().sortDescriptor,
+      (sortDescriptor) => {
+        if (isFirstRender) {
+          isFirstRender = false;
+          prevSortDescriptor = sortDescriptor;
+          return;
+        }
+
+        if (
+          sortDescriptor &&
+          (sortDescriptor.column !== prevSortDescriptor?.column ||
+            sortDescriptor.direction !== prevSortDescriptor?.direction)
+        ) {
+          const collection = state().collection;
+          const column = collection.columns.find((c) => c.key === sortDescriptor.column);
+          const columnName = column?.textValue ?? String(sortDescriptor.column);
+          const directionText =
+            sortDescriptor.direction === "ascending" ? "ascending" : "descending";
+
+          announce(`Sorted by ${columnName}, ${directionText}`, "assertive", 500);
+        }
+
         prevSortDescriptor = sortDescriptor;
-        return;
-      }
-
-      if (sortDescriptor && (
-        sortDescriptor.column !== prevSortDescriptor?.column ||
-        sortDescriptor.direction !== prevSortDescriptor?.direction
-      )) {
-        const collection = state().collection;
-        const column = collection.columns.find(c => c.key === sortDescriptor.column);
-        const columnName = column?.textValue ?? String(sortDescriptor.column);
-        const directionText = sortDescriptor.direction === 'ascending' ? 'ascending' : 'descending';
-
-        announce(`Sorted by ${columnName}, ${directionText}`, 'assertive', 500);
-      }
-
-      prevSortDescriptor = sortDescriptor;
-    }
-  ));
+      },
+    ),
+  );
 
   // Keyboard navigation handler with full 2D navigation
   const onKeyDown = (e: KeyboardEvent) => {
     const s = state();
     const collection = s.collection;
     const p = props();
-    const focusMode = p.focusMode ?? 'row';
-    const isRTL = locale().direction === 'rtl';
+    const focusMode = p.focusMode ?? "row";
+    const isRTL = locale().direction === "rtl";
     const setFocusedKey = (key: Key) => {
       s.setFocusedKey(key);
       queueMicrotask(() => focusCurrentElement(ref()));
@@ -150,7 +158,7 @@ export function createTable<T extends object>(
         clearTimeout(typeaheadTimeout);
       }
       typeaheadTimeout = setTimeout(() => {
-        typeaheadBuffer = '';
+        typeaheadBuffer = "";
         typeaheadTimeout = undefined;
       }, 500);
 
@@ -159,15 +167,15 @@ export function createTable<T extends object>(
         return true;
       }
 
-      const currentRowKey = isCell(focusedItem) && focusedItem.parentKey != null
-        ? focusedItem.parentKey
-        : focusedKey;
+      const currentRowKey =
+        isCell(focusedItem) && focusedItem.parentKey != null ? focusedItem.parentKey : focusedKey;
       const currentIndex = rows.findIndex((node) => node.key === currentRowKey);
-      const orderedRows = currentIndex >= 0
-        ? [...rows.slice(currentIndex + 1), ...rows.slice(0, currentIndex + 1)]
-        : rows;
+      const orderedRows =
+        currentIndex >= 0
+          ? [...rows.slice(currentIndex + 1), ...rows.slice(0, currentIndex + 1)]
+          : rows;
       const match = orderedRows.find((node) =>
-        collection.getTextValue(node.key).toLocaleLowerCase().startsWith(typeaheadBuffer)
+        collection.getTextValue(node.key).toLocaleLowerCase().startsWith(typeaheadBuffer),
       );
 
       if (match) {
@@ -185,7 +193,7 @@ export function createTable<T extends object>(
     const focusedKey = s.focusedKey;
     if (focusedKey == null) {
       // If nothing is focused, focus the first item
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Home' || e.key === 'End') {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Home" || e.key === "End") {
         const firstKey = collection.getFirstKey();
         if (firstKey != null) {
           e.preventDefault();
@@ -201,7 +209,7 @@ export function createTable<T extends object>(
     let nextKey: Key | null = null;
 
     switch (e.key) {
-      case 'ArrowDown': {
+      case "ArrowDown": {
         e.preventDefault();
         // If focused on a cell, move to the same column in the next row
         if (isCell(focusedItem) && focusedItem.parentKey != null) {
@@ -218,7 +226,7 @@ export function createTable<T extends object>(
         break;
       }
 
-      case 'ArrowUp': {
+      case "ArrowUp": {
         e.preventDefault();
         // If focused on a cell, move to the same column in the previous row
         if (isCell(focusedItem) && focusedItem.parentKey != null) {
@@ -235,7 +243,7 @@ export function createTable<T extends object>(
         break;
       }
 
-      case 'ArrowRight': {
+      case "ArrowRight": {
         e.preventDefault();
         const goNext = !isRTL;
 
@@ -253,7 +261,7 @@ export function createTable<T extends object>(
 
           if (targetIndex >= 0 && targetIndex < cells.length) {
             nextKey = cells[targetIndex].key;
-          } else if (focusMode === 'row') {
+          } else if (focusMode === "row") {
             // Wrap to row
             nextKey = focusedItem.parentKey;
           } else {
@@ -264,7 +272,7 @@ export function createTable<T extends object>(
         break;
       }
 
-      case 'ArrowLeft': {
+      case "ArrowLeft": {
         e.preventDefault();
         const goNext = isRTL;
 
@@ -282,7 +290,7 @@ export function createTable<T extends object>(
 
           if (targetIndex >= 0 && targetIndex < cells.length) {
             nextKey = cells[targetIndex].key;
-          } else if (focusMode === 'row') {
+          } else if (focusMode === "row") {
             // Wrap to row
             nextKey = focusedItem.parentKey;
           } else {
@@ -293,13 +301,13 @@ export function createTable<T extends object>(
         break;
       }
 
-      case 'Home': {
+      case "Home": {
         e.preventDefault();
         if (e.ctrlKey) {
           // Ctrl+Home: Go to first row/cell
           const firstRowKey = collection.getFirstKey();
           if (firstRowKey != null) {
-            if (isCell(focusedItem) || focusMode === 'cell') {
+            if (isCell(focusedItem) || focusMode === "cell") {
               const cells = getChildCells(collection, firstRowKey);
               nextKey = cells[0]?.key ?? firstRowKey;
             } else {
@@ -317,13 +325,13 @@ export function createTable<T extends object>(
         break;
       }
 
-      case 'End': {
+      case "End": {
         e.preventDefault();
         if (e.ctrlKey) {
           // Ctrl+End: Go to last row/cell
           const lastRowKey = collection.getLastKey();
           if (lastRowKey != null) {
-            if (isCell(focusedItem) || focusMode === 'cell') {
+            if (isCell(focusedItem) || focusMode === "cell") {
               const cells = getChildCells(collection, lastRowKey);
               nextKey = cells[cells.length - 1]?.key ?? lastRowKey;
             } else {
@@ -341,7 +349,7 @@ export function createTable<T extends object>(
         break;
       }
 
-      case 'PageDown': {
+      case "PageDown": {
         e.preventDefault();
         // Move down by roughly a page (using DOM measurements if available)
         const el = ref();
@@ -379,9 +387,10 @@ export function createTable<T extends object>(
         } else {
           // Fallback: move 10 rows
           let count = 10;
-          let current: Key | null = isCell(focusedItem) && focusedItem.parentKey != null
-            ? focusedItem.parentKey
-            : focusedKey;
+          let current: Key | null =
+            isCell(focusedItem) && focusedItem.parentKey != null
+              ? focusedItem.parentKey
+              : focusedKey;
           while (count > 0 && current != null) {
             const next = collection.getKeyAfter(current);
             if (next == null) break;
@@ -398,7 +407,7 @@ export function createTable<T extends object>(
         break;
       }
 
-      case 'PageUp': {
+      case "PageUp": {
         e.preventDefault();
         // Move up by roughly a page
         const el = ref();
@@ -434,9 +443,10 @@ export function createTable<T extends object>(
         } else {
           // Fallback: move 10 rows
           let count = 10;
-          let current: Key | null = isCell(focusedItem) && focusedItem.parentKey != null
-            ? focusedItem.parentKey
-            : focusedKey;
+          let current: Key | null =
+            isCell(focusedItem) && focusedItem.parentKey != null
+              ? focusedItem.parentKey
+              : focusedKey;
           while (count > 0 && current != null) {
             const prev = collection.getKeyBefore(current);
             if (prev == null) break;
@@ -453,32 +463,33 @@ export function createTable<T extends object>(
         break;
       }
 
-      case 'Escape':
-        if (p.escapeKeyBehavior !== 'none') {
+      case "Escape":
+        if (p.escapeKeyBehavior !== "none") {
           s.clearSelection();
         }
         return;
 
-      case 'a':
+      case "a":
         if (e.ctrlKey || e.metaKey) {
           e.preventDefault();
-          if (s.selectionMode === 'multiple') {
+          if (s.selectionMode === "multiple") {
             s.selectAll();
           }
         }
         return;
 
-      case ' ':
-      case 'Enter':
+      case " ":
+      case "Enter":
         e.preventDefault();
         // Toggle selection or trigger action
-        if (s.selectionMode !== 'none') {
+        if (s.selectionMode !== "none") {
           // For cells, select the parent row
-          const keyToSelect = isCell(focusedItem) && focusedItem.parentKey != null
-            ? focusedItem.parentKey
-            : focusedKey;
+          const keyToSelect =
+            isCell(focusedItem) && focusedItem.parentKey != null
+              ? focusedItem.parentKey
+              : focusedKey;
 
-          if (e.shiftKey && s.selectionMode === 'multiple') {
+          if (e.shiftKey && s.selectionMode === "multiple") {
             s.extendSelection(keyToSelect);
           } else {
             s.toggleSelection(keyToSelect);
@@ -497,12 +508,13 @@ export function createTable<T extends object>(
       setFocusedKey(nextKey);
 
       // Handle shift+arrow for range selection
-      if (e.shiftKey && s.selectionMode === 'multiple') {
+      if (e.shiftKey && s.selectionMode === "multiple") {
         // For cells, select the parent row
         const focusedNode = collection.getItem(nextKey);
-        const keyToSelect = focusedNode && isCell(focusedNode) && focusedNode.parentKey != null
-          ? focusedNode.parentKey
-          : nextKey;
+        const keyToSelect =
+          focusedNode && isCell(focusedNode) && focusedNode.parentKey != null
+            ? focusedNode.parentKey
+            : nextKey;
         s.extendSelection(keyToSelect);
       }
     }
@@ -543,8 +555,8 @@ export function createTable<T extends object>(
   // Warn if no label is provided
   createMemo(() => {
     const p = props();
-    if (!p['aria-label'] && !p['aria-labelledby']) {
-      console.warn('Table: An aria-label or aria-labelledby prop is required for accessibility.');
+    if (!p["aria-label"] && !p["aria-labelledby"]) {
+      console.warn("Table: An aria-label or aria-labelledby prop is required for accessibility.");
     }
   });
 
@@ -553,12 +565,12 @@ export function createTable<T extends object>(
     const s = state();
 
     const baseProps: Record<string, unknown> = {
-      role: 'grid',
+      role: "grid",
       id,
-      'aria-label': p['aria-label'],
-      'aria-labelledby': p['aria-labelledby'],
-      'aria-describedby': p['aria-describedby'],
-      'aria-multiselectable': s.selectionMode === 'multiple' ? 'true' : undefined,
+      "aria-label": p["aria-label"],
+      "aria-labelledby": p["aria-labelledby"],
+      "aria-describedby": p["aria-describedby"],
+      "aria-multiselectable": s.selectionMode === "multiple" ? "true" : undefined,
       // Keep the grid itself tabbable so keyboard users can enter
       // row/cell navigation without requiring a prior pointer interaction.
       tabIndex: 0,
@@ -568,8 +580,8 @@ export function createTable<T extends object>(
     };
 
     if (p.isVirtualized) {
-      baseProps['aria-rowcount'] = s.collection.rowCount;
-      baseProps['aria-colcount'] = s.collection.columnCount;
+      baseProps["aria-rowcount"] = s.collection.rowCount;
+      baseProps["aria-colcount"] = s.collection.columnCount;
     }
 
     return baseProps as JSX.HTMLAttributes<HTMLTableElement>;

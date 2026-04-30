@@ -3,4 +3,4 @@ export {
   getComboBoxData,
   type AriaComboBoxProps,
   type ComboBoxAria,
-} from './createComboBox';
+} from "./createComboBox";

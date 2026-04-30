@@ -4,10 +4,10 @@
  * Port of @react-aria/interactions useMove, adapted for SolidJS.
  */
 
-import { JSX, createSignal, createEffect, onCleanup } from 'solid-js';
-import { disableTextSelection, restoreTextSelection, createGlobalListeners } from '../utils';
+import { JSX, createSignal, createEffect, onCleanup } from "solid-js";
+import { disableTextSelection, restoreTextSelection, createGlobalListeners } from "../utils";
 
-export type PointerType = 'mouse' | 'pen' | 'touch' | 'keyboard';
+export type PointerType = "mouse" | "pen" | "touch" | "keyboard";
 
 interface BaseMoveEvent {
   pointerType: PointerType;
@@ -18,17 +18,17 @@ interface BaseMoveEvent {
 }
 
 export interface MoveStartEvent extends BaseMoveEvent {
-  type: 'movestart';
+  type: "movestart";
 }
 
 export interface MoveMoveEvent extends BaseMoveEvent {
-  type: 'move';
+  type: "move";
   deltaX: number;
   deltaY: number;
 }
 
 export interface MoveEndEvent extends BaseMoveEvent {
-  type: 'moveend';
+  type: "moveend";
 }
 
 export interface MoveEvents {
@@ -50,7 +50,7 @@ interface MoveState {
 
 function createBaseEvent(
   originalEvent: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean; altKey: boolean },
-  pointerType: PointerType
+  pointerType: PointerType,
 ): BaseMoveEvent {
   return {
     pointerType,
@@ -74,13 +74,13 @@ export function createMove(props: MoveEvents = {}): MoveResult {
   };
 
   const { addGlobalListener, removeGlobalListener } = createGlobalListeners();
-  const [pointerDown, setPointerDown] = createSignal<'pointer' | 'mouse' | 'touch' | null>(null);
+  const [pointerDown, setPointerDown] = createSignal<"pointer" | "mouse" | "touch" | null>(null);
 
   const move = (
     originalEvent: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean; altKey: boolean },
     pointerType: PointerType,
     deltaX: number,
-    deltaY: number
+    deltaY: number,
   ) => {
     if (deltaX === 0 && deltaY === 0) {
       return;
@@ -89,24 +89,27 @@ export function createMove(props: MoveEvents = {}): MoveResult {
     if (!state.didMove) {
       state.didMove = true;
       onMoveStart?.({
-        type: 'movestart',
+        type: "movestart",
         ...createBaseEvent(originalEvent, pointerType),
       });
     }
 
     onMove?.({
-      type: 'move',
+      type: "move",
       deltaX,
       deltaY,
       ...createBaseEvent(originalEvent, pointerType),
     });
   };
 
-  const end = (originalEvent: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean; altKey: boolean }, pointerType: PointerType) => {
+  const end = (
+    originalEvent: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean; altKey: boolean },
+    pointerType: PointerType,
+  ) => {
     restoreTextSelection();
     if (state.didMove) {
       onMoveEnd?.({
-        type: 'moveend',
+        type: "moveend",
         ...createBaseEvent(originalEvent, pointerType),
       });
     }
@@ -116,34 +119,39 @@ export function createMove(props: MoveEvents = {}): MoveResult {
     const activePointer = pointerDown();
     if (!activePointer) return;
 
-    if (activePointer === 'pointer') {
+    if (activePointer === "pointer") {
       const onPointerMove = (e: PointerEvent) => {
         if (e.pointerId === state.id) {
-          const pointerType = (e.pointerType || 'mouse') as PointerType;
-          move(e, pointerType, e.pageX - (state.lastPosition?.pageX ?? 0), e.pageY - (state.lastPosition?.pageY ?? 0));
+          const pointerType = (e.pointerType || "mouse") as PointerType;
+          move(
+            e,
+            pointerType,
+            e.pageX - (state.lastPosition?.pageX ?? 0),
+            e.pageY - (state.lastPosition?.pageY ?? 0),
+          );
           state.lastPosition = { pageX: e.pageX, pageY: e.pageY };
         }
       };
 
       const onPointerUp = (e: PointerEvent) => {
         if (e.pointerId === state.id) {
-          const pointerType = (e.pointerType || 'mouse') as PointerType;
+          const pointerType = (e.pointerType || "mouse") as PointerType;
           end(e, pointerType);
           state.id = null;
-          removeGlobalListener('pointermove', onPointerMove, { isWindow: true });
-          removeGlobalListener('pointerup', onPointerUp, { isWindow: true });
-          removeGlobalListener('pointercancel', onPointerUp, { isWindow: true });
+          removeGlobalListener("pointermove", onPointerMove, { isWindow: true });
+          removeGlobalListener("pointerup", onPointerUp, { isWindow: true });
+          removeGlobalListener("pointercancel", onPointerUp, { isWindow: true });
           setPointerDown(null);
         }
       };
 
-      addGlobalListener('pointermove', onPointerMove, { isWindow: true });
-      addGlobalListener('pointerup', onPointerUp, { isWindow: true });
-      addGlobalListener('pointercancel', onPointerUp, { isWindow: true });
+      addGlobalListener("pointermove", onPointerMove, { isWindow: true });
+      addGlobalListener("pointerup", onPointerUp, { isWindow: true });
+      addGlobalListener("pointercancel", onPointerUp, { isWindow: true });
       onCleanup(() => {
-        removeGlobalListener('pointermove', onPointerMove, { isWindow: true });
-        removeGlobalListener('pointerup', onPointerUp, { isWindow: true });
-        removeGlobalListener('pointercancel', onPointerUp, { isWindow: true });
+        removeGlobalListener("pointermove", onPointerMove, { isWindow: true });
+        removeGlobalListener("pointerup", onPointerUp, { isWindow: true });
+        removeGlobalListener("pointercancel", onPointerUp, { isWindow: true });
       });
     }
 
@@ -157,7 +165,8 @@ export function createMove(props: MoveEvents = {}): MoveResult {
 
   const moveProps: JSX.HTMLAttributes<HTMLElement> = {};
 
-  const hasPointerEvents = typeof window !== 'undefined' && typeof window.PointerEvent !== 'undefined';
+  const hasPointerEvents =
+    typeof window !== "undefined" && typeof window.PointerEvent !== "undefined";
 
   moveProps.onMouseDown = (e: MouseEvent) => {
     if (pointerDown() != null) {
@@ -168,25 +177,25 @@ export function createMove(props: MoveEvents = {}): MoveResult {
       e.stopPropagation();
       e.preventDefault();
       state.lastPosition = { pageX: e.pageX, pageY: e.pageY };
-      setPointerDown('mouse');
+      setPointerDown("mouse");
 
       const onMouseMove = (event: MouseEvent) => {
         move(
           event,
-          'mouse',
+          "mouse",
           event.pageX - (state.lastPosition?.pageX ?? 0),
-          event.pageY - (state.lastPosition?.pageY ?? 0)
+          event.pageY - (state.lastPosition?.pageY ?? 0),
         );
         state.lastPosition = { pageX: event.pageX, pageY: event.pageY };
       };
       const onMouseUp = (event: MouseEvent) => {
-        end(event, 'mouse');
-        removeGlobalListener('mousemove', onMouseMove);
-        removeGlobalListener('mouseup', onMouseUp);
+        end(event, "mouse");
+        removeGlobalListener("mousemove", onMouseMove);
+        removeGlobalListener("mouseup", onMouseUp);
         setPointerDown(null);
       };
-      addGlobalListener('mousemove', onMouseMove);
-      addGlobalListener('mouseup', onMouseUp);
+      addGlobalListener("mousemove", onMouseMove);
+      addGlobalListener("mouseup", onMouseUp);
     }
   };
 
@@ -200,34 +209,39 @@ export function createMove(props: MoveEvents = {}): MoveResult {
     e.preventDefault();
     state.lastPosition = { pageX, pageY };
     state.id = identifier;
-    setPointerDown('touch');
+    setPointerDown("touch");
 
     const onTouchMove = (event: TouchEvent) => {
       const touchIndex = [...event.changedTouches].findIndex(
-        ({ identifier: touchId }) => touchId === state.id
+        ({ identifier: touchId }) => touchId === state.id,
       );
       if (touchIndex >= 0) {
         const { pageX: moveX, pageY: moveY } = event.changedTouches[touchIndex];
-        move(event, 'touch', moveX - (state.lastPosition?.pageX ?? 0), moveY - (state.lastPosition?.pageY ?? 0));
+        move(
+          event,
+          "touch",
+          moveX - (state.lastPosition?.pageX ?? 0),
+          moveY - (state.lastPosition?.pageY ?? 0),
+        );
         state.lastPosition = { pageX: moveX, pageY: moveY };
       }
     };
     const onTouchEnd = (event: TouchEvent) => {
       const touchIndex = [...event.changedTouches].findIndex(
-        ({ identifier: touchId }) => touchId === state.id
+        ({ identifier: touchId }) => touchId === state.id,
       );
       if (touchIndex >= 0) {
-        end(event, 'touch');
+        end(event, "touch");
         state.id = null;
-        removeGlobalListener('touchmove', onTouchMove);
-        removeGlobalListener('touchend', onTouchEnd);
-        removeGlobalListener('touchcancel', onTouchEnd);
+        removeGlobalListener("touchmove", onTouchMove);
+        removeGlobalListener("touchend", onTouchEnd);
+        removeGlobalListener("touchcancel", onTouchEnd);
         setPointerDown(null);
       }
     };
-    addGlobalListener('touchmove', onTouchMove);
-    addGlobalListener('touchend', onTouchEnd);
-    addGlobalListener('touchcancel', onTouchEnd);
+    addGlobalListener("touchmove", onTouchMove);
+    addGlobalListener("touchend", onTouchEnd);
+    addGlobalListener("touchcancel", onTouchEnd);
   };
 
   if (hasPointerEvents) {
@@ -239,43 +253,39 @@ export function createMove(props: MoveEvents = {}): MoveResult {
         e.preventDefault();
         state.lastPosition = { pageX: e.pageX, pageY: e.pageY };
         state.id = e.pointerId;
-        setPointerDown('pointer');
+        setPointerDown("pointer");
       }
     };
   }
 
-  const triggerKeyboardMove = (
-    e: KeyboardEvent,
-    deltaX: number,
-    deltaY: number
-  ) => {
+  const triggerKeyboardMove = (e: KeyboardEvent, deltaX: number, deltaY: number) => {
     start();
-    move(e, 'keyboard', deltaX, deltaY);
-    end(e, 'keyboard');
+    move(e, "keyboard", deltaX, deltaY);
+    end(e, "keyboard");
   };
 
   moveProps.onKeyDown = (e: KeyboardEvent) => {
     switch (e.key) {
-      case 'Left':
-      case 'ArrowLeft':
+      case "Left":
+      case "ArrowLeft":
         e.preventDefault();
         e.stopPropagation();
         triggerKeyboardMove(e, -1, 0);
         break;
-      case 'Right':
-      case 'ArrowRight':
+      case "Right":
+      case "ArrowRight":
         e.preventDefault();
         e.stopPropagation();
         triggerKeyboardMove(e, 1, 0);
         break;
-      case 'Up':
-      case 'ArrowUp':
+      case "Up":
+      case "ArrowUp":
         e.preventDefault();
         e.stopPropagation();
         triggerKeyboardMove(e, 0, -1);
         break;
-      case 'Down':
-      case 'ArrowDown':
+      case "Down":
+      case "ArrowDown":
         e.preventDefault();
         e.stopPropagation();
         triggerKeyboardMove(e, 0, 1);

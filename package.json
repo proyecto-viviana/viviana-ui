@@ -18,10 +18,8 @@
     "lint:fix": "vp lint --fix",
     "fmt": "vp fmt . --write",
     "fmt:check": "vp fmt . --check",
-    "check": "vp run lint && vp run typecheck",
-    "check:fix": "vp run lint:fix && vp run fmt",
-    "check:full": "vp check",
-    "check:full:fix": "vp check --fix",
+    "check": "vp check && vp run typecheck",
+    "check:fix": "vp check --fix && vp run typecheck",
     "comparison:install": "vp install --filter @proyecto-viviana/comparison",
     "comparison:dev": "vp run --filter @proyecto-viviana/comparison dev",
     "comparison:build": "vp run --filter @proyecto-viviana/comparison build",
@@ -57,11 +55,8 @@
     "guard:docs-routes": "vp exec tsx scripts/check-doc-routes.ts",
     "guard:rac-parity": "vp exec tsx scripts/check-rac-parity.ts",
     "guard:rac-export-gap": "vp exec tsx scripts/check-rac-export-gap.ts",
-    "guard:rac-export-diff": "vp exec tsx scripts/diff-react-spectrum-exports.ts",
-    "guard:layer-parity": "vp exec tsx scripts/check-layer-parity.ts",
     "guard:dnd-keyboard-parity": "vp exec tsx scripts/check-dnd-keyboard-parity.ts",
     "guard:virtualizer-keyboard-parity": "vp exec tsx scripts/check-virtualizer-keyboard-parity.ts",
-    "watch:rac:new-entry": "vp exec tsx scripts/new-rac-watch-entry.ts",
     "bench:bundle": "vp exec tsx benchmarks/bundle-size/analyze.ts",
     "bench:runtime": "vp test run benchmarks/runtime",
     "bench:vitals": "vp exec --filter benchmarks-web-vitals -- playwright test",
@@ -88,11 +83,11 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.0",
-    "axe-core": "^4.10.0",
     "@solidjs/testing-library": "^0.8.10",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.5.2",
+    "axe-core": "^4.10.0",
     "esbuild-plugin-solid": "^0.6.0",
     "jsdom": "^27.3.0",
     "rimraf": "^6.1.2",
@@ -106,11 +101,11 @@
     "vitest": "npm:@voidzero-dev/vite-plus-test@latest",
     "wrangler": "^4.67.0"
   },
+  "packageManager": "pnpm@10.33.0",
   "pnpm": {
     "overrides": {
       "vite": "npm:@voidzero-dev/vite-plus-core@latest",
       "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
     }
-  },
-  "packageManager": "pnpm@10.33.0"
+  }
 }

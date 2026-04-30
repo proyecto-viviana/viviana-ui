@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
-import { Checkbox } from '../src/checkbox';
-import { setupUser } from '@proyecto-viviana/solid-spectrum-test-utils';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen } from "@solidjs/testing-library";
+import { Checkbox } from "../src/checkbox";
+import { setupUser } from "@proyecto-viviana/solid-spectrum-test-utils";
 
 // setupUser is consolidated in solid-spectrum-test-utils.
 
-describe('Checkbox', () => {
+describe("Checkbox", () => {
   let onChangeSpy = vi.fn();
   let user: ReturnType<typeof setupUser>;
 
@@ -17,22 +17,22 @@ describe('Checkbox', () => {
     onChangeSpy.mockClear();
   });
 
-  describe('basic functionality', () => {
+  describe("basic functionality", () => {
     it('renders with role="checkbox"', () => {
       render(() => <Checkbox aria-label="Test checkbox" />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toBeInTheDocument();
     });
 
-    it('handles defaults (unchecked)', () => {
+    it("handles defaults (unchecked)", () => {
       render(() => <Checkbox aria-label="Test checkbox" />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
       expect(checkbox).not.toBeChecked();
     });
 
-    it('toggles on click', async () => {
+    it("toggles on click", async () => {
       render(() => <Checkbox aria-label="Test checkbox" onChange={onChangeSpy} />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
 
       await user.click(checkbox);
       await Promise.resolve();
@@ -47,33 +47,35 @@ describe('Checkbox', () => {
       expect(onChangeSpy).toHaveBeenCalledWith(false);
     });
 
-    it('supports defaultSelected', () => {
+    it("supports defaultSelected", () => {
       render(() => <Checkbox aria-label="Test checkbox" defaultSelected />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toBeChecked();
     });
   });
 
-  describe('controlled mode', () => {
-    it('reflects controlled isSelected value', () => {
+  describe("controlled mode", () => {
+    it("reflects controlled isSelected value", () => {
       render(() => <Checkbox aria-label="Test checkbox" isSelected={true} />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toBeChecked();
     });
 
-    it('calls onChange in controlled mode', async () => {
-      render(() => <Checkbox aria-label="Test checkbox" isSelected={false} onChange={onChangeSpy} />);
-      const checkbox = screen.getByRole('checkbox');
+    it("calls onChange in controlled mode", async () => {
+      render(() => (
+        <Checkbox aria-label="Test checkbox" isSelected={false} onChange={onChangeSpy} />
+      ));
+      const checkbox = screen.getByRole("checkbox");
 
       await user.click(checkbox);
       expect(onChangeSpy).toHaveBeenCalledWith(true);
     });
   });
 
-  describe('disabled state', () => {
-    it('does not toggle when disabled', async () => {
+  describe("disabled state", () => {
+    it("does not toggle when disabled", async () => {
       render(() => <Checkbox aria-label="Test checkbox" isDisabled onChange={onChangeSpy} />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
 
       expect(checkbox).toBeDisabled();
       await user.click(checkbox);
@@ -81,20 +83,20 @@ describe('Checkbox', () => {
     });
   });
 
-  describe('indeterminate state', () => {
-    it('renders with indeterminate state', () => {
+  describe("indeterminate state", () => {
+    it("renders with indeterminate state", () => {
       render(() => <Checkbox aria-label="Test checkbox" isIndeterminate />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
       // Indeterminate is a visual state, the checkbox itself won't have a specific attribute
       // but the component should render without errors
       expect(checkbox).toBeInTheDocument();
     });
   });
 
-  describe('keyboard interaction', () => {
-    it('toggles on Space key', async () => {
+  describe("keyboard interaction", () => {
+    it("toggles on Space key", async () => {
       render(() => <Checkbox aria-label="Test checkbox" onChange={onChangeSpy} />);
-      const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+      const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
 
       // Focus and type space - use type() which simulates full keyboard interaction
       await user.click(checkbox);
@@ -102,139 +104,139 @@ describe('Checkbox', () => {
 
       // Clear the spy from the click, then test space key
       onChangeSpy.mockClear();
-      await user.type(checkbox, ' ');
+      await user.type(checkbox, " ");
       expect(onChangeSpy).toHaveBeenCalled();
     });
   });
 
-  describe('sizes', () => {
-    it('renders with default md size', () => {
+  describe("sizes", () => {
+    it("renders with default md size", () => {
       render(() => <Checkbox aria-label="Test checkbox" />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toBeInTheDocument();
     });
 
-    it('renders with sm size', () => {
+    it("renders with sm size", () => {
       render(() => <Checkbox aria-label="Test checkbox" size="sm" />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toBeInTheDocument();
     });
 
-    it('renders with lg size', () => {
+    it("renders with lg size", () => {
       render(() => <Checkbox aria-label="Test checkbox" size="lg" />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toBeInTheDocument();
     });
   });
 
-  describe('label', () => {
-    it('renders with label text', () => {
+  describe("label", () => {
+    it("renders with label text", () => {
       render(() => <Checkbox>Accept terms</Checkbox>);
-      expect(screen.getByText('Accept terms')).toBeInTheDocument();
+      expect(screen.getByText("Accept terms")).toBeInTheDocument();
     });
 
-    it('clicking checkbox toggles it', async () => {
+    it("clicking checkbox toggles it", async () => {
       render(() => <Checkbox onChange={onChangeSpy}>Accept terms</Checkbox>);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
 
       await user.click(checkbox);
       expect(onChangeSpy).toHaveBeenCalledWith(true);
     });
   });
 
-  describe('touch interaction', () => {
-    it('handles touch press', async () => {
+  describe("touch interaction", () => {
+    it("handles touch press", async () => {
       render(() => <Checkbox aria-label="Test checkbox" onChange={onChangeSpy} />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
 
       await user.pointer([
-        { keys: '[TouchA>]', target: checkbox },
-        { keys: '[/TouchA]', target: checkbox },
+        { keys: "[TouchA>]", target: checkbox },
+        { keys: "[/TouchA]", target: checkbox },
       ]);
 
       expect(onChangeSpy).toHaveBeenCalled();
     });
   });
 
-  describe('aria attributes', () => {
-    it('supports aria-label', () => {
+  describe("aria attributes", () => {
+    it("supports aria-label", () => {
       render(() => <Checkbox aria-label="Custom label" />);
-      const checkbox = screen.getByRole('checkbox');
-      expect(checkbox).toHaveAttribute('aria-label', 'Custom label');
+      const checkbox = screen.getByRole("checkbox");
+      expect(checkbox).toHaveAttribute("aria-label", "Custom label");
     });
 
-    it('supports aria-describedby', () => {
+    it("supports aria-describedby", () => {
       render(() => (
         <>
           <span id="desc">Description text</span>
           <Checkbox aria-label="Test" aria-describedby="desc" />
         </>
       ));
-      const checkbox = screen.getByRole('checkbox');
-      expect(checkbox).toHaveAttribute('aria-describedby', 'desc');
+      const checkbox = screen.getByRole("checkbox");
+      expect(checkbox).toHaveAttribute("aria-describedby", "desc");
     });
 
-    it('supports aria-labelledby', () => {
+    it("supports aria-labelledby", () => {
       render(() => (
         <>
           <span id="label">Label text</span>
           <Checkbox aria-labelledby="label" />
         </>
       ));
-      const checkbox = screen.getByRole('checkbox');
-      expect(checkbox).toHaveAttribute('aria-labelledby', 'label');
+      const checkbox = screen.getByRole("checkbox");
+      expect(checkbox).toHaveAttribute("aria-labelledby", "label");
     });
   });
 
-  describe('invalid state', () => {
-    it('sets aria-invalid when isInvalid is true', () => {
+  describe("invalid state", () => {
+    it("sets aria-invalid when isInvalid is true", () => {
       render(() => <Checkbox aria-label="Test checkbox" isInvalid />);
-      const checkbox = screen.getByRole('checkbox');
-      expect(checkbox).toHaveAttribute('aria-invalid', 'true');
+      const checkbox = screen.getByRole("checkbox");
+      expect(checkbox).toHaveAttribute("aria-invalid", "true");
     });
 
-    it('does not set aria-invalid when isInvalid is false', () => {
+    it("does not set aria-invalid when isInvalid is false", () => {
       render(() => <Checkbox aria-label="Test checkbox" />);
-      const checkbox = screen.getByRole('checkbox');
-      expect(checkbox).not.toHaveAttribute('aria-invalid');
+      const checkbox = screen.getByRole("checkbox");
+      expect(checkbox).not.toHaveAttribute("aria-invalid");
     });
   });
 
-  describe('readonly state', () => {
-    it('does not toggle when readonly', async () => {
+  describe("readonly state", () => {
+    it("does not toggle when readonly", async () => {
       render(() => <Checkbox aria-label="Test checkbox" isReadOnly onChange={onChangeSpy} />);
-      const checkbox = screen.getByRole('checkbox');
+      const checkbox = screen.getByRole("checkbox");
 
       await user.click(checkbox);
       expect(onChangeSpy).not.toHaveBeenCalled();
     });
 
-    it('sets aria-readonly when isReadOnly is true', () => {
+    it("sets aria-readonly when isReadOnly is true", () => {
       render(() => <Checkbox aria-label="Test checkbox" isReadOnly />);
-      const checkbox = screen.getByRole('checkbox');
-      expect(checkbox).toHaveAttribute('aria-readonly', 'true');
+      const checkbox = screen.getByRole("checkbox");
+      expect(checkbox).toHaveAttribute("aria-readonly", "true");
     });
   });
 
-  describe('excludeFromTabOrder', () => {
-    it('removes checkbox from tab order when excludeFromTabOrder is true', () => {
+  describe("excludeFromTabOrder", () => {
+    it("removes checkbox from tab order when excludeFromTabOrder is true", () => {
       render(() => <Checkbox aria-label="Test checkbox" excludeFromTabOrder />);
-      const checkbox = screen.getByRole('checkbox');
-      expect(checkbox).toHaveAttribute('tabindex', '-1');
+      const checkbox = screen.getByRole("checkbox");
+      expect(checkbox).toHaveAttribute("tabindex", "-1");
     });
   });
 
-  describe('custom props', () => {
-    it('allows custom data attributes to be passed through', () => {
+  describe("custom props", () => {
+    it("allows custom data attributes to be passed through", () => {
       render(() => <Checkbox aria-label="Test checkbox" data-testid="custom-checkbox" />);
-      const checkbox = screen.getByRole('checkbox');
-      expect(checkbox.closest('label')).toHaveAttribute('data-testid', 'custom-checkbox');
+      const checkbox = screen.getByRole("checkbox");
+      expect(checkbox.closest("label")).toHaveAttribute("data-testid", "custom-checkbox");
     });
 
-    it('allows custom data-foo attribute', () => {
+    it("allows custom data-foo attribute", () => {
       render(() => <Checkbox aria-label="Test checkbox" data-foo="bar" />);
-      const checkbox = screen.getByRole('checkbox');
-      expect(checkbox.closest('label')).toHaveAttribute('data-foo', 'bar');
+      const checkbox = screen.getByRole("checkbox");
+      expect(checkbox.closest("label")).toHaveAttribute("data-foo", "bar");
     });
   });
 });

@@ -85,16 +85,27 @@ function BadgePage() {
       <PropsTable
         props={[
           { name: "count", type: "number", description: "Numeric count to display" },
-          { name: "variant", type: "'primary' | 'accent' | 'success' | 'warning' | 'danger'", default: "'primary'", description: "Color variant" },
+          {
+            name: "variant",
+            type: "'primary' | 'accent' | 'success' | 'warning' | 'danger'",
+            default: "'primary'",
+            description: "Color variant",
+          },
           { name: "class", type: "string", description: "Additional CSS classes for positioning" },
         ]}
       />
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Use <code>aria-label</code> on the parent container to describe the badge count</li>
-          <li>Combine with <code>aria-live</code> regions for dynamic count updates</li>
-          <li>Example: <code>&lt;button aria-label="Notifications, 7 unread"&gt;</code></li>
+          <li>
+            Use <code>aria-label</code> on the parent container to describe the badge count
+          </li>
+          <li>
+            Combine with <code>aria-live</code> regions for dynamic count updates
+          </li>
+          <li>
+            Example: <code>&lt;button aria-label="Notifications, 7 unread"&gt;</code>
+          </li>
         </ul>
       </AccessibilitySection>
     </DocPage>

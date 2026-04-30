@@ -2,19 +2,24 @@
  * Tests for GridList component.
  */
 
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { GridList, GridListItem, GridListSection, GridListSelectionCheckbox } from '../src/GridList';
-import { useDragAndDrop } from '../src/useDragAndDrop';
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { render, screen, cleanup, fireEvent } from "@solidjs/testing-library";
+import {
+  GridList,
+  GridListItem,
+  GridListSection,
+  GridListSelectionCheckbox,
+} from "../src/GridList";
+import { useDragAndDrop } from "../src/useDragAndDrop";
 
 // Test data
 const testItems = [
-  { id: 1, name: 'Apple' },
-  { id: 2, name: 'Banana' },
-  { id: 3, name: 'Cherry' },
+  { id: 1, name: "Apple" },
+  { id: 2, name: "Banana" },
+  { id: 3, name: "Cherry" },
 ];
 
-describe('GridList', () => {
+describe("GridList", () => {
   afterEach(() => {
     cleanup();
   });
@@ -23,19 +28,15 @@ describe('GridList', () => {
   // BASIC RENDERING
   // ============================================
 
-  describe('rendering', () => {
-    it('should render GridListSection as a collection section primitive', () => {
+  describe("rendering", () => {
+    it("should render GridListSection as a collection section primitive", () => {
       const { container } = render(() => <GridListSection>Section</GridListSection>);
-      expect(container.querySelector('[data-section]')).toBeInTheDocument();
+      expect(container.querySelector("[data-section]")).toBeInTheDocument();
     });
 
-    it('should render with default class', () => {
+    it("should render with default class", () => {
       render(() => (
-        <GridList
-          items={testItems}
-          getKey={(item) => item.id}
-          aria-label="Fruits"
-        >
+        <GridList items={testItems} getKey={(item) => item.id} aria-label="Fruits">
           {(item) => (
             <GridListItem id={item.id} textValue={item.name}>
               {item.name}
@@ -44,12 +45,12 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const list = document.querySelector('.solidaria-GridList');
+      const list = document.querySelector(".solidaria-GridList");
       expect(list).toBeTruthy();
-      expect(list?.tagName).toBe('DIV');
+      expect(list?.tagName).toBe("DIV");
     });
 
-    it('should render with custom class', () => {
+    it("should render with custom class", () => {
       render(() => (
         <GridList
           items={testItems}
@@ -65,17 +66,13 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const list = document.querySelector('.custom-list');
+      const list = document.querySelector(".custom-list");
       expect(list).toBeTruthy();
     });
 
-    it('should render items', () => {
+    it("should render items", () => {
       render(() => (
-        <GridList
-          items={testItems}
-          getKey={(item) => item.id}
-          aria-label="Fruits"
-        >
+        <GridList items={testItems} getKey={(item) => item.id} aria-label="Fruits">
           {(item) => (
             <GridListItem id={item.id} textValue={item.name}>
               {item.name}
@@ -84,18 +81,14 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      expect(screen.getByText('Apple')).toBeTruthy();
-      expect(screen.getByText('Banana')).toBeTruthy();
-      expect(screen.getByText('Cherry')).toBeTruthy();
+      expect(screen.getByText("Apple")).toBeTruthy();
+      expect(screen.getByText("Banana")).toBeTruthy();
+      expect(screen.getByText("Cherry")).toBeTruthy();
     });
 
-    it('should render items with default class', () => {
+    it("should render items with default class", () => {
       render(() => (
-        <GridList
-          items={testItems}
-          getKey={(item) => item.id}
-          aria-label="Fruits"
-        >
+        <GridList items={testItems} getKey={(item) => item.id} aria-label="Fruits">
           {(item) => (
             <GridListItem id={item.id} textValue={item.name}>
               {item.name}
@@ -104,11 +97,11 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const items = document.querySelectorAll('.solidaria-GridList-item');
+      const items = document.querySelectorAll(".solidaria-GridList-item");
       expect(items.length).toBe(3);
     });
 
-    it('should render empty state', () => {
+    it("should render empty state", () => {
       render(() => (
         <GridList
           items={[]}
@@ -119,11 +112,11 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      expect(screen.getByTestId('empty')).toBeTruthy();
-      expect(screen.getByText('No items')).toBeTruthy();
+      expect(screen.getByTestId("empty")).toBeTruthy();
+      expect(screen.getByText("No items")).toBeTruthy();
     });
 
-    it('should trigger onLoadMore from load more sentinel', () => {
+    it("should trigger onLoadMore from load more sentinel", () => {
       const onLoadMore = vi.fn();
       render(() => (
         <GridList
@@ -141,17 +134,15 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      fireEvent.focus(screen.getByText('Load more'));
+      fireEvent.focus(screen.getByText("Load more"));
       expect(onLoadMore).toHaveBeenCalled();
     });
 
-    it('should apply draggable item semantics when drag hooks are provided', () => {
+    it("should apply draggable item semantics when drag hooks are provided", () => {
       const { dragAndDropHooks } = useDragAndDrop<(typeof testItems)[number]>({
         items: testItems,
         getItems: (keys, items) =>
-          items
-            .filter((item) => keys.has(item.id))
-            .map((item) => ({ 'text/plain': item.name })),
+          items.filter((item) => keys.has(item.id)).map((item) => ({ "text/plain": item.name })),
       });
 
       render(() => (
@@ -169,16 +160,16 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const rows = screen.getAllByRole('row');
-      expect(rows[0]).toHaveAttribute('draggable', 'true');
+      const rows = screen.getAllByRole("row");
+      expect(rows[0]).toHaveAttribute("draggable", "true");
     });
 
-    it('wires horizontal droppable keyboard delegate methods in ltr', () => {
+    it("wires horizontal droppable keyboard delegate methods in ltr", () => {
       let keyboardDelegate:
         | {
-          getKeyLeftOf?: (key: string | number) => string | number | null;
-          getKeyRightOf?: (key: string | number) => string | number | null;
-        }
+            getKeyLeftOf?: (key: string | number) => string | number | null;
+            getKeyRightOf?: (key: string | number) => string | number | null;
+          }
         | undefined;
       const dragAndDropHooks = {
         useDroppableCollectionState: () => ({
@@ -193,7 +184,7 @@ describe('GridList', () => {
           activateTarget: () => {},
           drop: () => {},
           shouldAcceptItemDrop: () => true,
-          getDropOperation: () => 'move' as const,
+          getDropOperation: () => "move" as const,
         }),
         useDroppableCollection: (props: {
           keyboardDelegate?: {
@@ -227,20 +218,20 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      expect(keyboardDelegate?.getKeyLeftOf).toBeTypeOf('function');
-      expect(keyboardDelegate?.getKeyRightOf).toBeTypeOf('function');
+      expect(keyboardDelegate?.getKeyLeftOf).toBeTypeOf("function");
+      expect(keyboardDelegate?.getKeyRightOf).toBeTypeOf("function");
       expect(keyboardDelegate?.getKeyLeftOf?.(2)).toBe(1);
       expect(keyboardDelegate?.getKeyRightOf?.(2)).toBe(3);
     });
 
-    it('wires horizontal droppable keyboard delegate methods in rtl', () => {
+    it("wires horizontal droppable keyboard delegate methods in rtl", () => {
       const originalDir = document.dir;
-      document.dir = 'rtl';
+      document.dir = "rtl";
       let keyboardDelegate:
         | {
-          getKeyLeftOf?: (key: string | number) => string | number | null;
-          getKeyRightOf?: (key: string | number) => string | number | null;
-        }
+            getKeyLeftOf?: (key: string | number) => string | number | null;
+            getKeyRightOf?: (key: string | number) => string | number | null;
+          }
         | undefined;
       const dragAndDropHooks = {
         useDroppableCollectionState: () => ({
@@ -255,7 +246,7 @@ describe('GridList', () => {
           activateTarget: () => {},
           drop: () => {},
           shouldAcceptItemDrop: () => true,
-          getDropOperation: () => 'move' as const,
+          getDropOperation: () => "move" as const,
         }),
         useDroppableCollection: (props: {
           keyboardDelegate?: {
@@ -290,8 +281,8 @@ describe('GridList', () => {
           </GridList>
         ));
 
-        expect(keyboardDelegate?.getKeyLeftOf).toBeTypeOf('function');
-        expect(keyboardDelegate?.getKeyRightOf).toBeTypeOf('function');
+        expect(keyboardDelegate?.getKeyLeftOf).toBeTypeOf("function");
+        expect(keyboardDelegate?.getKeyRightOf).toBeTypeOf("function");
         expect(keyboardDelegate?.getKeyLeftOf?.(2)).toBe(3);
         expect(keyboardDelegate?.getKeyRightOf?.(2)).toBe(1);
       } finally {
@@ -299,11 +290,11 @@ describe('GridList', () => {
       }
     });
 
-    it('falls back to document direction when getComputedStyle is unavailable', () => {
+    it("falls back to document direction when getComputedStyle is unavailable", () => {
       const originalDir = document.dir;
-      document.dir = 'rtl';
+      document.dir = "rtl";
       const originalGetComputedStyle = window.getComputedStyle;
-      Object.defineProperty(window, 'getComputedStyle', {
+      Object.defineProperty(window, "getComputedStyle", {
         configurable: true,
         writable: true,
         value: undefined,
@@ -311,9 +302,9 @@ describe('GridList', () => {
 
       let keyboardDelegate:
         | {
-          getKeyLeftOf?: (key: string | number) => string | number | null;
-          getKeyRightOf?: (key: string | number) => string | number | null;
-        }
+            getKeyLeftOf?: (key: string | number) => string | number | null;
+            getKeyRightOf?: (key: string | number) => string | number | null;
+          }
         | undefined;
       const dragAndDropHooks = {
         useDroppableCollectionState: () => ({
@@ -328,7 +319,7 @@ describe('GridList', () => {
           activateTarget: () => {},
           drop: () => {},
           shouldAcceptItemDrop: () => true,
-          getDropOperation: () => 'move' as const,
+          getDropOperation: () => "move" as const,
         }),
         useDroppableCollection: (props: {
           keyboardDelegate?: {
@@ -366,7 +357,7 @@ describe('GridList', () => {
         expect(keyboardDelegate?.getKeyLeftOf?.(2)).toBe(3);
         expect(keyboardDelegate?.getKeyRightOf?.(2)).toBe(1);
       } finally {
-        Object.defineProperty(window, 'getComputedStyle', {
+        Object.defineProperty(window, "getComputedStyle", {
           configurable: true,
           writable: true,
           value: originalGetComputedStyle,
@@ -380,26 +371,21 @@ describe('GridList', () => {
   // DATA ATTRIBUTES
   // ============================================
 
-  describe('data attributes', () => {
-    it('should have data-empty when list is empty', () => {
+  describe("data attributes", () => {
+    it("should have data-empty when list is empty", () => {
       render(() => (
         <GridList items={[]} aria-label="Empty list">
           {() => <GridListItem id="x">x</GridListItem>}
         </GridList>
       ));
 
-      const list = document.querySelector('.solidaria-GridList');
-      expect(list?.getAttribute('data-empty')).toBeTruthy();
+      const list = document.querySelector(".solidaria-GridList");
+      expect(list?.getAttribute("data-empty")).toBeTruthy();
     });
 
-    it('should have data-disabled when disabled', () => {
+    it("should have data-disabled when disabled", () => {
       render(() => (
-        <GridList
-          items={testItems}
-          getKey={(item) => item.id}
-          aria-label="Fruits"
-          isDisabled
-        >
+        <GridList items={testItems} getKey={(item) => item.id} aria-label="Fruits" isDisabled>
           {(item) => (
             <GridListItem id={item.id} textValue={item.name}>
               {item.name}
@@ -408,8 +394,8 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const list = document.querySelector('.solidaria-GridList');
-      expect(list?.getAttribute('data-disabled')).toBeTruthy();
+      const list = document.querySelector(".solidaria-GridList");
+      expect(list?.getAttribute("data-disabled")).toBeTruthy();
     });
   });
 
@@ -417,8 +403,8 @@ describe('GridList', () => {
   // SELECTION
   // ============================================
 
-  describe('selection', () => {
-    it('should support single selection mode', () => {
+  describe("selection", () => {
+    it("should support single selection mode", () => {
       render(() => (
         <GridList
           items={testItems}
@@ -434,11 +420,11 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const list = document.querySelector('.solidaria-GridList');
+      const list = document.querySelector(".solidaria-GridList");
       expect(list).toBeTruthy();
     });
 
-    it('should support multiple selection mode', () => {
+    it("should support multiple selection mode", () => {
       render(() => (
         <GridList
           items={testItems}
@@ -454,11 +440,11 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const list = document.querySelector('.solidaria-GridList');
+      const list = document.querySelector(".solidaria-GridList");
       expect(list).toBeTruthy();
     });
 
-    it('should support default selected keys', () => {
+    it("should support default selected keys", () => {
       render(() => (
         <GridList
           items={testItems}
@@ -476,11 +462,11 @@ describe('GridList', () => {
       ));
 
       // Items with keys 1 and 2 should be selected
-      const items = document.querySelectorAll('[data-selected]');
+      const items = document.querySelectorAll("[data-selected]");
       expect(items.length).toBe(2);
     });
 
-    it('should call onSelectionChange', () => {
+    it("should call onSelectionChange", () => {
       const onSelectionChange = vi.fn();
 
       render(() => (
@@ -499,11 +485,11 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const list = document.querySelector('.solidaria-GridList');
+      const list = document.querySelector(".solidaria-GridList");
       expect(list).toBeTruthy();
     });
 
-    it('supports keyboard selection from focused grid container with Space', () => {
+    it("supports keyboard selection from focused grid container with Space", () => {
       render(() => (
         <GridList
           items={testItems}
@@ -519,17 +505,17 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const grid = screen.getByRole('grid', { name: 'Fruits' });
-      const rows = screen.getAllByRole('row');
-      expect(rows[0]).toHaveAttribute('aria-selected', 'false');
+      const grid = screen.getByRole("grid", { name: "Fruits" });
+      const rows = screen.getAllByRole("row");
+      expect(rows[0]).toHaveAttribute("aria-selected", "false");
 
       fireEvent.focus(grid);
-      fireEvent.keyDown(grid, { key: ' ' });
+      fireEvent.keyDown(grid, { key: " " });
 
-      expect(rows[0]).toHaveAttribute('aria-selected', 'true');
+      expect(rows[0]).toHaveAttribute("aria-selected", "true");
     });
 
-    it('supports keyboard action from focused grid container with Enter', () => {
+    it("supports keyboard action from focused grid container with Enter", () => {
       const onAction = vi.fn();
       render(() => (
         <GridList
@@ -546,9 +532,9 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const grid = screen.getByRole('grid', { name: 'Fruits' });
+      const grid = screen.getByRole("grid", { name: "Fruits" });
       fireEvent.focus(grid);
-      fireEvent.keyDown(grid, { key: 'Enter' });
+      fireEvent.keyDown(grid, { key: "Enter" });
 
       expect(onAction).toHaveBeenCalledWith(1);
     });
@@ -558,8 +544,8 @@ describe('GridList', () => {
   // DISABLED KEYS
   // ============================================
 
-  describe('disabled keys', () => {
-    it('should support disabledKeys prop', () => {
+  describe("disabled keys", () => {
+    it("should support disabledKeys prop", () => {
       render(() => (
         <GridList
           items={testItems}
@@ -576,16 +562,16 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const disabledItems = document.querySelectorAll('[data-disabled]');
+      const disabledItems = document.querySelectorAll("[data-disabled]");
       expect(disabledItems.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('should support getDisabled function', () => {
+    it("should support getDisabled function", () => {
       render(() => (
         <GridList
           items={testItems}
           getKey={(item) => item.id}
-          getDisabled={(item) => item.name === 'Banana'}
+          getDisabled={(item) => item.name === "Banana"}
           aria-label="Fruits"
           selectionMode="single"
         >
@@ -597,7 +583,7 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const list = document.querySelector('.solidaria-GridList');
+      const list = document.querySelector(".solidaria-GridList");
       expect(list).toBeTruthy();
     });
   });
@@ -606,14 +592,14 @@ describe('GridList', () => {
   // RENDER PROPS
   // ============================================
 
-  describe('render props', () => {
-    it('should support class as a function', () => {
+  describe("render props", () => {
+    it("should support class as a function", () => {
       render(() => (
         <GridList
           items={testItems}
           getKey={(item) => item.id}
           aria-label="Fruits"
-          class={(props) => `list ${props.isEmpty ? 'empty' : 'has-items'}`}
+          class={(props) => `list ${props.isEmpty ? "empty" : "has-items"}`}
         >
           {(item) => (
             <GridListItem id={item.id} textValue={item.name}>
@@ -623,11 +609,11 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const list = document.querySelector('.has-items');
+      const list = document.querySelector(".has-items");
       expect(list).toBeTruthy();
     });
 
-    it('should support item render props children', () => {
+    it("should support item render props children", () => {
       render(() => (
         <GridList
           items={testItems}
@@ -639,7 +625,7 @@ describe('GridList', () => {
             <GridListItem id={item.id} textValue={item.name}>
               {(props) => (
                 <span data-testid={`item-${item.id}`}>
-                  {item.name} {props.isSelected ? '✓' : ''}
+                  {item.name} {props.isSelected ? "✓" : ""}
                 </span>
               )}
             </GridListItem>
@@ -647,10 +633,10 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      expect(screen.getByTestId('item-1')).toBeTruthy();
+      expect(screen.getByTestId("item-1")).toBeTruthy();
     });
 
-    it('should support item class as a function', () => {
+    it("should support item class as a function", () => {
       render(() => (
         <GridList
           items={testItems}
@@ -663,7 +649,7 @@ describe('GridList', () => {
             <GridListItem
               id={item.id}
               textValue={item.name}
-              class={(props) => `item ${props.isSelected ? 'selected' : ''}`}
+              class={(props) => `item ${props.isSelected ? "selected" : ""}`}
             >
               {item.name}
             </GridListItem>
@@ -671,7 +657,7 @@ describe('GridList', () => {
         </GridList>
       ));
 
-      const selectedItem = document.querySelector('.item.selected');
+      const selectedItem = document.querySelector(".item.selected");
       expect(selectedItem).toBeTruthy();
     });
   });
@@ -680,12 +666,12 @@ describe('GridList', () => {
   // STATIC PROPERTIES
   // ============================================
 
-  describe('static properties', () => {
-    it('should have Item as static property', () => {
+  describe("static properties", () => {
+    it("should have Item as static property", () => {
       expect(GridList.Item).toBe(GridListItem);
     });
 
-    it('should have SelectionCheckbox as static property', () => {
+    it("should have SelectionCheckbox as static property", () => {
       expect(GridList.SelectionCheckbox).toBe(GridListSelectionCheckbox);
     });
   });
@@ -694,17 +680,17 @@ describe('GridList', () => {
   // CONTEXT ERRORS
   // ============================================
 
-  describe('context errors', () => {
-    it('should throw when GridListItem is used outside GridList', () => {
+  describe("context errors", () => {
+    it("should throw when GridListItem is used outside GridList", () => {
       expect(() => {
         render(() => <GridListItem id="test">Test</GridListItem>);
-      }).toThrow('GridListItem must be used within a GridList');
+      }).toThrow("GridListItem must be used within a GridList");
     });
 
-    it('should throw when GridListSelectionCheckbox is used outside GridList', () => {
+    it("should throw when GridListSelectionCheckbox is used outside GridList", () => {
       expect(() => {
         render(() => <GridListSelectionCheckbox itemKey="test" />);
-      }).toThrow('GridListSelectionCheckbox must be used within a GridList');
+      }).toThrow("GridListSelectionCheckbox must be used within a GridList");
     });
   });
 
@@ -712,8 +698,8 @@ describe('GridList', () => {
   // ACCESSIBILITY
   // ============================================
 
-  describe('accessibility', () => {
-    it('should have aria-label', () => {
+  describe("accessibility", () => {
+    it("should have aria-label", () => {
       render(() => (
         <GridList items={testItems} getKey={(item) => item.id} aria-label="Fruit list">
           {(item) => (
@@ -728,7 +714,7 @@ describe('GridList', () => {
       expect(list).toBeTruthy();
     });
 
-    it('should render as grid role', () => {
+    it("should render as grid role", () => {
       render(() => (
         <GridList items={testItems} getKey={(item) => item.id} aria-label="Fruits">
           {(item) => (

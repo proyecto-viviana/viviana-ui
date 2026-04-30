@@ -3,11 +3,11 @@
  * Based on @react-aria/gridlist/useGridList.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { createId } from '@proyecto-viviana/solid-stately';
-import type { GridState, GridCollection, Key } from '@proyecto-viviana/solid-stately';
-import type { AriaGridListProps, GridListAria } from './types';
+import { createMemo, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import { createId } from "@proyecto-viviana/solid-stately";
+import type { GridState, GridCollection, Key } from "@proyecto-viviana/solid-stately";
+import type { AriaGridListProps, GridListAria } from "./types";
 
 /**
  * Metadata stored for a grid list instance.
@@ -30,7 +30,7 @@ const gridListDataMap = new WeakMap<object, GridListData>();
  * Gets the grid list data for a given state.
  */
 export function getGridListData<T extends object, C extends GridCollection<T>>(
-  state: GridState<T, C>
+  state: GridState<T, C>,
 ): GridListData | undefined {
   return gridListDataMap.get(state);
 }
@@ -41,7 +41,7 @@ export function getGridListData<T extends object, C extends GridCollection<T>>(
 export function createGridList<T extends object, C extends GridCollection<T> = GridCollection<T>>(
   props: Accessor<AriaGridListProps>,
   state: Accessor<GridState<T, C>>,
-  _ref: Accessor<HTMLUListElement | null>
+  _ref: Accessor<HTMLUListElement | null>,
 ): GridListAria {
   // Generate a unique ID for the grid list
   const gridListId = props().id ?? createId();
@@ -69,7 +69,7 @@ export function createGridList<T extends object, C extends GridCollection<T> = G
     if (p.isDisabled) return;
 
     switch (e.key) {
-      case 'ArrowDown': {
+      case "ArrowDown": {
         e.preventDefault();
         if (focusedKey != null) {
           const nextKey = collection.getKeyAfter(focusedKey);
@@ -84,7 +84,7 @@ export function createGridList<T extends object, C extends GridCollection<T> = G
         }
         break;
       }
-      case 'ArrowUp': {
+      case "ArrowUp": {
         e.preventDefault();
         if (focusedKey != null) {
           const prevKey = collection.getKeyBefore(focusedKey);
@@ -99,7 +99,7 @@ export function createGridList<T extends object, C extends GridCollection<T> = G
         }
         break;
       }
-      case 'Home': {
+      case "Home": {
         e.preventDefault();
         const firstKey = collection.getFirstKey();
         if (firstKey != null) {
@@ -107,7 +107,7 @@ export function createGridList<T extends object, C extends GridCollection<T> = G
         }
         break;
       }
-      case 'End': {
+      case "End": {
         e.preventDefault();
         const lastKey = collection.getLastKey();
         if (lastKey != null) {
@@ -115,32 +115,32 @@ export function createGridList<T extends object, C extends GridCollection<T> = G
         }
         break;
       }
-      case 'a':
-      case 'A': {
-        if ((e.ctrlKey || e.metaKey) && s.selectionMode === 'multiple') {
+      case "a":
+      case "A": {
+        if ((e.ctrlKey || e.metaKey) && s.selectionMode === "multiple") {
           e.preventDefault();
           s.selectAll();
         }
         break;
       }
-      case ' ':
-      case 'Space':
-      case 'Spacebar': {
-        if (focusedKey != null && s.selectionMode !== 'none' && !s.isDisabled(focusedKey)) {
+      case " ":
+      case "Space":
+      case "Spacebar": {
+        if (focusedKey != null && s.selectionMode !== "none" && !s.isDisabled(focusedKey)) {
           e.preventDefault();
           s.toggleSelection(focusedKey);
         }
         break;
       }
-      case 'Enter': {
+      case "Enter": {
         if (focusedKey != null && !s.isDisabled(focusedKey)) {
           e.preventDefault();
           p.onAction?.(focusedKey);
         }
         break;
       }
-      case 'Escape': {
-        if (s.selectionMode !== 'none') {
+      case "Escape": {
+        if (s.selectionMode !== "none") {
           e.preventDefault();
           s.clearSelection();
         }
@@ -172,13 +172,13 @@ export function createGridList<T extends object, C extends GridCollection<T> = G
     const s = state();
 
     const baseProps: Record<string, unknown> = {
-      role: 'grid',
+      role: "grid",
       id: gridListId,
-      'aria-label': p['aria-label'],
-      'aria-labelledby': p['aria-labelledby'],
-      'aria-describedby': p['aria-describedby'],
-      'aria-multiselectable': s.selectionMode === 'multiple' ? true : undefined,
-      'aria-disabled': p.isDisabled || undefined,
+      "aria-label": p["aria-label"],
+      "aria-labelledby": p["aria-labelledby"],
+      "aria-describedby": p["aria-describedby"],
+      "aria-multiselectable": s.selectionMode === "multiple" ? true : undefined,
+      "aria-disabled": p.isDisabled || undefined,
       tabIndex: p.isDisabled ? undefined : 0,
       onKeyDown,
       onFocus,
@@ -187,7 +187,7 @@ export function createGridList<T extends object, C extends GridCollection<T> = G
 
     // Add row count for virtualized lists
     if (p.isVirtualized) {
-      baseProps['aria-rowcount'] = s.collection.rowCount;
+      baseProps["aria-rowcount"] = s.collection.rowCount;
     }
 
     return baseProps as JSX.HTMLAttributes<HTMLUListElement>;

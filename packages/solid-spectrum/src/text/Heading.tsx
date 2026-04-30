@@ -4,8 +4,8 @@
  * Styled heading (h1-h6) with configurable level and size.
  */
 
-import { type JSX, splitProps } from 'solid-js';
-import { Dynamic } from 'solid-js/web';
+import { type JSX, splitProps } from "solid-js";
+import { Dynamic } from "solid-js/web";
 
 // ============================================
 // TYPES
@@ -29,12 +29,12 @@ export interface HeadingProps {
 // ============================================
 
 const levelStyles: Record<HeadingLevel, string> = {
-  1: 'text-4xl font-bold',
-  2: 'text-3xl font-bold',
-  3: 'text-2xl font-semibold',
-  4: 'text-xl font-semibold',
-  5: 'text-lg font-medium',
-  6: 'text-base font-medium',
+  1: "text-4xl font-bold",
+  2: "text-3xl font-bold",
+  3: "text-2xl font-semibold",
+  4: "text-xl font-semibold",
+  5: "text-lg font-medium",
+  6: "text-base font-medium",
 };
 
 // ============================================
@@ -45,7 +45,7 @@ const levelStyles: Record<HeadingLevel, string> = {
  * A styled heading component with configurable level.
  */
 export function Heading(props: HeadingProps): JSX.Element {
-  const [local, rest] = splitProps(props, ['level', 'class', 'children']);
+  const [local, rest] = splitProps(props, ["level", "class", "children"]);
   const level = () => local.level ?? 3;
   const tag = () => `h${level()}` as keyof JSX.IntrinsicElements;
 
@@ -53,7 +53,7 @@ export function Heading(props: HeadingProps): JSX.Element {
     <Dynamic
       component={tag()}
       {...rest}
-      class={`text-primary-100 ${levelStyles[level()]} ${local.class ?? ''}`}
+      class={`text-primary-100 ${levelStyles[level()]} ${local.class ?? ""}`}
     >
       {local.children}
     </Dynamic>

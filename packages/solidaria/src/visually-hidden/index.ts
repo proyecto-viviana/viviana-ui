@@ -3,4 +3,4 @@ export {
   visuallyHiddenStyles,
   type AriaVisuallyHiddenProps,
   type VisuallyHiddenAria,
-} from './createVisuallyHidden';
+} from "./createVisuallyHidden";

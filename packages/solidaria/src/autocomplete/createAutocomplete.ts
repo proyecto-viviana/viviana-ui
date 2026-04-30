@@ -7,14 +7,9 @@
  * Based on @react-aria/autocomplete useAutocomplete.
  */
 
-import {
-  createSignal,
-  createEffect,
-  onCleanup,
-  type Accessor,
-} from 'solid-js'
-import { createId, getOwnerDocument } from '../ssr'
-import { type AutocompleteState } from '@proyecto-viviana/solid-stately'
+import { createSignal, createEffect, onCleanup, type Accessor } from "solid-js";
+import { createId, getOwnerDocument } from "../ssr";
+import { type AutocompleteState } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
@@ -22,76 +17,76 @@ import { type AutocompleteState } from '@proyecto-viviana/solid-stately'
 
 export interface CollectionOptions {
   /** The id of the collection element. */
-  id?: string
+  id?: string;
   /** Accessible label for the collection. */
-  'aria-label'?: string
+  "aria-label"?: string;
   /** Whether the collection items should use virtual focus instead of being focused directly. */
-  shouldUseVirtualFocus: boolean
+  shouldUseVirtualFocus: boolean;
   /** Whether typeahead is disabled. */
-  disallowTypeAhead: boolean
+  disallowTypeAhead: boolean;
 }
 
 export interface AutocompleteInputProps {
   /** Current input value. */
-  value: Accessor<string>
+  value: Accessor<string>;
   /** Handler for input value changes. */
-  onChange: (value: string) => void
+  onChange: (value: string) => void;
   /** Handler for key events. */
-  onKeyDown: (e: KeyboardEvent) => void
+  onKeyDown: (e: KeyboardEvent) => void;
   /** Handler for focus events. */
-  onFocus: (e: FocusEvent) => void
+  onFocus: (e: FocusEvent) => void;
   /** Handler for blur events. */
-  onBlur: (e: FocusEvent) => void
+  onBlur: (e: FocusEvent) => void;
   /** The id of the currently focused item for aria-activedescendant. */
-  'aria-activedescendant': Accessor<string | undefined>
+  "aria-activedescendant": Accessor<string | undefined>;
   /** The id of the controlled collection. */
-  'aria-controls': string
+  "aria-controls": string;
   /** Autocomplete type. */
-  'aria-autocomplete': 'list' | 'none' | 'inline' | 'both'
+  "aria-autocomplete": "list" | "none" | "inline" | "both";
   /** Enter key hint for mobile keyboards. */
-  enterKeyHint: 'go'
+  enterKeyHint: "go";
   /** Disable autocorrect. */
-  autoCorrect: 'off'
+  autoCorrect: "off";
   /** Disable spell check. */
-  spellCheck: 'false'
+  spellCheck: "false";
   /** Disable browser autocomplete. */
-  autoComplete: 'off'
+  autoComplete: "off";
 }
 
 export interface AriaAutocompleteOptions<_T = unknown> {
   /** Ref accessor for the input element. */
-  inputRef: Accessor<HTMLInputElement | undefined>
+  inputRef: Accessor<HTMLInputElement | undefined>;
   /** Ref accessor for the collection element. */
-  collectionRef: Accessor<HTMLElement | undefined>
+  collectionRef: Accessor<HTMLElement | undefined>;
   /** Optional id override for the controlled collection element. */
-  collectionId?: string
+  collectionId?: string;
   /** Optional accessible name for the controlled collection element. */
-  collectionAriaLabel?: string
+  collectionAriaLabel?: string;
   /**
    * An optional filter function used to determine if an option should be included.
    * @param textValue - The text value of the item
    * @param inputValue - The current input value
    */
-  filter?: (textValue: string, inputValue: string) => boolean
+  filter?: (textValue: string, inputValue: string) => boolean;
   /**
    * Whether to focus the first item after filtering.
    * @default false
    */
-  disableAutoFocusFirst?: boolean
+  disableAutoFocusFirst?: boolean;
   /**
    * Whether to disable virtual focus (aria-activedescendant).
    * @default false
    */
-  disableVirtualFocus?: boolean
+  disableVirtualFocus?: boolean;
 }
 
 export interface AutocompleteAria<_T = unknown> {
   /** Props for the autocomplete input element. */
-  inputProps: AutocompleteInputProps
+  inputProps: AutocompleteInputProps;
   /** Props for the collection (ListBox/Menu). */
-  collectionProps: CollectionOptions
+  collectionProps: CollectionOptions;
   /** A filter function that returns if the item should be shown. */
-  filter?: (textValue: string) => boolean
+  filter?: (textValue: string) => boolean;
 }
 
 function toKeyboardEventInit(e: KeyboardEvent): KeyboardEventInit {
@@ -107,7 +102,7 @@ function toKeyboardEventInit(e: KeyboardEvent): KeyboardEventInit {
     metaKey: e.metaKey,
     bubbles: e.bubbles,
     cancelable: e.cancelable,
-  }
+  };
 }
 
 // ============================================
@@ -115,8 +110,8 @@ function toKeyboardEventInit(e: KeyboardEvent): KeyboardEventInit {
 // ============================================
 
 // Custom event names for collection communication
-export const AUTOCOMPLETE_FOCUS_EVENT = 'autocomplete:focus'
-export const AUTOCOMPLETE_CLEAR_FOCUS_EVENT = 'autocomplete:clearfocus'
+export const AUTOCOMPLETE_FOCUS_EVENT = "autocomplete:focus";
+export const AUTOCOMPLETE_CLEAR_FOCUS_EVENT = "autocomplete:clearfocus";
 
 // ============================================
 // CREATE AUTOCOMPLETE HOOK
@@ -153,7 +148,7 @@ export const AUTOCOMPLETE_CLEAR_FOCUS_EVENT = 'autocomplete:clearfocus'
  */
 export function createAutocomplete<T = unknown>(
   props: AriaAutocompleteOptions<T>,
-  state: AutocompleteState
+  state: AutocompleteState,
 ): AutocompleteAria<T> {
   const {
     inputRef,
@@ -163,109 +158,109 @@ export function createAutocomplete<T = unknown>(
     collectionAriaLabel,
     disableAutoFocusFirst = false,
     disableVirtualFocus = false,
-  } = props
+  } = props;
 
-  const collectionId = collectionIdProp ?? createId()
-  const [shouldUseVirtualFocus] = createSignal(!disableVirtualFocus)
-  let lastInputType = ''
+  const collectionId = collectionIdProp ?? createId();
+  const [shouldUseVirtualFocus] = createSignal(!disableVirtualFocus);
+  let lastInputType = "";
 
   // Track the input type for determining focus behavior
   const handleInput = (e: Event) => {
-    const inputEvent = e as InputEvent
-    lastInputType = inputEvent.inputType || ''
-  }
+    const inputEvent = e as InputEvent;
+    lastInputType = inputEvent.inputType || "";
+  };
 
   // Set up input event listener
   createEffect(() => {
-    const input = inputRef()
+    const input = inputRef();
     if (input) {
-      input.addEventListener('input', handleInput)
+      input.addEventListener("input", handleInput);
       onCleanup(() => {
-        input.removeEventListener('input', handleInput)
-      })
+        input.removeEventListener("input", handleInput);
+      });
     }
-  })
+  });
 
   // Focus first item in collection
   const focusFirstItem = () => {
-    const collection = collectionRef()
+    const collection = collectionRef();
     if (collection) {
       collection.dispatchEvent(
         new CustomEvent(AUTOCOMPLETE_FOCUS_EVENT, {
           cancelable: true,
           bubbles: true,
-          detail: { focusStrategy: 'first' },
-        })
-      )
+          detail: { focusStrategy: "first" },
+        }),
+      );
     }
-  }
+  };
 
   // Clear virtual focus
   const clearVirtualFocus = (clearFocusKey = false) => {
-    state.setFocusedNodeId(null)
-    const collection = collectionRef()
+    state.setFocusedNodeId(null);
+    const collection = collectionRef();
     if (collection) {
       collection.dispatchEvent(
         new CustomEvent(AUTOCOMPLETE_CLEAR_FOCUS_EVENT, {
           cancelable: true,
           bubbles: true,
           detail: { clearFocusKey },
-        })
-      )
+        }),
+      );
     }
-  }
+  };
 
   // Handle input value changes
   const onChange = (value: string) => {
     // Focus first item when typing forward, clear when backspacing/pasting
-    if (lastInputType === 'insertText' && !disableAutoFocusFirst) {
-      focusFirstItem()
+    if (lastInputType === "insertText" && !disableAutoFocusFirst) {
+      focusFirstItem();
     } else if (
       lastInputType &&
-      (lastInputType.includes('insert') ||
-        lastInputType.includes('delete') ||
-        lastInputType.includes('history'))
+      (lastInputType.includes("insert") ||
+        lastInputType.includes("delete") ||
+        lastInputType.includes("history"))
     ) {
-      clearVirtualFocus(true)
+      clearVirtualFocus(true);
     }
 
-    state.setInputValue(value)
-  }
+    state.setInputValue(value);
+  };
 
   // Handle keyboard navigation
   const onKeyDown = (e: KeyboardEvent) => {
-    if ('isComposing' in e && e.isComposing) {
-      return
+    if ("isComposing" in e && e.isComposing) {
+      return;
     }
 
-    const focusedNodeId = state.focusedNodeId()
-    const collection = collectionRef()
-    const ownerDocument = getOwnerDocument(inputRef() ?? collection)
+    const focusedNodeId = state.focusedNodeId();
+    const collection = collectionRef();
+    const ownerDocument = getOwnerDocument(inputRef() ?? collection);
 
     switch (e.key) {
-      case 'Escape':
+      case "Escape":
         // Let the input handle Escape (e.g., clear value)
         if (e.defaultPrevented) {
-          return
+          return;
         }
-        break
+        break;
 
-      case ' ':
+      case " ":
         // Space shouldn't trigger item action
-        return
+        return;
 
-      case 'Tab':
+      case "Tab":
         // Let Tab propagate normally for focus management
-        return
+        return;
 
-      case 'ArrowUp':
-      case 'ArrowDown':
-      case 'Home':
-      case 'End':
-      case 'PageUp':
-      case 'PageDown': {
+      case "ArrowUp":
+      case "ArrowDown":
+      case "Home":
+      case "End":
+      case "PageUp":
+      case "PageDown": {
         // Prevent cursor movement in input
-        e.preventDefault()
+        e.preventDefault();
 
         // Dispatch focus event to collection
         if (collection) {
@@ -273,68 +268,68 @@ export function createAutocomplete<T = unknown>(
             new CustomEvent(AUTOCOMPLETE_FOCUS_EVENT, {
               cancelable: true,
               bubbles: true,
-            })
-          )
+            }),
+          );
         }
-        break
+        break;
       }
 
-      case 'ArrowLeft':
-      case 'ArrowRight':
+      case "ArrowLeft":
+      case "ArrowRight":
         // Clear activedescendant so screen reader announces cursor movement
-        clearVirtualFocus()
-        return
+        clearVirtualFocus();
+        return;
 
-      case 'Enter':
+      case "Enter":
         // Trigger click on focused item
         if (focusedNodeId) {
-          const item = ownerDocument?.getElementById(focusedNodeId)
+          const item = ownerDocument?.getElementById(focusedNodeId);
           if (item) {
-            item.click()
-            e.preventDefault()
+            item.click();
+            e.preventDefault();
           }
         }
-        return
+        return;
     }
 
     // Forward keyboard events to collection/focused item
     if (!e.defaultPrevented && collection) {
-      e.stopPropagation()
+      e.stopPropagation();
 
       if (focusedNodeId) {
-        const item = ownerDocument?.getElementById(focusedNodeId)
+        const item = ownerDocument?.getElementById(focusedNodeId);
         if (item) {
-          item.dispatchEvent(new KeyboardEvent(e.type, toKeyboardEventInit(e)))
+          item.dispatchEvent(new KeyboardEvent(e.type, toKeyboardEventInit(e)));
         }
       } else {
-        collection.dispatchEvent(new KeyboardEvent(e.type, toKeyboardEventInit(e)))
+        collection.dispatchEvent(new KeyboardEvent(e.type, toKeyboardEventInit(e)));
       }
     }
-  }
+  };
 
   // Handle focus events
   const onFocus = (e: FocusEvent) => {
-    if (!e.isTrusted) return
+    if (!e.isTrusted) return;
 
     // Restore virtual focus when refocusing input
-    const focusedNodeId = state.focusedNodeId()
+    const focusedNodeId = state.focusedNodeId();
     if (focusedNodeId) {
-      const item = document.getElementById(focusedNodeId)
+      const item = document.getElementById(focusedNodeId);
       if (item) {
         // Item still exists, keep focus on it
       }
     }
-  }
+  };
 
   const onBlur = (e: FocusEvent) => {
-    if (!e.isTrusted) return
+    if (!e.isTrusted) return;
     // Virtual focus blur handling would go here
-  }
+  };
 
   // Create filter function
   const filterFn = filter
     ? (textValue: string) => filter(textValue, state.inputValue())
-    : undefined
+    : undefined;
 
   return {
     inputProps: {
@@ -343,22 +338,22 @@ export function createAutocomplete<T = unknown>(
       onKeyDown,
       onFocus,
       onBlur,
-      get 'aria-activedescendant'() {
-        return () => (shouldUseVirtualFocus() ? state.focusedNodeId() ?? undefined : undefined)
+      get "aria-activedescendant"() {
+        return () => (shouldUseVirtualFocus() ? (state.focusedNodeId() ?? undefined) : undefined);
       },
-      'aria-controls': collectionId,
-      'aria-autocomplete': 'list',
-      enterKeyHint: 'go',
-      autoCorrect: 'off',
-      spellCheck: 'false',
-      autoComplete: 'off',
+      "aria-controls": collectionId,
+      "aria-autocomplete": "list",
+      enterKeyHint: "go",
+      autoCorrect: "off",
+      spellCheck: "false",
+      autoComplete: "off",
     },
     collectionProps: {
       id: collectionId,
-      'aria-label': collectionAriaLabel,
+      "aria-label": collectionAriaLabel,
       shouldUseVirtualFocus: shouldUseVirtualFocus(),
       disallowTypeAhead: shouldUseVirtualFocus(),
     },
     filter: filterFn,
-  }
+  };
 }

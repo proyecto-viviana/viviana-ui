@@ -34,11 +34,12 @@ function SearchFieldPage() {
             value={value()}
             onChange={setValue}
             onSubmit={(v) => setLastSearch(v)}
-            onClear={() => { setValue(""); setLastSearch(""); }}
+            onClear={() => {
+              setValue("");
+              setLastSearch("");
+            }}
           />
-          <p class="text-sm text-primary-400">
-            Last search: {lastSearch() || "none"}
-          </p>
+          <p class="text-sm text-primary-400">Last search: {lastSearch() || "none"}</p>
         </div>
       </Example>
 
@@ -118,27 +119,70 @@ function SearchFieldPage() {
           { name: "label", type: "string", description: "Visible label for the field" },
           { name: "value", type: "string", description: "Controlled value" },
           { name: "defaultValue", type: "string", description: "Uncontrolled initial value" },
-          { name: "onChange", type: "(value: string) => void", description: "Called on every keystroke" },
-          { name: "onSubmit", type: "(value: string) => void", description: "Called when Enter is pressed" },
-          { name: "onClear", type: "() => void", description: "Called when the clear button is clicked or Escape pressed" },
+          {
+            name: "onChange",
+            type: "(value: string) => void",
+            description: "Called on every keystroke",
+          },
+          {
+            name: "onSubmit",
+            type: "(value: string) => void",
+            description: "Called when Enter is pressed",
+          },
+          {
+            name: "onClear",
+            type: "() => void",
+            description: "Called when the clear button is clicked or Escape pressed",
+          },
           { name: "placeholder", type: "string", description: "Placeholder text" },
-          { name: "size", type: "'sm' | 'md' | 'lg'", default: "'md'", description: "Size variant" },
-          { name: "variant", type: "'outline' | 'filled'", default: "'outline'", description: "Visual style" },
-          { name: "isDisabled", type: "boolean", default: "false", description: "Prevents interaction" },
-          { name: "isInvalid", type: "boolean", default: "false", description: "Shows error styling" },
+          {
+            name: "size",
+            type: "'sm' | 'md' | 'lg'",
+            default: "'md'",
+            description: "Size variant",
+          },
+          {
+            name: "variant",
+            type: "'outline' | 'filled'",
+            default: "'outline'",
+            description: "Visual style",
+          },
+          {
+            name: "isDisabled",
+            type: "boolean",
+            default: "false",
+            description: "Prevents interaction",
+          },
+          {
+            name: "isInvalid",
+            type: "boolean",
+            default: "false",
+            description: "Shows error styling",
+          },
           { name: "errorMessage", type: "string", description: "Validation error message" },
           { name: "description", type: "string", description: "Helper text below the field" },
-          { name: "hideSearchIcon", type: "boolean", default: "false", description: "Hides the leading search icon" },
+          {
+            name: "hideSearchIcon",
+            type: "boolean",
+            default: "false",
+            description: "Hides the leading search icon",
+          },
         ]}
       />
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Uses <code>role="searchbox"</code> for proper semantics</li>
+          <li>
+            Uses <code>role="searchbox"</code> for proper semantics
+          </li>
           <li>Clear button has an accessible label ("Clear search")</li>
           <li>Escape key clears the field and refocuses it</li>
-          <li>Enter key triggers the <code>onSubmit</code> callback</li>
-          <li>Works with <code>aria-label</code> if no visible label is provided</li>
+          <li>
+            Enter key triggers the <code>onSubmit</code> callback
+          </li>
+          <li>
+            Works with <code>aria-label</code> if no visible label is provided
+          </li>
         </ul>
       </AccessibilitySection>
     </DocPage>

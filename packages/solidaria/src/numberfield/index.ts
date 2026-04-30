@@ -2,4 +2,4 @@ export {
   createNumberField,
   type AriaNumberFieldProps,
   type NumberFieldAria,
-} from './createNumberField';
+} from "./createNumberField";

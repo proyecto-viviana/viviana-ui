@@ -133,25 +133,69 @@ function SliderPage() {
           { name: "label", type: "string", description: "Visible label" },
           { name: "value", type: "number", description: "Controlled value" },
           { name: "defaultValue", type: "number", description: "Uncontrolled initial value" },
-          { name: "onChange", type: "(value: number) => void", description: "Called when the value changes" },
+          {
+            name: "onChange",
+            type: "(value: number) => void",
+            description: "Called when the value changes",
+          },
           { name: "minValue", type: "number", default: "0", description: "Minimum allowed value" },
-          { name: "maxValue", type: "number", default: "100", description: "Maximum allowed value" },
+          {
+            name: "maxValue",
+            type: "number",
+            default: "100",
+            description: "Maximum allowed value",
+          },
           { name: "step", type: "number", default: "1", description: "Step increment" },
-          { name: "size", type: "'sm' | 'md' | 'lg'", default: "'md'", description: "Track/thumb size" },
-          { name: "variant", type: "'default' | 'accent'", default: "'default'", description: "Color variant" },
-          { name: "formatOptions", type: "Intl.NumberFormatOptions", description: "Number formatting (currency, percent, etc.)" },
-          { name: "isDisabled", type: "boolean", default: "false", description: "Prevents interaction" },
-          { name: "showOutput", type: "boolean", default: "true", description: "Shows current value label" },
-          { name: "showMinMax", type: "boolean", default: "false", description: "Shows min/max labels at track ends" },
+          {
+            name: "size",
+            type: "'sm' | 'md' | 'lg'",
+            default: "'md'",
+            description: "Track/thumb size",
+          },
+          {
+            name: "variant",
+            type: "'default' | 'accent'",
+            default: "'default'",
+            description: "Color variant",
+          },
+          {
+            name: "formatOptions",
+            type: "Intl.NumberFormatOptions",
+            description: "Number formatting (currency, percent, etc.)",
+          },
+          {
+            name: "isDisabled",
+            type: "boolean",
+            default: "false",
+            description: "Prevents interaction",
+          },
+          {
+            name: "showOutput",
+            type: "boolean",
+            default: "true",
+            description: "Shows current value label",
+          },
+          {
+            name: "showMinMax",
+            type: "boolean",
+            default: "false",
+            description: "Shows min/max labels at track ends",
+          },
         ]}
       />
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Keyboard: Arrow keys adjust by one step, Page Up/Down by 10%, Home/End go to min/max</li>
-          <li>Value is announced to screen readers via <code>aria-valuetext</code></li>
+          <li>
+            Keyboard: Arrow keys adjust by one step, Page Up/Down by 10%, Home/End go to min/max
+          </li>
+          <li>
+            Value is announced to screen readers via <code>aria-valuetext</code>
+          </li>
           <li>Formatted values (currency, percent) are properly announced</li>
-          <li>Disabled state communicated via <code>aria-disabled</code></li>
+          <li>
+            Disabled state communicated via <code>aria-disabled</code>
+          </li>
         </ul>
       </AccessibilitySection>
     </DocPage>

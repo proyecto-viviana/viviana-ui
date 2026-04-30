@@ -8,12 +8,12 @@
  * plus surfaces, text, borders, glows, semantics) is derived via OKLCH.
  */
 
-import { generateTheme, type GeneratedTheme } from './generator'
+import { generateTheme, type GeneratedTheme } from "./generator";
 
-export const VIVIANA_PRIMARY = '#75ABC7'
-export const VIVIANA_ACCENT = '#DF5C9A'
+export const VIVIANA_PRIMARY = "#75ABC7";
+export const VIVIANA_ACCENT = "#DF5C9A";
 
 export const viviana: GeneratedTheme = generateTheme({
   primary: VIVIANA_PRIMARY,
   accent: VIVIANA_ACCENT,
-})
+});

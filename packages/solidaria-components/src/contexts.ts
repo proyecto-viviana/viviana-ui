@@ -5,27 +5,27 @@
  * Dialog, Modal, Popover, and Button components.
  */
 
-import { createContext, useContext } from 'solid-js'
-import type { OverlayTriggerState as StatelyOverlayTriggerState } from '@proyecto-viviana/solid-stately'
+import { createContext, useContext } from "solid-js";
+import type { OverlayTriggerState as StatelyOverlayTriggerState } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // OVERLAY TRIGGER STATE CONTEXT
 // ============================================
 
 export interface OverlayTriggerState {
-  isOpen: boolean
-  open: () => void
-  close: () => void
-  toggle: () => void
+  isOpen: boolean;
+  open: () => void;
+  close: () => void;
+  toggle: () => void;
 }
 
-export const OverlayTriggerStateContext = createContext<OverlayTriggerState | null>(null)
+export const OverlayTriggerStateContext = createContext<OverlayTriggerState | null>(null);
 
 /**
  * Hook to access the overlay trigger state from context.
  */
 export function useOverlayTriggerState(): OverlayTriggerState | null {
-  return useContext(OverlayTriggerStateContext)
+  return useContext(OverlayTriggerStateContext);
 }
 
 // ============================================
@@ -33,19 +33,19 @@ export function useOverlayTriggerState(): OverlayTriggerState | null {
 // ============================================
 
 export interface DialogTriggerContextValue {
-  state: StatelyOverlayTriggerState
-  triggerRef: () => HTMLElement | null
-  setTriggerRef: (el: HTMLElement | null) => void
-  triggerId: string
+  state: StatelyOverlayTriggerState;
+  triggerRef: () => HTMLElement | null;
+  setTriggerRef: (el: HTMLElement | null) => void;
+  triggerId: string;
 }
 
-export const DialogTriggerContext = createContext<DialogTriggerContextValue | null>(null)
+export const DialogTriggerContext = createContext<DialogTriggerContextValue | null>(null);
 
 /**
  * Hook to access the dialog trigger state from context.
  */
 export function useDialogTrigger(): DialogTriggerContextValue | null {
-  return useContext(DialogTriggerContext)
+  return useContext(DialogTriggerContext);
 }
 
 // ============================================
@@ -54,22 +54,22 @@ export function useDialogTrigger(): DialogTriggerContextValue | null {
 
 export interface PopoverTriggerContextValue {
   state: {
-    isOpen: () => boolean
-    open: () => void
-    close: () => void
-    toggle: () => void
-  }
-  triggerRef: () => HTMLElement | null
-  setTriggerRef: (el: HTMLElement | null) => void
-  triggerId: string
-  trigger: string
+    isOpen: () => boolean;
+    open: () => void;
+    close: () => void;
+    toggle: () => void;
+  };
+  triggerRef: () => HTMLElement | null;
+  setTriggerRef: (el: HTMLElement | null) => void;
+  triggerId: string;
+  trigger: string;
 }
 
-export const PopoverTriggerContext = createContext<PopoverTriggerContextValue | null>(null)
+export const PopoverTriggerContext = createContext<PopoverTriggerContextValue | null>(null);
 
 /**
  * Hook to access the popover trigger state from context.
  */
 export function usePopoverTrigger(): PopoverTriggerContextValue | null {
-  return useContext(PopoverTriggerContext)
+  return useContext(PopoverTriggerContext);
 }

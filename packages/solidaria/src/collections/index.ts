@@ -1,11 +1,11 @@
-import { createContext, createMemo, useContext, type Accessor } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
+import { createContext, createMemo, useContext, type Accessor } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
 import {
   ListCollection,
   type Collection as StatelyCollection,
   type CollectionNode as StatelyCollectionNode,
   type Key,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 
 export interface CachedChildrenOptions<T> {
   items?: Iterable<T>;
@@ -26,15 +26,15 @@ export interface CollectionCompatNode<TProps = unknown, TValue = unknown> {
   props: TProps;
 }
 
-const COLLECTION_NODE_PROP = '__collectionNode';
+const COLLECTION_NODE_PROP = "__collectionNode";
 
 function applyCollectionMetadata<T>(
   rendered: unknown,
   item: T,
   key: Key,
-  addIdAndValue: boolean
+  addIdAndValue: boolean,
 ): unknown {
-  if (typeof rendered !== 'object' || rendered === null) return rendered;
+  if (typeof rendered !== "object" || rendered === null) return rendered;
   const next = {
     ...(rendered as Record<string, unknown>),
     key,
@@ -56,7 +56,7 @@ function applyCollectionMetadata<T>(
  * For Solid, this is a lightweight mapper over item arrays.
  */
 export function CollectionBuilder<T>(props: CollectionBuilderProps<T>): unknown {
-  if (typeof props.children === 'function' && props.items) {
+  if (typeof props.children === "function" && props.items) {
     const children = props.children as (item: T) => unknown;
     const mapped: unknown[] = [];
     let index = 0;
@@ -64,16 +64,11 @@ export function CollectionBuilder<T>(props: CollectionBuilderProps<T>): unknown 
     for (const item of props.items) {
       const baseKey = getResolvedItemKey(item, index, props.getKey);
       if (baseKey == null) {
-        throw new Error('Could not determine key for item');
+        throw new Error("Could not determine key for item");
       }
       const key = props.idScope != null ? `${String(props.idScope)}:${String(baseKey)}` : baseKey;
       const rendered = children(item);
-      const withMeta = applyCollectionMetadata(
-        rendered,
-        item,
-        key,
-        props.addIdAndValue ?? false
-      );
+      const withMeta = applyCollectionMetadata(rendered, item, key, props.addIdAndValue ?? false);
       mapped.push(withMeta);
       index += 1;
     }
@@ -94,12 +89,14 @@ export function Collection<T>(props: CollectionProps<T>): unknown {
  * Identity helper retained for API compatibility.
  */
 export function createLeafComponent<TProps>(
-  component: (props: TProps, node?: CollectionCompatNode<TProps, unknown>) => unknown
+  component: (props: TProps, node?: CollectionCompatNode<TProps, unknown>) => unknown,
 ): (props: TProps) => unknown {
   return (props: TProps) => {
-    const node = (props as Record<string, unknown>)[COLLECTION_NODE_PROP] as CollectionCompatNode<TProps, unknown> | undefined;
+    const node = (props as Record<string, unknown>)[COLLECTION_NODE_PROP] as
+      | CollectionCompatNode<TProps, unknown>
+      | undefined;
     if (component.length >= 2 && !node) {
-      throw new Error(`${component.name || 'Component'} cannot be rendered outside a collection.`);
+      throw new Error(`${component.name || "Component"} cannot be rendered outside a collection.`);
     }
     return component(props, node);
   };
@@ -109,12 +106,14 @@ export function createLeafComponent<TProps>(
  * Identity helper retained for API compatibility.
  */
 export function createBranchComponent<TProps>(
-  component: (props: TProps, node?: CollectionCompatNode<TProps, unknown>) => unknown
+  component: (props: TProps, node?: CollectionCompatNode<TProps, unknown>) => unknown,
 ): (props: TProps) => unknown {
   return (props: TProps) => {
-    const node = (props as Record<string, unknown>)[COLLECTION_NODE_PROP] as CollectionCompatNode<TProps, unknown> | undefined;
+    const node = (props as Record<string, unknown>)[COLLECTION_NODE_PROP] as
+      | CollectionCompatNode<TProps, unknown>
+      | undefined;
     if (component.length >= 2 && !node) {
-      throw new Error(`${component.name || 'Component'} cannot be rendered outside a collection.`);
+      throw new Error(`${component.name || "Component"} cannot be rendered outside a collection.`);
     }
     return component(props, node);
   };
@@ -125,7 +124,9 @@ const HiddenContext = createContext<Accessor<boolean>>(() => false);
 /**
  * Wraps a component and suppresses rendering when the hidden context is true.
  */
-export function createHideableComponent<TProps>(component: (props: TProps) => unknown): (props: TProps) => unknown {
+export function createHideableComponent<TProps>(
+  component: (props: TProps) => unknown,
+): (props: TProps) => unknown {
   return (props: TProps) => {
     const isHidden = useIsHidden();
     if (isHidden()) return null;
@@ -140,7 +141,9 @@ export function useIsHidden(): Accessor<boolean> {
 /**
  * Memoized item renderer for dynamic child mapping.
  */
-export function useCachedChildren<T>(options: MaybeAccessor<CachedChildrenOptions<T>>): Accessor<unknown[]> {
+export function useCachedChildren<T>(
+  options: MaybeAccessor<CachedChildrenOptions<T>>,
+): Accessor<unknown[]> {
   let objectCache = new WeakMap<object, unknown>();
   const primitiveCache = new Map<Key, unknown>();
   let lastDependencies: ReadonlyArray<unknown> | undefined;
@@ -178,7 +181,7 @@ export function useCachedChildren<T>(options: MaybeAccessor<CachedChildrenOption
       lastGetKey = resolvedGetKey;
     }
 
-    if (typeof resolved.children === 'function' && resolved.items) {
+    if (typeof resolved.children === "function" && resolved.items) {
       const children = resolved.children as (item: T) => unknown;
       const rendered: unknown[] = [];
       let index = 0;
@@ -186,12 +189,13 @@ export function useCachedChildren<T>(options: MaybeAccessor<CachedChildrenOption
       for (const item of resolved.items) {
         const baseKey = getItemKey(item, index, resolvedGetKey);
         if (baseKey == null) {
-          throw new Error('Could not determine key for item');
+          throw new Error("Could not determine key for item");
         }
-        const key = resolvedIdScope != null ? `${String(resolvedIdScope)}:${String(baseKey)}` : baseKey;
+        const key =
+          resolvedIdScope != null ? `${String(resolvedIdScope)}:${String(baseKey)}` : baseKey;
         let child: unknown;
 
-        if (typeof item === 'object' && item !== null) {
+        if (typeof item === "object" && item !== null) {
           child = objectCache.get(item as object);
           if (child === undefined) {
             child = applyCollectionMetadata(children(item), item, key, resolvedAddIdAndValue);
@@ -232,11 +236,11 @@ export type CollectionType<T = unknown> = StatelyCollection<T>;
 
 function getResolvedItemKey<T>(item: T, index: number, getKey?: (item: T) => Key): Key | undefined {
   if (getKey) return getKey(item);
-  if (typeof item === 'object' && item !== null) {
+  if (typeof item === "object" && item !== null) {
     const keyed = item as Record<string, unknown>;
     const keyValue = keyed.key ?? keyed.id;
-    if (typeof keyValue === 'string' || typeof keyValue === 'number') return keyValue;
+    if (typeof keyValue === "string" || typeof keyValue === "number") return keyValue;
   }
-  if (typeof item === 'string' || typeof item === 'number') return index;
+  if (typeof item === "string" || typeof item === "number") return index;
   return undefined;
 }

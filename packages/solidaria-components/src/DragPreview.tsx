@@ -1,17 +1,19 @@
-import { onCleanup, type JSX } from 'solid-js';
-import type { DragItem, DragPreviewRenderer } from '@proyecto-viviana/solid-stately';
+import { onCleanup, type JSX } from "solid-js";
+import type { DragItem, DragPreviewRenderer } from "@proyecto-viviana/solid-stately";
 
 export interface DragPreviewProps {
   ref?: { current: DragPreviewRenderer | null };
-  children: (items: DragItem[]) => JSX.Element | { element: JSX.Element; x?: number; y?: number } | null | undefined;
+  children: (
+    items: DragItem[],
+  ) => JSX.Element | { element: JSX.Element; x?: number; y?: number } | null | undefined;
 }
 
 export function DragPreview(props: DragPreviewProps): JSX.Element {
-  const hasDom = typeof HTMLElement !== 'undefined';
+  const hasDom = typeof HTMLElement !== "undefined";
   const isElementNode = (value: unknown): value is HTMLElement => {
     if (!value) return false;
     if (hasDom && value instanceof HTMLElement) return true;
-    return typeof value === 'object' && (value as { nodeType?: number }).nodeType === 1;
+    return typeof value === "object" && (value as { nodeType?: number }).nodeType === 1;
   };
 
   if (props.ref) {
@@ -21,13 +23,13 @@ export function DragPreview(props: DragPreviewProps): JSX.Element {
         callback(null);
         return;
       }
-      if (
-        typeof rendered === 'object' &&
-        rendered !== null &&
-        'element' in rendered
-      ) {
+      if (typeof rendered === "object" && rendered !== null && "element" in rendered) {
         const previewValue = rendered as { element: unknown; x?: number; y?: number };
-        callback(isElementNode(previewValue.element) ? previewValue.element : null, previewValue.x, previewValue.y);
+        callback(
+          isElementNode(previewValue.element) ? previewValue.element : null,
+          previewValue.x,
+          previewValue.y,
+        );
         return;
       }
       callback(isElementNode(rendered) ? rendered : null);

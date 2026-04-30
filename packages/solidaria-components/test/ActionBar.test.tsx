@@ -1,34 +1,34 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@solidjs/testing-library';
-import { createSignal } from 'solid-js';
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@solidjs/testing-library";
+import { createSignal } from "solid-js";
 import {
   ActionBar,
   ActionBarContainer,
   ActionBarSelectionCount,
   ActionBarClearButton,
-} from '../src/ActionBar';
+} from "../src/ActionBar";
 
-describe('ActionBar (headless)', () => {
-  describe('visibility', () => {
-    it('hides when selectedItemCount is 0', () => {
+describe("ActionBar (headless)", () => {
+  describe("visibility", () => {
+    it("hides when selectedItemCount is 0", () => {
       render(() => (
         <ActionBar selectedItemCount={0} onClearSelection={() => {}}>
           <span>actions</span>
         </ActionBar>
       ));
-      expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
+      expect(screen.queryByRole("toolbar")).not.toBeInTheDocument();
     });
 
-    it('shows when selectedItemCount > 0', () => {
+    it("shows when selectedItemCount > 0", () => {
       render(() => (
         <ActionBar selectedItemCount={3} onClearSelection={() => {}}>
           <span>actions</span>
         </ActionBar>
       ));
-      expect(screen.getByRole('toolbar')).toBeInTheDocument();
+      expect(screen.getByRole("toolbar")).toBeInTheDocument();
     });
 
     it('shows when selectedItemCount is "all"', () => {
@@ -37,10 +37,10 @@ describe('ActionBar (headless)', () => {
           <span>actions</span>
         </ActionBar>
       ));
-      expect(screen.getByRole('toolbar')).toBeInTheDocument();
+      expect(screen.getByRole("toolbar")).toBeInTheDocument();
     });
 
-    it('hides when count changes from positive to 0', () => {
+    it("hides when count changes from positive to 0", () => {
       const [count, setCount] = createSignal(3);
       render(() => (
         <ActionBar selectedItemCount={count()} onClearSelection={() => setCount(0)}>
@@ -48,20 +48,20 @@ describe('ActionBar (headless)', () => {
         </ActionBar>
       ));
 
-      expect(screen.getByRole('toolbar')).toBeInTheDocument();
+      expect(screen.getByRole("toolbar")).toBeInTheDocument();
       setCount(0);
-      expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
+      expect(screen.queryByRole("toolbar")).not.toBeInTheDocument();
     });
   });
 
-  describe('roles and attributes', () => {
-    it('renders with toolbar role', () => {
+  describe("roles and attributes", () => {
+    it("renders with toolbar role", () => {
       render(() => (
         <ActionBar selectedItemCount={1} onClearSelection={() => {}}>
           <span>actions</span>
         </ActionBar>
       ));
-      expect(screen.getByRole('toolbar')).toBeInTheDocument();
+      expect(screen.getByRole("toolbar")).toBeInTheDocument();
     });
 
     it('has default aria-label "Actions"', () => {
@@ -70,19 +70,19 @@ describe('ActionBar (headless)', () => {
           <span>actions</span>
         </ActionBar>
       ));
-      expect(screen.getByRole('toolbar')).toHaveAttribute('aria-label', 'Actions');
+      expect(screen.getByRole("toolbar")).toHaveAttribute("aria-label", "Actions");
     });
 
-    it('supports custom aria-label', () => {
+    it("supports custom aria-label", () => {
       render(() => (
         <ActionBar selectedItemCount={1} onClearSelection={() => {}} aria-label="Bulk actions">
           <span>actions</span>
         </ActionBar>
       ));
-      expect(screen.getByRole('toolbar')).toHaveAttribute('aria-label', 'Bulk actions');
+      expect(screen.getByRole("toolbar")).toHaveAttribute("aria-label", "Bulk actions");
     });
 
-    it('supports aria-labelledby without forcing aria-label fallback', () => {
+    it("supports aria-labelledby without forcing aria-label fallback", () => {
       render(() => (
         <>
           <span id="bulk-actions-label">Bulk actions</span>
@@ -96,14 +96,14 @@ describe('ActionBar (headless)', () => {
         </>
       ));
 
-      const toolbar = screen.getByRole('toolbar');
-      expect(toolbar).toHaveAttribute('aria-labelledby', 'bulk-actions-label');
-      expect(toolbar).not.toHaveAttribute('aria-label');
+      const toolbar = screen.getByRole("toolbar");
+      expect(toolbar).toHaveAttribute("aria-labelledby", "bulk-actions-label");
+      expect(toolbar).not.toHaveAttribute("aria-label");
     });
   });
 
-  describe('keyboard', () => {
-    it('calls onClearSelection on Escape', () => {
+  describe("keyboard", () => {
+    it("calls onClearSelection on Escape", () => {
       const onClear = vi.fn();
       render(() => (
         <ActionBar selectedItemCount={5} onClearSelection={onClear}>
@@ -111,12 +111,12 @@ describe('ActionBar (headless)', () => {
         </ActionBar>
       ));
 
-      const toolbar = screen.getByRole('toolbar');
-      fireEvent.keyDown(toolbar, { key: 'Escape' });
+      const toolbar = screen.getByRole("toolbar");
+      fireEvent.keyDown(toolbar, { key: "Escape" });
       expect(onClear).toHaveBeenCalledOnce();
     });
 
-    it('does not call onClearSelection on other keys', () => {
+    it("does not call onClearSelection on other keys", () => {
       const onClear = vi.fn();
       render(() => (
         <ActionBar selectedItemCount={5} onClearSelection={onClear}>
@@ -124,12 +124,12 @@ describe('ActionBar (headless)', () => {
         </ActionBar>
       ));
 
-      const toolbar = screen.getByRole('toolbar');
-      fireEvent.keyDown(toolbar, { key: 'Enter' });
+      const toolbar = screen.getByRole("toolbar");
+      fireEvent.keyDown(toolbar, { key: "Enter" });
       expect(onClear).not.toHaveBeenCalled();
     });
 
-    it('supports toolbar arrow and Home/End navigation between actions', () => {
+    it("supports toolbar arrow and Home/End navigation between actions", () => {
       render(() => (
         <ActionBar selectedItemCount={5} onClearSelection={() => {}}>
           <button>Edit</button>
@@ -138,50 +138,46 @@ describe('ActionBar (headless)', () => {
         </ActionBar>
       ));
 
-      const edit = screen.getByRole('button', { name: 'Edit' });
-      const duplicate = screen.getByRole('button', { name: 'Duplicate' });
-      const del = screen.getByRole('button', { name: 'Delete' });
+      const edit = screen.getByRole("button", { name: "Edit" });
+      const duplicate = screen.getByRole("button", { name: "Duplicate" });
+      const del = screen.getByRole("button", { name: "Delete" });
 
       edit.focus();
-      fireEvent.keyDown(edit, { key: 'ArrowRight' });
+      fireEvent.keyDown(edit, { key: "ArrowRight" });
       expect(document.activeElement).toBe(duplicate);
 
-      fireEvent.keyDown(duplicate, { key: 'End' });
+      fireEvent.keyDown(duplicate, { key: "End" });
       expect(document.activeElement).toBe(del);
 
-      fireEvent.keyDown(del, { key: 'Home' });
+      fireEvent.keyDown(del, { key: "Home" });
       expect(document.activeElement).toBe(edit);
     });
 
-    it('calls user onKeyDown handler and respects defaultPrevented', () => {
+    it("calls user onKeyDown handler and respects defaultPrevented", () => {
       const onClear = vi.fn();
       const onKeyDown = vi.fn((e: KeyboardEvent) => e.preventDefault());
 
       render(() => (
-        <ActionBar
-          selectedItemCount={5}
-          onClearSelection={onClear}
-          onKeyDown={onKeyDown}
-        >
+        <ActionBar selectedItemCount={5} onClearSelection={onClear} onKeyDown={onKeyDown}>
           <button>Delete</button>
         </ActionBar>
       ));
 
-      const toolbar = screen.getByRole('toolbar');
-      fireEvent.keyDown(toolbar, { key: 'Escape' });
+      const toolbar = screen.getByRole("toolbar");
+      fireEvent.keyDown(toolbar, { key: "Escape" });
       expect(onKeyDown).toHaveBeenCalledOnce();
       expect(onClear).not.toHaveBeenCalled();
     });
   });
 
-  describe('SelectionCount', () => {
-    it('shows count text', () => {
+  describe("SelectionCount", () => {
+    it("shows count text", () => {
       render(() => (
         <ActionBar selectedItemCount={3} onClearSelection={() => {}}>
           <ActionBarSelectionCount />
         </ActionBar>
       ));
-      expect(screen.getByText('3 selected')).toBeInTheDocument();
+      expect(screen.getByText("3 selected")).toBeInTheDocument();
     });
 
     it('shows "All selected" for "all"', () => {
@@ -190,7 +186,7 @@ describe('ActionBar (headless)', () => {
           <ActionBarSelectionCount />
         </ActionBar>
       ));
-      expect(screen.getByText('All selected')).toBeInTheDocument();
+      expect(screen.getByText("All selected")).toBeInTheDocument();
     });
 
     it('shows "1 selected" for single item', () => {
@@ -199,52 +195,52 @@ describe('ActionBar (headless)', () => {
           <ActionBarSelectionCount />
         </ActionBar>
       ));
-      expect(screen.getByText('1 selected')).toBeInTheDocument();
+      expect(screen.getByText("1 selected")).toBeInTheDocument();
     });
   });
 
-  describe('ClearButton', () => {
-    it('renders with default aria-label', () => {
+  describe("ClearButton", () => {
+    it("renders with default aria-label", () => {
       render(() => (
         <ActionBar selectedItemCount={2} onClearSelection={() => {}}>
           <ActionBarClearButton />
         </ActionBar>
       ));
-      expect(screen.getByRole('button', { name: 'Clear selection' })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Clear selection" })).toBeInTheDocument();
     });
 
-    it('calls onClearSelection on click', () => {
+    it("calls onClearSelection on click", () => {
       const onClear = vi.fn();
       render(() => (
         <ActionBar selectedItemCount={2} onClearSelection={onClear}>
           <ActionBarClearButton />
         </ActionBar>
       ));
-      fireEvent.click(screen.getByRole('button', { name: 'Clear selection' }));
+      fireEvent.click(screen.getByRole("button", { name: "Clear selection" }));
       expect(onClear).toHaveBeenCalledOnce();
     });
 
-    it('supports custom aria-label', () => {
+    it("supports custom aria-label", () => {
       render(() => (
         <ActionBar selectedItemCount={2} onClearSelection={() => {}}>
           <ActionBarClearButton aria-label="Deselect all" />
         </ActionBar>
       ));
-      expect(screen.getByRole('button', { name: 'Deselect all' })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Deselect all" })).toBeInTheDocument();
     });
 
-    it('renders custom children', () => {
+    it("renders custom children", () => {
       render(() => (
         <ActionBar selectedItemCount={2} onClearSelection={() => {}}>
           <ActionBarClearButton>Clear</ActionBarClearButton>
         </ActionBar>
       ));
-      expect(screen.getByText('Clear')).toBeInTheDocument();
+      expect(screen.getByText("Clear")).toBeInTheDocument();
     });
   });
 
-  describe('ActionBarContainer', () => {
-    it('renders children with relative positioning', () => {
+  describe("ActionBarContainer", () => {
+    it("renders children with relative positioning", () => {
       const { container } = render(() => (
         <ActionBarContainer>
           <div data-testid="collection">Table here</div>
@@ -254,9 +250,9 @@ describe('ActionBar (headless)', () => {
         </ActionBarContainer>
       ));
 
-      expect(screen.getByTestId('collection')).toBeInTheDocument();
-      expect(screen.getByRole('toolbar')).toBeInTheDocument();
-      expect(container.firstElementChild).toHaveStyle({ position: 'relative' });
+      expect(screen.getByTestId("collection")).toBeInTheDocument();
+      expect(screen.getByRole("toolbar")).toBeInTheDocument();
+      expect(container.firstElementChild).toHaveStyle({ position: "relative" });
     });
   });
 });

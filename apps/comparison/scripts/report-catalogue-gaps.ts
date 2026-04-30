@@ -37,9 +37,7 @@ const plannedOfficialStates = officialVisualStateCoverage.flatMap((entry) =>
 const legacySnapshottedStates = visualStateCoverage
   .filter((entry) => entry.source === "legacy-solidaria")
   .flatMap((entry) =>
-    entry.states.filter(
-      (state) => state.react === "snapshotted" && state.solid === "snapshotted",
-    ),
+    entry.states.filter((state) => state.react === "snapshotted" && state.solid === "snapshotted"),
   );
 
 console.log(`React Spectrum catalogue source: ${reactSpectrumCatalogueSource.url}`);
@@ -48,10 +46,18 @@ console.log(`Official entries in comparison app: ${officialComparisonEntries.len
 console.log(`Official styled entries live on both sides: ${officialLive.length}`);
 console.log(`Official entries still missing/gap: ${missingOfficialComparisonEntries.length}`);
 console.log(`Official visual states tracked: ${officialVisualStateSummary.states}`);
-console.log(`Official visual states with committed React/Solid screenshots: ${officialVisualStateSummary.snapshottedStates}`);
-console.log(`Official visual states with strict pair-diff tests: ${officialVisualStateSummary.strictPairDiffStates}`);
-console.log(`Official visual states blocked by missing implementations: ${officialVisualStateSummary.blockedStates}`);
-console.log(`Legacy visual states with committed React/Solid screenshots: ${legacySnapshottedStates.length}`);
+console.log(
+  `Official visual states with committed React/Solid screenshots: ${officialVisualStateSummary.snapshottedStates}`,
+);
+console.log(
+  `Official visual states with strict pair-diff tests: ${officialVisualStateSummary.strictPairDiffStates}`,
+);
+console.log(
+  `Official visual states blocked by missing implementations: ${officialVisualStateSummary.blockedStates}`,
+);
+console.log(
+  `Legacy visual states with committed React/Solid screenshots: ${legacySnapshottedStates.length}`,
+);
 console.log(`Legacy comparison routes retained: ${legacyEntries.length}`);
 
 if (missingOfficialComparisonEntries.length > 0) {

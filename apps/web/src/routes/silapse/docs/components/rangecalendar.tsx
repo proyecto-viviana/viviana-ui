@@ -26,7 +26,7 @@ function RangeCalendarPage() {
 
   const isDateUnavailable = (date: DateValue) => {
     return unavailableDates.some(
-      (d) => d.year === date.year && d.month === date.month && d.day === date.day
+      (d) => d.year === date.year && d.month === date.month && d.day === date.day,
     );
   };
 
@@ -60,14 +60,8 @@ import {
 <p>Selected: {formatRange(range())}</p>`}
       >
         <div class="flex flex-col items-start gap-4">
-          <RangeCalendar
-            aria-label="Trip dates"
-            value={range()}
-            onChange={setRange}
-          />
-          <p class="text-sm text-bg-500">
-            Selected range: {formatRange(range())}
-          </p>
+          <RangeCalendar aria-label="Trip dates" value={range()} onChange={setRange} />
+          <p class="text-sm text-bg-500">Selected range: {formatRange(range())}</p>
         </div>
       </Example>
 
@@ -84,14 +78,8 @@ const maxDate = new CalendarDate(2026, 12, 31);
 />`}
       >
         <div class="flex flex-col items-start gap-4">
-          <RangeCalendar
-            aria-label="2026 date range"
-            minValue={minDate}
-            maxValue={maxDate}
-          />
-          <p class="text-xs text-bg-400">
-            Only dates in 2026 are selectable
-          </p>
+          <RangeCalendar aria-label="2026 date range" minValue={minDate} maxValue={maxDate} />
+          <p class="text-xs text-bg-400">Only dates in 2026 are selectable</p>
         </div>
       </Example>
 
@@ -113,11 +101,12 @@ const maxDate = new CalendarDate(2026, 12, 31);
           <RangeCalendar
             aria-label="Booking dates"
             isDateUnavailable={isDateUnavailable}
-            defaultValue={{ start: new CalendarDate(2026, 3, 1), end: new CalendarDate(2026, 3, 5) }}
+            defaultValue={{
+              start: new CalendarDate(2026, 3, 1),
+              end: new CalendarDate(2026, 3, 5),
+            }}
           />
-          <p class="text-xs text-bg-400">
-            Mar 25-27 are unavailable
-          </p>
+          <p class="text-xs text-bg-400">Mar 25-27 are unavailable</p>
         </div>
       </Example>
 
@@ -130,10 +119,7 @@ const maxDate = new CalendarDate(2026, 12, 31);
 />`}
       >
         <div>
-          <RangeCalendar
-            aria-label="Disabled calendar"
-            isDisabled
-          />
+          <RangeCalendar aria-label="Disabled calendar" isDisabled />
         </div>
       </Example>
 
@@ -173,7 +159,8 @@ const maxDate = new CalendarDate(2026, 12, 31);
           {
             name: "isDateUnavailable",
             type: "(date: DateValue) => boolean",
-            description: "Callback that returns whether a specific date is unavailable for selection",
+            description:
+              "Callback that returns whether a specific date is unavailable for selection",
           },
           {
             name: "aria-label",
@@ -199,12 +186,13 @@ const maxDate = new CalendarDate(2026, 12, 31);
           <li>
             Uses a <code>grid</code> role with <code>gridcell</code> elements for each day
           </li>
-          <li>Full keyboard navigation: Arrow keys move between days, Page Up/Down change months</li>
           <li>
-            Range start and end are visually distinct with rounded corners at the endpoints
+            Full keyboard navigation: Arrow keys move between days, Page Up/Down change months
           </li>
+          <li>Range start and end are visually distinct with rounded corners at the endpoints</li>
           <li>
-            Days within the range use <code>aria-selected="true"</code> for screen reader announcement
+            Days within the range use <code>aria-selected="true"</code> for screen reader
+            announcement
           </li>
           <li>
             Unavailable dates are announced as disabled via <code>aria-disabled</code>
@@ -212,9 +200,7 @@ const maxDate = new CalendarDate(2026, 12, 31);
           <li>
             Previous/next month buttons include descriptive <code>aria-label</code> attributes
           </li>
-          <li>
-            Today's date is visually indicated with a ring highlight
-          </li>
+          <li>Today's date is visually indicated with a ring highlight</li>
         </ul>
       </AccessibilitySection>
     </DocPage>

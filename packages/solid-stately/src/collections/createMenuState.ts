@@ -3,12 +3,14 @@
  * Based on @react-stately/menu.
  */
 
-import { access, type MaybeAccessor } from '../utils';
-import { createListState, type ListState, type ListStateProps } from './createListState';
-import type { Key } from './types';
+import { access, type MaybeAccessor } from "../utils";
+import { createListState, type ListState, type ListStateProps } from "./createListState";
+import type { Key } from "./types";
 
-export interface MenuStateProps<T = unknown>
-  extends Omit<ListStateProps<T>, 'selectionMode' | 'disallowEmptySelection'> {
+export interface MenuStateProps<T = unknown> extends Omit<
+  ListStateProps<T>,
+  "selectionMode" | "disallowEmptySelection"
+> {
   /** Handler called when an item is activated (pressed). */
   onAction?: (key: Key) => void;
   /** Handler called when the menu should close. */
@@ -25,7 +27,7 @@ export interface MenuState<T = unknown> extends ListState<T> {
  * Menus are single-select lists that support actions.
  */
 export function createMenuState<T = unknown>(
-  props: MaybeAccessor<MenuStateProps<T>>
+  props: MaybeAccessor<MenuStateProps<T>>,
 ): MenuState<T> {
   const getProps = () => access(props);
 
@@ -49,7 +51,7 @@ export function createMenuState<T = unknown>(
     get disabledBehavior() {
       return getProps().disabledBehavior;
     },
-    selectionMode: 'none', // Menus typically use onAction, not selection
+    selectionMode: "none", // Menus typically use onAction, not selection
     disallowEmptySelection: true,
     get selectedKeys() {
       return getProps().selectedKeys;
@@ -94,13 +96,13 @@ export interface MenuTriggerState {
   /** Toggle the menu. */
   toggle(): void;
   /** Focus strategy for when the menu opens. */
-  readonly focusStrategy: () => 'first' | 'last' | null;
+  readonly focusStrategy: () => "first" | "last" | null;
   /** Set the focus strategy. */
-  setFocusStrategy(strategy: 'first' | 'last' | null): void;
+  setFocusStrategy(strategy: "first" | "last" | null): void;
 }
 
 /**
  * Creates state for a menu trigger (button that opens a menu).
  * This is essentially the same as overlay trigger state but with focus strategy.
  */
-export { createOverlayTriggerState as createMenuTriggerState } from '../overlays';
+export { createOverlayTriggerState as createMenuTriggerState } from "../overlays";

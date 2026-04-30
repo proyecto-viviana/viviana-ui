@@ -4,8 +4,8 @@
  * This is a 1-1 port of React-Aria's FocusableProvider adapted for SolidJS.
  */
 
-import { JSX, ParentComponent } from 'solid-js';
-import { FocusableContext, FocusableContextValue, FocusableProviderProps } from './createFocusable';
+import { JSX, ParentComponent } from "solid-js";
+import { FocusableContext, FocusableContextValue, FocusableProviderProps } from "./createFocusable";
 
 /**
  * Provides DOM props to the nearest focusable child.
@@ -36,9 +36,5 @@ export const FocusableProvider: ParentComponent<
     },
   };
 
-  return (
-    <FocusableContext.Provider value={context}>
-      {children}
-    </FocusableContext.Provider>
-  );
+  return <FocusableContext.Provider value={context}>{children}</FocusableContext.Provider>;
 };

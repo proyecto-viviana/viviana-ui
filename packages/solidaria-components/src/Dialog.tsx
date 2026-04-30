@@ -15,14 +15,14 @@ import {
   useContext,
   Switch,
   Match,
-} from 'solid-js'
+} from "solid-js";
 import {
   createDialog,
   createOverlayTrigger,
   type AriaDialogProps,
-} from '@proyecto-viviana/solidaria'
-import { createOverlayTriggerState } from '@proyecto-viviana/solid-stately'
-import { DialogTriggerContext, useOverlayTriggerState } from './contexts'
+} from "@proyecto-viviana/solidaria";
+import { createOverlayTriggerState } from "@proyecto-viviana/solid-stately";
+import { DialogTriggerContext, useOverlayTriggerState } from "./contexts";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -30,7 +30,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils'
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -38,29 +38,29 @@ import {
 
 export interface DialogRenderProps {
   /** Function to close the dialog */
-  close: () => void
+  close: () => void;
 }
 
-export interface DialogProps extends Omit<AriaDialogProps, 'class' | 'style'>, SlotProps {
+export interface DialogProps extends Omit<AriaDialogProps, "class" | "style">, SlotProps {
   /** The children of the component - can be JSX or render function. */
-  children?: RenderChildren<DialogRenderProps>
+  children?: RenderChildren<DialogRenderProps>;
   /** The CSS className for the element. */
-  class?: ClassNameOrFunction<DialogRenderProps>
+  class?: ClassNameOrFunction<DialogRenderProps>;
   /** The inline style for the element. */
-  style?: StyleOrFunction<DialogRenderProps>
+  style?: StyleOrFunction<DialogRenderProps>;
   /** Callback when dialog should close */
-  onClose?: () => void
+  onClose?: () => void;
 }
 
 export interface DialogTriggerProps {
   /** The children - should include a trigger and modal/popover content. */
-  children: JSX.Element
+  children: JSX.Element;
   /** Whether the dialog is open (controlled). */
-  isOpen?: boolean
+  isOpen?: boolean;
   /** Whether the dialog is open by default (uncontrolled). */
-  defaultOpen?: boolean
+  defaultOpen?: boolean;
   /** Callback when open state changes. */
-  onOpenChange?: (isOpen: boolean) => void
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
 // ============================================
@@ -68,14 +68,14 @@ export interface DialogTriggerProps {
 // ============================================
 
 interface DialogContextValue {
-  close: () => void
-  titleId?: string
+  close: () => void;
+  titleId?: string;
 }
 
-export const DialogContext = createContext<DialogContextValue | null>(null)
+export const DialogContext = createContext<DialogContextValue | null>(null);
 
 // Re-export DialogTriggerContext from shared contexts (also imported above for local use)
-export { DialogTriggerContext, useDialogTrigger } from './contexts'
+export { DialogTriggerContext, useDialogTrigger } from "./contexts";
 
 // ============================================
 // DIALOG TRIGGER COMPONENT
@@ -86,36 +86,32 @@ export { DialogTriggerContext, useDialogTrigger } from './contexts'
  * Children should include a trigger element (e.g. Button) and the dialog content.
  */
 export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
-  const [local] = splitProps(props, ['isOpen', 'defaultOpen', 'onOpenChange'])
+  const [local] = splitProps(props, ["isOpen", "defaultOpen", "onOpenChange"]);
 
   // Create overlay trigger state
   const state = createOverlayTriggerState({
     get isOpen() {
-      return local.isOpen
+      return local.isOpen;
     },
     get defaultOpen() {
-      return local.defaultOpen
+      return local.defaultOpen;
     },
     onOpenChange: local.onOpenChange,
-  })
+  });
 
   // Ref for the trigger element
-  let triggerRef: HTMLElement | null = null
-  const triggerId = createUniqueId()
+  let triggerRef: HTMLElement | null = null;
+  const triggerId = createUniqueId();
 
   // Create overlay trigger props (used via context, not directly applied)
-  createOverlayTrigger(
-    { type: 'dialog' },
-    state,
-    () => triggerRef
-  )
+  createOverlayTrigger({ type: "dialog" }, state, () => triggerRef);
 
   const setTriggerRef = (el: HTMLElement | null) => {
-    if (!el) return
+    if (!el) return;
     if (!triggerRef || !triggerRef.isConnected) {
-      triggerRef = el
+      triggerRef = el;
     }
-  }
+  };
 
   // Context value - memoized to avoid unnecessary re-renders
   const contextValue = createMemo(() => ({
@@ -123,7 +119,7 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
     triggerRef: () => triggerRef,
     setTriggerRef,
     triggerId,
-  }))
+  }));
 
   // In SolidJS, we simply render children directly within the provider
   // The children will have access to the context
@@ -131,7 +127,7 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
     <DialogTriggerContext.Provider value={contextValue()}>
       {props.children}
     </DialogTriggerContext.Provider>
-  )
+  );
 }
 
 // ============================================
@@ -144,64 +140,64 @@ export function DialogTrigger(props: DialogTriggerProps): JSX.Element {
 export function Dialog(props: DialogProps): JSX.Element {
   const [local, ariaProps, rest] = splitProps(
     props,
-    ['class', 'style', 'slot', 'onClose'],
-    ['role', 'aria-label', 'aria-labelledby', 'aria-describedby']
-  )
+    ["class", "style", "slot", "onClose"],
+    ["role", "aria-label", "aria-labelledby", "aria-describedby"],
+  );
 
-  let dialogRef!: HTMLDivElement
+  let dialogRef!: HTMLDivElement;
 
   // Get trigger context for aria-labelledby fallback
-  const triggerContext = useContext(DialogTriggerContext)
+  const triggerContext = useContext(DialogTriggerContext);
 
   // createDialog returns dialogProps AND titleProps (with the id for the Heading)
   const { dialogProps, titleProps } = createDialog(
     {
       get role() {
-        return ariaProps.role
+        return ariaProps.role;
       },
-      get 'aria-label'() {
-        return ariaProps['aria-label']
+      get "aria-label"() {
+        return ariaProps["aria-label"];
       },
-      get 'aria-labelledby'() {
-        return ariaProps['aria-labelledby']
+      get "aria-labelledby"() {
+        return ariaProps["aria-labelledby"];
       },
-      get 'aria-describedby'() {
-        return ariaProps['aria-describedby']
+      get "aria-describedby"() {
+        return ariaProps["aria-describedby"];
       },
     },
-    () => dialogRef
-  )
+    () => dialogRef,
+  );
 
   // Get titleId from titleProps - this links Dialog's aria-labelledby to Heading's id
-  const titleId = () => titleProps()?.id as string | undefined
+  const titleId = () => titleProps()?.id as string | undefined;
 
   // Get close function from OverlayTriggerState context or onClose prop
-  const overlayState = useOverlayTriggerState()
+  const overlayState = useOverlayTriggerState();
 
   const close = () => {
-    local.onClose?.()
+    local.onClose?.();
     if (overlayState) {
-      overlayState.close()
-      return
+      overlayState.close();
+      return;
     }
-    triggerContext?.state.close()
-  }
+    triggerContext?.state.close();
+  };
 
   createEffect(() => {
-    if (!dialogRef || ariaProps['aria-label'] || ariaProps['aria-labelledby']) return
-    const labelledBy = dialogRef.getAttribute('aria-labelledby')
-    if (labelledBy && dialogRef.ownerDocument.getElementById(labelledBy)) return
+    if (!dialogRef || ariaProps["aria-label"] || ariaProps["aria-labelledby"]) return;
+    const labelledBy = dialogRef.getAttribute("aria-labelledby");
+    if (labelledBy && dialogRef.ownerDocument.getElementById(labelledBy)) return;
 
-    const trigger = triggerContext?.triggerRef()
+    const trigger = triggerContext?.triggerRef();
     if (trigger?.id) {
-      dialogRef.setAttribute('aria-labelledby', trigger.id)
+      dialogRef.setAttribute("aria-labelledby", trigger.id);
     }
-  })
+  });
 
   // Render props values
   const renderValues = createMemo<DialogRenderProps>(() => ({
     close,
-  }))
+  }));
 
   // Resolve render props
   const renderProps = useRenderProps(
@@ -209,13 +205,15 @@ export function Dialog(props: DialogProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Dialog',
+      defaultClassName: "solidaria-Dialog",
     },
-    renderValues
-  )
+    renderValues,
+  );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }))
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   return (
     <DialogContext.Provider value={{ close, titleId: titleId() }}>
@@ -230,7 +228,7 @@ export function Dialog(props: DialogProps): JSX.Element {
         {renderProps.renderChildren()}
       </div>
     </DialogContext.Provider>
-  )
+  );
 }
 
 // ============================================
@@ -239,13 +237,13 @@ export function Dialog(props: DialogProps): JSX.Element {
 
 export interface HeadingProps {
   /** The children of the heading. */
-  children: JSX.Element
+  children: JSX.Element;
   /** The CSS className. */
-  class?: string
+  class?: string;
   /** The heading level (1-6). Defaults to 2. */
-  level?: 1 | 2 | 3 | 4 | 5 | 6
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
   /** The slot to render into. */
-  slot?: string
+  slot?: string;
 }
 
 /**
@@ -253,53 +251,65 @@ export interface HeadingProps {
  * When rendered inside a Dialog, automatically gets the titleProps.
  */
 export function Heading(props: HeadingProps): JSX.Element {
-  const dialogContext = useContext(DialogContext)
-  const level = () => props.level ?? 2
-  const id = () => dialogContext?.titleId
-  let headingRef: HTMLHeadingElement | undefined
+  const dialogContext = useContext(DialogContext);
+  const level = () => props.level ?? 2;
+  const id = () => dialogContext?.titleId;
+  let headingRef: HTMLHeadingElement | undefined;
 
   createEffect(() => {
-    const el = headingRef
-    if (!el) return
+    const el = headingRef;
+    if (!el) return;
 
-    const contextId = id()
+    const contextId = id();
     if (contextId) {
-      el.id = contextId
-      return
+      el.id = contextId;
+      return;
     }
 
     if (!el.id) {
-      const dialog = el.closest('[role="dialog"],[role="alertdialog"]')
-      const labelledBy = dialog?.getAttribute('aria-labelledby')
+      const dialog = el.closest('[role="dialog"],[role="alertdialog"]');
+      const labelledBy = dialog?.getAttribute("aria-labelledby");
       if (labelledBy && !el.ownerDocument.getElementById(labelledBy)) {
-        el.id = labelledBy
+        el.id = labelledBy;
       }
     }
-  })
+  });
 
   return (
     <Switch>
       <Match when={level() === 1}>
-        <h1 ref={headingRef} id={id()} class={props.class}>{props.children}</h1>
+        <h1 ref={headingRef} id={id()} class={props.class}>
+          {props.children}
+        </h1>
       </Match>
       <Match when={level() === 2}>
-        <h2 ref={headingRef} id={id()} class={props.class}>{props.children}</h2>
+        <h2 ref={headingRef} id={id()} class={props.class}>
+          {props.children}
+        </h2>
       </Match>
       <Match when={level() === 3}>
-        <h3 ref={headingRef} id={id()} class={props.class}>{props.children}</h3>
+        <h3 ref={headingRef} id={id()} class={props.class}>
+          {props.children}
+        </h3>
       </Match>
       <Match when={level() === 4}>
-        <h4 ref={headingRef} id={id()} class={props.class}>{props.children}</h4>
+        <h4 ref={headingRef} id={id()} class={props.class}>
+          {props.children}
+        </h4>
       </Match>
       <Match when={level() === 5}>
-        <h5 ref={headingRef} id={id()} class={props.class}>{props.children}</h5>
+        <h5 ref={headingRef} id={id()} class={props.class}>
+          {props.children}
+        </h5>
       </Match>
       <Match when={level() === 6}>
-        <h6 ref={headingRef} id={id()} class={props.class}>{props.children}</h6>
+        <h6 ref={headingRef} id={id()} class={props.class}>
+          {props.children}
+        </h6>
       </Match>
     </Switch>
-  )
+  );
 }
 
 // Keep backward compatibility
-export { Heading as DialogHeading }
+export { Heading as DialogHeading };

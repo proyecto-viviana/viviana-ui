@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export type ScreenshotDiffResult = {
   reactWidth: number;
@@ -42,19 +42,24 @@ export async function diffScreenshots(
 
       const comparedWidth = Math.min(reactImage.width, solidImage.width);
       const comparedHeight = Math.min(reactImage.height, solidImage.height);
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = comparedWidth * 2;
       canvas.height = comparedHeight;
-      const context = canvas.getContext('2d', { willReadFrequently: true });
+      const context = canvas.getContext("2d", { willReadFrequently: true });
       if (!context) {
-        throw new Error('Could not create canvas context for screenshot comparison');
+        throw new Error("Could not create canvas context for screenshot comparison");
       }
 
       context.drawImage(reactImage, 0, 0, comparedWidth, comparedHeight);
       context.drawImage(solidImage, comparedWidth, 0, comparedWidth, comparedHeight);
 
       const reactPixels = context.getImageData(0, 0, comparedWidth, comparedHeight).data;
-      const solidPixels = context.getImageData(comparedWidth, 0, comparedWidth, comparedHeight).data;
+      const solidPixels = context.getImageData(
+        comparedWidth,
+        0,
+        comparedWidth,
+        comparedHeight,
+      ).data;
       let mismatchedPixels = 0;
       let maxChannelDelta = 0;
 
@@ -90,8 +95,8 @@ export async function diffScreenshots(
       };
     },
     {
-      reactBase64: reactPng.toString('base64'),
-      solidBase64: solidPng.toString('base64'),
+      reactBase64: reactPng.toString("base64"),
+      solidBase64: solidPng.toString("base64"),
       pixelThreshold,
     },
   );
@@ -104,12 +109,7 @@ export async function compareScreenshots(
   label: string,
   threshold: ScreenshotDiffThreshold,
 ) {
-  const result = await diffScreenshots(
-    page,
-    reactPng,
-    solidPng,
-    threshold.pixelThreshold,
-  );
+  const result = await diffScreenshots(page, reactPng, solidPng, threshold.pixelThreshold);
 
   expect(result.widthDelta, `${label} width delta`).toBeLessThanOrEqual(
     threshold.maxDimensionDelta,
@@ -160,8 +160,8 @@ export async function diffLocatorScreenshots(
   pixelThreshold: number = 0,
 ) {
   const [reactPng, solidPng] = await Promise.all([
-    reactElement.screenshot({ animations: 'disabled' }),
-    solidElement.screenshot({ animations: 'disabled' }),
+    reactElement.screenshot({ animations: "disabled" }),
+    solidElement.screenshot({ animations: "disabled" }),
   ]);
 
   return diffScreenshots(page, reactPng, solidPng, pixelThreshold);

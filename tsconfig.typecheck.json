@@ -6,9 +6,5 @@
     "noUnusedParameters": false,
     "types": ["node"]
   },
-  "include": [
-    "packages/*/src/**/*",
-    "packages/*/test-utils/**/*.ts",
-    "scripts/**/*"
-  ]
+  "include": ["packages/*/src/**/*", "packages/*/test-utils/**/*.ts", "scripts/**/*"]
 }

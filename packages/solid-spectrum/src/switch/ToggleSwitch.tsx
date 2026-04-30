@@ -8,17 +8,21 @@
  * Named "ToggleSwitch" to avoid conflict with SolidJS's built-in Switch component.
  */
 
-import { type JSX, splitProps, mergeProps as solidMergeProps } from 'solid-js';
-import { ToggleSwitch as HeadlessToggleSwitch, type ToggleSwitchProps as HeadlessToggleSwitchProps, type ToggleSwitchRenderProps } from '@proyecto-viviana/solidaria-components';
-import { useProviderProps } from '../provider';
+import { type JSX, splitProps, mergeProps as solidMergeProps } from "solid-js";
+import {
+  ToggleSwitch as HeadlessToggleSwitch,
+  type ToggleSwitchProps as HeadlessToggleSwitchProps,
+  type ToggleSwitchRenderProps,
+} from "@proyecto-viviana/solidaria-components";
+import { useProviderProps } from "../provider";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type SwitchSize = 'sm' | 'md' | 'lg';
+export type SwitchSize = "sm" | "md" | "lg";
 
-export interface ToggleSwitchProps extends Omit<HeadlessToggleSwitchProps, 'class' | 'children'> {
+export interface ToggleSwitchProps extends Omit<HeadlessToggleSwitchProps, "class" | "children"> {
   /** The size of the switch. */
   size?: SwitchSize;
   /** Additional CSS class name. */
@@ -33,19 +37,19 @@ export interface ToggleSwitchProps extends Omit<HeadlessToggleSwitchProps, 'clas
 
 const sizeStyles = {
   sm: {
-    track: 'h-5 w-9',
-    thumb: 'h-4 w-4',
-    translate: 'translate-x-4',
+    track: "h-5 w-9",
+    thumb: "h-4 w-4",
+    translate: "translate-x-4",
   },
   md: {
-    track: 'h-6 w-11',
-    thumb: 'h-5 w-5',
-    translate: 'translate-x-5',
+    track: "h-6 w-11",
+    thumb: "h-5 w-5",
+    translate: "translate-x-5",
   },
   lg: {
-    track: 'h-7 w-14',
-    thumb: 'h-6 w-6',
-    translate: 'translate-x-7',
+    track: "h-7 w-14",
+    thumb: "h-6 w-6",
+    translate: "translate-x-7",
   },
 };
 
@@ -62,48 +66,42 @@ const sizeStyles = {
 export function ToggleSwitch(props: ToggleSwitchProps): JSX.Element {
   const providerProps = useProviderProps(props);
   const defaultProps: Partial<ToggleSwitchProps> = {
-    size: 'md',
+    size: "md",
   };
 
   const merged = solidMergeProps(defaultProps, providerProps);
 
-  const [local, headlessProps] = splitProps(merged, [
-    'size',
-    'class',
-  ]);
+  const [local, headlessProps] = splitProps(merged, ["size", "class"]);
 
   const size = () => sizeStyles[local.size!];
 
   // Generate class based on render props
   const getClassName = (renderProps: ToggleSwitchRenderProps): string => {
-    const base = 'inline-flex items-center gap-2 cursor-pointer';
-    const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed opacity-50' : '';
-    const custom = local.class || '';
-    return [base, disabledClass, custom].filter(Boolean).join(' ');
+    const base = "inline-flex items-center gap-2 cursor-pointer";
+    const disabledClass = renderProps.isDisabled ? "cursor-not-allowed opacity-50" : "";
+    const custom = local.class || "";
+    return [base, disabledClass, custom].filter(Boolean).join(" ");
   };
 
   return (
-    <HeadlessToggleSwitch
-      {...headlessProps}
-      class={getClassName}
-    >
+    <HeadlessToggleSwitch {...headlessProps} class={getClassName}>
       {(renderProps: ToggleSwitchRenderProps) => (
         <>
           <span
             class={[
-              'relative rounded-full transition-colors duration-200',
-              'focus-within:ring-2 focus-within:ring-accent-300 focus-within:ring-offset-2 focus-within:ring-offset-bg-400',
+              "relative rounded-full transition-colors duration-200",
+              "focus-within:ring-2 focus-within:ring-accent-300 focus-within:ring-offset-2 focus-within:ring-offset-bg-400",
               size().track,
-              renderProps.isSelected ? 'bg-accent' : 'bg-bg-300',
-              renderProps.isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
-            ].join(' ')}
+              renderProps.isSelected ? "bg-accent" : "bg-bg-300",
+              renderProps.isDisabled ? "cursor-not-allowed" : "cursor-pointer",
+            ].join(" ")}
           >
             <span
               class={[
-                'absolute top-0.5 left-0.5 rounded-full bg-on-color shadow transition-transform duration-200',
+                "absolute top-0.5 left-0.5 rounded-full bg-on-color shadow transition-transform duration-200",
                 size().thumb,
-                renderProps.isSelected ? size().translate : 'translate-x-0',
-              ].join(' ')}
+                renderProps.isSelected ? size().translate : "translate-x-0",
+              ].join(" ")}
             />
           </span>
           {props.children && <span class="text-primary-200">{props.children}</span>}

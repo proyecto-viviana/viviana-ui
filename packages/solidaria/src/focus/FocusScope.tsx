@@ -13,10 +13,10 @@ import {
   type ParentComponent,
   createSignal,
   onMount,
-} from 'solid-js'
-import { isServer } from 'solid-js/web'
-import { getOwnerDocument, isFocusable } from '../utils'
-import { focusSafely } from '../utils/focus'
+} from "solid-js";
+import { isServer } from "solid-js/web";
+import { getOwnerDocument, isFocusable } from "../utils";
+import { focusSafely } from "../utils/focus";
 
 // ============================================
 // TYPES
@@ -24,41 +24,41 @@ import { focusSafely } from '../utils/focus'
 
 export interface FocusScopeProps {
   /** The contents of the focus scope. */
-  children: JSX.Element
+  children: JSX.Element;
   /**
    * Whether to contain focus inside the scope, so users cannot
    * move focus outside, for example in a modal dialog.
    */
-  contain?: boolean
+  contain?: boolean;
   /**
    * Whether to restore focus back to the element that was focused
    * when the focus scope mounted, after the focus scope unmounts.
    */
-  restoreFocus?: boolean
+  restoreFocus?: boolean;
   /** Whether to auto focus the first focusable element in the focus scope on mount. */
-  autoFocus?: boolean
+  autoFocus?: boolean;
 }
 
 export interface FocusManagerOptions {
   /** The element to start searching from. The currently focused element by default. */
-  from?: Element
+  from?: Element;
   /** Whether to only include tabbable elements, or all focusable elements. */
-  tabbable?: boolean
+  tabbable?: boolean;
   /** Whether focus should wrap around when it reaches the end of the scope. */
-  wrap?: boolean
+  wrap?: boolean;
   /** A callback that determines whether the given element is focused. */
-  accept?: (node: Element) => boolean
+  accept?: (node: Element) => boolean;
 }
 
 export interface FocusManager {
   /** Moves focus to the next focusable or tabbable element in the focus scope. */
-  focusNext(opts?: FocusManagerOptions): HTMLElement | null
+  focusNext(opts?: FocusManagerOptions): HTMLElement | null;
   /** Moves focus to the previous focusable or tabbable element in the focus scope. */
-  focusPrevious(opts?: FocusManagerOptions): HTMLElement | null
+  focusPrevious(opts?: FocusManagerOptions): HTMLElement | null;
   /** Moves focus to the first focusable or tabbable element in the focus scope. */
-  focusFirst(opts?: FocusManagerOptions): HTMLElement | null
+  focusFirst(opts?: FocusManagerOptions): HTMLElement | null;
   /** Moves focus to the last focusable or tabbable element in the focus scope. */
-  focusLast(opts?: FocusManagerOptions): HTMLElement | null
+  focusLast(opts?: FocusManagerOptions): HTMLElement | null;
 }
 
 // ============================================
@@ -66,11 +66,11 @@ export interface FocusManager {
 // ============================================
 
 interface FocusScopeContextValue {
-  focusManager: FocusManager
-  scopeRef: Accessor<Element[]>
+  focusManager: FocusManager;
+  scopeRef: Accessor<Element[]>;
 }
 
-const FocusScopeContext = createContext<FocusScopeContextValue | null>(null)
+const FocusScopeContext = createContext<FocusScopeContextValue | null>(null);
 
 /**
  * Returns a FocusManager interface for the parent FocusScope.
@@ -78,7 +78,7 @@ const FocusScopeContext = createContext<FocusScopeContextValue | null>(null)
  * a FocusScope, e.g. in response to user events like keyboard navigation.
  */
 export function useFocusManager(): FocusManager | undefined {
-  return useContext(FocusScopeContext)?.focusManager
+  return useContext(FocusScopeContext)?.focusManager;
 }
 
 // ============================================
@@ -90,61 +90,61 @@ export function useFocusManager(): FocusManager | undefined {
  */
 function isTabbable(element: Element): boolean {
   if (!isFocusable(element)) {
-    return false
+    return false;
   }
 
   // Check tabIndex
-  const tabIndex = element.getAttribute('tabindex')
+  const tabIndex = element.getAttribute("tabindex");
   if (tabIndex != null) {
-    return parseInt(tabIndex, 10) >= 0
+    return parseInt(tabIndex, 10) >= 0;
   }
 
-  return true
+  return true;
 }
 
 /**
  * Gets all focusable elements within a scope.
  */
 function getFocusableElements(scope: Element[], tabbable = false): HTMLElement[] {
-  const elements: HTMLElement[] = []
-  const filter = tabbable ? isTabbable : isFocusable
+  const elements: HTMLElement[] = [];
+  const filter = tabbable ? isTabbable : isFocusable;
 
   for (const scopeElement of scope) {
     // Check the element itself
     if (filter(scopeElement)) {
-      elements.push(scopeElement as HTMLElement)
+      elements.push(scopeElement as HTMLElement);
     }
 
     // Check all descendants
-    const descendants = scopeElement.querySelectorAll('*')
+    const descendants = scopeElement.querySelectorAll("*");
     for (let i = 0; i < descendants.length; i++) {
-      const el = descendants[i]
+      const el = descendants[i];
       if (filter(el)) {
-        elements.push(el as HTMLElement)
+        elements.push(el as HTMLElement);
       }
     }
   }
 
-  return elements
+  return elements;
 }
 
 /**
  * Checks if an element is within a scope.
  */
 function isElementInScope(element: Element | null, scope: Element[]): boolean {
-  if (!element) return false
-  return scope.some(node => node.contains(element))
+  if (!element) return false;
+  return scope.some((node) => node.contains(element));
 }
 
 /**
  * Gets the active element, accounting for shadow DOM.
  */
 function getActiveElement(doc: Document): Element | null {
-  let activeElement = doc.activeElement
+  let activeElement = doc.activeElement;
   while (activeElement?.shadowRoot?.activeElement) {
-    activeElement = activeElement.shadowRoot.activeElement
+    activeElement = activeElement.shadowRoot.activeElement;
   }
-  return activeElement
+  return activeElement;
 }
 
 // ============================================
@@ -160,135 +160,135 @@ function getActiveElement(doc: Document): Element | null {
  */
 export const FocusScope: ParentComponent<FocusScopeProps> = (props) => {
   if (isServer) {
-    return <>{props.children}</>
+    return <>{props.children}</>;
   }
 
-  let startRef: HTMLSpanElement | undefined
-  let endRef: HTMLSpanElement | undefined
-  const [scopeElements, setScopeElements] = createSignal<Element[]>([])
+  let startRef: HTMLSpanElement | undefined;
+  let endRef: HTMLSpanElement | undefined;
+  const [scopeElements, setScopeElements] = createSignal<Element[]>([]);
 
   // Store the element that was focused when the scope mounted
-  let nodeToRestore: Element | null = null
+  let nodeToRestore: Element | null = null;
 
   // Create focus manager
   const focusManager: FocusManager = {
     focusNext(opts = {}) {
-      const scope = scopeElements()
-      if (scope.length === 0) return null
+      const scope = scopeElements();
+      if (scope.length === 0) return null;
 
-      const { from, tabbable = true, wrap = false, accept } = opts
-      const elements = getFocusableElements(scope, tabbable).filter(el => !accept || accept(el))
-      const doc = getOwnerDocument(scope[0])
-      const current = from || getActiveElement(doc)
+      const { from, tabbable = true, wrap = false, accept } = opts;
+      const elements = getFocusableElements(scope, tabbable).filter((el) => !accept || accept(el));
+      const doc = getOwnerDocument(scope[0]);
+      const current = from || getActiveElement(doc);
 
-      if (!current || elements.length === 0) return null
+      if (!current || elements.length === 0) return null;
 
-      const currentIndex = elements.indexOf(current as HTMLElement)
-      let nextIndex = currentIndex + 1
+      const currentIndex = elements.indexOf(current as HTMLElement);
+      let nextIndex = currentIndex + 1;
 
       if (nextIndex >= elements.length) {
         if (wrap) {
-          nextIndex = 0
+          nextIndex = 0;
         } else {
-          return null
+          return null;
         }
       }
 
-      const nextElement = elements[nextIndex]
+      const nextElement = elements[nextIndex];
       if (nextElement) {
-        focusSafely(nextElement)
-        return nextElement
+        focusSafely(nextElement);
+        return nextElement;
       }
 
-      return null
+      return null;
     },
 
     focusPrevious(opts = {}) {
-      const scope = scopeElements()
-      if (scope.length === 0) return null
+      const scope = scopeElements();
+      if (scope.length === 0) return null;
 
-      const { from, tabbable = true, wrap = false, accept } = opts
-      const elements = getFocusableElements(scope, tabbable).filter(el => !accept || accept(el))
-      const doc = getOwnerDocument(scope[0])
-      const current = from || getActiveElement(doc)
+      const { from, tabbable = true, wrap = false, accept } = opts;
+      const elements = getFocusableElements(scope, tabbable).filter((el) => !accept || accept(el));
+      const doc = getOwnerDocument(scope[0]);
+      const current = from || getActiveElement(doc);
 
-      if (!current || elements.length === 0) return null
+      if (!current || elements.length === 0) return null;
 
-      const currentIndex = elements.indexOf(current as HTMLElement)
-      let prevIndex = currentIndex - 1
+      const currentIndex = elements.indexOf(current as HTMLElement);
+      let prevIndex = currentIndex - 1;
 
       if (prevIndex < 0) {
         if (wrap) {
-          prevIndex = elements.length - 1
+          prevIndex = elements.length - 1;
         } else {
-          return null
+          return null;
         }
       }
 
-      const prevElement = elements[prevIndex]
+      const prevElement = elements[prevIndex];
       if (prevElement) {
-        focusSafely(prevElement)
-        return prevElement
+        focusSafely(prevElement);
+        return prevElement;
       }
 
-      return null
+      return null;
     },
 
     focusFirst(opts = {}) {
-      const scope = scopeElements()
-      if (scope.length === 0) return null
+      const scope = scopeElements();
+      if (scope.length === 0) return null;
 
-      const { tabbable = true, accept } = opts
-      const elements = getFocusableElements(scope, tabbable).filter(el => !accept || accept(el))
+      const { tabbable = true, accept } = opts;
+      const elements = getFocusableElements(scope, tabbable).filter((el) => !accept || accept(el));
 
       if (elements.length > 0) {
-        focusSafely(elements[0])
-        return elements[0]
+        focusSafely(elements[0]);
+        return elements[0];
       }
 
-      return null
+      return null;
     },
 
     focusLast(opts = {}) {
-      const scope = scopeElements()
-      if (scope.length === 0) return null
+      const scope = scopeElements();
+      if (scope.length === 0) return null;
 
-      const { tabbable = true, accept } = opts
-      const elements = getFocusableElements(scope, tabbable).filter(el => !accept || accept(el))
+      const { tabbable = true, accept } = opts;
+      const elements = getFocusableElements(scope, tabbable).filter((el) => !accept || accept(el));
 
       if (elements.length > 0) {
-        const lastElement = elements[elements.length - 1]
-        focusSafely(lastElement)
-        return lastElement
+        const lastElement = elements[elements.length - 1];
+        focusSafely(lastElement);
+        return lastElement;
       }
 
-      return null
+      return null;
     },
-  }
+  };
 
   // Collect scope elements after render
   onMount(() => {
-    if (!startRef || !endRef) return
+    if (!startRef || !endRef) return;
 
-    const nodes: Element[] = []
-    let node = startRef.nextSibling
+    const nodes: Element[] = [];
+    let node = startRef.nextSibling;
     while (node && node !== endRef) {
       if (node.nodeType === Node.ELEMENT_NODE) {
-        nodes.push(node as Element)
+        nodes.push(node as Element);
       }
-      node = node.nextSibling
+      node = node.nextSibling;
     }
-    setScopeElements(nodes)
-  })
+    setScopeElements(nodes);
+  });
 
   // Save the currently focused element for restoration (must happen before autoFocus/contain effects run).
   onMount(() => {
-    if (!props.restoreFocus) return
+    if (!props.restoreFocus) return;
 
     // Focus can be in the main document, or inside this iframe's document.
-    const scopeDoc = startRef ? getOwnerDocument(startRef) : document
-    const scopeActive = getActiveElement(scopeDoc)
-    const topActive = getActiveElement(document)
+    const scopeDoc = startRef ? getOwnerDocument(startRef) : document;
+    const scopeActive = getActiveElement(scopeDoc);
+    const topActive = getActiveElement(document);
 
     // If the scope is in an iframe and that iframe is currently focused, prefer the iframe document's active element.
     if (
@@ -298,103 +298,103 @@ export const FocusScope: ParentComponent<FocusScopeProps> = (props) => {
       scopeActive &&
       scopeActive !== scopeDoc.body
     ) {
-      nodeToRestore = scopeActive
-      return
+      nodeToRestore = scopeActive;
+      return;
     }
 
-    nodeToRestore = topActive
-  })
+    nodeToRestore = topActive;
+  });
 
   // Auto-focus first element
   createEffect(() => {
-    if (!props.autoFocus) return
+    if (!props.autoFocus) return;
 
-    const scope = scopeElements()
-    if (scope.length === 0) return
+    const scope = scopeElements();
+    if (scope.length === 0) return;
 
-    const doc = getOwnerDocument(scope[0])
-    const activeElement = getActiveElement(doc)
+    const doc = getOwnerDocument(scope[0]);
+    const activeElement = getActiveElement(doc);
 
     // Only auto-focus if focus is not already inside the scope
     if (!isElementInScope(activeElement, scope)) {
-      focusManager.focusFirst()
+      focusManager.focusFirst();
     }
-  })
+  });
 
   // Focus containment
   createEffect(() => {
-    if (!props.contain) return
+    if (!props.contain) return;
 
-    const scope = scopeElements()
-    if (scope.length === 0) return
+    const scope = scopeElements();
+    if (scope.length === 0) return;
 
-    const doc = getOwnerDocument(scope[0])
-    let focusedNode: Element | null = null
+    const doc = getOwnerDocument(scope[0]);
+    let focusedNode: Element | null = null;
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab' || e.altKey || e.ctrlKey || e.metaKey) {
-        return
+      if (e.key !== "Tab" || e.altKey || e.ctrlKey || e.metaKey) {
+        return;
       }
 
-      const scope = scopeElements()
-      const activeElement = getActiveElement(doc)
+      const scope = scopeElements();
+      const activeElement = getActiveElement(doc);
       if (!isElementInScope(activeElement, scope)) {
-        return
+        return;
       }
 
-      const elements = getFocusableElements(scope, true)
-      if (elements.length === 0) return
+      const elements = getFocusableElements(scope, true);
+      if (elements.length === 0) return;
 
-      const firstElement = elements[0]
-      const lastElement = elements[elements.length - 1]
+      const firstElement = elements[0];
+      const lastElement = elements[elements.length - 1];
 
       if (e.shiftKey && activeElement === firstElement) {
-        e.preventDefault()
-        focusSafely(lastElement)
+        e.preventDefault();
+        focusSafely(lastElement);
       } else if (!e.shiftKey && activeElement === lastElement) {
-        e.preventDefault()
-        focusSafely(firstElement)
+        e.preventDefault();
+        focusSafely(firstElement);
       }
-    }
+    };
 
     const onFocusIn = (e: FocusEvent) => {
-      const scope = scopeElements()
-      const target = e.target as Element
+      const scope = scopeElements();
+      const target = e.target as Element;
 
       if (isElementInScope(target, scope)) {
-        focusedNode = target
+        focusedNode = target;
       } else if (focusedNode) {
         // Focus escaped the scope, bring it back
-        focusSafely(focusedNode as HTMLElement)
+        focusSafely(focusedNode as HTMLElement);
       } else {
         // No previous focus, focus first element
-        focusManager.focusFirst()
+        focusManager.focusFirst();
       }
-    }
+    };
 
-    doc.addEventListener('keydown', onKeyDown, true)
-    doc.addEventListener('focusin', onFocusIn, true)
+    doc.addEventListener("keydown", onKeyDown, true);
+    doc.addEventListener("focusin", onFocusIn, true);
 
     onCleanup(() => {
-      doc.removeEventListener('keydown', onKeyDown, true)
-      doc.removeEventListener('focusin', onFocusIn, true)
-    })
-  })
+      doc.removeEventListener("keydown", onKeyDown, true);
+      doc.removeEventListener("focusin", onFocusIn, true);
+    });
+  });
 
   // Restore focus on unmount
   onCleanup(() => {
     if (props.restoreFocus && nodeToRestore && (nodeToRestore as HTMLElement).focus) {
-      const doc = getOwnerDocument(nodeToRestore as Element)
-      const win = doc.defaultView ?? window
+      const doc = getOwnerDocument(nodeToRestore as Element);
+      const win = doc.defaultView ?? window;
 
       // Use requestAnimationFrame to ensure the element is still in the DOM
       win.requestAnimationFrame(() => {
         if (nodeToRestore && doc.body.contains(nodeToRestore as Node)) {
-          ;(nodeToRestore as HTMLElement).focus()
+          (nodeToRestore as HTMLElement).focus();
         }
-      })
+      });
     }
-  })
+  });
 
   return (
     <FocusScopeContext.Provider value={{ focusManager, scopeRef: scopeElements }}>
@@ -402,7 +402,7 @@ export const FocusScope: ParentComponent<FocusScopeProps> = (props) => {
       {props.children}
       <span data-focus-scope-end hidden ref={endRef} />
     </FocusScopeContext.Provider>
-  )
-}
+  );
+};
 
-export default FocusScope
+export default FocusScope;

@@ -5,21 +5,16 @@
  * Manages expansion state, selection, and focus for hierarchical tree data.
  */
 
-import { createSignal, createEffect, createMemo, on, type Accessor } from 'solid-js';
-import type {
-  TreeState,
-  TreeStateOptions,
-  TreeCollection,
-  TreeNode,
-} from './types';
-import type { Key, FocusStrategy } from '../collections/types';
+import { createSignal, createEffect, createMemo, on, type Accessor } from "solid-js";
+import type { TreeState, TreeStateOptions, TreeCollection, TreeNode } from "./types";
+import type { Key, FocusStrategy } from "../collections/types";
 
 /**
  * Creates state management for a tree component.
  * Handles expansion, selection, focus management, and keyboard navigation state.
  */
 export function createTreeState<T extends object, C extends TreeCollection<T> = TreeCollection<T>>(
-  options: Accessor<TreeStateOptions<T, C>>
+  options: Accessor<TreeStateOptions<T, C>>,
 ): TreeState<T, C> {
   const getOptions = () => options();
 
@@ -31,7 +26,7 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
 
   // Expansion state (uncontrolled)
   const [internalExpandedKeys, setInternalExpandedKeys] = createSignal<Set<Key>>(
-    getInitialExpandedKeys(getOptions().defaultExpandedKeys)
+    getInitialExpandedKeys(getOptions().defaultExpandedKeys),
   );
 
   // Computed expanded keys (controlled or uncontrolled)
@@ -56,8 +51,8 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
   const [isKeyboardNavigationDisabled, setKeyboardNavigationDisabled] = createSignal(false);
 
   // Selection state
-  const [internalSelectedKeys, setInternalSelectedKeys] = createSignal<'all' | Set<Key>>(
-    getInitialSelection(getOptions().defaultSelectedKeys)
+  const [internalSelectedKeys, setInternalSelectedKeys] = createSignal<"all" | Set<Key>>(
+    getInitialSelection(getOptions().defaultSelectedKeys),
   );
   const [anchorKey, setAnchorKey] = createSignal<Key | null>(null);
 
@@ -70,13 +65,13 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
     return internalSelectedKeys();
   });
 
-  const selectionMode = createMemo(() => getOptions().selectionMode ?? 'none');
-  const selectionBehavior = createMemo(() => getOptions().selectionBehavior ?? 'toggle');
+  const selectionMode = createMemo(() => getOptions().selectionMode ?? "none");
+  const selectionBehavior = createMemo(() => getOptions().selectionBehavior ?? "toggle");
   const disallowEmptySelection = createMemo(() => getOptions().disallowEmptySelection ?? false);
-  const disabledBehavior = createMemo(() => getOptions().disabledBehavior ?? 'all');
+  const disabledBehavior = createMemo(() => getOptions().disabledBehavior ?? "all");
 
   // Set focused key
-  const setFocusedKey = (key: Key | null, strategy: FocusStrategy = 'first') => {
+  const setFocusedKey = (key: Key | null, strategy: FocusStrategy = "first") => {
     setFocusedKeyInternal(key);
     setChildFocusStrategy(strategy);
   };
@@ -132,13 +127,13 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
       }
 
       cachedCollection = coll;
-    })
+    }),
   );
 
   // Selection methods
   const isSelected = (key: Key): boolean => {
     const keys = selectedKeys();
-    if (keys === 'all') return true;
+    if (keys === "all") return true;
     return keys.has(key);
   };
 
@@ -150,7 +145,7 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
     return expandedKeys().has(key);
   };
 
-  const updateSelection = (newSelection: 'all' | Set<Key>) => {
+  const updateSelection = (newSelection: "all" | Set<Key>) => {
     const opts = getOptions();
 
     // Controlled mode
@@ -162,8 +157,8 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
     // Uncontrolled mode
     const current = internalSelectedKeys();
     const isDifferent =
-      current === 'all' ||
-      newSelection === 'all' ||
+      current === "all" ||
+      newSelection === "all" ||
       current.size !== (newSelection as Set<Key>).size ||
       ![...current].every((k) => (newSelection as Set<Key>).has(k));
 
@@ -174,12 +169,12 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
   };
 
   const toggleSelection = (key: Key) => {
-    if (isDisabled(key) && disabledBehavior() === 'all') return;
-    if (selectionMode() === 'none') return;
+    if (isDisabled(key) && disabledBehavior() === "all") return;
+    if (selectionMode() === "none") return;
 
     const current = selectedKeys();
 
-    if (selectionMode() === 'single') {
+    if (selectionMode() === "single") {
       if (isSelected(key) && !disallowEmptySelection()) {
         updateSelection(new Set());
       } else {
@@ -189,7 +184,7 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
     }
 
     // Multiple selection
-    if (current === 'all') {
+    if (current === "all") {
       // Can't toggle when all selected without knowing all keys
       return;
     }
@@ -208,16 +203,16 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
   };
 
   const replaceSelection = (key: Key) => {
-    if (isDisabled(key) && disabledBehavior() === 'all') return;
-    if (selectionMode() === 'none') return;
+    if (isDisabled(key) && disabledBehavior() === "all") return;
+    if (selectionMode() === "none") return;
 
     updateSelection(new Set([key]));
     setAnchorKey(key);
   };
 
   const extendSelection = (toKey: Key) => {
-    if (isDisabled(toKey) && disabledBehavior() === 'all') return;
-    if (selectionMode() !== 'multiple') {
+    if (isDisabled(toKey) && disabledBehavior() === "all") return;
+    if (selectionMode() !== "multiple") {
       replaceSelection(toKey);
       return;
     }
@@ -229,7 +224,7 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
     }
 
     const coll = collection();
-    const rows = coll.rows.filter((r) => r.type === 'item');
+    const rows = coll.rows.filter((r) => r.type === "item");
     const keys = rows.map((r) => r.key);
     const anchorIndex = keys.indexOf(anchor);
     const toIndex = keys.indexOf(toKey);
@@ -247,8 +242,8 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
   };
 
   const selectAll = () => {
-    if (selectionMode() !== 'multiple') return;
-    updateSelection('all');
+    if (selectionMode() !== "multiple") return;
+    updateSelection("all");
   };
 
   const clearSelection = () => {
@@ -257,9 +252,9 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
   };
 
   const toggleSelectAll = () => {
-    if (selectionMode() !== 'multiple') return;
+    if (selectionMode() !== "multiple") return;
 
-    if (selectedKeys() === 'all') {
+    if (selectedKeys() === "all") {
       clearSelection();
     } else {
       selectAll();
@@ -284,7 +279,7 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
   const toggleKey = (key: Key) => {
     const node = collection().getItem(key);
     if (!node || !node.isExpandable) return;
-    if (isDisabled(key) && disabledBehavior() === 'all') return;
+    if (isDisabled(key) && disabledBehavior() === "all") return;
 
     const current = expandedKeys();
     const newKeys = new Set(current);
@@ -301,7 +296,7 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
   const expandKey = (key: Key) => {
     const node = collection().getItem(key);
     if (!node || !node.isExpandable) return;
-    if (isDisabled(key) && disabledBehavior() === 'all') return;
+    if (isDisabled(key) && disabledBehavior() === "all") return;
 
     const current = expandedKeys();
     if (current.has(key)) return;
@@ -314,7 +309,7 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
   const collapseKey = (key: Key) => {
     const node = collection().getItem(key);
     if (!node || !node.isExpandable) return;
-    if (isDisabled(key) && disabledBehavior() === 'all') return;
+    if (isDisabled(key) && disabledBehavior() === "all") return;
 
     const current = expandedKeys();
     if (!current.has(key)) return;
@@ -376,13 +371,13 @@ export function createTreeState<T extends object, C extends TreeCollection<T> = 
 }
 
 // Helper functions
-function getInitialSelection(defaultKeys?: 'all' | Iterable<Key>): 'all' | Set<Key> {
+function getInitialSelection(defaultKeys?: "all" | Iterable<Key>): "all" | Set<Key> {
   if (defaultKeys === undefined) return new Set();
   return normalizeSelection(defaultKeys);
 }
 
-function normalizeSelection(keys: 'all' | Iterable<Key>): 'all' | Set<Key> {
-  if (keys === 'all') return 'all';
+function normalizeSelection(keys: "all" | Iterable<Key>): "all" | Set<Key> {
+  if (keys === "all") return "all";
   return new Set(keys);
 }
 

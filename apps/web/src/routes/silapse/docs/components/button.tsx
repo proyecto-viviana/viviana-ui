@@ -39,10 +39,18 @@ function ButtonPage() {
 <Button variant="primary" buttonStyle="outline">Outline</Button>`}
       >
         <div class="flex flex-wrap gap-3">
-          <Button variant="primary" buttonStyle="fill">Fill</Button>
-          <Button variant="primary" buttonStyle="outline">Outline</Button>
-          <Button variant="secondary" buttonStyle="fill">Fill</Button>
-          <Button variant="secondary" buttonStyle="outline">Outline</Button>
+          <Button variant="primary" buttonStyle="fill">
+            Fill
+          </Button>
+          <Button variant="primary" buttonStyle="outline">
+            Outline
+          </Button>
+          <Button variant="secondary" buttonStyle="fill">
+            Fill
+          </Button>
+          <Button variant="secondary" buttonStyle="outline">
+            Outline
+          </Button>
         </div>
       </Example>
 
@@ -151,9 +159,7 @@ function ButtonPage() {
             Uses native <code>&lt;button&gt;</code> element for proper semantics
           </li>
           <li>Supports keyboard activation via Enter and Space keys</li>
-          <li>
-            Focus ring visible only on keyboard navigation (not mouse clicks)
-          </li>
+          <li>Focus ring visible only on keyboard navigation (not mouse clicks)</li>
           <li>
             Disabled state communicated via native <code>disabled</code> semantics
           </li>

@@ -5,9 +5,9 @@
  * These testers encapsulate common testing scenarios for accessibility.
  */
 
-import { screen, within } from '@solidjs/testing-library';
-import type { UserEventInstance } from './interactions';
-import { setupUser, pressKey } from './interactions';
+import { screen, within } from "@solidjs/testing-library";
+import type { UserEventInstance } from "./interactions";
+import { setupUser, pressKey } from "./interactions";
 import {
   isAriaDisabled,
   isAriaPressed,
@@ -15,8 +15,8 @@ import {
   isAriaExpanded,
   isAriaSelected,
   getAriaRole,
-} from './aria';
-import { isFocused, isFocusWithin } from './focus';
+} from "./aria";
+import { isFocused, isFocusWithin } from "./focus";
 
 /**
  * Button tester interface
@@ -25,7 +25,7 @@ export interface ButtonTester {
   /** The button element */
   element: HTMLElement;
   /** Check if button is pressed (for toggle buttons) */
-  isPressed(): boolean | 'mixed' | null;
+  isPressed(): boolean | "mixed" | null;
   /** Check if button is disabled */
   isDisabled(): boolean;
   /** Click the button */
@@ -47,10 +47,7 @@ export interface ButtonTester {
  * expect(onPress).toHaveBeenCalled();
  * ```
  */
-export function createButtonTester(
-  element: HTMLElement,
-  user?: UserEventInstance
-): ButtonTester {
+export function createButtonTester(element: HTMLElement, user?: UserEventInstance): ButtonTester {
   const userInstance = user || setupUser();
 
   return {
@@ -80,7 +77,7 @@ export interface CheckboxTester {
   /** The checkbox element */
   element: HTMLElement;
   /** Check if checkbox is checked */
-  isChecked(): boolean | 'mixed' | null;
+  isChecked(): boolean | "mixed" | null;
   /** Check if checkbox is disabled */
   isDisabled(): boolean;
   /** Toggle the checkbox */
@@ -104,7 +101,7 @@ export interface CheckboxTester {
  */
 export function createCheckboxTester(
   element: HTMLElement,
-  user?: UserEventInstance
+  user?: UserEventInstance,
 ): CheckboxTester {
   const userInstance = user || setupUser();
 
@@ -163,14 +160,14 @@ export interface RadioGroupTester {
  */
 export function createRadioGroupTester(
   element: HTMLElement,
-  user?: UserEventInstance
+  user?: UserEventInstance,
 ): RadioGroupTester {
   const userInstance = user || setupUser();
 
   return {
     element,
     getRadios() {
-      return within(element).getAllByRole('radio');
+      return within(element).getAllByRole("radio");
     },
     getSelected() {
       const radios = this.getRadios();
@@ -178,25 +175,25 @@ export function createRadioGroupTester(
     },
     getSelectedValue() {
       const selected = this.getSelected();
-      return selected?.getAttribute('value') || null;
+      return selected?.getAttribute("value") || null;
     },
     async select(value: string) {
       const radios = this.getRadios();
-      const target = radios.find((r) => r.getAttribute('value') === value);
+      const target = radios.find((r) => r.getAttribute("value") === value);
       if (target) {
         await userInstance.click(target);
       }
     },
     isRadioDisabled(value: string) {
       const radios = this.getRadios();
-      const target = radios.find((r) => r.getAttribute('value') === value);
+      const target = radios.find((r) => r.getAttribute("value") === value);
       return target ? isAriaDisabled(target) : false;
     },
     async navigateNext() {
-      await pressKey(userInstance, 'ArrowDown');
+      await pressKey(userInstance, "ArrowDown");
     },
     async navigatePrevious() {
-      await pressKey(userInstance, 'ArrowUp');
+      await pressKey(userInstance, "ArrowUp");
     },
   };
 }
@@ -230,27 +227,24 @@ export interface ListBoxTester {
 /**
  * Create a tester for listbox components.
  */
-export function createListBoxTester(
-  element: HTMLElement,
-  user?: UserEventInstance
-): ListBoxTester {
+export function createListBoxTester(element: HTMLElement, user?: UserEventInstance): ListBoxTester {
   const userInstance = user || setupUser();
 
   return {
     element,
     getOptions() {
-      return within(element).getAllByRole('option');
+      return within(element).getAllByRole("option");
     },
     getSelected() {
       return this.getOptions().filter((o) => isAriaSelected(o));
     },
     getSelectedValues() {
-      return this.getSelected().map((o) => o.getAttribute('data-value') || o.textContent || '');
+      return this.getSelected().map((o) => o.getAttribute("data-value") || o.textContent || "");
     },
     async select(value: string) {
       const options = this.getOptions();
       const target = options.find(
-        (o) => o.getAttribute('data-value') === value || o.textContent === value
+        (o) => o.getAttribute("data-value") === value || o.textContent === value,
       );
       if (target) {
         await userInstance.click(target);
@@ -259,21 +253,21 @@ export function createListBoxTester(
     isOptionDisabled(value: string) {
       const options = this.getOptions();
       const target = options.find(
-        (o) => o.getAttribute('data-value') === value || o.textContent === value
+        (o) => o.getAttribute("data-value") === value || o.textContent === value,
       );
       return target ? isAriaDisabled(target) : false;
     },
     async navigateNext() {
-      await pressKey(userInstance, 'ArrowDown');
+      await pressKey(userInstance, "ArrowDown");
     },
     async navigatePrevious() {
-      await pressKey(userInstance, 'ArrowUp');
+      await pressKey(userInstance, "ArrowUp");
     },
     async navigateFirst() {
-      await pressKey(userInstance, 'Home');
+      await pressKey(userInstance, "Home");
     },
     async navigateLast() {
-      await pressKey(userInstance, 'End');
+      await pressKey(userInstance, "End");
     },
   };
 }
@@ -303,16 +297,13 @@ export interface MenuTester {
 /**
  * Create a tester for menu components.
  */
-export function createMenuTester(
-  element: HTMLElement,
-  user?: UserEventInstance
-): MenuTester {
+export function createMenuTester(element: HTMLElement, user?: UserEventInstance): MenuTester {
   const userInstance = user || setupUser();
 
   return {
     element,
     getItems() {
-      return within(element).getAllByRole('menuitem');
+      return within(element).getAllByRole("menuitem");
     },
     getItem(text: string) {
       try {
@@ -329,16 +320,16 @@ export function createMenuTester(
     },
     isOpen() {
       // Check if menu is visible in the DOM
-      return element.offsetParent !== null || getComputedStyle(element).display !== 'none';
+      return element.offsetParent !== null || getComputedStyle(element).display !== "none";
     },
     async navigateNext() {
-      await pressKey(userInstance, 'ArrowDown');
+      await pressKey(userInstance, "ArrowDown");
     },
     async navigatePrevious() {
-      await pressKey(userInstance, 'ArrowUp');
+      await pressKey(userInstance, "ArrowUp");
     },
     async close() {
-      await pressKey(userInstance, 'Escape');
+      await pressKey(userInstance, "Escape");
     },
   };
 }
@@ -368,17 +359,14 @@ export interface SelectTester {
 /**
  * Create a tester for select components.
  */
-export function createSelectTester(
-  trigger: HTMLElement,
-  user?: UserEventInstance
-): SelectTester {
+export function createSelectTester(trigger: HTMLElement, user?: UserEventInstance): SelectTester {
   const userInstance = user || setupUser();
 
   return {
     trigger,
     getListBox() {
       try {
-        return screen.getByRole('listbox');
+        return screen.getByRole("listbox");
       } catch {
         return null;
       }
@@ -393,13 +381,13 @@ export function createSelectTester(
     },
     async close() {
       if (this.isOpen()) {
-        await pressKey(userInstance, 'Escape');
+        await pressKey(userInstance, "Escape");
       }
     },
     getSelectedValue() {
       // Look for a value indicator in the trigger
-      const valueElement = trigger.querySelector('[data-value]');
-      return valueElement?.getAttribute('data-value') || trigger.textContent?.trim() || null;
+      const valueElement = trigger.querySelector("[data-value]");
+      return valueElement?.getAttribute("data-value") || trigger.textContent?.trim() || null;
     },
     async select(value: string) {
       await this.open();
@@ -444,16 +432,13 @@ export interface TabsTester {
 /**
  * Create a tester for tabs components.
  */
-export function createTabsTester(
-  element: HTMLElement,
-  user?: UserEventInstance
-): TabsTester {
+export function createTabsTester(element: HTMLElement, user?: UserEventInstance): TabsTester {
   const userInstance = user || setupUser();
 
   return {
     element,
     getTabs() {
-      return within(element).getAllByRole('tab');
+      return within(element).getAllByRole("tab");
     },
     getSelectedTab() {
       const tabs = this.getTabs();
@@ -461,37 +446,37 @@ export function createTabsTester(
     },
     getSelectedValue() {
       const selected = this.getSelectedTab();
-      return selected?.getAttribute('data-value') || selected?.id || null;
+      return selected?.getAttribute("data-value") || selected?.id || null;
     },
     async select(value: string) {
       const tabs = this.getTabs();
       const target = tabs.find(
-        (t) => t.getAttribute('data-value') === value || t.textContent === value || t.id === value
+        (t) => t.getAttribute("data-value") === value || t.textContent === value || t.id === value,
       );
       if (target) {
         await userInstance.click(target);
       }
     },
     async navigateNext() {
-      await pressKey(userInstance, 'ArrowRight');
+      await pressKey(userInstance, "ArrowRight");
     },
     async navigatePrevious() {
-      await pressKey(userInstance, 'ArrowLeft');
+      await pressKey(userInstance, "ArrowLeft");
     },
     async navigateFirst() {
-      await pressKey(userInstance, 'Home');
+      await pressKey(userInstance, "Home");
     },
     async navigateLast() {
-      await pressKey(userInstance, 'End');
+      await pressKey(userInstance, "End");
     },
     getTabPanel(tabValue: string) {
       const tabs = this.getTabs();
       const tab = tabs.find(
-        (t) => t.getAttribute('data-value') === tabValue || t.textContent === tabValue
+        (t) => t.getAttribute("data-value") === tabValue || t.textContent === tabValue,
       );
       if (!tab) return null;
 
-      const panelId = tab.getAttribute('aria-controls');
+      const panelId = tab.getAttribute("aria-controls");
       if (!panelId) return null;
 
       return document.getElementById(panelId);
@@ -522,18 +507,16 @@ export interface DialogTester {
 /**
  * Create a tester for dialog components.
  */
-export function createDialogTester(
-  element: HTMLElement,
-  user?: UserEventInstance
-): DialogTester {
+export function createDialogTester(element: HTMLElement, user?: UserEventInstance): DialogTester {
   const userInstance = user || setupUser();
 
   return {
     element,
     isOpen() {
       const role = getAriaRole(element);
-      const isDialog = role === 'dialog' || role === 'alertdialog';
-      const isVisible = element.offsetParent !== null || getComputedStyle(element).display !== 'none';
+      const isDialog = role === "dialog" || role === "alertdialog";
+      const isVisible =
+        element.offsetParent !== null || getComputedStyle(element).display !== "none";
       return isDialog && isVisible;
     },
     hasFocus() {
@@ -541,17 +524,17 @@ export function createDialogTester(
     },
     getTitle() {
       // Check aria-labelledby
-      const labelledBy = element.getAttribute('aria-labelledby');
+      const labelledBy = element.getAttribute("aria-labelledby");
       if (labelledBy) {
         const titleElement = document.getElementById(labelledBy);
         return titleElement?.textContent || null;
       }
 
       // Check aria-label
-      return element.getAttribute('aria-label');
+      return element.getAttribute("aria-label");
     },
     async close() {
-      await pressKey(userInstance, 'Escape');
+      await pressKey(userInstance, "Escape");
     },
     find(text: string) {
       try {
@@ -561,7 +544,7 @@ export function createDialogTester(
       }
     },
     async clickButton(text: string) {
-      const button = within(element).getByRole('button', { name: text });
+      const button = within(element).getByRole("button", { name: text });
       await userInstance.click(button);
     },
   };

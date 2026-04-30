@@ -26,6 +26,6 @@ export function minmax(min: string, max: string): string {
  * @param count - The repetition count or 'auto-fill' / 'auto-fit'
  * @param track - The track definition
  */
-export function repeat(count: number | 'auto-fill' | 'auto-fit', track: string): string {
+export function repeat(count: number | "auto-fill" | "auto-fit", track: string): string {
   return `repeat(${count}, ${track})`;
 }

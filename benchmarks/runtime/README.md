@@ -5,12 +5,14 @@ Measures component mount and update performance in jsdom using Vitest.
 ## ⚠️ Important Caveats
 
 ### jsdom is NOT a Real Browser
+
 - **No layout engine:** `getBoundingClientRect()` returns zeros
 - **No paint/composite:** Can't measure actual frame rate
 - **Different timing:** JavaScript execution only, no browser overhead
 - **Useful for:** Comparing component logic overhead in isolation
 
 ### Different Reactivity Models
+
 - **SolidJS (PV):** Fine-grained reactivity compiled at build time
   - Updates propagate directly to affected DOM nodes
   - No virtual DOM diffing overhead
@@ -22,18 +24,21 @@ Measures component mount and update performance in jsdom using Vitest.
   - Batched updates for efficiency
 
 **These are fundamentally different approaches.** Faster benchmarks don't mean "better framework" - they reflect different trade-offs:
+
 - SolidJS: More performant, steeper learning curve
 - React: More flexible, easier debugging, larger community
 
 ## Methodology
 
 ### Test Harness
+
 - **Framework:** Vitest (already configured in project)
 - **Rendering:** `@solidjs/testing-library` for PV, `@testing-library/react` for RS
 - **Timing:** `performance.mark/measure` API
 - **Environment:** jsdom (Node.js, not a real browser)
 
 ### Test Pattern
+
 ```typescript
 // Warm-up run (eliminate JIT compilation bias)
 render(component);
@@ -56,16 +61,19 @@ const p95 = timings[9];
 ### Test Scenarios
 
 #### 1. Button Mount (100 components)
+
 **What:** Render 100 `<Button>` components from scratch
 **Measures:** Component creation overhead + initial DOM insertion
 **Expected:** PV faster (no virtual DOM)
 
 #### 2. Button Update (100 components)
+
 **What:** Toggle `isDisabled` on 100 buttons
 **Measures:** Reactivity update speed
 **Expected:** PV MUCH faster (fine-grained updates, no diffing)
 
 #### 3. Select Mount (50 components with 100 options each)
+
 **What:** Render 50 Select components with 100 options
 **Measures:** Complex component overhead
 **Expected:** PV faster (compiled JSX, smaller runtime)
@@ -81,11 +89,13 @@ Results are logged to console (not saved to JSON - too much variance).
 ## Interpreting Results
 
 ### Good Results
+
 - PV 2-5x faster on mount
 - PV 5-10x faster on updates
 - Consistent across runs (low variance)
 
 ### Unexpected Results
+
 - RS faster than PV → investigate (possible test error)
 - High variance (>50%) → environmental noise, re-run
 - Very slow (>1s) → memory pressure, restart
@@ -101,6 +111,7 @@ Results are logged to console (not saved to JSON - too much variance).
 ## Why Not React Spectrum Benchmarks?
 
 To properly benchmark React Spectrum, we'd need:
+
 1. React 18 setup with concurrent rendering
 2. Separate test environment (conflicts with SolidJS)
 3. Different testing library (`@testing-library/react`)

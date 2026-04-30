@@ -5,7 +5,7 @@
  * Uses the range calendar for date selection and displays formatted dates.
  */
 
-import { type JSX, splitProps, Show, createMemo } from 'solid-js'
+import { type JSX, splitProps, Show, createMemo } from "solid-js";
 import {
   DateRangePicker as HeadlessDateRangePicker,
   DateRangePickerLabel as HeadlessDateRangePickerLabel,
@@ -17,9 +17,9 @@ import {
   type DateRangePickerProps as HeadlessDateRangePickerProps,
   type CalendarDate,
   type DateValue,
-} from '@proyecto-viviana/solidaria-components'
-import { RangeCalendar } from './RangeCalendar'
-import { useProviderProps } from '../provider'
+} from "@proyecto-viviana/solidaria-components";
+import { RangeCalendar } from "./RangeCalendar";
+import { useProviderProps } from "../provider";
 
 function CalendarIcon(): JSX.Element {
   return (
@@ -38,27 +38,29 @@ function CalendarIcon(): JSX.Element {
       <line x1="8" y1="2" x2="8" y2="6" />
       <line x1="3" y1="10" x2="21" y2="10" />
     </svg>
-  )
+  );
 }
 
 // ============================================
 // TYPES
 // ============================================
 
-export type DateRangePickerSize = 'sm' | 'md' | 'lg'
+export type DateRangePickerSize = "sm" | "md" | "lg";
 
-export interface DateRangePickerProps<T extends DateValue = DateValue>
-  extends Omit<HeadlessDateRangePickerProps<T>, 'class' | 'style' | 'children'> {
+export interface DateRangePickerProps<T extends DateValue = DateValue> extends Omit<
+  HeadlessDateRangePickerProps<T>,
+  "class" | "style" | "children"
+> {
   /** The size of the picker. @default 'md' */
-  size?: DateRangePickerSize
+  size?: DateRangePickerSize;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Label for the field. */
-  label?: string
+  label?: string;
   /** Description text. */
-  description?: string
+  description?: string;
   /** Error message. */
-  errorMessage?: string
+  errorMessage?: string;
 }
 
 // ============================================
@@ -67,57 +69,57 @@ export interface DateRangePickerProps<T extends DateValue = DateValue>
 
 const sizeStyles = {
   sm: {
-    container: 'text-sm',
-    field: 'px-2 py-1',
-    label: 'text-xs',
-    button: 'w-7 h-7',
+    container: "text-sm",
+    field: "px-2 py-1",
+    label: "text-xs",
+    button: "w-7 h-7",
   },
   md: {
-    container: 'text-base',
-    field: 'px-3 py-2',
-    label: 'text-sm',
-    button: 'w-9 h-9',
+    container: "text-base",
+    field: "px-3 py-2",
+    label: "text-sm",
+    button: "w-9 h-9",
   },
   lg: {
-    container: 'text-lg',
-    field: 'px-4 py-3',
-    label: 'text-base',
-    button: 'w-11 h-11',
+    container: "text-lg",
+    field: "px-4 py-3",
+    label: "text-base",
+    button: "w-11 h-11",
   },
-}
+};
 
 /**
  * Inner component that uses the DateRangePicker context to display formatted dates.
  */
 function DateRangeDisplay(props: {
-  size: DateRangePickerSize
-  isInvalid: boolean
-  label?: string
-  description?: string
-  errorMessage?: string
-  isRequired?: boolean
+  size: DateRangePickerSize;
+  isInvalid: boolean;
+  label?: string;
+  description?: string;
+  errorMessage?: string;
+  isRequired?: boolean;
 }): JSX.Element {
-  const context = useDateRangePickerContext()
-  const sizeConfig = () => sizeStyles[props.size]
+  const context = useDateRangePickerContext();
+  const sizeConfig = () => sizeStyles[props.size];
 
   const startDisplay = createMemo(() => {
-    const state = context.calendarState
-    const start = state.value?.()?.start ?? state.anchorDate?.()
-    if (!start) return 'Start date'
-    return `${start.month}/${start.day}/${start.year}`
-  })
+    const state = context.calendarState;
+    const start = state.value?.()?.start ?? state.anchorDate?.();
+    if (!start) return "Start date";
+    return `${start.month}/${start.day}/${start.year}`;
+  });
 
   const endDisplay = createMemo(() => {
-    const state = context.calendarState
-    const end = state.value?.()?.end
-    if (!end) return 'End date'
-    return `${end.month}/${end.day}/${end.year}`
-  })
+    const state = context.calendarState;
+    const end = state.value?.()?.end;
+    if (!end) return "End date";
+    return `${end.month}/${end.day}/${end.year}`;
+  });
 
   const hasValue = createMemo(() => {
-    const state = context.calendarState
-    return !!state.value?.()?.start
-  })
+    const state = context.calendarState;
+    return !!state.value?.()?.start;
+  });
 
   return (
     <>
@@ -138,15 +140,20 @@ function DateRangeDisplay(props: {
             ${sizeConfig().field}
             bg-bg-400 rounded-l-md border-y border-l
             transition-colors duration-150
-            ${props.isInvalid ? 'border-red-500' : 'border-primary-600'}
-            ${hasValue() ? 'text-primary-100' : 'text-primary-500 italic'}
-            ${context.calendarState.isDisabled() ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/50'}
+            ${props.isInvalid ? "border-red-500" : "border-primary-600"}
+            ${hasValue() ? "text-primary-100" : "text-primary-500 italic"}
+            ${context.calendarState.isDisabled() ? "opacity-50 cursor-not-allowed" : "cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/50"}
           `}
         >
           {startDisplay()}
         </div>
 
-        <span class="px-1 text-primary-400 bg-bg-400 border-y border-primary-600" aria-hidden="true">–</span>
+        <span
+          class="px-1 text-primary-400 bg-bg-400 border-y border-primary-600"
+          aria-hidden="true"
+        >
+          –
+        </span>
 
         <div
           {...context.pickerAria.endFieldProps}
@@ -155,9 +162,9 @@ function DateRangeDisplay(props: {
             ${sizeConfig().field}
             bg-bg-400 border-y
             transition-colors duration-150
-            ${props.isInvalid ? 'border-red-500' : 'border-primary-600'}
-            ${hasValue() ? 'text-primary-100' : 'text-primary-500 italic'}
-            ${context.calendarState.isDisabled() ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/50'}
+            ${props.isInvalid ? "border-red-500" : "border-primary-600"}
+            ${hasValue() ? "text-primary-100" : "text-primary-500 italic"}
+            ${context.calendarState.isDisabled() ? "opacity-50 cursor-not-allowed" : "cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/50"}
           `}
         >
           {endDisplay()}
@@ -172,17 +179,17 @@ function DateRangeDisplay(props: {
               text-primary-200
               transition-colors duration-150
               focus:outline-none focus:ring-2 focus:ring-accent/50
-            `
-            let borderClass = 'border-primary-600'
+            `;
+            let borderClass = "border-primary-600";
             if (props.isInvalid) {
-              borderClass = 'border-red-500'
+              borderClass = "border-red-500";
             } else if (isOpen) {
-              borderClass = 'border-accent bg-bg-300'
+              borderClass = "border-accent bg-bg-300";
             }
             const disabledClass = isDisabled
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-bg-300 cursor-pointer'
-            return `${base} ${borderClass} ${disabledClass}`.trim()
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-bg-300 cursor-pointer";
+            return `${base} ${borderClass} ${disabledClass}`.trim();
           }}
         >
           <CalendarIcon />
@@ -205,7 +212,7 @@ function DateRangeDisplay(props: {
         </HeadlessDateRangePickerErrorMessage>
       </Show>
     </>
-  )
+  );
 }
 
 // ============================================
@@ -216,21 +223,21 @@ function DateRangeDisplay(props: {
  * A date range picker combines two date display fields with a range calendar popup.
  */
 export function DateRangePicker<T extends DateValue = CalendarDate>(
-  props: DateRangePickerProps<T>
+  props: DateRangePickerProps<T>,
 ): JSX.Element {
-  const mergedProps = useProviderProps(props)
+  const mergedProps = useProviderProps(props);
   const [local, rest] = splitProps(mergedProps, [
-    'size',
-    'class',
-    'label',
-    'description',
-    'errorMessage',
-    'isInvalid',
-  ])
+    "size",
+    "class",
+    "label",
+    "description",
+    "errorMessage",
+    "isInvalid",
+  ]);
 
-  const size = () => local.size ?? 'md'
-  const sizeConfig = () => sizeStyles[size()]
-  const isInvalid = () => local.isInvalid || !!local.errorMessage
+  const size = () => local.size ?? "md";
+  const sizeConfig = () => sizeStyles[size()];
+  const isInvalid = () => local.isInvalid || !!local.errorMessage;
 
   return (
     <HeadlessDateRangePicker
@@ -239,7 +246,7 @@ export function DateRangePicker<T extends DateValue = CalendarDate>(
       description={local.description}
       errorMessage={local.errorMessage}
       isInvalid={isInvalid()}
-      class={`flex flex-col gap-1 relative ${sizeConfig().container} ${local.class ?? ''}`}
+      class={`flex flex-col gap-1 relative ${sizeConfig().container} ${local.class ?? ""}`}
     >
       <DateRangeDisplay
         size={size()}
@@ -250,5 +257,5 @@ export function DateRangePicker<T extends DateValue = CalendarDate>(
         isRequired={rest.isRequired}
       />
     </HeadlessDateRangePicker>
-  )
+  );
 }

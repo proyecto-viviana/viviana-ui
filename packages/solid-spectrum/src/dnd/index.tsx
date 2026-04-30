@@ -9,7 +9,7 @@ export {
   useDndPersistedKeys,
   useRenderDropIndicator,
   useDragAndDrop,
-} from '@proyecto-viviana/solidaria-components';
+} from "@proyecto-viviana/solidaria-components";
 export type {
   DragAndDropContextValue,
   DropIndicatorProps,
@@ -17,7 +17,6 @@ export type {
   DropTargetDelegate,
   DragAndDropOptions,
   DragAndDropHooks,
-} from '@proyecto-viviana/solidaria-components';
+} from "@proyecto-viviana/solidaria-components";
 
-export { DIRECTORY_DRAG_TYPE } from '@proyecto-viviana/solid-stately';
-
+export { DIRECTORY_DRAG_TYPE } from "@proyecto-viviana/solid-stately";

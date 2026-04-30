@@ -3,20 +3,20 @@
  * Based on @react-aria/tabs.
  */
 
-import { type Accessor, createEffect, createMemo } from 'solid-js';
-import { createFocusRing } from '../interactions';
-import { createPress } from '../interactions';
-import { createHover } from '../interactions';
-import { createId } from '../ssr';
-import { useLocale } from '../i18n';
-import type { Key, Collection, CollectionNode } from '@proyecto-viviana/solid-stately';
+import { type Accessor, createEffect, createMemo } from "solid-js";
+import { createFocusRing } from "../interactions";
+import { createPress } from "../interactions";
+import { createHover } from "../interactions";
+import { createId } from "../ssr";
+import { useLocale } from "../i18n";
+import type { Key, Collection, CollectionNode } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type TabOrientation = 'horizontal' | 'vertical';
-export type KeyboardActivation = 'automatic' | 'manual';
+export type TabOrientation = "horizontal" | "vertical";
+export type KeyboardActivation = "automatic" | "manual";
 
 export interface TabListState<T = unknown> {
   collection: Accessor<Collection<T>>;
@@ -42,21 +42,21 @@ export interface AriaTabListProps {
   /** Whether the tab list is disabled. */
   isDisabled?: boolean;
   /** Label for the tab list. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ID of element that labels the tab list. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ID of element that describes the tab list. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
 }
 
 export interface TabListAria {
   /** Props for the tab list container element. */
   tabListProps: {
-    role: 'tablist';
-    'aria-orientation': TabOrientation;
-    'aria-label'?: string;
-    'aria-labelledby'?: string;
-    'aria-describedby'?: string;
+    role: "tablist";
+    "aria-orientation": TabOrientation;
+    "aria-label"?: string;
+    "aria-labelledby"?: string;
+    "aria-describedby"?: string;
     onKeyDown: (e: KeyboardEvent) => void;
     onFocus: (e: FocusEvent) => void;
     onBlur: (e: FocusEvent) => void;
@@ -69,18 +69,18 @@ export interface AriaTabProps {
   /** Whether the tab is disabled. */
   isDisabled?: boolean;
   /** Label for the tab. */
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 export interface TabAria {
   /** Props for the tab element. */
   tabProps: {
     id: string;
-    role: 'tab';
-    'aria-selected': boolean;
-    'aria-disabled': boolean | undefined;
-    'aria-controls': string | undefined;
-    'aria-label'?: string;
+    role: "tab";
+    "aria-selected": boolean;
+    "aria-disabled": boolean | undefined;
+    "aria-controls": string | undefined;
+    "aria-label"?: string;
     tabIndex: number;
     onKeyDown: (e: KeyboardEvent) => void;
     onMouseDown: (e: MouseEvent) => void;
@@ -106,21 +106,21 @@ export interface AriaTabPanelProps {
   /** The key of the associated tab. */
   id?: Key;
   /** Label for the tab panel. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ID of element that labels the tab panel. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ID of element that describes the tab panel. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
 }
 
 export interface TabPanelAria {
   /** Props for the tab panel element. */
   tabPanelProps: {
     id: string;
-    role: 'tabpanel';
-    'aria-labelledby'?: string;
-    'aria-label'?: string;
-    'aria-describedby'?: string;
+    role: "tabpanel";
+    "aria-labelledby"?: string;
+    "aria-label"?: string;
+    "aria-describedby"?: string;
     tabIndex: number;
   };
   /** Whether this panel is the selected one. */
@@ -144,13 +144,13 @@ function getTabListId<T>(state: TabListState<T>): string {
 
 function generateTabId<T>(state: TabListState<T>, key: Key): string {
   const baseId = getTabListId(state);
-  const keyStr = String(key).replace(/\s+/g, '-');
+  const keyStr = String(key).replace(/\s+/g, "-");
   return `${baseId}-tab-${keyStr}`;
 }
 
 function generateTabPanelId<T>(state: TabListState<T>, key: Key): string {
   const baseId = getTabListId(state);
-  const keyStr = String(key).replace(/\s+/g, '-');
+  const keyStr = String(key).replace(/\s+/g, "-");
   return `${baseId}-tabpanel-${keyStr}`;
 }
 
@@ -160,7 +160,7 @@ function generateTabPanelId<T>(state: TabListState<T>, key: Key): string {
 
 function getNextKey<T>(state: TabListState<T>, currentKey: Key): Key | null {
   const coll = state.collection();
-  const keys = [...coll].map(node => node.key);
+  const keys = [...coll].map((node) => node.key);
   const currentIndex = keys.indexOf(currentKey);
 
   if (currentIndex === -1) return keys[0] ?? null;
@@ -179,7 +179,7 @@ function getNextKey<T>(state: TabListState<T>, currentKey: Key): Key | null {
 
 function getPreviousKey<T>(state: TabListState<T>, currentKey: Key): Key | null {
   const coll = state.collection();
-  const keys = [...coll].map(node => node.key);
+  const keys = [...coll].map((node) => node.key);
   const currentIndex = keys.indexOf(currentKey);
 
   if (currentIndex === -1) return keys[keys.length - 1] ?? null;
@@ -208,7 +208,7 @@ function getFirstKey<T>(state: TabListState<T>): Key | null {
 
 function getLastKey<T>(state: TabListState<T>): Key | null {
   const coll = state.collection();
-  const keys = [...coll].map(node => node.key).reverse();
+  const keys = [...coll].map((node) => node.key).reverse();
   for (const key of keys) {
     if (!state.isKeyDisabled(key)) {
       return key;
@@ -224,13 +224,11 @@ function getLastKey<T>(state: TabListState<T>): Key | null {
 /**
  * Creates ARIA props for a tab list container.
  */
-export function createTabList<T>(
-  props: AriaTabListProps,
-  state: TabListState<T>
-): TabListAria {
+export function createTabList<T>(props: AriaTabListProps, state: TabListState<T>): TabListAria {
   const locale = useLocale();
-  const orientation = () => props.orientation ?? state.orientation() ?? 'horizontal';
-  const keyboardActivation = () => props.keyboardActivation ?? state.keyboardActivation() ?? 'automatic';
+  const orientation = () => props.orientation ?? state.orientation() ?? "horizontal";
+  const keyboardActivation = () =>
+    props.keyboardActivation ?? state.keyboardActivation() ?? "automatic";
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (state.isDisabled()) return;
@@ -239,40 +237,40 @@ export function createTabList<T>(
     if (currentKey === null) return;
 
     let nextKey: Key | null = null;
-    const isHorizontal = orientation() === 'horizontal';
-    const isRTL = locale().direction === 'rtl';
+    const isHorizontal = orientation() === "horizontal";
+    const isRTL = locale().direction === "rtl";
 
     switch (e.key) {
-      case 'ArrowLeft':
+      case "ArrowLeft":
         if (isHorizontal) {
           nextKey = isRTL ? getNextKey(state, currentKey) : getPreviousKey(state, currentKey);
         }
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         if (isHorizontal) {
           nextKey = isRTL ? getPreviousKey(state, currentKey) : getNextKey(state, currentKey);
         }
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         if (!isHorizontal) {
           nextKey = getPreviousKey(state, currentKey);
         }
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         if (!isHorizontal) {
           nextKey = getNextKey(state, currentKey);
         }
         break;
-      case 'Home':
+      case "Home":
         nextKey = getFirstKey(state);
         break;
-      case 'End':
+      case "End":
         nextKey = getLastKey(state);
         break;
-      case 'Enter':
-      case ' ':
+      case "Enter":
+      case " ":
         // In manual mode, Enter/Space activates the focused tab
-        if (keyboardActivation() === 'manual' && state.focusedKey()) {
+        if (keyboardActivation() === "manual" && state.focusedKey()) {
           state.setSelectedKey(state.focusedKey()!);
           e.preventDefault();
         }
@@ -306,11 +304,11 @@ export function createTabList<T>(
 
   return {
     tabListProps: {
-      role: 'tablist',
-      'aria-orientation': orientation(),
-      'aria-label': props['aria-label'],
-      'aria-labelledby': props['aria-labelledby'],
-      'aria-describedby': props['aria-describedby'],
+      role: "tablist",
+      "aria-orientation": orientation(),
+      "aria-label": props["aria-label"],
+      "aria-labelledby": props["aria-labelledby"],
+      "aria-describedby": props["aria-describedby"],
       onKeyDown: handleKeyDown,
       onFocus: handleFocus,
       onBlur: handleBlur,
@@ -324,7 +322,7 @@ export function createTabList<T>(
 export function createTab<T>(
   props: AriaTabProps,
   state: TabListState<T>,
-  ref?: Accessor<HTMLElement | null>
+  ref?: Accessor<HTMLElement | null>,
 ): TabAria {
   const key = () => props.key;
 
@@ -350,7 +348,7 @@ export function createTab<T>(
 
       state.setFocusedKey(tabKey);
 
-      if (state.keyboardActivation() === 'manual' || wasSelected) {
+      if (state.keyboardActivation() === "manual" || wasSelected) {
         state.setSelectedKey(tabKey);
       }
     },
@@ -369,15 +367,11 @@ export function createTab<T>(
 
   // Helper to safely call event handlers that may be bound tuples
   const callHandler = <E extends Event>(handler: unknown, event: E) => {
-    if (typeof handler === 'function') {
+    if (typeof handler === "function") {
       (handler as (e: E) => void)(event);
       return;
     }
-    if (
-      Array.isArray(handler) &&
-      handler.length >= 2 &&
-      typeof handler[1] === 'function'
-    ) {
+    if (Array.isArray(handler) && handler.length >= 2 && typeof handler[1] === "function") {
       (handler[1] as (this: unknown, e: E) => void).call(handler[0], event);
     }
   };
@@ -419,17 +413,17 @@ export function createTab<T>(
   return {
     tabProps: {
       id: tabId,
-      role: 'tab',
-      get 'aria-selected'() {
+      role: "tab",
+      get "aria-selected"() {
         return isSelected();
       },
-      get 'aria-disabled'() {
+      get "aria-disabled"() {
         return isDisabled() || undefined;
       },
-      get 'aria-controls'() {
+      get "aria-controls"() {
         return isSelected() ? tabPanelId : undefined;
       },
-      'aria-label': props['aria-label'],
+      "aria-label": props["aria-label"],
       get tabIndex() {
         return isSelected() && !isDisabled() ? 0 : -1;
       },
@@ -453,7 +447,7 @@ export function createTab<T>(
  */
 export function createTabPanel<T>(
   props: AriaTabPanelProps,
-  state: TabListState<T> | null
+  state: TabListState<T> | null,
 ): TabPanelAria {
   const fallbackId = createId();
 
@@ -482,17 +476,17 @@ export function createTabPanel<T>(
         }
         return fallbackId;
       },
-      role: 'tabpanel',
-      get 'aria-labelledby'() {
-        if (props['aria-labelledby']) return props['aria-labelledby'];
+      role: "tabpanel",
+      get "aria-labelledby"() {
+        if (props["aria-labelledby"]) return props["aria-labelledby"];
         const key = associatedKey();
         if (state && key !== null) {
           return generateTabId(state, key);
         }
         return undefined;
       },
-      'aria-label': props['aria-label'],
-      'aria-describedby': props['aria-describedby'],
+      "aria-label": props["aria-label"],
+      "aria-describedby": props["aria-describedby"],
       // Make panel focusable if no tabbable children
       tabIndex: 0,
     },

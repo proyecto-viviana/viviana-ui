@@ -4,7 +4,7 @@ export {
   radioGroupSyncVersion,
   type RadioGroupProps,
   type RadioGroupState,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 
 // ARIA hooks (solidaria-specific)
 // Radio Group
@@ -13,11 +13,7 @@ export {
   radioGroupData,
   type AriaRadioGroupProps,
   type RadioGroupAria,
-} from './createRadioGroup';
+} from "./createRadioGroup";
 
 // Radio
-export {
-  createRadio,
-  type AriaRadioProps,
-  type RadioAria,
-} from './createRadio';
+export { createRadio, type AriaRadioProps, type RadioAria } from "./createRadio";

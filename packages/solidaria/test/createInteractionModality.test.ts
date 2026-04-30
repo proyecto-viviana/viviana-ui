@@ -2,8 +2,8 @@
  * Tests for createInteractionModality
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createRoot } from 'solid-js';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { createRoot } from "solid-js";
 import {
   createInteractionModality,
   getInteractionModality,
@@ -11,178 +11,186 @@ import {
   addModalityListener,
   setupGlobalFocusListeners,
   type Modality,
-} from '../src/interactions/createInteractionModality';
+} from "../src/interactions/createInteractionModality";
 
-describe('createInteractionModality', () => {
-  describe('getInteractionModality', () => {
-    it('should return null initially', () => {
+describe("createInteractionModality", () => {
+  describe("getInteractionModality", () => {
+    it("should return null initially", () => {
       // Note: This may not be null if other tests have run
       const modality = getInteractionModality();
-      expect(modality === null || ['keyboard', 'pointer', 'virtual'].includes(modality as string)).toBe(true);
+      expect(
+        modality === null || ["keyboard", "pointer", "virtual"].includes(modality as string),
+      ).toBe(true);
     });
   });
 
-  describe('setInteractionModality', () => {
-    it('should set the current modality to keyboard', () => {
-      setInteractionModality('keyboard');
-      expect(getInteractionModality()).toBe('keyboard');
+  describe("setInteractionModality", () => {
+    it("should set the current modality to keyboard", () => {
+      setInteractionModality("keyboard");
+      expect(getInteractionModality()).toBe("keyboard");
     });
 
-    it('should set the current modality to pointer', () => {
-      setInteractionModality('pointer');
-      expect(getInteractionModality()).toBe('pointer');
+    it("should set the current modality to pointer", () => {
+      setInteractionModality("pointer");
+      expect(getInteractionModality()).toBe("pointer");
     });
 
-    it('should set the current modality to virtual', () => {
-      setInteractionModality('virtual');
-      expect(getInteractionModality()).toBe('virtual');
+    it("should set the current modality to virtual", () => {
+      setInteractionModality("virtual");
+      expect(getInteractionModality()).toBe("virtual");
     });
   });
 
-  describe('addModalityListener', () => {
-    it('should call listener when modality changes', () => {
+  describe("addModalityListener", () => {
+    it("should call listener when modality changes", () => {
       const listener = vi.fn();
       const cleanup = addModalityListener(listener);
 
-      setInteractionModality('keyboard');
-      expect(listener).toHaveBeenCalledWith('keyboard');
+      setInteractionModality("keyboard");
+      expect(listener).toHaveBeenCalledWith("keyboard");
 
-      setInteractionModality('pointer');
-      expect(listener).toHaveBeenCalledWith('pointer');
+      setInteractionModality("pointer");
+      expect(listener).toHaveBeenCalledWith("pointer");
 
       cleanup();
     });
 
-    it('should not call listener after cleanup', () => {
+    it("should not call listener after cleanup", () => {
       const listener = vi.fn();
       const cleanup = addModalityListener(listener);
 
       cleanup();
       listener.mockClear();
 
-      setInteractionModality('keyboard');
+      setInteractionModality("keyboard");
       expect(listener).not.toHaveBeenCalled();
     });
 
-    it('should support multiple listeners', () => {
+    it("should support multiple listeners", () => {
       const listener1 = vi.fn();
       const listener2 = vi.fn();
 
       const cleanup1 = addModalityListener(listener1);
       const cleanup2 = addModalityListener(listener2);
 
-      setInteractionModality('virtual');
+      setInteractionModality("virtual");
 
-      expect(listener1).toHaveBeenCalledWith('virtual');
-      expect(listener2).toHaveBeenCalledWith('virtual');
+      expect(listener1).toHaveBeenCalledWith("virtual");
+      expect(listener2).toHaveBeenCalledWith("virtual");
 
       cleanup1();
       cleanup2();
     });
   });
 
-  describe('createInteractionModality hook', () => {
-    it('should return modality accessor', () => {
+  describe("createInteractionModality hook", () => {
+    it("should return modality accessor", () => {
       createRoot((dispose) => {
         const { modality } = createInteractionModality();
 
         // The accessor should be a function
-        expect(typeof modality).toBe('function');
+        expect(typeof modality).toBe("function");
 
         // The modality can be null initially or have a value from previous tests
         const value = modality();
-        expect(
-          value === null || ['keyboard', 'pointer', 'virtual'].includes(value)
-        ).toBe(true);
+        expect(value === null || ["keyboard", "pointer", "virtual"].includes(value)).toBe(true);
 
         dispose();
       });
     });
 
-    it('should track modality via listener', () => {
+    it("should track modality via listener", () => {
       // Test that the listener mechanism works independently
       const listener = vi.fn();
       const cleanup = addModalityListener(listener);
 
-      setInteractionModality('keyboard');
-      expect(listener).toHaveBeenLastCalledWith('keyboard');
+      setInteractionModality("keyboard");
+      expect(listener).toHaveBeenLastCalledWith("keyboard");
 
-      setInteractionModality('pointer');
-      expect(listener).toHaveBeenLastCalledWith('pointer');
+      setInteractionModality("pointer");
+      expect(listener).toHaveBeenLastCalledWith("pointer");
 
       cleanup();
     });
   });
 
-  describe('keyboard events', () => {
+  describe("keyboard events", () => {
     beforeEach(() => {
       setupGlobalFocusListeners();
     });
 
-    it('should set modality to keyboard on keydown', () => {
-      const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true });
+    it("should set modality to keyboard on keydown", () => {
+      const event = new KeyboardEvent("keydown", { key: "Tab", bubbles: true });
       document.dispatchEvent(event);
-      expect(getInteractionModality()).toBe('keyboard');
+      expect(getInteractionModality()).toBe("keyboard");
     });
 
-    it('should set modality to keyboard on keyup', () => {
-      setInteractionModality('pointer'); // Reset first
-      const event = new KeyboardEvent('keyup', { key: 'Enter', bubbles: true });
+    it("should set modality to keyboard on keyup", () => {
+      setInteractionModality("pointer"); // Reset first
+      const event = new KeyboardEvent("keyup", { key: "Enter", bubbles: true });
       document.dispatchEvent(event);
-      expect(getInteractionModality()).toBe('keyboard');
+      expect(getInteractionModality()).toBe("keyboard");
     });
 
-    it('should ignore modifier key events', () => {
-      setInteractionModality('pointer'); // Set to pointer first
+    it("should ignore modifier key events", () => {
+      setInteractionModality("pointer"); // Set to pointer first
 
       // Control key should be ignored
-      const ctrlEvent = new KeyboardEvent('keydown', { key: 'Control', ctrlKey: true, bubbles: true });
+      const ctrlEvent = new KeyboardEvent("keydown", {
+        key: "Control",
+        ctrlKey: true,
+        bubbles: true,
+      });
       document.dispatchEvent(ctrlEvent);
-      expect(getInteractionModality()).toBe('pointer');
+      expect(getInteractionModality()).toBe("pointer");
 
       // Shift key should be ignored
-      const shiftEvent = new KeyboardEvent('keydown', { key: 'Shift', shiftKey: true, bubbles: true });
+      const shiftEvent = new KeyboardEvent("keydown", {
+        key: "Shift",
+        shiftKey: true,
+        bubbles: true,
+      });
       document.dispatchEvent(shiftEvent);
-      expect(getInteractionModality()).toBe('pointer');
+      expect(getInteractionModality()).toBe("pointer");
 
       // Meta key should be ignored
-      const metaEvent = new KeyboardEvent('keydown', { key: 'Meta', metaKey: true, bubbles: true });
+      const metaEvent = new KeyboardEvent("keydown", { key: "Meta", metaKey: true, bubbles: true });
       document.dispatchEvent(metaEvent);
-      expect(getInteractionModality()).toBe('pointer');
+      expect(getInteractionModality()).toBe("pointer");
     });
 
-    it('should ignore events with modifier keys held', () => {
-      setInteractionModality('pointer');
+    it("should ignore events with modifier keys held", () => {
+      setInteractionModality("pointer");
 
       // Event with ctrl held should be ignored
-      const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true });
+      const event = new KeyboardEvent("keydown", { key: "a", ctrlKey: true, bubbles: true });
       document.dispatchEvent(event);
-      expect(getInteractionModality()).toBe('pointer');
+      expect(getInteractionModality()).toBe("pointer");
     });
   });
 
-  describe('pointer events', () => {
+  describe("pointer events", () => {
     beforeEach(() => {
       setupGlobalFocusListeners();
     });
 
-    it('should set modality to pointer on pointerdown (mouse)', () => {
-      setInteractionModality('keyboard'); // Reset first
-      const event = new PointerEvent('pointerdown', { bubbles: true, pointerType: 'mouse' });
+    it("should set modality to pointer on pointerdown (mouse)", () => {
+      setInteractionModality("keyboard"); // Reset first
+      const event = new PointerEvent("pointerdown", { bubbles: true, pointerType: "mouse" });
       document.dispatchEvent(event);
-      expect(getInteractionModality()).toBe('pointer');
+      expect(getInteractionModality()).toBe("pointer");
     });
 
-    it('should set modality to pointer on pointerdown (pen)', () => {
-      setInteractionModality('keyboard'); // Reset first
-      const event = new PointerEvent('pointerdown', { bubbles: true, pointerType: 'pen' });
+    it("should set modality to pointer on pointerdown (pen)", () => {
+      setInteractionModality("keyboard"); // Reset first
+      const event = new PointerEvent("pointerdown", { bubbles: true, pointerType: "pen" });
       document.dispatchEvent(event);
-      expect(getInteractionModality()).toBe('pointer');
+      expect(getInteractionModality()).toBe("pointer");
     });
   });
 
-  describe('setupGlobalFocusListeners', () => {
-    it('should be idempotent', () => {
+  describe("setupGlobalFocusListeners", () => {
+    it("should be idempotent", () => {
       // Call multiple times, should not throw or add duplicate listeners
       setupGlobalFocusListeners();
       setupGlobalFocusListeners();
@@ -192,7 +200,7 @@ describe('createInteractionModality', () => {
       const listener = vi.fn();
       const cleanup = addModalityListener(listener);
 
-      setInteractionModality('keyboard');
+      setInteractionModality("keyboard");
 
       // Should only be called once
       expect(listener).toHaveBeenCalledTimes(1);

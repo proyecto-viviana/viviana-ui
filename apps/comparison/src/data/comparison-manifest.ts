@@ -5,11 +5,7 @@ import {
 } from "./react-spectrum-catalogue";
 
 export type ComparisonLayerId = "styled" | "components" | "headless" | "state";
-export type ComponentStatus =
-  | "parity"
-  | "composition"
-  | "solid-spectrum-native"
-  | "tracked-gap";
+export type ComponentStatus = "parity" | "composition" | "solid-spectrum-native" | "tracked-gap";
 export type ComparisonSlug = string;
 export type ParityStatus = "matched" | "partial" | "gap";
 export type DemoStatus = "live" | "tracked" | "missing" | "na";
@@ -37,12 +33,7 @@ export interface ComparisonEntry {
   layers: Record<ComparisonLayerId, LayerTrack>;
 }
 
-export const layerOrder: ComparisonLayerId[] = [
-  "styled",
-  "components",
-  "headless",
-  "state",
-];
+export const layerOrder: ComparisonLayerId[] = ["styled", "components", "headless", "state"];
 
 function layerTrack(
   label: string,
@@ -198,8 +189,7 @@ const entryOverrides: Record<string, ComparisonEntry> = {
       docsUrl: `${reactSpectrumCatalogueSource.docsBase}/Provider`,
     }),
     componentStatus: "tracked-gap",
-    summary:
-      "Root-scoped theming, inherited props, locale, direction, and overlay containment.",
+    summary: "Root-scoped theming, inherited props, locale, direction, and overlay containment.",
     parity: "partial",
     priority: "live",
     gapSummary: [
@@ -294,7 +284,8 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     category: "Components",
     summary:
       "Task-oriented ActionButton reference mounted with React Spectrum and the Solid Spectrum skin.",
-    styledSummary: "React Spectrum ActionButton vs Solid action button behavior with Spectrum-shaped styling.",
+    styledSummary:
+      "React Spectrum ActionButton vs Solid action button behavior with Spectrum-shaped styling.",
     styledNote:
       "React uses @react-spectrum/s2 ActionButton directly; Solid uses solidaria button behavior under the comparison Spectrum skin.",
   }),
@@ -303,9 +294,9 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     slug: "actionbuttongroup",
     title: "ActionButtonGroup",
     category: "Components",
-    summary:
-      "Related action collection with single selection and action tracking on both stacks.",
-    styledSummary: "React Spectrum ActionButtonGroup vs Solid action group behavior with the comparison Spectrum skin.",
+    summary: "Related action collection with single selection and action tracking on both stacks.",
+    styledSummary:
+      "React Spectrum ActionButtonGroup vs Solid action group behavior with the comparison Spectrum skin.",
     styledNote:
       "React uses @react-spectrum/s2 ActionButtonGroup and ActionButton directly; Solid uses solidaria collection behavior under the comparison Spectrum skin.",
   }),
@@ -314,8 +305,7 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     slug: "buttongroup",
     title: "ButtonGroup",
     category: "Components",
-    summary:
-      "Grouped related buttons mounted on both stacks for layout and overflow parity work.",
+    summary: "Grouped related buttons mounted on both stacks for layout and overflow parity work.",
     styledSummary: "React Spectrum ButtonGroup vs Solid grouped Spectrum-skinned buttons.",
     styledNote:
       "React uses @react-spectrum/s2 ButtonGroup directly; Solid uses the Solid Spectrum grouping wrapper with Spectrum-skinned buttons.",
@@ -325,9 +315,9 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     slug: "togglebutton",
     title: "ToggleButton",
     category: "Components",
-    summary:
-      "Selectable action button mounted on both stacks with controlled selected-state data.",
-    styledSummary: "React Spectrum ToggleButton vs Solid toggle button behavior with Spectrum-shaped styling.",
+    summary: "Selectable action button mounted on both stacks with controlled selected-state data.",
+    styledSummary:
+      "React Spectrum ToggleButton vs Solid toggle button behavior with Spectrum-shaped styling.",
     styledNote:
       "React uses @react-spectrum/s2 ToggleButton directly; Solid uses solidaria toggle behavior under the comparison Spectrum skin.",
   }),
@@ -381,15 +371,17 @@ const entryOverrides: Record<string, ComparisonEntry> = {
   },
 
   ...Object.fromEntries(
-    ([
-      ["textfield", "TextField"],
-      ["checkbox", "Checkbox"],
-      ["dialog", "Dialog"],
-      ["datepicker", "DatePicker"],
-      ["searchfield", "SearchField"],
-      ["tooltip", "Tooltip"],
-      ["toast", "Toast"],
-    ] as const).map(([slug, title]) => [
+    (
+      [
+        ["textfield", "TextField"],
+        ["checkbox", "Checkbox"],
+        ["dialog", "Dialog"],
+        ["datepicker", "DatePicker"],
+        ["searchfield", "SearchField"],
+        ["tooltip", "Tooltip"],
+        ["toast", "Toast"],
+      ] as const
+    ).map(([slug, title]) => [
       slug,
       {
         ...createGapEntry({
@@ -460,8 +452,7 @@ const legacyEntries: ComparisonEntry[] = [
     slug: "radio",
     title: "Radio",
     category: "Legacy",
-    summary:
-      "Legacy route retained while official React Spectrum RadioGroup coverage is added.",
+    summary: "Legacy route retained while official React Spectrum RadioGroup coverage is added.",
     gapSummary: [
       "React Spectrum S2 exposes RadioGroup as the catalogue component.",
       "Migrate the current demo into the official RadioGroup entry.",
@@ -472,8 +463,7 @@ const legacyEntries: ComparisonEntry[] = [
     slug: "table",
     title: "Table",
     category: "Legacy",
-    summary:
-      "Legacy route retained while official React Spectrum TableView coverage is added.",
+    summary: "Legacy route retained while official React Spectrum TableView coverage is added.",
     gapSummary: [
       "React Spectrum S2 exposes TableView as the catalogue component.",
       "Migrate collection fixtures into the official TableView entry.",
@@ -484,8 +474,7 @@ const legacyEntries: ComparisonEntry[] = [
     slug: "tree",
     title: "Tree",
     category: "Legacy",
-    summary:
-      "Legacy route retained while official React Spectrum TreeView coverage is added.",
+    summary: "Legacy route retained while official React Spectrum TreeView coverage is added.",
     gapSummary: [
       "React Spectrum S2 exposes TreeView as the catalogue component.",
       "Migrate hierarchical fixtures into the official TreeView entry.",
@@ -583,22 +572,16 @@ const officialEntries = reactSpectrumCatalogue.map((catalogueEntry) => {
   return entryOverrides[catalogueEntry.slug] ?? baseEntry;
 });
 
-export const comparisonEntries: ComparisonEntry[] = [
-  ...officialEntries,
-  ...legacyEntries,
-];
+export const comparisonEntries: ComparisonEntry[] = [...officialEntries, ...legacyEntries];
 
 export const officialComparisonEntries = comparisonEntries.filter(
   (entry) => entry.catalogueSource === "react-spectrum-s2",
 );
 
 export const missingOfficialComparisonEntries = officialComparisonEntries.filter(
-  (entry) =>
-    entry.layers.styled.react !== "live" || entry.layers.styled.solid !== "live",
+  (entry) => entry.layers.styled.react !== "live" || entry.layers.styled.solid !== "live",
 );
 
-export function getComparisonEntry(
-  slug: string,
-): ComparisonEntry | undefined {
+export function getComparisonEntry(slug: string): ComparisonEntry | undefined {
   return comparisonEntries.find((entry) => entry.slug === slug);
 }

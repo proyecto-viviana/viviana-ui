@@ -14,12 +14,12 @@ import {
   useContext,
   For,
   Show,
-} from 'solid-js';
+} from "solid-js";
 import {
   createDateField,
   createDateSegment,
   type AriaDateFieldProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createDateFieldState,
   type DateFieldState,
@@ -27,7 +27,7 @@ import {
   type DateSegment as DateSegmentType,
   type CalendarDate,
   type DateValue,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -36,7 +36,7 @@ import {
   useRenderProps,
   dataAttr,
   useIsHydrated,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -54,8 +54,9 @@ export interface DateFieldRenderProps {
 }
 
 export interface DateFieldProps<T extends DateValue = DateValue>
-  extends Omit<AriaDateFieldProps, 'id' | 'isDisabled' | 'isReadOnly' | 'isRequired'>,
-    Omit<DateFieldStateProps<T>, 'locale'>,
+  extends
+    Omit<AriaDateFieldProps, "id" | "isDisabled" | "isReadOnly" | "isRequired">,
+    Omit<DateFieldStateProps<T>, "locale">,
     SlotProps {
   /** The children of the component. */
   children?: JSX.Element | ((segment: DateSegmentType) => JSX.Element);
@@ -91,7 +92,7 @@ export interface DateSegmentRenderProps {
   /** Whether the segment is a placeholder. */
   isPlaceholder: boolean;
   /** The segment type. */
-  type: DateSegmentType['type'];
+  type: DateSegmentType["type"];
   /** The text to display. */
   text: string;
 }
@@ -127,7 +128,7 @@ export const DateFieldStateContext = createContext<DateFieldState<DateValue> | n
 export function useDateFieldContext(): DateFieldContextValue {
   const context = useContext(DateFieldContext);
   if (!context) {
-    throw new Error('DateField components must be used within a DateField');
+    throw new Error("DateField components must be used within a DateField");
   }
   return context;
 }
@@ -150,7 +151,7 @@ export function useDateFieldContext(): DateFieldContextValue {
  * ```
  */
 export function DateField<T extends DateValue = CalendarDate>(
-  props: DateFieldProps<T>
+  props: DateFieldProps<T>,
 ): JSX.Element {
   // Use hydration-safe pattern for client-only rendering
   const isHydrated = useIsHydrated();
@@ -158,7 +159,9 @@ export function DateField<T extends DateValue = CalendarDate>(
   return (
     <Show
       when={isHydrated()}
-      fallback={<div class="solidaria-DateField solidaria-DateField--placeholder" aria-hidden="true" />}
+      fallback={
+        <div class="solidaria-DateField solidaria-DateField--placeholder" aria-hidden="true" />
+      }
     >
       <DateFieldInner {...props} />
     </Show>
@@ -168,30 +171,28 @@ export function DateField<T extends DateValue = CalendarDate>(
 /**
  * Internal DateField component that renders after client mount.
  */
-function DateFieldInner<T extends DateValue = CalendarDate>(
-  props: DateFieldProps<T>
-): JSX.Element {
+function DateFieldInner<T extends DateValue = CalendarDate>(props: DateFieldProps<T>): JSX.Element {
   const [local, stateProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
+    ["children", "class", "style", "slot"],
     [
-      'value',
-      'defaultValue',
-      'onChange',
-      'minValue',
-      'maxValue',
-      'isDisabled',
-      'isReadOnly',
-      'isRequired',
-      'locale',
-      'granularity',
-      'hourCycle',
-      'hideTimeZone',
-      'placeholderValue',
-      'validationState',
-      'description',
-      'errorMessage',
-    ]
+      "value",
+      "defaultValue",
+      "onChange",
+      "minValue",
+      "maxValue",
+      "isDisabled",
+      "isReadOnly",
+      "isRequired",
+      "locale",
+      "granularity",
+      "hourCycle",
+      "hideTimeZone",
+      "placeholderValue",
+      "validationState",
+      "description",
+      "errorMessage",
+    ],
   );
 
   const [fieldRef, setFieldRef] = createSignal<HTMLDivElement | null>(null);
@@ -207,7 +208,7 @@ function DateFieldInner<T extends DateValue = CalendarDate>(
       errorMessage: stateProps.errorMessage,
     }),
     state as unknown as DateFieldState<DateValue>,
-    fieldRef
+    fieldRef,
   );
 
   // Render props values
@@ -223,9 +224,9 @@ function DateFieldInner<T extends DateValue = CalendarDate>(
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-DateField',
+      defaultClassName: "solidaria-DateField",
     },
-    renderValues
+    renderValues,
   );
 
   return (
@@ -281,9 +282,9 @@ export function DateInput(props: DateInputProps): JSX.Element {
     {
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-DateInput',
+      defaultClassName: "solidaria-DateInput",
     },
-    renderValues
+    renderValues,
   );
 
   return (
@@ -296,9 +297,7 @@ export function DateInput(props: DateInputProps): JSX.Element {
       onFocusIn={() => setIsFocused(true)}
       onFocusOut={() => setIsFocused(false)}
     >
-      <For each={state.segments()}>
-        {(segment) => props.children?.(segment)}
-      </For>
+      <For each={state.segments()}>{(segment) => props.children?.(segment)}</For>
     </div>
   );
 }
@@ -315,11 +314,7 @@ export function DateSegment(props: DateSegmentProps): JSX.Element {
   const [segmentRef, setSegmentRef] = createSignal<HTMLElement | null>(null);
 
   // Create segment ARIA props
-  const segmentAria = createDateSegment(
-    { segment: props.segment },
-    state,
-    segmentRef
-  );
+  const segmentAria = createDateSegment({ segment: props.segment }, state, segmentRef);
 
   // Render props values
   const renderValues = createMemo<DateSegmentRenderProps>(() => ({
@@ -336,14 +331,14 @@ export function DateSegment(props: DateSegmentProps): JSX.Element {
       children: props.children,
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-DateSegment',
+      defaultClassName: "solidaria-DateSegment",
     },
-    renderValues
+    renderValues,
   );
 
   // Determine children content - avoid Show for SSR hydration compatibility
   const getChildren = () => {
-    if (typeof props.children === 'function') {
+    if (typeof props.children === "function") {
       return renderProps.renderChildren();
     }
     return segmentAria.text;

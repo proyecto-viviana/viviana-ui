@@ -2,8 +2,8 @@
  * Tests for collection state management
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot } from 'solid-js';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot } from "solid-js";
 import {
   ListCollection,
   createListCollection,
@@ -13,19 +13,19 @@ import {
   useMenuTriggerState,
   createMenuState,
   createMenuTriggerState,
-} from '../src';
+} from "../src";
 
 // ============================================
 // ListCollection tests
 // ============================================
-describe('ListCollection', () => {
+describe("ListCollection", () => {
   const items = [
-    { key: 'a', label: 'Apple' },
-    { key: 'b', label: 'Banana' },
-    { key: 'c', label: 'Cherry' },
+    { key: "a", label: "Apple" },
+    { key: "b", label: "Banana" },
+    { key: "c", label: "Cherry" },
   ];
 
-  it('creates a collection from items', () => {
+  it("creates a collection from items", () => {
     const collection = createListCollection(items, {
       getKey: (item) => item.key,
       getTextValue: (item) => item.label,
@@ -34,41 +34,41 @@ describe('ListCollection', () => {
     expect(collection.size).toBe(3);
   });
 
-  it('can get item by key', () => {
+  it("can get item by key", () => {
     const collection = createListCollection(items, {
       getKey: (item) => item.key,
       getTextValue: (item) => item.label,
     });
 
-    const item = collection.getItem('b');
+    const item = collection.getItem("b");
     expect(item).not.toBeNull();
-    expect(item?.value).toEqual({ key: 'b', label: 'Banana' });
+    expect(item?.value).toEqual({ key: "b", label: "Banana" });
   });
 
-  it('can get first and last keys', () => {
+  it("can get first and last keys", () => {
     const collection = createListCollection(items, {
       getKey: (item) => item.key,
     });
 
-    expect(collection.getFirstKey()).toBe('a');
-    expect(collection.getLastKey()).toBe('c');
+    expect(collection.getFirstKey()).toBe("a");
+    expect(collection.getLastKey()).toBe("c");
   });
 
-  it('can get key before and after', () => {
+  it("can get key before and after", () => {
     const collection = createListCollection(items, {
       getKey: (item) => item.key,
     });
 
-    expect(collection.getKeyAfter('a')).toBe('b');
-    expect(collection.getKeyAfter('b')).toBe('c');
-    expect(collection.getKeyAfter('c')).toBeNull();
+    expect(collection.getKeyAfter("a")).toBe("b");
+    expect(collection.getKeyAfter("b")).toBe("c");
+    expect(collection.getKeyAfter("c")).toBeNull();
 
-    expect(collection.getKeyBefore('c')).toBe('b');
-    expect(collection.getKeyBefore('b')).toBe('a');
-    expect(collection.getKeyBefore('a')).toBeNull();
+    expect(collection.getKeyBefore("c")).toBe("b");
+    expect(collection.getKeyBefore("b")).toBe("a");
+    expect(collection.getKeyBefore("a")).toBeNull();
   });
 
-  it('can iterate over items', () => {
+  it("can iterate over items", () => {
     const collection = createListCollection(items, {
       getKey: (item) => item.key,
     });
@@ -78,21 +78,21 @@ describe('ListCollection', () => {
       keys.push(item.key as string);
     }
 
-    expect(keys).toEqual(['a', 'b', 'c']);
+    expect(keys).toEqual(["a", "b", "c"]);
   });
 
-  it('can get text value', () => {
+  it("can get text value", () => {
     const collection = createListCollection(items, {
       getKey: (item) => item.key,
       getTextValue: (item) => item.label,
     });
 
-    expect(collection.getTextValue('a')).toBe('Apple');
-    expect(collection.getTextValue('b')).toBe('Banana');
+    expect(collection.getTextValue("a")).toBe("Apple");
+    expect(collection.getTextValue("b")).toBe("Banana");
   });
 
-  it('uses index as default key', () => {
-    const simpleItems = ['Apple', 'Banana', 'Cherry'];
+  it("uses index as default key", () => {
+    const simpleItems = ["Apple", "Banana", "Cherry"];
     const collection = createListCollection(simpleItems);
 
     expect(collection.getFirstKey()).toBe(0);
@@ -103,11 +103,11 @@ describe('ListCollection', () => {
 // ============================================
 // createSelectionState tests
 // ============================================
-describe('createSelectionState', () => {
-  it('starts with no selection by default', () => {
+describe("createSelectionState", () => {
+  it("starts with no selection by default", () => {
     createRoot((dispose) => {
       const state = createSelectionState({
-        selectionMode: 'single',
+        selectionMode: "single",
       });
 
       expect(state.selectedKeys().size).toBe(0);
@@ -115,73 +115,73 @@ describe('createSelectionState', () => {
     });
   });
 
-  it('supports default selected keys', () => {
+  it("supports default selected keys", () => {
     createRoot((dispose) => {
       const state = createSelectionState({
-        selectionMode: 'single',
-        defaultSelectedKeys: ['a'],
+        selectionMode: "single",
+        defaultSelectedKeys: ["a"],
       });
 
-      expect(state.selectedKeys().has('a')).toBe(true);
+      expect(state.selectedKeys().has("a")).toBe(true);
       dispose();
     });
   });
 
-  it('can toggle selection in single mode', () => {
+  it("can toggle selection in single mode", () => {
     createRoot((dispose) => {
       const state = createSelectionState({
-        selectionMode: 'single',
+        selectionMode: "single",
       });
 
-      state.toggleSelection('a');
-      expect(state.selectedKeys().has('a')).toBe(true);
+      state.toggleSelection("a");
+      expect(state.selectedKeys().has("a")).toBe(true);
 
-      state.toggleSelection('a');
-      expect(state.selectedKeys().has('a')).toBe(false);
+      state.toggleSelection("a");
+      expect(state.selectedKeys().has("a")).toBe(false);
       dispose();
     });
   });
 
-  it('replaces selection in single mode', () => {
+  it("replaces selection in single mode", () => {
     createRoot((dispose) => {
       const state = createSelectionState({
-        selectionMode: 'single',
+        selectionMode: "single",
       });
 
-      state.replaceSelection('a');
-      expect(state.selectedKeys().has('a')).toBe(true);
+      state.replaceSelection("a");
+      expect(state.selectedKeys().has("a")).toBe(true);
 
-      state.replaceSelection('b');
-      expect(state.selectedKeys().has('a')).toBe(false);
-      expect(state.selectedKeys().has('b')).toBe(true);
+      state.replaceSelection("b");
+      expect(state.selectedKeys().has("a")).toBe(false);
+      expect(state.selectedKeys().has("b")).toBe(true);
       dispose();
     });
   });
 
-  it('can select multiple in multiple mode', () => {
+  it("can select multiple in multiple mode", () => {
     createRoot((dispose) => {
       const state = createSelectionState({
-        selectionMode: 'multiple',
+        selectionMode: "multiple",
       });
 
-      state.toggleSelection('a');
-      state.toggleSelection('b');
+      state.toggleSelection("a");
+      state.toggleSelection("b");
 
-      expect(state.selectedKeys().has('a')).toBe(true);
-      expect(state.selectedKeys().has('b')).toBe(true);
+      expect(state.selectedKeys().has("a")).toBe(true);
+      expect(state.selectedKeys().has("b")).toBe(true);
       expect(state.selectedKeys().size).toBe(2);
       dispose();
     });
   });
 
-  it('can clear selection', () => {
+  it("can clear selection", () => {
     createRoot((dispose) => {
       const state = createSelectionState({
-        selectionMode: 'multiple',
+        selectionMode: "multiple",
       });
 
-      state.toggleSelection('a');
-      state.toggleSelection('b');
+      state.toggleSelection("a");
+      state.toggleSelection("b");
       state.clearSelection();
 
       expect(state.selectedKeys().size).toBe(0);
@@ -189,47 +189,47 @@ describe('createSelectionState', () => {
     });
   });
 
-  it('respects disallowEmptySelection', () => {
+  it("respects disallowEmptySelection", () => {
     createRoot((dispose) => {
       const state = createSelectionState({
-        selectionMode: 'single',
+        selectionMode: "single",
         disallowEmptySelection: true,
-        defaultSelectedKeys: ['a'],
+        defaultSelectedKeys: ["a"],
       });
 
-      state.toggleSelection('a');
+      state.toggleSelection("a");
       // Should not deselect when disallowEmptySelection is true
-      expect(state.selectedKeys().has('a')).toBe(true);
+      expect(state.selectedKeys().has("a")).toBe(true);
       dispose();
     });
   });
 
-  it('calls onSelectionChange', () => {
+  it("calls onSelectionChange", () => {
     createRoot((dispose) => {
       const onSelectionChange = vi.fn();
       const state = createSelectionState({
-        selectionMode: 'single',
+        selectionMode: "single",
         onSelectionChange,
       });
 
-      state.toggleSelection('a');
+      state.toggleSelection("a");
       expect(onSelectionChange).toHaveBeenCalled();
       dispose();
     });
   });
 });
 
-describe('selection module compatibility aliases', () => {
-  it('useMultipleSelectionState maps to createSelectionState behavior', () => {
+describe("selection module compatibility aliases", () => {
+  it("useMultipleSelectionState maps to createSelectionState behavior", () => {
     createRoot((dispose) => {
       const state = useMultipleSelectionState({
-        selectionMode: 'multiple',
-        defaultSelectedKeys: ['a'],
+        selectionMode: "multiple",
+        defaultSelectedKeys: ["a"],
       });
 
-      expect(state.selectedKeys().has('a')).toBe(true);
-      state.toggleSelection('b');
-      expect(state.selectedKeys().has('b')).toBe(true);
+      expect(state.selectedKeys().has("a")).toBe(true);
+      state.toggleSelection("b");
+      expect(state.selectedKeys().has("b")).toBe(true);
       dispose();
     });
   });
@@ -238,19 +238,19 @@ describe('selection module compatibility aliases', () => {
 // ============================================
 // createListState tests
 // ============================================
-describe('createListState', () => {
+describe("createListState", () => {
   const items = [
-    { key: 'a', label: 'Apple' },
-    { key: 'b', label: 'Banana' },
-    { key: 'c', label: 'Cherry' },
+    { key: "a", label: "Apple" },
+    { key: "b", label: "Banana" },
+    { key: "c", label: "Cherry" },
   ];
 
-  it('creates a list state with collection', () => {
+  it("creates a list state with collection", () => {
     createRoot((dispose) => {
       const state = createListState({
         items,
         getKey: (item) => item.key,
-        selectionMode: 'single',
+        selectionMode: "single",
       });
 
       expect(state.collection().size).toBe(3);
@@ -258,62 +258,62 @@ describe('createListState', () => {
     });
   });
 
-  it('tracks focused key', () => {
+  it("tracks focused key", () => {
     createRoot((dispose) => {
       const state = createListState({
         items,
         getKey: (item) => item.key,
-        selectionMode: 'single',
+        selectionMode: "single",
       });
 
       expect(state.focusedKey()).toBeNull();
 
-      state.setFocusedKey('b');
-      expect(state.focusedKey()).toBe('b');
+      state.setFocusedKey("b");
+      expect(state.focusedKey()).toBe("b");
       dispose();
     });
   });
 
-  it('can check if key is selected', () => {
+  it("can check if key is selected", () => {
     createRoot((dispose) => {
       const state = createListState({
         items,
         getKey: (item) => item.key,
-        selectionMode: 'single',
-        defaultSelectedKeys: ['a'],
+        selectionMode: "single",
+        defaultSelectedKeys: ["a"],
       });
 
-      expect(state.isSelected('a')).toBe(true);
-      expect(state.isSelected('b')).toBe(false);
+      expect(state.isSelected("a")).toBe(true);
+      expect(state.isSelected("b")).toBe(false);
       dispose();
     });
   });
 
-  it('can check if key is disabled', () => {
+  it("can check if key is disabled", () => {
     createRoot((dispose) => {
       const state = createListState({
         items,
         getKey: (item) => item.key,
-        selectionMode: 'single',
-        disabledKeys: ['b'],
+        selectionMode: "single",
+        disabledKeys: ["b"],
       });
 
-      expect(state.isDisabled('a')).toBe(false);
-      expect(state.isDisabled('b')).toBe(true);
+      expect(state.isDisabled("a")).toBe(false);
+      expect(state.isDisabled("b")).toBe(true);
       dispose();
     });
   });
 
-  it('can select items', () => {
+  it("can select items", () => {
     createRoot((dispose) => {
       const state = createListState({
         items,
         getKey: (item) => item.key,
-        selectionMode: 'single',
+        selectionMode: "single",
       });
 
-      state.select('a');
-      expect(state.isSelected('a')).toBe(true);
+      state.select("a");
+      expect(state.isSelected("a")).toBe(true);
       dispose();
     });
   });
@@ -322,14 +322,14 @@ describe('createListState', () => {
 // ============================================
 // createMenuState tests
 // ============================================
-describe('createMenuState', () => {
+describe("createMenuState", () => {
   const items = [
-    { key: 'copy', label: 'Copy' },
-    { key: 'paste', label: 'Paste' },
-    { key: 'delete', label: 'Delete' },
+    { key: "copy", label: "Copy" },
+    { key: "paste", label: "Paste" },
+    { key: "delete", label: "Delete" },
   ];
 
-  it('creates menu state', () => {
+  it("creates menu state", () => {
     createRoot((dispose) => {
       const state = createMenuState({
         items,
@@ -341,7 +341,7 @@ describe('createMenuState', () => {
     });
   });
 
-  it('calls onClose when close is called', () => {
+  it("calls onClose when close is called", () => {
     createRoot((dispose) => {
       const onClose = vi.fn();
       const state = createMenuState({
@@ -360,8 +360,8 @@ describe('createMenuState', () => {
 // ============================================
 // createMenuTriggerState tests
 // ============================================
-describe('createMenuTriggerState', () => {
-  it('starts closed by default', () => {
+describe("createMenuTriggerState", () => {
+  it("starts closed by default", () => {
     createRoot((dispose) => {
       const state = createMenuTriggerState();
       expect(state.isOpen()).toBe(false);
@@ -369,7 +369,7 @@ describe('createMenuTriggerState', () => {
     });
   });
 
-  it('can open and close', () => {
+  it("can open and close", () => {
     createRoot((dispose) => {
       const state = createMenuTriggerState();
 
@@ -382,7 +382,7 @@ describe('createMenuTriggerState', () => {
     });
   });
 
-  it('can toggle', () => {
+  it("can toggle", () => {
     createRoot((dispose) => {
       const state = createMenuTriggerState();
 
@@ -395,7 +395,7 @@ describe('createMenuTriggerState', () => {
     });
   });
 
-  it('calls onOpenChange', () => {
+  it("calls onOpenChange", () => {
     createRoot((dispose) => {
       const onOpenChange = vi.fn();
       const state = createMenuTriggerState({ onOpenChange });
@@ -410,8 +410,8 @@ describe('createMenuTriggerState', () => {
   });
 });
 
-describe('menu module compatibility aliases', () => {
-  it('useMenuTriggerState maps to menu trigger state behavior', () => {
+describe("menu module compatibility aliases", () => {
+  it("useMenuTriggerState maps to menu trigger state behavior", () => {
     createRoot((dispose) => {
       const state = useMenuTriggerState();
       expect(state.isOpen()).toBe(false);

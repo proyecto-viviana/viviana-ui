@@ -7,7 +7,7 @@
 
 export interface Announcement {
   text: string;
-  politeness: 'assertive' | 'polite' | 'off';
+  politeness: "assertive" | "polite" | "off";
   role: string | null;
   timestamp: number;
 }
@@ -20,44 +20,38 @@ export interface LiveRegionMonitor {
   /** Clear recorded announcements */
   clear(): void;
   /** Wait for an announcement matching `text` (substring or regex) */
-  waitForAnnouncement(
-    text: string | RegExp,
-    options?: { timeout?: number },
-  ): Promise<Announcement>;
+  waitForAnnouncement(text: string | RegExp, options?: { timeout?: number }): Promise<Announcement>;
 }
 
 const LIVE_REGION_SELECTOR = [
-  '[aria-live]',
+  "[aria-live]",
   '[role="alert"]',
   '[role="status"]',
   '[role="log"]',
-].join(',');
+].join(",");
 
-function getPoliteness(element: Element): 'assertive' | 'polite' | 'off' {
-  const ariaLive = element.getAttribute('aria-live');
-  if (ariaLive === 'assertive') return 'assertive';
-  if (ariaLive === 'polite') return 'polite';
-  if (ariaLive === 'off') return 'off';
+function getPoliteness(element: Element): "assertive" | "polite" | "off" {
+  const ariaLive = element.getAttribute("aria-live");
+  if (ariaLive === "assertive") return "assertive";
+  if (ariaLive === "polite") return "polite";
+  if (ariaLive === "off") return "off";
 
   // Implicit live region roles
-  const role = element.getAttribute('role');
-  if (role === 'alert') return 'assertive';
-  if (role === 'status' || role === 'log') return 'polite';
+  const role = element.getAttribute("role");
+  if (role === "alert") return "assertive";
+  if (role === "status" || role === "log") return "polite";
 
-  return 'off';
+  return "off";
 }
 
-function recordAnnouncement(
-  element: Element,
-  announcements: Announcement[],
-): void {
-  const text = (element.textContent || '').trim();
+function recordAnnouncement(element: Element, announcements: Announcement[]): void {
+  const text = (element.textContent || "").trim();
   if (!text) return;
 
   announcements.push({
     text,
     politeness: getPoliteness(element),
-    role: element.getAttribute('role'),
+    role: element.getAttribute("role"),
     timestamp: Date.now(),
   });
 }
@@ -74,17 +68,14 @@ function recordAnnouncement(
  * monitor.stop();
  * ```
  */
-export function createLiveRegionMonitor(
-  container: Element = document.body,
-): LiveRegionMonitor {
+export function createLiveRegionMonitor(container: Element = document.body): LiveRegionMonitor {
   const announcements: Announcement[] = [];
 
   // Record content changes in existing live regions
   const contentObserver = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      const target = mutation.target instanceof Element
-        ? mutation.target
-        : mutation.target.parentElement;
+      const target =
+        mutation.target instanceof Element ? mutation.target : mutation.target.parentElement;
 
       if (!target) continue;
 
@@ -146,18 +137,18 @@ export function createLiveRegionMonitor(
 
       // Check existing announcements first
       const existing = announcements.find((a) =>
-        typeof text === 'string' ? a.text.includes(text) : text.test(a.text),
+        typeof text === "string" ? a.text.includes(text) : text.test(a.text),
       );
       if (existing) return Promise.resolve(existing);
 
       return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           cleanup();
-          const recorded = announcements.map((a) => `"${a.text}"`).join(', ');
+          const recorded = announcements.map((a) => `"${a.text}"`).join(", ");
           reject(
             new Error(
               `No announcement matching ${text} within ${timeout}ms. ` +
-                `Recorded: [${recorded || 'none'}]`,
+                `Recorded: [${recorded || "none"}]`,
             ),
           );
         }, timeout);
@@ -165,9 +156,7 @@ export function createLiveRegionMonitor(
         // Poll the announcements array
         const intervalId = setInterval(() => {
           const match = announcements.find((a) =>
-            typeof text === 'string'
-              ? a.text.includes(text)
-              : text.test(a.text),
+            typeof text === "string" ? a.text.includes(text) : text.test(a.text),
           );
           if (match) {
             cleanup();
@@ -195,7 +184,7 @@ export function createLiveRegionMonitor(
 export async function expectAnnouncement(
   monitor: LiveRegionMonitor,
   text: string | RegExp,
-  options?: { timeout?: number; politeness?: 'assertive' | 'polite' },
+  options?: { timeout?: number; politeness?: "assertive" | "polite" },
 ): Promise<void> {
   const announcement = await monitor.waitForAnnouncement(text, options);
   if (options?.politeness && announcement.politeness !== options.politeness) {

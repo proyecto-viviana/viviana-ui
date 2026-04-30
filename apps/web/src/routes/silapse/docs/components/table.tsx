@@ -18,7 +18,11 @@ import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components
 const ClientOnly: FlowComponent<{ fallback?: JSX.Element }> = (props) => {
   const [ready, setReady] = createSignal(false);
   if (!isServer) onMount(() => setReady(true));
-  return <Show when={ready()} fallback={props.fallback}>{props.children}</Show>;
+  return (
+    <Show when={ready()} fallback={props.fallback}>
+      {props.children}
+    </Show>
+  );
 };
 
 type UserRow = {
@@ -41,10 +45,7 @@ const baseColumns = [
   { key: "role", name: "Role" },
 ];
 
-const selectableColumns = [
-  { key: "selection", name: "Selection" },
-  ...baseColumns,
-];
+const selectableColumns = [{ key: "selection", name: "Selection" }, ...baseColumns];
 
 const sortableColumns = [
   { key: "name", name: "Name", allowsSorting: true },
@@ -93,7 +94,12 @@ function TablePage() {
 </Table>`}
       >
         <ClientOnly fallback={<p class="text-sm text-bg-400">Loading table...</p>}>
-          <Table items={sampleData} columns={baseColumns} aria-label="Users table" getKey={(user) => user.id}>
+          <Table
+            items={sampleData}
+            columns={baseColumns}
+            aria-label="Users table"
+            getKey={(user) => user.id}
+          >
             <TableHeader>
               <TableColumn id="name">Name</TableColumn>
               <TableColumn id="email">Email</TableColumn>

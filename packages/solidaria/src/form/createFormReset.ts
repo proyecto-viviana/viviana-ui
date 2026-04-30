@@ -5,7 +5,7 @@
  * Port of @react-aria/utils useFormReset.
  */
 
-import { type Accessor, createEffect, onCleanup } from 'solid-js';
+import { type Accessor, createEffect, onCleanup } from "solid-js";
 
 export interface FormResetOptions<T> {
   /** The default value to reset to. */
@@ -29,7 +29,7 @@ export interface FormResetOptions<T> {
 export function createFormReset<T>(
   ref: Accessor<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | undefined>,
   defaultValue: T,
-  onReset: (value: T) => void
+  onReset: (value: T) => void,
 ): void {
   createEffect(() => {
     const element = ref();
@@ -42,10 +42,10 @@ export function createFormReset<T>(
       onReset(defaultValue);
     };
 
-    form.addEventListener('reset', handleReset);
+    form.addEventListener("reset", handleReset);
 
     onCleanup(() => {
-      form.removeEventListener('reset', handleReset);
+      form.removeEventListener("reset", handleReset);
     });
   });
 }

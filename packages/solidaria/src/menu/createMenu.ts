@@ -4,16 +4,16 @@
  * Based on @react-aria/menu useMenu.
  */
 
-import { createEffect, onCleanup, type JSX, type Accessor } from 'solid-js';
-import { createFocusWithin } from '../interactions/createFocusWithin';
-import { createLabel } from '../label/createLabel';
-import { createTypeSelect } from '../selection/createTypeSelect';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { mergeProps } from '../utils/mergeProps';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { isDevEnv } from '../utils/env';
-import type { MenuState, Key, Collection } from '@proyecto-viviana/solid-stately';
+import { createEffect, onCleanup, type JSX, type Accessor } from "solid-js";
+import { createFocusWithin } from "../interactions/createFocusWithin";
+import { createLabel } from "../label/createLabel";
+import { createTypeSelect } from "../selection/createTypeSelect";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { mergeProps } from "../utils/mergeProps";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { isDevEnv } from "../utils/env";
+import type { MenuState, Key, Collection } from "@proyecto-viviana/solid-stately";
 
 /**
  * Default number of items to skip for page up/down when DOM measurement is not available.
@@ -26,17 +26,17 @@ const DEFAULT_PAGE_SIZE = 10;
 function findNextNonDisabledKey<T>(
   collection: Collection<T>,
   currentKey: Key | null,
-  direction: 'next' | 'prev',
+  direction: "next" | "prev",
   isDisabled: (key: Key) => boolean,
-  wrap: boolean
+  wrap: boolean,
 ): Key | null {
-  const getNextKey = direction === 'next'
-    ? (key: Key) => collection.getKeyAfter(key)
-    : (key: Key) => collection.getKeyBefore(key);
+  const getNextKey =
+    direction === "next"
+      ? (key: Key) => collection.getKeyAfter(key)
+      : (key: Key) => collection.getKeyBefore(key);
 
-  const getFirstKey = direction === 'next'
-    ? () => collection.getFirstKey()
-    : () => collection.getLastKey();
+  const getFirstKey =
+    direction === "next" ? () => collection.getFirstKey() : () => collection.getLastKey();
 
   let nextKey = currentKey != null ? getNextKey(currentKey) : getFirstKey();
 
@@ -65,11 +65,11 @@ export interface AriaMenuProps {
   /** The label for the menu. */
   label?: JSX.Element;
   /** An accessible label for the menu when no visible label is provided. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The ID of an element that labels the menu. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The ID of an element that describes the menu. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Handler called when focus moves into the menu. */
   onFocus?: (e: FocusEvent) => void;
   /** Handler called when focus moves out of the menu. */
@@ -83,7 +83,7 @@ export interface AriaMenuProps {
   /** Whether focus should automatically wrap around. */
   shouldFocusWrap?: boolean;
   /** Whether to auto-focus the first item when the menu opens. */
-  autoFocus?: boolean | 'first' | 'last';
+  autoFocus?: boolean | "first" | "last";
   /** Whether type-to-select is disabled. @default false */
   disallowTypeAhead?: boolean;
 }
@@ -116,7 +116,7 @@ export function getMenuData(state: MenuState): MenuData | undefined {
 export function createMenu<T>(
   props: MaybeAccessor<AriaMenuProps>,
   state: MenuState<T>,
-  ref?: Accessor<HTMLElement | null>
+  ref?: Accessor<HTMLElement | null>,
 ): MenuAria {
   const getProps = () => access(props);
   const id = createId(getProps().id);
@@ -124,15 +124,16 @@ export function createMenu<T>(
   // Development-time warning for missing accessibility labels
   if (isDevEnv()) {
     const p = getProps();
-    if (!p.label && !p['aria-label'] && !p['aria-labelledby']) {
+    if (!p.label && !p["aria-label"] && !p["aria-labelledby"]) {
       console.warn(
-        '[solidaria] A Menu requires an aria-label or aria-labelledby attribute for accessibility.'
+        "[solidaria] A Menu requires an aria-label or aria-labelledby attribute for accessibility.",
       );
     }
   }
 
   // Filter DOM props
-  const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
+  const domProps = () =>
+    filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
   const updateSharedData = () => {
     const p = getProps();
@@ -174,13 +175,13 @@ export function createMenu<T>(
     get label() {
       return getProps().label;
     },
-    get 'aria-label'() {
-      return getProps()['aria-label'];
+    get "aria-label"() {
+      return getProps()["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return getProps()['aria-labelledby'];
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
     },
-    labelElementType: 'span',
+    labelElementType: "span",
   });
 
   // Type-to-select
@@ -206,25 +207,25 @@ export function createMenu<T>(
     const isDisabled = (key: Key) => state.isDisabled(key);
 
     switch (e.key) {
-      case 'ArrowDown': {
+      case "ArrowDown": {
         e.preventDefault();
         const currentKey = state.focusedKey();
-        const nextKey = findNextNonDisabledKey(collection, currentKey, 'next', isDisabled, wrap);
+        const nextKey = findNextNonDisabledKey(collection, currentKey, "next", isDisabled, wrap);
         if (nextKey != null) {
           state.setFocusedKey(nextKey);
         }
         break;
       }
-      case 'ArrowUp': {
+      case "ArrowUp": {
         e.preventDefault();
         const currentKey = state.focusedKey();
-        const prevKey = findNextNonDisabledKey(collection, currentKey, 'prev', isDisabled, wrap);
+        const prevKey = findNextNonDisabledKey(collection, currentKey, "prev", isDisabled, wrap);
         if (prevKey != null) {
           state.setFocusedKey(prevKey);
         }
         break;
       }
-      case 'Home': {
+      case "Home": {
         e.preventDefault();
         // Find first non-disabled key
         let firstKey = collection.getFirstKey();
@@ -236,7 +237,7 @@ export function createMenu<T>(
         }
         break;
       }
-      case 'End': {
+      case "End": {
         e.preventDefault();
         // Find last non-disabled key
         let lastKey = collection.getLastKey();
@@ -248,8 +249,8 @@ export function createMenu<T>(
         }
         break;
       }
-      case ' ':
-      case 'Enter': {
+      case " ":
+      case "Enter": {
         e.preventDefault();
         const focusedKey = state.focusedKey();
         // Don't activate disabled items
@@ -259,12 +260,12 @@ export function createMenu<T>(
         }
         break;
       }
-      case 'Escape': {
+      case "Escape": {
         e.preventDefault();
         p.onClose?.();
         break;
       }
-      case 'PageDown': {
+      case "PageDown": {
         e.preventDefault();
         const currentKey = state.focusedKey();
         const el = ref?.();
@@ -288,7 +289,13 @@ export function createMenu<T>(
               targetKey = nextKey;
             } else {
               // Skip over disabled items without counting them
-              const afterDisabled = findNextNonDisabledKey(collection, nextKey, 'next', isDisabled, false);
+              const afterDisabled = findNextNonDisabledKey(
+                collection,
+                nextKey,
+                "next",
+                isDisabled,
+                false,
+              );
               if (afterDisabled != null) {
                 targetKey = afterDisabled;
               } else {
@@ -306,7 +313,13 @@ export function createMenu<T>(
           let targetKey = currentKey;
 
           while (count > 0 && targetKey != null) {
-            const nextKey = findNextNonDisabledKey(collection, targetKey, 'next', isDisabled, false);
+            const nextKey = findNextNonDisabledKey(
+              collection,
+              targetKey,
+              "next",
+              isDisabled,
+              false,
+            );
             if (nextKey == null) break;
             targetKey = nextKey;
             count--;
@@ -318,7 +331,7 @@ export function createMenu<T>(
         }
         break;
       }
-      case 'PageUp': {
+      case "PageUp": {
         e.preventDefault();
         const currentKey = state.focusedKey();
         const el = ref?.();
@@ -342,7 +355,13 @@ export function createMenu<T>(
               targetKey = prevKey;
             } else {
               // Skip over disabled items without counting them
-              const beforeDisabled = findNextNonDisabledKey(collection, prevKey, 'prev', isDisabled, false);
+              const beforeDisabled = findNextNonDisabledKey(
+                collection,
+                prevKey,
+                "prev",
+                isDisabled,
+                false,
+              );
               if (beforeDisabled != null) {
                 targetKey = beforeDisabled;
               } else {
@@ -360,7 +379,13 @@ export function createMenu<T>(
           let targetKey = currentKey;
 
           while (count > 0 && targetKey != null) {
-            const prevKey = findNextNonDisabledKey(collection, targetKey, 'prev', isDisabled, false);
+            const prevKey = findNextNonDisabledKey(
+              collection,
+              targetKey,
+              "prev",
+              isDisabled,
+              false,
+            );
             if (prevKey == null) break;
             targetKey = prevKey;
             count--;
@@ -387,16 +412,19 @@ export function createMenu<T>(
         focusWithinProps as Record<string, unknown>,
         fieldProps as Record<string, unknown>,
         {
-          role: 'menu',
+          role: "menu",
           tabIndex: p.isDisabled ? undefined : 0,
-          'aria-disabled': p.isDisabled || undefined,
+          "aria-disabled": p.isDisabled || undefined,
           onKeyDown,
-        } as Record<string, unknown>
+        } as Record<string, unknown>,
       );
 
       // Add type-select props if enabled
       if (!p.disallowTypeAhead) {
-        return mergeProps(baseProps, typeSelectProps as Record<string, unknown>) as JSX.HTMLAttributes<HTMLElement>;
+        return mergeProps(
+          baseProps,
+          typeSelectProps as Record<string, unknown>,
+        ) as JSX.HTMLAttributes<HTMLElement>;
       }
 
       return baseProps as JSX.HTMLAttributes<HTMLElement>;

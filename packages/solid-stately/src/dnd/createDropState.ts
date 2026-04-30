@@ -4,7 +4,7 @@
  * Provides reactive state for drop target operations.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from "solid-js";
 import type {
   DropItem,
   DropEnterEvent,
@@ -14,16 +14,13 @@ import type {
   DropEvent,
   DropOperation,
   DragTypes,
-} from './types';
+} from "./types";
 
 export interface DropStateOptions {
   /**
    * A function returning the drop operation to be performed.
    */
-  getDropOperation?: (
-    types: DragTypes,
-    allowedOperations: DropOperation[]
-  ) => DropOperation;
+  getDropOperation?: (types: DragTypes, allowedOperations: DropOperation[]) => DropOperation;
   /**
    * A function returning the drop operation for a specific point.
    */
@@ -31,7 +28,7 @@ export interface DropStateOptions {
     types: DragTypes,
     allowedOperations: DropOperation[],
     x: number,
-    y: number
+    y: number,
   ) => DropOperation;
   /** Handler that is called when a valid drag enters the drop target. */
   onDropEnter?: (e: DropEnterEvent) => void;
@@ -73,7 +70,7 @@ export interface DropState {
     types: DragTypes,
     allowedOperations: DropOperation[],
     x: number,
-    y: number
+    y: number,
   ): DropOperation;
 }
 
@@ -83,9 +80,7 @@ export interface DropState {
  * @param props - Accessor returning drop state options
  * @returns Drop state object
  */
-export function createDropState(
-  props: Accessor<DropStateOptions>
-): DropState {
+export function createDropState(props: Accessor<DropStateOptions>): DropState {
   const getProps = createMemo(() => props());
 
   const [isDropTarget, setIsDropTarget] = createSignal(false);
@@ -96,9 +91,9 @@ export function createDropState(
 
     setIsDropTarget(true);
 
-    if (typeof p.onDropEnter === 'function') {
+    if (typeof p.onDropEnter === "function") {
       p.onDropEnter({
-        type: 'dropenter',
+        type: "dropenter",
         x,
         y,
       });
@@ -109,9 +104,9 @@ export function createDropState(
     const p = getProps();
     if (!isDropTarget() || p.isDisabled) return;
 
-    if (typeof p.onDropMove === 'function') {
+    if (typeof p.onDropMove === "function") {
       p.onDropMove({
-        type: 'dropmove',
+        type: "dropmove",
         x,
         y,
       });
@@ -123,9 +118,9 @@ export function createDropState(
 
     setIsDropTarget(false);
 
-    if (typeof p.onDropExit === 'function') {
+    if (typeof p.onDropExit === "function") {
       p.onDropExit({
-        type: 'dropexit',
+        type: "dropexit",
         x,
         y,
       });
@@ -136,29 +131,24 @@ export function createDropState(
     const p = getProps();
     if (p.isDisabled) return;
 
-    if (typeof p.onDropActivate === 'function') {
+    if (typeof p.onDropActivate === "function") {
       p.onDropActivate({
-        type: 'dropactivate',
+        type: "dropactivate",
         x,
         y,
       });
     }
   };
 
-  const drop = (
-    x: number,
-    y: number,
-    items: DropItem[],
-    dropOperation: DropOperation
-  ) => {
+  const drop = (x: number, y: number, items: DropItem[], dropOperation: DropOperation) => {
     const p = getProps();
     if (p.isDisabled) return;
 
     setIsDropTarget(false);
 
-    if (typeof p.onDrop === 'function') {
+    if (typeof p.onDrop === "function") {
       p.onDrop({
-        type: 'drop',
+        type: "drop",
         x,
         y,
         items,
@@ -169,23 +159,23 @@ export function createDropState(
 
   const getDropOperation = (
     types: DragTypes,
-    allowedOperations: DropOperation[]
+    allowedOperations: DropOperation[],
   ): DropOperation => {
     const p = getProps();
-    if (typeof p.getDropOperation === 'function') {
+    if (typeof p.getDropOperation === "function") {
       return p.getDropOperation(types, allowedOperations);
     }
-    return allowedOperations[0] ?? 'cancel';
+    return allowedOperations[0] ?? "cancel";
   };
 
   const getDropOperationForPoint = (
     types: DragTypes,
     allowedOperations: DropOperation[],
     x: number,
-    y: number
+    y: number,
   ): DropOperation => {
     const p = getProps();
-    if (typeof p.getDropOperationForPoint === 'function') {
+    if (typeof p.getDropOperationForPoint === "function") {
       return p.getDropOperationForPoint(types, allowedOperations, x, y);
     }
     return getDropOperation(types, allowedOperations);

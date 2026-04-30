@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createRoot } from 'solid-js';
-import { createTooltipTriggerState, resetTooltipState } from '../src/tooltip';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { createRoot } from "solid-js";
+import { createTooltipTriggerState, resetTooltipState } from "../src/tooltip";
 
-describe('createTooltipTriggerState', () => {
+describe("createTooltipTriggerState", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     resetTooltipState();
@@ -13,7 +13,7 @@ describe('createTooltipTriggerState', () => {
     resetTooltipState();
   });
 
-  it('should initialize as closed by default', () => {
+  it("should initialize as closed by default", () => {
     createRoot((dispose) => {
       const state = createTooltipTriggerState();
       expect(state.isOpen()).toBe(false);
@@ -21,7 +21,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should open immediately when immediate=true', () => {
+  it("should open immediately when immediate=true", () => {
     createRoot((dispose) => {
       const state = createTooltipTriggerState();
       state.open(true);
@@ -30,7 +30,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should close immediately when immediate=true', () => {
+  it("should close immediately when immediate=true", () => {
     createRoot((dispose) => {
       const state = createTooltipTriggerState();
       state.open(true);
@@ -41,7 +41,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should respect controlled isOpen prop', () => {
+  it("should respect controlled isOpen prop", () => {
     createRoot((dispose) => {
       const state = createTooltipTriggerState({ isOpen: true });
       expect(state.isOpen()).toBe(true);
@@ -49,7 +49,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should call onOpenChange when opening', () => {
+  it("should call onOpenChange when opening", () => {
     createRoot((dispose) => {
       const onOpenChange = vi.fn();
       const state = createTooltipTriggerState({ onOpenChange });
@@ -59,7 +59,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should call onOpenChange when closing', () => {
+  it("should call onOpenChange when closing", () => {
     createRoot((dispose) => {
       const onOpenChange = vi.fn();
       const state = createTooltipTriggerState({ onOpenChange });
@@ -70,7 +70,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should delay opening based on delay prop', () => {
+  it("should delay opening based on delay prop", () => {
     createRoot((dispose) => {
       const state = createTooltipTriggerState({ delay: 500 });
       state.open(); // Not immediate
@@ -85,7 +85,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should delay closing based on closeDelay prop', () => {
+  it("should delay closing based on closeDelay prop", () => {
     createRoot((dispose) => {
       const state = createTooltipTriggerState({ closeDelay: 300 });
       state.open(true);
@@ -103,7 +103,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should use default delay of 1500ms', () => {
+  it("should use default delay of 1500ms", () => {
     createRoot((dispose) => {
       const state = createTooltipTriggerState();
       state.open();
@@ -118,7 +118,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should close other tooltips when opening a new one', () => {
+  it("should close other tooltips when opening a new one", () => {
     createRoot((dispose) => {
       const state1 = createTooltipTriggerState();
       const state2 = createTooltipTriggerState();
@@ -133,7 +133,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should skip delay when warmed up (second tooltip)', () => {
+  it("should skip delay when warmed up (second tooltip)", () => {
     createRoot((dispose) => {
       const state1 = createTooltipTriggerState({ delay: 1000 });
       const state2 = createTooltipTriggerState({ delay: 1000 });
@@ -153,7 +153,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should cancel close timeout when opening again', () => {
+  it("should cancel close timeout when opening again", () => {
     createRoot((dispose) => {
       const state = createTooltipTriggerState({ closeDelay: 500 });
       state.open(true);
@@ -172,7 +172,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should respect defaultOpen prop', () => {
+  it("should respect defaultOpen prop", () => {
     createRoot((dispose) => {
       const state = createTooltipTriggerState({ defaultOpen: true });
       expect(state.isOpen()).toBe(true);
@@ -180,7 +180,7 @@ describe('createTooltipTriggerState', () => {
     });
   });
 
-  it('should close immediately when closeDelay is 0', () => {
+  it("should close immediately when closeDelay is 0", () => {
     createRoot((dispose) => {
       const state = createTooltipTriggerState({ closeDelay: 0 });
       state.open(true);

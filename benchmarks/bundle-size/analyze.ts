@@ -5,14 +5,14 @@
  * across three scenarios: single component, multiple components, full library.
  */
 
-import * as esbuild from 'esbuild';
-import { solidPlugin } from 'esbuild-plugin-solid';
-import { gzipSize } from 'gzip-size';
-import brotliSizeModule from 'brotli-size';
-import { existsSync } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join, dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import * as esbuild from "esbuild";
+import { solidPlugin } from "esbuild-plugin-solid";
+import { gzipSize } from "gzip-size";
+import brotliSizeModule from "brotli-size";
+import { existsSync } from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { join, dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // Handle both default and named exports for brotli-size
 const brotliSize = (brotliSizeModule as any).default || brotliSizeModule;
@@ -47,22 +47,22 @@ interface BenchmarkResults {
 }
 
 async function analyzeBundle(entryPoint: string): Promise<BundleMetrics> {
-  const isSolid = entryPoint.includes('pv-');
+  const isSolid = entryPoint.includes("pv-");
 
   const result = await esbuild.build({
     entryPoints: [entryPoint],
     bundle: true,
     minify: true,
     treeShaking: true,
-    platform: 'browser',
-    format: 'esm',
+    platform: "browser",
+    format: "esm",
     write: false,
     metafile: true,
-    jsx: isSolid ? undefined : 'automatic',
-    jsxImportSource: isSolid ? undefined : 'react',
+    jsx: isSolid ? undefined : "automatic",
+    jsxImportSource: isSolid ? undefined : "react",
     plugins: isSolid ? [solidPlugin()] : [],
-    loader: { '.css': 'text' }, // Include CSS as text in bundle
-    logLevel: 'silent',
+    loader: { ".css": "text" }, // Include CSS as text in bundle
+    logLevel: "silent",
   });
 
   if (!result.outputFiles || result.outputFiles.length === 0) {
@@ -81,14 +81,14 @@ async function analyzeBundle(entryPoint: string): Promise<BundleMetrics> {
     bundle: true,
     minify: false,
     treeShaking: true,
-    platform: 'browser',
-    format: 'esm',
+    platform: "browser",
+    format: "esm",
     write: false,
-    jsx: isSolid ? undefined : 'automatic',
-    jsxImportSource: isSolid ? undefined : 'react',
+    jsx: isSolid ? undefined : "automatic",
+    jsxImportSource: isSolid ? undefined : "react",
     plugins: isSolid ? [solidPlugin()] : [],
-    loader: { '.css': 'text' }, // Include CSS as text in bundle
-    logLevel: 'silent',
+    loader: { ".css": "text" }, // Include CSS as text in bundle
+    logLevel: "silent",
   });
 
   const raw = rawResult.outputFiles![0].contents.length;
@@ -103,7 +103,7 @@ async function analyzeBundle(entryPoint: string): Promise<BundleMetrics> {
 async function readPackageJson(path: string): Promise<Record<string, any> | undefined> {
   try {
     if (existsSync(path)) {
-      return JSON.parse(await readFile(path, 'utf8'));
+      return JSON.parse(await readFile(path, "utf8"));
     }
   } catch (error) {
     console.warn(`Could not read package metadata from ${path}:`, error);
@@ -113,15 +113,16 @@ async function readPackageJson(path: string): Promise<Record<string, any> | unde
 
 async function getPackageVersions(): Promise<{ pv: string; rs: string }> {
   const [pvPackage, comparisonPackage] = await Promise.all([
-    readPackageJson(resolve(__dirname, '../../packages/silapse/package.json')),
-    readPackageJson(resolve(__dirname, '../../apps/comparison/package.json')),
+    readPackageJson(resolve(__dirname, "../../packages/silapse/package.json")),
+    readPackageJson(resolve(__dirname, "../../apps/comparison/package.json")),
   ]);
 
   return {
-    pv: typeof pvPackage?.version === 'string' ? pvPackage.version : 'unknown',
-    rs: typeof comparisonPackage?.dependencies?.['@adobe/react-spectrum'] === 'string'
-      ? comparisonPackage.dependencies['@adobe/react-spectrum']
-      : 'unknown',
+    pv: typeof pvPackage?.version === "string" ? pvPackage.version : "unknown",
+    rs:
+      typeof comparisonPackage?.dependencies?.["@adobe/react-spectrum"] === "string"
+        ? comparisonPackage.dependencies["@adobe/react-spectrum"]
+        : "unknown",
   };
 }
 
@@ -131,12 +132,12 @@ function formatBytes(bytes: number): string {
 
 function calculateSavings(pv: number, rs: number): string {
   const savings = ((rs - pv) / rs) * 100;
-  return `${savings > 0 ? '+' : ''}${savings.toFixed(1)}%`;
+  return `${savings > 0 ? "+" : ""}${savings.toFixed(1)}%`;
 }
 
 function printResults(results: BenchmarkResults) {
-  console.log('\n📊 Bundle Size Analysis Results\n');
-  console.log('Environment:');
+  console.log("\n📊 Bundle Size Analysis Results\n");
+  console.log("Environment:");
   console.log(`  Node: ${results.environment.node}`);
   console.log(`  esbuild: ${results.environment.esbuild}`);
   console.log(`  PV: ${results.environment.pv_version}`);
@@ -144,42 +145,50 @@ function printResults(results: BenchmarkResults) {
   console.log();
 
   const scenarios = [
-    { name: 'Single Button', key: 'single_button' as const },
-    { name: 'Multiple Components', key: 'multiple' as const },
-    { name: 'Full Library', key: 'full_library' as const },
+    { name: "Single Button", key: "single_button" as const },
+    { name: "Multiple Components", key: "multiple" as const },
+    { name: "Full Library", key: "full_library" as const },
   ];
 
   for (const scenario of scenarios) {
     const data = results.scenarios[scenario.key];
     console.log(`${scenario.name}:`);
-    console.log('┌─────────────┬──────────────┬──────────────┬───────────┐');
-    console.log('│ Metric      │ PV           │ RS           │ Savings   │');
-    console.log('├─────────────┼──────────────┼──────────────┼───────────┤');
-    console.log(`│ Raw         │ ${formatBytes(data.pv.raw).padEnd(12)} │ ${formatBytes(data.rs.raw).padEnd(12)} │ ${calculateSavings(data.pv.raw, data.rs.raw).padEnd(9)} │`);
-    console.log(`│ Minified    │ ${formatBytes(data.pv.minified).padEnd(12)} │ ${formatBytes(data.rs.minified).padEnd(12)} │ ${calculateSavings(data.pv.minified, data.rs.minified).padEnd(9)} │`);
-    console.log(`│ Gzip        │ ${formatBytes(data.pv.gzip).padEnd(12)} │ ${formatBytes(data.rs.gzip).padEnd(12)} │ ${calculateSavings(data.pv.gzip, data.rs.gzip).padEnd(9)} │`);
-    console.log(`│ Brotli      │ ${formatBytes(data.pv.brotli).padEnd(12)} │ ${formatBytes(data.rs.brotli).padEnd(12)} │ ${calculateSavings(data.pv.brotli, data.rs.brotli).padEnd(9)} │`);
-    console.log('└─────────────┴──────────────┴──────────────┴───────────┘');
+    console.log("┌─────────────┬──────────────┬──────────────┬───────────┐");
+    console.log("│ Metric      │ PV           │ RS           │ Savings   │");
+    console.log("├─────────────┼──────────────┼──────────────┼───────────┤");
+    console.log(
+      `│ Raw         │ ${formatBytes(data.pv.raw).padEnd(12)} │ ${formatBytes(data.rs.raw).padEnd(12)} │ ${calculateSavings(data.pv.raw, data.rs.raw).padEnd(9)} │`,
+    );
+    console.log(
+      `│ Minified    │ ${formatBytes(data.pv.minified).padEnd(12)} │ ${formatBytes(data.rs.minified).padEnd(12)} │ ${calculateSavings(data.pv.minified, data.rs.minified).padEnd(9)} │`,
+    );
+    console.log(
+      `│ Gzip        │ ${formatBytes(data.pv.gzip).padEnd(12)} │ ${formatBytes(data.rs.gzip).padEnd(12)} │ ${calculateSavings(data.pv.gzip, data.rs.gzip).padEnd(9)} │`,
+    );
+    console.log(
+      `│ Brotli      │ ${formatBytes(data.pv.brotli).padEnd(12)} │ ${formatBytes(data.rs.brotli).padEnd(12)} │ ${calculateSavings(data.pv.brotli, data.rs.brotli).padEnd(9)} │`,
+    );
+    console.log("└─────────────┴──────────────┴──────────────┴───────────┘");
     console.log();
   }
 }
 
 async function main() {
-  console.log('🔍 Analyzing bundle sizes...\n');
+  console.log("🔍 Analyzing bundle sizes...\n");
   const versions = await getPackageVersions();
 
   const fixtures = {
     single_button: {
-      pv: join(__dirname, 'fixtures/pv-button.tsx'),
-      rs: join(__dirname, 'fixtures/rs-button.tsx'),
+      pv: join(__dirname, "fixtures/pv-button.tsx"),
+      rs: join(__dirname, "fixtures/rs-button.tsx"),
     },
     multiple: {
-      pv: join(__dirname, 'fixtures/pv-multiple.tsx'),
-      rs: join(__dirname, 'fixtures/rs-multiple.tsx'),
+      pv: join(__dirname, "fixtures/pv-multiple.tsx"),
+      rs: join(__dirname, "fixtures/rs-multiple.tsx"),
     },
     full_library: {
-      pv: join(__dirname, 'fixtures/pv-full.tsx'),
-      rs: join(__dirname, 'fixtures/rs-full.tsx'),
+      pv: join(__dirname, "fixtures/pv-full.tsx"),
+      rs: join(__dirname, "fixtures/rs-full.tsx"),
     },
   };
 
@@ -214,9 +223,9 @@ async function main() {
   printResults(results);
 
   // Save results to JSON
-  const resultsDir = join(__dirname, 'results');
+  const resultsDir = join(__dirname, "results");
   await mkdir(resultsDir, { recursive: true });
-  const resultsPath = join(resultsDir, 'bundle-sizes.json');
+  const resultsPath = join(resultsDir, "bundle-sizes.json");
   await writeFile(resultsPath, JSON.stringify(results, null, 2));
   console.log(`\n✅ Results saved to ${resultsPath}`);
 }

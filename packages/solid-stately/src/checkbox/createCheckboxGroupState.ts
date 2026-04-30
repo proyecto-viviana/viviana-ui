@@ -7,14 +7,14 @@
  * This is a 1:1 port of @react-stately/checkbox's useCheckboxGroupState.
  */
 
-import { createSignal, Accessor } from 'solid-js';
-import { type MaybeAccessor, access } from '../utils';
+import { createSignal, Accessor } from "solid-js";
+import { type MaybeAccessor, access } from "../utils";
 import {
   createFormValidationState,
   type FormValidationState,
   type ValidationFunction,
   type ValidationResult,
-} from '../form';
+} from "../form";
 
 // ============================================
 // TYPES
@@ -48,14 +48,21 @@ export interface CheckboxGroupProps {
   /** Handler that is called when the checkbox group's focus status changes. */
   onFocusChange?: (isFocused: boolean) => void;
   /** Backward-compatible controlled validation state. */
-  validationState?: 'valid' | 'invalid';
+  validationState?: "valid" | "invalid";
   /** Custom validation function. */
   validate?: ValidationFunction<readonly string[]>;
   /** Validation behavior for the checkbox group. */
-  validationBehavior?: 'aria' | 'native';
+  validationBehavior?: "aria" | "native";
 }
 
-export interface CheckboxGroupState extends Pick<FormValidationState, 'realtimeValidation' | 'displayValidation' | 'updateValidation' | 'resetValidation' | 'commitValidation'> {
+export interface CheckboxGroupState extends Pick<
+  FormValidationState,
+  | "realtimeValidation"
+  | "displayValidation"
+  | "updateValidation"
+  | "resetValidation"
+  | "commitValidation"
+> {
   /** Current selected values. */
   readonly value: Accessor<readonly string[]>;
   /** Default selected values. */
@@ -95,7 +102,7 @@ export interface CheckboxGroupState extends Pick<FormValidationState, 'realtimeV
  * Provides a name for the group, and manages selection and focus state.
  */
 export function createCheckboxGroupState(
-  props: MaybeAccessor<CheckboxGroupProps> = {}
+  props: MaybeAccessor<CheckboxGroupProps> = {},
 ): CheckboxGroupState {
   const getProps = () => access(props);
 
@@ -135,7 +142,7 @@ export function createCheckboxGroupState(
       return getProps().validate;
     },
     get validationBehavior() {
-      return getProps().validationBehavior ?? 'aria';
+      return getProps().validationBehavior ?? "aria";
     },
     get name() {
       return getProps().name;

@@ -1,18 +1,9 @@
-export {
-  createMenu,
-  getMenuData,
-  type AriaMenuProps,
-  type MenuAria,
-} from './createMenu';
+export { createMenu, getMenuData, type AriaMenuProps, type MenuAria } from "./createMenu";
 
-export {
-  createMenuItem,
-  type AriaMenuItemProps,
-  type MenuItemAria,
-} from './createMenuItem';
+export { createMenuItem, type AriaMenuItemProps, type MenuItemAria } from "./createMenuItem";
 
 export {
   createMenuTrigger,
   type AriaMenuTriggerProps,
   type MenuTriggerAria,
-} from './createMenuTrigger';
+} from "./createMenuTrigger";

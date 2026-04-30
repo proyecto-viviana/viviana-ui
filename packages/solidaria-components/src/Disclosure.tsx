@@ -14,7 +14,7 @@ import {
   createSignal,
   splitProps,
   useContext,
-} from 'solid-js';
+} from "solid-js";
 import {
   createDisclosureState,
   createDisclosureGroupState,
@@ -22,13 +22,13 @@ import {
   type DisclosureGroupState,
   type DisclosureStateProps,
   type DisclosureGroupStateProps,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   createDisclosure,
   createDisclosureGroup,
   createFocusRing,
   mergeProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -36,7 +36,7 @@ import {
   useRenderProps,
   filterDOMProps,
   dataAttr,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -97,7 +97,7 @@ export interface DisclosurePanelProps {
   /** The inline style for the element. */
   style?: StyleOrFunction<DisclosureRenderProps>;
   /** The accessibility role for the disclosure panel. */
-  role?: 'group' | 'region';
+  role?: "group" | "region";
 }
 
 // ============================================
@@ -160,13 +160,13 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
   // the context provider renders causes them to evaluate outside the context.
   // See: https://github.com/solidjs/solid/issues/182
   const [local, rest] = splitProps(props, [
-    'class',
-    'style',
-    'allowsMultipleExpanded',
-    'isDisabled',
-    'expandedKeys',
-    'defaultExpandedKeys',
-    'onExpandedChange',
+    "class",
+    "style",
+    "allowsMultipleExpanded",
+    "isDisabled",
+    "expandedKeys",
+    "defaultExpandedKeys",
+    "onExpandedChange",
   ]);
 
   // Create group state
@@ -179,10 +179,7 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
   }));
 
   // Create group accessibility props
-  const { groupProps } = createDisclosureGroup(
-    () => ({ isDisabled: local.isDisabled }),
-    state
-  );
+  const { groupProps } = createDisclosureGroup(() => ({ isDisabled: local.isDisabled }), state);
 
   // Render props values
   const renderValues = createMemo<DisclosureGroupRenderProps>(() => ({
@@ -194,13 +191,15 @@ export function DisclosureGroup(props: DisclosureGroupProps): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-DisclosureGroup',
+      defaultClassName: "solidaria-DisclosureGroup",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   // Context value
   const contextValue: DisclosureGroupContextValue = { state };
@@ -246,13 +245,13 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
   // the context provider renders causes them to evaluate outside the context.
   // See: https://github.com/solidjs/solid/issues/182
   const [local, rest] = splitProps(props, [
-    'class',
-    'style',
-    'isDisabled',
-    'isExpanded',
-    'defaultExpanded',
-    'onExpandedChange',
-    'id',
+    "class",
+    "style",
+    "isDisabled",
+    "isExpanded",
+    "defaultExpanded",
+    "onExpandedChange",
+    "id",
   ]);
 
   // Check if we're inside a DisclosureGroup
@@ -292,12 +291,11 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
   const disclosureAria = createDisclosure(
     () => ({ isDisabled: isDisabled() }),
     state,
-    panelRef  // Pass the accessor directly
+    panelRef, // Pass the accessor directly
   );
-  const {
-    isFocusVisible: isFocusVisibleWithin,
-    focusProps: focusWithinProps,
-  } = createFocusRing({ within: true });
+  const { isFocusVisible: isFocusVisibleWithin, focusProps: focusWithinProps } = createFocusRing({
+    within: true,
+  });
 
   // Render props values
   const renderValues = createMemo<DisclosureRenderProps>(() => ({
@@ -312,18 +310,20 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Disclosure',
+      defaultClassName: "solidaria-Disclosure",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   // Context value - pass the disclosureAria object with getters intact
   const contextValue: DisclosureContextValue = {
     state,
-    isDisabled,  // Pass the accessor function, not the value
+    isDisabled, // Pass the accessor function, not the value
     disclosureAria,
   };
 
@@ -339,7 +339,7 @@ export function Disclosure(props: DisclosureProps): JSX.Element {
           <div
             {...mergeProps(
               domProps() as Record<string, unknown>,
-              focusWithinProps as Record<string, unknown>
+              focusWithinProps as Record<string, unknown>,
             )}
             class={renderProps.class()}
             style={renderProps.style()}
@@ -370,7 +370,7 @@ export function DisclosureTrigger(props: DisclosureTriggerProps): JSX.Element {
   // Get context - now safe because parent uses lazy children evaluation
   const context = useContext(DisclosureContext);
   if (!context) {
-    throw new Error('DisclosureTrigger must be used within a Disclosure');
+    throw new Error("DisclosureTrigger must be used within a Disclosure");
   }
 
   const { state, disclosureAria, isDisabled } = context;
@@ -410,15 +410,14 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
   // Get context - now safe because parent uses lazy children evaluation
   const context = useContext(DisclosureContext);
   if (!context) {
-    throw new Error('DisclosurePanel must be used within a Disclosure');
+    throw new Error("DisclosurePanel must be used within a Disclosure");
   }
   const panelRefSetter = useContext(DisclosurePanelRefContext);
 
-  const [local, rest] = splitProps(props, ['class', 'style', 'role']);
-  const {
-    isFocusVisible: isFocusVisibleWithin,
-    focusProps: focusWithinProps,
-  } = createFocusRing({ within: true });
+  const [local, rest] = splitProps(props, ["class", "style", "role"]);
+  const { isFocusVisible: isFocusVisibleWithin, focusProps: focusWithinProps } = createFocusRing({
+    within: true,
+  });
 
   // Reactive accessors
   const isExpanded = () => context.state.isExpanded();
@@ -438,13 +437,15 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-DisclosurePanel',
+      defaultClassName: "solidaria-DisclosurePanel",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   // Get panelProps from the getter each time - this ensures reactivity
   // IMPORTANT: Call the getter fresh each render to get updated hidden attribute, etc.
@@ -457,11 +458,11 @@ export function DisclosurePanel(props: DisclosurePanelProps): JSX.Element {
     <div
       {...mergeProps(
         domProps() as Record<string, unknown>,
-        focusWithinProps as Record<string, unknown>
+        focusWithinProps as Record<string, unknown>,
       )}
       {...getPanelProps()}
       ref={(el) => panelRefSetter?.(el)}
-      role={local.role ?? 'region'}
+      role={local.role ?? "region"}
       class={renderProps.class()}
       style={renderProps.style()}
       data-expanded={dataAttr(isExpanded())}

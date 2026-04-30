@@ -3,9 +3,9 @@
  * Based on @react-aria/overlays ariaHideOutside.
  */
 
-import { getOwnerWindow } from '../utils';
+import { getOwnerWindow } from "../utils";
 
-const supportsInert = typeof HTMLElement !== 'undefined' && 'inert' in HTMLElement.prototype;
+const supportsInert = typeof HTMLElement !== "undefined" && "inert" in HTMLElement.prototype;
 
 export interface AriaHideOutsideOptions {
   /** The root element to start hiding from. */
@@ -37,7 +37,7 @@ const observerStack: ObserverWrapper[] = [];
  */
 export function ariaHideOutside(
   targets: Element[],
-  options?: AriaHideOutsideOptions | Element
+  options?: AriaHideOutsideOptions | Element,
 ): () => void {
   const windowObj = getOwnerWindow(targets?.[0]);
   const opts = options instanceof windowObj.Element ? { root: options } : options;
@@ -49,16 +49,16 @@ export function ariaHideOutside(
   const getHidden = (element: Element): boolean => {
     return shouldUseInert && element instanceof windowObj.HTMLElement
       ? element.inert
-      : element.getAttribute('aria-hidden') === 'true';
+      : element.getAttribute("aria-hidden") === "true";
   };
 
   const setHidden = (element: Element, hidden: boolean): void => {
     if (shouldUseInert && element instanceof windowObj.HTMLElement) {
       element.inert = hidden;
     } else if (hidden) {
-      element.setAttribute('aria-hidden', 'true');
+      element.setAttribute("aria-hidden", "true");
     } else {
-      element.removeAttribute('aria-hidden');
+      element.removeAttribute("aria-hidden");
       if (element instanceof windowObj.HTMLElement) {
         // We only ever call setHidden with hidden = false when the nodeCount is 1 aka
         // we are trying to make the element visible to screen readers again, so remove inert as well
@@ -86,7 +86,9 @@ export function ariaHideOutside(
 
   const walk = (walkRoot: Element): void => {
     // Keep live announcer and top layer elements (e.g. toasts) visible.
-    for (const element of walkRoot.querySelectorAll('[data-live-announcer], [data-solidaria-top-layer]')) {
+    for (const element of walkRoot.querySelectorAll(
+      "[data-live-announcer], [data-solidaria-top-layer]",
+    )) {
       visibleNodes.add(element);
     }
 
@@ -98,7 +100,9 @@ export function ariaHideOutside(
       if (
         hiddenNodes.has(node) ||
         visibleNodes.has(node) ||
-        (node.parentElement && hiddenNodes.has(node.parentElement) && node.parentElement.getAttribute('role') !== 'row')
+        (node.parentElement &&
+          hiddenNodes.has(node.parentElement) &&
+          node.parentElement.getAttribute("role") !== "row")
       ) {
         return NodeFilter.FILTER_REJECT;
       }
@@ -140,7 +144,7 @@ export function ariaHideOutside(
 
   const observer = new MutationObserver((changes) => {
     for (const change of changes) {
-      if (change.type !== 'childList') {
+      if (change.type !== "childList") {
         continue;
       }
 
@@ -150,7 +154,7 @@ export function ariaHideOutside(
         for (const node of change.addedNodes) {
           if (
             (node instanceof HTMLElement || node instanceof SVGElement) &&
-            (node.dataset.liveAnnouncer === 'true' || node.dataset.solidariaTopLayer === 'true')
+            (node.dataset.liveAnnouncer === "true" || node.dataset.solidariaTopLayer === "true")
           ) {
             visibleNodes.add(node);
           } else if (node instanceof Element) {

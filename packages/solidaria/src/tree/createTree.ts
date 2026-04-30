@@ -3,11 +3,11 @@
  * Based on @react-aria/tree/useTree.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { createId } from '@proyecto-viviana/solid-stately';
-import type { TreeState, TreeCollection, Key } from '@proyecto-viviana/solid-stately';
-import type { AriaTreeProps, TreeAria } from './types';
+import { createMemo, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import { createId } from "@proyecto-viviana/solid-stately";
+import type { TreeState, TreeCollection, Key } from "@proyecto-viviana/solid-stately";
+import type { AriaTreeProps, TreeAria } from "./types";
 
 /**
  * Metadata stored for a tree instance.
@@ -30,7 +30,7 @@ const treeDataMap = new WeakMap<object, TreeData>();
  * Gets the tree data for a given state.
  */
 export function getTreeData<T extends object, C extends TreeCollection<T>>(
-  state: TreeState<T, C>
+  state: TreeState<T, C>,
 ): TreeData | undefined {
   return treeDataMap.get(state);
 }
@@ -41,7 +41,7 @@ export function getTreeData<T extends object, C extends TreeCollection<T>>(
 export function createTree<T extends object, C extends TreeCollection<T> = TreeCollection<T>>(
   props: Accessor<AriaTreeProps>,
   state: Accessor<TreeState<T, C>>,
-  _ref: Accessor<HTMLDivElement | null>
+  _ref: Accessor<HTMLDivElement | null>,
 ): TreeAria {
   // Generate a unique ID for the tree
   const treeId = props().id ?? createId();
@@ -65,15 +65,15 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
     const p = props();
     const collection = s.collection;
     const focusedKey = s.focusedKey;
-    const direction = p.direction ?? 'ltr';
+    const direction = p.direction ?? "ltr";
     // In RTL, ArrowLeft expands and ArrowRight collapses (opposite of LTR)
-    const expandKey = direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
-    const collapseKey = direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
+    const expandKey = direction === "rtl" ? "ArrowLeft" : "ArrowRight";
+    const collapseKey = direction === "rtl" ? "ArrowRight" : "ArrowLeft";
 
     if (p.isDisabled) return;
 
     switch (e.key) {
-      case 'ArrowDown': {
+      case "ArrowDown": {
         e.preventDefault();
         if (focusedKey != null) {
           const nextKey = collection.getKeyAfter(focusedKey);
@@ -88,7 +88,7 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
         }
         break;
       }
-      case 'ArrowUp': {
+      case "ArrowUp": {
         e.preventDefault();
         if (focusedKey != null) {
           const prevKey = collection.getKeyBefore(focusedKey);
@@ -103,8 +103,8 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
         }
         break;
       }
-      case 'ArrowRight':
-      case 'ArrowLeft': {
+      case "ArrowRight":
+      case "ArrowLeft": {
         e.preventDefault();
         if (focusedKey != null) {
           const node = collection.getItem(focusedKey);
@@ -131,7 +131,7 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
         }
         break;
       }
-      case 'Home': {
+      case "Home": {
         e.preventDefault();
         const firstKey = collection.getFirstKey();
         if (firstKey != null) {
@@ -139,7 +139,7 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
         }
         break;
       }
-      case 'End': {
+      case "End": {
         e.preventDefault();
         const lastKey = collection.getLastKey();
         if (lastKey != null) {
@@ -147,38 +147,38 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
         }
         break;
       }
-      case 'a':
-      case 'A': {
-        if ((e.ctrlKey || e.metaKey) && s.selectionMode === 'multiple') {
+      case "a":
+      case "A": {
+        if ((e.ctrlKey || e.metaKey) && s.selectionMode === "multiple") {
           e.preventDefault();
           s.selectAll();
         }
         break;
       }
-      case ' ':
-      case 'Space':
-      case 'Spacebar': {
-        if (focusedKey != null && s.selectionMode !== 'none' && !s.isDisabled(focusedKey)) {
+      case " ":
+      case "Space":
+      case "Spacebar": {
+        if (focusedKey != null && s.selectionMode !== "none" && !s.isDisabled(focusedKey)) {
           e.preventDefault();
           s.toggleSelection(focusedKey);
         }
         break;
       }
-      case 'Enter': {
+      case "Enter": {
         if (focusedKey != null && !s.isDisabled(focusedKey)) {
           e.preventDefault();
           p.onAction?.(focusedKey);
         }
         break;
       }
-      case 'Escape': {
-        if (s.selectionMode !== 'none') {
+      case "Escape": {
+        if (s.selectionMode !== "none") {
           e.preventDefault();
           s.clearSelection();
         }
         break;
       }
-      case '*': {
+      case "*": {
         // Expand all siblings at current level
         e.preventDefault();
         if (focusedKey != null) {
@@ -191,9 +191,7 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
               siblings = [...collection.getChildren(parentKey)].map((n) => n.key);
             } else {
               // Root level siblings
-              siblings = collection.rows
-                .filter((n) => n.level === 0)
-                .map((n) => n.key);
+              siblings = collection.rows.filter((n) => n.level === 0).map((n) => n.key);
             }
             // Expand all expandable siblings
             for (const siblingKey of siblings) {
@@ -232,13 +230,13 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
     const s = state();
 
     const baseProps: Record<string, unknown> = {
-      role: 'treegrid',
+      role: "treegrid",
       id: treeId,
-      'aria-label': p['aria-label'],
-      'aria-labelledby': p['aria-labelledby'],
-      'aria-describedby': p['aria-describedby'],
-      'aria-multiselectable': s.selectionMode === 'multiple' ? true : undefined,
-      'aria-disabled': p.isDisabled || undefined,
+      "aria-label": p["aria-label"],
+      "aria-labelledby": p["aria-labelledby"],
+      "aria-describedby": p["aria-describedby"],
+      "aria-multiselectable": s.selectionMode === "multiple" ? true : undefined,
+      "aria-disabled": p.isDisabled || undefined,
       tabIndex: p.isDisabled ? undefined : 0,
       onKeyDown,
       onFocus,
@@ -247,7 +245,7 @@ export function createTree<T extends object, C extends TreeCollection<T> = TreeC
 
     // Add row count for virtualized trees
     if (p.isVirtualized) {
-      baseProps['aria-rowcount'] = s.collection.rowCount;
+      baseProps["aria-rowcount"] = s.collection.rowCount;
     }
 
     return baseProps as JSX.HTMLAttributes<HTMLDivElement>;

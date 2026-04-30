@@ -8,10 +8,10 @@
  * The F6 key (or Shift+F6) cycles through all registered landmarks.
  */
 
-import type { JSX, Accessor } from 'solid-js';
-import { createEffect, onCleanup } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
-import { filterDOMProps } from '../utils';
+import type { JSX, Accessor } from "solid-js";
+import { createEffect, onCleanup } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
+import { filterDOMProps } from "../utils";
 
 // ============================================
 // TYPES
@@ -19,14 +19,14 @@ import { filterDOMProps } from '../utils';
 
 /** ARIA landmark roles */
 export type AriaLandmarkRole =
-  | 'main'
-  | 'region'
-  | 'search'
-  | 'navigation'
-  | 'form'
-  | 'banner'
-  | 'contentinfo'
-  | 'complementary';
+  | "main"
+  | "region"
+  | "search"
+  | "navigation"
+  | "form"
+  | "banner"
+  | "contentinfo"
+  | "complementary";
 
 export interface AriaLandmarkProps {
   /** The ARIA landmark role. */
@@ -35,9 +35,9 @@ export interface AriaLandmarkProps {
    * A human-readable label for the landmark.
    * Required when multiple landmarks with the same role exist on a page.
    */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element(s) that labels the landmark. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The element's unique identifier. */
   id?: string;
   /**
@@ -88,7 +88,7 @@ class LandmarkManager {
   private listening = false;
 
   constructor() {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       this.startListening();
     }
   }
@@ -97,12 +97,12 @@ class LandmarkManager {
     if (this.listening) return;
     this.listening = true;
 
-    window.addEventListener('keydown', this.handleKeyDown.bind(this), true);
+    window.addEventListener("keydown", this.handleKeyDown.bind(this), true);
   }
 
   private handleKeyDown(event: KeyboardEvent) {
     // F6 to navigate landmarks
-    if (event.key === 'F6') {
+    if (event.key === "F6") {
       event.preventDefault();
       if (event.shiftKey) {
         this.focusPrevious();
@@ -168,7 +168,7 @@ class LandmarkManager {
         const uniqueLabels = new Set(labels.filter(Boolean));
         if (uniqueLabels.size < group.length) {
           console.warn(
-            `Multiple landmarks with role "${role}" exist. Each should have a unique aria-label or aria-labelledby.`
+            `Multiple landmarks with role "${role}" exist. Each should have a unique aria-label or aria-labelledby.`,
           );
         }
       }
@@ -195,13 +195,12 @@ class LandmarkManager {
     this.currentIndex = this.findCurrentLandmarkIndex(activeElement);
 
     // Move to previous
-    this.currentIndex =
-      (this.currentIndex - 1 + this.landmarks.length) % this.landmarks.length;
+    this.currentIndex = (this.currentIndex - 1 + this.landmarks.length) % this.landmarks.length;
     this.focusLandmark(this.landmarks[this.currentIndex]);
   }
 
   focusMain(): void {
-    const main = this.landmarks.find((l) => l.role === 'main');
+    const main = this.landmarks.find((l) => l.role === "main");
     if (main) {
       this.focusLandmark(main);
     }
@@ -252,21 +251,21 @@ class LandmarkManager {
     }
 
     // Fallback: make the landmark itself focusable and focus it
-    if (!landmark.ref.hasAttribute('tabindex')) {
-      landmark.ref.setAttribute('tabindex', '-1');
+    if (!landmark.ref.hasAttribute("tabindex")) {
+      landmark.ref.setAttribute("tabindex", "-1");
     }
     landmark.ref.focus();
   }
 
   private findFirstFocusable(container: HTMLElement): HTMLElement | null {
     const focusableSelectors = [
-      'a[href]',
-      'button:not([disabled])',
-      'input:not([disabled])',
-      'select:not([disabled])',
-      'textarea:not([disabled])',
+      "a[href]",
+      "button:not([disabled])",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      "textarea:not([disabled])",
       '[tabindex]:not([tabindex="-1"])',
-    ].join(', ');
+    ].join(", ");
 
     return container.querySelector<HTMLElement>(focusableSelectors);
   }
@@ -318,7 +317,7 @@ function getLandmarkManager(): LandmarkManager {
  */
 export function createLandmark<T extends HTMLElement = HTMLElement>(
   props: MaybeAccessor<AriaLandmarkProps>,
-  ref: Accessor<T | undefined>
+  ref: Accessor<T | undefined>,
 ): LandmarkAria<T> {
   // Register with the landmark manager
   createEffect(() => {
@@ -329,7 +328,7 @@ export function createLandmark<T extends HTMLElement = HTMLElement>(
     const entry: LandmarkEntry = {
       ref: element,
       role: p.role,
-      label: p['aria-label'],
+      label: p["aria-label"],
       focus: p.focus,
     };
 

@@ -1,11 +1,11 @@
-import { Accessor } from 'solid-js';
-import { createPress } from '../interactions';
-import { createFocusable } from '../interactions';
-import { mergeProps, filterDOMProps } from '../utils';
-import type { AriaButtonProps, ButtonAria } from './types';
+import { Accessor } from "solid-js";
+import { createPress } from "../interactions";
+import { createFocusable } from "../interactions";
+import { mergeProps, filterDOMProps } from "../utils";
+import type { AriaButtonProps, ButtonAria } from "./types";
 
 function isDisabledValue(isDisabled: Accessor<boolean> | boolean | undefined): boolean {
-  if (typeof isDisabled === 'function') {
+  if (typeof isDisabled === "function") {
     return isDisabled();
   }
   return isDisabled ?? false;
@@ -38,7 +38,7 @@ function isDisabledValue(isDisabled: Accessor<boolean> | boolean | undefined): b
  * ```
  */
 export function createButton(props: AriaButtonProps = {}): ButtonAria {
-  const elementType = props.elementType ?? 'button';
+  const elementType = props.elementType ?? "button";
 
   const { pressProps, isPressed } = createPress({
     isDisabled: props.isDisabled,
@@ -57,8 +57,8 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
     excludeFromTabOrder: props.excludeFromTabOrder,
   });
 
-  const isNativeButton = elementType === 'button' || elementType === 'input';
-  const isLink = elementType === 'a';
+  const isNativeButton = elementType === "button" || elementType === "input";
+  const isLink = elementType === "a";
   const disabled = isDisabledValue(props.isDisabled);
 
   // Handle allowFocusWhenDisabled - set tabIndex to -1 when disabled but focusable
@@ -72,7 +72,7 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
 
   if (isNativeButton) {
     additionalProps = {
-      type: props.type ?? 'button',
+      type: props.type ?? "button",
       disabled: disabled,
       // Form-related attributes
       ...(props.form && { form: props.form }),
@@ -87,9 +87,9 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
   } else {
     // Non-native buttons need role and tabIndex
     additionalProps = {
-      role: 'button',
+      role: "button",
       tabIndex: disabled ? undefined : 0,
-      'aria-disabled': disabled ? true : undefined,
+      "aria-disabled": disabled ? true : undefined,
     };
 
     if (isLink) {
@@ -102,29 +102,29 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
   // ARIA attributes
   const ariaProps: Record<string, unknown> = {};
 
-  if (props['aria-pressed'] !== undefined) {
-    ariaProps['aria-pressed'] = props['aria-pressed'];
+  if (props["aria-pressed"] !== undefined) {
+    ariaProps["aria-pressed"] = props["aria-pressed"];
   }
-  if (props['aria-haspopup'] !== undefined) {
-    ariaProps['aria-haspopup'] = props['aria-haspopup'];
+  if (props["aria-haspopup"] !== undefined) {
+    ariaProps["aria-haspopup"] = props["aria-haspopup"];
   }
-  if (props['aria-expanded'] !== undefined) {
-    ariaProps['aria-expanded'] = props['aria-expanded'];
+  if (props["aria-expanded"] !== undefined) {
+    ariaProps["aria-expanded"] = props["aria-expanded"];
   }
-  if (props['aria-label']) {
-    ariaProps['aria-label'] = props['aria-label'];
+  if (props["aria-label"]) {
+    ariaProps["aria-label"] = props["aria-label"];
   }
-  if (props['aria-labelledby']) {
-    ariaProps['aria-labelledby'] = props['aria-labelledby'];
+  if (props["aria-labelledby"]) {
+    ariaProps["aria-labelledby"] = props["aria-labelledby"];
   }
-  if (props['aria-describedby']) {
-    ariaProps['aria-describedby'] = props['aria-describedby'];
+  if (props["aria-describedby"]) {
+    ariaProps["aria-describedby"] = props["aria-describedby"];
   }
-  if (props['aria-controls']) {
-    ariaProps['aria-controls'] = props['aria-controls'];
+  if (props["aria-controls"]) {
+    ariaProps["aria-controls"] = props["aria-controls"];
   }
-  if (props['aria-current'] !== undefined) {
-    ariaProps['aria-current'] = props['aria-current'];
+  if (props["aria-current"] !== undefined) {
+    ariaProps["aria-current"] = props["aria-current"];
   }
 
   const buttonProps = mergeProps(
@@ -132,7 +132,7 @@ export function createButton(props: AriaButtonProps = {}): ButtonAria {
     additionalProps,
     ariaProps,
     focusableProps as Record<string, unknown>,
-    pressProps as Record<string, unknown>
+    pressProps as Record<string, unknown>,
   );
 
   return {

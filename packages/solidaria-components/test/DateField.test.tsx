@@ -9,11 +9,11 @@
  * - ARIA attributes
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
-import { DateField, DateInput, DateSegment } from '../src/DateField';
-import { CalendarDate } from '@internationalized/date';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { render, screen, cleanup, fireEvent, waitFor } from "@solidjs/testing-library";
+import { DateField, DateInput, DateSegment } from "../src/DateField";
+import { CalendarDate } from "@internationalized/date";
+import { setupUser } from "@proyecto-viviana/solidaria-test-utils";
 
 // User event instance - created per test
 let user: ReturnType<typeof setupUser>;
@@ -27,19 +27,15 @@ async function waitForDateFieldHydration() {
 }
 
 // Helper component for testing DateField
-function TestDateField(props: {
-  fieldProps?: Partial<Parameters<typeof DateField>[0]>;
-}) {
+function TestDateField(props: { fieldProps?: Partial<Parameters<typeof DateField>[0]> }) {
   return (
     <DateField aria-label="Test Date Field" {...props.fieldProps}>
-      <DateInput>
-        {(segment) => <DateSegment segment={segment} />}
-      </DateInput>
+      <DateInput>{(segment) => <DateSegment segment={segment} />}</DateInput>
     </DateField>
   );
 }
 
-describe('DateField', () => {
+describe("DateField", () => {
   beforeEach(() => {
     user = setupUser();
   });
@@ -52,46 +48,46 @@ describe('DateField', () => {
   // RENDERING
   // ============================================
 
-  describe('rendering', () => {
-    it('should render with default class', async () => {
+  describe("rendering", () => {
+    it("should render with default class", async () => {
       render(() => <TestDateField />);
       await waitForDateFieldHydration();
 
-      const field = document.querySelector('.solidaria-DateField');
+      const field = document.querySelector(".solidaria-DateField");
       expect(field).toBeInTheDocument();
     });
 
-    it('should render date segments', async () => {
+    it("should render date segments", async () => {
       render(() => <TestDateField />);
       await waitForDateFieldHydration();
 
       // Should have segments for month, day, year (and literals between)
-      const segments = document.querySelectorAll('.solidaria-DateSegment');
+      const segments = document.querySelectorAll(".solidaria-DateSegment");
       expect(segments.length).toBeGreaterThan(0);
     });
 
-    it('should render with spinbutton role on editable segments', async () => {
+    it("should render with spinbutton role on editable segments", async () => {
       render(() => <TestDateField />);
       await waitForDateFieldHydration();
 
-      const spinbuttons = screen.getAllByRole('spinbutton');
+      const spinbuttons = screen.getAllByRole("spinbutton");
       expect(spinbuttons.length).toBeGreaterThan(0);
     });
 
-    it('should render DateInput with presentation role', async () => {
+    it("should render DateInput with presentation role", async () => {
       render(() => <TestDateField />);
       await waitForDateFieldHydration();
 
-      const input = document.querySelector('.solidaria-DateInput');
+      const input = document.querySelector(".solidaria-DateInput");
       expect(input).toBeInTheDocument();
-      expect(input).toHaveAttribute('role', 'presentation');
+      expect(input).toHaveAttribute("role", "presentation");
     });
 
-    it('should render with custom class', async () => {
-      render(() => <TestDateField fieldProps={{ class: 'my-date-field' }} />);
+    it("should render with custom class", async () => {
+      render(() => <TestDateField fieldProps={{ class: "my-date-field" }} />);
       await waitForDateFieldHydration();
 
-      const field = document.querySelector('.my-date-field');
+      const field = document.querySelector(".my-date-field");
       expect(field).toBeInTheDocument();
     });
   });
@@ -100,46 +96,38 @@ describe('DateField', () => {
   // SEGMENT DISPLAY
   // ============================================
 
-  describe('segment display', () => {
-    it('should show placeholders when no value', async () => {
+  describe("segment display", () => {
+    it("should show placeholders when no value", async () => {
       render(() => <TestDateField />);
       await waitForDateFieldHydration();
 
       // data-placeholder is set as empty string (truthy attribute) not "true"
-      const segments = document.querySelectorAll('[data-placeholder]');
+      const segments = document.querySelectorAll("[data-placeholder]");
       expect(segments.length).toBeGreaterThan(0);
     });
 
-    it('should display value when provided', async () => {
-      render(() => (
-        <TestDateField
-          fieldProps={{ value: new CalendarDate(2024, 6, 15) }}
-        />
-      ));
+    it("should display value when provided", async () => {
+      render(() => <TestDateField fieldProps={{ value: new CalendarDate(2024, 6, 15) }} />);
       await waitForDateFieldHydration();
 
       // The segments should show the value
-      const segments = screen.getAllByRole('spinbutton');
-      const segmentTexts = segments.map(s => s.textContent);
+      const segments = screen.getAllByRole("spinbutton");
+      const segmentTexts = segments.map((s) => s.textContent);
 
       // Should contain month (6 or June), day (15), year (2024)
-      expect(segmentTexts.join(' ')).toContain('15');
-      expect(segmentTexts.join(' ')).toContain('2024');
+      expect(segmentTexts.join(" ")).toContain("15");
+      expect(segmentTexts.join(" ")).toContain("2024");
     });
 
-    it('should display defaultValue', async () => {
-      render(() => (
-        <TestDateField
-          fieldProps={{ defaultValue: new CalendarDate(2024, 3, 20) }}
-        />
-      ));
+    it("should display defaultValue", async () => {
+      render(() => <TestDateField fieldProps={{ defaultValue: new CalendarDate(2024, 3, 20) }} />);
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
-      const segmentTexts = segments.map(s => s.textContent);
+      const segments = screen.getAllByRole("spinbutton");
+      const segmentTexts = segments.map((s) => s.textContent);
 
-      expect(segmentTexts.join(' ')).toContain('20');
-      expect(segmentTexts.join(' ')).toContain('2024');
+      expect(segmentTexts.join(" ")).toContain("20");
+      expect(segmentTexts.join(" ")).toContain("2024");
     });
   });
 
@@ -147,95 +135,79 @@ describe('DateField', () => {
   // SEGMENT EDITING
   // ============================================
 
-  describe('segment editing', () => {
+  describe("segment editing", () => {
     // Note: Keyboard interactions in date segments use contenteditable
     // and complex event handling that doesn't work reliably in jsdom.
     // These tests verify basic segment structure instead.
 
-    it.skip('should increment segment on Arrow Up', async () => {
+    it.skip("should increment segment on Arrow Up", async () => {
       // Skipped: contenteditable keyboard events don't fire handlers in jsdom
-      render(() => (
-        <TestDateField
-          fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }}
-        />
-      ));
+      render(() => <TestDateField fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }} />);
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
-      const daySegment = segments.find(s => s.textContent === '15');
+      const segments = screen.getAllByRole("spinbutton");
+      const daySegment = segments.find((s) => s.textContent === "15");
       expect(daySegment).toBeInTheDocument();
     });
 
-    it.skip('should decrement segment on Arrow Down', async () => {
+    it.skip("should decrement segment on Arrow Down", async () => {
       // Skipped: contenteditable keyboard events don't fire handlers in jsdom
-      render(() => (
-        <TestDateField
-          fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }}
-        />
-      ));
+      render(() => <TestDateField fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }} />);
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
-      const daySegment = segments.find(s => s.textContent === '15');
+      const segments = screen.getAllByRole("spinbutton");
+      const daySegment = segments.find((s) => s.textContent === "15");
       expect(daySegment).toBeInTheDocument();
     });
 
-    it('should navigate to next segment with Arrow Right', async () => {
-      render(() => (
-        <TestDateField
-          fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }}
-        />
-      ));
+    it("should navigate to next segment with Arrow Right", async () => {
+      render(() => <TestDateField fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }} />);
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
+      const segments = screen.getAllByRole("spinbutton");
       expect(segments.length).toBe(3);
 
       segments[0].focus();
-      fireEvent.keyDown(segments[0], { key: 'ArrowRight' });
+      fireEvent.keyDown(segments[0], { key: "ArrowRight" });
       expect(segments[1]).toHaveFocus();
     });
 
-    it.skip('should navigate to previous segment with Arrow Left', async () => {
+    it.skip("should navigate to previous segment with Arrow Left", async () => {
       // Skipped: focus management in contenteditable doesn't work in jsdom
-      render(() => (
-        <TestDateField
-          fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }}
-        />
-      ));
+      render(() => <TestDateField fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }} />);
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
+      const segments = screen.getAllByRole("spinbutton");
       expect(segments.length).toBe(3);
     });
 
-    it.skip('should accept numeric input', async () => {
+    it.skip("should accept numeric input", async () => {
       // Skipped: contenteditable input events don't work in jsdom
       render(() => <TestDateField />);
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
+      const segments = screen.getAllByRole("spinbutton");
       expect(segments.length).toBe(3);
     });
 
-    it('should have editable segments', async () => {
+    it("should have editable segments", async () => {
       render(() => <TestDateField />);
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
+      const segments = screen.getAllByRole("spinbutton");
       // Each segment should have data-editable
-      segments.forEach(segment => {
-        expect(segment).toHaveAttribute('data-editable');
+      segments.forEach((segment) => {
+        expect(segment).toHaveAttribute("data-editable");
       });
     });
 
-    it('should have contenteditable on segments', async () => {
+    it("should have contenteditable on segments", async () => {
       render(() => <TestDateField />);
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
-      segments.forEach(segment => {
-        expect(segment).toHaveAttribute('contenteditable', 'true');
+      const segments = screen.getAllByRole("spinbutton");
+      segments.forEach((segment) => {
+        expect(segment).toHaveAttribute("contenteditable", "true");
       });
     });
   });
@@ -244,24 +216,24 @@ describe('DateField', () => {
   // VALIDATION
   // ============================================
 
-  describe('validation', () => {
-    it('should support isInvalid state', async () => {
+  describe("validation", () => {
+    it("should support isInvalid state", async () => {
       // Need a value for validation state to be reflected
       render(() => (
         <TestDateField
           fieldProps={{
             value: new CalendarDate(2024, 6, 15),
-            validationState: 'invalid'
+            validationState: "invalid",
           }}
         />
       ));
       await waitForDateFieldHydration();
 
-      const field = document.querySelector('.solidaria-DateField');
-      expect(field).toHaveAttribute('data-invalid');
+      const field = document.querySelector(".solidaria-DateField");
+      expect(field).toHaveAttribute("data-invalid");
     });
 
-    it('should mark field as invalid when value is below minValue', async () => {
+    it("should mark field as invalid when value is below minValue", async () => {
       // When value is below minValue, the field should be marked invalid
       render(() => (
         <TestDateField
@@ -274,11 +246,11 @@ describe('DateField', () => {
       await waitForDateFieldHydration();
 
       // Field should be marked invalid because value < minValue
-      const field = document.querySelector('.solidaria-DateField');
-      expect(field).toHaveAttribute('data-invalid');
+      const field = document.querySelector(".solidaria-DateField");
+      expect(field).toHaveAttribute("data-invalid");
     });
 
-    it('should mark field as invalid when value is above maxValue', async () => {
+    it("should mark field as invalid when value is above maxValue", async () => {
       render(() => (
         <TestDateField
           fieldProps={{
@@ -289,8 +261,8 @@ describe('DateField', () => {
       ));
       await waitForDateFieldHydration();
 
-      const field = document.querySelector('.solidaria-DateField');
-      expect(field).toHaveAttribute('data-invalid');
+      const field = document.querySelector(".solidaria-DateField");
+      expect(field).toHaveAttribute("data-invalid");
     });
   });
 
@@ -298,16 +270,16 @@ describe('DateField', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('should support isDisabled on DateField', async () => {
+  describe("disabled state", () => {
+    it("should support isDisabled on DateField", async () => {
       render(() => <TestDateField fieldProps={{ isDisabled: true }} />);
       await waitForDateFieldHydration();
 
-      const field = document.querySelector('.solidaria-DateField');
-      expect(field).toHaveAttribute('data-disabled');
+      const field = document.querySelector(".solidaria-DateField");
+      expect(field).toHaveAttribute("data-disabled");
     });
 
-    it('should not allow editing when disabled', async () => {
+    it("should not allow editing when disabled", async () => {
       render(() => (
         <TestDateField
           fieldProps={{
@@ -318,15 +290,15 @@ describe('DateField', () => {
       ));
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
-      const daySegment = segments.find(s => s.textContent === '15');
+      const segments = screen.getAllByRole("spinbutton");
+      const daySegment = segments.find((s) => s.textContent === "15");
 
       if (daySegment) {
         // Try to increment - should not work
-        fireEvent.keyDown(daySegment, { key: 'ArrowUp' });
+        fireEvent.keyDown(daySegment, { key: "ArrowUp" });
 
         await waitFor(() => {
-          expect(daySegment.textContent).toBe('15');
+          expect(daySegment.textContent).toBe("15");
         });
       }
     });
@@ -336,13 +308,13 @@ describe('DateField', () => {
   // READ ONLY STATE
   // ============================================
 
-  describe('read only state', () => {
-    it('should support isReadOnly on DateField', async () => {
+  describe("read only state", () => {
+    it("should support isReadOnly on DateField", async () => {
       render(() => <TestDateField fieldProps={{ isReadOnly: true }} />);
       await waitForDateFieldHydration();
 
-      const field = document.querySelector('.solidaria-DateField');
-      expect(field).toHaveAttribute('data-readonly');
+      const field = document.querySelector(".solidaria-DateField");
+      expect(field).toHaveAttribute("data-readonly");
     });
   });
 
@@ -350,13 +322,13 @@ describe('DateField', () => {
   // REQUIRED STATE
   // ============================================
 
-  describe('required state', () => {
-    it('should support isRequired on DateField', async () => {
+  describe("required state", () => {
+    it("should support isRequired on DateField", async () => {
       render(() => <TestDateField fieldProps={{ isRequired: true }} />);
       await waitForDateFieldHydration();
 
-      const field = document.querySelector('.solidaria-DateField');
-      expect(field).toHaveAttribute('data-required');
+      const field = document.querySelector(".solidaria-DateField");
+      expect(field).toHaveAttribute("data-required");
     });
   });
 
@@ -364,8 +336,8 @@ describe('DateField', () => {
   // CONTROLLED/UNCONTROLLED
   // ============================================
 
-  describe('controlled/uncontrolled', () => {
-    it('should fire onChange when value changes', async () => {
+  describe("controlled/uncontrolled", () => {
+    it("should fire onChange when value changes", async () => {
       const onChange = vi.fn();
       render(() => (
         <TestDateField
@@ -377,12 +349,12 @@ describe('DateField', () => {
       ));
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
-      const daySegment = segments.find(s => s.textContent === '15');
+      const segments = screen.getAllByRole("spinbutton");
+      const daySegment = segments.find((s) => s.textContent === "15");
 
       if (daySegment) {
         daySegment.focus();
-        fireEvent.keyDown(daySegment, { key: 'ArrowUp' });
+        fireEvent.keyDown(daySegment, { key: "ArrowUp" });
 
         await waitFor(() => {
           expect(onChange).toHaveBeenCalled();
@@ -390,19 +362,15 @@ describe('DateField', () => {
       }
     });
 
-    it('should support controlled value', async () => {
-      render(() => (
-        <TestDateField
-          fieldProps={{ value: new CalendarDate(2024, 12, 25) }}
-        />
-      ));
+    it("should support controlled value", async () => {
+      render(() => <TestDateField fieldProps={{ value: new CalendarDate(2024, 12, 25) }} />);
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
-      const segmentTexts = segments.map(s => s.textContent);
+      const segments = screen.getAllByRole("spinbutton");
+      const segmentTexts = segments.map((s) => s.textContent);
 
-      expect(segmentTexts.join(' ')).toContain('25');
-      expect(segmentTexts.join(' ')).toContain('2024');
+      expect(segmentTexts.join(" ")).toContain("25");
+      expect(segmentTexts.join(" ")).toContain("2024");
     });
   });
 
@@ -410,34 +378,30 @@ describe('DateField', () => {
   // ARIA ATTRIBUTES
   // ============================================
 
-  describe('aria attributes', () => {
-    it('should have spinbutton role on editable segments', async () => {
+  describe("aria attributes", () => {
+    it("should have spinbutton role on editable segments", async () => {
       render(() => <TestDateField />);
       await waitForDateFieldHydration();
 
-      const spinbuttons = screen.getAllByRole('spinbutton');
+      const spinbuttons = screen.getAllByRole("spinbutton");
       expect(spinbuttons.length).toBeGreaterThan(0);
     });
 
-    it('should have aria-label on field', async () => {
+    it("should have aria-label on field", async () => {
       render(() => <TestDateField />);
       await waitForDateFieldHydration();
 
-      const field = document.querySelector('.solidaria-DateField');
-      expect(field).toHaveAttribute('aria-label', 'Test Date Field');
+      const field = document.querySelector(".solidaria-DateField");
+      expect(field).toHaveAttribute("aria-label", "Test Date Field");
     });
 
-    it('should have aria-valuenow on segments with values', async () => {
-      render(() => (
-        <TestDateField
-          fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }}
-        />
-      ));
+    it("should have aria-valuenow on segments with values", async () => {
+      render(() => <TestDateField fieldProps={{ defaultValue: new CalendarDate(2024, 6, 15) }} />);
       await waitForDateFieldHydration();
 
-      const segments = screen.getAllByRole('spinbutton');
+      const segments = screen.getAllByRole("spinbutton");
       // At least some segments should have aria-valuenow
-      const segmentsWithValue = segments.filter(s => s.hasAttribute('aria-valuenow'));
+      const segmentsWithValue = segments.filter((s) => s.hasAttribute("aria-valuenow"));
       expect(segmentsWithValue.length).toBeGreaterThan(0);
     });
   });

@@ -6,15 +6,15 @@
  * when items are selected in a collection.
  */
 
-import { type JSX, splitProps } from 'solid-js';
+import { type JSX, splitProps } from "solid-js";
 import {
   ActionBar as HeadlessActionBar,
   ActionBarContainer as HeadlessActionBarContainer,
   ActionBarSelectionCount as HeadlessSelectionCount,
   ActionBarClearButton as HeadlessClearButton,
   type ActionBarRenderProps,
-} from '@proyecto-viviana/solidaria-components';
-import type { Key } from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solidaria-components";
+import type { Key } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
@@ -22,7 +22,7 @@ import type { Key } from '@proyecto-viviana/solid-stately';
 
 export interface ActionBarProps {
   /** The number of selected items. ActionBar is hidden when 0. */
-  selectedItemCount: number | 'all';
+  selectedItemCount: number | "all";
   /** Callback when the clear button is pressed. */
   onClearSelection: () => void;
   /** Callback when an action is triggered. */
@@ -32,9 +32,9 @@ export interface ActionBarProps {
   /** Additional CSS class name. */
   class?: string;
   /** Accessible label for the action bar. @default 'Actions' */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element (or elements) that labels the action bar. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Optional keydown handler for the action bar root. */
   onKeyDown?: JSX.EventHandlerUnion<HTMLDivElement, KeyboardEvent>;
 }
@@ -50,9 +50,11 @@ export interface ActionBarContainerProps {
 
 function getBarClassName(renderProps: ActionBarRenderProps, extraClass?: string): string {
   return [
-    'vui-action-bar flex items-center gap-2 rounded-lg border border-primary-600 bg-bg-300 p-2',
-    extraClass ?? '',
-  ].filter(Boolean).join(' ');
+    "vui-action-bar flex items-center gap-2 rounded-lg border border-primary-600 bg-bg-300 p-2",
+    extraClass ?? "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 // ============================================
@@ -60,23 +62,17 @@ function getBarClassName(renderProps: ActionBarRenderProps, extraClass?: string)
 // ============================================
 
 export function ActionBar(props: ActionBarProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children']);
+  const [local, headlessProps] = splitProps(props, ["class", "children"]);
 
   return (
     <HeadlessActionBar
       {...headlessProps}
       class={(rp: ActionBarRenderProps) => getBarClassName(rp, local.class)}
     >
-      <HeadlessClearButton
-        class="inline-flex items-center justify-center rounded p-1 text-primary-200 hover:bg-bg-400 transition-colors"
-      />
-      <HeadlessSelectionCount
-        class="text-sm text-primary-200 whitespace-nowrap"
-      />
+      <HeadlessClearButton class="inline-flex items-center justify-center rounded p-1 text-primary-200 hover:bg-bg-400 transition-colors" />
+      <HeadlessSelectionCount class="text-sm text-primary-200 whitespace-nowrap" />
       <div class="flex-1" />
-      <div class="flex items-center gap-1">
-        {local.children}
-      </div>
+      <div class="flex items-center gap-1">{local.children}</div>
     </HeadlessActionBar>
   );
 }
@@ -84,7 +80,7 @@ export function ActionBar(props: ActionBarProps): JSX.Element {
 export function ActionBarContainer(props: ActionBarContainerProps): JSX.Element {
   return (
     <HeadlessActionBarContainer
-      class={['vui-action-bar-container', props.class].filter(Boolean).join(' ')}
+      class={["vui-action-bar-container", props.class].filter(Boolean).join(" ")}
     >
       {props.children}
     </HeadlessActionBarContainer>

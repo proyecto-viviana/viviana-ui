@@ -8,11 +8,17 @@
  * This is a 1:1 port of @react-aria/label's useField hook.
  */
 
-import { JSX } from 'solid-js';
-import { createId } from '../ssr';
-import { createLabel, type LabelAriaProps, type LabelAria, type AriaLabelingProps, type DOMProps } from './createLabel';
-import { mergeProps } from '../utils/mergeProps';
-import { type MaybeAccessor, access } from '../utils/reactivity';
+import { JSX } from "solid-js";
+import { createId } from "../ssr";
+import {
+  createLabel,
+  type LabelAriaProps,
+  type LabelAria,
+  type AriaLabelingProps,
+  type DOMProps,
+} from "./createLabel";
+import { mergeProps } from "../utils/mergeProps";
+import { type MaybeAccessor, access } from "../utils/reactivity";
 
 // ============================================
 // TYPES
@@ -43,7 +49,8 @@ export interface Validation<T> {
   validate?: (value: T) => string | string[] | true | null | undefined;
 }
 
-export interface AriaFieldProps extends LabelAriaProps, HelpTextProps, Omit<Validation<any>, 'isRequired'> {}
+export interface AriaFieldProps
+  extends LabelAriaProps, HelpTextProps, Omit<Validation<any>, "isRequired"> {}
 
 export interface FieldAria extends LabelAria {
   /** Props for the description element, if any. */
@@ -72,7 +79,7 @@ export function createField(props: MaybeAccessor<AriaFieldProps>): FieldAria {
   const descriptionId = createId();
   const errorMessageId = createId();
 
-  const getDescriptionProps = (): FieldAria['descriptionProps'] => {
+  const getDescriptionProps = (): FieldAria["descriptionProps"] => {
     const { description, errorMessage, isInvalid } = getProps();
 
     // Only include ID if description exists or there's an error message that might be shown
@@ -85,7 +92,7 @@ export function createField(props: MaybeAccessor<AriaFieldProps>): FieldAria {
     };
   };
 
-  const getErrorMessageProps = (): FieldAria['errorMessageProps'] => {
+  const getErrorMessageProps = (): FieldAria["errorMessageProps"] => {
     const { errorMessage, isInvalid } = getProps();
 
     // Only include ID if there's an error message and the field is invalid
@@ -116,15 +123,15 @@ export function createField(props: MaybeAccessor<AriaFieldProps>): FieldAria {
     }
 
     // Add any existing aria-describedby from props
-    const existingDescribedBy = getProps()['aria-describedby'];
+    const existingDescribedBy = getProps()["aria-describedby"];
     if (existingDescribedBy) {
       describedByIds.push(existingDescribedBy);
     }
 
-    const ariaDescribedBy = describedByIds.length > 0 ? describedByIds.join(' ') : undefined;
+    const ariaDescribedBy = describedByIds.length > 0 ? describedByIds.join(" ") : undefined;
 
     return mergeProps(baseLabelFieldProps, {
-      'aria-describedby': ariaDescribedBy,
+      "aria-describedby": ariaDescribedBy,
     }) as AriaLabelingProps & DOMProps;
   };
 

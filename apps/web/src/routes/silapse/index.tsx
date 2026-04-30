@@ -88,8 +88,8 @@ function Landing() {
             "text-align": "left",
           }}
         >
-          A meticulously crafted port of Adobe's React Spectrum.
-          60+ accessible components, 3680 tests, zero compromises.
+          A meticulously crafted port of Adobe's React Spectrum. 60+ accessible components, 3680
+          tests, zero compromises.
         </p>
 
         {/* CTA Buttons */}
@@ -219,9 +219,7 @@ function Landing() {
           "font-size": "11px",
         }}
       >
-        <span style={{ "font-weight": "600", color: colors().text }}>
-          Proyecto Viviana
-        </span>
+        <span style={{ "font-weight": "600", color: colors().text }}>Proyecto Viviana</span>
         <div style={{ display: "flex", gap: "16px", "font-size": "10px" }}>
           <span style={{ color: colors().blue }}>SolidJS</span>
           <span style={{ color: colors().pink }}>Tailwind v4</span>
@@ -232,12 +230,7 @@ function Landing() {
   );
 }
 
-function FeatureBlock(props: {
-  title: string;
-  desc: string;
-  color: string;
-  bgColor: string;
-}) {
+function FeatureBlock(props: { title: string; desc: string; color: string; bgColor: string }) {
   return (
     <div
       style={{

@@ -7,16 +7,16 @@
  * This is a 1:1 port of @react-aria/radio's useRadio hook.
  */
 
-import { JSX, Accessor, createEffect } from 'solid-js';
-import { createPress } from '../interactions/createPress';
-import { createFocusable } from '../interactions/createFocusable';
-import { mergeProps } from '../utils/mergeProps';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { type MaybeAccessor, access } from '../utils/reactivity';
-import { isDevEnv } from '../utils/env';
-import { type RadioGroupState, radioGroupSyncVersion } from '@proyecto-viviana/solid-stately';
-import { radioGroupData } from './createRadioGroup';
-import { type PressEvent } from '../interactions/PressEvent';
+import { JSX, Accessor, createEffect } from "solid-js";
+import { createPress } from "../interactions/createPress";
+import { createFocusable } from "../interactions/createFocusable";
+import { mergeProps } from "../utils/mergeProps";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { type MaybeAccessor, access } from "../utils/reactivity";
+import { isDevEnv } from "../utils/env";
+import { type RadioGroupState, radioGroupSyncVersion } from "@proyecto-viviana/solid-stately";
+import { radioGroupData } from "./createRadioGroup";
+import { type PressEvent } from "../interactions/PressEvent";
 
 // ============================================
 // TYPES
@@ -30,11 +30,11 @@ export interface AriaRadioProps {
   /** The label for the radio button. */
   children?: JSX.Element;
   /** Defines a string value that labels the current element. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element (or elements) that labels the current element. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Identifies the element (or elements) that describes the object. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Handler that is called when the press is released over the target. */
   onPress?: (e: PressEvent) => void;
   /** Handler that is called when a press interaction starts. */
@@ -85,7 +85,7 @@ export interface RadioAria {
 export function createRadio(
   props: MaybeAccessor<AriaRadioProps>,
   state: RadioGroupState,
-  ref: () => HTMLInputElement | null
+  ref: () => HTMLInputElement | null,
 ): RadioAria {
   const getProps = () => access(props);
 
@@ -101,9 +101,11 @@ export function createRadio(
   createEffect(() => {
     const p = getProps();
     const hasChildren = p.children != null;
-    const hasAriaLabel = p['aria-label'] != null || p['aria-labelledby'] != null;
+    const hasAriaLabel = p["aria-label"] != null || p["aria-labelledby"] != null;
     if (!hasChildren && !hasAriaLabel && isDevEnv()) {
-      console.warn('If you do not provide children, you must specify an aria-label for accessibility');
+      console.warn(
+        "If you do not provide children, you must specify an aria-label for accessibility",
+      );
     }
   });
 
@@ -172,49 +174,91 @@ export function createRadio(
 
   // Handle press state for keyboard interactions and cases where labelProps is not used.
   const { pressProps, isPressed } = createPress({
-    get onPressStart() { return getProps().onPressStart; },
-    get onPressEnd() { return getProps().onPressEnd; },
-    get onPressChange() { return getProps().onPressChange; },
-    get onPress() { return getProps().onPress; },
-    get onPressUp() { return getProps().onPressUp; },
-    get onClick() { return getProps().onClick; },
-    get isDisabled() { return isDisabled(); },
+    get onPressStart() {
+      return getProps().onPressStart;
+    },
+    get onPressEnd() {
+      return getProps().onPressEnd;
+    },
+    get onPressChange() {
+      return getProps().onPressChange;
+    },
+    get onPress() {
+      return getProps().onPress;
+    },
+    get onPressUp() {
+      return getProps().onPressUp;
+    },
+    get onClick() {
+      return getProps().onClick;
+    },
+    get isDisabled() {
+      return isDisabled();
+    },
   });
 
   // Handle press state on the label.
   const { pressProps: labelPressProps, isPressed: isLabelPressed } = createPress({
-    get onPressStart() { return getProps().onPressStart; },
-    get onPressEnd() { return getProps().onPressEnd; },
-    get onPressChange() { return getProps().onPressChange; },
-    get onPressUp() { return getProps().onPressUp; },
-    get onClick() { return getProps().onClick; },
+    get onPressStart() {
+      return getProps().onPressStart;
+    },
+    get onPressEnd() {
+      return getProps().onPressEnd;
+    },
+    get onPressChange() {
+      return getProps().onPressChange;
+    },
+    get onPressUp() {
+      return getProps().onPressUp;
+    },
+    get onClick() {
+      return getProps().onClick;
+    },
     onPress(e: PressEvent) {
       getProps().onPress?.(e);
       state.setSelectedValue(value());
       ref()?.focus();
     },
-    get isDisabled() { return isDisabled(); },
+    get isDisabled() {
+      return isDisabled();
+    },
   });
 
   // Handle focusable
-  const { focusableProps } = createFocusable({
-    get isDisabled() { return isDisabled(); },
-    get autoFocus() { return getProps().autoFocus; },
-    onFocus(e: FocusEvent) {
-      getProps().onFocus?.(e);
-      state.setLastFocusedValue(value());
+  const { focusableProps } = createFocusable(
+    {
+      get isDisabled() {
+        return isDisabled();
+      },
+      get autoFocus() {
+        return getProps().autoFocus;
+      },
+      onFocus(e: FocusEvent) {
+        getProps().onFocus?.(e);
+        state.setLastFocusedValue(value());
+      },
+      get onBlur() {
+        return getProps().onBlur;
+      },
+      get onFocusChange() {
+        return getProps().onFocusChange;
+      },
+      get onKeyDown() {
+        return getProps().onKeyDown;
+      },
+      get onKeyUp() {
+        return getProps().onKeyUp;
+      },
     },
-    get onBlur() { return getProps().onBlur; },
-    get onFocusChange() { return getProps().onFocusChange; },
-    get onKeyDown() { return getProps().onKeyDown; },
-    get onKeyUp() { return getProps().onKeyUp; },
-  }, ref as unknown as (el: HTMLElement) => void);
+    ref as unknown as (el: HTMLElement) => void,
+  );
 
   // Combine press and focusable props for input
   const interactions = mergeProps(pressProps, focusableProps);
 
   // Filter DOM props
-  const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
+  const domProps = () =>
+    filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
   // Calculate tabIndex based on selection and focus state
   const getTabIndex = (): number | undefined => {
@@ -258,8 +302,8 @@ export function createRadio(
 
       // Build aria-describedby
       const describedByIds: string[] = [];
-      if (p['aria-describedby']) {
-        describedByIds.push(p['aria-describedby']);
+      if (p["aria-describedby"]) {
+        describedByIds.push(p["aria-describedby"]);
       }
       if (state.isInvalid && groupData?.errorMessageId) {
         describedByIds.push(groupData.errorMessageId);
@@ -267,10 +311,10 @@ export function createRadio(
       if (groupData?.descriptionId) {
         describedByIds.push(groupData.descriptionId);
       }
-      const ariaDescribedBy = describedByIds.length > 0 ? describedByIds.join(' ') : undefined;
+      const ariaDescribedBy = describedByIds.length > 0 ? describedByIds.join(" ") : undefined;
 
       return mergeProps(domProps(), interactions, {
-        type: 'radio' as const,
+        type: "radio" as const,
         name: groupData?.name,
         form: groupData?.form,
         tabIndex: getTabIndex(),
@@ -279,7 +323,7 @@ export function createRadio(
         checked: isSelected(),
         value: value(),
         onChange,
-        'aria-describedby': ariaDescribedBy,
+        "aria-describedby": ariaDescribedBy,
       }) as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
     isDisabled: isDisabled(),

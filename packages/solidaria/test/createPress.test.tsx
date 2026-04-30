@@ -5,12 +5,12 @@
  * This matches React Aria's test patterns for compatibility.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { createPress, type PressEvent } from '../src/interactions/createPress';
-import { Dynamic } from 'solid-js/web';
-import type { JSX, Component } from 'solid-js';
-import { setupUser, createPointerEvent } from '@proyecto-viviana/solidaria-test-utils';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, cleanup, fireEvent } from "@solidjs/testing-library";
+import { createPress, type PressEvent } from "../src/interactions/createPress";
+import { Dynamic } from "solid-js/web";
+import type { JSX, Component } from "solid-js";
+import { setupUser, createPointerEvent } from "@proyecto-viviana/solidaria-test-utils";
 
 // setupUser and pointer helpers are consolidated in solidaria-test-utils.
 // Note: createPointerEvent includes width/height/pressure defaults to avoid virtual detection.
@@ -36,7 +36,7 @@ interface ExampleProps extends JSX.HTMLAttributes<HTMLElement> {
 
 const Example: Component<ExampleProps> = (props) => {
   const {
-    elementType = 'div',
+    elementType = "div",
     style,
     draggable,
     children,
@@ -77,12 +77,12 @@ const Example: Component<ExampleProps> = (props) => {
       data-testid="test-element"
       data-pressed={isPressed() || undefined}
     >
-      {elementType !== 'input' ? (children || 'test') : undefined}
+      {elementType !== "input" ? children || "test" : undefined}
     </Dynamic>
   );
 };
 
-describe('createPress', () => {
+describe("createPress", () => {
   const user = setupUser();
   let usingFakeTimers = true;
 
@@ -106,7 +106,7 @@ describe('createPress', () => {
     vi.useRealTimers();
   }
 
-  const originalPointerEvent = typeof PointerEvent !== 'undefined' ? PointerEvent : undefined;
+  const originalPointerEvent = typeof PointerEvent !== "undefined" ? PointerEvent : undefined;
 
   function disablePointerEvents() {
     (globalThis as any).PointerEvent = undefined;
@@ -120,7 +120,7 @@ describe('createPress', () => {
   // MOUSE EVENTS (separate from pointer events)
   // ============================================
 
-  describe('mouse events', () => {
+  describe("mouse events", () => {
     beforeEach(() => {
       disablePointerEvents();
     });
@@ -129,7 +129,7 @@ describe('createPress', () => {
       restorePointerEvents();
     });
 
-    it('should fire press events based on mouse events', () => {
+    it("should fire press events based on mouse events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -137,13 +137,13 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       const shouldFocus = fireEvent.mouseDown(el, { detail: 1 });
       if (shouldFocus) {
         el.focus();
@@ -152,15 +152,23 @@ describe('createPress', () => {
       const shouldClick = fireEvent.click(el, { detail: 1 });
       expect(shouldClick).toBe(true);
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: true });
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressup', pointerType: 'mouse' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: false });
-      expect(events).toContainEqual(expect.objectContaining({ type: 'press', pointerType: 'mouse' }));
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressstart", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "presschange", pressed: true });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressup", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressend", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "presschange", pressed: false });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "press", pointerType: "mouse" }),
+      );
     });
 
-    it('should fire press change events when moving mouse outside target', () => {
+    it("should fire press change events when moving mouse outside target", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -168,23 +176,23 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.mouseDown(el, { detail: 1 });
       fireEvent.mouseLeave(el);
       fireEvent.mouseUp(document.body, { detail: 1, clientX: 100, clientY: 100 });
       fireEvent.mouseEnter(el);
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: true });
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: false });
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressstart" }));
+      expect(events).toContainEqual({ type: "presschange", pressed: true });
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressend" }));
+      expect(events).toContainEqual({ type: "presschange", pressed: false });
     });
 
-    it('should cancel press when moving outside and the shouldCancelOnPointerExit option is set (mouse)', () => {
+    it("should cancel press when moving outside and the shouldCancelOnPointerExit option is set (mouse)", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -193,30 +201,30 @@ describe('createPress', () => {
           shouldCancelOnPointerExit
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.mouseDown(el, { detail: 1 });
       fireEvent.mouseLeave(el);
       fireEvent.mouseEnter(el);
       fireEvent.mouseUp(el, { detail: 1 });
       fireEvent.click(el, { detail: 1 });
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend' }));
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressstart" }));
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressend" }));
       // Should NOT have press event since we cancelled
-      const pressEvents = events.filter((e) => e.type === 'press');
+      const pressEvents = events.filter((e) => e.type === "press");
       expect(pressEvents.length).toBe(0);
     });
 
-    it('should only handle left clicks (mouse)', () => {
+    it("should only handle left clicks (mouse)", () => {
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       // Right click
       fireEvent.mouseDown(el, { button: 2, detail: 1 });
@@ -233,10 +241,10 @@ describe('createPress', () => {
       expect(onPress).not.toHaveBeenCalled();
     });
 
-    it('should focus the element on click by default', () => {
+    it("should focus the element on click by default", () => {
       render(() => <Example />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       const shouldFocus = fireEvent.mouseDown(el, { detail: 1 });
       fireEvent.mouseUp(el, { detail: 1 });
       fireEvent.click(el, { detail: 1 });
@@ -247,12 +255,12 @@ describe('createPress', () => {
       expect(document.activeElement).toBe(el);
     });
 
-    it('should cancel press on dragstart (mouse)', () => {
+    it("should cancel press on dragstart (mouse)", () => {
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} draggable />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.mouseDown(el, { detail: 1 });
       fireEvent.dragStart(el);
       fireEvent.mouseUp(el, { detail: 1 });
@@ -265,8 +273,8 @@ describe('createPress', () => {
   // POINTER EVENTS (MOUSE)
   // ============================================
 
-  describe('pointer events - mouse', () => {
-    it('should fire press events based on pointer events with pointerType=mouse', async () => {
+  describe("pointer events - mouse", () => {
+    it("should fire press events based on pointer events with pointerType=mouse", async () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -274,93 +282,113 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       // Pointer down
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: true });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressstart", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "presschange", pressed: true });
 
       // Pointer up + click
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
       fireEvent.click(el);
 
       vi.runAllTimers();
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressup', pointerType: 'mouse' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: false });
-      expect(events).toContainEqual(expect.objectContaining({ type: 'press', pointerType: 'mouse' }));
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressup", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressend", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "presschange", pressed: false });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "press", pointerType: "mouse" }),
+      );
     });
 
-    it('should fire onPressStart on pointer down', () => {
+    it("should fire onPressStart on pointer down", () => {
       const onPressStart = vi.fn();
 
       render(() => <Example onPressStart={onPressStart} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
 
       expect(onPressStart).toHaveBeenCalledTimes(1);
-      expect(onPressStart).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'pressstart',
-        pointerType: 'mouse',
-      }));
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "pressstart",
+          pointerType: "mouse",
+        }),
+      );
     });
 
-    it('should fire onPressEnd on pointer up', () => {
+    it("should fire onPressEnd on pointer up", () => {
       const onPressEnd = vi.fn();
 
       render(() => <Example onPressEnd={onPressEnd} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.click(el);
 
       vi.runAllTimers();
 
       expect(onPressEnd).toHaveBeenCalledTimes(1);
-      expect(onPressEnd).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'pressend',
-        pointerType: 'mouse',
-      }));
+      expect(onPressEnd).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "pressend",
+          pointerType: "mouse",
+        }),
+      );
     });
 
-    it('should fire onPress on complete press', () => {
+    it("should fire onPress on complete press", () => {
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.click(el);
 
       vi.runAllTimers();
 
       expect(onPress).toHaveBeenCalledTimes(1);
-      expect(onPress).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'press',
-        pointerType: 'mouse',
-      }));
+      expect(onPress).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "press",
+          pointerType: "mouse",
+        }),
+      );
     });
 
-    it('should fire onPressUp on pointer release', () => {
+    it("should fire onPressUp on pointer release", () => {
       const onPressUp = vi.fn();
 
       render(() => <Example onPressUp={onPressUp} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.click(el);
 
       vi.runAllTimers();
@@ -368,49 +396,49 @@ describe('createPress', () => {
       expect(onPressUp).toHaveBeenCalledTimes(1);
     });
 
-    it('should fire onPressChange with pressed state', () => {
+    it("should fire onPressChange with pressed state", () => {
       const onPressChange = vi.fn();
 
       render(() => <Example onPressChange={onPressChange} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
 
       expect(onPressChange).toHaveBeenCalledWith(true);
 
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.click(el);
       vi.runAllTimers();
 
       expect(onPressChange).toHaveBeenCalledWith(false);
     });
 
-    it('should track isPressed state', () => {
+    it("should track isPressed state", () => {
       render(() => <Example />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      expect(el).not.toHaveAttribute('data-pressed');
+      expect(el).not.toHaveAttribute("data-pressed");
 
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      expect(el).toHaveAttribute('data-pressed', 'true');
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      expect(el).toHaveAttribute("data-pressed", "true");
 
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.click(el);
       vi.runAllTimers();
 
-      expect(el).not.toHaveAttribute('data-pressed');
+      expect(el).not.toHaveAttribute("data-pressed");
     });
 
-    it('should not fire press events when disabled', () => {
+    it("should not fire press events when disabled", () => {
       const onPress = vi.fn();
       const onPressStart = vi.fn();
 
       render(() => <Example onPress={onPress} onPressStart={onPressStart} isDisabled />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.click(el);
 
       vi.runAllTimers();
@@ -419,27 +447,27 @@ describe('createPress', () => {
       expect(onPress).not.toHaveBeenCalled();
     });
 
-    it('should only handle left button clicks', () => {
+    it("should only handle left button clicks", () => {
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       // Right click
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse', button: 2 }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse', button: 2 }));
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse", button: 2 }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse", button: 2 }));
 
       expect(onPress).not.toHaveBeenCalled();
 
       // Middle click
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse', button: 1 }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse', button: 1 }));
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse", button: 1 }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse", button: 1 }));
 
       expect(onPress).not.toHaveBeenCalled();
     });
 
-    it('should ignore virtual pointer events', () => {
+    it("should ignore virtual pointer events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -452,24 +480,30 @@ describe('createPress', () => {
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       // Virtual pointer events have zero dimensions
-      fireEvent(el, pointerEvent('pointerdown', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        width: 0,
-        height: 0,
-        clientX: 0,
-        clientY: 0,
-      }));
-      fireEvent(el, pointerEvent('pointerup', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        width: 0,
-        height: 0,
-        clientX: 0,
-        clientY: 0,
-      }));
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "mouse",
+          width: 0,
+          height: 0,
+          clientX: 0,
+          clientY: 0,
+        }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerup", {
+          pointerId: 1,
+          pointerType: "mouse",
+          width: 0,
+          height: 0,
+          clientX: 0,
+          clientY: 0,
+        }),
+      );
 
       // Should not fire press events for virtual pointer events
       expect(events).toEqual([]);
@@ -478,14 +512,16 @@ describe('createPress', () => {
       fireEvent.click(el);
       vi.runAllTimers();
 
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'pressstart',
-        pointerType: 'virtual',
-      }));
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "pressstart",
+          pointerType: "virtual",
+        }),
+      );
     });
 
-    it('should not ignore virtual pointer events on Android', () => {
-      const uaMock = vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Android');
+    it("should not ignore virtual pointer events on Android", () => {
+      const uaMock = vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Android");
 
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
@@ -499,38 +535,46 @@ describe('createPress', () => {
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       // On Android, virtual pointer events should NOT be ignored
-      fireEvent(el, pointerEvent('pointerdown', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        width: 0,
-        height: 0,
-        clientX: 0,
-        clientY: 0,
-      }));
-      fireEvent(el, pointerEvent('pointerup', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        width: 0,
-        height: 0,
-        clientX: 0,
-        clientY: 0,
-      }));
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "mouse",
+          width: 0,
+          height: 0,
+          clientX: 0,
+          clientY: 0,
+        }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerup", {
+          pointerId: 1,
+          pointerType: "mouse",
+          width: 0,
+          height: 0,
+          clientX: 0,
+          clientY: 0,
+        }),
+      );
       fireEvent.click(el);
 
       vi.runAllTimers();
 
       // On Android, should fire press events (not ignored)
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'pressstart',
-        pointerType: 'mouse', // Not virtual on Android
-      }));
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "pressstart",
+          pointerType: "mouse", // Not virtual on Android
+        }),
+      );
 
       uaMock.mockRestore();
     });
 
-    it('should detect Android TalkBack double tap', () => {
+    it("should detect Android TalkBack double tap", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -543,46 +587,54 @@ describe('createPress', () => {
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       // Android TalkBack fires pointer events with width: 1, height: 1, pressure: 0, detail: 0
       // These should be detected as virtual events
-      fireEvent(el, pointerEvent('pointerdown', {
-        pointerId: 1,
-        width: 1,
-        height: 1,
-        pressure: 0,
-        detail: 0,
-        pointerType: 'mouse',
-      }));
-      fireEvent(el, pointerEvent('pointerup', {
-        pointerId: 1,
-        width: 1,
-        height: 1,
-        pressure: 0,
-        detail: 0,
-        pointerType: 'mouse',
-      }));
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          width: 1,
+          height: 1,
+          pressure: 0,
+          detail: 0,
+          pointerType: "mouse",
+        }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerup", {
+          pointerId: 1,
+          width: 1,
+          height: 1,
+          pressure: 0,
+          detail: 0,
+          pointerType: "mouse",
+        }),
+      );
 
       // Should be ignored (virtual event)
       expect(events).toEqual([]);
 
       // Click should handle it as virtual
-      fireEvent.click(el, { pointerType: 'mouse', width: 1, height: 1, detail: 1 });
+      fireEvent.click(el, { pointerType: "mouse", width: 1, height: 1, detail: 1 });
       vi.runAllTimers();
 
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'pressstart',
-        pointerType: 'virtual',
-      }));
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "pressstart",
+          pointerType: "virtual",
+        }),
+      );
     });
 
-    it('should fire press event when pointerup close to the target', () => {
+    it("should fire press event when pointerup close to the target", () => {
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
-      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+      const el = screen.getByTestId("test-element");
+      vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
         left: 0,
         top: 0,
         right: 100,
@@ -594,30 +646,39 @@ describe('createPress', () => {
         toJSON: () => ({}),
       });
 
-      fireEvent(el, pointerEvent('pointerdown', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        clientX: 0,
-        clientY: 0,
-        width: 20,
-        height: 20,
-      }));
-      fireEvent(el, pointerEvent('pointermove', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        clientX: 10,
-        clientY: 10,
-        width: 20,
-        height: 20,
-      }));
-      fireEvent(el, pointerEvent('pointerup', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        clientX: 10,
-        clientY: 10,
-        width: 20,
-        height: 20,
-      }));
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 0,
+          clientY: 0,
+          width: 20,
+          height: 20,
+        }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointermove", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 10,
+          clientY: 10,
+          width: 20,
+          height: 20,
+        }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerup", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 10,
+          clientY: 10,
+          width: 20,
+          height: 20,
+        }),
+      );
       fireEvent.click(el);
 
       expect(onPress).toHaveBeenCalled();
@@ -628,8 +689,8 @@ describe('createPress', () => {
   // TOUCH EVENTS (separate from pointer events)
   // ============================================
 
-  describe('touch events', () => {
-    it('should fire press events based on touch events', () => {
+  describe("touch events", () => {
+    it("should fire press events based on touch events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -637,27 +698,35 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
 
       vi.runAllTimers();
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart', pointerType: 'touch' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: true });
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressup', pointerType: 'touch' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend', pointerType: 'touch' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: false });
-      expect(events).toContainEqual(expect.objectContaining({ type: 'press', pointerType: 'touch' }));
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressstart", pointerType: "touch" }),
+      );
+      expect(events).toContainEqual({ type: "presschange", pressed: true });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressup", pointerType: "touch" }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressend", pointerType: "touch" }),
+      );
+      expect(events).toContainEqual({ type: "presschange", pressed: false });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "press", pointerType: "touch" }),
+      );
     });
 
-    it('should fire press change events when moving touch outside target', () => {
+    it("should fire press change events when moving touch outside target", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -665,12 +734,12 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+      const el = screen.getByTestId("test-element");
+      vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
         left: 0,
         top: 0,
         right: 100,
@@ -686,13 +755,13 @@ describe('createPress', () => {
       fireEvent.touchMove(el, { changedTouches: [{ identifier: 1, clientX: 200, clientY: 200 }] });
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, clientX: 200, clientY: 200 }] });
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: true });
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: false });
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressstart" }));
+      expect(events).toContainEqual({ type: "presschange", pressed: true });
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressend" }));
+      expect(events).toContainEqual({ type: "presschange", pressed: false });
     });
 
-    it('should cancel press when moving outside and the shouldCancelOnPointerExit option is set (touch)', () => {
+    it("should cancel press when moving outside and the shouldCancelOnPointerExit option is set (touch)", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -701,12 +770,12 @@ describe('createPress', () => {
           shouldCancelOnPointerExit
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+      const el = screen.getByTestId("test-element");
+      vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
         left: 0,
         top: 0,
         right: 100,
@@ -724,19 +793,19 @@ describe('createPress', () => {
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, clientX: 50, clientY: 50 }] });
 
       // Should have pressstart and pressend, but NOT press (because cancel was called)
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend' }));
-      const pressEvents = events.filter((e) => e.type === 'press');
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressstart" }));
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressend" }));
+      const pressEvents = events.filter((e) => e.type === "press");
       expect(pressEvents.length).toBe(0);
     });
 
-    it('should handle touch cancel events', () => {
+    it("should handle touch cancel events", () => {
       const onPressEnd = vi.fn();
       const onPress = vi.fn();
 
       render(() => <Example onPressEnd={onPressEnd} onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
       fireEvent.touchCancel(el, { changedTouches: [{ identifier: 1 }] });
 
@@ -744,13 +813,13 @@ describe('createPress', () => {
       expect(onPress).not.toHaveBeenCalled();
     });
 
-    it('should fire press event when touchup close to the target', () => {
+    it("should fire press event when touchup close to the target", () => {
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
-      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+      const el = screen.getByTestId("test-element");
+      vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
         left: 0,
         top: 0,
         right: 100,
@@ -780,8 +849,8 @@ describe('createPress', () => {
   // POINTER EVENTS (TOUCH)
   // ============================================
 
-  describe('pointer events - touch', () => {
-    it('should fire press events based on pointer events with pointerType=touch', () => {
+  describe("pointer events - touch", () => {
+    it("should fire press events based on pointer events with pointerType=touch", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -789,51 +858,65 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'touch', clientX: 0, clientY: 0 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", { pointerId: 1, pointerType: "touch", clientX: 0, clientY: 0 }),
+      );
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart', pointerType: 'touch' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: true });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressstart", pointerType: "touch" }),
+      );
+      expect(events).toContainEqual({ type: "presschange", pressed: true });
 
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'touch', clientX: 0, clientY: 0 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerup", { pointerId: 1, pointerType: "touch", clientX: 0, clientY: 0 }),
+      );
       fireEvent.click(el);
 
       vi.runAllTimers();
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'press', pointerType: 'touch' }));
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "press", pointerType: "touch" }),
+      );
     });
 
-    it('should handle touch start and end', () => {
+    it("should handle touch start and end", () => {
       const onPressStart = vi.fn();
       const onPressEnd = vi.fn();
 
       render(() => <Example onPressStart={onPressStart} onPressEnd={onPressEnd} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
 
-      expect(onPressStart).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'pressstart',
-        pointerType: 'touch',
-      }));
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "pressstart",
+          pointerType: "touch",
+        }),
+      );
 
       fireEvent.touchEnd(el, {
         changedTouches: [{ identifier: 1, clientX: 0, clientY: 0 }],
         targetTouches: [],
       });
 
-      expect(onPressEnd).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'pressend',
-        pointerType: 'touch',
-      }));
+      expect(onPressEnd).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "pressend",
+          pointerType: "touch",
+        }),
+      );
     });
   });
 
@@ -841,8 +924,8 @@ describe('createPress', () => {
   // POINTER MOVEMENT (ENTER/LEAVE)
   // ============================================
 
-  describe('pointer movement', () => {
-    it('should fire press change events when moving pointer outside target', () => {
+  describe("pointer movement", () => {
+    it("should fire press change events when moving pointer outside target", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -850,43 +933,54 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       // Press down
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: true });
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressstart" }));
+      expect(events).toContainEqual({ type: "presschange", pressed: true });
 
       // Move out of target
-      fireEvent(el, pointerEvent('pointerleave', { pointerId: 1, pointerType: 'mouse', clientX: 100, clientY: 100 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerleave", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 100,
+          clientY: 100,
+        }),
+      );
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: false });
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressend" }));
+      expect(events).toContainEqual({ type: "presschange", pressed: false });
     });
 
-    it('should re-enter pressed state when pointer moves back over target', () => {
+    it("should re-enter pressed state when pointer moves back over target", () => {
       const onPressChange = vi.fn();
 
       render(() => <Example onPressChange={onPressChange} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
       expect(onPressChange).toHaveBeenLastCalledWith(true);
 
-      fireEvent(el, pointerEvent('pointerleave', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerleave", { pointerId: 1, pointerType: "mouse" }));
       expect(onPressChange).toHaveBeenLastCalledWith(false);
 
-      fireEvent(el, pointerEvent('pointerenter', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerenter", { pointerId: 1, pointerType: "mouse" }));
       expect(onPressChange).toHaveBeenLastCalledWith(true);
     });
 
-    it('should cancel press when shouldCancelOnPointerExit is true', () => {
+    it("should cancel press when shouldCancelOnPointerExit is true", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -895,31 +989,54 @@ describe('createPress', () => {
           shouldCancelOnPointerExit
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
-      fireEvent(el, pointerEvent('pointerleave', { pointerId: 1, pointerType: 'mouse', clientX: 100, clientY: 100 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerleave", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 100,
+          clientY: 100,
+        }),
+      );
 
       // Move back over target
-      fireEvent(el, pointerEvent('pointerenter', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerenter", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 0,
+          clientY: 0,
+        }),
+      );
 
       // Should have pressstart, presschange(true), pressend, presschange(false)
       // But NOT another pressstart after re-enter because cancel was called
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: true });
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'presschange', pressed: false });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressstart", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "presschange", pressed: true });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressend", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "presschange", pressed: false });
 
       // Should NOT have press event since we cancelled
-      expect(events).not.toContainEqual(expect.objectContaining({ type: 'press' }));
+      expect(events).not.toContainEqual(expect.objectContaining({ type: "press" }));
 
       // After cancel, re-entering should NOT restart the press
-      const pressStarts = events.filter(e => e.type === 'pressstart');
+      const pressStarts = events.filter((e) => e.type === "pressstart");
       expect(pressStarts).toHaveLength(1);
     });
   });
@@ -928,46 +1045,50 @@ describe('createPress', () => {
   // KEYBOARD EVENTS
   // ============================================
 
-  describe('keyboard events', () => {
-    it('should fire onPress on Enter key', async () => {
+  describe("keyboard events", () => {
+    it("should fire onPress on Enter key", async () => {
       switchToRealTimers();
       const user = setupUser();
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       el.focus();
 
-      await user.keyboard('[Enter]');
+      await user.keyboard("[Enter]");
 
       expect(onPress).toHaveBeenCalledTimes(1);
-      expect(onPress).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'press',
-        pointerType: 'keyboard',
-      }));
+      expect(onPress).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "press",
+          pointerType: "keyboard",
+        }),
+      );
     });
 
-    it('should fire onPress on Space key', async () => {
+    it("should fire onPress on Space key", async () => {
       switchToRealTimers();
       const user = setupUser();
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       el.focus();
 
-      await user.keyboard('[Space]');
+      await user.keyboard("[Space]");
 
       expect(onPress).toHaveBeenCalledTimes(1);
-      expect(onPress).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'press',
-        pointerType: 'keyboard',
-      }));
+      expect(onPress).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "press",
+          pointerType: "keyboard",
+        }),
+      );
     });
 
-    it('should fire onPressStart on key down and onPressEnd on key up', async () => {
+    it("should fire onPressStart on key down and onPressEnd on key up", async () => {
       switchToRealTimers();
       const user = setupUser();
       const onPressStart = vi.fn();
@@ -975,85 +1096,85 @@ describe('createPress', () => {
 
       render(() => <Example onPressStart={onPressStart} onPressEnd={onPressEnd} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       el.focus();
 
-      await user.keyboard('[Space>]'); // Key down only
+      await user.keyboard("[Space>]"); // Key down only
       expect(onPressStart).toHaveBeenCalledTimes(1);
       expect(onPressEnd).not.toHaveBeenCalled();
 
-      await user.keyboard('[/Space]'); // Key up
+      await user.keyboard("[/Space]"); // Key up
       expect(onPressEnd).toHaveBeenCalledTimes(1);
     });
 
-    it('should track isPressed during keyboard press', async () => {
+    it("should track isPressed during keyboard press", async () => {
       switchToRealTimers();
       const user = setupUser();
 
       render(() => <Example />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       el.focus();
 
-      expect(el).not.toHaveAttribute('data-pressed');
+      expect(el).not.toHaveAttribute("data-pressed");
 
-      await user.keyboard('[Space>]');
-      expect(el).toHaveAttribute('data-pressed', 'true');
+      await user.keyboard("[Space>]");
+      expect(el).toHaveAttribute("data-pressed", "true");
 
-      await user.keyboard('[/Space]');
-      expect(el).not.toHaveAttribute('data-pressed');
+      await user.keyboard("[/Space]");
+      expect(el).not.toHaveAttribute("data-pressed");
     });
 
-    it('should not fire onPress on key repeat', () => {
+    it("should not fire onPress on key repeat", () => {
       const onPress = vi.fn();
       const onPressStart = vi.fn();
 
       render(() => <Example onPress={onPress} onPressStart={onPressStart} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       el.focus();
 
       // First keydown
-      fireEvent.keyDown(el, { key: ' ', code: 'Space' });
+      fireEvent.keyDown(el, { key: " ", code: "Space" });
       expect(onPressStart).toHaveBeenCalledTimes(1);
 
       // Repeat keydown
-      fireEvent.keyDown(el, { key: ' ', code: 'Space', repeat: true });
+      fireEvent.keyDown(el, { key: " ", code: "Space", repeat: true });
       expect(onPressStart).toHaveBeenCalledTimes(1); // Should not increase
 
-      fireEvent.keyUp(el, { key: ' ', code: 'Space' });
+      fireEvent.keyUp(el, { key: " ", code: "Space" });
       expect(onPress).toHaveBeenCalledTimes(1);
     });
 
-    it('should not fire press events for other keys', async () => {
+    it("should not fire press events for other keys", async () => {
       switchToRealTimers();
       const user = setupUser();
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       el.focus();
 
-      await user.keyboard('a');
-      await user.keyboard('[Tab]');
-      await user.keyboard('[Escape]');
+      await user.keyboard("a");
+      await user.keyboard("[Tab]");
+      await user.keyboard("[Escape]");
 
       expect(onPress).not.toHaveBeenCalled();
     });
 
-    it('should not fire press events when disabled', async () => {
+    it("should not fire press events when disabled", async () => {
       switchToRealTimers();
       const user = setupUser();
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} isDisabled />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       el.focus();
 
-      await user.keyboard('[Enter]');
-      await user.keyboard('[Space]');
+      await user.keyboard("[Enter]");
+      await user.keyboard("[Space]");
 
       expect(onPress).not.toHaveBeenCalled();
     });
@@ -1063,7 +1184,7 @@ describe('createPress', () => {
   // POINTER COORDINATES
   // ============================================
 
-  describe('pointer coordinates', () => {
+  describe("pointer coordinates", () => {
     const DEFAULT_SIZE = 100;
     const getBoundingClientRect = ({
       width = DEFAULT_SIZE,
@@ -1088,29 +1209,38 @@ describe('createPress', () => {
       },
     });
 
-    it('should track x and y coordinates for mouse events', () => {
-      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(() => getBoundingClientRect({}));
+    it("should track x and y coordinates for mouse events", () => {
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(() =>
+        getBoundingClientRect({}),
+      );
 
       const onPressStart = vi.fn();
 
       render(() => <Example onPressStart={onPressStart} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        clientX: 50,
-        clientY: 100,
-      }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 50,
+          clientY: 100,
+        }),
+      );
 
-      expect(onPressStart).toHaveBeenCalledWith(expect.objectContaining({
-        x: 50,
-        y: 100,
-      }));
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          x: 50,
+          y: 100,
+        }),
+      );
     });
 
-    it('mouse pointer events should have coordinates', () => {
-      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(() => getBoundingClientRect({}));
+    it("mouse pointer events should have coordinates", () => {
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(() =>
+        getBoundingClientRect({}),
+      );
 
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
@@ -1119,36 +1249,55 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 25, clientY: 0 }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse', clientX: 75, clientY: 75 }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 25,
+          clientY: 0,
+        }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse", clientX: 75, clientY: 75 }),
+      );
       fireEvent.click(el, { clientX: 75, clientY: 75 });
 
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'pressstart',
-        x: 25,
-        y: 0,
-      }));
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'pressup',
-        x: 75,
-        y: 75,
-      }));
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'press',
-        x: 75,
-        y: 75,
-      }));
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "pressstart",
+          x: 25,
+          y: 0,
+        }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "pressup",
+          x: 75,
+          y: 75,
+        }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "press",
+          x: 75,
+          y: 75,
+        }),
+      );
     });
 
-    it('pointer touch events should have coordinates', () => {
-      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(() => getBoundingClientRect({}));
+    it("pointer touch events should have coordinates", () => {
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(() =>
+        getBoundingClientRect({}),
+      );
 
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
@@ -1157,33 +1306,50 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'touch', clientX: 25, clientY: 0 }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'touch', clientX: 75, clientY: 75 }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "touch",
+          clientX: 25,
+          clientY: 0,
+        }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerup", { pointerId: 1, pointerType: "touch", clientX: 75, clientY: 75 }),
+      );
       fireEvent.click(el, { clientX: 75, clientY: 75 });
 
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'pressstart',
-        pointerType: 'touch',
-        x: 25,
-        y: 0,
-      }));
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'pressup',
-        pointerType: 'touch',
-        x: 75,
-        y: 75,
-      }));
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "pressstart",
+          pointerType: "touch",
+          x: 25,
+          y: 0,
+        }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "pressup",
+          pointerType: "touch",
+          x: 75,
+          y: 75,
+        }),
+      );
     });
 
-    it('should return the center of the element when keyboard pressed', () => {
-      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(() => getBoundingClientRect({}));
+    it("should return the center of the element when keyboard pressed", () => {
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(() =>
+        getBoundingClientRect({}),
+      );
 
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
@@ -1192,33 +1358,39 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      fireEvent.keyDown(el, { key: ' ' });
-      fireEvent.keyUp(el, { key: ' ' });
+      const el = screen.getByTestId("test-element");
+      fireEvent.keyDown(el, { key: " " });
+      fireEvent.keyUp(el, { key: " " });
 
       // Keyboard events should use center of element (50, 50 for 100x100 element)
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'pressstart',
-        pointerType: 'keyboard',
-        x: 50,
-        y: 50,
-      }));
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'press',
-        pointerType: 'keyboard',
-        x: 50,
-        y: 50,
-      }));
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "pressstart",
+          pointerType: "keyboard",
+          x: 50,
+          y: 50,
+        }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "press",
+          pointerType: "keyboard",
+          x: 50,
+          y: 50,
+        }),
+      );
     });
 
-    it('cancel from scroll events should have coordinates', () => {
-      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(() => getBoundingClientRect({}));
+    it("cancel from scroll events should have coordinates", () => {
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(() =>
+        getBoundingClientRect({}),
+      );
 
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
@@ -1227,35 +1399,39 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1, clientX: 25, clientY: 25 }] });
       fireEvent.scroll(document.body);
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, clientX: 25, clientY: 0 }] });
 
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'pressstart',
-        pointerType: 'touch',
-        x: 25,
-        y: 25,
-      }));
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'pressend',
-        pointerType: 'touch',
-        x: 50,
-        y: 50,
-      }));
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "pressstart",
+          pointerType: "touch",
+          x: 25,
+          y: 25,
+        }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "pressend",
+          pointerType: "touch",
+          x: 50,
+          y: 50,
+        }),
+      );
     });
 
-    it('should track coordinates for touch events', () => {
+    it("should track coordinates for touch events", () => {
       const onPressStart = vi.fn();
 
       render(() => <Example onPressStart={onPressStart} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       // For touch events, we pass the coordinates in the Touch object, not the event
       // The PressEvent extracts coordinates from the original event
@@ -1267,10 +1443,12 @@ describe('createPress', () => {
       // The implementation extracts x/y from the touch, not the event directly
       // In JSDOM, the TouchEvent's properties may not propagate correctly
       // This is a known limitation - verify the event was fired with touch type
-      expect(onPressStart).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'pressstart',
-        pointerType: 'touch',
-      }));
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "pressstart",
+          pointerType: "touch",
+        }),
+      );
     });
   });
 
@@ -1278,99 +1456,124 @@ describe('createPress', () => {
   // MODIFIER KEYS
   // ============================================
 
-  describe('modifier keys', () => {
-    it('should track shiftKey modifier', () => {
+  describe("modifier keys", () => {
+    it("should track shiftKey modifier", () => {
       const onPressStart = vi.fn();
 
       render(() => <Example onPressStart={onPressStart} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        shiftKey: true,
-      }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "mouse",
+          shiftKey: true,
+        }),
+      );
 
-      expect(onPressStart).toHaveBeenCalledWith(expect.objectContaining({
-        shiftKey: true,
-        ctrlKey: false,
-        metaKey: false,
-        altKey: false,
-      }));
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          shiftKey: true,
+          ctrlKey: false,
+          metaKey: false,
+          altKey: false,
+        }),
+      );
     });
 
-    it('should track ctrlKey modifier', () => {
+    it("should track ctrlKey modifier", () => {
       const onPressStart = vi.fn();
 
       render(() => <Example onPressStart={onPressStart} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        ctrlKey: true,
-      }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "mouse",
+          ctrlKey: true,
+        }),
+      );
 
-      expect(onPressStart).toHaveBeenCalledWith(expect.objectContaining({
-        ctrlKey: true,
-      }));
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ctrlKey: true,
+        }),
+      );
     });
 
-    it('should track metaKey modifier', () => {
+    it("should track metaKey modifier", () => {
       const onPressStart = vi.fn();
 
       render(() => <Example onPressStart={onPressStart} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        metaKey: true,
-      }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "mouse",
+          metaKey: true,
+        }),
+      );
 
-      expect(onPressStart).toHaveBeenCalledWith(expect.objectContaining({
-        metaKey: true,
-      }));
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metaKey: true,
+        }),
+      );
     });
 
-    it('should track altKey modifier', () => {
+    it("should track altKey modifier", () => {
       const onPressStart = vi.fn();
 
       render(() => <Example onPressStart={onPressStart} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        altKey: true,
-      }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "mouse",
+          altKey: true,
+        }),
+      );
 
-      expect(onPressStart).toHaveBeenCalledWith(expect.objectContaining({
-        altKey: true,
-      }));
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          altKey: true,
+        }),
+      );
     });
 
-    it('should track multiple modifiers', () => {
+    it("should track multiple modifiers", () => {
       const onPressStart = vi.fn();
 
       render(() => <Example onPressStart={onPressStart} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', {
-        pointerId: 1,
-        pointerType: 'mouse',
-        shiftKey: true,
-        ctrlKey: true,
-        metaKey: true,
-        altKey: true,
-      }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", {
+          pointerId: 1,
+          pointerType: "mouse",
+          shiftKey: true,
+          ctrlKey: true,
+          metaKey: true,
+          altKey: true,
+        }),
+      );
 
-      expect(onPressStart).toHaveBeenCalledWith(expect.objectContaining({
-        shiftKey: true,
-        ctrlKey: true,
-        metaKey: true,
-        altKey: true,
-      }));
+      expect(onPressStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          shiftKey: true,
+          ctrlKey: true,
+          metaKey: true,
+          altKey: true,
+        }),
+      );
     });
   });
 
@@ -1378,36 +1581,36 @@ describe('createPress', () => {
   // CANCEL BEHAVIOR
   // ============================================
 
-  describe('cancel behavior', () => {
-    it('should cancel press on pointer cancel', () => {
+  describe("cancel behavior", () => {
+    it("should cancel press on pointer cancel", () => {
       const onPressEnd = vi.fn();
       const onPress = vi.fn();
 
       render(() => <Example onPressEnd={onPressEnd} onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      fireEvent(el, pointerEvent('pointercancel', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      fireEvent(el, pointerEvent("pointercancel", { pointerId: 1, pointerType: "mouse" }));
 
       // Press end should fire but not onPress
       expect(onPressEnd).toHaveBeenCalled();
       expect(onPress).not.toHaveBeenCalled();
     });
 
-    it('should not fire onPress if pointer released outside target', () => {
+    it("should not fire onPress if pointer released outside target", () => {
       const onPress = vi.fn();
       const onPressEnd = vi.fn();
 
       render(() => <Example onPress={onPress} onPressEnd={onPressEnd} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      fireEvent(el, pointerEvent('pointerleave', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      fireEvent(el, pointerEvent("pointerleave", { pointerId: 1, pointerType: "mouse" }));
 
       // Release outside
-      fireEvent(document, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(document, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
 
       vi.runAllTimers();
 
@@ -1415,13 +1618,13 @@ describe('createPress', () => {
       expect(onPress).not.toHaveBeenCalled();
     });
 
-    it('should cancel on touch cancel', () => {
+    it("should cancel on touch cancel", () => {
       const onPressEnd = vi.fn();
       const onPress = vi.fn();
 
       render(() => <Example onPressEnd={onPressEnd} onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
       fireEvent.touchCancel(el, { changedTouches: [{ identifier: 1 }] });
@@ -1430,16 +1633,16 @@ describe('createPress', () => {
       expect(onPress).not.toHaveBeenCalled();
     });
 
-    it('should cancel on drag start', () => {
+    it("should cancel on drag start", () => {
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} draggable />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.dragStart(el);
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
 
       expect(onPress).not.toHaveBeenCalled();
     });
@@ -1449,15 +1652,15 @@ describe('createPress', () => {
   // TOUCH MOVE BEHAVIOR
   // ============================================
 
-  describe('touch move', () => {
-    it('should cancel press if touch moves out of target', () => {
+  describe("touch move", () => {
+    it("should cancel press if touch moves out of target", () => {
       const onPressChange = vi.fn();
 
       render(() => <Example onPressChange={onPressChange} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       // Mock getBoundingClientRect for hit testing - isPointOverTarget uses this
-      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+      vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
         left: 0,
         top: 0,
         right: 100,
@@ -1483,13 +1686,13 @@ describe('createPress', () => {
       expect(onPressChange).toHaveBeenLastCalledWith(false);
     });
 
-    it('should restore press state if touch moves back over target', () => {
+    it("should restore press state if touch moves back over target", () => {
       const onPressChange = vi.fn();
 
       render(() => <Example onPressChange={onPressChange} />);
 
-      const el = screen.getByTestId('test-element');
-      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+      const el = screen.getByTestId("test-element");
+      vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
         left: 0,
         top: 0,
         right: 100,
@@ -1522,13 +1725,13 @@ describe('createPress', () => {
   // VIRTUAL / SCREEN READER CLICKS
   // ============================================
 
-  describe('virtual clicks', () => {
-    it('should handle virtual clicks from screen readers', () => {
+  describe("virtual clicks", () => {
+    it("should handle virtual clicks from screen readers", () => {
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       // Virtual clicks have zero dimensions
       fireEvent.click(el, {
@@ -1537,24 +1740,28 @@ describe('createPress', () => {
         height: 0,
       });
 
-      expect(onPress).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'press',
-        pointerType: 'virtual',
-      }));
+      expect(onPress).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "press",
+          pointerType: "virtual",
+        }),
+      );
     });
 
-    it('should handle element.click()', () => {
+    it("should handle element.click()", () => {
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       el.click();
 
-      expect(onPress).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'press',
-        pointerType: 'virtual',
-      }));
+      expect(onPress).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "press",
+          pointerType: "virtual",
+        }),
+      );
     });
   });
 
@@ -1562,51 +1769,51 @@ describe('createPress', () => {
   // DIFFERENT ELEMENT TYPES
   // ============================================
 
-  describe('element types', () => {
-    it('should work on div elements', async () => {
+  describe("element types", () => {
+    it("should work on div elements", async () => {
       switchToRealTimers();
       const user = setupUser();
       const onPress = vi.fn();
 
       render(() => <Example elementType="div" onPress={onPress} />);
 
-      await user.click(screen.getByTestId('test-element'));
+      await user.click(screen.getByTestId("test-element"));
 
       expect(onPress).toHaveBeenCalledTimes(1);
     });
 
-    it('should work on button elements', async () => {
+    it("should work on button elements", async () => {
       switchToRealTimers();
       const user = setupUser();
       const onPress = vi.fn();
 
       render(() => <Example elementType="button" onPress={onPress} />);
 
-      await user.click(screen.getByTestId('test-element'));
+      await user.click(screen.getByTestId("test-element"));
 
       expect(onPress).toHaveBeenCalledTimes(1);
     });
 
-    it('should work on anchor elements', async () => {
+    it("should work on anchor elements", async () => {
       switchToRealTimers();
       const user = setupUser();
       const onPress = vi.fn();
 
       render(() => <Example elementType="a" onPress={onPress} />);
 
-      await user.click(screen.getByTestId('test-element'));
+      await user.click(screen.getByTestId("test-element"));
 
       expect(onPress).toHaveBeenCalledTimes(1);
     });
 
-    it('should work on span elements', async () => {
+    it("should work on span elements", async () => {
       switchToRealTimers();
       const user = setupUser();
       const onPress = vi.fn();
 
       render(() => <Example elementType="span" onPress={onPress} />);
 
-      await user.click(screen.getByTestId('test-element'));
+      await user.click(screen.getByTestId("test-element"));
 
       expect(onPress).toHaveBeenCalledTimes(1);
     });
@@ -1616,22 +1823,24 @@ describe('createPress', () => {
   // EVENT TARGET
   // ============================================
 
-  describe('event target', () => {
-    it('should include target in press event', () => {
+  describe("event target", () => {
+    it("should include target in press event", () => {
       const onPress = vi.fn();
 
       render(() => <Example onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.click(el);
 
       vi.runAllTimers();
 
-      expect(onPress).toHaveBeenCalledWith(expect.objectContaining({
-        target: el,
-      }));
+      expect(onPress).toHaveBeenCalledWith(
+        expect.objectContaining({
+          target: el,
+        }),
+      );
     });
   });
 
@@ -1639,8 +1848,8 @@ describe('createPress', () => {
   // TOUCH EVENT EDGE CASES
   // ============================================
 
-  describe('touch event edge cases', () => {
-    it('should fire press events on long press even if onClick is not fired by the browser', () => {
+  describe("touch event edge cases", () => {
+    it("should fire press events on long press even if onClick is not fired by the browser", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -1648,26 +1857,36 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       // Pointer events: release without a click to trigger fallback
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'touch', clientX: 0, clientY: 0 }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'touch', clientX: 0, clientY: 0 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", { pointerId: 1, pointerType: "touch", clientX: 0, clientY: 0 }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerup", { pointerId: 1, pointerType: "touch", clientX: 0, clientY: 0 }),
+      );
 
       // Advance timers to trigger fallback click
       vi.advanceTimersByTime(90);
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart', pointerType: 'touch' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'press', pointerType: 'touch' }));
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressstart", pointerType: "touch" }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "press", pointerType: "touch" }),
+      );
     });
 
-    it('should cancel press if onClick propagation is stopped', () => {
+    it("should cancel press if onClick propagation is stopped", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -1675,33 +1894,36 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         >
-          <div
-            data-testid="inner"
-            onClick={(e: MouseEvent) => e.stopPropagation()}
-          />
+          <div data-testid="inner" onClick={(e: MouseEvent) => e.stopPropagation()} />
         </Example>
       ));
 
-      const el = screen.getByTestId('inner');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
+      const el = screen.getByTestId("inner");
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
       fireEvent.click(el);
 
       vi.advanceTimersByTime(90);
 
       // Should have pressstart and pressend, but not press (because click was stopped)
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend' }));
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressstart" }));
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressend" }));
       // Press should not fire if click propagation was stopped
-      const pressEvents = events.filter((e) => e.type === 'press');
+      const pressEvents = events.filter((e) => e.type === "press");
       expect(pressEvents.length).toBe(0);
     });
 
-    it('should cancel press after scroll events', () => {
+    it("should cancel press after scroll events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -1709,24 +1931,28 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
       fireEvent.scroll(document.body);
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart', pointerType: 'touch' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend', pointerType: 'touch' }));
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressstart", pointerType: "touch" }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressend", pointerType: "touch" }),
+      );
       // Should NOT have press event because scroll cancelled it
-      const pressEvents = events.filter((e) => e.type === 'press');
+      const pressEvents = events.filter((e) => e.type === "press");
       expect(pressEvents.length).toBe(0);
     });
 
-    it('should not cancel press after scroll events in unrelated scrollable regions', () => {
+    it("should not cancel press after scroll events in unrelated scrollable regions", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -1735,15 +1961,15 @@ describe('createPress', () => {
           <Example
             onPressStart={addEvent}
             onPressEnd={addEvent}
-            onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+            onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
             onPress={addEvent}
           />
           <div data-testid="scrollable" />
         </>
       ));
 
-      const el = screen.getByTestId('test-element');
-      const scrollable = screen.getByTestId('scrollable');
+      const el = screen.getByTestId("test-element");
+      const scrollable = screen.getByTestId("scrollable");
 
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
       fireEvent.scroll(scrollable);
@@ -1752,10 +1978,12 @@ describe('createPress', () => {
       vi.runAllTimers();
 
       // Should have press event because scroll was on unrelated element
-      expect(events).toContainEqual(expect.objectContaining({ type: 'press', pointerType: 'touch' }));
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "press", pointerType: "touch" }),
+      );
     });
 
-    it('should ignore emulated mouse events from touch', () => {
+    it("should ignore emulated mouse events from touch", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -1763,12 +1991,12 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       // Touch sequence
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
@@ -1781,9 +2009,9 @@ describe('createPress', () => {
       vi.runAllTimers();
 
       // Should only have one press event from touch, not from emulated mouse
-      const pressEvents = events.filter((e) => e.type === 'press');
+      const pressEvents = events.filter((e) => e.type === "press");
       expect(pressEvents.length).toBe(1);
-      expect(pressEvents[0]).toMatchObject({ pointerType: 'touch' });
+      expect(pressEvents[0]).toMatchObject({ pointerType: "touch" });
     });
   });
 
@@ -1791,8 +2019,8 @@ describe('createPress', () => {
   // KEYBOARD EDGE CASES
   // ============================================
 
-  describe('keyboard edge cases', () => {
-    it('should fire press events when the element is a link', () => {
+  describe("keyboard edge cases", () => {
+    it("should fire press events when the element is a link", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -1802,33 +2030,35 @@ describe('createPress', () => {
           href="#test"
           onClick={(e) => {
             e.preventDefault();
-            addEvent({ type: 'click' });
+            addEvent({ type: "click" });
           }}
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element') as HTMLAnchorElement;
+      const el = screen.getByTestId("test-element") as HTMLAnchorElement;
       el.focus();
 
       // Space should do nothing on links
-      fireEvent.keyDown(el, { key: ' ' });
-      fireEvent.keyUp(el, { key: ' ' });
+      fireEvent.keyDown(el, { key: " " });
+      fireEvent.keyUp(el, { key: " " });
       expect(events).toEqual([]);
 
       // Enter should trigger press events and a click
-      fireEvent.keyDown(el, { key: 'Enter' });
-      fireEvent.keyUp(el, { key: 'Enter' });
+      fireEvent.keyDown(el, { key: "Enter" });
+      fireEvent.keyUp(el, { key: "Enter" });
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'press', pointerType: 'keyboard' }));
-      expect(events).toContainEqual({ type: 'click' });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "press", pointerType: "keyboard" }),
+      );
+      expect(events).toContainEqual({ type: "click" });
     });
 
-    it('should fire press events on Enter when the element role is link', () => {
+    it("should fire press events on Enter when the element role is link", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -1838,29 +2068,31 @@ describe('createPress', () => {
           role="link"
           onClick={(e) => {
             e.preventDefault();
-            addEvent({ type: 'click' });
+            addEvent({ type: "click" });
           }}
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       el.focus();
 
       // Space should do nothing
-      fireEvent.keyDown(el, { key: ' ' });
-      fireEvent.keyUp(el, { key: ' ' });
+      fireEvent.keyDown(el, { key: " " });
+      fireEvent.keyUp(el, { key: " " });
       expect(events).toEqual([]);
 
-      fireEvent.keyDown(el, { key: 'Enter' });
-      fireEvent.keyUp(el, { key: 'Enter' });
+      fireEvent.keyDown(el, { key: "Enter" });
+      fireEvent.keyUp(el, { key: "Enter" });
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'press', pointerType: 'keyboard' }));
-      expect(events).toContainEqual({ type: 'click' });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "press", pointerType: "keyboard" }),
+      );
+      expect(events).toContainEqual({ type: "click" });
     });
 
     it('should explicitly call click method when Space key is triggered on a link with href and role="button"', () => {
@@ -1868,27 +2100,21 @@ describe('createPress', () => {
       const onClick = vi.fn((e: MouseEvent) => e.preventDefault());
 
       render(() => (
-        <Example
-          elementType="a"
-          href="#test"
-          role="button"
-          onPress={onPress}
-          onClick={onClick}
-        />
+        <Example elementType="a" href="#test" role="button" onPress={onPress} onClick={onClick} />
       ));
 
-      const el = screen.getByTestId('test-element') as HTMLAnchorElement;
+      const el = screen.getByTestId("test-element") as HTMLAnchorElement;
       el.focus();
 
-      fireEvent.keyDown(el, { key: ' ' });
-      fireEvent.keyUp(el, { key: ' ' });
+      fireEvent.keyDown(el, { key: " " });
+      fireEvent.keyUp(el, { key: " " });
 
       expect(onPress).toHaveBeenCalled();
       // Click should be called explicitly for links with role="button"
       expect(onClick).toHaveBeenCalled();
     });
 
-    it('should handle when focus moves between keydown and keyup', () => {
+    it("should handle when focus moves between keydown and keyup", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -1896,36 +2122,32 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      fireEvent.keyDown(el, { key: ' ' });
+      const el = screen.getByTestId("test-element");
+      fireEvent.keyDown(el, { key: " " });
       // Focus moves away
-      fireEvent.keyUp(document.body, { key: ' ' });
+      fireEvent.keyUp(document.body, { key: " " });
 
       // Should still fire pressend
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend', pointerType: 'keyboard' }));
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "pressend", pointerType: "keyboard" }),
+      );
     });
 
-    it('should fire press events on checkboxes but not prevent default', () => {
+    it("should fire press events on checkboxes but not prevent default", () => {
       const onPress = vi.fn();
 
-      render(() => (
-        <Example
-          elementType="input"
-          type="checkbox"
-          onPress={onPress}
-        />
-      ));
+      render(() => <Example elementType="input" type="checkbox" onPress={onPress} />);
 
-      const el = screen.getByTestId('test-element') as HTMLInputElement;
+      const el = screen.getByTestId("test-element") as HTMLInputElement;
       el.focus();
 
-      fireEvent.keyDown(el, { key: ' ' });
-      fireEvent.keyUp(el, { key: ' ' });
+      fireEvent.keyDown(el, { key: " " });
+      fireEvent.keyUp(el, { key: " " });
 
       expect(onPress).toHaveBeenCalled();
       // Checkbox should still toggle (default behavior not prevented)
@@ -1937,8 +2159,8 @@ describe('createPress', () => {
   // POINTER EVENT EDGE CASES (pointerout/pointerover)
   // ============================================
 
-  describe('pointer event edge cases', () => {
-    it('should handle pointerout and pointerover events', () => {
+  describe("pointer event edge cases", () => {
+    it("should handle pointerout and pointerover events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -1946,24 +2168,46 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
 
       // Use pointerout/pointerover (React Aria listens for these, not pointerleave/pointerenter)
-      fireEvent(el, pointerEvent('pointerout', { pointerId: 1, pointerType: 'mouse', clientX: 100, clientY: 100 }));
-      fireEvent(document, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse', clientX: 100, clientY: 100 }));
-      fireEvent(el, pointerEvent('pointerover', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
+      fireEvent(
+        el,
+        pointerEvent("pointerout", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 100,
+          clientY: 100,
+        }),
+      );
+      fireEvent(
+        document,
+        pointerEvent("pointerup", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 100,
+          clientY: 100,
+        }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerover", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressstart' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'pressend' }));
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressstart" }));
+      expect(events).toContainEqual(expect.objectContaining({ type: "pressend" }));
     });
 
-    it('should handle pointermove events', () => {
+    it("should handle pointermove events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -1971,24 +2215,52 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
-      fireEvent(el, pointerEvent('pointermove', { pointerId: 1, pointerType: 'mouse', clientX: 100, clientY: 100 }));
-      fireEvent(el, pointerEvent('pointerout', { pointerId: 1, pointerType: 'mouse', clientX: 100, clientY: 100 }));
-      fireEvent(el, pointerEvent('pointermove', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
-      fireEvent(el, pointerEvent('pointerover', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 }));
+      const el = screen.getByTestId("test-element");
+      fireEvent(
+        el,
+        pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointermove", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 100,
+          clientY: 100,
+        }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerout", {
+          pointerId: 1,
+          pointerType: "mouse",
+          clientX: 100,
+          clientY: 100,
+        }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointermove", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerover", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
+      fireEvent(
+        el,
+        pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse", clientX: 0, clientY: 0 }),
+      );
       fireEvent.click(el);
 
       vi.runAllTimers();
 
       // Should have press event after re-entering
-      expect(events).toContainEqual(expect.objectContaining({ type: 'press' }));
+      expect(events).toContainEqual(expect.objectContaining({ type: "press" }));
     });
   });
 
@@ -1996,7 +2268,7 @@ describe('createPress', () => {
   // VIRTUAL CLICKS - ADDITIONAL TESTS
   // ============================================
 
-  describe('virtual clicks - additional', () => {
+  describe("virtual clicks - additional", () => {
     beforeEach(() => {
       disablePointerEvents();
     });
@@ -2005,7 +2277,7 @@ describe('createPress', () => {
       restorePointerEvents();
     });
 
-    it('should ignore synthetic events fired during an onPressUp event', () => {
+    it("should ignore synthetic events fired during an onPressUp event", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -2013,7 +2285,7 @@ describe('createPress', () => {
         <Example
           onPressStart={addEvent}
           onPressEnd={addEvent}
-          onPressChange={(pressed) => addEvent({ type: 'presschange', pressed })}
+          onPressChange={(pressed) => addEvent({ type: "presschange", pressed })}
           onPress={addEvent}
           onPressUp={(e) => {
             addEvent(e);
@@ -2023,15 +2295,15 @@ describe('createPress', () => {
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       // Simulate mouseUp without mouseDown (coming from another element)
       fireEvent.mouseUp(el, { detail: 1 });
 
       // Should only have pressup, not pressstart/pressend/press
-      const pressUpEvents = events.filter((e) => e.type === 'pressup');
+      const pressUpEvents = events.filter((e) => e.type === "pressup");
       expect(pressUpEvents.length).toBe(1);
       // Should not have press event from synthetic click
-      const pressEvents = events.filter((e) => e.type === 'press');
+      const pressEvents = events.filter((e) => e.type === "press");
       expect(pressEvents.length).toBe(0);
     });
   });
@@ -2040,20 +2312,20 @@ describe('createPress', () => {
   // FOCUS MANAGEMENT
   // ============================================
 
-  describe('focus management', () => {
-    it('should not focus the target if preventFocusOnPress is true', () => {
+  describe("focus management", () => {
+    it("should not focus the target if preventFocusOnPress is true", () => {
       render(() => <Example preventFocusOnPress />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.click(el);
 
       expect(document.activeElement).not.toBe(el);
     });
 
-    it('should focus the target on touch by default', () => {
+    it("should focus the target on touch by default", () => {
       render(() => <Example />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
 
@@ -2064,10 +2336,10 @@ describe('createPress', () => {
       expect(document.activeElement).toBe(el);
     });
 
-    it('should not focus the target if preventFocusOnPress is true (touch)', () => {
+    it("should not focus the target if preventFocusOnPress is true (touch)", () => {
       render(() => <Example preventFocusOnPress />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1, clientX: 0, clientY: 0 }] });
 
@@ -2079,36 +2351,36 @@ describe('createPress', () => {
   // TEXT SELECTION (user-select: none)
   // ============================================
 
-  describe('text selection', () => {
-    it('should add/remove user-select: none to the element on pointer down/up', () => {
+  describe("text selection", () => {
+    it("should add/remove user-select: none to the element on pointer down/up", () => {
       render(() => <Example />);
 
-      const el = screen.getByTestId('test-element');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      expect(el).toHaveStyle({ 'user-select': 'none' });
+      const el = screen.getByTestId("test-element");
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      expect(el).toHaveStyle({ "user-select": "none" });
 
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.click(el);
       vi.runAllTimers();
 
-      expect(el).not.toHaveStyle({ 'user-select': 'none' });
+      expect(el).not.toHaveStyle({ "user-select": "none" });
     });
 
-    it('should add user-select: none to the page on press start (iOS)', () => {
+    it("should add user-select: none to the page on press start (iOS)", () => {
       // Mock iOS platform
-      const platformGetter = vi.spyOn(window.navigator, 'platform', 'get');
-      platformGetter.mockReturnValue('iPhone');
+      const platformGetter = vi.spyOn(window.navigator, "platform", "get");
+      platformGetter.mockReturnValue("iPhone");
 
       const oldUserSelect = document.documentElement.style.webkitUserSelect;
-      document.documentElement.style.webkitUserSelect = 'contain';
+      document.documentElement.style.webkitUserSelect = "contain";
 
       render(() => <Example />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1 }] });
 
-      expect(document.documentElement.style.webkitUserSelect).toBe('none');
-      expect(el).not.toHaveStyle({ 'user-select': 'none' });
+      expect(document.documentElement.style.webkitUserSelect).toBe("none");
+      expect(el).not.toHaveStyle({ "user-select": "none" });
 
       fireEvent.touchEnd(el, { changedTouches: [{ identifier: 1 }] });
       vi.advanceTimersByTime(316);
@@ -2118,21 +2390,21 @@ describe('createPress', () => {
       platformGetter.mockRestore();
     });
 
-    it('should not add user-select: none to the page when press start (non-iOS)', () => {
+    it("should not add user-select: none to the page when press start (non-iOS)", () => {
       // Mock Android platform
-      const platformGetter = vi.spyOn(window.navigator, 'platform', 'get');
-      platformGetter.mockReturnValue('Android');
+      const platformGetter = vi.spyOn(window.navigator, "platform", "get");
+      platformGetter.mockReturnValue("Android");
 
       const oldUserSelect = document.documentElement.style.webkitUserSelect;
-      document.documentElement.style.webkitUserSelect = 'contain';
+      document.documentElement.style.webkitUserSelect = "contain";
 
       render(() => <Example />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.touchStart(el, { targetTouches: [{ identifier: 1 }] });
 
-      expect(document.documentElement.style.webkitUserSelect).toBe('contain');
-      expect(el).toHaveStyle({ 'user-select': 'none' });
+      expect(document.documentElement.style.webkitUserSelect).toBe("contain");
+      expect(el).toHaveStyle({ "user-select": "none" });
 
       // Cleanup
       document.documentElement.style.webkitUserSelect = oldUserSelect;
@@ -2144,21 +2416,21 @@ describe('createPress', () => {
   // EVENT BUBBLING
   // ============================================
 
-  describe('event bubbling', () => {
-    const Pressable: Component<ExampleProps & { 'data-testid'?: string }> = (props) => {
+  describe("event bubbling", () => {
+    const Pressable: Component<ExampleProps & { "data-testid"?: string }> = (props) => {
       const { pressProps } = createPress({
         onPress: props.onPress,
         onPressStart: props.onPressStart,
         onPressEnd: props.onPressEnd,
       });
       return (
-        <div {...pressProps} data-testid={props['data-testid']}>
+        <div {...pressProps} data-testid={props["data-testid"]}>
           {props.children}
         </div>
       );
     };
 
-    it('should stop propagation by default', () => {
+    it("should stop propagation by default", () => {
       const outerPressMock = vi.fn();
       const innerPressMock = vi.fn();
 
@@ -2179,9 +2451,9 @@ describe('createPress', () => {
         </Pressable>
       ));
 
-      const el = screen.getByTestId('inner');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      const el = screen.getByTestId("inner");
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.click(el);
 
       vi.runAllTimers();
@@ -2190,7 +2462,7 @@ describe('createPress', () => {
       expect(innerPressMock).toHaveBeenCalled();
     });
 
-    it('should allow propagation if continuePropagation is called', () => {
+    it("should allow propagation if continuePropagation is called", () => {
       const outerPressMock = vi.fn();
       const innerPressMock = vi.fn().mockImplementation((e: PressEvent) => {
         e.continuePropagation?.();
@@ -2215,9 +2487,9 @@ describe('createPress', () => {
         </Pressable>
       ));
 
-      const el = screen.getByTestId('inner');
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
-      fireEvent(el, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      const el = screen.getByTestId("inner");
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
+      fireEvent(el, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
       fireEvent.click(el);
 
       vi.runAllTimers();
@@ -2232,22 +2504,22 @@ describe('createPress', () => {
   // CLEANUP
   // ============================================
 
-  describe('cleanup', () => {
-    it('should clean up global listeners on unmount', () => {
+  describe("cleanup", () => {
+    it("should clean up global listeners on unmount", () => {
       const onPressEnd = vi.fn();
 
       const { unmount } = render(() => <Example onPressEnd={onPressEnd} />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       // Start a press
-      fireEvent(el, pointerEvent('pointerdown', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(el, pointerEvent("pointerdown", { pointerId: 1, pointerType: "mouse" }));
 
       // Unmount while pressed
       unmount();
 
       // Global pointer up should not cause errors
-      fireEvent(document, pointerEvent('pointerup', { pointerId: 1, pointerType: 'mouse' }));
+      fireEvent(document, pointerEvent("pointerup", { pointerId: 1, pointerType: "mouse" }));
 
       // No errors should occur
       expect(true).toBe(true);

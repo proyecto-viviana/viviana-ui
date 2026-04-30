@@ -3,8 +3,8 @@
  * Based on @react-stately/tree.
  */
 
-import type { Key, FocusStrategy } from '../collections/types';
-import type { GridNode, GridCollection } from '../grid/types';
+import type { Key, FocusStrategy } from "../collections/types";
+import type { GridNode, GridCollection } from "../grid/types";
 
 /**
  * Represents a node in a tree collection.
@@ -29,7 +29,10 @@ export interface TreeNode<T = unknown> extends GridNode<T> {
  * A collection of tree nodes with tree-specific navigation.
  * Only includes visible nodes (respects expanded state).
  */
-export interface TreeCollection<T = unknown> extends Omit<GridCollection<T>, 'rows' | 'columns' | 'headerRows' | 'columnCount' | 'getCell'> {
+export interface TreeCollection<T = unknown> extends Omit<
+  GridCollection<T>,
+  "rows" | "columns" | "headerRows" | "columnCount" | "getCell"
+> {
   /** All visible rows in the tree (respects expanded state). */
   readonly rows: TreeNode<T>[];
   /** Number of visible rows. */
@@ -89,9 +92,9 @@ export interface TreeState<T, C extends TreeCollection<T> = TreeCollection<T>> {
   /** Whether the tree is focused. */
   readonly isFocused: boolean;
   /** The selection mode. */
-  readonly selectionMode: 'none' | 'single' | 'multiple';
+  readonly selectionMode: "none" | "single" | "multiple";
   /** The currently selected keys. */
-  readonly selectedKeys: 'all' | Set<Key>;
+  readonly selectedKeys: "all" | Set<Key>;
 
   /** Check if a key is selected. */
   isSelected(key: Key): boolean;
@@ -136,19 +139,19 @@ export interface TreeStateOptions<T, C extends TreeCollection<T> = TreeCollectio
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
   /** Disabled behavior: 'selection' only or 'all' interactions. */
-  disabledBehavior?: 'selection' | 'all';
+  disabledBehavior?: "selection" | "all";
   /** Selection mode. */
-  selectionMode?: 'none' | 'single' | 'multiple';
+  selectionMode?: "none" | "single" | "multiple";
   /** Selection behavior. */
-  selectionBehavior?: 'toggle' | 'replace';
+  selectionBehavior?: "toggle" | "replace";
   /** Whether empty selection is disallowed. */
   disallowEmptySelection?: boolean;
   /** Currently selected keys (controlled). */
-  selectedKeys?: 'all' | Iterable<Key>;
+  selectedKeys?: "all" | Iterable<Key>;
   /** Default selected keys (uncontrolled). */
-  defaultSelectedKeys?: 'all' | Iterable<Key>;
+  defaultSelectedKeys?: "all" | Iterable<Key>;
   /** Handler for selection changes. */
-  onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  onSelectionChange?: (keys: "all" | Set<Key>) => void;
   /** Currently expanded keys (controlled). */
   expandedKeys?: Iterable<Key>;
   /** Default expanded keys (uncontrolled). */

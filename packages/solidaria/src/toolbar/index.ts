@@ -3,4 +3,4 @@ export {
   type AriaToolbarProps,
   type ToolbarAria,
   type Orientation,
-} from './createToolbar'
+} from "./createToolbar";

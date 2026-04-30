@@ -1,16 +1,23 @@
-import userEvent, { type UserEvent, PointerEventsCheckLevel } from '@testing-library/user-event';
+import userEvent, { type UserEvent, PointerEventsCheckLevel } from "@testing-library/user-event";
 
 /**
  * Pointer map matching react-spectrum's test setup.
  * Ensures pointer events have realistic dimensions so they aren't mistaken for virtual clicks.
  */
 export const pointerMap = [
-  { name: 'MouseLeft', pointerType: 'mouse', button: 'primary', height: 1, width: 1, pressure: 0.5 },
-  { name: 'MouseRight', pointerType: 'mouse', button: 'secondary' },
-  { name: 'MouseMiddle', pointerType: 'mouse', button: 'auxiliary' },
-  { name: 'TouchA', pointerType: 'touch', height: 1, width: 1 },
-  { name: 'TouchB', pointerType: 'touch' },
-  { name: 'TouchC', pointerType: 'touch' },
+  {
+    name: "MouseLeft",
+    pointerType: "mouse",
+    button: "primary",
+    height: 1,
+    width: 1,
+    pressure: 0.5,
+  },
+  { name: "MouseRight", pointerType: "mouse", button: "secondary" },
+  { name: "MouseMiddle", pointerType: "mouse", button: "auxiliary" },
+  { name: "TouchA", pointerType: "touch", height: 1, width: 1 },
+  { name: "TouchB", pointerType: "touch" },
+  { name: "TouchC", pointerType: "touch" },
 ];
 
 // Type for userEvent v14+ setup function
@@ -36,5 +43,5 @@ export function setupUser(): UserEvent {
   });
 }
 
-export { render, screen, fireEvent, cleanup } from '@solidjs/testing-library';
+export { render, screen, fireEvent, cleanup } from "@solidjs/testing-library";
 export { userEvent };

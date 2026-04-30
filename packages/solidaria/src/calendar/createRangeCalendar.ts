@@ -5,11 +5,11 @@
  * Based on @react-aria/calendar useRangeCalendar
  */
 
-import { createMemo } from 'solid-js';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { mergeProps } from '../utils/mergeProps';
-import type { RangeCalendarState } from '@proyecto-viviana/solid-stately';
+import { createMemo } from "solid-js";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { mergeProps } from "../utils/mergeProps";
+import type { RangeCalendarState } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
@@ -23,11 +23,11 @@ export interface AriaRangeCalendarProps {
   /** Whether the calendar is read-only. */
   isReadOnly?: boolean;
   /** An accessible label for the calendar. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The ID of an element that labels the calendar. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The ID of an element that describes the calendar. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
 }
 
 export interface RangeCalendarAria {
@@ -52,7 +52,7 @@ export interface RangeCalendarAria {
  */
 export function createRangeCalendar<T extends RangeCalendarState>(
   props: MaybeAccessor<AriaRangeCalendarProps>,
-  state: T
+  state: T,
 ): RangeCalendarAria {
   const getProps = () => access(props);
   const id = createId(getProps().id);
@@ -67,7 +67,7 @@ export function createRangeCalendar<T extends RangeCalendarState>(
     const isDisabled = p.isDisabled || state.isDisabled();
 
     return {
-      'aria-label': 'Previous month',
+      "aria-label": "Previous month",
       onClick: () => {
         if (!isDisabled) {
           state.focusPreviousPage();
@@ -84,7 +84,7 @@ export function createRangeCalendar<T extends RangeCalendarState>(
     const isDisabled = p.isDisabled || state.isDisabled();
 
     return {
-      'aria-label': 'Next month',
+      "aria-label": "Next month",
       onClick: () => {
         if (!isDisabled) {
           state.focusNextPage();
@@ -98,22 +98,20 @@ export function createRangeCalendar<T extends RangeCalendarState>(
   // Title props
   const titleProps = createMemo(() => ({
     id: titleId,
-    'aria-live': 'polite' as const,
+    "aria-live": "polite" as const,
   }));
 
   // Calendar container props
   const calendarProps = createMemo(() => {
     const p = getProps();
 
-    return mergeProps(
-      {
-        id,
-        role: 'group',
-        'aria-labelledby': p['aria-labelledby'] ?? titleId,
-        'aria-label': p['aria-label'],
-        'aria-describedby': p['aria-describedby'],
-      }
-    );
+    return mergeProps({
+      id,
+      role: "group",
+      "aria-labelledby": p["aria-labelledby"] ?? titleId,
+      "aria-label": p["aria-label"],
+      "aria-describedby": p["aria-describedby"],
+    });
   });
 
   return {

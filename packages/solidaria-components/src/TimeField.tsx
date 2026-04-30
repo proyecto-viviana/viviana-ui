@@ -14,19 +14,19 @@ import {
   useContext,
   For,
   Show,
-} from 'solid-js';
+} from "solid-js";
 import {
   createTimeField,
   createTimeSegment,
   type AriaTimeFieldProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createTimeFieldState,
   type TimeFieldState,
   type TimeFieldStateProps,
   type TimeSegment as TimeSegmentType,
   type TimeValue,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -35,7 +35,7 @@ import {
   useRenderProps,
   dataAttr,
   useIsHydrated,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -53,8 +53,9 @@ export interface TimeFieldRenderProps {
 }
 
 export interface TimeFieldProps<T extends TimeValue = TimeValue>
-  extends Omit<AriaTimeFieldProps, 'id' | 'isDisabled' | 'isReadOnly' | 'isRequired'>,
-    Omit<TimeFieldStateProps<T>, 'locale'>,
+  extends
+    Omit<AriaTimeFieldProps, "id" | "isDisabled" | "isReadOnly" | "isRequired">,
+    Omit<TimeFieldStateProps<T>, "locale">,
     SlotProps {
   /** The children of the component. */
   children?: JSX.Element | ((segment: TimeSegmentType) => JSX.Element);
@@ -90,7 +91,7 @@ export interface TimeSegmentRenderProps {
   /** Whether the segment is a placeholder. */
   isPlaceholder: boolean;
   /** The segment type. */
-  type: TimeSegmentType['type'];
+  type: TimeSegmentType["type"];
   /** The text to display. */
   text: string;
 }
@@ -126,7 +127,7 @@ export const TimeFieldStateContext = createContext<TimeFieldState<TimeValue> | n
 function useTimeFieldContextValue(): TimeFieldContextValue {
   const context = useContext(TimeFieldContext);
   if (!context) {
-    throw new Error('TimeField components must be used within a TimeField');
+    throw new Error("TimeField components must be used within a TimeField");
   }
   return context;
 }
@@ -152,16 +153,16 @@ export function useTimeFieldContext(): TimeFieldState<TimeValue> {
  * </TimeField>
  * ```
  */
-export function TimeField<T extends TimeValue = TimeValue>(
-  props: TimeFieldProps<T>
-): JSX.Element {
+export function TimeField<T extends TimeValue = TimeValue>(props: TimeFieldProps<T>): JSX.Element {
   // Use hydration-safe pattern for client-only rendering
   const isHydrated = useIsHydrated();
 
   return (
     <Show
       when={isHydrated()}
-      fallback={<div class="solidaria-TimeField solidaria-TimeField--placeholder" aria-hidden="true" />}
+      fallback={
+        <div class="solidaria-TimeField solidaria-TimeField--placeholder" aria-hidden="true" />
+      }
     >
       <TimeFieldInner {...props} />
     </Show>
@@ -171,27 +172,25 @@ export function TimeField<T extends TimeValue = TimeValue>(
 /**
  * Internal TimeField component that renders after client mount.
  */
-function TimeFieldInner<T extends TimeValue = TimeValue>(
-  props: TimeFieldProps<T>
-): JSX.Element {
+function TimeFieldInner<T extends TimeValue = TimeValue>(props: TimeFieldProps<T>): JSX.Element {
   const [local, stateProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
+    ["children", "class", "style", "slot"],
     [
-      'value',
-      'defaultValue',
-      'onChange',
-      'minValue',
-      'maxValue',
-      'isDisabled',
-      'isReadOnly',
-      'isRequired',
-      'locale',
-      'granularity',
-      'hourCycle',
-      'validationState',
-      'placeholderValue',
-    ]
+      "value",
+      "defaultValue",
+      "onChange",
+      "minValue",
+      "maxValue",
+      "isDisabled",
+      "isReadOnly",
+      "isRequired",
+      "locale",
+      "granularity",
+      "hourCycle",
+      "validationState",
+      "placeholderValue",
+    ],
   );
 
   const [fieldRef, setFieldRef] = createSignal<HTMLDivElement | null>(null);
@@ -215,9 +214,9 @@ function TimeFieldInner<T extends TimeValue = TimeValue>(
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-TimeField',
+      defaultClassName: "solidaria-TimeField",
     },
-    renderValues
+    renderValues,
   );
 
   return (
@@ -272,9 +271,9 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
     {
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-TimeInput',
+      defaultClassName: "solidaria-TimeInput",
     },
-    renderValues
+    renderValues,
   );
 
   return (
@@ -287,9 +286,7 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
       onFocusIn={() => setIsFocused(true)}
       onFocusOut={() => setIsFocused(false)}
     >
-      <For each={state.segments()}>
-        {(segment) => props.children?.(segment)}
-      </For>
+      <For each={state.segments()}>{(segment) => props.children?.(segment)}</For>
     </div>
   );
 }
@@ -308,7 +305,7 @@ export function TimeSegment(props: TimeSegmentProps): JSX.Element {
   const segmentAria = createTimeSegment(
     { segment: props.segment },
     state as unknown as TimeFieldState,
-    segmentRef
+    segmentRef,
   );
 
   // Render props values
@@ -326,14 +323,14 @@ export function TimeSegment(props: TimeSegmentProps): JSX.Element {
       children: props.children,
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-TimeSegment',
+      defaultClassName: "solidaria-TimeSegment",
     },
-    renderValues
+    renderValues,
   );
 
   // Determine children content - avoid Show for SSR hydration compatibility
   const getChildren = () => {
-    if (typeof props.children === 'function') {
+    if (typeof props.children === "function") {
       return renderProps.renderChildren();
     }
     return segmentAria.text;

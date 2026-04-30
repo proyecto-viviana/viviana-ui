@@ -7,9 +7,9 @@
  * This is a 1:1 port of @react-stately/radio's useRadioGroupState.
  */
 
-import { createSignal, Accessor, untrack } from 'solid-js';
-import { type MaybeAccessor, access } from '../utils/reactivity';
-import { createId } from '../ssr';
+import { createSignal, Accessor, untrack } from "solid-js";
+import { type MaybeAccessor, access } from "../utils/reactivity";
+import { createId } from "../ssr";
 
 // ============================================
 // TYPES
@@ -37,7 +37,7 @@ export interface RadioGroupProps {
   /** The label for the radio group. */
   label?: string;
   /** Orientation of the radio group. */
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   /** Handler that is called when the radio group receives focus. */
   onFocus?: (e: FocusEvent) => void;
   /** Handler that is called when the radio group loses focus. */
@@ -100,9 +100,7 @@ export const radioGroupSyncVersion: WeakMap<RadioGroupState, Accessor<number>> =
  * Provides state management for a radio group component.
  * Provides a name for the group, and manages selection and focus state.
  */
-export function createRadioGroupState(
-  props: MaybeAccessor<RadioGroupProps> = {}
-): RadioGroupState {
+export function createRadioGroupState(props: MaybeAccessor<RadioGroupProps> = {}): RadioGroupState {
   const getProps = () => access(props);
 
   // Get initial props using untrack to avoid setting up dependencies
@@ -116,7 +114,7 @@ export function createRadioGroupState(
   // Create internal signal for uncontrolled mode
   // Initialize with defaultValue only (not value, which is for controlled mode)
   const [internalValue, setInternalValue] = createSignal<string | null>(
-    initialProps.defaultValue ?? null
+    initialProps.defaultValue ?? null,
   );
   const [lastFocusedValue, setLastFocusedValueInternal] = createSignal<string | null>(null);
 

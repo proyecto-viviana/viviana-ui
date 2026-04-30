@@ -6,11 +6,11 @@
  * This is a 1:1 port of @react-aria/textfield's useTextField hook.
  */
 
-import { JSX } from 'solid-js';
-import { createField, type AriaFieldProps, type FieldAria } from '../label';
-import { createFocusable, type FocusableProps } from '../interactions';
-import { mergeProps, filterDOMProps } from '../utils';
-import { type MaybeAccessor, access } from '../utils/reactivity';
+import { JSX } from "solid-js";
+import { createField, type AriaFieldProps, type FieldAria } from "../label";
+import { createFocusable, type FocusableProps } from "../interactions";
+import { mergeProps, filterDOMProps } from "../utils";
+import { type MaybeAccessor, access } from "../utils/reactivity";
 
 // ============================================
 // TYPES
@@ -30,9 +30,9 @@ export interface AriaTextFieldProps extends AriaFieldProps, FocusableProps {
   /** Whether the input is required. */
   isRequired?: boolean;
   /** The type of input to render. */
-  type?: 'text' | 'search' | 'url' | 'tel' | 'email' | 'password' | string;
+  type?: "text" | "search" | "url" | "tel" | "email" | "password" | string;
   /** The input mode hint for virtual keyboards. */
-  inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
+  inputMode?: "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search";
   /** The name of the input element, used when submitting an HTML form. */
   name?: string;
   /** Associates the input with a form element by id. */
@@ -50,11 +50,11 @@ export interface AriaTextFieldProps extends AriaFieldProps, FocusableProps {
   /** Whether to enable auto correct. */
   autoCorrect?: string;
   /** Whether to enable spell check. */
-  spellCheck?: 'true' | 'false';
+  spellCheck?: "true" | "false";
   /** Controls whether and how text input is automatically capitalized. */
-  autoCapitalize?: 'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters';
+  autoCapitalize?: "off" | "none" | "on" | "sentences" | "words" | "characters";
   /** The element type to use for the input. Defaults to 'input'. */
-  inputElementType?: 'input' | 'textarea';
+  inputElementType?: "input" | "textarea";
 
   // Clipboard events
   onCopy?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, ClipboardEvent>;
@@ -74,7 +74,9 @@ export interface AriaTextFieldProps extends AriaFieldProps, FocusableProps {
   onInput?: JSX.EventHandler<HTMLInputElement | HTMLTextAreaElement, InputEvent>;
 }
 
-export interface TextFieldAria<T extends HTMLInputElement | HTMLTextAreaElement = HTMLInputElement> extends Omit<FieldAria, 'fieldProps'> {
+export interface TextFieldAria<
+  T extends HTMLInputElement | HTMLTextAreaElement = HTMLInputElement,
+> extends Omit<FieldAria, "fieldProps"> {
   /** Props for the input element. */
   inputProps: JSX.InputHTMLAttributes<T>;
   /** Whether the text field is invalid. */
@@ -92,10 +94,9 @@ export interface TextFieldAria<T extends HTMLInputElement | HTMLTextAreaElement 
  * @param props - Props for the text field.
  * @param ref - Optional ref callback for the input element.
  */
-export function createTextField<T extends HTMLInputElement | HTMLTextAreaElement = HTMLInputElement>(
-  props: MaybeAccessor<AriaTextFieldProps>,
-  ref?: (el: T) => void
-): TextFieldAria<T> {
+export function createTextField<
+  T extends HTMLInputElement | HTMLTextAreaElement = HTMLInputElement,
+>(props: MaybeAccessor<AriaTextFieldProps>, ref?: (el: T) => void): TextFieldAria<T> {
   const getProps = () => access(props);
 
   // Get field accessibility props (label, description, error message)
@@ -116,17 +117,18 @@ export function createTextField<T extends HTMLInputElement | HTMLTextAreaElement
       onKeyDown: getProps().onKeyDown,
       onKeyUp: getProps().onKeyUp,
     },
-    ref as ((el: HTMLElement) => void) | undefined
+    ref as ((el: HTMLElement) => void) | undefined,
   );
 
   // Filter DOM props
-  const getDomProps = () => filterDOMProps(getProps() as Record<string, unknown>, { labelable: true });
+  const getDomProps = () =>
+    filterDOMProps(getProps() as Record<string, unknown>, { labelable: true });
 
   // Build input props
   const getInputProps = (): JSX.InputHTMLAttributes<T> => {
     const p = getProps();
     const isInvalid = p.isInvalid ?? false;
-    const isTextarea = p.inputElementType === 'textarea';
+    const isTextarea = p.inputElementType === "textarea";
 
     return mergeProps(
       getDomProps(),
@@ -134,15 +136,15 @@ export function createTextField<T extends HTMLInputElement | HTMLTextAreaElement
         disabled: p.isDisabled,
         readOnly: p.isReadOnly,
         required: p.isRequired,
-        'aria-required': p.isRequired || undefined,
-        'aria-invalid': isInvalid || undefined,
-        value: p.value ?? p.defaultValue ?? '',
+        "aria-required": p.isRequired || undefined,
+        "aria-invalid": isInvalid || undefined,
+        value: p.value ?? p.defaultValue ?? "",
         onChange: (e: Event) => {
           const target = e.target as HTMLInputElement | HTMLTextAreaElement;
           p.onChange?.(target.value);
         },
         // Don't include type and pattern for textarea elements
-        type: isTextarea ? undefined : (p.type ?? 'text'),
+        type: isTextarea ? undefined : (p.type ?? "text"),
         inputMode: p.inputMode,
         name: p.name,
         form: p.form,
@@ -173,7 +175,7 @@ export function createTextField<T extends HTMLInputElement | HTMLTextAreaElement
         onInput: p.onInput,
       },
       focusableProps as Record<string, unknown>,
-      fieldProps as Record<string, unknown>
+      fieldProps as Record<string, unknown>,
     ) as JSX.InputHTMLAttributes<T>;
   };
 

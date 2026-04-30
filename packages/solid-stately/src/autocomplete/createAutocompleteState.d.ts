@@ -3,24 +3,24 @@
  *
  * Based on @react-stately/autocomplete useAutocompleteState.
  */
-import { type Accessor } from 'solid-js';
+import { type Accessor } from "solid-js";
 export interface AutocompleteState {
-    /** The current value of the autocomplete input. */
-    inputValue: Accessor<string>;
-    /** Sets the value of the autocomplete input. */
-    setInputValue(value: string): void;
-    /** The id of the current aria-activedescendant of the autocomplete input. */
-    focusedNodeId: Accessor<string | null>;
-    /** Sets the id of the current aria-activedescendant of the autocomplete input. */
-    setFocusedNodeId(value: string | null): void;
+  /** The current value of the autocomplete input. */
+  inputValue: Accessor<string>;
+  /** Sets the value of the autocomplete input. */
+  setInputValue(value: string): void;
+  /** The id of the current aria-activedescendant of the autocomplete input. */
+  focusedNodeId: Accessor<string | null>;
+  /** Sets the id of the current aria-activedescendant of the autocomplete input. */
+  setFocusedNodeId(value: string | null): void;
 }
 export interface AutocompleteStateOptions {
-    /** The value of the autocomplete input (controlled). */
-    inputValue?: string;
-    /** The default value of the autocomplete input (uncontrolled). */
-    defaultInputValue?: string;
-    /** Handler that is called when the autocomplete input value changes. */
-    onInputChange?: (value: string) => void;
+  /** The value of the autocomplete input (controlled). */
+  inputValue?: string;
+  /** The default value of the autocomplete input (uncontrolled). */
+  defaultInputValue?: string;
+  /** Handler that is called when the autocomplete input value changes. */
+  onInputChange?: (value: string) => void;
 }
 /**
  * Provides state management for an autocomplete component.
@@ -42,5 +42,7 @@ export interface AutocompleteStateOptions {
  * state.setFocusedNodeId('item-1');
  * ```
  */
-export declare function createAutocompleteState(props?: AutocompleteStateOptions): AutocompleteState;
+export declare function createAutocompleteState(
+  props?: AutocompleteStateOptions,
+): AutocompleteState;
 //# sourceMappingURL=createAutocompleteState.d.ts.map

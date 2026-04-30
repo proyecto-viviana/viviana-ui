@@ -5,10 +5,10 @@
  * Port of @react-aria/breadcrumbs.
  */
 
-import { createLink, type AriaLinkProps, type LinkAria } from '../link';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { mergeProps } from '../utils/mergeProps';
-import { type MaybeAccessor, access } from '../utils/reactivity';
+import { createLink, type AriaLinkProps, type LinkAria } from "../link";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { mergeProps } from "../utils/mergeProps";
+import { type MaybeAccessor, access } from "../utils/reactivity";
 
 // ============================================
 // TYPES
@@ -16,11 +16,11 @@ import { type MaybeAccessor, access } from '../utils/reactivity';
 
 export interface AriaBreadcrumbsProps {
   /** Provides a label for the breadcrumbs navigation. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element (or elements) that labels the breadcrumbs. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Identifies the element (or elements) that describes the breadcrumbs. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the breadcrumbs are disabled. */
   isDisabled?: boolean;
 }
@@ -30,13 +30,13 @@ export interface BreadcrumbsAria {
   navProps: Record<string, unknown>;
 }
 
-export interface AriaBreadcrumbItemProps extends Omit<AriaLinkProps, 'aria-current'> {
+export interface AriaBreadcrumbItemProps extends Omit<AriaLinkProps, "aria-current"> {
   /** The DOM id for the breadcrumb item. */
   id?: string;
   /** Whether this is the current/last item in the breadcrumb trail. */
   isCurrent?: boolean;
   /** The type of current location for aria-current. @default 'page' */
-  'aria-current'?: 'page' | 'step' | 'location' | 'date' | 'time' | boolean;
+  "aria-current"?: "page" | "step" | "location" | "date" | "time" | boolean;
   /** The HTML element type. @default 'a' */
   elementType?: string;
 }
@@ -54,7 +54,7 @@ export interface BreadcrumbItemAria extends LinkAria {
  * Provides accessibility implementation for the breadcrumbs navigation container.
  */
 export function createBreadcrumbs(
-  props: MaybeAccessor<AriaBreadcrumbsProps> = {}
+  props: MaybeAccessor<AriaBreadcrumbsProps> = {},
 ): BreadcrumbsAria {
   const getProps = () => access(props);
 
@@ -62,15 +62,11 @@ export function createBreadcrumbs(
     const p = getProps();
 
     // Only apply a default label when no other label source exists.
-    const ariaLabel =
-      p['aria-label'] ?? (p['aria-labelledby'] ? undefined : 'Breadcrumbs');
+    const ariaLabel = p["aria-label"] ?? (p["aria-labelledby"] ? undefined : "Breadcrumbs");
 
-    return mergeProps(
-      filterDOMProps(p as Record<string, unknown>, { labelable: true }),
-      {
-        'aria-label': ariaLabel,
-      }
-    );
+    return mergeProps(filterDOMProps(p as Record<string, unknown>, { labelable: true }), {
+      "aria-label": ariaLabel,
+    });
   };
 
   return {
@@ -84,13 +80,13 @@ export function createBreadcrumbs(
  * Provides accessibility implementation for an individual breadcrumb item.
  */
 export function createBreadcrumbItem(
-  props: MaybeAccessor<AriaBreadcrumbItemProps> = {}
+  props: MaybeAccessor<AriaBreadcrumbItemProps> = {},
 ): BreadcrumbItemAria {
   const getProps = () => access(props);
 
   const isCurrent = () => getProps().isCurrent ?? false;
   const isDisabled = () => getProps().isDisabled ?? false;
-  const elementType = () => getProps().elementType ?? 'a';
+  const elementType = () => getProps().elementType ?? "a";
 
   // Use createLink for base link behavior
   // Current items are treated as disabled (can't navigate to current page)
@@ -140,14 +136,14 @@ export function createBreadcrumbItem(
     get autoFocus() {
       return getProps().autoFocus;
     },
-    get 'aria-label'() {
-      return getProps()['aria-label'];
+    get "aria-label"() {
+      return getProps()["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return getProps()['aria-labelledby'];
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
     },
-    get 'aria-describedby'() {
-      return getProps()['aria-describedby'];
+    get "aria-describedby"() {
+      return getProps()["aria-describedby"];
     },
   });
 
@@ -156,23 +152,20 @@ export function createBreadcrumbItem(
     const current = isCurrent();
 
     // Start with link props, forwarding id if provided
-    let baseProps: Record<string, unknown> = p.id
-      ? mergeProps(linkProps, { id: p.id })
-      : linkProps;
+    let baseProps: Record<string, unknown> = p.id ? mergeProps(linkProps, { id: p.id }) : linkProps;
 
     // Add aria-current for current page
     if (current) {
-      const ariaCurrent = p['aria-current'] ?? 'page';
+      const ariaCurrent = p["aria-current"] ?? "page";
       baseProps = mergeProps(baseProps, {
-        'aria-current': ariaCurrent,
+        "aria-current": ariaCurrent,
       });
-
     }
 
     // Add aria-disabled for disabled items
     if (isDisabled()) {
       baseProps = mergeProps(baseProps, {
-        'aria-disabled': true,
+        "aria-disabled": true,
       });
     }
 

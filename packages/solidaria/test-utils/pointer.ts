@@ -5,15 +5,15 @@
  * in tests, compatible with userEvent's pointerMap.
  */
 
-import { fireEvent } from '@solidjs/testing-library';
+import { fireEvent } from "@solidjs/testing-library";
 
 /**
  * Pointer map entry for userEvent configuration
  */
 export interface PointerMapEntry {
   name: string;
-  pointerType: 'mouse' | 'touch' | 'pen';
-  button?: 'primary' | 'secondary' | 'auxiliary';
+  pointerType: "mouse" | "touch" | "pen";
+  button?: "primary" | "secondary" | "auxiliary";
   height?: number;
   width?: number;
   pressure?: number;
@@ -25,46 +25,46 @@ export interface PointerMapEntry {
  */
 export const pointerMap: PointerMapEntry[] = [
   {
-    name: 'MouseLeft',
-    pointerType: 'mouse',
-    button: 'primary',
+    name: "MouseLeft",
+    pointerType: "mouse",
+    button: "primary",
     height: 1,
     width: 1,
     pressure: 0.5,
   },
   {
-    name: 'MouseRight',
-    pointerType: 'mouse',
-    button: 'secondary',
+    name: "MouseRight",
+    pointerType: "mouse",
+    button: "secondary",
     height: 1,
     width: 1,
     pressure: 0.5,
   },
   {
-    name: 'MouseMiddle',
-    pointerType: 'mouse',
-    button: 'auxiliary',
+    name: "MouseMiddle",
+    pointerType: "mouse",
+    button: "auxiliary",
     height: 1,
     width: 1,
     pressure: 0.5,
   },
   {
-    name: 'TouchA',
-    pointerType: 'touch',
+    name: "TouchA",
+    pointerType: "touch",
     height: 1,
     width: 1,
     pressure: 0.5,
   },
   {
-    name: 'TouchB',
-    pointerType: 'touch',
+    name: "TouchB",
+    pointerType: "touch",
     height: 1,
     width: 1,
     pressure: 0.5,
   },
   {
-    name: 'PenA',
-    pointerType: 'pen',
+    name: "PenA",
+    pointerType: "pen",
     height: 1,
     width: 1,
     pressure: 0.5,
@@ -76,7 +76,7 @@ export const pointerMap: PointerMapEntry[] = [
  */
 export interface PointerEventOptions extends Partial<PointerEventInit> {
   /** Pointer type (mouse, touch, pen) */
-  pointerType?: 'mouse' | 'touch' | 'pen';
+  pointerType?: "mouse" | "touch" | "pen";
   /** Unique pointer ID */
   pointerId?: number;
   /** Whether this is the primary pointer */
@@ -117,21 +117,18 @@ export interface PointerEventOptions extends Partial<PointerEventInit> {
  * fireEvent(element, event);
  * ```
  */
-export function createPointerEvent(
-  type: string,
-  options: PointerEventOptions = {}
-): PointerEvent {
+export function createPointerEvent(type: string, options: PointerEventOptions = {}): PointerEvent {
   const {
-    pointerType = 'mouse',
+    pointerType = "mouse",
     pointerId = 1,
     isPrimary = true,
     clientX = 0,
     clientY = 0,
     button = 0,
-    buttons = type.includes('down') ? 1 : 0,
+    buttons = type.includes("down") ? 1 : 0,
     width = 1,
     height = 1,
-    pressure = type.includes('down') || type.includes('move') ? 0.5 : 0,
+    pressure = type.includes("down") || type.includes("move") ? 0.5 : 0,
     tiltX = 0,
     tiltY = 0,
     twist = 0,
@@ -181,7 +178,7 @@ export const pointerEvent = createPointerEvent;
  */
 export function createPressSequence(
   target: Element,
-  options: PointerEventOptions = {}
+  options: PointerEventOptions = {},
 ): PointerEvent[] {
   const rect = target.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
@@ -194,8 +191,8 @@ export function createPressSequence(
   };
 
   return [
-    createPointerEvent('pointerdown', { ...baseOptions, buttons: 1 }),
-    createPointerEvent('pointerup', { ...baseOptions, buttons: 0 }),
+    createPointerEvent("pointerdown", { ...baseOptions, buttons: 1 }),
+    createPointerEvent("pointerup", { ...baseOptions, buttons: 0 }),
   ];
 }
 
@@ -203,14 +200,14 @@ export function createPressSequence(
  * Fire a pointerdown event on a target with defaults.
  */
 export function firePointerDown(target: Element, options: PointerEventOptions = {}): void {
-  fireEvent(target, createPointerEvent('pointerdown', options));
+  fireEvent(target, createPointerEvent("pointerdown", options));
 }
 
 /**
  * Fire a pointerup event on a target with defaults.
  */
 export function firePointerUp(target: Element, options: PointerEventOptions = {}): void {
-  fireEvent(target, createPointerEvent('pointerup', { buttons: 0, ...options }));
+  fireEvent(target, createPointerEvent("pointerup", { buttons: 0, ...options }));
 }
 
 /**
@@ -227,23 +224,23 @@ export function firePointerClick(target: Element, options: PointerEventOptions =
  */
 export function createHoverSequence(
   target: Element,
-  options: PointerEventOptions = {}
+  options: PointerEventOptions = {},
 ): PointerEvent[] {
   const rect = target.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
 
   const baseOptions = {
-    pointerType: 'mouse' as const,
+    pointerType: "mouse" as const,
     clientX: centerX,
     clientY: centerY,
     ...options,
   };
 
   return [
-    createPointerEvent('pointerenter', baseOptions),
-    createPointerEvent('pointerover', baseOptions),
-    createPointerEvent('pointermove', baseOptions),
+    createPointerEvent("pointerenter", baseOptions),
+    createPointerEvent("pointerover", baseOptions),
+    createPointerEvent("pointermove", baseOptions),
   ];
 }
 
@@ -252,16 +249,16 @@ export function createHoverSequence(
  */
 export function createLeaveSequence(
   target: Element,
-  options: PointerEventOptions = {}
+  options: PointerEventOptions = {},
 ): PointerEvent[] {
   const baseOptions = {
-    pointerType: 'mouse' as const,
+    pointerType: "mouse" as const,
     ...options,
   };
 
   return [
-    createPointerEvent('pointerout', baseOptions),
-    createPointerEvent('pointerleave', baseOptions),
+    createPointerEvent("pointerout", baseOptions),
+    createPointerEvent("pointerleave", baseOptions),
   ];
 }
 
@@ -312,13 +309,13 @@ function createMockTouch(init: MockTouchInit): Touch {
  * Create touch events for testing touch interactions.
  */
 export function createTouchEvent(
-  type: 'touchstart' | 'touchmove' | 'touchend' | 'touchcancel',
+  type: "touchstart" | "touchmove" | "touchend" | "touchcancel",
   options: {
     identifier?: number;
     clientX?: number;
     clientY?: number;
     target?: EventTarget;
-  } = {}
+  } = {},
 ): TouchEvent {
   const { identifier = 0, clientX = 0, clientY = 0, target } = options;
 
@@ -337,7 +334,7 @@ export function createTouchEvent(
     force: 0.5,
   });
 
-  const isEnd = type === 'touchend' || type === 'touchcancel';
+  const isEnd = type === "touchend" || type === "touchcancel";
 
   return new TouchEvent(type, {
     bubbles: true,

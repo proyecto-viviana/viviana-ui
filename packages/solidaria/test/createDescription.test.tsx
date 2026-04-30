@@ -2,19 +2,19 @@
  * Tests for createDescription utility.
  */
 
-import { describe, it, expect, afterEach, beforeEach } from 'vitest';
-import { render, cleanup } from '@solidjs/testing-library';
-import { createRoot, createEffect } from 'solid-js';
+import { describe, it, expect, afterEach, beforeEach } from "vitest";
+import { render, cleanup } from "@solidjs/testing-library";
+import { createRoot, createEffect } from "solid-js";
 import {
   createDescription,
   getDescriptionNodeCount,
   clearDescriptionNodes,
-} from '../src/utils/createDescription';
+} from "../src/utils/createDescription";
 
 // Helper to wait for effects to run
 const flushEffects = () => new Promise((resolve) => queueMicrotask(resolve));
 
-describe('createDescription', () => {
+describe("createDescription", () => {
   beforeEach(() => {
     clearDescriptionNodes();
   });
@@ -24,31 +24,31 @@ describe('createDescription', () => {
     clearDescriptionNodes();
   });
 
-  it('returns object with aria-describedby property', () => {
+  it("returns object with aria-describedby property", () => {
     createRoot((dispose) => {
-      const props = createDescription(() => 'Test description');
+      const props = createDescription(() => "Test description");
 
       // Should have the property (getter)
-      expect('aria-describedby' in props).toBe(true);
+      expect("aria-describedby" in props).toBe(true);
 
       dispose();
     });
   });
 
-  it('returns undefined aria-describedby when description is undefined', () => {
+  it("returns undefined aria-describedby when description is undefined", () => {
     createRoot((dispose) => {
       const props = createDescription(() => undefined);
 
-      expect(props['aria-describedby']).toBeUndefined();
+      expect(props["aria-describedby"]).toBeUndefined();
 
       dispose();
     });
   });
 
-  it('creates a hidden description element in the DOM', async () => {
+  it("creates a hidden description element in the DOM", async () => {
     await new Promise<void>((resolve) => {
       createRoot(async (dispose) => {
-        const description = 'This is a description';
+        const description = "This is a description";
         createDescription(() => description);
 
         // Wait for effects to run
@@ -58,7 +58,7 @@ describe('createDescription', () => {
         const descElement = document.querySelector('[id^="solidaria-description-"]');
         expect(descElement).not.toBeNull();
         expect(descElement?.textContent).toBe(description);
-        expect(descElement?.style.display).toBe('none');
+        expect(descElement?.style.display).toBe("none");
 
         dispose();
         resolve();
@@ -66,16 +66,16 @@ describe('createDescription', () => {
     });
   });
 
-  it('returns aria-describedby pointing to the description element', async () => {
+  it("returns aria-describedby pointing to the description element", async () => {
     await new Promise<void>((resolve) => {
       createRoot(async (dispose) => {
-        const description = 'Press Enter to activate';
+        const description = "Press Enter to activate";
         const props = createDescription(() => description);
 
         // Wait for effects to run
         await flushEffects();
 
-        const describedBy = props['aria-describedby'];
+        const describedBy = props["aria-describedby"];
 
         expect(describedBy).toBeDefined();
         expect(describedBy).toMatch(/^solidaria-description-\d+$/);
@@ -91,10 +91,10 @@ describe('createDescription', () => {
     });
   });
 
-  it('reuses the same element for identical descriptions', async () => {
+  it("reuses the same element for identical descriptions", async () => {
     await new Promise<void>((resolve) => {
       createRoot(async (dispose) => {
-        const description = 'Shared description';
+        const description = "Shared description";
 
         const props1 = createDescription(() => description);
         const props2 = createDescription(() => description);
@@ -106,7 +106,7 @@ describe('createDescription', () => {
         expect(getDescriptionNodeCount()).toBe(1);
 
         // Both should point to the same ID
-        expect(props1['aria-describedby']).toBe(props2['aria-describedby']);
+        expect(props1["aria-describedby"]).toBe(props2["aria-describedby"]);
 
         dispose();
         resolve();
@@ -114,11 +114,11 @@ describe('createDescription', () => {
     });
   });
 
-  it('creates separate elements for different descriptions', async () => {
+  it("creates separate elements for different descriptions", async () => {
     await new Promise<void>((resolve) => {
       createRoot(async (dispose) => {
-        const description1 = 'First description';
-        const description2 = 'Second description';
+        const description1 = "First description";
+        const description2 = "Second description";
 
         createDescription(() => description1);
         createDescription(() => description2);
@@ -134,8 +134,8 @@ describe('createDescription', () => {
     });
   });
 
-  it('cleans up description element when disposed', async () => {
-    const description = 'Cleanup test description';
+  it("cleans up description element when disposed", async () => {
+    const description = "Cleanup test description";
 
     await new Promise<void>((resolve) => {
       createRoot(async (dispose) => {
@@ -161,10 +161,10 @@ describe('createDescription', () => {
     });
   });
 
-  it('appends description element to document.body', async () => {
+  it("appends description element to document.body", async () => {
     await new Promise<void>((resolve) => {
       createRoot(async (dispose) => {
-        const description = 'Body append test';
+        const description = "Body append test";
         createDescription(() => description);
 
         // Wait for effects to run
@@ -179,20 +179,20 @@ describe('createDescription', () => {
     });
   });
 
-  it('can be used in JSX with spread', async () => {
+  it("can be used in JSX with spread", async () => {
     const { container } = render(() => {
-      const props = createDescription(() => 'Description for button');
+      const props = createDescription(() => "Description for button");
       return <button {...props}>Test</button>;
     });
 
     // Wait for effects to run
     await flushEffects();
 
-    const button = container.querySelector('button');
+    const button = container.querySelector("button");
     expect(button).not.toBeNull();
 
     // The aria-describedby should be set
-    const describedBy = button?.getAttribute('aria-describedby');
+    const describedBy = button?.getAttribute("aria-describedby");
     expect(describedBy).toMatch(/^solidaria-description-\d+$/);
   });
 });

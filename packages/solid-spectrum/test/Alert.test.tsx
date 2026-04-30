@@ -1,27 +1,27 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
-import { setupUser } from '@proyecto-viviana/solid-spectrum-test-utils';
-import { Alert } from '../src/alert';
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@solidjs/testing-library";
+import { setupUser } from "@proyecto-viviana/solid-spectrum-test-utils";
+import { Alert } from "../src/alert";
 
-describe('Alert (solid-spectrum)', () => {
-  it('renders an alert with variant styling', () => {
+describe("Alert (solid-spectrum)", () => {
+  it("renders an alert with variant styling", () => {
     render(() => (
       <Alert variant="warning" title="Warning">
         Please review your configuration.
       </Alert>
     ));
 
-    const alert = screen.getByRole('alert');
+    const alert = screen.getByRole("alert");
     expect(alert).toBeInTheDocument();
-    expect(alert).toHaveTextContent('Warning');
-    expect(alert).toHaveTextContent('Please review your configuration.');
-    expect(alert.className).toContain('bg-warning-600');
+    expect(alert).toHaveTextContent("Warning");
+    expect(alert).toHaveTextContent("Please review your configuration.");
+    expect(alert.className).toContain("bg-warning-600");
   });
 
-  it('supports dismissible alerts', async () => {
+  it("supports dismissible alerts", async () => {
     const user = setupUser();
     const onDismiss = vi.fn();
 
@@ -31,7 +31,7 @@ describe('Alert (solid-spectrum)', () => {
       </Alert>
     ));
 
-    const dismiss = screen.getByRole('button', { name: 'Dismiss' });
+    const dismiss = screen.getByRole("button", { name: "Dismiss" });
     await user.click(dismiss);
 
     expect(onDismiss).toHaveBeenCalledTimes(1);

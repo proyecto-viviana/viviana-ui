@@ -3,9 +3,9 @@
  * Based on @react-stately/color useColorAreaState.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
-import type { Color, ColorChannel, ColorAxes } from './types';
-import { normalizeColor } from './Color';
+import { createSignal, createMemo, type Accessor } from "solid-js";
+import type { Color, ColorChannel, ColorAxes } from "./types";
+import { normalizeColor } from "./Color";
 
 export interface ColorAreaStateOptions {
   /** The current color value (controlled). */
@@ -75,9 +75,7 @@ export interface ColorAreaState {
 /**
  * Creates state for a color area (2D color picker).
  */
-export function createColorAreaState(
-  options: Accessor<ColorAreaStateOptions>
-): ColorAreaState {
+export function createColorAreaState(options: Accessor<ColorAreaStateOptions>): ColorAreaState {
   const getOptions = () => options();
 
   // Internal value state
@@ -107,7 +105,7 @@ export function createColorAreaState(
     if (opts.value !== undefined) {
       return normalizeColor(opts.value);
     }
-    return internalValue() ?? normalizeColor('#ff0000');
+    return internalValue() ?? normalizeColor("#ff0000");
   });
 
   const isDisabled = createMemo(() => getOptions().isDisabled ?? false);
@@ -243,7 +241,7 @@ export function createColorAreaState(
 
   // Get display color (alpha = 1)
   const getDisplayColor = () => {
-    return value().withChannelValue('alpha', 1);
+    return value().withChannelValue("alpha", 1);
   };
 
   return {

@@ -14,7 +14,10 @@ function resolveTheme(): Theme {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === "dark" || saved === "light") return saved;
   }
-  if (typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: light)").matches) {
+  if (
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-color-scheme: light)").matches
+  ) {
     return "light";
   }
   return "dark";

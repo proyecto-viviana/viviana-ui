@@ -5,9 +5,9 @@
  * and conflict resolution for multiple auto-focus elements.
  */
 
-import { createEffect, onCleanup, onMount } from 'solid-js';
-import { isServer } from 'solid-js/web';
-import { focusSafely } from '../utils/focus';
+import { createEffect, onCleanup, onMount } from "solid-js";
+import { isServer } from "solid-js/web";
+import { focusSafely } from "../utils/focus";
 
 // ============================================
 // TYPES
@@ -229,7 +229,7 @@ function removeFromQueue(ref: () => HTMLElement | null | undefined): void {
  */
 export function createAutoFocus(
   ref: () => HTMLElement | null | undefined,
-  options: AutoFocusOptions = {}
+  options: AutoFocusOptions = {},
 ): AutoFocusResult {
   const {
     isEnabled = true,

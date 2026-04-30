@@ -3,11 +3,11 @@
  * Based on @react-aria/grid/useGridCell.
  */
 
-import { createMemo, createSignal, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import type { GridState, GridCollection } from '@proyecto-viviana/solid-stately';
-import type { GridCellProps, GridCellAria } from './types';
-import { getGridData } from './createGrid';
+import { createMemo, createSignal, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import type { GridState, GridCollection } from "@proyecto-viviana/solid-stately";
+import type { GridCellProps, GridCellAria } from "./types";
+import { getGridData } from "./createGrid";
 
 /**
  * Creates accessibility props for a grid cell.
@@ -15,7 +15,7 @@ import { getGridData } from './createGrid';
 export function createGridCell<T extends object>(
   props: Accessor<GridCellProps>,
   state: Accessor<GridState<T, GridCollection<T>>>,
-  _ref: Accessor<HTMLElement | null>
+  _ref: Accessor<HTMLElement | null>,
 ): GridCellAria {
   const [isPressed, setIsPressed] = createSignal(false);
 
@@ -63,8 +63,8 @@ export function createGridCell<T extends object>(
     const rowKey = node?.parentKey;
 
     // Handle selection on parent row
-    if (rowKey != null && s.selectionMode !== 'none') {
-      if (e.shiftKey && s.selectionMode === 'multiple') {
+    if (rowKey != null && s.selectionMode !== "none") {
+      if (e.shiftKey && s.selectionMode === "multiple") {
         s.extendSelection(rowKey);
       } else if (e.ctrlKey || e.metaKey) {
         s.toggleSelection(rowKey);
@@ -91,7 +91,7 @@ export function createGridCell<T extends object>(
     if (isDisabled()) return;
 
     // Enter or Space triggers cell action
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       // Only handle if there's an action to trigger
       const gridData = getGridData(s);
       const onCellAction = gridData?.actions.onCellAction;
@@ -130,17 +130,17 @@ export function createGridCell<T extends object>(
     const node = s.collection.getItem(p.key);
 
     // Determine the role based on node type
-    let role: string = 'gridcell';
-    if (node?.type === 'rowheader') {
-      role = 'rowheader';
-    } else if (node?.type === 'column') {
-      role = 'columnheader';
+    let role: string = "gridcell";
+    if (node?.type === "rowheader") {
+      role = "rowheader";
+    } else if (node?.type === "column") {
+      role = "columnheader";
     }
 
     const baseProps: Record<string, unknown> = {
       role,
-      'aria-disabled': isDisabled() || undefined,
-      'aria-selected': s.selectionMode !== 'none' ? isSelected() : undefined,
+      "aria-disabled": isDisabled() || undefined,
+      "aria-selected": s.selectionMode !== "none" ? isSelected() : undefined,
       tabIndex: isFocused() ? 0 : -1,
       onClick,
       onKeyDown,
@@ -151,12 +151,12 @@ export function createGridCell<T extends object>(
 
     // Add column index for virtualized grids
     if (p.isVirtualized && node?.column != null) {
-      baseProps['aria-colindex'] = node.column + 1; // aria-colindex is 1-based
+      baseProps["aria-colindex"] = node.column + 1; // aria-colindex is 1-based
     }
 
     // Add colspan if present
     if (node?.colspan != null && node.colspan > 1) {
-      baseProps['aria-colspan'] = node.colspan;
+      baseProps["aria-colspan"] = node.colspan;
     }
 
     return baseProps as JSX.HTMLAttributes<HTMLElement>;

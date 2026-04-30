@@ -4,18 +4,18 @@
  * A circular SVG progress indicator.
  */
 
-import { type JSX, splitProps, Show } from 'solid-js';
+import { type JSX, splitProps, Show } from "solid-js";
 import {
   ProgressBar as HeadlessProgressBar,
   type ProgressBarRenderProps,
-} from '@proyecto-viviana/solidaria-components';
+} from "@proyecto-viviana/solidaria-components";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type ProgressCircleSize = 'sm' | 'md' | 'lg';
-export type ProgressCircleVariant = 'primary' | 'accent';
+export type ProgressCircleSize = "sm" | "md" | "lg";
+export type ProgressCircleVariant = "primary" | "accent";
 
 export interface ProgressCircleProps {
   /** The current value. @default 0 */
@@ -33,7 +33,7 @@ export interface ProgressCircleProps {
   /** Additional CSS class name. */
   class?: string;
   /** An accessibility label. */
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 // ============================================
@@ -47,8 +47,8 @@ const sizeConfig: Record<ProgressCircleSize, { size: number; stroke: number }> =
 };
 
 const variantColors: Record<ProgressCircleVariant, string> = {
-  primary: 'stroke-primary-400',
-  accent: 'stroke-accent',
+  primary: "stroke-primary-400",
+  accent: "stroke-accent",
 };
 
 // ============================================
@@ -59,32 +59,30 @@ const variantColors: Record<ProgressCircleVariant, string> = {
  * A circular progress indicator using SVG.
  */
 export function ProgressCircle(props: ProgressCircleProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['size', 'variant', 'class']);
+  const [local, headlessProps] = splitProps(props, ["size", "variant", "class"]);
 
-  const size = () => local.size ?? 'md';
+  const size = () => local.size ?? "md";
   const config = () => sizeConfig[size()];
-  const variant = () => local.variant ?? 'primary';
+  const variant = () => local.variant ?? "primary";
 
   const radius = () => (config().size - config().stroke) / 2;
   const circumference = () => 2 * Math.PI * radius();
   const center = () => config().size / 2;
 
   return (
-    <HeadlessProgressBar
-      {...headlessProps}
-      class={`inline-flex ${local.class ?? ''}`}
-    >
+    <HeadlessProgressBar {...headlessProps} class={`inline-flex ${local.class ?? ""}`}>
       {(renderProps: ProgressBarRenderProps) => {
-        const offset = () => renderProps.isIndeterminate
-          ? circumference() * 0.75
-          : circumference() - ((renderProps.percentage ?? 0) / 100) * circumference();
+        const offset = () =>
+          renderProps.isIndeterminate
+            ? circumference() * 0.75
+            : circumference() - ((renderProps.percentage ?? 0) / 100) * circumference();
 
         return (
           <svg
             width={config().size}
             height={config().size}
             viewBox={`0 0 ${config().size} ${config().size}`}
-            class={renderProps.isIndeterminate ? 'animate-spin' : ''}
+            class={renderProps.isIndeterminate ? "animate-spin" : ""}
           >
             <circle
               cx={center()}

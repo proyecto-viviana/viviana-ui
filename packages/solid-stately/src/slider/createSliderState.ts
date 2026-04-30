@@ -3,10 +3,10 @@
  * Based on @react-stately/slider useSliderState.
  */
 
-import { type Accessor, createSignal, createMemo } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
+import { type Accessor, createSignal, createMemo } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
 
-export type SliderOrientation = 'horizontal' | 'vertical';
+export type SliderOrientation = "horizontal" | "vertical";
 
 export interface SliderStateProps {
   /** The current value (controlled). */
@@ -87,7 +87,7 @@ function clamp(value: number, min: number, max: number): number {
 function snapToStep(value: number, min: number, max: number, step: number): number {
   const snapped = Math.round((value - min) / step) * step + min;
   // Handle floating point precision issues
-  const decimalPlaces = (step.toString().split('.')[1] || '').length;
+  const decimalPlaces = (step.toString().split(".")[1] || "").length;
   const rounded = parseFloat(snapped.toFixed(decimalPlaces));
   return clamp(rounded, min, max);
 }
@@ -95,27 +95,28 @@ function snapToStep(value: number, min: number, max: number, step: number): numb
 /**
  * Provides state management for a slider component.
  */
-export function createSliderState(
-  props: MaybeAccessor<SliderStateProps>
-): SliderState {
+export function createSliderState(props: MaybeAccessor<SliderStateProps>): SliderState {
   const getProps = () => access(props);
 
   // Get static values with defaults
   const minValue = getProps().minValue ?? DEFAULT_MIN;
   const maxValue = getProps().maxValue ?? DEFAULT_MAX;
   const step = getProps().step ?? DEFAULT_STEP;
-  const orientation = getProps().orientation ?? 'horizontal';
+  const orientation = getProps().orientation ?? "horizontal";
   const isDisabled = getProps().isDisabled ?? false;
 
   // Calculate page step (10% of range, snapped to step)
-  const pageStep = Math.max(step, snapToStep((maxValue - minValue) / 10, 0, maxValue - minValue, step));
+  const pageStep = Math.max(
+    step,
+    snapToStep((maxValue - minValue) / 10, 0, maxValue - minValue, step),
+  );
 
   // Controlled vs uncontrolled
   const isControlled = () => getProps().value !== undefined;
 
   // Internal signal for uncontrolled mode
   const [internalValue, setInternalValue] = createSignal(
-    snapToStep(getProps().defaultValue ?? minValue, minValue, maxValue, step)
+    snapToStep(getProps().defaultValue ?? minValue, minValue, maxValue, step),
   );
 
   // Dragging and focus state

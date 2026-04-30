@@ -7,12 +7,12 @@
  * - TabSwitch: A styled two-option selector composed with headless toggle primitives
  */
 
-import { type JSX, createMemo } from 'solid-js'
-import type { Key } from '@proyecto-viviana/solid-stately'
+import { type JSX, createMemo } from "solid-js";
+import type { Key } from "@proyecto-viviana/solid-stately";
 import {
   ToggleButtonGroup as HeadlessToggleButtonGroup,
   ToggleButton as HeadlessToggleButton,
-} from '@proyecto-viviana/solidaria-components'
+} from "@proyecto-viviana/solidaria-components";
 
 // Re-export ToggleSwitch (the solidaria-components based switch)
 export {
@@ -21,22 +21,22 @@ export {
   type ToggleSwitchProps,
   type ToggleSwitchProps as SwitchProps,
   type SwitchSize,
-} from './ToggleSwitch'
+} from "./ToggleSwitch";
 
 // ============================================
 // TAB SWITCH (Two-option selector)
 // ============================================
 
 interface SwitchOption {
-  label: string
-  value: string
+  label: string;
+  value: string;
 }
 
 export interface TabSwitchProps {
-  options: SwitchOption[]
-  value?: string
-  onChange?: (value: string) => void
-  class?: string
+  options: SwitchOption[];
+  value?: string;
+  onChange?: (value: string) => void;
+  class?: string;
 }
 
 /**
@@ -44,33 +44,33 @@ export interface TabSwitchProps {
  * Behavior is delegated to headless ToggleButtonGroup/ToggleButton primitives.
  */
 export function TabSwitch(props: TabSwitchProps): JSX.Element {
-  const options = createMemo(() => props.options.slice(0, 2))
+  const options = createMemo(() => props.options.slice(0, 2));
   const selectedValue = createMemo(() => {
-    const match = options().find((option) => option.value === props.value)
-    return match?.value ?? options()[0]?.value
-  })
+    const match = options().find((option) => option.value === props.value);
+    return match?.value ?? options()[0]?.value;
+  });
   const selectedIndex = createMemo(() => {
-    const index = options().findIndex((option) => option.value === selectedValue())
-    return index >= 0 ? index : 0
-  })
+    const index = options().findIndex((option) => option.value === selectedValue());
+    return index >= 0 ? index : 0;
+  });
   const selectedKeys = createMemo<Set<Key>>(() => {
-    const value = selectedValue()
-    return value ? new Set<Key>([value]) : new Set<Key>()
-  })
+    const value = selectedValue();
+    return value ? new Set<Key>([value]) : new Set<Key>();
+  });
 
-  const textSelected = 'font-extrabold text-primary-100 tracking-wider'
-  const textUnselected = 'font-medium text-primary-300 tracking-wider'
-  const optionCount = createMemo(() => Math.max(options().length, 1))
+  const textSelected = "font-extrabold text-primary-100 tracking-wider";
+  const textUnselected = "font-medium text-primary-300 tracking-wider";
+  const optionCount = createMemo(() => Math.max(options().length, 1));
   const indicatorStyle = createMemo(() => ({
     width: `calc(100% / ${optionCount()})`,
     transform: `translateX(${selectedIndex() * 100}%)`,
-  }))
+  }));
   const layoutStyle = createMemo(() => ({
-    'grid-template-columns': `repeat(${optionCount()}, minmax(0, 1fr))`,
-  }))
+    "grid-template-columns": `repeat(${optionCount()}, minmax(0, 1fr))`,
+  }));
 
   return (
-    <div class={`relative bg-bg-400 rounded-full w-[250px] ${props.class ?? ''}`}>
+    <div class={`relative bg-bg-400 rounded-full w-[250px] ${props.class ?? ""}`}>
       <div
         class="left-0 top-0 transition-all duration-300 ease-in-out z-0 absolute bg-primary-700 rounded-full h-8 border-l-2 border-r-2 border-accent-300"
         style={indicatorStyle()}
@@ -97,5 +97,5 @@ export function TabSwitch(props: TabSwitchProps): JSX.Element {
         ))}
       </HeadlessToggleButtonGroup>
     </div>
-  )
+  );
 }

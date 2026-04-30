@@ -4,10 +4,10 @@
  * Provides ARIA attributes and keyboard handling for a color input field.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import type { ColorFieldState } from '@proyecto-viviana/solid-stately';
-import { createId } from '../ssr';
-import type { AriaColorFieldOptions, ColorFieldAria } from './types';
+import { createMemo, type Accessor } from "solid-js";
+import type { ColorFieldState } from "@proyecto-viviana/solid-stately";
+import { createId } from "../ssr";
+import type { AriaColorFieldOptions, ColorFieldAria } from "./types";
 
 /**
  * Creates ARIA props for a color field.
@@ -15,7 +15,7 @@ import type { AriaColorFieldOptions, ColorFieldAria } from './types';
 export function createColorField(
   props: Accessor<AriaColorFieldOptions>,
   state: Accessor<ColorFieldState>,
-  _inputRef: Accessor<HTMLInputElement | null>
+  _inputRef: Accessor<HTMLInputElement | null>,
 ): ColorFieldAria {
   const getProps = () => props();
   const getState = () => state();
@@ -37,26 +37,26 @@ export function createColorField(
     let handled = true;
 
     switch (e.key) {
-      case 'ArrowUp':
+      case "ArrowUp":
         s.increment();
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         s.decrement();
         break;
-      case 'PageUp':
+      case "PageUp":
         s.incrementToMax();
         break;
-      case 'PageDown':
+      case "PageDown":
         s.decrementToMin();
         break;
-      case 'Home':
+      case "Home":
         if (e.ctrlKey) {
           s.decrementToMin();
         } else {
           handled = false;
         }
         break;
-      case 'End':
+      case "End":
         if (e.ctrlKey) {
           s.incrementToMax();
         } else {
@@ -86,31 +86,26 @@ export function createColorField(
     const p = getProps();
 
     // Get channel name if in channel mode
-    const channelLabel = s.channel && s.value
-      ? s.value.getChannelName(s.channel, 'en-US')
-      : undefined;
+    const channelLabel =
+      s.channel && s.value ? s.value.getChannelName(s.channel, "en-US") : undefined;
 
     return {
       id: inputId,
-      type: 'text',
+      type: "text",
       value: s.inputValue,
       disabled: p.isDisabled || s.isDisabled,
       readOnly: p.isReadOnly || s.isReadOnly,
-      'aria-label': p['aria-label'] ?? channelLabel,
-      'aria-labelledby': p['aria-labelledby'],
-      'aria-describedby': p['aria-describedby'],
-      'aria-invalid': s.isInvalid || undefined,
+      "aria-label": p["aria-label"] ?? channelLabel,
+      "aria-labelledby": p["aria-labelledby"],
+      "aria-describedby": p["aria-describedby"],
+      "aria-invalid": s.isInvalid || undefined,
       // For spinbutton role in channel mode
-      role: s.channel ? ('spinbutton' as const) : undefined,
-      'aria-valuenow': s.channel && s.value
-        ? s.value.getChannelValue(s.channel)
-        : undefined,
-      'aria-valuemin': s.channel && s.value
-        ? s.value.getChannelRange(s.channel).minValue
-        : undefined,
-      'aria-valuemax': s.channel && s.value
-        ? s.value.getChannelRange(s.channel).maxValue
-        : undefined,
+      role: s.channel ? ("spinbutton" as const) : undefined,
+      "aria-valuenow": s.channel && s.value ? s.value.getChannelValue(s.channel) : undefined,
+      "aria-valuemin":
+        s.channel && s.value ? s.value.getChannelRange(s.channel).minValue : undefined,
+      "aria-valuemax":
+        s.channel && s.value ? s.value.getChannelRange(s.channel).maxValue : undefined,
       onInput: (e: InputEvent) => {
         const target = e.target as HTMLInputElement;
         s.setInputValue(target.value);

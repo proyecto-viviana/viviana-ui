@@ -5,13 +5,7 @@
  * Port of react-aria-components/src/Button.tsx
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-  useContext,
-} from 'solid-js';
+import { type JSX, createContext, createMemo, splitProps, useContext } from "solid-js";
 import {
   createButton,
   createFocusRing,
@@ -20,7 +14,7 @@ import {
   type AriaButtonProps,
   type HoverEvent,
   type PressEvent,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -28,8 +22,8 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
-import { DialogTriggerContext, PopoverTriggerContext } from './contexts';
+} from "./utils";
+import { DialogTriggerContext, PopoverTriggerContext } from "./contexts";
 
 // ============================================
 // TYPES
@@ -50,9 +44,7 @@ export interface ButtonRenderProps {
   isPending: boolean;
 }
 
-export interface ButtonProps
-  extends Omit<AriaButtonProps, 'children'>,
-    SlotProps {
+export interface ButtonProps extends Omit<AriaButtonProps, "children">, SlotProps {
   /** The children of the component. A function may be provided to receive render props. */
   children?: RenderChildren<ButtonRenderProps>;
   /** The CSS className for the element. */
@@ -62,7 +54,7 @@ export interface ButtonProps
   /** Custom renderer for the outer button element. */
   render?: (
     props: JSX.ButtonHTMLAttributes<HTMLButtonElement>,
-    renderProps: ButtonRenderProps
+    renderProps: ButtonRenderProps,
   ) => JSX.Element;
   /** Whether the button is in a pending state. */
   isPending?: boolean;
@@ -107,25 +99,27 @@ export const ButtonContext = createContext<ButtonContextValue | null>(null);
  */
 export function Button(props: ButtonProps): JSX.Element {
   const contextProps = useContext(ButtonContext);
-  const contextSlotProps = contextProps?.slots?.[props.slot ?? 'default'];
+  const contextSlotProps = contextProps?.slots?.[props.slot ?? "default"];
   const contextBaseProps = createMemo<ButtonProps>(() => {
     if (!contextProps) return {};
     const { slots: _slots, ...rest } = contextProps;
     return rest;
   });
-  const mergedProps = (contextProps ? mergeProps(contextBaseProps(), contextSlotProps ?? {}, props) : props) as ButtonProps;
+  const mergedProps = (
+    contextProps ? mergeProps(contextBaseProps(), contextSlotProps ?? {}, props) : props
+  ) as ButtonProps;
 
   // Split props
   const [local, ariaProps] = splitProps(mergedProps, [
-    'children',
-    'class',
-    'style',
-    'render',
-    'slot',
-    'isPending',
-    'onHoverStart',
-    'onHoverEnd',
-    'onHoverChange',
+    "children",
+    "class",
+    "style",
+    "render",
+    "slot",
+    "isPending",
+    "onHoverStart",
+    "onHoverEnd",
+    "onHoverChange",
   ]);
 
   // Check if inside a DialogTrigger or PopoverTrigger - if so, toggle on press
@@ -139,7 +133,7 @@ export function Button(props: ButtonProps): JSX.Element {
   // Helper to resolve isDisabled (handles both boolean and Accessor<boolean>)
   const resolveDisabled = (): boolean => {
     const disabled = ariaProps.isDisabled;
-    if (typeof disabled === 'function') {
+    if (typeof disabled === "function") {
       return disabled();
     }
     return !!disabled;
@@ -162,7 +156,7 @@ export function Button(props: ButtonProps): JSX.Element {
       return;
     }
     // Call original onPress if provided
-    if (typeof ariaProps.onPress === 'function') {
+    if (typeof ariaProps.onPress === "function") {
       ariaProps.onPress(e);
     }
     // Toggle only when this exact button is the registered trigger element.
@@ -228,9 +222,9 @@ export function Button(props: ButtonProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Button',
+      defaultClassName: "solidaria-Button",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
@@ -244,9 +238,15 @@ export function Button(props: ButtonProps): JSX.Element {
   });
 
   // Extract refs from props to combine them manually
-  const buttonPropsRef = (buttonAria.buttonProps as Record<string, unknown>).ref as ((el: HTMLElement) => void) | undefined;
-  const focusPropsRef = (focusProps as Record<string, unknown>).ref as ((el: HTMLElement) => void) | undefined;
-  const hoverPropsRef = (hoverProps as Record<string, unknown>).ref as ((el: HTMLElement) => void) | undefined;
+  const buttonPropsRef = (buttonAria.buttonProps as Record<string, unknown>).ref as
+    | ((el: HTMLElement) => void)
+    | undefined;
+  const focusPropsRef = (focusProps as Record<string, unknown>).ref as
+    | ((el: HTMLElement) => void)
+    | undefined;
+  const hoverPropsRef = (hoverProps as Record<string, unknown>).ref as
+    | ((el: HTMLElement) => void)
+    | undefined;
 
   // Remove ref from spread props to avoid type conflicts
   const cleanButtonProps = () => {
@@ -283,44 +283,43 @@ export function Button(props: ButtonProps): JSX.Element {
     }
   };
   const buttonType = () =>
-    (buttonAria.buttonProps as Record<string, unknown>).type === 'submit' && resolvePending()
-      ? 'button'
-      : (buttonAria.buttonProps as Record<string, unknown>).type as
-          | 'button'
-          | 'submit'
-          | 'reset'
-          | undefined;
+    (buttonAria.buttonProps as Record<string, unknown>).type === "submit" && resolvePending()
+      ? "button"
+      : ((buttonAria.buttonProps as Record<string, unknown>).type as
+          | "button"
+          | "submit"
+          | "reset"
+          | undefined);
   const buttonChildren = () => renderProps.renderChildren();
-  const rootProps = () => ({
-    ...domProps(),
-    ...cleanButtonProps(),
-    ...cleanFocusProps(),
-    ...cleanHoverProps(),
-    type: buttonType(),
-    class: renderProps.class(),
-    style: renderProps.style(),
-    slot: local.slot,
-    'data-pressed': (buttonAria.isPressed() && !resolvePending()) || undefined,
-    'data-hovered': isHovered() || undefined,
-    'data-focused': isFocused() || undefined,
-    'data-focus-visible': isFocusVisible() || undefined,
-    'data-disabled': resolveDisabled() || undefined,
-    'data-pending': resolvePending() || undefined,
-  }) as JSX.ButtonHTMLAttributes<HTMLButtonElement>;
-  const customRootProps = () => ({
-    ...rootProps(),
-    ref: handleRef,
-    children: buttonChildren(),
-  }) as JSX.ButtonHTMLAttributes<HTMLButtonElement>;
-  const customRendered = createMemo(() =>
-    local.render?.(customRootProps(), renderValues())
-  );
+  const rootProps = () =>
+    ({
+      ...domProps(),
+      ...cleanButtonProps(),
+      ...cleanFocusProps(),
+      ...cleanHoverProps(),
+      type: buttonType(),
+      class: renderProps.class(),
+      style: renderProps.style(),
+      slot: local.slot,
+      "data-pressed": (buttonAria.isPressed() && !resolvePending()) || undefined,
+      "data-hovered": isHovered() || undefined,
+      "data-focused": isFocused() || undefined,
+      "data-focus-visible": isFocusVisible() || undefined,
+      "data-disabled": resolveDisabled() || undefined,
+      "data-pending": resolvePending() || undefined,
+    }) as JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+  const customRootProps = () =>
+    ({
+      ...rootProps(),
+      ref: handleRef,
+      children: buttonChildren(),
+    }) as JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+  const customRendered = createMemo(() => local.render?.(customRootProps(), renderValues()));
 
-  return local.render ? customRendered() : (
-    <button
-      ref={handleRef}
-      {...rootProps()}
-    >
+  return local.render ? (
+    customRendered()
+  ) : (
+    <button ref={handleRef} {...rootProps()}>
       {buttonChildren()}
     </button>
   );

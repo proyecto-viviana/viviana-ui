@@ -40,14 +40,10 @@ export const Route = createFileRoute("/silapse/docs/components/taggroup")({
 function TagGroupPage() {
   const [removableTags, setRemovableTags] = createSignal<TagItem[]>(initialTags);
   const [selectedKeys, setSelectedKeys] = createSignal<Set<Key>>(new Set(["frontend"]));
-  const [multiSelected, setMultiSelected] = createSignal<Set<Key>>(
-    new Set(["active", "pending"])
-  );
+  const [multiSelected, setMultiSelected] = createSignal<Set<Key>>(new Set(["active", "pending"]));
 
   function handleRemove(keys: Set<Key>) {
-    setRemovableTags((prev) =>
-      prev.filter((tag) => !keys.has(tag.id))
-    );
+    setRemovableTags((prev) => prev.filter((tag) => !keys.has(tag.id)));
   }
 
   function resetTags() {
@@ -76,11 +72,7 @@ function TagGroupPage() {
 </TagGroup>`}
       >
         <div class="max-w-md space-y-3">
-          <TagGroup
-            label="Frameworks"
-            items={removableTags()}
-            onRemove={handleRemove}
-          >
+          <TagGroup label="Frameworks" items={removableTags()} onRemove={handleRemove}>
             {(item) => item.name}
           </TagGroup>
           {removableTags().length === 0 && (
@@ -284,9 +276,7 @@ function TagGroupPage() {
           <li>Arrow keys navigate between tags</li>
           <li>Delete or Backspace removes focused tag when removable</li>
           <li>Space or Enter toggles selection on focused tag</li>
-          <li>
-            Remove buttons have accessible labels like "Remove [tag name]"
-          </li>
+          <li>Remove buttons have accessible labels like "Remove [tag name]"</li>
           <li>
             Group label is linked via <code>aria-labelledby</code>
           </li>

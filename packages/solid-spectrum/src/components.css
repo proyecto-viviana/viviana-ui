@@ -10,21 +10,21 @@
 /* Jost = titles, headings, labels, buttons */
 
 .font-sen {
-  font-family: 'Sen', sans-serif;
+  font-family: "Sen", sans-serif;
 }
 
 .font-jost {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
 }
 
 /* Base body font */
 .vui-body {
-  font-family: 'Sen', sans-serif;
+  font-family: "Sen", sans-serif;
 }
 
 /* Titles and headings */
 .vui-title {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
 }
 
 /* ===== CUSTOM SHADOWS ===== */
@@ -36,11 +36,10 @@
   filter: drop-shadow(0 0 10px rgba(255, 160, 213, 0.8));
 }
 
-
 /* ===== BUTTON COMPONENT ===== */
 .vui-button {
   position: relative;
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -58,7 +57,7 @@
 
 /* Shimmer overlay for hover effect */
 .vui-button::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
@@ -77,9 +76,10 @@
 
 .vui-button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-bg-400),
-              0 0 0 4px var(--color-accent-300),
-              0 0 20px rgba(255, 160, 213, 0.3);
+  box-shadow:
+    0 0 0 2px var(--color-bg-400),
+    0 0 0 4px var(--color-accent-300),
+    0 0 20px rgba(255, 160, 213, 0.3);
 }
 
 .vui-button:disabled {
@@ -143,8 +143,9 @@
 }
 
 .vui-button--fill.vui-button--accent:hover:not(:disabled) {
-  box-shadow: 0 0 20px rgba(255, 160, 213, 0.4),
-              0 4px 12px rgba(255, 160, 213, 0.3);
+  box-shadow:
+    0 0 20px rgba(255, 160, 213, 0.4),
+    0 4px 12px rgba(255, 160, 213, 0.3);
 }
 
 /* Positive = bg-success-600, text-success-100, border-success-400 */
@@ -449,7 +450,7 @@
 }
 
 .prose h1 {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0 0 1rem 0;
@@ -463,7 +464,7 @@
 }
 
 .prose h2 {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 1.25rem;
   font-weight: 600;
   margin-top: 2rem;
@@ -474,7 +475,7 @@
 }
 
 .prose h3 {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 0.8125rem;
   font-weight: 600;
   margin-top: 1.5rem;
@@ -520,7 +521,8 @@
   clip-path: none;
 }
 
-.prose ul, .prose ol {
+.prose ul,
+.prose ol {
   padding-left: 1.25rem;
   margin-bottom: 1rem;
 }
@@ -545,7 +547,7 @@
   border-left: 3px solid transparent;
   color: var(--color-primary-400);
   font-size: 0.8125rem;
-  font-family: 'Sen', sans-serif;
+  font-family: "Sen", sans-serif;
   text-decoration: none;
   transition: all 0.1s ease;
 }
@@ -566,7 +568,7 @@
 .vui-logo {
   display: inline-flex;
   align-items: baseline;
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.01em;
 }
@@ -605,7 +607,7 @@
 }
 
 .vui-logo--lg {
-  font-size: 2.0rem;
+  font-size: 2rem;
 }
 
 .vui-logo--lg .vui-logo__second::before {
@@ -689,7 +691,7 @@
 }
 
 .vui-header__link {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-primary-300);
@@ -714,7 +716,7 @@
   flex-direction: column;
   min-height: 100vh;
   background: var(--color-bg-100);
-  font-family: 'Sen', sans-serif;
+  font-family: "Sen", sans-serif;
 }
 
 /* Use this modifier for pages with fixed header where content shouldn't go behind it */
@@ -728,7 +730,7 @@
 .vui-page h4,
 .vui-page h5,
 .vui-page h6 {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
 }
 
 /* ===== LANDING PAGE LAYOUT ===== */
@@ -737,7 +739,7 @@
   flex-direction: column;
   min-height: 100vh;
   background: var(--color-bg-100);
-  font-family: 'Sen', sans-serif;
+  font-family: "Sen", sans-serif;
 }
 
 /* Hero Section */
@@ -763,7 +765,7 @@
 }
 
 .vui-hero__title {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 3rem;
   font-weight: 800;
   letter-spacing: -0.025em;
@@ -828,7 +830,7 @@
 }
 
 .vui-section__title {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 1.875rem;
   font-weight: 700;
   color: var(--color-primary-100);
@@ -868,7 +870,9 @@
   border: 1px solid var(--color-bg-300);
   background: var(--color-bg-200);
   color: var(--color-primary-100);
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
 }
 
 .vui-feature-card--alt {
@@ -887,7 +891,7 @@
 }
 
 .vui-feature-card__title {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-primary-100);
@@ -988,7 +992,7 @@
 }
 
 .vui-footer__link {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 0.875rem;
   color: var(--color-primary-300);
   transition: color 0.15s;
@@ -1024,13 +1028,15 @@
   color: var(--color-primary-200);
   border: 1px solid var(--color-primary-500);
   border-radius: 0.5rem;
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+  transition:
+    opacity 0.15s ease-in-out,
+    transform 0.15s ease-in-out;
 }
 
 .vui-tooltip__content--bottom {
@@ -1097,7 +1103,7 @@
   color: var(--color-primary-200);
   border: 1px solid var(--color-primary-500);
   border-radius: 0.5rem;
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   white-space: nowrap;
@@ -1125,14 +1131,16 @@
 /* ===== LIGHT MODE OVERRIDES ===== */
 
 [data-theme="light"] .vui-button:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-bg-400),
-              0 0 0 4px var(--color-accent-300),
-              0 0 20px rgba(160, 37, 88, 0.2);
+  box-shadow:
+    0 0 0 2px var(--color-bg-400),
+    0 0 0 4px var(--color-accent-300),
+    0 0 20px rgba(160, 37, 88, 0.2);
 }
 
 [data-theme="light"] .vui-button--fill.vui-button--accent:hover:not(:disabled) {
-  box-shadow: 0 0 20px rgba(160, 37, 88, 0.3),
-              0 4px 12px rgba(160, 37, 88, 0.2);
+  box-shadow:
+    0 0 20px rgba(160, 37, 88, 0.3),
+    0 4px 12px rgba(160, 37, 88, 0.2);
 }
 
 [data-theme="light"] .drop-shadow-logo {
@@ -1191,7 +1199,6 @@
  */
 
 @media (forced-colors: active) {
-
   /* ---------- BUTTON ---------- */
 
   .vui-button {

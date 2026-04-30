@@ -69,7 +69,7 @@ export function DocPage(props: DocPageProps) {
           margin: "0.75rem 0",
           "font-family": FONT_MONO,
           "font-size": "12px",
-          "border": `1px solid ${colors().muted}`,
+          border: `1px solid ${colors().muted}`,
           "border-left": `3px solid ${colors().blue}`,
         }}
       >
@@ -136,7 +136,7 @@ export function Example(props: ExampleProps) {
           margin: "0.75rem 0",
           "font-family": FONT_MONO,
           "font-size": "12px",
-          "border": `1px solid ${colors().muted}`,
+          border: `1px solid ${colors().muted}`,
           "border-left": `3px solid ${colors().blue}`,
         }}
       >
@@ -184,9 +184,13 @@ export function PropsTable(props: PropsTableProps) {
               {["Prop", "Type", "Default", "Description"].map((h) => (
                 <th
                   style={{
-                    padding: "8px 12px", "text-align": "left", "font-weight": "600",
-                    "font-family": FONT_TITLE, "font-size": "10px",
-                    "text-transform": "uppercase", "letter-spacing": "0.1em",
+                    padding: "8px 12px",
+                    "text-align": "left",
+                    "font-weight": "600",
+                    "font-family": FONT_TITLE,
+                    "font-size": "10px",
+                    "text-transform": "uppercase",
+                    "letter-spacing": "0.1em",
                     color: colors().pink,
                   }}
                 >
@@ -215,13 +219,26 @@ export function PropsTable(props: PropsTableProps) {
                       {prop.name}
                     </code>
                   </td>
-                  <td style={{ padding: "8px 12px", "font-family": FONT_MONO, "font-size": "12px", color: colors().textSecondary }}>{prop.type}</td>
+                  <td
+                    style={{
+                      padding: "8px 12px",
+                      "font-family": FONT_MONO,
+                      "font-size": "12px",
+                      color: colors().textSecondary,
+                    }}
+                  >
+                    {prop.type}
+                  </td>
                   <td style={{ padding: "8px 12px", color: colors().textSecondary }}>
                     <Show when={prop.default} fallback="—">
-                      <code style={{ "font-family": FONT_MONO, "font-size": "12px" }}>{prop.default}</code>
+                      <code style={{ "font-family": FONT_MONO, "font-size": "12px" }}>
+                        {prop.default}
+                      </code>
                     </Show>
                   </td>
-                  <td style={{ padding: "8px 12px", color: colors().textSecondary }}>{prop.description}</td>
+                  <td style={{ padding: "8px 12px", color: colors().textSecondary }}>
+                    {prop.description}
+                  </td>
                 </tr>
               )}
             </For>

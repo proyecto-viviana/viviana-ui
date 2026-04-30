@@ -38,81 +38,81 @@ function App() {
 
 ### Form Controls
 
-| Component | Description |
-|-----------|-------------|
-| Button | Action buttons with variants |
-| TextField | Text input with label |
-| NumberField | Numeric input with inc/dec |
-| SearchField | Search input with clear |
-| Slider | Range slider |
-| Checkbox, CheckboxGroup | Checkboxes |
-| RadioGroup, Radio | Radio buttons |
-| ToggleSwitch | Toggle switch |
+| Component               | Description                  |
+| ----------------------- | ---------------------------- |
+| Button                  | Action buttons with variants |
+| TextField               | Text input with label        |
+| NumberField             | Numeric input with inc/dec   |
+| SearchField             | Search input with clear      |
+| Slider                  | Range slider                 |
+| Checkbox, CheckboxGroup | Checkboxes                   |
+| RadioGroup, Radio       | Radio buttons                |
+| ToggleSwitch            | Toggle switch                |
 
 ### Selection
 
-| Component | Description |
-|-----------|-------------|
-| Select | Dropdown select |
-| Menu, MenuItem | Action menus |
+| Component              | Description      |
+| ---------------------- | ---------------- |
+| Select                 | Dropdown select  |
+| Menu, MenuItem         | Action menus     |
 | ListBox, ListBoxOption | Selectable lists |
 
 ### Navigation
 
-| Component | Description |
-|-----------|-------------|
-| Tabs, TabList, Tab, TabPanel | Tabbed navigation |
-| Breadcrumbs, BreadcrumbItem | Breadcrumb trail |
-| Link | Accessible links |
+| Component                             | Description                       |
+| ------------------------------------- | --------------------------------- |
+| Tabs, TabList, Tab, TabPanel          | Tabbed navigation                 |
+| Breadcrumbs, BreadcrumbItem           | Breadcrumb trail                  |
+| Link                                  | Accessible links                  |
 | Landmark, SkipLink, LandmarkNavigator | ARIA landmarks with F6 navigation |
 
 ### Data Display
 
-| Component | Description |
-|-----------|-------------|
-| Table | Data tables with sorting/selection |
-| GridList, GridListItem | Grid lists with keyboard nav |
-| Tree, TreeItem | Hierarchical tree views |
+| Component              | Description                        |
+| ---------------------- | ---------------------------------- |
+| Table                  | Data tables with sorting/selection |
+| GridList, GridListItem | Grid lists with keyboard nav       |
+| Tree, TreeItem         | Hierarchical tree views            |
 
 ### Color
 
-| Component | Description |
-|-----------|-------------|
+| Component   | Description                 |
+| ----------- | --------------------------- |
 | ColorSlider | Single channel color slider |
-| ColorArea | 2D color gradient picker |
-| ColorWheel | Circular hue picker |
-| ColorField | Hex/RGB color input |
-| ColorSwatch | Color preview |
-| ColorPicker | Complete color picker |
+| ColorArea   | 2D color gradient picker    |
+| ColorWheel  | Circular hue picker         |
+| ColorField  | Hex/RGB color input         |
+| ColorSwatch | Color preview               |
+| ColorPicker | Complete color picker       |
 
 ### Feedback
 
-| Component | Description |
-|-----------|-------------|
-| Alert | Informational alerts |
-| Badge | Status badges |
-| ProgressBar | Progress indicators |
-| Tooltip | Contextual tooltips |
-| Dialog | Modal dialogs |
+| Component   | Description          |
+| ----------- | -------------------- |
+| Alert       | Informational alerts |
+| Badge       | Status badges        |
+| ProgressBar | Progress indicators  |
+| Tooltip     | Contextual tooltips  |
+| Dialog      | Modal dialogs        |
 
 ### Layout
 
-| Component | Description |
-|-----------|-------------|
-| Separator | Visual dividers |
-| Avatar, AvatarGroup | User avatars |
+| Component           | Description     |
+| ------------------- | --------------- |
+| Separator           | Visual dividers |
+| Avatar, AvatarGroup | User avatars    |
 
 ### Custom Components
 
-| Component | Description |
-|-----------|-------------|
-| Chip | Tag-like chips |
-| ProfileCard | User profile cards |
-| EventCard | Event display |
-| CalendarCard | Calendar widget |
-| Conversation | Chat bubbles |
-| LateralNav | Side navigation |
-| PageLayout | Page structure |
+| Component    | Description        |
+| ------------ | ------------------ |
+| Chip         | Tag-like chips     |
+| ProfileCard  | User profile cards |
+| EventCard    | Event display      |
+| CalendarCard | Calendar widget    |
+| Conversation | Chat bubbles       |
+| LateralNav   | Side navigation    |
+| PageLayout   | Page structure     |
 
 ## Examples
 

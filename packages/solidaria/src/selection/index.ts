@@ -3,4 +3,4 @@
  * in collection components.
  */
 
-export { createTypeSelect, type TypeSelectOptions, type TypeSelectAria } from './createTypeSelect';
+export { createTypeSelect, type TypeSelectOptions, type TypeSelectAria } from "./createTypeSelect";

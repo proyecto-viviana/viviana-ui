@@ -9,7 +9,9 @@ type Props = { [key: string]: unknown };
  * @param args - Props objects to merge
  * @returns Merged props object. Use type parameter R to specify the result type.
  */
-export function mergeProps<R extends object = Record<string, unknown>, T extends object = object>(...args: T[]): R {
+export function mergeProps<R extends object = Record<string, unknown>, T extends object = object>(
+  ...args: T[]
+): R {
   const result: Props = {};
 
   for (const props of args) {
@@ -18,17 +20,21 @@ export function mergeProps<R extends object = Record<string, unknown>, T extends
       const existingValue = result[key];
 
       if (
-        typeof existingValue === 'function' &&
-        typeof value === 'function' &&
-        key.startsWith('on') &&
+        typeof existingValue === "function" &&
+        typeof value === "function" &&
+        key.startsWith("on") &&
         key[2] === key[2]?.toUpperCase()
       ) {
         // Chain event handlers
         result[key] = chainHandlers(existingValue as Function, value as Function);
-      } else if (key === 'class' || key === 'className') {
+      } else if (key === "class" || key === "className") {
         // Merge class names
         result[key] = mergeClassNames(existingValue, value);
-      } else if (key === 'style' && typeof existingValue === 'object' && typeof value === 'object') {
+      } else if (
+        key === "style" &&
+        typeof existingValue === "object" &&
+        typeof value === "object"
+      ) {
         // Merge style objects
         result[key] = { ...(existingValue as object), ...(value as object) };
       } else if (value !== undefined) {
@@ -48,5 +54,5 @@ function chainHandlers(existingHandler: Function, newHandler: Function) {
 }
 
 function mergeClassNames(...classes: unknown[]): string {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }

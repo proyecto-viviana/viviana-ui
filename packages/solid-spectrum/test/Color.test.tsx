@@ -1,34 +1,28 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
-import { setupUser } from '@proyecto-viviana/solid-spectrum-test-utils';
-import { ColorSwatch } from '../src/color';
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@solidjs/testing-library";
+import { setupUser } from "@proyecto-viviana/solid-spectrum-test-utils";
+import { ColorSwatch } from "../src/color";
 
-describe('ColorSwatch (solid-spectrum)', () => {
-  it('renders non-interactive swatch by default', () => {
+describe("ColorSwatch (solid-spectrum)", () => {
+  it("renders non-interactive swatch by default", () => {
     render(() => <ColorSwatch color="#ff0000" aria-label="Red" />);
-    expect(screen.getByRole('img', { name: 'Red' })).toBeInTheDocument();
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Red" })).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it('renders as semantic toggle button when selectable', async () => {
+  it("renders as semantic toggle button when selectable", async () => {
     const user = setupUser();
     const onClick = vi.fn();
 
     render(() => (
-      <ColorSwatch
-        color="#00ff00"
-        aria-label="Green"
-        isSelectable
-        isSelected
-        onClick={onClick}
-      />
+      <ColorSwatch color="#00ff00" aria-label="Green" isSelectable isSelected onClick={onClick} />
     ));
 
-    const button = screen.getByRole('button', { name: 'Green' });
-    expect(button).toHaveAttribute('aria-pressed', 'true');
+    const button = screen.getByRole("button", { name: "Green" });
+    expect(button).toHaveAttribute("aria-pressed", "true");
 
     await user.click(button);
     expect(onClick).toHaveBeenCalledTimes(1);

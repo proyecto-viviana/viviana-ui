@@ -3,12 +3,12 @@
  * Based on @react-aria/select useHiddenSelect.
  */
 
-import { type JSX, type Accessor, For, createEffect, onCleanup } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { createFormValidation } from '../form/createFormValidation';
-import type { SelectState, Key, FormValidationState } from '@proyecto-viviana/solid-stately';
+import { type JSX, type Accessor, For, createEffect, onCleanup } from "solid-js";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { createFormValidation } from "../form/createFormValidation";
+import type { SelectState, Key, FormValidationState } from "@proyecto-viviana/solid-stately";
 
-export type ValidationBehavior = 'aria' | 'native';
+export type ValidationBehavior = "aria" | "native";
 
 export interface AriaHiddenSelectProps<T> {
   /** The state object for the select. */
@@ -45,7 +45,7 @@ export interface HiddenSelectAria {
  * This is used for native form submission and accessibility on mobile devices.
  */
 export function createHiddenSelect<T>(
-  props: MaybeAccessor<AriaHiddenSelectProps<T>>
+  props: MaybeAccessor<AriaHiddenSelectProps<T>>,
 ): HiddenSelectAria {
   const getProps = () => access(props);
 
@@ -66,17 +66,17 @@ export function createHiddenSelect<T>(
       p.state.setSelectedKey(defaultKey);
     };
 
-    form.addEventListener('reset', handleReset);
+    form.addEventListener("reset", handleReset);
 
     onCleanup(() => {
-      form.removeEventListener('reset', handleReset);
+      form.removeEventListener("reset", handleReset);
     });
   });
 
   // Set up form validation handler for native validation
   createEffect(() => {
     const p = getProps();
-    if (!selectRef || p.validationBehavior !== 'native' || !p.validationState) return;
+    if (!selectRef || p.validationBehavior !== "native" || !p.validationState) return;
 
     createFormValidation(
       {
@@ -84,31 +84,39 @@ export function createHiddenSelect<T>(
         focus: () => p.triggerRef?.()?.focus(),
       },
       p.validationState,
-      () => selectRef
+      () => selectRef,
     );
   });
 
   return {
     get containerProps() {
       return {
-        'aria-hidden': true,
-        'data-a11y-ignore': 'aria-hidden-focus',
+        "aria-hidden": true,
+        "data-a11y-ignore": "aria-hidden-focus",
       } as JSX.HTMLAttributes<HTMLDivElement>;
     },
     get selectProps() {
       const p = getProps();
       const state = p.state;
       const selectedKey = state.selectedKey();
-      const selectedKeys = typeof state.selectedKeys === 'function'
-        ? state.selectedKeys()
-        : (selectedKey != null ? new Set([selectedKey]) : new Set<Key>());
-      const validationBehavior = p.validationBehavior ?? 'aria';
-      const isMultiple = typeof state.selectionMode === 'function' && state.selectionMode() === 'multiple';
+      const selectedKeys =
+        typeof state.selectedKeys === "function"
+          ? state.selectedKeys()
+          : selectedKey != null
+            ? new Set([selectedKey])
+            : new Set<Key>();
+      const validationBehavior = p.validationBehavior ?? "aria";
+      const isMultiple =
+        typeof state.selectionMode === "function" && state.selectionMode() === "multiple";
       const multipleValue =
-        selectedKeys === 'all' ? Array.from(state.collection()).map((item) => String(item.key)) : Array.from(selectedKeys).map(String);
+        selectedKeys === "all"
+          ? Array.from(state.collection()).map((item) => String(item.key))
+          : Array.from(selectedKeys).map(String);
 
       return {
-        ref: (el: HTMLSelectElement) => { selectRef = el; },
+        ref: (el: HTMLSelectElement) => {
+          selectRef = el;
+        },
         tabIndex: -1,
         autoComplete: p.autoComplete,
         disabled: p.isDisabled ?? state.isDisabled,
@@ -116,12 +124,12 @@ export function createHiddenSelect<T>(
         name: p.name,
         form: p.form,
         // Add required attribute for native form validation
-        required: validationBehavior === 'native' && p.isRequired,
-        value: isMultiple ? multipleValue : (selectedKey != null ? String(selectedKey) : ''),
+        required: validationBehavior === "native" && p.isRequired,
+        value: isMultiple ? multipleValue : selectedKey != null ? String(selectedKey) : "",
         onChange: (e: Event) => {
           const target = e.target as HTMLSelectElement;
           if (isMultiple) {
-            if (typeof state.setSelectedKeys === 'function') {
+            if (typeof state.setSelectedKeys === "function") {
               state.setSelectedKeys(Array.from(target.selectedOptions).map((o) => o.value as Key));
             } else {
               const first = target.selectedOptions[0]?.value;
@@ -132,18 +140,18 @@ export function createHiddenSelect<T>(
           }
         },
         style: {
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
+          width: "100%",
+          height: "100%",
           opacity: 0,
-          'font-size': '16px', // Prevents zoom on iOS
-          border: 'none',
-          cursor: 'default',
+          "font-size": "16px", // Prevents zoom on iOS
+          border: "none",
+          cursor: "default",
           margin: 0,
           padding: 0,
-          'pointer-events': 'none',
+          "pointer-events": "none",
         },
       } as JSX.SelectHTMLAttributes<HTMLSelectElement>;
     },
@@ -151,20 +159,20 @@ export function createHiddenSelect<T>(
       const p = getProps();
       const state = p.state;
       const selectedKey = state.selectedKey();
-      const validationBehavior = p.validationBehavior ?? 'aria';
+      const validationBehavior = p.validationBehavior ?? "aria";
 
       // For native validation with required, use type="text" with display:none
       // so the browser will validate it on form submit
-      const useTextInput = validationBehavior === 'native' && p.isRequired;
+      const useTextInput = validationBehavior === "native" && p.isRequired;
 
       return {
-        type: useTextInput ? 'text' : 'hidden',
+        type: useTextInput ? "text" : "hidden",
         name: p.name,
         form: p.form,
-        value: selectedKey != null ? String(selectedKey) : '',
+        value: selectedKey != null ? String(selectedKey) : "",
         disabled: p.isDisabled ?? state.isDisabled,
         required: useTextInput ? p.isRequired : undefined,
-        style: useTextInput ? { display: 'none' } : undefined,
+        style: useTextInput ? { display: "none" } : undefined,
       } as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
   };
@@ -230,11 +238,14 @@ export function HiddenSelect<T>(props: HiddenSelectProps<T>): JSX.Element {
 
   const collection = () => props.state.collection();
   const selectedKey = () => props.state.selectedKey();
-  const selectedKeys = () => typeof props.state.selectedKeys === 'function'
-    ? props.state.selectedKeys()
-    : (selectedKey() != null ? new Set([selectedKey() as Key]) : new Set<Key>());
-  const isMultiple = () => typeof props.state.selectionMode === 'function'
-    && props.state.selectionMode() === 'multiple';
+  const selectedKeys = () =>
+    typeof props.state.selectedKeys === "function"
+      ? props.state.selectedKeys()
+      : selectedKey() != null
+        ? new Set([selectedKey() as Key])
+        : new Set<Key>();
+  const isMultiple = () =>
+    typeof props.state.selectionMode === "function" && props.state.selectionMode() === "multiple";
 
   return (
     <div {...containerProps}>
@@ -246,11 +257,13 @@ export function HiddenSelect<T>(props: HiddenSelectProps<T>): JSX.Element {
             {(item) => (
               <option
                 value={String(item.key)}
-                selected={isMultiple()
-                  ? selectedKeys() === 'all'
-                    ? true
-                    : (selectedKeys() as Set<Key>).has(item.key)
-                  : item.key === selectedKey()}
+                selected={
+                  isMultiple()
+                    ? selectedKeys() === "all"
+                      ? true
+                      : (selectedKeys() as Set<Key>).has(item.key)
+                    : item.key === selectedKey()
+                }
               >
                 {item.textValue}
               </option>

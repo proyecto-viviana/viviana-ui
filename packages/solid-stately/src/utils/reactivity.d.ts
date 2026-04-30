@@ -3,7 +3,7 @@
  *
  * Provides type-safe utilities for working with SolidJS reactivity patterns.
  */
-import { Accessor } from 'solid-js';
+import { Accessor } from "solid-js";
 /**
  * A value that may be either a raw value or an accessor function.
  * This is a common pattern in SolidJS for props that may be reactive.

@@ -1,6 +1,12 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Dialog, DialogTrigger, DialogFooter, Button, TextField } from "@proyecto-viviana/solid-spectrum";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogFooter,
+  Button,
+  TextField,
+} from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/dialog")({
@@ -64,8 +70,12 @@ function DialogPage() {
                 Are you sure you want to delete this item? This action cannot be undone.
               </p>
               <DialogFooter>
-                <Button variant="secondary" onPress={close}>Cancel</Button>
-                <Button variant="negative" onPress={close}>Delete</Button>
+                <Button variant="secondary" onPress={close}>
+                  Cancel
+                </Button>
+                <Button variant="negative" onPress={close}>
+                  Delete
+                </Button>
               </DialogFooter>
             </Dialog>
           )}
@@ -98,8 +108,12 @@ function DialogPage() {
                 <TextField label="Email" defaultValue="john@example.com" />
               </div>
               <DialogFooter>
-                <Button variant="secondary" onPress={close}>Cancel</Button>
-                <Button variant="primary" onPress={close}>Save</Button>
+                <Button variant="secondary" onPress={close}>
+                  Cancel
+                </Button>
+                <Button variant="primary" onPress={close}>
+                  Save
+                </Button>
               </DialogFooter>
             </Dialog>
           )}

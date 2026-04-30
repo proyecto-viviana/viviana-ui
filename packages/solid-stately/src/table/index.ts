@@ -3,9 +3,9 @@
  * Provides state hooks for Table components.
  */
 
-export { createTableState } from './createTableState';
-export { createTableColumnResizeState } from './createTableColumnResizeState';
-export { TableCollection, createTableCollection } from './TableCollection';
+export { createTableState } from "./createTableState";
+export { createTableColumnResizeState } from "./createTableColumnResizeState";
+export { TableCollection, createTableCollection } from "./TableCollection";
 export type {
   TableState,
   TableStateOptions,
@@ -16,10 +16,10 @@ export type {
   ColumnDefinition,
   RowDefinition,
   TableCollectionOptions,
-} from './types';
+} from "./types";
 export type {
   ColumnSize,
   ColumnResizeDefinition,
   TableColumnResizeStateProps,
   TableColumnResizeState,
-} from './createTableColumnResizeState';
+} from "./createTableColumnResizeState";

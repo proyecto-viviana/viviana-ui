@@ -4,10 +4,10 @@
  * Provides ARIA attributes and keyboard handling for a color slider.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import type { ColorSliderState } from '@proyecto-viviana/solid-stately';
-import { createId } from '../ssr';
-import type { AriaColorSliderOptions, ColorSliderAria } from './types';
+import { createMemo, type Accessor } from "solid-js";
+import type { ColorSliderState } from "@proyecto-viviana/solid-stately";
+import { createId } from "../ssr";
+import type { AriaColorSliderOptions, ColorSliderAria } from "./types";
 
 /**
  * Creates ARIA props for a color slider.
@@ -15,7 +15,7 @@ import type { AriaColorSliderOptions, ColorSliderAria } from './types';
 export function createColorSlider(
   props: Accessor<AriaColorSliderOptions>,
   state: Accessor<ColorSliderState>,
-  trackRef: Accessor<HTMLDivElement | null>
+  trackRef: Accessor<HTMLDivElement | null>,
 ): ColorSliderAria {
   const getProps = () => props();
   const getState = () => state();
@@ -29,7 +29,7 @@ export function createColorSlider(
     const p = getProps();
     if (p.channelName) return p.channelName;
     const s = getState();
-    return s.value.getChannelName(s.channel, 'en-US');
+    return s.value.getChannelName(s.channel, "en-US");
   });
 
   const updateFromClientX = (clientX: number) => {
@@ -97,24 +97,24 @@ export function createColorSlider(
     let handled = true;
 
     switch (e.key) {
-      case 'ArrowRight':
-      case 'ArrowUp':
+      case "ArrowRight":
+      case "ArrowUp":
         s.incrementThumb();
         break;
-      case 'ArrowLeft':
-      case 'ArrowDown':
+      case "ArrowLeft":
+      case "ArrowDown":
         s.decrementThumb();
         break;
-      case 'PageUp':
+      case "PageUp":
         s.incrementThumb(s.pageSize);
         break;
-      case 'PageDown':
+      case "PageDown":
         s.decrementThumb(s.pageSize);
         break;
-      case 'Home':
+      case "Home":
         s.setThumbValue(s.minValue);
         break;
-      case 'End':
+      case "End":
         s.setThumbValue(s.maxValue);
         break;
       default:
@@ -132,31 +132,31 @@ export function createColorSlider(
     const s = getState();
     const value = s.value;
     const channel = s.channel;
-    const to = 'right';
+    const to = "right";
 
     switch (channel) {
-      case 'hue': {
+      case "hue": {
         const stops = [0, 60, 120, 180, 240, 300, 360]
-          .map(hue => value.withChannelValue('hue', hue).toString('css'))
-          .join(', ');
+          .map((hue) => value.withChannelValue("hue", hue).toString("css"))
+          .join(", ");
         return `linear-gradient(to ${to}, ${stops})`;
       }
-      case 'lightness': {
+      case "lightness": {
         const min = s.minValue;
         const max = s.maxValue;
-        const start = value.withChannelValue(channel, min).toString('css');
-        const middle = value.withChannelValue(channel, (max - min) / 2).toString('css');
-        const end = value.withChannelValue(channel, max).toString('css');
+        const start = value.withChannelValue(channel, min).toString("css");
+        const middle = value.withChannelValue(channel, (max - min) / 2).toString("css");
+        const end = value.withChannelValue(channel, max).toString("css");
         return `linear-gradient(to ${to}, ${start}, ${middle}, ${end})`;
       }
-      case 'saturation':
-      case 'brightness':
-      case 'red':
-      case 'green':
-      case 'blue':
-      case 'alpha': {
-        const start = value.withChannelValue(channel, s.minValue).toString('css');
-        const end = value.withChannelValue(channel, s.maxValue).toString('css');
+      case "saturation":
+      case "brightness":
+      case "red":
+      case "green":
+      case "blue":
+      case "alpha": {
+        const start = value.withChannelValue(channel, s.minValue).toString("css");
+        const end = value.withChannelValue(channel, s.maxValue).toString("css");
         return `linear-gradient(to ${to}, ${start}, ${end})`;
       }
       default:
@@ -169,7 +169,7 @@ export function createColorSlider(
     const s = getState();
     const bg = generateBackground();
     return {
-      role: 'presentation' as const,
+      role: "presentation" as const,
       onPointerDown: onTrackPointerDown,
       onPointerMove: onTrackPointerMove,
       onPointerUp: onTrackPointerUp,
@@ -178,11 +178,11 @@ export function createColorSlider(
       onMouseMove: onTrackMouseMove,
       onMouseUp: onTrackMouseUp,
       style: {
-        position: 'relative' as const,
-        'touch-action': 'none',
-        ...(bg ? { background: bg, 'forced-color-adjust': 'none' as const } : {}),
+        position: "relative" as const,
+        "touch-action": "none",
+        ...(bg ? { background: bg, "forced-color-adjust": "none" as const } : {}),
       },
-      'data-disabled': s.isDisabled || undefined,
+      "data-disabled": s.isDisabled || undefined,
     };
   });
 
@@ -193,16 +193,16 @@ export function createColorSlider(
     const percent = s.getThumbPercent();
 
     return {
-      role: 'presentation' as const,
+      role: "presentation" as const,
       style: {
-        position: 'absolute' as const,
+        position: "absolute" as const,
         left: `${percent * 100}%`,
-        top: '50%',
-        transform: 'translate(-50%, -50%)',
-        'touch-action': 'none',
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+        "touch-action": "none",
       },
-      'data-dragging': s.isDragging || undefined,
-      'data-disabled': s.isDisabled || p.isDisabled || undefined,
+      "data-dragging": s.isDragging || undefined,
+      "data-disabled": s.isDisabled || p.isDisabled || undefined,
     };
   });
 
@@ -212,17 +212,17 @@ export function createColorSlider(
     const p = getProps();
 
     return {
-      type: 'range',
+      type: "range",
       id: inputId,
       min: s.minValue,
       max: s.maxValue,
       step: s.step,
       value: s.getThumbValue(),
       disabled: s.isDisabled || p.isDisabled,
-      'aria-label': p['aria-label'] ?? channelName(),
-      'aria-labelledby': p['aria-labelledby'],
-      'aria-describedby': p['aria-describedby'],
-      'aria-valuetext': s.getThumbValueLabel(),
+      "aria-label": p["aria-label"] ?? channelName(),
+      "aria-labelledby": p["aria-labelledby"],
+      "aria-describedby": p["aria-describedby"],
+      "aria-valuetext": s.getThumbValueLabel(),
       onKeyDown,
       onChange: (e: Event) => {
         const target = e.target as HTMLInputElement;
@@ -237,15 +237,15 @@ export function createColorSlider(
         }
       },
       style: {
-        position: 'absolute' as const,
-        width: '1px',
-        height: '1px',
-        padding: '0',
-        margin: '-1px',
-        overflow: 'hidden',
-        clip: 'rect(0, 0, 0, 0)',
-        'white-space': 'nowrap',
-        border: '0',
+        position: "absolute" as const,
+        width: "1px",
+        height: "1px",
+        padding: "0",
+        margin: "-1px",
+        overflow: "hidden",
+        clip: "rect(0, 0, 0, 0)",
+        "white-space": "nowrap",
+        border: "0",
       },
     };
   });
@@ -253,7 +253,7 @@ export function createColorSlider(
   // Output props
   const outputProps = createMemo(() => {
     return {
-      'aria-live': 'off' as const,
+      "aria-live": "off" as const,
       for: inputId,
     };
   });

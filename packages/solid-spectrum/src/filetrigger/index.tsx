@@ -4,11 +4,11 @@
  * Styling-only wrapper around solidaria-components FileTrigger primitive.
  */
 
-import { type JSX, splitProps } from 'solid-js';
+import { type JSX, splitProps } from "solid-js";
 import {
   FileTrigger as HeadlessFileTrigger,
   type FileTriggerProps as HeadlessFileTriggerProps,
-} from '@proyecto-viviana/solidaria-components';
+} from "@proyecto-viviana/solidaria-components";
 
 export interface FileTriggerProps extends HeadlessFileTriggerProps {
   /** Additional CSS class for the trigger wrapper. */
@@ -16,7 +16,7 @@ export interface FileTriggerProps extends HeadlessFileTriggerProps {
 }
 
 export function FileTrigger(props: FileTriggerProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class', 'children']);
+  const [local, headlessProps] = splitProps(props, ["class", "children"]);
   const hasClass = () => !!local.class && local.class.trim().length > 0;
 
   return (
@@ -25,4 +25,3 @@ export function FileTrigger(props: FileTriggerProps): JSX.Element {
     </HeadlessFileTrigger>
   );
 }
-

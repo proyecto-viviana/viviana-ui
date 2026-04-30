@@ -3,10 +3,6 @@ export {
   getListBoxData,
   type AriaListBoxProps,
   type ListBoxAria,
-} from './createListBox';
+} from "./createListBox";
 
-export {
-  createOption,
-  type AriaOptionProps,
-  type OptionAria,
-} from './createOption';
+export { createOption, type AriaOptionProps, type OptionAria } from "./createOption";

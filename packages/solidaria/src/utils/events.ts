@@ -3,7 +3,7 @@
  * Based on @react-aria/utils event utilities.
  */
 
-import { isAndroid } from './platform';
+import { isAndroid } from "./platform";
 
 /**
  * Checks if a click event was generated from a virtual source like a screen reader.
@@ -11,14 +11,14 @@ import { isAndroid } from './platform';
  */
 export function isVirtualClick(event: MouseEvent | PointerEvent): boolean {
   // JAWS/NVDA with Firefox.
-  if ((event as PointerEvent).pointerType === '' && event.isTrusted) {
+  if ((event as PointerEvent).pointerType === "" && event.isTrusted) {
     return true;
   }
 
   // Android TalkBack's detail value varies depending on the event listener providing the event.
   // If pointerType is defined, event is from a click listener.
   if (isAndroid() && (event as PointerEvent).pointerType) {
-    return event.type === 'click' && (event as MouseEvent).buttons === 1;
+    return event.type === "click" && (event as MouseEvent).buttons === 1;
   }
 
   return event.detail === 0 && !(event as PointerEvent).pointerType;
@@ -40,7 +40,7 @@ export function isVirtualPointerEvent(event: PointerEvent): boolean {
       event.height === 1 &&
       event.pressure === 0 &&
       event.detail === 0 &&
-      event.pointerType === 'mouse')
+      event.pointerType === "mouse")
   );
 }
 
@@ -81,7 +81,7 @@ export function chain<T extends (...args: any[]) => any>(
 ): T {
   return ((...args: Parameters<T>) => {
     for (const callback of callbacks) {
-      if (typeof callback === 'function') {
+      if (typeof callback === "function") {
         callback(...args);
       }
     }
@@ -93,12 +93,12 @@ export function chain<T extends (...args: any[]) => any>(
  * Used for synthetic events where target needs to be modified.
  */
 export function setEventTarget<T extends Event>(event: T, target: EventTarget): void {
-  Object.defineProperty(event, 'target', {
+  Object.defineProperty(event, "target", {
     value: target,
     writable: false,
     configurable: true,
   });
-  Object.defineProperty(event, 'currentTarget', {
+  Object.defineProperty(event, "currentTarget", {
     value: target,
     writable: false,
     configurable: true,

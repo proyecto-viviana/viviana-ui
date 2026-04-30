@@ -3,18 +3,18 @@
  * Based on @react-aria/table/useTableSelectionCheckbox.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { createId } from '@proyecto-viviana/solid-stately';
-import type { TableState, TableCollection } from '@proyecto-viviana/solid-stately';
-import type { AriaTableSelectionCheckboxProps, TableSelectionCheckboxAria } from './types';
+import { createMemo, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import { createId } from "@proyecto-viviana/solid-stately";
+import type { TableState, TableCollection } from "@proyecto-viviana/solid-stately";
+import type { AriaTableSelectionCheckboxProps, TableSelectionCheckboxAria } from "./types";
 
 /**
  * Creates accessibility props for a table row selection checkbox.
  */
 export function createTableSelectionCheckbox<T extends object>(
   props: Accessor<AriaTableSelectionCheckboxProps>,
-  state: Accessor<TableState<T, TableCollection<T>>>
+  state: Accessor<TableState<T, TableCollection<T>>>,
 ): TableSelectionCheckboxAria {
   const checkboxId = createId();
 
@@ -41,11 +41,11 @@ export function createTableSelectionCheckbox<T extends object>(
   const checkboxProps = createMemo(() => {
     const baseProps: Record<string, unknown> = {
       id: checkboxId,
-      type: 'checkbox',
+      type: "checkbox",
       checked: isSelected(),
       disabled: isDisabled(),
       onChange,
-      'aria-label': 'Select',
+      "aria-label": "Select",
     };
 
     return baseProps as JSX.InputHTMLAttributes<HTMLInputElement>;

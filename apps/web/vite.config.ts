@@ -19,11 +19,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       "~": path.resolve(__dirname, "./src"),
     },
-    dedupe: [
-      "solid-js",
-      "@tanstack/solid-router",
-      "@tanstack/router-core",
-    ],
+    dedupe: ["solid-js", "@tanstack/solid-router", "@tanstack/router-core"],
   },
   optimizeDeps: {
     exclude: [

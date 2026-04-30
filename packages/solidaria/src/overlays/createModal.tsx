@@ -12,9 +12,9 @@ import {
   type JSX,
   type Accessor,
   type ParentComponent,
-} from 'solid-js';
-import { Portal } from 'solid-js/web';
-import { isServer } from 'solid-js/web';
+} from "solid-js";
+import { Portal } from "solid-js/web";
+import { isServer } from "solid-js/web";
 
 export interface ModalProviderProps {
   children: JSX.Element;
@@ -69,11 +69,7 @@ export const ModalProvider: ParentComponent<ModalProviderProps> = (props) => {
     },
   };
 
-  return (
-    <ModalContext.Provider value={context}>
-      {props.children}
-    </ModalContext.Provider>
-  );
+  return <ModalContext.Provider value={context}>{props.children}</ModalContext.Provider>;
 };
 
 /**
@@ -85,7 +81,8 @@ export const UNSAFE_PortalProvider: ParentComponent<PortalProviderProps> = (prop
   return (
     <PortalContext.Provider
       value={{
-        getContainer: props.getContainer === null ? undefined : props.getContainer ?? parent.getContainer,
+        getContainer:
+          props.getContainer === null ? undefined : (props.getContainer ?? parent.getContainer),
       }}
     >
       {props.children}
@@ -103,7 +100,7 @@ export function useUNSAFE_PortalContext(): PortalProviderContextValue {
 export interface ModalProviderAria {
   /** Props to be spread on the container element. */
   modalProviderProps: {
-    'aria-hidden'?: true;
+    "aria-hidden"?: true;
   };
 }
 
@@ -115,7 +112,7 @@ export function useModalProvider(): ModalProviderAria {
   const context = useContext(ModalContext);
   return {
     modalProviderProps: {
-      get 'aria-hidden'() {
+      get "aria-hidden"() {
         return context && context.modalCount() > 0 ? true : undefined;
       },
     },
@@ -172,12 +169,15 @@ export const OverlayContainer: ParentComponent<OverlayContainerProps> = (props) 
   }
 
   const portalContext = useUNSAFE_PortalContext();
-  const portalContainer = () => props.portalContainer ?? portalContext.getContainer?.() ?? document.body;
+  const portalContainer = () =>
+    props.portalContainer ?? portalContext.getContainer?.() ?? document.body;
 
   createEffect(() => {
     const container = portalContainer();
-    if (container?.closest('[data-overlay-container]')) {
-      throw new Error('An OverlayContainer must not be inside another container. Please change the portalContainer prop.');
+    if (container?.closest("[data-overlay-container]")) {
+      throw new Error(
+        "An OverlayContainer must not be inside another container. Please change the portalContainer prop.",
+      );
     }
   });
 
@@ -196,7 +196,7 @@ export interface AriaModalOptions {
 export interface ModalAria {
   /** Props for the modal content element. */
   modalProps: {
-    'data-ismodal': boolean;
+    "data-ismodal": boolean;
   };
 }
 
@@ -211,7 +211,7 @@ export function createModal(options?: AriaModalOptions): ModalAria {
   const context = useContext(ModalContext);
 
   if (!context) {
-    throw new Error('Modal is not contained within a provider');
+    throw new Error("Modal is not contained within a provider");
   }
 
   createEffect(() => {
@@ -232,7 +232,7 @@ export function createModal(options?: AriaModalOptions): ModalAria {
 
   return {
     modalProps: {
-      'data-ismodal': !options?.isDisabled,
+      "data-ismodal": !options?.isDisabled,
     },
   };
 }

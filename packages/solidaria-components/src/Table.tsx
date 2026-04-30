@@ -17,7 +17,7 @@ import {
   useContext,
   For,
   Show,
-} from 'solid-js';
+} from "solid-js";
 import {
   createTable,
   createTableColumnHeader,
@@ -33,7 +33,7 @@ import {
   mergeProps,
   type AriaTableProps,
   createTableColumnResize,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createTableState,
   createTableCollection,
@@ -47,7 +47,7 @@ import {
   type ColumnSize,
   type GridNode,
   type DropTarget,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -56,25 +56,29 @@ import {
   dataAttr,
   useRenderProps,
   filterDOMProps,
-} from './utils';
-import { SharedElementTransition } from './SharedElementTransition';
-import { type DragAndDropHooks } from './useDragAndDrop';
-import { ButtonContext, type ButtonProps } from './Button';
-import { CollectionRendererContext, type CollectionRendererContextValue, useCollectionRenderer } from './Collection';
-import { useVirtualizerContext } from './Virtualizer';
+} from "./utils";
+import { SharedElementTransition } from "./SharedElementTransition";
+import { type DragAndDropHooks } from "./useDragAndDrop";
+import { ButtonContext, type ButtonProps } from "./Button";
+import {
+  CollectionRendererContext,
+  type CollectionRendererContextValue,
+  useCollectionRenderer,
+} from "./Collection";
+import { useVirtualizerContext } from "./Virtualizer";
 import {
   type LinkDOMProps,
   type RouterOptions,
   useRouter,
   useLinkProps,
   type RouterClickModifiers,
-} from './RouterProvider';
+} from "./RouterProvider";
 import {
   getNormalizedDropTargetKey,
   mergePersistedKeysIntoVirtualRange,
   useDndPersistedKeys,
   useRenderDropIndicator,
-} from './DragAndDrop';
+} from "./DragAndDrop";
 
 // ============================================
 // TYPES
@@ -95,11 +99,11 @@ type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
 
 function assignRef<T>(ref: RefLike<T>, el: T): void {
   if (!ref) return;
-  if (typeof ref === 'function') ref(el);
+  if (typeof ref === "function") ref(el);
   else ref.current = el;
 }
 
-export interface TableProps<T extends object> extends Omit<AriaTableProps, 'children'>, SlotProps {
+export interface TableProps<T extends object> extends Omit<AriaTableProps, "children">, SlotProps {
   /** The data items to render in the table. */
   items: T[];
   /** The column definitions. */
@@ -109,21 +113,21 @@ export interface TableProps<T extends object> extends Omit<AriaTableProps, 'chil
   /** Function to get the text value from an item for a column. */
   getTextValue?: (item: T, column: ColumnDefinition<T>) => string;
   /** The selection mode. */
-  selectionMode?: 'none' | 'single' | 'multiple';
+  selectionMode?: "none" | "single" | "multiple";
   /** The selection behavior (toggle vs replace). */
-  selectionBehavior?: 'toggle' | 'replace';
+  selectionBehavior?: "toggle" | "replace";
   /** Whether disabled rows remain focusable. */
-  disabledBehavior?: 'selection' | 'all';
+  disabledBehavior?: "selection" | "all";
   /** Whether Escape clears selection. */
-  escapeKeyBehavior?: 'clearSelection' | 'none';
+  escapeKeyBehavior?: "clearSelection" | "none";
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
   /** Currently selected keys (controlled). */
-  selectedKeys?: 'all' | Iterable<Key>;
+  selectedKeys?: "all" | Iterable<Key>;
   /** Default selected keys (uncontrolled). */
-  defaultSelectedKeys?: 'all' | Iterable<Key>;
+  defaultSelectedKeys?: "all" | Iterable<Key>;
   /** Handler called when selection changes. */
-  onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  onSelectionChange?: (keys: "all" | Set<Key>) => void;
   /** The current sort descriptor. */
   sortDescriptor?: SortDescriptor;
   /** Handler called when sort changes. */
@@ -143,7 +147,7 @@ export interface TableProps<T extends object> extends Omit<AriaTableProps, 'chil
   /** Custom renderer for the table element. */
   render?: (
     props: JSX.HTMLAttributes<HTMLTableElement>,
-    renderProps: TableRenderProps
+    renderProps: TableRenderProps,
   ) => JSX.Element;
   /** Drag and drop hooks from `useDragAndDrop`. */
   dragAndDropHooks?: DragAndDropHooks<T>;
@@ -168,7 +172,7 @@ export interface TableHeaderProps extends SlotProps {
   /** Custom renderer for the table header element. */
   render?: (
     props: JSX.HTMLAttributes<HTMLTableSectionElement>,
-    renderProps: TableHeaderRenderProps
+    renderProps: TableHeaderRenderProps,
   ) => JSX.Element;
 }
 
@@ -180,7 +184,7 @@ export interface TableColumnRenderProps {
   /** Whether the column is sortable. */
   isSortable: boolean;
   /** The current sort direction ('ascending', 'descending', or undefined). */
-  sortDirection: 'ascending' | 'descending' | undefined;
+  sortDirection: "ascending" | "descending" | undefined;
   /** Whether the column is being hovered. */
   isHovered: boolean;
   /** Whether the column allows resizing. */
@@ -215,7 +219,7 @@ export interface TableColumnProps extends SlotProps {
   /** Custom renderer for the column header element. */
   render?: (
     props: JSX.ThHTMLAttributes<HTMLTableCellElement>,
-    renderProps: TableColumnRenderProps
+    renderProps: TableColumnRenderProps,
   ) => JSX.Element;
 }
 
@@ -246,7 +250,7 @@ export interface TableBodyProps<T> extends SlotProps {
   /** Custom renderer for the table body element. */
   render?: (
     props: JSX.HTMLAttributes<HTMLTableSectionElement>,
-    renderProps: TableBodyRenderProps
+    renderProps: TableBodyRenderProps,
   ) => JSX.Element;
 }
 
@@ -291,7 +295,10 @@ export interface TableRowProps<T> extends SlotProps {
   /** Whether the row is disabled. */
   isDisabled?: boolean;
   /** The children of the row (usually TableCell components). */
-  children?: JSX.Element | RenderChildren<TableRowRenderProps> | ((column: ColumnDefinition<T>) => JSX.Element);
+  children?:
+    | JSX.Element
+    | RenderChildren<TableRowRenderProps>
+    | ((column: ColumnDefinition<T>) => JSX.Element);
   /** The CSS className for the element. */
   class?: ClassNameOrFunction<TableRowRenderProps>;
   /** The inline style for the element. */
@@ -301,15 +308,15 @@ export interface TableRowProps<T> extends SlotProps {
   /** The URL this row links to. */
   href?: string;
   /** Link target for linked rows. */
-  target?: LinkDOMProps['target'];
+  target?: LinkDOMProps["target"];
   /** Link relationship for linked rows. */
-  rel?: LinkDOMProps['rel'];
+  rel?: LinkDOMProps["rel"];
   /** Download attribute for linked rows. */
-  download?: LinkDOMProps['download'];
+  download?: LinkDOMProps["download"];
   /** Ping attribute for linked rows. */
-  ping?: LinkDOMProps['ping'];
+  ping?: LinkDOMProps["ping"];
   /** Referrer policy for linked rows. */
-  referrerPolicy?: LinkDOMProps['referrerPolicy'];
+  referrerPolicy?: LinkDOMProps["referrerPolicy"];
   /** Router options for linked rows. */
   routerOptions?: RouterOptions;
   /** Ref for the table row element. */
@@ -317,7 +324,7 @@ export interface TableRowProps<T> extends SlotProps {
   /** Custom renderer for the table row element. */
   render?: (
     props: JSX.HTMLAttributes<HTMLTableRowElement>,
-    renderProps: TableRowRenderProps
+    renderProps: TableRowRenderProps,
   ) => JSX.Element;
 }
 
@@ -350,7 +357,7 @@ export interface TableCellProps extends SlotProps {
   /** Custom renderer for the table cell element. */
   render?: (
     props: JSX.TdHTMLAttributes<HTMLTableCellElement>,
-    renderProps: TableCellRenderProps
+    renderProps: TableCellRenderProps,
   ) => JSX.Element;
 }
 
@@ -383,9 +390,13 @@ interface TableContextValue<T extends object> {
 }
 
 export const TableContext = createContext<TableContextValue<object> | null>(null);
-export const TableStateContext = createContext<TableState<object, TableCollection<object>> | null>(null);
+export const TableStateContext = createContext<TableState<object, TableCollection<object>> | null>(
+  null,
+);
 /** The resize context carries a getter for the resize state. The getter may return null before columns register. */
-export const TableColumnResizeStateContext = createContext<{ getState: () => TableColumnResizeState | null } | null>(null);
+export const TableColumnResizeStateContext = createContext<{
+  getState: () => TableColumnResizeState | null;
+} | null>(null);
 
 // Row-level context for cells
 interface TableRowContextValue {
@@ -406,24 +417,24 @@ export const TableRowContext = createContext<TableRowContextValue | null>(null);
 export function Table<T extends object>(props: TableProps<T>): JSX.Element {
   const [local, stateProps, ariaProps] = splitProps(
     props,
-    ['class', 'style', 'render', 'slot', 'renderEmptyState', 'dragAndDropHooks', 'ref'],
+    ["class", "style", "render", "slot", "renderEmptyState", "dragAndDropHooks", "ref"],
     [
-      'items',
-      'columns',
-      'getKey',
-      'getTextValue',
-      'disabledKeys',
-      'disabledBehavior',
-      'escapeKeyBehavior',
-      'selectionMode',
-      'selectionBehavior',
-      'selectedKeys',
-      'defaultSelectedKeys',
-      'onSelectionChange',
-      'sortDescriptor',
-      'onSortChange',
-      'showSelectionCheckboxes',
-    ]
+      "items",
+      "columns",
+      "getKey",
+      "getTextValue",
+      "disabledKeys",
+      "disabledBehavior",
+      "escapeKeyBehavior",
+      "selectionMode",
+      "selectionBehavior",
+      "selectedKeys",
+      "defaultSelectedKeys",
+      "onSelectionChange",
+      "sortDescriptor",
+      "onSortChange",
+      "showSelectionCheckboxes",
+    ],
   );
 
   // Create ref signal
@@ -437,16 +448,16 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
       getKey: stateProps.getKey,
       getTextValue: stateProps.getTextValue,
       showSelectionCheckboxes: stateProps.showSelectionCheckboxes ?? false,
-    })
+    }),
   );
 
   // Create table state
   const state = createTableState<T, TableCollection<T>>(() => ({
     collection: collection(),
-      disabledKeys: stateProps.disabledKeys,
-      selectionMode: stateProps.selectionMode,
-      selectionBehavior: stateProps.selectionBehavior,
-      selectedKeys: stateProps.selectedKeys,
+    disabledKeys: stateProps.disabledKeys,
+    selectionMode: stateProps.selectionMode,
+    selectionBehavior: stateProps.selectionBehavior,
+    selectedKeys: stateProps.selectedKeys,
     defaultSelectedKeys: stateProps.defaultSelectedKeys,
     onSelectionChange: stateProps.onSelectionChange,
     sortDescriptor: stateProps.sortDescriptor,
@@ -459,9 +470,9 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
   const { gridProps } = createTable<T>(
     () => ({
       id: ariaProps.id,
-      'aria-label': ariaProps['aria-label'],
-      'aria-labelledby': ariaProps['aria-labelledby'],
-      'aria-describedby': ariaProps['aria-describedby'],
+      "aria-label": ariaProps["aria-label"],
+      "aria-labelledby": ariaProps["aria-labelledby"],
+      "aria-describedby": ariaProps["aria-describedby"],
       isVirtualized: ariaProps.isVirtualized ?? parentCollectionRenderer?.isVirtualized,
       onRowAction: ariaProps.onRowAction,
       onCellAction: ariaProps.onCellAction,
@@ -470,7 +481,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
       escapeKeyBehavior: stateProps.escapeKeyBehavior,
     }),
     () => state,
-    ref
+    ref,
   );
 
   // Create focus ring
@@ -490,9 +501,9 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Table',
+      defaultClassName: "solidaria-Table",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
@@ -510,18 +521,25 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     const { ref: _ref2, ...rest } = focusProps as Record<string, unknown>;
     return rest;
   };
-  const getItemNodes = createMemo(() => Array.from(state.collection).filter((node) => node.type === 'item'));
-  const getDropTargetByIndex = (index: number, position: 'before' | 'after' | 'on'): DropTarget | null => {
+  const getItemNodes = createMemo(() =>
+    Array.from(state.collection).filter((node) => node.type === "item"),
+  );
+  const getDropTargetByIndex = (
+    index: number,
+    position: "before" | "after" | "on",
+  ): DropTarget | null => {
     const node = getItemNodes()[index];
     if (!node) return null;
-    return { type: 'item', key: node.key, dropPosition: position };
+    return { type: "item", key: node.key, dropPosition: position };
   };
   const hasDroppableDnd = createMemo(() => {
     const hooks = local.dragAndDropHooks;
     return Boolean(
       hooks?.useDroppableCollectionState &&
       hooks.useDroppableCollection &&
-      (hooks.dropTargetDelegate || parentCollectionRenderer?.dropTargetDelegate || hooks.ListDropTargetDelegate)
+      (hooks.dropTargetDelegate ||
+        parentCollectionRenderer?.dropTargetDelegate ||
+        hooks.ListDropTargetDelegate),
     );
   });
   const hasDraggableDnd = createMemo(() => {
@@ -550,22 +568,23 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
     const hooks = local.dragAndDropHooks;
     const activeDropState = dropState();
     if (!hooks?.useDroppableCollection || !activeDropState) return undefined;
-    const resolveDirection = (): 'ltr' | 'rtl' => {
+    const resolveDirection = (): "ltr" | "rtl" => {
       const el = ref();
-      if (el && typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
+      if (el && typeof window !== "undefined" && typeof window.getComputedStyle === "function") {
         const dir = window.getComputedStyle(el).direction;
-        if (dir === 'rtl') return 'rtl';
+        if (dir === "rtl") return "rtl";
       }
-      return typeof document !== 'undefined' && document.dir === 'rtl' ? 'rtl' : 'ltr';
+      return typeof document !== "undefined" && document.dir === "rtl" ? "rtl" : "ltr";
     };
-    const dropTargetDelegate = hooks.dropTargetDelegate
-      ?? parentCollectionRenderer?.dropTargetDelegate
-      ?? (hooks.ListDropTargetDelegate
+    const dropTargetDelegate =
+      hooks.dropTargetDelegate ??
+      parentCollectionRenderer?.dropTargetDelegate ??
+      (hooks.ListDropTargetDelegate
         ? new hooks.ListDropTargetDelegate(
-          () => state.collection,
-          () => ref(),
-          { layout: 'grid', orientation: 'vertical', direction: resolveDirection() }
-        )
+            () => state.collection,
+            () => ref(),
+            { layout: "grid", orientation: "vertical", direction: resolveDirection() },
+          )
         : undefined);
     if (!dropTargetDelegate) return undefined;
     return hooks.useDroppableCollection(
@@ -577,13 +596,13 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
           getKeyBelow: (key) => state.collection.getKeyAfter?.(key) ?? null,
           getKeyAbove: (key) => state.collection.getKeyBefore?.(key) ?? null,
           getKeyLeftOf: (key) =>
-            resolveDirection() === 'rtl'
-              ? state.collection.getKeyAfter?.(key) ?? null
-              : state.collection.getKeyBefore?.(key) ?? null,
+            resolveDirection() === "rtl"
+              ? (state.collection.getKeyAfter?.(key) ?? null)
+              : (state.collection.getKeyBefore?.(key) ?? null),
           getKeyRightOf: (key) =>
-            resolveDirection() === 'rtl'
-              ? state.collection.getKeyBefore?.(key) ?? null
-              : state.collection.getKeyAfter?.(key) ?? null,
+            resolveDirection() === "rtl"
+              ? (state.collection.getKeyBefore?.(key) ?? null)
+              : (state.collection.getKeyAfter?.(key) ?? null),
           getKeyPageBelow: (key) => state.collection.getKeyAfter?.(key) ?? null,
           getKeyPageAbove: (key) => state.collection.getKeyBefore?.(key) ?? null,
         },
@@ -594,7 +613,7 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
           return state.selectedKeys;
         },
         setSelectedKeys: (keys: Set<Key>) => {
-          if (state.selectionMode === 'none') return;
+          if (state.selectionMode === "none") return;
           state.clearSelection();
           for (const key of keys) {
             state.toggleSelection(key);
@@ -603,16 +622,18 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
         setFocusedKey: (key) => state.setFocusedKey(key),
       },
       activeDropState,
-      () => ref()
+      () => ref(),
     );
   });
   const isRootDropTarget = createMemo(() => {
-    return Boolean(dropState()?.target?.type === 'root');
+    return Boolean(dropState()?.target?.type === "root");
   });
-  const dndRenderDropIndicator = createMemo(() => useRenderDropIndicator(local.dragAndDropHooks, dropState()));
-  const dndDropIndicator = (index: number, position: 'before' | 'after' | 'on') => {
+  const dndRenderDropIndicator = createMemo(() =>
+    useRenderDropIndicator(local.dragAndDropHooks, dropState()),
+  );
+  const dndDropIndicator = (index: number, position: "before" | "after" | "on") => {
     const target = getDropTargetByIndex(index, position);
-    if (!target || target.type !== 'item') return undefined;
+    if (!target || target.type !== "item") return undefined;
     return dndRenderDropIndicator()?.(target);
   };
 
@@ -647,40 +668,41 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
   const collectionRenderer = createMemo<CollectionRendererContextValue<unknown>>(() => ({
     ...parentCollectionRenderer,
     renderItem: (item) => item as JSX.Element,
-    renderDropIndicator: (index: number, position: 'before' | 'after' | 'on') =>
-      dndDropIndicator(index, position) ?? parentCollectionRenderer?.renderDropIndicator?.(index, position),
+    renderDropIndicator: (index: number, position: "before" | "after" | "on") =>
+      dndDropIndicator(index, position) ??
+      parentCollectionRenderer?.renderDropIndicator?.(index, position),
   }));
-  const tableChildren = () => typeof props.children === 'function'
-    ? props.children(renderValues())
-    : props.children;
-  const tableProps = () => ({
-    ref: (el: HTMLTableElement) => {
-      setRef(el);
-      assignRef(local.ref, el);
-    },
-    ...mergeProps(
-      domProps(),
-      cleanGridProps(),
-      cleanFocusProps(),
-      (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {}
-    ),
-    class: renderProps.class(),
-    style: renderProps.style(),
-    'data-focused': state.isFocused || undefined,
-    'data-focus-visible': isFocusVisible() || undefined,
-    'data-empty': stateProps.items.length === 0 || undefined,
-    'data-drop-target': isRootDropTarget() || undefined,
-    slot: local.slot,
-    children: tableChildren(),
-  }) as JSX.HTMLAttributes<HTMLTableElement>;
+  const tableChildren = () =>
+    typeof props.children === "function" ? props.children(renderValues()) : props.children;
+  const tableProps = () =>
+    ({
+      ref: (el: HTMLTableElement) => {
+        setRef(el);
+        assignRef(local.ref, el);
+      },
+      ...mergeProps(
+        domProps(),
+        cleanGridProps(),
+        cleanFocusProps(),
+        (droppableCollection()?.collectionProps as Record<string, unknown> | undefined) ?? {},
+      ),
+      class: renderProps.class(),
+      style: renderProps.style(),
+      "data-focused": state.isFocused || undefined,
+      "data-focus-visible": isFocusVisible() || undefined,
+      "data-empty": stateProps.items.length === 0 || undefined,
+      "data-drop-target": isRootDropTarget() || undefined,
+      slot: local.slot,
+      children: tableChildren(),
+    }) as JSX.HTMLAttributes<HTMLTableElement>;
 
   return (
     <TableContext.Provider value={contextValue as unknown as TableContextValue<object>}>
-      <TableStateContext.Provider value={state as unknown as TableState<object, TableCollection<object>>}>
+      <TableStateContext.Provider
+        value={state as unknown as TableState<object, TableCollection<object>>}
+      >
         <CollectionRendererContext.Provider value={collectionRenderer()}>
-          {local.render
-            ? local.render(tableProps(), renderValues())
-            : <table {...tableProps()} />}
+          {local.render ? local.render(tableProps(), renderValues()) : <table {...tableProps()} />}
         </CollectionRendererContext.Provider>
       </TableStateContext.Provider>
     </TableContext.Provider>
@@ -691,15 +713,22 @@ export function Table<T extends object>(props: TableProps<T>): JSX.Element {
  * A header row in a table containing column headers.
  */
 export function TableHeader(props: TableHeaderProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'render', 'slot', 'children', 'ref']);
+  const [local, domProps] = splitProps(props, [
+    "class",
+    "style",
+    "render",
+    "slot",
+    "children",
+    "ref",
+  ]);
 
   // Get context
   const context = useContext(TableContext);
   if (!context) {
-    throw new Error('TableHeader must be used within a Table');
+    throw new Error("TableHeader must be used within a Table");
   }
 
-  const { rowGroupProps } = createTableRowGroup(() => ({ type: 'thead' }));
+  const { rowGroupProps } = createTableRowGroup(() => ({ type: "thead" }));
 
   const { isHovered, hoverProps } = createHover({
     isDisabled: false,
@@ -725,9 +754,9 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Table-header',
+      defaultClassName: "solidaria-Table-header",
     },
-    renderValues
+    renderValues,
   );
 
   const cleanRowGroupProps = () => {
@@ -739,22 +768,23 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
     return rest;
   };
 
-  const headerProps = () => ({
-    ref: (el: HTMLTableSectionElement) => assignRef(local.ref, el),
-    ...domProps,
-    ...cleanRowGroupProps(),
-    ...cleanHoverProps(),
-    class: renderProps.class(),
-    style: renderProps.style(),
-    'data-hovered': isHovered() || undefined,
-    children: <tr role="row">{local.children}</tr>,
-  }) as JSX.HTMLAttributes<HTMLTableSectionElement>;
+  const headerProps = () =>
+    ({
+      ref: (el: HTMLTableSectionElement) => assignRef(local.ref, el),
+      ...domProps,
+      ...cleanRowGroupProps(),
+      ...cleanHoverProps(),
+      class: renderProps.class(),
+      style: renderProps.style(),
+      "data-hovered": isHovered() || undefined,
+      children: <tr role="row">{local.children}</tr>,
+    }) as JSX.HTMLAttributes<HTMLTableSectionElement>;
 
-  return local.render
-    ? local.render(headerProps(), renderValues())
-    : (
-      <thead
-        ref={(el) => assignRef(local.ref, el)}
+  return local.render ? (
+    local.render(headerProps(), renderValues())
+  ) : (
+    <thead
+      ref={(el) => assignRef(local.ref, el)}
       {...domProps}
       {...cleanRowGroupProps()}
       {...cleanHoverProps()}
@@ -771,12 +801,26 @@ export function TableHeader(props: TableHeaderProps): JSX.Element {
  * A column header in a table.
  */
 export function TableColumn(props: TableColumnProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'render', 'slot', 'id', 'allowsSorting', 'allowsResizing', 'width', 'defaultWidth', 'minWidth', 'maxWidth', 'children', 'ref']);
+  const [local, domProps] = splitProps(props, [
+    "class",
+    "style",
+    "render",
+    "slot",
+    "id",
+    "allowsSorting",
+    "allowsResizing",
+    "width",
+    "defaultWidth",
+    "minWidth",
+    "maxWidth",
+    "children",
+    "ref",
+  ]);
 
   // Get context
   const context = useContext(TableContext);
   if (!context) {
-    throw new Error('TableColumn must be used within a Table');
+    throw new Error("TableColumn must be used within a Table");
   }
   const { state, collection } = context;
 
@@ -789,7 +833,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     if (!node) {
       // Create a simple node for the column
       return {
-        type: 'column' as const,
+        type: "column" as const,
         key: local.id,
         value: null,
         textValue: String(local.id),
@@ -809,7 +853,7 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
       allowsSorting: local.allowsSorting,
     }),
     () => state as TableState<object, TableCollection<object>>,
-    ref
+    ref,
   );
 
   // Create hover
@@ -874,9 +918,9 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Table-column',
+      defaultClassName: "solidaria-Table-column",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -898,52 +942,44 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
     const base = renderProps.style();
     const rw = resizeWidth();
     if (rw == null) return base;
-    const widthStyle = { width: `${rw}px`, 'min-width': `${rw}px`, 'max-width': `${rw}px` };
+    const widthStyle = { width: `${rw}px`, "min-width": `${rw}px`, "max-width": `${rw}px` };
     if (!base) return widthStyle;
-    if (typeof base === 'string') return widthStyle; // fallback
+    if (typeof base === "string") return widthStyle; // fallback
     return { ...base, ...widthStyle };
   });
 
-  const columnChildren = () => typeof local.children === 'function'
-    ? local.children(renderValues())
-    : local.children;
-  const columnProps = () => ({
-    ref: (el: HTMLTableCellElement) => {
-      setRef(el);
-      assignRef(local.ref, el);
-    },
-    ...domProps,
-    ...mergeProps(
-      cleanColumnHeaderProps(),
-      cleanHoverProps(),
-      cleanFocusProps()
-    ),
-    class: renderProps.class(),
-    style: columnStyle(),
-    'data-sortable': local.allowsSorting || undefined,
-    'data-sort-direction': sortDirection() || undefined,
-    'data-resizable': local.allowsResizing || undefined,
-    'data-resizing': isResizing() || undefined,
-    'data-hovered': isHovered() || undefined,
-    'data-focused': state.focusedKey === local.id || undefined,
-    'data-focus-visible': (isFocusVisible() && state.focusedKey === local.id) || undefined,
-    children: columnChildren(),
-  }) as JSX.ThHTMLAttributes<HTMLTableCellElement>;
+  const columnChildren = () =>
+    typeof local.children === "function" ? local.children(renderValues()) : local.children;
+  const columnProps = () =>
+    ({
+      ref: (el: HTMLTableCellElement) => {
+        setRef(el);
+        assignRef(local.ref, el);
+      },
+      ...domProps,
+      ...mergeProps(cleanColumnHeaderProps(), cleanHoverProps(), cleanFocusProps()),
+      class: renderProps.class(),
+      style: columnStyle(),
+      "data-sortable": local.allowsSorting || undefined,
+      "data-sort-direction": sortDirection() || undefined,
+      "data-resizable": local.allowsResizing || undefined,
+      "data-resizing": isResizing() || undefined,
+      "data-hovered": isHovered() || undefined,
+      "data-focused": state.focusedKey === local.id || undefined,
+      "data-focus-visible": (isFocusVisible() && state.focusedKey === local.id) || undefined,
+      children: columnChildren(),
+    }) as JSX.ThHTMLAttributes<HTMLTableCellElement>;
 
-  return local.render
-    ? local.render(columnProps(), renderValues())
-    : (
-      <th
-        ref={(el) => {
+  return local.render ? (
+    local.render(columnProps(), renderValues())
+  ) : (
+    <th
+      ref={(el) => {
         setRef(el);
         assignRef(local.ref, el);
       }}
       {...domProps}
-      {...mergeProps(
-        cleanColumnHeaderProps(),
-        cleanHoverProps(),
-        cleanFocusProps()
-      )}
+      {...mergeProps(cleanColumnHeaderProps(), cleanHoverProps(), cleanFocusProps())}
       class={renderProps.class()}
       style={columnStyle()}
       data-sortable={local.allowsSorting || undefined}
@@ -963,15 +999,27 @@ export function TableColumn(props: TableColumnProps): JSX.Element {
  * The body of a table containing data rows.
  */
 export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Element {
-  const [local, domProps] = splitProps(props, ['items', 'class', 'style', 'render', 'slot', 'renderEmptyState', 'hasMore', 'isLoading', 'onLoadMore', 'children', 'ref']);
+  const [local, domProps] = splitProps(props, [
+    "items",
+    "class",
+    "style",
+    "render",
+    "slot",
+    "renderEmptyState",
+    "hasMore",
+    "isLoading",
+    "onLoadMore",
+    "children",
+    "ref",
+  ]);
 
   // Get context
   const context = useContext(TableContext);
   if (!context) {
-    throw new Error('TableBody must be used within a Table');
+    throw new Error("TableBody must be used within a Table");
   }
 
-  const { rowGroupProps } = createTableRowGroup(() => ({ type: 'tbody' }));
+  const { rowGroupProps } = createTableRowGroup(() => ({ type: "tbody" }));
 
   // Use provided items or context items
   const items = createMemo(() => (local.items ?? context.items) as T[]);
@@ -986,9 +1034,9 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Table-body',
+      defaultClassName: "solidaria-Table-body",
     },
-    renderValues
+    renderValues,
   );
 
   const cleanRowGroupProps = () => {
@@ -999,12 +1047,14 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
   const isEmpty = () => items().length === 0;
   const virtualizer = useVirtualizerContext();
   const parentCollectionRenderer = useCollectionRenderer<T>();
-  const rowNodes = createMemo(() => Array.from(context.collection).filter((node) => node.type === 'item'));
+  const rowNodes = createMemo(() =>
+    Array.from(context.collection).filter((node) => node.type === "item"),
+  );
   const persistedKeys = useDndPersistedKeys(
     { focusedKey: () => context.state.focusedKey },
     context.dragAndDropHooks,
     context.dropState as { target?: DropTarget | null } | undefined,
-    context.collection
+    context.collection,
   );
   const virtualRange = createMemo(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return null;
@@ -1016,16 +1066,28 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
     const dropTarget = (context.dropState as { target?: DropTarget | null } | undefined)?.target;
     const normalizedDropKey = getNormalizedDropTargetKey(dropTarget, context.collection);
     const focusedKey = context.state.focusedKey;
-    const focusedIndex = focusedKey != null ? rowNodes().findIndex((node) => node.key === focusedKey) : -1;
+    const focusedIndex =
+      focusedKey != null ? rowNodes().findIndex((node) => node.key === focusedKey) : -1;
     const forceIncludeIndexes = [
-      dropTarget?.type === 'item' ? rowNodes().findIndex((node) => node.key === dropTarget.key) : -1,
-      normalizedDropKey != null ? rowNodes().findIndex((node) => node.key === normalizedDropKey) : -1,
-      dropTarget?.type === 'item' ? -1 : focusedIndex,
+      dropTarget?.type === "item"
+        ? rowNodes().findIndex((node) => node.key === dropTarget.key)
+        : -1,
+      normalizedDropKey != null
+        ? rowNodes().findIndex((node) => node.key === normalizedDropKey)
+        : -1,
+      dropTarget?.type === "item" ? -1 : focusedIndex,
     ].filter((index) => index >= 0);
-    return mergePersistedKeysIntoVirtualRange(baseRange, persistedIndexes, rowCount, virtualizer, 80, {
-      forceIncludeIndexes,
-      forceIncludeMaxSpan: 320,
-    });
+    return mergePersistedKeysIntoVirtualRange(
+      baseRange,
+      persistedIndexes,
+      rowCount,
+      virtualizer,
+      80,
+      {
+        forceIncludeIndexes,
+        forceIncludeMaxSpan: 320,
+      },
+    );
   });
   createEffect(() => {
     if (!virtualizer || !parentCollectionRenderer?.isVirtualized) return;
@@ -1039,7 +1101,7 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
       if (!node) return target;
       return {
         ...target,
-        key: typeof node.key === 'string' || typeof node.key === 'number' ? node.key : undefined,
+        key: typeof node.key === "string" || typeof node.key === "number" ? node.key : undefined,
       };
     });
     onCleanup(() => {
@@ -1058,46 +1120,58 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
   const bodyChildren = () => (
     <>
       <SharedElementTransition>
-      <Show when={isEmpty() && local.renderEmptyState && !local.isLoading} fallback={
-        <>
-          {virtualRange()?.offsetTop
-            ? (
-              <tr role="presentation" aria-hidden="true" data-virtualizer-spacer="top">
-                <td colSpan={spacerColSpan()} style={{ height: `${virtualRange()!.offsetTop}px`, padding: '0', border: '0' }} />
-              </tr>
-            )
-            : null}
-          <For each={visibleItems()}>
-            {(item, index) => {
-              const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-              const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
-              const onIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'on');
-              const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
-              return (
-                <>
-                  {beforeIndicator()}
-                  {onIndicator()}
-                  {local.children?.(item)}
-                  {afterIndicator()}
-                </>
-              );
-            }}
-          </For>
-          {virtualRange()?.offsetBottom
-            ? (
-              <tr role="presentation" aria-hidden="true" data-virtualizer-spacer="bottom">
-                <td colSpan={spacerColSpan()} style={{ height: `${virtualRange()!.offsetBottom}px`, padding: '0', border: '0' }} />
-              </tr>
-            )
-            : null}
-        </>
-      }>
-        <tr data-empty-state>
-          <th role="rowheader" colSpan={spacerColSpan()}>
-            {local.renderEmptyState?.()}
-          </th>
-        </tr>
-      </Show>
+        <Show
+          when={isEmpty() && local.renderEmptyState && !local.isLoading}
+          fallback={
+            <>
+              {virtualRange()?.offsetTop ? (
+                <tr role="presentation" aria-hidden="true" data-virtualizer-spacer="top">
+                  <td
+                    colSpan={spacerColSpan()}
+                    style={{ height: `${virtualRange()!.offsetTop}px`, padding: "0", border: "0" }}
+                  />
+                </tr>
+              ) : null}
+              <For each={visibleItems()}>
+                {(item, index) => {
+                  const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                  const beforeIndicator = () =>
+                    parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), "before");
+                  const onIndicator = () =>
+                    parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), "on");
+                  const afterIndicator = () =>
+                    parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), "after");
+                  return (
+                    <>
+                      {beforeIndicator()}
+                      {onIndicator()}
+                      {local.children?.(item)}
+                      {afterIndicator()}
+                    </>
+                  );
+                }}
+              </For>
+              {virtualRange()?.offsetBottom ? (
+                <tr role="presentation" aria-hidden="true" data-virtualizer-spacer="bottom">
+                  <td
+                    colSpan={spacerColSpan()}
+                    style={{
+                      height: `${virtualRange()!.offsetBottom}px`,
+                      padding: "0",
+                      border: "0",
+                    }}
+                  />
+                </tr>
+              ) : null}
+            </>
+          }
+        >
+          <tr data-empty-state>
+            <th role="rowheader" colSpan={spacerColSpan()}>
+              {local.renderEmptyState?.()}
+            </th>
+          </tr>
+        </Show>
       </SharedElementTransition>
       <Show when={local.hasMore && local.onLoadMore}>
         <TableLoadMoreItem
@@ -1108,21 +1182,22 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
       </Show>
     </>
   );
-  const bodyProps = () => ({
-    ref: (el: HTMLTableSectionElement) => assignRef(local.ref, el),
-    ...domProps,
-    ...cleanRowGroupProps(),
-    class: renderProps.class(),
-    style: renderProps.style(),
-    'data-empty': isEmpty() || undefined,
-    children: bodyChildren(),
-  }) as JSX.HTMLAttributes<HTMLTableSectionElement>;
+  const bodyProps = () =>
+    ({
+      ref: (el: HTMLTableSectionElement) => assignRef(local.ref, el),
+      ...domProps,
+      ...cleanRowGroupProps(),
+      class: renderProps.class(),
+      style: renderProps.style(),
+      "data-empty": isEmpty() || undefined,
+      children: bodyChildren(),
+    }) as JSX.HTMLAttributes<HTMLTableSectionElement>;
 
-  return local.render
-    ? local.render(bodyProps(), renderValues())
-    : (
-      <tbody
-        ref={(el) => assignRef(local.ref, el)}
+  return local.render ? (
+    local.render(bodyProps(), renderValues())
+  ) : (
+    <tbody
+      ref={(el) => assignRef(local.ref, el)}
       {...domProps}
       {...cleanRowGroupProps()}
       class={renderProps.class()}
@@ -1130,46 +1205,58 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
       data-empty={isEmpty() || undefined}
     >
       <SharedElementTransition>
-      <Show when={isEmpty() && local.renderEmptyState && !local.isLoading} fallback={
-        <>
-          {virtualRange()?.offsetTop
-            ? (
-              <tr role="presentation" aria-hidden="true" data-virtualizer-spacer="top">
-                <td colSpan={spacerColSpan()} style={{ height: `${virtualRange()!.offsetTop}px`, padding: '0', border: '0' }} />
-              </tr>
-            )
-            : null}
-          <For each={visibleItems()}>
-            {(item, index) => {
-              const itemIndex = () => (virtualRange()?.start ?? 0) + index();
-              const beforeIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'before');
-              const onIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'on');
-              const afterIndicator = () => parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), 'after');
-              return (
-                <>
-                  {beforeIndicator()}
-                  {onIndicator()}
-                  {local.children?.(item)}
-                  {afterIndicator()}
-                </>
-              );
-            }}
-          </For>
-          {virtualRange()?.offsetBottom
-            ? (
-              <tr role="presentation" aria-hidden="true" data-virtualizer-spacer="bottom">
-                <td colSpan={spacerColSpan()} style={{ height: `${virtualRange()!.offsetBottom}px`, padding: '0', border: '0' }} />
-              </tr>
-            )
-            : null}
-        </>
-      }>
-        <tr data-empty-state>
-          <th role="rowheader" colSpan={spacerColSpan()}>
-            {local.renderEmptyState?.()}
-          </th>
-        </tr>
-      </Show>
+        <Show
+          when={isEmpty() && local.renderEmptyState && !local.isLoading}
+          fallback={
+            <>
+              {virtualRange()?.offsetTop ? (
+                <tr role="presentation" aria-hidden="true" data-virtualizer-spacer="top">
+                  <td
+                    colSpan={spacerColSpan()}
+                    style={{ height: `${virtualRange()!.offsetTop}px`, padding: "0", border: "0" }}
+                  />
+                </tr>
+              ) : null}
+              <For each={visibleItems()}>
+                {(item, index) => {
+                  const itemIndex = () => (virtualRange()?.start ?? 0) + index();
+                  const beforeIndicator = () =>
+                    parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), "before");
+                  const onIndicator = () =>
+                    parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), "on");
+                  const afterIndicator = () =>
+                    parentCollectionRenderer?.renderDropIndicator?.(itemIndex(), "after");
+                  return (
+                    <>
+                      {beforeIndicator()}
+                      {onIndicator()}
+                      {local.children?.(item)}
+                      {afterIndicator()}
+                    </>
+                  );
+                }}
+              </For>
+              {virtualRange()?.offsetBottom ? (
+                <tr role="presentation" aria-hidden="true" data-virtualizer-spacer="bottom">
+                  <td
+                    colSpan={spacerColSpan()}
+                    style={{
+                      height: `${virtualRange()!.offsetBottom}px`,
+                      padding: "0",
+                      border: "0",
+                    }}
+                  />
+                </tr>
+              ) : null}
+            </>
+          }
+        >
+          <tr data-empty-state>
+            <th role="rowheader" colSpan={spacerColSpan()}>
+              {local.renderEmptyState?.()}
+            </th>
+          </tr>
+        </Show>
       </SharedElementTransition>
       <Show when={local.hasMore && local.onLoadMore}>
         <TableLoadMoreItem
@@ -1186,14 +1273,14 @@ export function TableBody<T extends object>(props: TableBodyProps<T>): JSX.Eleme
  * The footer of a table containing summary rows.
  */
 export function TableFooter<T extends object>(props: TableFooterProps<T>): JSX.Element {
-  const [local, domProps] = splitProps(props, ['items', 'class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["items", "class", "style", "slot", "children"]);
 
   const context = useContext(TableContext);
   if (!context) {
-    throw new Error('TableFooter must be used within a Table');
+    throw new Error("TableFooter must be used within a Table");
   }
 
-  const { rowGroupProps } = createTableRowGroup(() => ({ type: 'tfoot' }));
+  const { rowGroupProps } = createTableRowGroup(() => ({ type: "tfoot" }));
   const items = createMemo(() => local.items ?? []);
 
   const renderValues = createMemo<TableFooterRenderProps>(() => ({
@@ -1204,9 +1291,9 @@ export function TableFooter<T extends object>(props: TableFooterProps<T>): JSX.E
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Table-footer',
+      defaultClassName: "solidaria-Table-footer",
     },
-    renderValues
+    renderValues,
   );
 
   const cleanRowGroupProps = () => {
@@ -1215,14 +1302,17 @@ export function TableFooter<T extends object>(props: TableFooterProps<T>): JSX.E
   };
 
   return (
-    <tfoot {...domProps} {...cleanRowGroupProps()} class={renderProps.class()} style={renderProps.style()}>
+    <tfoot
+      {...domProps}
+      {...cleanRowGroupProps()}
+      class={renderProps.class()}
+      style={renderProps.style()}
+    >
       <Show
-        when={local.items && typeof local.children === 'function'}
+        when={local.items && typeof local.children === "function"}
         fallback={local.children as JSX.Element}
       >
-        <For each={items()}>
-          {(item) => (local.children as (item: T) => JSX.Element)(item)}
-        </For>
+        <For each={items()}>{(item) => (local.children as (item: T) => JSX.Element)(item)}</For>
       </Show>
     </tfoot>
   );
@@ -1244,7 +1334,7 @@ export function TableLoadMoreItem(props: TableLoadMoreItemProps): JSX.Element {
   };
 
   createEffect(() => {
-    if (!sentinelRef || typeof IntersectionObserver !== 'function') return;
+    if (!sentinelRef || typeof IntersectionObserver !== "function") return;
     const offset = props.scrollOffset ?? 1;
     const margin = `0px 0px ${100 * offset}% 0px`;
     const observer = new IntersectionObserver(
@@ -1253,7 +1343,7 @@ export function TableLoadMoreItem(props: TableLoadMoreItemProps): JSX.Element {
           void triggerLoadMore();
         }
       },
-      { rootMargin: margin }
+      { rootMargin: margin },
     );
     observer.observe(sentinelRef);
     return () => observer.disconnect();
@@ -1261,18 +1351,26 @@ export function TableLoadMoreItem(props: TableLoadMoreItemProps): JSX.Element {
 
   const renderProps = useRenderProps(
     {
-      children: props.children ?? (() => (isLoading() ? <div role="progressbar" aria-label="loading" /> : null)),
+      children:
+        props.children ??
+        (() => (isLoading() ? <div role="progressbar" aria-label="loading" /> : null)),
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-Table-loadMore',
+      defaultClassName: "solidaria-Table-loadMore",
     },
-    () => ({ isLoading: isLoading() })
+    () => ({ isLoading: isLoading() }),
   );
 
   return (
     <>
-      <tr style={{ position: 'relative', width: 0, height: 0, overflow: 'hidden' }} inert>
-        <td><div ref={sentinelRef} data-testid="loadMoreSentinel" style={{ position: 'absolute', height: '1px', width: '1px' }} /></td>
+      <tr style={{ position: "relative", width: 0, height: 0, overflow: "hidden" }} inert>
+        <td>
+          <div
+            ref={sentinelRef}
+            data-testid="loadMoreSentinel"
+            style={{ position: "absolute", height: "1px", width: "1px" }}
+          />
+        </td>
       </tr>
       <Show when={isLoading()}>
         <tr
@@ -1285,7 +1383,9 @@ export function TableLoadMoreItem(props: TableLoadMoreItemProps): JSX.Element {
           style={renderProps.style()}
           data-loading
         >
-          <td role="rowheader" colSpan={props.colSpan ?? 1}>{renderProps.renderChildren()}</td>
+          <td role="rowheader" colSpan={props.colSpan ?? 1}>
+            {renderProps.renderChildren()}
+          </td>
         </tr>
       </Show>
     </>
@@ -1297,44 +1397,46 @@ export function TableLoadMoreItem(props: TableLoadMoreItemProps): JSX.Element {
  */
 export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element {
   const [local, domProps] = splitProps(props, [
-    'class',
-    'style',
-    'render',
-    'slot',
-    'id',
-    'item',
-    'columns',
-    'isDisabled',
-    'onAction',
-    'children',
-    'ref',
-    'href',
-    'target',
-    'rel',
-    'download',
-    'ping',
-    'referrerPolicy',
-    'routerOptions',
+    "class",
+    "style",
+    "render",
+    "slot",
+    "id",
+    "item",
+    "columns",
+    "isDisabled",
+    "onAction",
+    "children",
+    "ref",
+    "href",
+    "target",
+    "rel",
+    "download",
+    "ping",
+    "referrerPolicy",
+    "routerOptions",
   ]);
 
   // Get context
   const context = useContext(TableContext);
   if (!context) {
-    throw new Error('TableRow must be used within a Table');
+    throw new Error("TableRow must be used within a Table");
   }
   const { state, collection } = context;
   const tableContext = context as unknown as TableContextValue<T>;
   const generatedId = createUniqueId();
   const rowKey = () => local.id ?? generatedId;
   const router = useRouter();
-  const linkProps = createMemo(() => useLinkProps({
-    href: local.href,
-    target: local.target,
-    rel: local.rel,
-    download: local.download,
-    ping: local.ping,
-    referrerPolicy: local.referrerPolicy,
-  }));
+  const linkProps = createMemo(() =>
+    useLinkProps({
+      href: local.href,
+      target: local.target,
+      rel: local.rel,
+      download: local.download,
+      ping: local.ping,
+      referrerPolicy: local.referrerPolicy,
+    }),
+  );
 
   // Create ref signal
   const [ref, setRef] = createSignal<HTMLTableRowElement | null>(null);
@@ -1345,7 +1447,7 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     if (!node) {
       // Create a simple node for the row
       return {
-        type: 'item' as const,
+        type: "item" as const,
         key: rowKey(),
         value: local.item ?? null,
         textValue: String(local.id),
@@ -1373,14 +1475,14 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
       },
     }),
     () => state as TableState<object, TableCollection<object>>,
-    ref
+    ref,
   );
   const isSelected = () => rowAria.isSelected;
   const isDisabled = () => rowAria.isDisabled;
   const isPressed = () => rowAria.isPressed;
   const isInteractive = () => {
     const tableData = getTableData(state as TableState<object, TableCollection<object>>);
-    return state.selectionMode !== 'none' || !!tableData?.actions.onRowAction || !!local.onAction;
+    return state.selectionMode !== "none" || !!tableData?.actions.onRowAction || !!local.onAction;
   };
 
   // Create hover
@@ -1418,23 +1520,25 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
   // Check if focused
   const isFocused = createMemo(() => state.focusedKey === rowKey());
   const draggableItem = createMemo(() => {
-    if (!tableContext.dragAndDropHooks?.useDraggableItem || !tableContext.dragState) return undefined;
+    if (!tableContext.dragAndDropHooks?.useDraggableItem || !tableContext.dragState)
+      return undefined;
     return tableContext.dragAndDropHooks.useDraggableItem(
       {
         key: rowKey() as string | number,
         hasDragButton: true,
       },
-      tableContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>['useDraggableItem']>>[1]
+      tableContext.dragState as Parameters<NonNullable<DragAndDropHooks<T>["useDraggableItem"]>>[1],
     );
   });
   const droppableItem = createMemo(() => {
-    if (!tableContext.dragAndDropHooks?.useDroppableItem || !tableContext.dropState) return undefined;
+    if (!tableContext.dragAndDropHooks?.useDroppableItem || !tableContext.dropState)
+      return undefined;
     return tableContext.dragAndDropHooks.useDroppableItem(
       {
         key: rowKey() as string | number,
       },
-      tableContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>['useDroppableItem']>>[1],
-      () => ref()
+      tableContext.dropState as Parameters<NonNullable<DragAndDropHooks<T>["useDroppableItem"]>>[1],
+      () => ref(),
     );
   });
 
@@ -1453,9 +1557,9 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Table-row',
+      defaultClassName: "solidaria-Table-row",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -1481,10 +1585,10 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
     const textValue = (rowNode().textValue || String(rowKey())).trim();
     return {
       ...props,
-      'aria-label': `Drag ${textValue}`,
+      "aria-label": `Drag ${textValue}`,
       style: {
-        ...(typeof props.style === 'object' ? props.style : {}),
-        'pointer-events': 'none',
+        ...(typeof props.style === "object" ? props.style : {}),
+        "pointer-events": "none",
       },
     };
   });
@@ -1497,52 +1601,62 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
 
   const rowChildren = () => (
     <ButtonContext.Provider value={buttonContextValue()}>
-      {typeof local.children === 'function'
-        ? local.columns
-          ? <For each={local.columns}>{(column) => (local.children as (column: ColumnDefinition<T>) => JSX.Element)(column)}</For>
-          : (local.children as (renderProps: TableRowRenderProps) => JSX.Element)(renderValues())
-        : local.children}
+      {typeof local.children === "function" ? (
+        local.columns ? (
+          <For each={local.columns}>
+            {(column) => (local.children as (column: ColumnDefinition<T>) => JSX.Element)(column)}
+          </For>
+        ) : (
+          (local.children as (renderProps: TableRowRenderProps) => JSX.Element)(renderValues())
+        )
+      ) : (
+        local.children
+      )}
     </ButtonContext.Provider>
   );
-  const tableRowProps = () => ({
-    ref: (el: HTMLTableRowElement) => {
-      setRef(el);
-      assignRef(local.ref, el);
-    },
-    ...domProps,
-    ...mergeProps(
-      cleanRowProps(),
-      cleanHoverProps(),
-      cleanFocusProps(),
-      focusWithinProps as Record<string, unknown>,
-      (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
-      (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {}
-    ),
-    class: renderProps.class(),
-    style: renderProps.style(),
-    'data-selected': isSelected() || undefined,
-    'data-focused': isFocused() || undefined,
-    'data-focus-visible': (isFocusVisible() && isFocused()) || undefined,
-    'data-focus-visible-within': dataAttr(isFocusWithin() && isGlobalFocusVisible()),
-    'data-pressed': isPressed() || undefined,
-    'data-hovered': isHovered() || undefined,
-    'data-disabled': isDisabled() || undefined,
-    'data-href': linkProps().href,
-    'data-target': linkProps().target,
-    'data-rel': linkProps().rel,
-    'data-download': typeof linkProps().download === 'string' ? linkProps().download : linkProps().download ? '' : undefined,
-    'data-ping': linkProps().ping,
-    'data-referrer-policy': linkProps().referrerPolicy,
-    'data-dragging': draggableItem()?.isDragging || undefined,
-    'data-drop-target': droppableItem()?.isDropTarget || undefined,
-    children: rowChildren(),
-  }) as JSX.HTMLAttributes<HTMLTableRowElement>;
+  const tableRowProps = () =>
+    ({
+      ref: (el: HTMLTableRowElement) => {
+        setRef(el);
+        assignRef(local.ref, el);
+      },
+      ...domProps,
+      ...mergeProps(
+        cleanRowProps(),
+        cleanHoverProps(),
+        cleanFocusProps(),
+        focusWithinProps as Record<string, unknown>,
+        (draggableItem()?.dragProps as Record<string, unknown> | undefined) ?? {},
+        (droppableItem()?.dropProps as Record<string, unknown> | undefined) ?? {},
+      ),
+      class: renderProps.class(),
+      style: renderProps.style(),
+      "data-selected": isSelected() || undefined,
+      "data-focused": isFocused() || undefined,
+      "data-focus-visible": (isFocusVisible() && isFocused()) || undefined,
+      "data-focus-visible-within": dataAttr(isFocusWithin() && isGlobalFocusVisible()),
+      "data-pressed": isPressed() || undefined,
+      "data-hovered": isHovered() || undefined,
+      "data-disabled": isDisabled() || undefined,
+      "data-href": linkProps().href,
+      "data-target": linkProps().target,
+      "data-rel": linkProps().rel,
+      "data-download":
+        typeof linkProps().download === "string"
+          ? linkProps().download
+          : linkProps().download
+            ? ""
+            : undefined,
+      "data-ping": linkProps().ping,
+      "data-referrer-policy": linkProps().referrerPolicy,
+      "data-dragging": draggableItem()?.isDragging || undefined,
+      "data-drop-target": droppableItem()?.isDropTarget || undefined,
+      children: rowChildren(),
+    }) as JSX.HTMLAttributes<HTMLTableRowElement>;
 
   return (
     <TableRowContext.Provider value={rowContextValue}>
-      {local.render
-        ? local.render(tableRowProps(), renderValues())
-        : <tr {...tableRowProps()} />}
+      {local.render ? local.render(tableRowProps(), renderValues()) : <tr {...tableRowProps()} />}
     </TableRowContext.Provider>
   );
 }
@@ -1551,17 +1665,26 @@ export function TableRow<T extends object>(props: TableRowProps<T>): JSX.Element
  * A cell in a table row.
  */
 export function TableCell(props: TableCellProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'render', 'slot', 'id', 'colSpan', 'children', 'ref']);
+  const [local, domProps] = splitProps(props, [
+    "class",
+    "style",
+    "render",
+    "slot",
+    "id",
+    "colSpan",
+    "children",
+    "ref",
+  ]);
 
   // Get context
   const tableContext = useContext(TableContext);
   const rowContext = useContext(TableRowContext);
 
   if (!tableContext) {
-    throw new Error('TableCell must be used within a Table');
+    throw new Error("TableCell must be used within a Table");
   }
   if (!rowContext) {
-    throw new Error('TableCell must be used within a Table');
+    throw new Error("TableCell must be used within a Table");
   }
 
   const { state, collection } = tableContext;
@@ -1581,10 +1704,10 @@ export function TableCell(props: TableCellProps): JSX.Element {
 
     // Otherwise create a simple node
     return {
-      type: 'cell' as const,
+      type: "cell" as const,
       key: local.id ?? `${rowKey}-cell`,
       value: rowNode.value,
-      textValue: '',
+      textValue: "",
       level: 1,
       index: 0,
       parentKey: rowKey,
@@ -1604,7 +1727,7 @@ export function TableCell(props: TableCellProps): JSX.Element {
       node: cellNode(),
     }),
     () => state as TableState<object, TableCollection<object>>,
-    ref
+    ref,
   );
   const isPressed = () => cellAria.isPressed;
 
@@ -1633,9 +1756,9 @@ export function TableCell(props: TableCellProps): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Table-cell',
+      defaultClassName: "solidaria-Table-cell",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -1652,45 +1775,37 @@ export function TableCell(props: TableCellProps): JSX.Element {
     return rest;
   };
 
-  const cellChildren = () => typeof local.children === 'function'
-    ? local.children(renderValues())
-    : local.children;
-  const tableCellProps = () => ({
-    ref: (el: HTMLTableCellElement) => {
-      setRef(el);
-      assignRef(local.ref, el);
-    },
-    ...domProps,
-    ...mergeProps(
-      cleanCellProps(),
-      cleanHoverProps(),
-      cleanFocusProps()
-    ),
-    colSpan: local.colSpan,
-    class: renderProps.class(),
-    style: renderProps.style(),
-    'data-focused': isFocused() || undefined,
-    'data-focus-visible': (isFocusVisible() && isFocused()) || undefined,
-    'data-column-index': cellColumnIndex(),
-    'data-pressed': isPressed() || undefined,
-    'data-hovered': isHovered() || undefined,
-    children: cellChildren(),
-  }) as JSX.TdHTMLAttributes<HTMLTableCellElement>;
+  const cellChildren = () =>
+    typeof local.children === "function" ? local.children(renderValues()) : local.children;
+  const tableCellProps = () =>
+    ({
+      ref: (el: HTMLTableCellElement) => {
+        setRef(el);
+        assignRef(local.ref, el);
+      },
+      ...domProps,
+      ...mergeProps(cleanCellProps(), cleanHoverProps(), cleanFocusProps()),
+      colSpan: local.colSpan,
+      class: renderProps.class(),
+      style: renderProps.style(),
+      "data-focused": isFocused() || undefined,
+      "data-focus-visible": (isFocusVisible() && isFocused()) || undefined,
+      "data-column-index": cellColumnIndex(),
+      "data-pressed": isPressed() || undefined,
+      "data-hovered": isHovered() || undefined,
+      children: cellChildren(),
+    }) as JSX.TdHTMLAttributes<HTMLTableCellElement>;
 
-  return local.render
-    ? local.render(tableCellProps(), renderValues())
-    : (
-      <td
-        ref={(el) => {
+  return local.render ? (
+    local.render(tableCellProps(), renderValues())
+  ) : (
+    <td
+      ref={(el) => {
         setRef(el);
         assignRef(local.ref, el);
       }}
       {...domProps}
-      {...mergeProps(
-        cleanCellProps(),
-        cleanHoverProps(),
-        cleanFocusProps()
-      )}
+      {...mergeProps(cleanCellProps(), cleanHoverProps(), cleanFocusProps())}
       colSpan={local.colSpan}
       class={renderProps.class()}
       style={renderProps.style()}
@@ -1711,14 +1826,14 @@ export function TableCell(props: TableCellProps): JSX.Element {
 export function TableSelectionCheckbox(props: { rowKey: Key }): JSX.Element {
   const context = useContext(TableContext);
   if (!context) {
-    throw new Error('TableSelectionCheckbox must be used within a Table');
+    throw new Error("TableSelectionCheckbox must be used within a Table");
   }
 
   const { state } = context;
 
   const selectionCheckboxAria = createTableSelectionCheckbox<object>(
     () => ({ key: props.rowKey }),
-    () => state as TableState<object, TableCollection<object>>
+    () => state as TableState<object, TableCollection<object>>,
   );
 
   return <input {...selectionCheckboxAria.checkboxProps} />;
@@ -1730,13 +1845,13 @@ export function TableSelectionCheckbox(props: { rowKey: Key }): JSX.Element {
 export function TableSelectAllCheckbox(): JSX.Element {
   const context = useContext(TableContext);
   if (!context) {
-    throw new Error('TableSelectAllCheckbox must be used within a Table');
+    throw new Error("TableSelectAllCheckbox must be used within a Table");
   }
 
   const { state } = context;
 
   const selectAllCheckboxAria = createTableSelectAllCheckbox<object>(
-    () => state as TableState<object, TableCollection<object>>
+    () => state as TableState<object, TableCollection<object>>,
   );
 
   return <input {...selectAllCheckboxAria.checkboxProps} />;
@@ -1764,14 +1879,14 @@ export interface ColumnResizerRenderProps {
   /** Whether the column is currently being resized. */
   isResizing: boolean;
   /** The direction(s) the column can be resized: 'both', 'left', 'right'. */
-  resizableDirection: 'both' | 'left' | 'right';
+  resizableDirection: "both" | "left" | "right";
 }
 
 export interface ColumnResizerProps extends SlotProps {
   /** The column key this resizer belongs to. */
   column: { key: Key };
   /** Accessible label for the resizer. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Whether resizing is disabled. */
   isDisabled?: boolean;
   /** Called when resize starts. */
@@ -1790,9 +1905,16 @@ export interface ColumnResizerProps extends SlotProps {
 
 export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
   const [local, domProps] = splitProps(props, [
-    'column', 'aria-label', 'isDisabled',
-    'onResizeStart', 'onResize', 'onResizeEnd',
-    'class', 'style', 'slot', 'children',
+    "column",
+    "aria-label",
+    "isDisabled",
+    "onResizeStart",
+    "onResize",
+    "onResizeEnd",
+    "class",
+    "style",
+    "slot",
+    "children",
   ]);
 
   // Register this column with the ResizableTableContainer (auto-collect columns)
@@ -1810,10 +1932,18 @@ export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
     columnWidths: () => new Map(),
     startResize() {},
     endResize() {},
-    updateResizedColumns(_key: Key, _width: number) { return new Map(); },
-    getColumnWidth() { return 0; },
-    getColumnMinWidth() { return 75; },
-    getColumnMaxWidth() { return Infinity; },
+    updateResizedColumns(_key: Key, _width: number) {
+      return new Map();
+    },
+    getColumnWidth() {
+      return 0;
+    },
+    getColumnMinWidth() {
+      return 75;
+    },
+    getColumnMaxWidth() {
+      return Infinity;
+    },
   };
 
   const { isHovered, hoverProps } = createHover({ isDisabled: local.isDisabled ?? false });
@@ -1823,7 +1953,7 @@ export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
   const columnResize = createTableColumnResize(
     () => ({
       column: local.column,
-      'aria-label': local['aria-label'] ?? `Resize column ${String(local.column.key)}`,
+      "aria-label": local["aria-label"] ?? `Resize column ${String(local.column.key)}`,
       isDisabled: local.isDisabled,
       onResizeStart: local.onResizeStart,
       onResize: local.onResize,
@@ -1836,14 +1966,14 @@ export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
     isHovered: isHovered(),
     isFocused: isFocused(),
     isResizing: columnResize.isResizing(),
-    resizableDirection: 'both',
+    resizableDirection: "both",
   }));
 
   const renderProps = useRenderProps(
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Table-columnResizer',
+      defaultClassName: "solidaria-Table-columnResizer",
     },
     renderValues,
   );
@@ -1870,7 +2000,7 @@ export function ColumnResizer(props: ColumnResizerProps): JSX.Element {
           onBlur={() => setIsFocused(false)}
         />
       </Show>
-      {typeof local.children === 'function'
+      {typeof local.children === "function"
         ? (local.children as (props: ColumnResizerRenderProps) => JSX.Element)(renderValues())
         : local.children}
     </div>
@@ -1899,7 +2029,16 @@ export interface ResizableTableContainerProps extends SlotProps {
 }
 
 export function ResizableTableContainer(props: ResizableTableContainerProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children', 'columns', 'onResizeStart', 'onResize', 'onResizeEnd']);
+  const [local, domProps] = splitProps(props, [
+    "class",
+    "style",
+    "slot",
+    "children",
+    "columns",
+    "onResizeStart",
+    "onResize",
+    "onResizeEnd",
+  ]);
 
   const [containerRef, setContainerRef] = createSignal<HTMLDivElement | null>(null);
   const [tableWidth, setTableWidth] = createSignal(0);
@@ -1912,7 +2051,7 @@ export function ResizableTableContainer(props: ResizableTableContainerProps): JS
     // Initial measurement
     setTableWidth(el.clientWidth);
 
-    if (typeof ResizeObserver !== 'undefined') {
+    if (typeof ResizeObserver !== "undefined") {
       const observer = new ResizeObserver((entries) => {
         for (const entry of entries) {
           setTableWidth(entry.contentRect.width);
@@ -1924,9 +2063,14 @@ export function ResizableTableContainer(props: ResizableTableContainerProps): JS
   });
 
   // Auto-collected columns from ColumnResizer children
-  const [autoColumns, setAutoColumns] = createSignal<Map<Key, { key: Key; width?: ColumnSize; minWidth?: number; maxWidth?: number }>>(new Map());
+  const [autoColumns, setAutoColumns] = createSignal<
+    Map<Key, { key: Key; width?: ColumnSize; minWidth?: number; maxWidth?: number }>
+  >(new Map());
 
-  const registerColumn = (key: Key, def: { key: Key; width?: ColumnSize; minWidth?: number; maxWidth?: number }) => {
+  const registerColumn = (
+    key: Key,
+    def: { key: Key; width?: ColumnSize; minWidth?: number; maxWidth?: number },
+  ) => {
     setAutoColumns((prev) => {
       const next = new Map(prev);
       next.set(key, def);
@@ -1966,8 +2110,8 @@ export function ResizableTableContainer(props: ResizableTableContainerProps): JS
         <div
           ref={setContainerRef}
           {...domProps}
-          class={local.class ?? 'solidaria-ResizableTableContainer'}
-          style={{ position: 'relative', overflow: 'auto', ...local.style }}
+          class={local.class ?? "solidaria-ResizableTableContainer"}
+          style={{ position: "relative", overflow: "auto", ...local.style }}
         >
           {local.children}
         </div>
@@ -1978,7 +2122,11 @@ export function ResizableTableContainer(props: ResizableTableContainerProps): JS
 
 /** Internal context for ColumnResizer to register itself with ResizableTableContainer */
 const ResizableTableRegisterContext = createContext<
-  ((key: Key, def: { key: Key; width?: ColumnSize; minWidth?: number; maxWidth?: number }) => void) | null
+  | ((
+      key: Key,
+      def: { key: Key; width?: ColumnSize; minWidth?: number; maxWidth?: number },
+    ) => void)
+  | null
 >(null);
 
 export function useTableOptions() {

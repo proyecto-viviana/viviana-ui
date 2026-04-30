@@ -3,11 +3,11 @@
  * Based on @react-aria/table/useTableRow.
  */
 
-import { createMemo, createSignal, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import type { TableState, TableCollection } from '@proyecto-viviana/solid-stately';
-import type { AriaTableRowProps, TableRowAria } from './types';
-import { getTableData } from './createTable';
+import { createMemo, createSignal, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import type { TableState, TableCollection } from "@proyecto-viviana/solid-stately";
+import type { AriaTableRowProps, TableRowAria } from "./types";
+import { getTableData } from "./createTable";
 
 /**
  * Creates accessibility props for a table row.
@@ -15,7 +15,7 @@ import { getTableData } from './createTable';
 export function createTableRow<T extends object>(
   props: Accessor<AriaTableRowProps>,
   state: Accessor<TableState<T, TableCollection<T>>>,
-  _ref: Accessor<HTMLTableRowElement | null>
+  _ref: Accessor<HTMLTableRowElement | null>,
 ): TableRowAria {
   const [isPressed, setIsPressed] = createSignal(false);
   let didSelectOnPointer = false;
@@ -42,19 +42,21 @@ export function createTableRow<T extends object>(
     const s = state();
     const p = props();
     const tableData = getTableData(s);
-    return s.selectionMode !== 'none' || !!tableData?.actions.onRowAction || !!p.onAction || !!p.href;
+    return (
+      s.selectionMode !== "none" || !!tableData?.actions.onRowAction || !!p.onAction || !!p.href
+    );
   };
 
   const selectRow = (e: MouseEvent | PointerEvent | KeyboardEvent, forceReplace = false) => {
     const s = state();
     const p = props();
 
-    if (s.selectionMode !== 'none') {
-      if (e.shiftKey && s.selectionMode === 'multiple') {
+    if (s.selectionMode !== "none") {
+      if (e.shiftKey && s.selectionMode === "multiple") {
         s.extendSelection(p.node.key);
-      } else if (!forceReplace && (e.ctrlKey || e.metaKey || s.selectionBehavior === 'toggle')) {
+      } else if (!forceReplace && (e.ctrlKey || e.metaKey || s.selectionBehavior === "toggle")) {
         s.toggleSelection(p.node.key);
-      } else if (!forceReplace && s.selectionMode === 'single' && s.isSelected(p.node.key)) {
+      } else if (!forceReplace && s.selectionMode === "single" && s.isSelected(p.node.key)) {
         s.toggleSelection(p.node.key);
       } else {
         // Replace selection
@@ -70,7 +72,9 @@ export function createTableRow<T extends object>(
   const isFromInteractiveElement = (e: Event) => {
     const target = e.target;
     if (!(target instanceof Element)) return false;
-    return !!target.closest('a[href],button,input,select,textarea,[role="button"],[role="checkbox"],[role="link"]');
+    return !!target.closest(
+      'a[href],button,input,select,textarea,[role="button"],[role="checkbox"],[role="link"]',
+    );
   };
 
   // Handle click/press for selection
@@ -90,7 +94,7 @@ export function createTableRow<T extends object>(
     }
 
     if (p.href) {
-      if (s.selectionBehavior === 'replace' && s.selectionMode !== 'none') {
+      if (s.selectionBehavior === "replace" && s.selectionMode !== "none") {
         if (!didSelectOnPointer) {
           selectRow(e, true);
         }
@@ -120,7 +124,7 @@ export function createTableRow<T extends object>(
     const s = state();
     const p = props();
 
-    if (isDisabled() || !p.href || s.selectionBehavior !== 'replace') return;
+    if (isDisabled() || !p.href || s.selectionBehavior !== "replace") return;
 
     activateLink(e);
   };
@@ -131,7 +135,7 @@ export function createTableRow<T extends object>(
 
     if (isDisabled()) return;
 
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
 
       // Get table metadata for actions
@@ -144,7 +148,7 @@ export function createTableRow<T extends object>(
       }
 
       // Handle selection
-      if (s.selectionMode !== 'none') {
+      if (s.selectionMode !== "none") {
         selectRow(e);
       }
 
@@ -158,11 +162,11 @@ export function createTableRow<T extends object>(
       }
     }
 
-    if (e.key === ' ' || e.key === 'Space' || e.key === 'Spacebar') {
+    if (e.key === " " || e.key === "Space" || e.key === "Spacebar") {
       e.preventDefault();
 
-      if (p.href && s.selectionMode !== 'none') {
-        selectRow(e, s.selectionBehavior === 'replace');
+      if (p.href && s.selectionMode !== "none") {
+        selectRow(e, s.selectionBehavior === "replace");
         return;
       }
 
@@ -171,7 +175,7 @@ export function createTableRow<T extends object>(
         return;
       }
 
-      if (s.selectionMode !== 'none') {
+      if (s.selectionMode !== "none") {
         selectRow(e);
       }
     }
@@ -189,7 +193,7 @@ export function createTableRow<T extends object>(
     }
     const s = state();
     const tableData = getTableData(s);
-    if (s.selectionMode !== 'none' && !tableData?.shouldSelectOnPressUp && !isDisabled()) {
+    if (s.selectionMode !== "none" && !tableData?.shouldSelectOnPressUp && !isDisabled()) {
       selectRow(e);
       didSelectOnPointer = true;
     }
@@ -198,7 +202,7 @@ export function createTableRow<T extends object>(
   const onPointerUp = (e: PointerEvent) => {
     const s = state();
     const tableData = getTableData(s);
-    if (s.selectionMode !== 'none' && tableData?.shouldSelectOnPressUp && !isDisabled()) {
+    if (s.selectionMode !== "none" && tableData?.shouldSelectOnPressUp && !isDisabled()) {
       selectRow(e);
       didSelectOnPointer = true;
     }
@@ -211,9 +215,9 @@ export function createTableRow<T extends object>(
     const node = p.node;
 
     const baseProps: Record<string, unknown> = {
-      role: 'row',
-      'aria-selected': s.selectionMode !== 'none' ? isSelected() : undefined,
-      'aria-disabled': isDisabled() || undefined,
+      role: "row",
+      "aria-selected": s.selectionMode !== "none" ? isSelected() : undefined,
+      "aria-disabled": isDisabled() || undefined,
       tabIndex: isFocused() ? 0 : -1,
       onClick,
       onDblClick,
@@ -225,7 +229,7 @@ export function createTableRow<T extends object>(
 
     // Add aria-rowindex for virtualized tables
     if (p.isVirtualized && node.rowIndex != null) {
-      baseProps['aria-rowindex'] = node.rowIndex + 1; // 1-based
+      baseProps["aria-rowindex"] = node.rowIndex + 1; // 1-based
     }
 
     return baseProps as JSX.HTMLAttributes<HTMLTableRowElement>;

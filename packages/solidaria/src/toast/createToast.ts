@@ -6,9 +6,9 @@
  * Port of @react-aria/toast useToast.
  */
 
-import { type JSX, createMemo } from 'solid-js';
-import { type QueuedToast, type ToastState } from '@proyecto-viviana/solid-stately';
-import { createId } from '../ssr';
+import { type JSX, createMemo } from "solid-js";
+import { type QueuedToast, type ToastState } from "@proyecto-viviana/solid-stately";
+import { createId } from "../ssr";
 
 // ============================================
 // TYPES
@@ -83,19 +83,19 @@ export function createToast<T>(props: AriaToastProps<T>): ToastAria {
 
   // Toast container - role="alertdialog" for screen readers
   const toastProps = createMemo<JSX.HTMLAttributes<HTMLElement>>(() => ({
-    role: 'alertdialog',
-    'aria-modal': 'false',
-    'aria-labelledby': hasTitle ? titleId : undefined,
-    'aria-describedby': hasDescription ? descriptionId : undefined,
-    'data-animation': props.toast.animation,
-    'data-key': props.toast.key,
+    role: "alertdialog",
+    "aria-modal": "false",
+    "aria-labelledby": hasTitle ? titleId : undefined,
+    "aria-describedby": hasDescription ? descriptionId : undefined,
+    "data-animation": props.toast.animation,
+    "data-key": props.toast.key,
   }));
 
   // Content area with role="alert" for immediate announcement
   const contentProps = createMemo<JSX.HTMLAttributes<HTMLElement>>(() => ({
-    role: 'alert',
-    'aria-atomic': 'true',
-    'aria-live': 'assertive',
+    role: "alert",
+    "aria-atomic": "true",
+    "aria-live": "assertive",
   }));
 
   // Title props
@@ -110,15 +110,25 @@ export function createToast<T>(props: AriaToastProps<T>): ToastAria {
 
   // Close button
   const closeButtonProps = createMemo<JSX.ButtonHTMLAttributes<HTMLButtonElement>>(() => ({
-    'aria-label': 'Close',
+    "aria-label": "Close",
     onClick: close,
   }));
 
   return {
-    get toastProps() { return toastProps(); },
-    get contentProps() { return contentProps(); },
-    get titleProps() { return titleProps(); },
-    get descriptionProps() { return descriptionProps(); },
-    get closeButtonProps() { return closeButtonProps(); },
+    get toastProps() {
+      return toastProps();
+    },
+    get contentProps() {
+      return contentProps();
+    },
+    get titleProps() {
+      return titleProps();
+    },
+    get descriptionProps() {
+      return descriptionProps();
+    },
+    get closeButtonProps() {
+      return closeButtonProps();
+    },
   };
 }

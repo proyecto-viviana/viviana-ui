@@ -15,7 +15,7 @@ import {
   For,
   Index,
   Show,
-} from 'solid-js';
+} from "solid-js";
 
 import {
   createCalendar,
@@ -23,7 +23,7 @@ import {
   createCalendarCell,
   type AriaCalendarProps,
   type AriaCalendarGridProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   createCalendarState,
   type CalendarState,
@@ -32,7 +32,7 @@ import {
   type DateValue,
   endOfMonth,
   isSameMonth,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -41,7 +41,7 @@ import {
   useRenderProps,
   dataAttr,
   useIsHydrated,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -55,8 +55,9 @@ export interface CalendarRenderProps {
 }
 
 export interface CalendarProps<T extends DateValue = DateValue>
-  extends Omit<AriaCalendarProps, 'id' | 'isDisabled' | 'isReadOnly'>,
-    Omit<CalendarStateProps<T>, 'locale'>,
+  extends
+    Omit<AriaCalendarProps, "id" | "isDisabled" | "isReadOnly">,
+    Omit<CalendarStateProps<T>, "locale">,
     SlotProps {
   /** The children of the component. */
   children?: JSX.Element;
@@ -73,7 +74,8 @@ export interface CalendarGridRenderProps {
   isDisabled: boolean;
 }
 
-export interface CalendarGridProps extends Omit<AriaCalendarGridProps, 'startDate' | 'endDate'>, SlotProps {
+export interface CalendarGridProps
+  extends Omit<AriaCalendarGridProps, "startDate" | "endDate">, SlotProps {
   /** The children of the component (render function receiving weeks). */
   children?: (date: CalendarDate) => JSX.Element;
   /** The CSS className for the element. */
@@ -145,7 +147,7 @@ const CalendarGridMonthContext = createContext<CalendarDate | null>(null);
 export function useCalendarContext(): CalendarState<DateValue> {
   const context = useContext(CalendarContext);
   if (!context) {
-    throw new Error('Calendar components must be used within a Calendar');
+    throw new Error("Calendar components must be used within a Calendar");
   }
   return context;
 }
@@ -171,9 +173,7 @@ export function useCalendarContext(): CalendarState<DateValue> {
  * </Calendar>
  * ```
  */
-export function Calendar<T extends DateValue = CalendarDate>(
-  props: CalendarProps<T>
-): JSX.Element {
+export function Calendar<T extends DateValue = CalendarDate>(props: CalendarProps<T>): JSX.Element {
   const inheritedState = useContext(CalendarContext);
 
   // Use hydration-safe pattern for client-only rendering
@@ -182,47 +182,43 @@ export function Calendar<T extends DateValue = CalendarDate>(
   return (
     <Show
       when={isHydrated()}
-      fallback={<div class="solidaria-Calendar solidaria-Calendar--placeholder" aria-hidden="true" />}
+      fallback={
+        <div class="solidaria-Calendar solidaria-Calendar--placeholder" aria-hidden="true" />
+      }
     >
-      <Show
-        when={inheritedState}
-        fallback={<CalendarInner {...props} />}
-      >
-        <CalendarWithState
-          state={inheritedState as CalendarState<DateValue>}
-          {...props}
-        />
+      <Show when={inheritedState} fallback={<CalendarInner {...props} />}>
+        <CalendarWithState state={inheritedState as CalendarState<DateValue>} {...props} />
       </Show>
     </Show>
   );
 }
 
 function CalendarWithState<T extends DateValue = CalendarDate>(
-  props: CalendarProps<T> & { state: CalendarState<DateValue> }
+  props: CalendarProps<T> & { state: CalendarState<DateValue> },
 ): JSX.Element {
   const [local, _stateProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'state'],
+    ["children", "class", "style", "slot", "state"],
     [
-      'value',
-      'defaultValue',
-      'onChange',
-      'minValue',
-      'maxValue',
-      'isDisabled',
-      'isReadOnly',
-      'autoFocus',
-      'focusedValue',
-      'defaultFocusedValue',
-      'onFocusChange',
-      'locale',
-      'isDateUnavailable',
-      'visibleMonths',
-      'isDateDisabled',
-      'validationState',
-      'errorMessage',
-      'firstDayOfWeek',
-    ]
+      "value",
+      "defaultValue",
+      "onChange",
+      "minValue",
+      "maxValue",
+      "isDisabled",
+      "isReadOnly",
+      "autoFocus",
+      "focusedValue",
+      "defaultFocusedValue",
+      "onFocusChange",
+      "locale",
+      "isDateUnavailable",
+      "visibleMonths",
+      "isDateDisabled",
+      "validationState",
+      "errorMessage",
+      "firstDayOfWeek",
+    ],
   );
 
   const state = () => props.state;
@@ -237,9 +233,9 @@ function CalendarWithState<T extends DateValue = CalendarDate>(
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Calendar',
+      defaultClassName: "solidaria-Calendar",
     },
-    renderValues
+    renderValues,
   );
 
   return (
@@ -258,32 +254,30 @@ function CalendarWithState<T extends DateValue = CalendarDate>(
 /**
  * Internal Calendar component that renders after client mount.
  */
-function CalendarInner<T extends DateValue = CalendarDate>(
-  props: CalendarProps<T>
-): JSX.Element {
+function CalendarInner<T extends DateValue = CalendarDate>(props: CalendarProps<T>): JSX.Element {
   const [local, stateProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
+    ["children", "class", "style", "slot"],
     [
-      'value',
-      'defaultValue',
-      'onChange',
-      'minValue',
-      'maxValue',
-      'isDisabled',
-      'isReadOnly',
-      'autoFocus',
-      'focusedValue',
-      'defaultFocusedValue',
-      'onFocusChange',
-      'locale',
-      'isDateUnavailable',
-      'visibleMonths',
-      'isDateDisabled',
-      'validationState',
-      'errorMessage',
-      'firstDayOfWeek',
-    ]
+      "value",
+      "defaultValue",
+      "onChange",
+      "minValue",
+      "maxValue",
+      "isDisabled",
+      "isReadOnly",
+      "autoFocus",
+      "focusedValue",
+      "defaultFocusedValue",
+      "onFocusChange",
+      "locale",
+      "isDateUnavailable",
+      "visibleMonths",
+      "isDateDisabled",
+      "validationState",
+      "errorMessage",
+      "firstDayOfWeek",
+    ],
   );
 
   // Create calendar state
@@ -303,9 +297,9 @@ function CalendarInner<T extends DateValue = CalendarDate>(
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Calendar',
+      defaultClassName: "solidaria-Calendar",
     },
-    renderValues
+    renderValues,
   );
 
   return (
@@ -341,11 +335,7 @@ export function CalendarHeading(props: CalendarHeadingProps): JSX.Element {
   const state = useCalendarContext();
 
   return (
-    <h2
-      class={props.class ?? 'solidaria-CalendarHeading'}
-      style={props.style}
-      aria-live="polite"
-    >
+    <h2 class={props.class ?? "solidaria-CalendarHeading"} style={props.style} aria-live="polite">
       {state.title()}
     </h2>
   );
@@ -357,7 +347,7 @@ export function CalendarHeading(props: CalendarHeadingProps): JSX.Element {
 
 export interface CalendarButtonProps extends SlotProps {
   /** The slot for this button (previous or next). */
-  slot?: 'previous' | 'next';
+  slot?: "previous" | "next";
   /** The children of the component. */
   children?: JSX.Element;
   /** The CSS className for the element. */
@@ -376,7 +366,7 @@ export function CalendarButton(props: CalendarButtonProps): JSX.Element {
   const calendarAria = createCalendar({}, state);
 
   const buttonProps = createMemo(() => {
-    if (props.slot === 'previous') {
+    if (props.slot === "previous") {
       return calendarAria.prevButtonProps;
     }
     return calendarAria.nextButtonProps;
@@ -385,7 +375,7 @@ export function CalendarButton(props: CalendarButtonProps): JSX.Element {
   return (
     <button
       {...buttonProps()}
-      class={props.class ?? 'solidaria-CalendarButton'}
+      class={props.class ?? "solidaria-CalendarButton"}
       style={props.style}
       disabled={props.isDisabled || state.isDisabled()}
     >
@@ -418,7 +408,7 @@ export function CalendarGrid(props: CalendarGridProps): JSX.Element {
       weekdayStyle: props.weekdayStyle,
     },
     state,
-    gridRef
+    gridRef,
   );
 
   // Render props values
@@ -431,9 +421,9 @@ export function CalendarGrid(props: CalendarGridProps): JSX.Element {
     {
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-CalendarGrid',
+      defaultClassName: "solidaria-CalendarGrid",
     },
-    renderValues
+    renderValues,
   );
 
   // Memoize ALL dates for the grid at once to avoid reactive loops.
@@ -492,7 +482,7 @@ export function CalendarGrid(props: CalendarGridProps): JSX.Element {
 
 export function CalendarGridHeader(props: CalendarGridHeaderProps): JSX.Element {
   return (
-    <thead class={props.class ?? 'solidaria-CalendarGridHeader'} style={props.style}>
+    <thead class={props.class ?? "solidaria-CalendarGridHeader"} style={props.style}>
       {props.children}
     </thead>
   );
@@ -500,7 +490,7 @@ export function CalendarGridHeader(props: CalendarGridHeaderProps): JSX.Element 
 
 export function CalendarGridBody(props: CalendarGridBodyProps): JSX.Element {
   return (
-    <tbody class={props.class ?? 'solidaria-CalendarGridBody'} style={props.style}>
+    <tbody class={props.class ?? "solidaria-CalendarGridBody"} style={props.style}>
       {props.children}
     </tbody>
   );
@@ -508,11 +498,7 @@ export function CalendarGridBody(props: CalendarGridBodyProps): JSX.Element {
 
 export function CalendarHeaderCell(props: CalendarHeaderCellProps): JSX.Element {
   return (
-    <th
-      scope="col"
-      class={props.class ?? 'solidaria-CalendarHeaderCell'}
-      style={props.style}
-    >
+    <th scope="col" class={props.class ?? "solidaria-CalendarHeaderCell"} style={props.style}>
       {props.children}
     </th>
   );
@@ -529,7 +515,9 @@ export function CalendarCell(props: CalendarCellProps): JSX.Element {
   const state = useCalendarContext();
   const currentMonthStart = useContext(CalendarGridMonthContext);
   const [cellRef, setCellRef] = createSignal<HTMLDivElement | null>(null);
-  const isOutsideMonth = createMemo(() => currentMonthStart != null && !isSameMonth(currentMonthStart, props.date));
+  const isOutsideMonth = createMemo(
+    () => currentMonthStart != null && !isSameMonth(currentMonthStart, props.date),
+  );
 
   // Create cell ARIA props
   const cellAria = createCalendarCell(
@@ -538,7 +526,7 @@ export function CalendarCell(props: CalendarCellProps): JSX.Element {
       isOutsideMonth: isOutsideMonth(),
     }),
     state,
-    cellRef
+    cellRef,
   );
 
   // Render props values
@@ -559,14 +547,14 @@ export function CalendarCell(props: CalendarCellProps): JSX.Element {
       children: props.children,
       class: props.class,
       style: props.style,
-      defaultClassName: 'solidaria-CalendarCell',
+      defaultClassName: "solidaria-CalendarCell",
     },
-    renderValues
+    renderValues,
   );
 
   // Determine children content - avoid Show for SSR hydration compatibility
   const getChildren = () => {
-    if (typeof props.children === 'function') {
+    if (typeof props.children === "function") {
       return renderProps.renderChildren();
     }
     return cellAria.formattedDate;

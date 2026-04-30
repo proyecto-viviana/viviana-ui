@@ -17,16 +17,16 @@ import {
   createEffect,
   splitProps,
   useContext,
-} from 'solid-js';
-import { announce, createToolbar } from '@proyecto-viviana/solidaria';
-import type { Key } from '@proyecto-viviana/solid-stately';
+} from "solid-js";
+import { announce, createToolbar } from "@proyecto-viviana/solidaria";
+import type { Key } from "@proyecto-viviana/solid-stately";
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -36,12 +36,12 @@ export interface ActionBarRenderProps {
   /** Whether the action bar is visible. */
   isOpen: boolean;
   /** The number of selected items. */
-  selectedItemCount: number | 'all';
+  selectedItemCount: number | "all";
 }
 
 export interface ActionBarProps extends SlotProps {
   /** The number of selected items. ActionBar is hidden when 0. */
-  selectedItemCount: number | 'all';
+  selectedItemCount: number | "all";
   /** Callback when the clear button is pressed. */
   onClearSelection: () => void;
   /** Callback when an action is triggered. */
@@ -53,9 +53,9 @@ export interface ActionBarProps extends SlotProps {
   /** Inline style for the container. */
   style?: StyleOrFunction<ActionBarRenderProps>;
   /** Accessible label for the action bar. @default 'Actions' */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element (or elements) that labels the action bar. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Optional keydown handler on the action bar element. */
   onKeyDown?: JSX.EventHandlerUnion<HTMLDivElement, KeyboardEvent>;
 }
@@ -65,7 +65,7 @@ export interface ActionBarProps extends SlotProps {
 // ============================================
 
 export interface ActionBarContextValue {
-  selectedItemCount: () => number | 'all';
+  selectedItemCount: () => number | "all";
   onClearSelection: () => void;
   onAction?: (key: Key) => void;
 }
@@ -82,27 +82,27 @@ export function useActionBarContext(): ActionBarContextValue | null {
 
 export function ActionBar(props: ActionBarProps): JSX.Element {
   const [local, domProps] = splitProps(props, [
-    'selectedItemCount',
-    'onClearSelection',
-    'onAction',
-    'children',
-    'class',
-    'style',
-    'slot',
-    'aria-label',
-    'aria-labelledby',
-    'onKeyDown',
+    "selectedItemCount",
+    "onClearSelection",
+    "onAction",
+    "children",
+    "class",
+    "style",
+    "slot",
+    "aria-label",
+    "aria-labelledby",
+    "onKeyDown",
   ]);
 
   const isOpen = () => local.selectedItemCount !== 0;
 
   const { toolbarProps } = createToolbar({
-    orientation: 'horizontal',
-    get 'aria-label'() {
-      return local['aria-label'] ?? (local['aria-labelledby'] ? undefined : 'Actions');
+    orientation: "horizontal",
+    get "aria-label"() {
+      return local["aria-label"] ?? (local["aria-labelledby"] ? undefined : "Actions");
     },
-    get 'aria-labelledby'() {
-      return local['aria-labelledby'];
+    get "aria-labelledby"() {
+      return local["aria-labelledby"];
     },
   });
 
@@ -111,20 +111,22 @@ export function ActionBar(props: ActionBarProps): JSX.Element {
   createEffect(() => {
     const open = isOpen();
     if (open && !wasOpen) {
-      announce('Actions available.');
+      announce("Actions available.");
     }
     wasOpen = open;
   });
 
   // Escape key to clear selection
   const handleKeyDown: JSX.EventHandlerUnion<HTMLDivElement, KeyboardEvent> = (e) => {
-    const onKeyDown = local.onKeyDown as JSX.EventHandler<HTMLDivElement, KeyboardEvent> | undefined;
+    const onKeyDown = local.onKeyDown as
+      | JSX.EventHandler<HTMLDivElement, KeyboardEvent>
+      | undefined;
     onKeyDown?.(e);
     if (e.defaultPrevented) {
       return;
     }
 
-    if (e.key === 'Escape' && isOpen()) {
+    if (e.key === "Escape" && isOpen()) {
       e.preventDefault();
       e.stopPropagation();
       local.onClearSelection();
@@ -136,15 +138,17 @@ export function ActionBar(props: ActionBarProps): JSX.Element {
       children: undefined,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ActionBar',
+      defaultClassName: "solidaria-ActionBar",
     },
     () => ({
       isOpen: isOpen(),
       selectedItemCount: local.selectedItemCount,
-    })
+    }),
   );
 
-  const filteredDOMProps = createMemo(() => filterDOMProps(domProps as Record<string, unknown>, { global: true }));
+  const filteredDOMProps = createMemo(() =>
+    filterDOMProps(domProps as Record<string, unknown>, { global: true }),
+  );
 
   const contextValue = createMemo<ActionBarContextValue>(() => ({
     selectedItemCount: () => local.selectedItemCount,
@@ -186,8 +190,8 @@ export interface ActionBarContainerProps extends ParentProps {
 export function ActionBarContainer(props: ActionBarContainerProps): JSX.Element {
   return (
     <div
-      class={props.class ?? 'solidaria-ActionBarContainer'}
-      style={{ position: 'relative', ...props.style }}
+      class={props.class ?? "solidaria-ActionBarContainer"}
+      style={{ position: "relative", ...props.style }}
     >
       {props.children}
     </div>
@@ -209,10 +213,10 @@ export function ActionBarSelectionCount(props: ActionBarSelectionCountProps): JS
   const ctx = useActionBarContext();
 
   const text = () => {
-    if (!ctx) return '';
+    if (!ctx) return "";
     const count = ctx.selectedItemCount();
-    if (count === 'all') return 'All selected';
-    if (count === 0) return 'None selected';
+    if (count === "all") return "All selected";
+    if (count === 0) return "None selected";
     return `${count} selected`;
   };
 
@@ -226,7 +230,7 @@ export function ActionBarSelectionCount(props: ActionBarSelectionCountProps): JS
 export interface ActionBarClearButtonProps {
   class?: string;
   children?: JSX.Element;
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 /**
@@ -238,11 +242,11 @@ export function ActionBarClearButton(props: ActionBarClearButtonProps): JSX.Elem
   return (
     <button
       type="button"
-      aria-label={props['aria-label'] ?? 'Clear selection'}
+      aria-label={props["aria-label"] ?? "Clear selection"}
       class={props.class}
       onClick={() => ctx?.onClearSelection()}
     >
-      {props.children ?? '\u2715'}
+      {props.children ?? "\u2715"}
     </button>
   );
 }

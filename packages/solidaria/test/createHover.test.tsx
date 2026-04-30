@@ -5,20 +5,20 @@
  * Verifies that touch events don't trigger hover (mouse-only behavior).
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { createHover, type HoverEvent, type HoverProps } from '../src/interactions/createHover';
-import type { Component } from 'solid-js';
-import { createSignal } from 'solid-js';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, cleanup, fireEvent } from "@solidjs/testing-library";
+import { createHover, type HoverEvent, type HoverProps } from "../src/interactions/createHover";
+import type { Component } from "solid-js";
+import { createSignal } from "solid-js";
 
-const originalPointerEvent = typeof PointerEvent !== 'undefined' ? PointerEvent : undefined;
+const originalPointerEvent = typeof PointerEvent !== "undefined" ? PointerEvent : undefined;
 
 function enablePointerEventsMock() {
   class TestPointerEvent extends MouseEvent {
     pointerType: string;
     constructor(type: string, init: PointerEventInit = {}) {
       super(type, init as MouseEventInit);
-      this.pointerType = init.pointerType ?? 'mouse';
+      this.pointerType = init.pointerType ?? "mouse";
     }
   }
 
@@ -40,8 +40,8 @@ function restorePointerEvents() {
 function triggerPointerOver(
   hoverProps: HoverProps,
   element: Element,
-  pointerType: 'mouse' | 'pen' | 'touch',
-  eventTarget: Element = element
+  pointerType: "mouse" | "pen" | "touch",
+  eventTarget: Element = element,
 ) {
   hoverProps.onPointerOver?.({
     currentTarget: element,
@@ -53,8 +53,8 @@ function triggerPointerOver(
 function triggerPointerOut(
   hoverProps: HoverProps,
   element: Element,
-  pointerType: 'mouse' | 'pen' | 'touch',
-  eventTarget: Element = element
+  pointerType: "mouse" | "pen" | "touch",
+  eventTarget: Element = element,
 ) {
   hoverProps.onPointerOut?.({
     currentTarget: element,
@@ -105,13 +105,13 @@ const Example: Component<ExampleProps> = (props) => {
 
   return (
     <div {...hoverProps} data-testid="test-element">
-      test{isHovered() && '-hovered'}
+      test{isHovered() && "-hovered"}
       <div data-testid="inner-target" />
     </div>
   );
 };
 
-describe('createHover', () => {
+describe("createHover", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -126,7 +126,7 @@ describe('createHover', () => {
   // DISABLED STATE
   // ============================================
 
-  it('does not handle hover events if disabled', () => {
+  it("does not handle hover events if disabled", () => {
     const events: any[] = [];
     const addEvent = (e: any) => events.push(e);
 
@@ -136,14 +136,14 @@ describe('createHover', () => {
         isDisabled
         onHoverStart={addEvent}
         onHoverEnd={addEvent}
-        onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+        onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
         exposeHoverProps={(props) => {
           hoverPropsRef = props;
         }}
       />
     ));
 
-    const el = screen.getByTestId('test-element');
+    const el = screen.getByTestId("test-element");
     triggerMouseEnter(hoverPropsRef!, el);
     triggerMouseLeave(hoverPropsRef!, el);
 
@@ -154,7 +154,7 @@ describe('createHover', () => {
   // POINTER EVENTS
   // ============================================
 
-  describe('pointer events', () => {
+  describe("pointer events", () => {
     beforeEach(() => {
       enablePointerEventsMock();
     });
@@ -163,7 +163,7 @@ describe('createHover', () => {
       restorePointerEvents();
     });
 
-    it('should fire hover events based on pointer events', () => {
+    it("should fire hover events based on pointer events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -172,30 +172,34 @@ describe('createHover', () => {
         <Example
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
-      triggerPointerOut(hoverPropsRef!, el, 'mouse');
+      const el = screen.getByTestId("test-element");
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
+      triggerPointerOut(hoverPropsRef!, el, "mouse");
 
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'hoverstart',
-        pointerType: 'mouse',
-      }));
-      expect(events).toContainEqual({ type: 'hoverchange', isHovering: true });
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'hoverend',
-        pointerType: 'mouse',
-      }));
-      expect(events).toContainEqual({ type: 'hoverchange', isHovering: false });
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "hoverstart",
+          pointerType: "mouse",
+        }),
+      );
+      expect(events).toContainEqual({ type: "hoverchange", isHovering: true });
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "hoverend",
+          pointerType: "mouse",
+        }),
+      );
+      expect(events).toContainEqual({ type: "hoverchange", isHovering: false });
     });
 
-    it('hover event target should be the element we attached listeners to', () => {
+    it("hover event target should be the element we attached listeners to", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -204,27 +208,27 @@ describe('createHover', () => {
         <Example
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      const inner = screen.getByTestId('inner-target');
+      const el = screen.getByTestId("test-element");
+      const inner = screen.getByTestId("inner-target");
 
       // Hover over inner element - target should still be the outer element
-      triggerPointerOver(hoverPropsRef!, el, 'mouse', inner);
-      triggerPointerOut(hoverPropsRef!, el, 'mouse', inner);
+      triggerPointerOver(hoverPropsRef!, el, "mouse", inner);
+      triggerPointerOut(hoverPropsRef!, el, "mouse", inner);
 
       // Check that the target is the element with hoverProps, not the inner element
-      const hoverStart = events.find((e) => e.type === 'hoverstart');
+      const hoverStart = events.find((e) => e.type === "hoverstart");
       expect(hoverStart).toBeDefined();
       expect(hoverStart.target).toBe(el);
     });
 
-    it('should not fire hover events when pointerType is touch', () => {
+    it("should not fire hover events when pointerType is touch", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -233,21 +237,21 @@ describe('createHover', () => {
         <Example
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      triggerPointerOver(hoverPropsRef!, el, 'touch');
-      triggerPointerOut(hoverPropsRef!, el, 'touch');
+      const el = screen.getByTestId("test-element");
+      triggerPointerOver(hoverPropsRef!, el, "touch");
+      triggerPointerOut(hoverPropsRef!, el, "touch");
 
       expect(events).toEqual([]);
     });
 
-    it('ignores emulated mouse events following touch events', () => {
+    it("ignores emulated mouse events following touch events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -256,26 +260,26 @@ describe('createHover', () => {
         <Example
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      document.dispatchEvent(new PointerEvent('pointerup', { pointerType: 'touch' }));
-      triggerPointerOver(hoverPropsRef!, el, 'touch');
-      triggerPointerOut(hoverPropsRef!, el, 'touch');
+      const el = screen.getByTestId("test-element");
+      document.dispatchEvent(new PointerEvent("pointerup", { pointerType: "touch" }));
+      triggerPointerOver(hoverPropsRef!, el, "touch");
+      triggerPointerOut(hoverPropsRef!, el, "touch");
 
       // Emulated mouse events should be ignored immediately after touch
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
-      triggerPointerOut(hoverPropsRef!, el, 'mouse');
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
+      triggerPointerOut(hoverPropsRef!, el, "mouse");
 
       expect(events).toEqual([]);
     });
 
-    it('supports mouse events following touch events after a delay', () => {
+    it("supports mouse events following touch events after a delay", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -284,62 +288,74 @@ describe('createHover', () => {
         <Example
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      document.dispatchEvent(new PointerEvent('pointerup', { pointerType: 'touch' }));
-      triggerPointerOver(hoverPropsRef!, el, 'touch');
-      triggerPointerOut(hoverPropsRef!, el, 'touch');
+      const el = screen.getByTestId("test-element");
+      document.dispatchEvent(new PointerEvent("pointerup", { pointerType: "touch" }));
+      triggerPointerOver(hoverPropsRef!, el, "touch");
+      triggerPointerOut(hoverPropsRef!, el, "touch");
 
       vi.advanceTimersByTime(100);
 
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
-      triggerPointerOut(hoverPropsRef!, el, 'mouse');
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
+      triggerPointerOut(hoverPropsRef!, el, "mouse");
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'hoverstart', pointerType: 'mouse' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'hoverend', pointerType: 'mouse' }));
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "hoverstart", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "hoverend", pointerType: "mouse" }),
+      );
     });
 
-    it('should visually change component with pointer events', () => {
+    it("should visually change component with pointer events", () => {
       let hoverPropsRef: HoverProps | undefined;
 
-      render(() => <Example exposeHoverProps={(props) => {
-        hoverPropsRef = props;
-      }} />);
+      render(() => (
+        <Example
+          exposeHoverProps={(props) => {
+            hoverPropsRef = props;
+          }}
+        />
+      ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      expect(el.textContent).toBe('test');
+      expect(el.textContent).toBe("test");
 
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
-      expect(el.textContent).toBe('test-hovered');
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
+      expect(el.textContent).toBe("test-hovered");
 
-      triggerPointerOut(hoverPropsRef!, el, 'mouse');
-      expect(el.textContent).toBe('test');
+      triggerPointerOut(hoverPropsRef!, el, "mouse");
+      expect(el.textContent).toBe("test");
     });
 
-    it('should not visually change component when pointerType is touch', () => {
+    it("should not visually change component when pointerType is touch", () => {
       let hoverPropsRef: HoverProps | undefined;
 
-      render(() => <Example exposeHoverProps={(props) => {
-        hoverPropsRef = props;
-      }} />);
+      render(() => (
+        <Example
+          exposeHoverProps={(props) => {
+            hoverPropsRef = props;
+          }}
+        />
+      ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      triggerPointerOver(hoverPropsRef!, el, 'touch');
-      expect(el.textContent).toBe('test');
+      triggerPointerOver(hoverPropsRef!, el, "touch");
+      expect(el.textContent).toBe("test");
 
-      triggerPointerOut(hoverPropsRef!, el, 'touch');
-      expect(el.textContent).toBe('test');
+      triggerPointerOut(hoverPropsRef!, el, "touch");
+      expect(el.textContent).toBe("test");
     });
 
-    it('should fire hover events for pen pointerType', () => {
+    it("should fire hover events for pen pointerType", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -348,28 +364,32 @@ describe('createHover', () => {
         <Example
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
-      triggerPointerOver(hoverPropsRef!, el, 'pen');
-      triggerPointerOut(hoverPropsRef!, el, 'pen');
+      const el = screen.getByTestId("test-element");
+      triggerPointerOver(hoverPropsRef!, el, "pen");
+      triggerPointerOut(hoverPropsRef!, el, "pen");
 
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'hoverstart',
-        pointerType: 'pen',
-      }));
-      expect(events).toContainEqual(expect.objectContaining({
-        type: 'hoverend',
-        pointerType: 'pen',
-      }));
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "hoverstart",
+          pointerType: "pen",
+        }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({
+          type: "hoverend",
+          pointerType: "pen",
+        }),
+      );
     });
 
-    it('should end hover when disabled', () => {
+    it("should end hover when disabled", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -380,7 +400,7 @@ describe('createHover', () => {
           isDisabled={isDisabled()}
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
@@ -389,20 +409,22 @@ describe('createHover', () => {
 
       render(() => <Test />);
 
-      let el = screen.getByTestId('test-element');
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
-      expect(el.textContent).toBe('test-hovered');
+      let el = screen.getByTestId("test-element");
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
+      expect(el.textContent).toBe("test-hovered");
 
       events.length = 0;
       setIsDisabled(true);
 
-      el = screen.getByTestId('test-element');
-      expect(el.textContent).toBe('test');
-      expect(events).toContainEqual(expect.objectContaining({ type: 'hoverend', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'hoverchange', isHovering: false });
+      el = screen.getByTestId("test-element");
+      expect(el.textContent).toBe("test");
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "hoverend", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "hoverchange", isHovering: false });
     });
 
-    it('should trigger onHoverEnd after an element is removed', () => {
+    it("should trigger onHoverEnd after an element is removed", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -412,7 +434,7 @@ describe('createHover', () => {
         const { hoverProps, isHovered } = createHover({
           onHoverStart: addEvent,
           onHoverEnd: addEvent,
-          onHoverChange: (isHovering) => addEvent({ type: 'hoverchange', isHovering }),
+          onHoverChange: (isHovering) => addEvent({ type: "hoverchange", isHovering }),
         });
         hoverPropsRef = hoverProps;
 
@@ -425,20 +447,22 @@ describe('createHover', () => {
 
       render(() => <Test />);
 
-      const el = screen.getByTestId('test');
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
-      expect(el).toHaveAttribute('data-hovered', 'true');
+      const el = screen.getByTestId("test");
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
+      expect(el).toHaveAttribute("data-hovered", "true");
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
       fireEvent.click(button);
-      expect(screen.queryByRole('button')).toBeNull();
+      expect(screen.queryByRole("button")).toBeNull();
 
       // Pointerover on a new target should end hover
-      fireEvent.pointerOver(document.body, { pointerType: 'mouse' });
-      expect(el).not.toHaveAttribute('data-hovered');
+      fireEvent.pointerOver(document.body, { pointerType: "mouse" });
+      expect(el).not.toHaveAttribute("data-hovered");
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'hoverend', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'hoverchange', isHovering: false });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "hoverend", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "hoverchange", isHovering: false });
     });
   });
 
@@ -446,7 +470,7 @@ describe('createHover', () => {
   // MOUSE EVENTS (FALLBACK)
   // ============================================
 
-  describe('mouse events', () => {
+  describe("mouse events", () => {
     beforeEach(() => {
       disablePointerEvents();
     });
@@ -455,7 +479,7 @@ describe('createHover', () => {
       restorePointerEvents();
     });
 
-    it('should fire hover events based on mouse events', () => {
+    it("should fire hover events based on mouse events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -464,38 +488,46 @@ describe('createHover', () => {
         <Example
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       triggerMouseEnter(hoverPropsRef!, el);
       triggerMouseLeave(hoverPropsRef!, el);
-      expect(events).toContainEqual(expect.objectContaining({ type: 'hoverstart', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'hoverchange', isHovering: true });
-      expect(events).toContainEqual(expect.objectContaining({ type: 'hoverend', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'hoverchange', isHovering: false });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "hoverstart", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "hoverchange", isHovering: true });
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "hoverend", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "hoverchange", isHovering: false });
     });
 
-    it('should visually change component with mouse events', () => {
+    it("should visually change component with mouse events", () => {
       let hoverPropsRef: HoverProps | undefined;
-      render(() => <Example exposeHoverProps={(props) => {
-        hoverPropsRef = props;
-      }} />);
+      render(() => (
+        <Example
+          exposeHoverProps={(props) => {
+            hoverPropsRef = props;
+          }}
+        />
+      ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       triggerMouseEnter(hoverPropsRef!, el);
-      expect(el.textContent).toBe('test-hovered');
+      expect(el.textContent).toBe("test-hovered");
 
       triggerMouseLeave(hoverPropsRef!, el);
-      expect(el.textContent).toBe('test');
+      expect(el.textContent).toBe("test");
     });
 
-    it('ignores emulated mouse events following touch events', () => {
+    it("ignores emulated mouse events following touch events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -504,16 +536,16 @@ describe('createHover', () => {
         <Example
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       triggerTouchStart(hoverPropsRef!, el);
-      document.dispatchEvent(new Event('touchend'));
+      document.dispatchEvent(new Event("touchend"));
 
       // Emulated mouse events after touch should be ignored
       triggerMouseEnter(hoverPropsRef!, el);
@@ -522,7 +554,7 @@ describe('createHover', () => {
       expect(events).toEqual([]);
     });
 
-    it('supports mouse events following touch events after a delay', () => {
+    it("supports mouse events following touch events after a delay", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -531,16 +563,16 @@ describe('createHover', () => {
         <Example
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       triggerTouchStart(hoverPropsRef!, el);
-      document.dispatchEvent(new Event('touchend'));
+      document.dispatchEvent(new Event("touchend"));
       triggerMouseEnter(hoverPropsRef!, el);
       triggerMouseLeave(hoverPropsRef!, el);
 
@@ -549,11 +581,15 @@ describe('createHover', () => {
       triggerMouseEnter(hoverPropsRef!, el);
       triggerMouseLeave(hoverPropsRef!, el);
 
-      expect(events).toContainEqual(expect.objectContaining({ type: 'hoverstart', pointerType: 'mouse' }));
-      expect(events).toContainEqual(expect.objectContaining({ type: 'hoverend', pointerType: 'mouse' }));
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "hoverstart", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "hoverend", pointerType: "mouse" }),
+      );
     });
 
-    it('should end hover when disabled', () => {
+    it("should end hover when disabled", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
       let hoverPropsRef: HoverProps | undefined;
@@ -564,7 +600,7 @@ describe('createHover', () => {
           isDisabled={isDisabled()}
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
           exposeHoverProps={(props) => {
             hoverPropsRef = props;
           }}
@@ -573,17 +609,19 @@ describe('createHover', () => {
 
       render(() => <Test />);
 
-      let el = screen.getByTestId('test-element');
+      let el = screen.getByTestId("test-element");
       triggerMouseEnter(hoverPropsRef!, el);
-      expect(el.textContent).toBe('test-hovered');
+      expect(el.textContent).toBe("test-hovered");
 
       events.length = 0;
       setIsDisabled(true);
 
-      el = screen.getByTestId('test-element');
-      expect(el.textContent).toBe('test');
-      expect(events).toContainEqual(expect.objectContaining({ type: 'hoverend', pointerType: 'mouse' }));
-      expect(events).toContainEqual({ type: 'hoverchange', isHovering: false });
+      el = screen.getByTestId("test-element");
+      expect(el.textContent).toBe("test");
+      expect(events).toContainEqual(
+        expect.objectContaining({ type: "hoverend", pointerType: "mouse" }),
+      );
+      expect(events).toContainEqual({ type: "hoverchange", isHovering: false });
     });
   });
 
@@ -591,8 +629,8 @@ describe('createHover', () => {
   // TOUCH EVENTS
   // ============================================
 
-  describe('touch events', () => {
-    it('should not fire hover events based on touch events', () => {
+  describe("touch events", () => {
+    it("should not fire hover events based on touch events", () => {
       const events: any[] = [];
       const addEvent = (e: any) => events.push(e);
 
@@ -600,11 +638,11 @@ describe('createHover', () => {
         <Example
           onHoverStart={addEvent}
           onHoverEnd={addEvent}
-          onHoverChange={(isHovering) => addEvent({ type: 'hoverchange', isHovering })}
+          onHoverChange={(isHovering) => addEvent({ type: "hoverchange", isHovering })}
         />
       ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
       fireEvent.touchStart(el);
       fireEvent.touchMove(el);
       fireEvent.touchEnd(el);
@@ -612,19 +650,19 @@ describe('createHover', () => {
       expect(events).toEqual([]);
     });
 
-    it('should not visually change component with touch events', () => {
+    it("should not visually change component with touch events", () => {
       render(() => <Example />);
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
       fireEvent.touchStart(el);
-      expect(el.textContent).toBe('test');
+      expect(el.textContent).toBe("test");
 
       fireEvent.touchMove(el);
-      expect(el.textContent).toBe('test');
+      expect(el.textContent).toBe("test");
 
       fireEvent.touchEnd(el);
-      expect(el.textContent).toBe('test');
+      expect(el.textContent).toBe("test");
     });
   });
 
@@ -632,51 +670,65 @@ describe('createHover', () => {
   // HOVER STATE TRACKING
   // ============================================
 
-  describe('hover state', () => {
-    it('should track isHovered state', () => {
+  describe("hover state", () => {
+    it("should track isHovered state", () => {
       let hoverPropsRef: HoverProps | undefined;
-      render(() => <Example exposeHoverProps={(props) => {
-        hoverPropsRef = props;
-      }} />);
+      render(() => (
+        <Example
+          exposeHoverProps={(props) => {
+            hoverPropsRef = props;
+          }}
+        />
+      ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      expect(el.textContent).not.toContain('-hovered');
+      expect(el.textContent).not.toContain("-hovered");
 
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
-      expect(el.textContent).toContain('-hovered');
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
+      expect(el.textContent).toContain("-hovered");
 
-      triggerPointerOut(hoverPropsRef!, el, 'mouse');
-      expect(el.textContent).not.toContain('-hovered');
+      triggerPointerOut(hoverPropsRef!, el, "mouse");
+      expect(el.textContent).not.toContain("-hovered");
     });
 
-    it('should not double-fire hoverstart if already hovered', () => {
+    it("should not double-fire hoverstart if already hovered", () => {
       const onHoverStart = vi.fn();
       let hoverPropsRef: HoverProps | undefined;
 
-      render(() => <Example onHoverStart={onHoverStart} exposeHoverProps={(props) => {
-        hoverPropsRef = props;
-      }} />);
+      render(() => (
+        <Example
+          onHoverStart={onHoverStart}
+          exposeHoverProps={(props) => {
+            hoverPropsRef = props;
+          }}
+        />
+      ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
 
       expect(onHoverStart).toHaveBeenCalledTimes(1);
     });
 
-    it('should not fire hoverend if not hovered', () => {
+    it("should not fire hoverend if not hovered", () => {
       const onHoverEnd = vi.fn();
       let hoverPropsRef: HoverProps | undefined;
 
-      render(() => <Example onHoverEnd={onHoverEnd} exposeHoverProps={(props) => {
-        hoverPropsRef = props;
-      }} />);
+      render(() => (
+        <Example
+          onHoverEnd={onHoverEnd}
+          exposeHoverProps={(props) => {
+            hoverPropsRef = props;
+          }}
+        />
+      ));
 
-      const el = screen.getByTestId('test-element');
+      const el = screen.getByTestId("test-element");
 
-      triggerPointerOut(hoverPropsRef!, el, 'mouse');
+      triggerPointerOut(hoverPropsRef!, el, "mouse");
 
       expect(onHoverEnd).not.toHaveBeenCalled();
     });
@@ -686,60 +738,79 @@ describe('createHover', () => {
   // EVENT CALLBACKS
   // ============================================
 
-  describe('event callbacks', () => {
-    it('should call onHoverStart when hover starts', () => {
+  describe("event callbacks", () => {
+    it("should call onHoverStart when hover starts", () => {
       const onHoverStart = vi.fn();
       let hoverPropsRef: HoverProps | undefined;
 
-      render(() => <Example onHoverStart={onHoverStart} exposeHoverProps={(props) => {
-        hoverPropsRef = props;
-      }} />);
+      render(() => (
+        <Example
+          onHoverStart={onHoverStart}
+          exposeHoverProps={(props) => {
+            hoverPropsRef = props;
+          }}
+        />
+      ));
 
-      const el = screen.getByTestId('test-element');
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
+      const el = screen.getByTestId("test-element");
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
 
       expect(onHoverStart).toHaveBeenCalledTimes(1);
-      expect(onHoverStart).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'hoverstart',
-        pointerType: 'mouse',
-        target: el,
-      }));
+      expect(onHoverStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "hoverstart",
+          pointerType: "mouse",
+          target: el,
+        }),
+      );
     });
 
-    it('should call onHoverEnd when hover ends', () => {
+    it("should call onHoverEnd when hover ends", () => {
       const onHoverEnd = vi.fn();
       let hoverPropsRef: HoverProps | undefined;
 
-      render(() => <Example onHoverEnd={onHoverEnd} exposeHoverProps={(props) => {
-        hoverPropsRef = props;
-      }} />);
+      render(() => (
+        <Example
+          onHoverEnd={onHoverEnd}
+          exposeHoverProps={(props) => {
+            hoverPropsRef = props;
+          }}
+        />
+      ));
 
-      const el = screen.getByTestId('test-element');
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
-      triggerPointerOut(hoverPropsRef!, el, 'mouse');
+      const el = screen.getByTestId("test-element");
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
+      triggerPointerOut(hoverPropsRef!, el, "mouse");
 
       expect(onHoverEnd).toHaveBeenCalledTimes(1);
-      expect(onHoverEnd).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'hoverend',
-        pointerType: 'mouse',
-        target: el,
-      }));
+      expect(onHoverEnd).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "hoverend",
+          pointerType: "mouse",
+          target: el,
+        }),
+      );
     });
 
-    it('should call onHoverChange with boolean state', () => {
+    it("should call onHoverChange with boolean state", () => {
       const onHoverChange = vi.fn();
       let hoverPropsRef: HoverProps | undefined;
 
-      render(() => <Example onHoverChange={onHoverChange} exposeHoverProps={(props) => {
-        hoverPropsRef = props;
-      }} />);
+      render(() => (
+        <Example
+          onHoverChange={onHoverChange}
+          exposeHoverProps={(props) => {
+            hoverPropsRef = props;
+          }}
+        />
+      ));
 
-      const el = screen.getByTestId('test-element');
-      triggerPointerOver(hoverPropsRef!, el, 'mouse');
+      const el = screen.getByTestId("test-element");
+      triggerPointerOver(hoverPropsRef!, el, "mouse");
 
       expect(onHoverChange).toHaveBeenCalledWith(true);
 
-      triggerPointerOut(hoverPropsRef!, el, 'mouse');
+      triggerPointerOut(hoverPropsRef!, el, "mouse");
 
       expect(onHoverChange).toHaveBeenCalledWith(false);
     });

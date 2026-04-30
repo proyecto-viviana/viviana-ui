@@ -7,51 +7,54 @@
  * Works with any GeneratedTheme — defaults to Viviana if none provided.
  */
 
-import { createSignal, onMount } from 'solid-js'
-import { viviana } from './viviana'
-import { applyThemeVars, type CSSVarMap, type GeneratedTheme } from './generator'
+import { createSignal, onMount } from "solid-js";
+import { viviana } from "./viviana";
+import { applyThemeVars, type CSSVarMap, type GeneratedTheme } from "./generator";
 
-export type ColorScheme = 'dark' | 'light'
+export type ColorScheme = "dark" | "light";
 
-const STORAGE_KEY = 'solid-spectrum-theme'
+const STORAGE_KEY = "solid-spectrum-theme";
 
 function resolveScheme(): ColorScheme {
-  if (typeof localStorage !== 'undefined') {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved === 'dark' || saved === 'light') return saved
+  if (typeof localStorage !== "undefined") {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "dark" || saved === "light") return saved;
   }
-  if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: light)').matches) {
-    return 'light'
+  if (
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-color-scheme: light)").matches
+  ) {
+    return "light";
   }
-  return 'dark'
+  return "dark";
 }
 
 // Module-level singleton — all consumers share the same signal
-const [globalScheme, setGlobalScheme] = createSignal<ColorScheme>('dark')
-let initialized = false
+const [globalScheme, setGlobalScheme] = createSignal<ColorScheme>("dark");
+let initialized = false;
 
 function init(theme: GeneratedTheme): void {
-  if (initialized) return
-  if (typeof document === 'undefined') return
-  initialized = true
+  if (initialized) return;
+  if (typeof document === "undefined") return;
+  initialized = true;
 
-  const scheme = resolveScheme()
-  setGlobalScheme(scheme)
-  document.documentElement.setAttribute('data-theme', scheme)
-  applyThemeVars(document.documentElement, theme[scheme])
+  const scheme = resolveScheme();
+  setGlobalScheme(scheme);
+  document.documentElement.setAttribute("data-theme", scheme);
+  applyThemeVars(document.documentElement, theme[scheme]);
 }
 
 export interface SolidSpectrumThemeResult {
   /** Current color scheme ('dark' | 'light') */
-  scheme: () => ColorScheme
+  scheme: () => ColorScheme;
   /** Whether the current scheme is dark */
-  isDark: () => boolean
+  isDark: () => boolean;
   /** Toggle between dark and light */
-  toggleScheme: () => void
+  toggleScheme: () => void;
   /** Set a specific scheme */
-  setScheme: (scheme: ColorScheme) => void
+  setScheme: (scheme: ColorScheme) => void;
   /** Current CSS variable map */
-  vars: () => CSSVarMap
+  vars: () => CSSVarMap;
 }
 
 /**
@@ -70,29 +73,31 @@ export interface SolidSpectrumThemeResult {
  * const { scheme, isDark, toggleScheme } = createSolidSpectrumTheme(custom)
  * ```
  */
-export function createSolidSpectrumTheme(theme: GeneratedTheme = viviana): SolidSpectrumThemeResult {
-  onMount(() => init(theme))
+export function createSolidSpectrumTheme(
+  theme: GeneratedTheme = viviana,
+): SolidSpectrumThemeResult {
+  onMount(() => init(theme));
 
   const setScheme = (next: ColorScheme) => {
-    setGlobalScheme(next)
-    if (typeof document !== 'undefined') {
-      document.documentElement.setAttribute('data-theme', next)
-      applyThemeVars(document.documentElement, theme[next])
+    setGlobalScheme(next);
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-theme", next);
+      applyThemeVars(document.documentElement, theme[next]);
     }
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY, next)
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, next);
     }
-  }
+  };
 
   const toggleScheme = () => {
-    setScheme(globalScheme() === 'dark' ? 'light' : 'dark')
-  }
+    setScheme(globalScheme() === "dark" ? "light" : "dark");
+  };
 
   return {
     scheme: globalScheme,
-    isDark: () => globalScheme() === 'dark',
+    isDark: () => globalScheme() === "dark",
     toggleScheme,
     setScheme,
     vars: () => theme[globalScheme()],
-  }
+  };
 }

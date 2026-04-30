@@ -5,10 +5,10 @@
  * Focus events on child elements are ignored.
  */
 
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup, waitFor, fireEvent } from '@solidjs/testing-library';
-import { createFocus } from '../src/interactions/createFocus';
-import { createSignal, type Component } from 'solid-js';
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { render, screen, cleanup, waitFor, fireEvent } from "@solidjs/testing-library";
+import { createFocus } from "../src/interactions/createFocus";
+import { createSignal, type Component } from "solid-js";
 
 // Test component that uses createFocus
 interface ExampleProps {
@@ -34,10 +34,10 @@ const Example: Component<ExampleProps> = (props) => {
 };
 
 function createShadowRootContainer() {
-  const host = document.createElement('div');
+  const host = document.createElement("div");
   document.body.appendChild(host);
-  const shadowRoot = host.attachShadow({ mode: 'open' });
-  const container = document.createElement('div');
+  const shadowRoot = host.attachShadow({ mode: "open" });
+  const container = document.createElement("div");
   shadowRoot.appendChild(container);
   return {
     host,
@@ -47,7 +47,7 @@ function createShadowRootContainer() {
   };
 }
 
-describe('createFocus', () => {
+describe("createFocus", () => {
   afterEach(() => {
     cleanup();
   });
@@ -56,25 +56,25 @@ describe('createFocus', () => {
   // BASIC FUNCTIONALITY
   // ============================================
 
-  describe('basic functionality', () => {
-    it('should fire onFocus when element receives focus', () => {
+  describe("basic functionality", () => {
+    it("should fire onFocus when element receives focus", () => {
       const onFocus = vi.fn();
 
       render(() => <Example onFocus={onFocus} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       // Use actual focus() to properly set document.activeElement
       el.focus();
 
       expect(onFocus).toHaveBeenCalledTimes(1);
     });
 
-    it('should fire onBlur when element loses focus', () => {
+    it("should fire onBlur when element loses focus", () => {
       const onBlur = vi.fn();
 
       render(() => <Example onBlur={onBlur} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
       fireEvent.focusIn(el);
       el.blur();
@@ -83,23 +83,23 @@ describe('createFocus', () => {
       expect(onBlur).toHaveBeenCalledTimes(1);
     });
 
-    it('should fire onFocusChange with true when focused', () => {
+    it("should fire onFocusChange with true when focused", () => {
       const onFocusChange = vi.fn();
 
       render(() => <Example onFocusChange={onFocusChange} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
       expect(onFocusChange).toHaveBeenCalledWith(true);
     });
 
-    it('should fire onFocusChange with false when blurred', () => {
+    it("should fire onFocusChange with false when blurred", () => {
       const onFocusChange = vi.fn();
 
       render(() => <Example onFocusChange={onFocusChange} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
       fireEvent.focusIn(el);
       el.blur();
@@ -108,19 +108,19 @@ describe('createFocus', () => {
       expect(onFocusChange).toHaveBeenCalledWith(false);
     });
 
-    it('should call all handlers in sequence', () => {
+    it("should call all handlers in sequence", () => {
       const events: string[] = [];
-      const onFocus = vi.fn(() => events.push('onFocus'));
-      const onBlur = vi.fn(() => events.push('onBlur'));
+      const onFocus = vi.fn(() => events.push("onFocus"));
+      const onBlur = vi.fn(() => events.push("onBlur"));
       const onFocusChange = vi.fn((isFocused) => events.push(`onFocusChange:${isFocused}`));
 
       render(() => <Example onFocus={onFocus} onBlur={onBlur} onFocusChange={onFocusChange} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
       el.blur();
 
-      expect(events).toEqual(['onFocus', 'onFocusChange:true', 'onBlur', 'onFocusChange:false']);
+      expect(events).toEqual(["onFocus", "onFocusChange:true", "onBlur", "onFocusChange:false"]);
     });
   });
 
@@ -128,48 +128,52 @@ describe('createFocus', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('should not fire onFocus when disabled', () => {
+  describe("disabled state", () => {
+    it("should not fire onFocus when disabled", () => {
       const onFocus = vi.fn();
 
       render(() => <Example isDisabled onFocus={onFocus} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
       expect(onFocus).not.toHaveBeenCalled();
     });
 
-    it('should not fire onBlur when disabled', () => {
+    it("should not fire onBlur when disabled", () => {
       const onBlur = vi.fn();
 
       render(() => <Example isDisabled onBlur={onBlur} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
       el.blur();
 
       expect(onBlur).not.toHaveBeenCalled();
     });
 
-    it('should not fire onFocusChange when disabled', () => {
+    it("should not fire onFocusChange when disabled", () => {
       const onFocusChange = vi.fn();
 
       render(() => <Example isDisabled onFocusChange={onFocusChange} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
       expect(onFocusChange).not.toHaveBeenCalled();
     });
 
-    it('should return empty focusProps when disabled', () => {
+    it("should return empty focusProps when disabled", () => {
       const result = createFocus({ isDisabled: true, onFocus: vi.fn() });
       expect(result.focusProps).toEqual({});
     });
 
-    it('should fire onBlur when a focused element is disabled', async () => {
-      const ButtonExample: Component<{ disabled?: boolean; onFocus?: (e: FocusEvent) => void; onBlur?: (e: FocusEvent) => void }> = (props) => {
+    it("should fire onBlur when a focused element is disabled", async () => {
+      const ButtonExample: Component<{
+        disabled?: boolean;
+        onFocus?: (e: FocusEvent) => void;
+        onBlur?: (e: FocusEvent) => void;
+      }> = (props) => {
         const { focusProps } = createFocus({
           onFocus: props.onFocus,
           onBlur: props.onBlur,
@@ -185,15 +189,9 @@ describe('createFocus', () => {
       const onFocus = vi.fn();
       const onBlur = vi.fn();
       const [isDisabled, setIsDisabled] = createSignal(false);
-      render(() => (
-        <ButtonExample
-          disabled={isDisabled()}
-          onFocus={onFocus}
-          onBlur={onBlur}
-        />
-      ));
+      render(() => <ButtonExample disabled={isDisabled()} onFocus={onFocus} onBlur={onBlur} />);
 
-      const button = screen.getByTestId('button');
+      const button = screen.getByTestId("button");
       button.focus();
       expect(onFocus).toHaveBeenCalledTimes(1);
 
@@ -209,25 +207,25 @@ describe('createFocus', () => {
   // CHILD ELEMENT FOCUS
   // ============================================
 
-  describe('child element focus', () => {
-    it('should not fire onFocus when child receives focus', () => {
+  describe("child element focus", () => {
+    it("should not fire onFocus when child receives focus", () => {
       const onFocus = vi.fn();
 
       render(() => <Example onFocus={onFocus} />);
 
-      const innerButton = screen.getByTestId('inner-button');
+      const innerButton = screen.getByTestId("inner-button");
       innerButton.focus();
 
       // Focus on child should not trigger parent's onFocus
       expect(onFocus).not.toHaveBeenCalled();
     });
 
-    it('should not fire onBlur when child loses focus', () => {
+    it("should not fire onBlur when child loses focus", () => {
       const onBlur = vi.fn();
 
       render(() => <Example onBlur={onBlur} />);
 
-      const innerButton = screen.getByTestId('inner-button');
+      const innerButton = screen.getByTestId("inner-button");
       innerButton.focus();
       innerButton.blur();
 
@@ -240,37 +238,37 @@ describe('createFocus', () => {
   // EVENT PROPERTIES
   // ============================================
 
-  describe('event properties', () => {
-    it('should pass the focus event to onFocus handler', () => {
+  describe("event properties", () => {
+    it("should pass the focus event to onFocus handler", () => {
       const onFocus = vi.fn();
 
       render(() => <Example onFocus={onFocus} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
 
       expect(onFocus).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: 'focus',
+          type: "focus",
           target: el,
-        })
+        }),
       );
     });
 
-    it('should pass the blur event to onBlur handler', () => {
+    it("should pass the blur event to onBlur handler", () => {
       const onBlur = vi.fn();
 
       render(() => <Example onBlur={onBlur} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
       el.blur();
 
       expect(onBlur).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: 'blur',
+          type: "blur",
           target: el,
-        })
+        }),
       );
     });
   });
@@ -279,8 +277,8 @@ describe('createFocus', () => {
   // EVENT PROPAGATION
   // ============================================
 
-  describe('event propagation', () => {
-    it('events do not bubble when stopPropagation is called', () => {
+  describe("event propagation", () => {
+    it("events do not bubble when stopPropagation is called", () => {
       const onWrapperFocus = vi.fn();
       const onWrapperBlur = vi.fn();
       const onInnerFocus = vi.fn((event: FocusEvent) => event.stopImmediatePropagation());
@@ -292,7 +290,7 @@ describe('createFocus', () => {
         </div>
       ));
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
       onInnerFocus.mockClear();
       onInnerBlur.mockClear();
@@ -307,7 +305,7 @@ describe('createFocus', () => {
       expect(onWrapperBlur).not.toHaveBeenCalled();
     });
 
-    it('events bubble by default', () => {
+    it("events bubble by default", () => {
       const onWrapperFocus = vi.fn();
       const onWrapperBlur = vi.fn();
       const onInnerFocus = vi.fn();
@@ -319,7 +317,7 @@ describe('createFocus', () => {
         </div>
       ));
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
       el.focus();
       onInnerFocus.mockClear();
       onInnerBlur.mockClear();
@@ -339,33 +337,33 @@ describe('createFocus', () => {
   // RETURN VALUE
   // ============================================
 
-  describe('return value', () => {
-    it('should return focusProps object', () => {
+  describe("return value", () => {
+    it("should return focusProps object", () => {
       const result = createFocus({
         onFocus: vi.fn(),
         onBlur: vi.fn(),
       });
 
-      expect(result).toHaveProperty('focusProps');
+      expect(result).toHaveProperty("focusProps");
     });
 
-    it('should include onFocus when handler provided', () => {
+    it("should include onFocus when handler provided", () => {
       const result = createFocus({ onFocus: vi.fn() });
-      expect(typeof result.focusProps.onFocus).toBe('function');
+      expect(typeof result.focusProps.onFocus).toBe("function");
     });
 
-    it('should include onBlur when handler provided', () => {
+    it("should include onBlur when handler provided", () => {
       const result = createFocus({ onBlur: vi.fn() });
-      expect(typeof result.focusProps.onBlur).toBe('function');
+      expect(typeof result.focusProps.onBlur).toBe("function");
     });
 
-    it('should include both when onFocusChange provided', () => {
+    it("should include both when onFocusChange provided", () => {
       const result = createFocus({ onFocusChange: vi.fn() });
-      expect(typeof result.focusProps.onFocus).toBe('function');
-      expect(typeof result.focusProps.onBlur).toBe('function');
+      expect(typeof result.focusProps.onFocus).toBe("function");
+      expect(typeof result.focusProps.onBlur).toBe("function");
     });
 
-    it('should return empty focusProps when no handlers provided', () => {
+    it("should return empty focusProps when no handlers provided", () => {
       const result = createFocus({});
       expect(result.focusProps.onFocus).toBeUndefined();
       expect(result.focusProps.onBlur).toBeUndefined();
@@ -376,13 +374,13 @@ describe('createFocus', () => {
   // MULTIPLE FOCUS/BLUR CYCLES
   // ============================================
 
-  describe('multiple focus/blur cycles', () => {
-    it('should handle multiple focus/blur cycles', () => {
+  describe("multiple focus/blur cycles", () => {
+    it("should handle multiple focus/blur cycles", () => {
       const onFocusChange = vi.fn();
 
       render(() => <Example onFocusChange={onFocusChange} />);
 
-      const el = screen.getByTestId('example');
+      const el = screen.getByTestId("example");
 
       el.focus();
       el.blur();
@@ -399,7 +397,7 @@ describe('createFocus', () => {
   // FORM ELEMENTS
   // ============================================
 
-  describe('form elements', () => {
+  describe("form elements", () => {
     const FormExample: Component<ExampleProps> = (props) => {
       const { focusProps } = createFocus({
         isDisabled: props.isDisabled,
@@ -411,13 +409,13 @@ describe('createFocus', () => {
       return <input type="text" {...focusProps} data-testid="input" />;
     };
 
-    it('should work with input elements', () => {
+    it("should work with input elements", () => {
       const onFocus = vi.fn();
       const onBlur = vi.fn();
 
       render(() => <FormExample onFocus={onFocus} onBlur={onBlur} />);
 
-      const input = screen.getByTestId('input');
+      const input = screen.getByTestId("input");
       input.focus();
       input.blur();
 
@@ -425,7 +423,7 @@ describe('createFocus', () => {
       expect(onBlur).toHaveBeenCalledTimes(1);
     });
 
-    it('should work with button elements', () => {
+    it("should work with button elements", () => {
       const ButtonExample: Component<ExampleProps> = (props) => {
         const { focusProps } = createFocus({
           onFocus: props.onFocus,
@@ -444,7 +442,7 @@ describe('createFocus', () => {
 
       render(() => <ButtonExample onFocus={onFocus} onBlur={onBlur} />);
 
-      const button = screen.getByTestId('button');
+      const button = screen.getByTestId("button");
       button.focus();
       button.blur();
 
@@ -457,19 +455,25 @@ describe('createFocus', () => {
   // SHADOW DOM
   // ============================================
 
-  describe('shadow dom', () => {
-    it('handles focus events inside shadow root', () => {
+  describe("shadow dom", () => {
+    it("handles focus events inside shadow root", () => {
       const events: Array<{ type: string; target: EventTarget | null }> = [];
-      const addEvent = (event: FocusEvent) => events.push({ type: event.type, target: event.target });
+      const addEvent = (event: FocusEvent) =>
+        events.push({ type: event.type, target: event.target });
       const { container, cleanup: cleanupShadow, shadowRoot } = createShadowRootContainer();
 
-      const { unmount } = render(() => (
-        <Example
-          onFocus={addEvent}
-          onBlur={addEvent}
-          onFocusChange={(isFocused) => events.push({ type: 'focuschange', target: isFocused ? 'focused' : 'blurred' })}
-        />
-      ), { container });
+      const { unmount } = render(
+        () => (
+          <Example
+            onFocus={addEvent}
+            onBlur={addEvent}
+            onFocusChange={(isFocused) =>
+              events.push({ type: "focuschange", target: isFocused ? "focused" : "blurred" })
+            }
+          />
+        ),
+        { container },
+      );
 
       const el = shadowRoot.querySelector('[data-testid="example"]') as HTMLElement;
       el.focus();
@@ -478,29 +482,35 @@ describe('createFocus', () => {
       fireEvent.focusOut(el);
 
       expect(events).toEqual([
-        { type: 'focus', target: el },
-        { type: 'focuschange', target: 'focused' },
-        { type: 'blur', target: el },
-        { type: 'focuschange', target: 'blurred' },
+        { type: "focus", target: el },
+        { type: "focuschange", target: "focused" },
+        { type: "blur", target: el },
+        { type: "focuschange", target: "blurred" },
       ]);
 
       unmount();
       cleanupShadow();
     });
 
-    it('does not handle focus events if disabled in shadow root', () => {
+    it("does not handle focus events if disabled in shadow root", () => {
       const events: Array<{ type: string; target: EventTarget | null }> = [];
-      const addEvent = (event: FocusEvent) => events.push({ type: event.type, target: event.target });
+      const addEvent = (event: FocusEvent) =>
+        events.push({ type: event.type, target: event.target });
       const { container, cleanup: cleanupShadow, shadowRoot } = createShadowRootContainer();
 
-      const { unmount } = render(() => (
-        <Example
-          isDisabled
-          onFocus={addEvent}
-          onBlur={addEvent}
-          onFocusChange={(isFocused) => events.push({ type: 'focuschange', target: isFocused ? 'focused' : 'blurred' })}
-        />
-      ), { container });
+      const { unmount } = render(
+        () => (
+          <Example
+            isDisabled
+            onFocus={addEvent}
+            onBlur={addEvent}
+            onFocusChange={(isFocused) =>
+              events.push({ type: "focuschange", target: isFocused ? "focused" : "blurred" })
+            }
+          />
+        ),
+        { container },
+      );
 
       const el = shadowRoot.querySelector('[data-testid="example"]') as HTMLElement;
       el.focus();

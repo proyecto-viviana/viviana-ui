@@ -5,16 +5,13 @@
  * Parity target: react-aria-components/src/ToggleButtonGroup.tsx
  */
 
-import { type JSX, createContext, createMemo, splitProps, useContext } from 'solid-js';
-import {
-  createToggleButtonGroup,
-  mergeProps,
-} from '@proyecto-viviana/solidaria';
+import { type JSX, createContext, createMemo, splitProps, useContext } from "solid-js";
+import { createToggleButtonGroup, mergeProps } from "@proyecto-viviana/solidaria";
 import {
   createToggleGroupState,
   type Key,
   type ToggleGroupState,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -22,23 +19,24 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 export interface ToggleButtonGroupRenderProps {
-  orientation: 'horizontal' | 'vertical';
+  orientation: "horizontal" | "vertical";
   isDisabled: boolean;
   state: ToggleGroupState;
 }
 
 export interface ToggleButtonGroupProps
-  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'style' | 'onSelectionChange'>,
+  extends
+    Omit<JSX.HTMLAttributes<HTMLDivElement>, "children" | "class" | "style" | "onSelectionChange">,
     SlotProps {
-  selectionMode?: 'single' | 'multiple';
+  selectionMode?: "single" | "multiple";
   disallowEmptySelection?: boolean;
   selectedKeys?: Iterable<Key>;
   defaultSelectedKeys?: Iterable<Key>;
   onSelectionChange?: (keys: Set<Key>) => void;
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   isDisabled?: boolean;
   children?: RenderChildren<ToggleButtonGroupRenderProps>;
   class?: ClassNameOrFunction<ToggleButtonGroupRenderProps>;
@@ -52,19 +50,19 @@ export type ToggleButtonGroupStateContextValue = ToggleGroupState;
 
 export function ToggleButtonGroup(props: ToggleButtonGroupProps): JSX.Element {
   const [local, domProps] = splitProps(props, [
-    'selectionMode',
-    'disallowEmptySelection',
-    'selectedKeys',
-    'defaultSelectedKeys',
-    'onSelectionChange',
-    'orientation',
-    'isDisabled',
-    'children',
-    'class',
-    'style',
-    'slot',
-    'aria-label',
-    'aria-labelledby',
+    "selectionMode",
+    "disallowEmptySelection",
+    "selectedKeys",
+    "defaultSelectedKeys",
+    "onSelectionChange",
+    "orientation",
+    "isDisabled",
+    "children",
+    "class",
+    "style",
+    "slot",
+    "aria-label",
+    "aria-labelledby",
   ]);
 
   const state = createToggleGroupState(() => ({
@@ -84,14 +82,14 @@ export function ToggleButtonGroup(props: ToggleButtonGroupProps): JSX.Element {
       get isDisabled() {
         return !!local.isDisabled;
       },
-      get 'aria-label'() {
-        return local['aria-label'];
+      get "aria-label"() {
+        return local["aria-label"];
       },
-      get 'aria-labelledby'() {
-        return local['aria-labelledby'];
+      get "aria-labelledby"() {
+        return local["aria-labelledby"];
       },
     },
-    state
+    state,
   );
 
   const renderProps = useRenderProps(
@@ -99,18 +97,18 @@ export function ToggleButtonGroup(props: ToggleButtonGroupProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-ToggleButtonGroup',
+      defaultClassName: "solidaria-ToggleButtonGroup",
     },
     () => ({
-      orientation: local.orientation ?? 'horizontal',
+      orientation: local.orientation ?? "horizontal",
       isDisabled: !!local.isDisabled,
       state,
-    })
+    }),
   );
 
   const filteredDomProps = createMemo(() => filterDOMProps(domProps, { global: true }));
   const mergedGroupProps = createMemo(() =>
-    mergeProps(filteredDomProps(), groupProps as Record<string, unknown>)
+    mergeProps(filteredDomProps(), groupProps as Record<string, unknown>),
   );
 
   return (
@@ -119,7 +117,7 @@ export function ToggleButtonGroup(props: ToggleButtonGroupProps): JSX.Element {
       class={renderProps.class()}
       style={renderProps.style()}
       slot={local.slot}
-      data-orientation={local.orientation ?? 'horizontal'}
+      data-orientation={local.orientation ?? "horizontal"}
       data-disabled={local.isDisabled || undefined}
     >
       <ToggleButtonGroupContext.Provider value={props}>

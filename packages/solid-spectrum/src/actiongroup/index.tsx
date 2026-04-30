@@ -6,16 +6,16 @@
  * (toolbar/radiogroup), keyboard navigation, and ARIA semantics.
  */
 
-import { type JSX, splitProps } from 'solid-js';
+import { type JSX, splitProps } from "solid-js";
 import {
   ActionGroup as HeadlessActionGroup,
   type ActionGroupProps as HeadlessActionGroupProps,
   type ActionGroupRenderProps,
   type ActionGroupItemRenderProps,
   type ActionGroupItem,
-} from '@proyecto-viviana/solidaria-components';
-import type { Key, SelectionMode } from '@proyecto-viviana/solid-stately';
-import { useProviderProps } from '../provider';
+} from "@proyecto-viviana/solidaria-components";
+import type { Key, SelectionMode } from "@proyecto-viviana/solid-stately";
+import { useProviderProps } from "../provider";
 
 // ============================================
 // TYPES
@@ -27,19 +27,19 @@ export interface ActionGroupProps<T extends ActionGroupItem = ActionGroupItem> {
   /** The selection mode. @default 'none' */
   selectionMode?: SelectionMode;
   /** Orientation of the group. @default 'horizontal' */
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   /** Whether the entire group is disabled. */
   isDisabled?: boolean;
   /** Accessible label. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Labelled-by id. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Currently selected keys (controlled). */
   selectedKeys?: Iterable<Key>;
   /** Default selected keys (uncontrolled). */
   defaultSelectedKeys?: Iterable<Key>;
   /** Handler called when selection changes. */
-  onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  onSelectionChange?: (keys: "all" | Set<Key>) => void;
   /** Handler called when an item action is triggered. */
   onAction?: (key: Key) => void;
   /** Keys of disabled items. */
@@ -57,28 +57,26 @@ export interface ActionGroupProps<T extends ActionGroupItem = ActionGroupItem> {
 // ============================================
 
 function getContainerClassName(renderProps: ActionGroupRenderProps, extraClass?: string): string {
-  const orientationClass = renderProps.orientation === 'vertical'
-    ? 'flex-col'
-    : 'flex-row';
+  const orientationClass = renderProps.orientation === "vertical" ? "flex-col" : "flex-row";
   return [
-    'vui-action-group inline-flex items-center gap-1 rounded-lg border border-primary-600 bg-bg-300 p-1',
+    "vui-action-group inline-flex items-center gap-1 rounded-lg border border-primary-600 bg-bg-300 p-1",
     orientationClass,
-    extraClass ?? '',
-  ].filter(Boolean).join(' ');
+    extraClass ?? "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 function getItemClassName(renderProps: ActionGroupItemRenderProps): string {
   const stateClass = renderProps.isSelected
-    ? 'bg-accent text-bg-400'
-    : 'bg-transparent text-primary-200 hover:bg-bg-400';
-  const disabledClass = renderProps.isDisabled
-    ? 'cursor-not-allowed opacity-50'
-    : 'cursor-pointer';
+    ? "bg-accent text-bg-400"
+    : "bg-transparent text-primary-200 hover:bg-bg-400";
+  const disabledClass = renderProps.isDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer";
   return [
-    'inline-flex items-center rounded-md px-3 py-1.5 text-sm transition-colors duration-150',
+    "inline-flex items-center rounded-md px-3 py-1.5 text-sm transition-colors duration-150",
     stateClass,
     disabledClass,
-  ].join(' ');
+  ].join(" ");
 }
 
 // ============================================
@@ -86,14 +84,14 @@ function getItemClassName(renderProps: ActionGroupItemRenderProps): string {
 // ============================================
 
 export function ActionGroup<T extends ActionGroupItem = ActionGroupItem>(
-  props: ActionGroupProps<T>
+  props: ActionGroupProps<T>,
 ): JSX.Element {
   const mergedProps = useProviderProps(props);
-  const [local, headlessProps] = splitProps(mergedProps, ['class', 'renderItem', 'children']);
+  const [local, headlessProps] = splitProps(mergedProps, ["class", "renderItem", "children"]);
 
   return (
     <HeadlessActionGroup<T>
-      {...headlessProps as HeadlessActionGroupProps<T>}
+      {...(headlessProps as HeadlessActionGroupProps<T>)}
       class={(rp: ActionGroupRenderProps) => getContainerClassName(rp, local.class)}
     >
       {(item: T, renderProps: ActionGroupItemRenderProps) => (

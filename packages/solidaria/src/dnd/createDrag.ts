@@ -5,9 +5,9 @@
  * mouse, touch, and keyboard interactions.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import { createDragState } from '@proyecto-viviana/solid-stately';
-import type { AriaDragOptions, DragAria } from './types';
+import { createMemo, type Accessor } from "solid-js";
+import { createDragState } from "@proyecto-viviana/solid-stately";
+import type { AriaDragOptions, DragAria } from "./types";
 import {
   getTypes,
   writeToDataTransfer,
@@ -17,8 +17,8 @@ import {
   setGlobalAllowedDropOperations,
   setGlobalDropEffect,
   getGlobalDropEffect,
-} from './utils';
-import { setGlobalDraggingTypes } from './createDraggableCollection';
+} from "./utils";
+import { setGlobalDraggingTypes } from "./createDraggableCollection";
 
 /**
  * Creates ARIA props for a draggable element.
@@ -73,14 +73,15 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
     }
 
     setGlobalAllowedDropOperations(allowed);
-    const effectAllowed = EFFECT_ALLOWED[allowed] || 'none';
+    const effectAllowed = EFFECT_ALLOWED[allowed] || "none";
     if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed =
-        (effectAllowed === 'cancel' ? 'none' : effectAllowed) as DataTransfer['effectAllowed'];
+      e.dataTransfer.effectAllowed = (
+        effectAllowed === "cancel" ? "none" : effectAllowed
+      ) as DataTransfer["effectAllowed"];
     }
 
     // Handle custom preview
-    if (typeof p.preview?.current === 'function' && e.dataTransfer) {
+    if (typeof p.preview?.current === "function" && e.dataTransfer) {
       p.preview.current(items, (node, userX, userY) => {
         if (!node || !e.dataTransfer) return;
 
@@ -94,8 +95,8 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
           defaultY = size.height / 2;
         }
 
-        let offsetX = typeof userX === 'number' ? userX : defaultX;
-        let offsetY = typeof userY === 'number' ? userY : defaultY;
+        let offsetX = typeof userX === "number" ? userX : defaultX;
+        let offsetY = typeof userY === "number" ? userY : defaultY;
 
         offsetX = Math.max(0, Math.min(offsetX, size.width));
         offsetY = Math.max(0, Math.min(offsetY, size.height));
@@ -124,7 +125,7 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
   const onDragEnd = (e: DragEvent) => {
     e.stopPropagation();
 
-    let dropEffect: string = e.dataTransfer?.dropEffect ?? 'none';
+    let dropEffect: string = e.dataTransfer?.dropEffect ?? "none";
     // Chrome Android fix - use global drop effect
     if (getGlobalDropEffect()) {
       dropEffect = getGlobalDropEffect()!;
@@ -140,14 +141,14 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
 
   // Keyboard/screen reader drag initiation
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' && e.target === e.currentTarget) {
+    if (e.key === "Enter" && e.target === e.currentTarget) {
       e.preventDefault();
       e.stopPropagation();
     }
   };
 
   const onKeyUp = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' && e.target === e.currentTarget) {
+    if (e.key === "Enter" && e.target === e.currentTarget) {
       e.preventDefault();
       e.stopPropagation();
       // Would initiate keyboard-based drag mode
@@ -203,8 +204,8 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
     }
 
     return {
-      type: 'button' as const,
-      'aria-label': 'Drag',
+      type: "button" as const,
+      "aria-label": "Drag",
       onKeyDown,
       onKeyUp,
     };
@@ -212,10 +213,10 @@ export function createDrag(props: Accessor<AriaDragOptions>): DragAria {
 
   return {
     get dragProps() {
-      return dragProps() as DragAria['dragProps'];
+      return dragProps() as DragAria["dragProps"];
     },
     get dragButtonProps() {
-      return dragButtonProps() as DragAria['dragButtonProps'];
+      return dragButtonProps() as DragAria["dragButtonProps"];
     },
     get isDragging() {
       return state.isDragging;

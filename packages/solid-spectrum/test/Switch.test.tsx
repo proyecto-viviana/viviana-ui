@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
-import { ToggleSwitch, TabSwitch } from '../src/switch';
-import { setupUser } from '@proyecto-viviana/solid-spectrum-test-utils';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen } from "@solidjs/testing-library";
+import { ToggleSwitch, TabSwitch } from "../src/switch";
+import { setupUser } from "@proyecto-viviana/solid-spectrum-test-utils";
 
 // setupUser is consolidated in solid-spectrum-test-utils.
 
-describe('ToggleSwitch', () => {
+describe("ToggleSwitch", () => {
   let onChangeSpy = vi.fn();
   let user: ReturnType<typeof setupUser>;
 
@@ -17,22 +17,22 @@ describe('ToggleSwitch', () => {
     onChangeSpy.mockClear();
   });
 
-  describe('basic functionality', () => {
+  describe("basic functionality", () => {
     it('renders with role="switch"', () => {
       render(() => <ToggleSwitch aria-label="Test switch" />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeInTheDocument();
     });
 
-    it('handles defaults (unchecked)', () => {
+    it("handles defaults (unchecked)", () => {
       render(() => <ToggleSwitch aria-label="Test switch" />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).not.toBeChecked();
     });
 
-    it('toggles on click', async () => {
+    it("toggles on click", async () => {
       render(() => <ToggleSwitch aria-label="Test switch" onChange={onChangeSpy} />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
 
       await user.click(switchEl);
       await Promise.resolve();
@@ -47,33 +47,35 @@ describe('ToggleSwitch', () => {
       expect(onChangeSpy).toHaveBeenCalledWith(false);
     });
 
-    it('supports defaultSelected', () => {
+    it("supports defaultSelected", () => {
       render(() => <ToggleSwitch aria-label="Test switch" defaultSelected />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeChecked();
     });
   });
 
-  describe('controlled mode', () => {
-    it('reflects controlled isSelected value', () => {
+  describe("controlled mode", () => {
+    it("reflects controlled isSelected value", () => {
       render(() => <ToggleSwitch aria-label="Test switch" isSelected={true} />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeChecked();
     });
 
-    it('calls onChange in controlled mode', async () => {
-      render(() => <ToggleSwitch aria-label="Test switch" isSelected={false} onChange={onChangeSpy} />);
-      const switchEl = screen.getByRole('switch');
+    it("calls onChange in controlled mode", async () => {
+      render(() => (
+        <ToggleSwitch aria-label="Test switch" isSelected={false} onChange={onChangeSpy} />
+      ));
+      const switchEl = screen.getByRole("switch");
 
       await user.click(switchEl);
       expect(onChangeSpy).toHaveBeenCalledWith(true);
     });
   });
 
-  describe('disabled state', () => {
-    it('does not toggle when disabled', async () => {
+  describe("disabled state", () => {
+    it("does not toggle when disabled", async () => {
       render(() => <ToggleSwitch aria-label="Test switch" isDisabled onChange={onChangeSpy} />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
 
       expect(switchEl).toBeDisabled();
       await user.click(switchEl);
@@ -81,10 +83,10 @@ describe('ToggleSwitch', () => {
     });
   });
 
-  describe('keyboard interaction', () => {
-    it('toggles on Space key', async () => {
+  describe("keyboard interaction", () => {
+    it("toggles on Space key", async () => {
       render(() => <ToggleSwitch aria-label="Test switch" onChange={onChangeSpy} />);
-      const switchEl = screen.getByRole('switch') as HTMLInputElement;
+      const switchEl = screen.getByRole("switch") as HTMLInputElement;
 
       // Focus and type space - use type() which simulates full keyboard interaction
       await user.click(switchEl);
@@ -92,157 +94,157 @@ describe('ToggleSwitch', () => {
 
       // Clear the spy from the click, then test space key
       onChangeSpy.mockClear();
-      await user.type(switchEl, ' ');
+      await user.type(switchEl, " ");
       expect(onChangeSpy).toHaveBeenCalled();
     });
   });
 
-  describe('sizes', () => {
-    it('renders with default md size', () => {
+  describe("sizes", () => {
+    it("renders with default md size", () => {
       render(() => <ToggleSwitch aria-label="Test switch" />);
       // Size is applied via classes, just check it renders
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeInTheDocument();
     });
 
-    it('renders with sm size', () => {
+    it("renders with sm size", () => {
       render(() => <ToggleSwitch aria-label="Test switch" size="sm" />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeInTheDocument();
     });
 
-    it('renders with lg size', () => {
+    it("renders with lg size", () => {
       render(() => <ToggleSwitch aria-label="Test switch" size="lg" />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeInTheDocument();
     });
   });
 
-  describe('label', () => {
-    it('renders with label text', () => {
+  describe("label", () => {
+    it("renders with label text", () => {
       render(() => <ToggleSwitch>Enable notifications</ToggleSwitch>);
-      expect(screen.getByText('Enable notifications')).toBeInTheDocument();
+      expect(screen.getByText("Enable notifications")).toBeInTheDocument();
     });
   });
 
-  describe('touch interaction', () => {
-    it('handles touch press', async () => {
+  describe("touch interaction", () => {
+    it("handles touch press", async () => {
       render(() => <ToggleSwitch aria-label="Test switch" onChange={onChangeSpy} />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
 
       await user.pointer([
-        { keys: '[TouchA>]', target: switchEl },
-        { keys: '[/TouchA]', target: switchEl },
+        { keys: "[TouchA>]", target: switchEl },
+        { keys: "[/TouchA]", target: switchEl },
       ]);
 
       expect(onChangeSpy).toHaveBeenCalled();
     });
   });
 
-  describe('aria attributes', () => {
-    it('supports aria-label', () => {
+  describe("aria attributes", () => {
+    it("supports aria-label", () => {
       render(() => <ToggleSwitch aria-label="Custom label" />);
-      const switchEl = screen.getByRole('switch');
-      expect(switchEl).toHaveAttribute('aria-label', 'Custom label');
+      const switchEl = screen.getByRole("switch");
+      expect(switchEl).toHaveAttribute("aria-label", "Custom label");
     });
 
-    it('supports aria-labelledby', () => {
+    it("supports aria-labelledby", () => {
       render(() => (
         <>
           <span id="label">Label text</span>
           <ToggleSwitch aria-labelledby="label" />
         </>
       ));
-      const switchEl = screen.getByRole('switch');
-      expect(switchEl).toHaveAttribute('aria-labelledby', 'label');
+      const switchEl = screen.getByRole("switch");
+      expect(switchEl).toHaveAttribute("aria-labelledby", "label");
     });
 
-    it('supports aria-describedby', () => {
+    it("supports aria-describedby", () => {
       render(() => (
         <>
           <span id="desc">Description text</span>
           <ToggleSwitch aria-label="Test" aria-describedby="desc" />
         </>
       ));
-      const switchEl = screen.getByRole('switch');
-      expect(switchEl).toHaveAttribute('aria-describedby', 'desc');
+      const switchEl = screen.getByRole("switch");
+      expect(switchEl).toHaveAttribute("aria-describedby", "desc");
     });
   });
 
-  describe('readonly state', () => {
-    it('does not toggle when readonly', async () => {
+  describe("readonly state", () => {
+    it("does not toggle when readonly", async () => {
       render(() => <ToggleSwitch aria-label="Test switch" isReadOnly onChange={onChangeSpy} />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
 
       await user.click(switchEl);
       expect(onChangeSpy).not.toHaveBeenCalled();
     });
 
-    it('sets aria-readonly when isReadOnly is true', () => {
+    it("sets aria-readonly when isReadOnly is true", () => {
       render(() => <ToggleSwitch aria-label="Test switch" isReadOnly />);
-      const switchEl = screen.getByRole('switch');
-      expect(switchEl).toHaveAttribute('aria-readonly', 'true');
+      const switchEl = screen.getByRole("switch");
+      expect(switchEl).toHaveAttribute("aria-readonly", "true");
     });
   });
 
-  describe('excludeFromTabOrder', () => {
-    it('removes switch from tab order when excludeFromTabOrder is true', () => {
+  describe("excludeFromTabOrder", () => {
+    it("removes switch from tab order when excludeFromTabOrder is true", () => {
       render(() => <ToggleSwitch aria-label="Test switch" excludeFromTabOrder />);
-      const switchEl = screen.getByRole('switch');
-      expect(switchEl).toHaveAttribute('tabindex', '-1');
+      const switchEl = screen.getByRole("switch");
+      expect(switchEl).toHaveAttribute("tabindex", "-1");
     });
   });
 
-  describe('custom props', () => {
-    it('allows custom data attributes to be passed through', () => {
+  describe("custom props", () => {
+    it("allows custom data attributes to be passed through", () => {
       render(() => <ToggleSwitch aria-label="Test switch" data-testid="custom-switch" />);
-      const switchEl = screen.getByRole('switch');
-      expect(switchEl).toHaveAttribute('data-testid', 'custom-switch');
+      const switchEl = screen.getByRole("switch");
+      expect(switchEl).toHaveAttribute("data-testid", "custom-switch");
     });
 
-    it('allows custom data-foo attribute', () => {
+    it("allows custom data-foo attribute", () => {
       render(() => <ToggleSwitch aria-label="Test switch" data-foo="bar" />);
-      const switchEl = screen.getByRole('switch');
-      expect(switchEl).toHaveAttribute('data-foo', 'bar');
+      const switchEl = screen.getByRole("switch");
+      expect(switchEl).toHaveAttribute("data-foo", "bar");
     });
   });
 });
 
-describe('TabSwitch', () => {
+describe("TabSwitch", () => {
   let user: ReturnType<typeof setupUser>;
 
   beforeEach(() => {
     user = setupUser();
   });
 
-  it('renders two options as buttons', () => {
+  it("renders two options as buttons", () => {
     render(() => (
       <TabSwitch
         options={[
-          { label: 'List', value: 'list' },
-          { label: 'Grid', value: 'grid' },
+          { label: "List", value: "list" },
+          { label: "Grid", value: "grid" },
         ]}
       />
     ));
 
-    expect(screen.getByRole('button', { name: 'List' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Grid' })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "List" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Grid" })).toBeInTheDocument();
   });
 
-  it('calls onChange with selected value', async () => {
+  it("calls onChange with selected value", async () => {
     const onChange = vi.fn();
     render(() => (
       <TabSwitch
         options={[
-          { label: 'List', value: 'list' },
-          { label: 'Grid', value: 'grid' },
+          { label: "List", value: "list" },
+          { label: "Grid", value: "grid" },
         ]}
         value="list"
         onChange={onChange}
       />
     ));
 
-    await user.click(screen.getByRole('button', { name: 'Grid' }));
-    expect(onChange).toHaveBeenCalledWith('grid');
+    await user.click(screen.getByRole("button", { name: "Grid" }));
+    expect(onChange).toHaveBeenCalledWith("grid");
   });
 });

@@ -3,23 +3,23 @@
  * Based on @react-aria/numberfield useNumberField.
  */
 
-import { type JSX, createMemo } from 'solid-js';
-import { createLabel } from '../label/createLabel';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { mergeProps } from '../utils/mergeProps';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import type { NumberFieldState } from '@proyecto-viviana/solid-stately';
+import { type JSX, createMemo } from "solid-js";
+import { createLabel } from "../label/createLabel";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { mergeProps } from "../utils/mergeProps";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import type { NumberFieldState } from "@proyecto-viviana/solid-stately";
 
 export interface AriaNumberFieldProps {
   /** A label for the number field. */
   label?: JSX.Element;
   /** An accessible label for the number field. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The element ID that labels the number field. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The element ID that describes the number field. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the number field is disabled. */
   isDisabled?: boolean;
   /** Whether the number field is read-only. */
@@ -81,7 +81,7 @@ export interface NumberFieldAria {
 export function createNumberField(
   props: MaybeAccessor<AriaNumberFieldProps>,
   state: NumberFieldState,
-  inputRef?: () => HTMLInputElement | null
+  inputRef?: () => HTMLInputElement | null,
 ): NumberFieldAria {
   const getProps = () => access(props);
   const id = createId(getProps().id);
@@ -101,26 +101,26 @@ export function createNumberField(
     get label() {
       return getProps().label;
     },
-    get 'aria-label'() {
-      return getProps()['aria-label'];
+    get "aria-label"() {
+      return getProps()["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return getProps()['aria-labelledby'];
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
     },
-    labelElementType: 'span',
+    labelElementType: "span",
   });
 
   // Get the label text for button aria-labels
   const getLabelText = (): string => {
     const p = getProps();
-    if (p['aria-label']) return p['aria-label'];
-    if (typeof p.label === 'string') return p.label;
-    return 'value';
+    if (p["aria-label"]) return p["aria-label"];
+    if (typeof p.label === "string") return p.label;
+    return "value";
   };
 
   // Filter DOM props
   const domProps = createMemo(() =>
-    filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true })
+    filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true }),
   );
 
   // Handle input change
@@ -154,31 +154,31 @@ export function createNumberField(
     }
 
     switch (e.key) {
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         state.increment();
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         state.decrement();
         break;
-      case 'PageUp':
+      case "PageUp":
         e.preventDefault();
         state.incrementToMax();
         break;
-      case 'PageDown':
+      case "PageDown":
         e.preventDefault();
         state.decrementToMin();
         break;
-      case 'Home':
+      case "Home":
         e.preventDefault();
         state.decrementToMin();
         break;
-      case 'End':
+      case "End":
         e.preventDefault();
         state.incrementToMax();
         break;
-      case 'Enter':
+      case "Enter":
         state.commit();
         break;
     }
@@ -208,10 +208,10 @@ export function createNumberField(
   const getAriaDescribedBy = () => {
     const p = getProps();
     const parts: string[] = [];
-    if (p['aria-describedby']) parts.push(p['aria-describedby']);
+    if (p["aria-describedby"]) parts.push(p["aria-describedby"]);
     if (p.description) parts.push(descriptionId);
     if (p.isInvalid && p.errorMessage) parts.push(errorMessageId);
-    return parts.length > 0 ? parts.join(' ') : undefined;
+    return parts.length > 0 ? parts.join(" ") : undefined;
   };
 
   return {
@@ -220,9 +220,9 @@ export function createNumberField(
     },
     get groupProps() {
       return {
-        role: 'group',
-        'aria-disabled': getProps().isDisabled || undefined,
-        'aria-invalid': getProps().isInvalid || undefined,
+        role: "group",
+        "aria-disabled": getProps().isDisabled || undefined,
+        "aria-invalid": getProps().isInvalid || undefined,
       } as JSX.HTMLAttributes<HTMLElement>;
     },
     get inputProps() {
@@ -235,19 +235,19 @@ export function createNumberField(
         fieldProps as Record<string, unknown>,
         {
           id: inputId,
-          type: 'text',
-          inputMode: 'decimal' as const,
-          autoComplete: 'off',
-          autoCorrect: 'off',
+          type: "text",
+          inputMode: "decimal" as const,
+          autoComplete: "off",
+          autoCorrect: "off",
           spellcheck: false,
-          role: 'spinbutton',
-          'aria-valuenow': isNaN(state.numberValue()) ? undefined : state.numberValue(),
-          'aria-valuemin': state.minValue(),
-          'aria-valuemax': state.maxValue(),
-          'aria-valuetext': isNaN(state.numberValue()) ? undefined : state.inputValue(),
-          'aria-invalid': p.isInvalid || undefined,
-          'aria-required': p.isRequired || undefined,
-          'aria-describedby': getAriaDescribedBy(),
+          role: "spinbutton",
+          "aria-valuenow": isNaN(state.numberValue()) ? undefined : state.numberValue(),
+          "aria-valuemin": state.minValue(),
+          "aria-valuemax": state.maxValue(),
+          "aria-valuetext": isNaN(state.numberValue()) ? undefined : state.inputValue(),
+          "aria-invalid": p.isInvalid || undefined,
+          "aria-required": p.isRequired || undefined,
+          "aria-describedby": getAriaDescribedBy(),
           disabled: isDisabled || undefined,
           readOnly: isReadOnly || undefined,
           value: state.inputValue(),
@@ -262,7 +262,7 @@ export function createNumberField(
           name: p.name,
           form: p.form,
           autoFocus: p.autoFocus,
-        } as Record<string, unknown>
+        } as Record<string, unknown>,
       ) as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
     get incrementButtonProps() {
@@ -272,10 +272,10 @@ export function createNumberField(
 
       return {
         id: incrementId,
-        type: 'button' as const,
+        type: "button" as const,
         tabIndex: -1, // Exclude from tab order
-        'aria-label': `Increase ${getLabelText()}`,
-        'aria-controls': inputId,
+        "aria-label": `Increase ${getLabelText()}`,
+        "aria-controls": inputId,
         disabled: isDisabled || !canIncrement,
         onClick: onIncrementPress,
         onMouseDown: (e: MouseEvent) => e.preventDefault(), // Prevent focus
@@ -288,10 +288,10 @@ export function createNumberField(
 
       return {
         id: decrementId,
-        type: 'button' as const,
+        type: "button" as const,
         tabIndex: -1, // Exclude from tab order
-        'aria-label': `Decrease ${getLabelText()}`,
-        'aria-controls': inputId,
+        "aria-label": `Decrease ${getLabelText()}`,
+        "aria-controls": inputId,
         disabled: isDisabled || !canDecrement,
         onClick: onDecrementPress,
         onMouseDown: (e: MouseEvent) => e.preventDefault(), // Prevent focus

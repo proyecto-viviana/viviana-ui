@@ -6,33 +6,25 @@
 /**
  * Supported color formats.
  */
-export type ColorFormat =
-  | 'hex'
-  | 'hexa'
-  | 'rgb'
-  | 'rgba'
-  | 'hsl'
-  | 'hsla'
-  | 'hsb'
-  | 'hsba';
+export type ColorFormat = "hex" | "hexa" | "rgb" | "rgba" | "hsl" | "hsla" | "hsb" | "hsba";
 
 /**
  * Color spaces.
  */
-export type ColorSpace = 'rgb' | 'hsl' | 'hsb';
+export type ColorSpace = "rgb" | "hsl" | "hsb";
 
 /**
  * Color channels.
  */
 export type ColorChannel =
-  | 'hue'
-  | 'saturation'
-  | 'brightness'
-  | 'lightness'
-  | 'red'
-  | 'green'
-  | 'blue'
-  | 'alpha';
+  | "hue"
+  | "saturation"
+  | "brightness"
+  | "lightness"
+  | "red"
+  | "green"
+  | "blue"
+  | "alpha";
 
 /**
  * Range for a color channel.
@@ -67,7 +59,7 @@ export interface Color {
   /** Convert to a different format. */
   toFormat(format: ColorFormat): Color;
   /** Convert to a CSS string. */
-  toString(format?: ColorFormat | 'css'): string;
+  toString(format?: ColorFormat | "css"): string;
   /** Clone this color. */
   clone(): Color;
   /** Get the hex value as an integer. */

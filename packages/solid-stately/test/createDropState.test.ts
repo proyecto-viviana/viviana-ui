@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot } from 'solid-js';
-import { createDropState } from '../src/dnd/createDropState';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot } from "solid-js";
+import { createDropState } from "../src/dnd/createDropState";
 
-describe('createDropState', () => {
-  it('should initialize with isDropTarget false', () => {
+describe("createDropState", () => {
+  it("should initialize with isDropTarget false", () => {
     createRoot((dispose) => {
       const state = createDropState(() => ({}));
 
@@ -12,7 +12,7 @@ describe('createDropState', () => {
     });
   });
 
-  it('should set isDropTarget true when enterTarget is called', () => {
+  it("should set isDropTarget true when enterTarget is called", () => {
     createRoot((dispose) => {
       const state = createDropState(() => ({}));
 
@@ -22,7 +22,7 @@ describe('createDropState', () => {
     });
   });
 
-  it('should call onDropEnter callback', () => {
+  it("should call onDropEnter callback", () => {
     createRoot((dispose) => {
       const onDropEnter = vi.fn();
       const state = createDropState(() => ({
@@ -31,7 +31,7 @@ describe('createDropState', () => {
 
       state.enterTarget(100, 200);
       expect(onDropEnter).toHaveBeenCalledWith({
-        type: 'dropenter',
+        type: "dropenter",
         x: 100,
         y: 200,
       });
@@ -39,7 +39,7 @@ describe('createDropState', () => {
     });
   });
 
-  it('should call onDropMove callback', () => {
+  it("should call onDropMove callback", () => {
     createRoot((dispose) => {
       const onDropMove = vi.fn();
       const state = createDropState(() => ({
@@ -49,7 +49,7 @@ describe('createDropState', () => {
       state.enterTarget(100, 100);
       state.moveInTarget(150, 150);
       expect(onDropMove).toHaveBeenCalledWith({
-        type: 'dropmove',
+        type: "dropmove",
         x: 150,
         y: 150,
       });
@@ -57,7 +57,7 @@ describe('createDropState', () => {
     });
   });
 
-  it('should not call onDropMove if not a drop target', () => {
+  it("should not call onDropMove if not a drop target", () => {
     createRoot((dispose) => {
       const onDropMove = vi.fn();
       const state = createDropState(() => ({
@@ -70,7 +70,7 @@ describe('createDropState', () => {
     });
   });
 
-  it('should call onDropActivate callback', () => {
+  it("should call onDropActivate callback", () => {
     createRoot((dispose) => {
       const onDropActivate = vi.fn();
       const state = createDropState(() => ({
@@ -80,7 +80,7 @@ describe('createDropState', () => {
       state.enterTarget(100, 100);
       state.activateTarget(100, 100);
       expect(onDropActivate).toHaveBeenCalledWith({
-        type: 'dropactivate',
+        type: "dropactivate",
         x: 100,
         y: 100,
       });
@@ -88,7 +88,7 @@ describe('createDropState', () => {
     });
   });
 
-  it('should call onDropExit callback and set isDropTarget to false', () => {
+  it("should call onDropExit callback and set isDropTarget to false", () => {
     createRoot((dispose) => {
       const onDropExit = vi.fn();
       const state = createDropState(() => ({
@@ -101,7 +101,7 @@ describe('createDropState', () => {
       state.exitTarget(200, 200);
       expect(state.isDropTarget).toBe(false);
       expect(onDropExit).toHaveBeenCalledWith({
-        type: 'dropexit',
+        type: "dropexit",
         x: 200,
         y: 200,
       });
@@ -109,30 +109,36 @@ describe('createDropState', () => {
     });
   });
 
-  it('should call onDrop callback', () => {
+  it("should call onDrop callback", () => {
     createRoot((dispose) => {
       const onDrop = vi.fn();
       const state = createDropState(() => ({
         onDrop,
       }));
 
-      const items = [{ kind: 'text' as const, types: new Set(['text/plain']), getText: () => Promise.resolve('test') }];
+      const items = [
+        {
+          kind: "text" as const,
+          types: new Set(["text/plain"]),
+          getText: () => Promise.resolve("test"),
+        },
+      ];
       state.enterTarget(100, 100);
-      state.drop(200, 200, items, 'move');
+      state.drop(200, 200, items, "move");
 
       expect(state.isDropTarget).toBe(false);
       expect(onDrop).toHaveBeenCalledWith({
-        type: 'drop',
+        type: "drop",
         x: 200,
         y: 200,
         items,
-        dropOperation: 'move',
+        dropOperation: "move",
       });
       dispose();
     });
   });
 
-  it('should not enter target when disabled', () => {
+  it("should not enter target when disabled", () => {
     createRoot((dispose) => {
       const onDropEnter = vi.fn();
       const state = createDropState(() => ({
@@ -147,7 +153,7 @@ describe('createDropState', () => {
     });
   });
 
-  it('should expose isDisabled state', () => {
+  it("should expose isDisabled state", () => {
     createRoot((dispose) => {
       const state = createDropState(() => ({
         isDisabled: true,
@@ -158,24 +164,24 @@ describe('createDropState', () => {
     });
   });
 
-  it('should get drop operation from callback', () => {
+  it("should get drop operation from callback", () => {
     createRoot((dispose) => {
       const state = createDropState(() => ({
-        getDropOperation: () => 'copy',
+        getDropOperation: () => "copy",
       }));
 
       const types = { has: () => true };
-      expect(state.getDropOperation(types, ['move', 'copy'])).toBe('copy');
+      expect(state.getDropOperation(types, ["move", "copy"])).toBe("copy");
       dispose();
     });
   });
 
-  it('should return first allowed operation if no callback', () => {
+  it("should return first allowed operation if no callback", () => {
     createRoot((dispose) => {
       const state = createDropState(() => ({}));
 
       const types = { has: () => true };
-      expect(state.getDropOperation(types, ['link', 'copy'])).toBe('link');
+      expect(state.getDropOperation(types, ["link", "copy"])).toBe("link");
       dispose();
     });
   });

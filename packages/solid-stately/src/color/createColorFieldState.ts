@@ -3,9 +3,9 @@
  * Based on @react-stately/color useColorFieldState.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
-import type { Color, ColorChannel, ColorFormat } from './types';
-import { normalizeColor, parseColor } from './Color';
+import { createSignal, createMemo, type Accessor } from "solid-js";
+import type { Color, ColorChannel, ColorFormat } from "./types";
+import { normalizeColor, parseColor } from "./Color";
 
 export interface ColorFieldStateOptions {
   /** The current color value (controlled). */
@@ -57,14 +57,12 @@ export interface ColorFieldState {
 /**
  * Creates state for a color field (text input for color values).
  */
-export function createColorFieldState(
-  options: Accessor<ColorFieldStateOptions>
-): ColorFieldState {
+export function createColorFieldState(options: Accessor<ColorFieldStateOptions>): ColorFieldState {
   const getOptions = () => options();
 
   // Internal value state
   const [internalValue, setInternalValue] = createSignal<Color | null>(null);
-  const [inputValue, setInputValueInternal] = createSignal('');
+  const [inputValue, setInputValueInternal] = createSignal("");
   const [isInvalid, setIsInvalid] = createSignal(false);
 
   // Initialize internal value
@@ -104,9 +102,9 @@ export function createColorFieldState(
   function formatColorValue(
     color: Color | null,
     chan?: ColorChannel,
-    format?: ColorFormat
+    format?: ColorFormat,
   ): string {
-    if (!color) return '';
+    if (!color) return "";
 
     // Single channel mode
     if (chan) {
@@ -114,7 +112,7 @@ export function createColorFieldState(
     }
 
     // Full color mode
-    return color.toString(format ?? 'hex');
+    return color.toString(format ?? "hex");
   }
 
   // Update value

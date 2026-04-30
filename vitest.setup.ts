@@ -1,5 +1,5 @@
-import '@testing-library/jest-dom/vitest';
-import { vi, afterEach } from 'vitest';
+import "@testing-library/jest-dom/vitest";
+import { vi, afterEach } from "vitest";
 
 // ============================================
 // POLYFILLS
@@ -31,7 +31,7 @@ class FakePointerEvent extends MouseEvent {
   }
 
   get pointerType(): string {
-    return this._init.pointerType ?? 'mouse';
+    return this._init.pointerType ?? "mouse";
   }
 
   get pointerId(): number {
@@ -62,7 +62,7 @@ class FakePointerEvent extends MouseEvent {
     if (this._init.pressure !== undefined) {
       return this._init.pressure;
     }
-    return this.pointerType === 'mouse' ? 0.5 : 0;
+    return this.pointerType === "mouse" ? 0.5 : 0;
   }
 
   get tiltX(): number {
@@ -150,20 +150,15 @@ class FakeIntersectionObserver implements IntersectionObserver {
   private static instances: FakeIntersectionObserver[] = [];
 
   readonly root: Element | Document | null = null;
-  readonly rootMargin: string = '0px';
+  readonly rootMargin: string = "0px";
   readonly thresholds: ReadonlyArray<number> = [0];
 
-  constructor(
-    callback: IntersectionObserverCallback,
-    options?: IntersectionObserverInit
-  ) {
+  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
     this.callback = callback;
     if (options?.root) this.root = options.root;
     if (options?.rootMargin) this.rootMargin = options.rootMargin;
     if (options?.threshold) {
-      this.thresholds = Array.isArray(options.threshold)
-        ? options.threshold
-        : [options.threshold];
+      this.thresholds = Array.isArray(options.threshold) ? options.threshold : [options.threshold];
     }
     FakeIntersectionObserver.instances.push(this);
   }
@@ -218,7 +213,7 @@ globalThis.IntersectionObserver = FakeIntersectionObserver;
 /**
  * matchMedia mock for responsive/theme tests
  */
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({
     matches: false,

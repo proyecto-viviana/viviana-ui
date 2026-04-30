@@ -6,9 +6,9 @@
  * Port of @react-aria/i18n useDateFormatter.
  */
 
-import { createMemo } from 'solid-js';
-import { useLocale } from './locale';
-import { createCacheKey } from './utils';
+import { createMemo } from "solid-js";
+import { useLocale } from "./locale";
+import { createCacheKey } from "./utils";
 
 // ============================================
 // CACHE
@@ -21,7 +21,7 @@ const dateFormatterCache = new Map<string, Intl.DateTimeFormat>();
  */
 function getCachedDateFormatter(
   locale: string,
-  options?: Intl.DateTimeFormatOptions
+  options?: Intl.DateTimeFormatOptions,
 ): Intl.DateTimeFormat {
   const cacheKey = createCacheKey(locale, options as Record<string, unknown>);
 
@@ -75,7 +75,7 @@ function getCachedDateFormatter(
  * ```
  */
 export function createDateFormatter(
-  options?: Intl.DateTimeFormatOptions
+  options?: Intl.DateTimeFormatOptions,
 ): () => Intl.DateTimeFormat {
   const locale = useLocale();
 

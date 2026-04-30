@@ -8,13 +8,13 @@
  * This is a 1:1 port of @react-aria/link's useLink hook.
  */
 
-import { type Accessor } from 'solid-js';
-import { createPress } from '../interactions/createPress';
-import { createFocusable } from '../interactions/createFocusable';
-import { mergeProps } from '../utils/mergeProps';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { type MaybeAccessor, access } from '../utils/reactivity';
-import { type PressEvent } from '../interactions/PressEvent';
+import { type Accessor } from "solid-js";
+import { createPress } from "../interactions/createPress";
+import { createFocusable } from "../interactions/createFocusable";
+import { mergeProps } from "../utils/mergeProps";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { type MaybeAccessor, access } from "../utils/reactivity";
+import { type PressEvent } from "../interactions/PressEvent";
 
 // ============================================
 // TYPES
@@ -41,15 +41,15 @@ export interface AriaLinkProps {
   ping?: string;
   /** Referrer policy for fetches initiated by this link. */
   referrerPolicy?:
-    | ''
-    | 'no-referrer'
-    | 'no-referrer-when-downgrade'
-    | 'origin'
-    | 'origin-when-cross-origin'
-    | 'same-origin'
-    | 'strict-origin'
-    | 'strict-origin-when-cross-origin'
-    | 'unsafe-url';
+    | ""
+    | "no-referrer"
+    | "no-referrer-when-downgrade"
+    | "origin"
+    | "origin-when-cross-origin"
+    | "same-origin"
+    | "strict-origin"
+    | "strict-origin-when-cross-origin"
+    | "unsafe-url";
   /** Handler that is called when the press is released over the target. */
   onPress?: (e: PressEvent) => void;
   /** Handler that is called when a press interaction starts. */
@@ -71,13 +71,13 @@ export interface AriaLinkProps {
   /** Whether to autofocus the element. */
   autoFocus?: boolean;
   /** Indicates the current "page" or state within a set of related elements. */
-  'aria-current'?: 'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false' | boolean;
+  "aria-current"?: "page" | "step" | "location" | "date" | "time" | "true" | "false" | boolean;
   /** Defines a string value that labels the current element. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element (or elements) that labels the current element. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Identifies the element (or elements) that describes the object. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
 }
 
 export interface LinkAria {
@@ -96,31 +96,51 @@ export interface LinkAria {
  * A link allows a user to navigate to another page or resource within a web page
  * or application.
  */
-export function createLink(
-  props: MaybeAccessor<AriaLinkProps> = {}
-): LinkAria {
+export function createLink(props: MaybeAccessor<AriaLinkProps> = {}): LinkAria {
   const getProps = () => access(props);
 
   const isDisabled = () => getProps().isDisabled ?? false;
-  const elementType = () => getProps().elementType ?? 'a';
+  const elementType = () => getProps().elementType ?? "a";
 
   // Create press handling
   const { pressProps, isPressed } = createPress({
-    get isDisabled() { return isDisabled(); },
-    get onPress() { return getProps().onPress; },
-    get onPressStart() { return getProps().onPressStart; },
-    get onPressEnd() { return getProps().onPressEnd; },
+    get isDisabled() {
+      return isDisabled();
+    },
+    get onPress() {
+      return getProps().onPress;
+    },
+    get onPressStart() {
+      return getProps().onPressStart;
+    },
+    get onPressEnd() {
+      return getProps().onPressEnd;
+    },
   });
 
   // Create focusable handling
   const { focusableProps } = createFocusable({
-    get isDisabled() { return isDisabled(); },
-    get autoFocus() { return getProps().autoFocus; },
-    get onFocus() { return getProps().onFocus; },
-    get onBlur() { return getProps().onBlur; },
-    get onFocusChange() { return getProps().onFocusChange; },
-    get onKeyDown() { return getProps().onKeyDown; },
-    get onKeyUp() { return getProps().onKeyUp; },
+    get isDisabled() {
+      return isDisabled();
+    },
+    get autoFocus() {
+      return getProps().autoFocus;
+    },
+    get onFocus() {
+      return getProps().onFocus;
+    },
+    get onBlur() {
+      return getProps().onBlur;
+    },
+    get onFocusChange() {
+      return getProps().onFocusChange;
+    },
+    get onKeyDown() {
+      return getProps().onKeyDown;
+    },
+    get onKeyUp() {
+      return getProps().onKeyUp;
+    },
   });
 
   // Build link props
@@ -132,29 +152,29 @@ export function createLink(
     let baseProps: Record<string, unknown> = {};
 
     // If not an <a>, add role and tabIndex
-    if (elType !== 'a') {
+    if (elType !== "a") {
       baseProps = {
-        role: 'link',
+        role: "link",
         tabIndex: disabled ? undefined : 0,
       };
     }
 
     // ARIA attributes
     const ariaProps: Record<string, unknown> = {
-      'aria-disabled': disabled || undefined,
+      "aria-disabled": disabled || undefined,
     };
 
-    if (p['aria-current'] !== undefined) {
-      ariaProps['aria-current'] = p['aria-current'];
+    if (p["aria-current"] !== undefined) {
+      ariaProps["aria-current"] = p["aria-current"];
     }
-    if (p['aria-label']) {
-      ariaProps['aria-label'] = p['aria-label'];
+    if (p["aria-label"]) {
+      ariaProps["aria-label"] = p["aria-label"];
     }
-    if (p['aria-labelledby']) {
-      ariaProps['aria-labelledby'] = p['aria-labelledby'];
+    if (p["aria-labelledby"]) {
+      ariaProps["aria-labelledby"] = p["aria-labelledby"];
     }
-    if (p['aria-describedby']) {
-      ariaProps['aria-describedby'] = p['aria-describedby'];
+    if (p["aria-describedby"]) {
+      ariaProps["aria-describedby"] = p["aria-describedby"];
     }
 
     // Handle onClick - prevent default navigation when appropriate
@@ -178,13 +198,13 @@ export function createLink(
     return mergeProps(
       filterDOMProps(p as Record<string, unknown>, {
         labelable: true,
-        isLink: elType === 'a',
+        isLink: elType === "a",
       }),
       baseProps,
       ariaProps,
       focusableProps as Record<string, unknown>,
       pressProps as Record<string, unknown>,
-      { onClick }
+      { onClick },
     );
   };
 

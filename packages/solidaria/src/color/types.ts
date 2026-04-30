@@ -2,18 +2,18 @@
  * Color ARIA types.
  */
 
-import type { JSX } from 'solid-js';
-import type { ColorChannel, Color } from '@proyecto-viviana/solid-stately';
+import type { JSX } from "solid-js";
+import type { ColorChannel, Color } from "@proyecto-viviana/solid-stately";
 
 export interface AriaColorSliderOptions {
   /** The channel this slider controls. */
   channel: ColorChannel;
   /** Accessible label for the slider. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ID of element that labels the slider. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ID of element that describes the slider. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the slider is disabled. */
   isDisabled?: boolean;
   /** Localized channel name. */
@@ -39,11 +39,11 @@ export interface AriaColorAreaOptions {
   /** The Y channel. */
   yChannel?: ColorChannel;
   /** Accessible label for the area. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ID of element that labels the area. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ID of element that describes the area. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the area is disabled. */
   isDisabled?: boolean;
 }
@@ -63,11 +63,11 @@ export interface ColorAreaAria {
 
 export interface AriaColorWheelOptions {
   /** Accessible label for the wheel. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ID of element that labels the wheel. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ID of element that describes the wheel. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the wheel is disabled. */
   isDisabled?: boolean;
 }
@@ -83,11 +83,11 @@ export interface ColorWheelAria {
 
 export interface AriaColorFieldOptions {
   /** Accessible label for the field. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ID of element that labels the field. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ID of element that describes the field. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the field is disabled. */
   isDisabled?: boolean;
   /** Whether the field is read-only. */
@@ -107,7 +107,7 @@ export interface AriaColorSwatchOptions {
   /** The color to display. */
   color: Color | string;
   /** Accessible label for the swatch. */
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 export interface ColorSwatchAria {

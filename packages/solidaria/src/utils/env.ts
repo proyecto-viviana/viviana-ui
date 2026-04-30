@@ -5,13 +5,15 @@
  */
 
 // Type-safe access to import.meta.env (Vite) and process.env
-type ImportMetaWithEnv = ImportMeta & { env?: Record<string, unknown> & { DEV?: boolean; PROD?: boolean } };
+type ImportMetaWithEnv = ImportMeta & {
+  env?: Record<string, unknown> & { DEV?: boolean; PROD?: boolean };
+};
 type ProcessLike = { env?: Record<string, string | undefined> };
 
 function getEnvVar(key: string): string | undefined {
   // Check Vite's import.meta.env
   const importMetaEnv = (import.meta as ImportMetaWithEnv).env;
-  if (importMetaEnv && typeof importMetaEnv[key] === 'string') {
+  if (importMetaEnv && typeof importMetaEnv[key] === "string") {
     return importMetaEnv[key] as string;
   }
   // Check Node.js process.env via globalThis
@@ -26,7 +28,7 @@ function getEnvVar(key: string): string | undefined {
  * Check if we're running in a test environment.
  */
 export function isTestEnv(): boolean {
-  return getEnvVar('NODE_ENV') === 'test';
+  return getEnvVar("NODE_ENV") === "test";
 }
 
 /**
@@ -38,8 +40,8 @@ export function isDevEnv(): boolean {
   if (importMetaEnv?.DEV === true) {
     return true;
   }
-  const nodeEnv = getEnvVar('NODE_ENV');
-  return nodeEnv !== 'production';
+  const nodeEnv = getEnvVar("NODE_ENV");
+  return nodeEnv !== "production";
 }
 
 /**
@@ -51,5 +53,5 @@ export function isProdEnv(): boolean {
   if (importMetaEnv?.PROD === true) {
     return true;
   }
-  return getEnvVar('NODE_ENV') === 'production';
+  return getEnvVar("NODE_ENV") === "production";
 }

@@ -3,9 +3,9 @@
  * Based on @react-aria/overlays useOverlay.
  */
 
-import { createEffect, onCleanup, type JSX } from 'solid-js';
-import { createInteractOutside } from './createInteractOutside';
-import { createFocusWithin } from '../interactions/createFocusWithin';
+import { createEffect, onCleanup, type JSX } from "solid-js";
+import { createInteractOutside } from "./createInteractOutside";
+import { createFocusWithin } from "../interactions/createFocusWithin";
 
 export interface AriaOverlayProps {
   /** Whether the overlay is currently open. */
@@ -48,10 +48,7 @@ const visibleOverlays: Array<() => Element | null> = [];
  * Hides the overlay when the user interacts outside it, when the Escape key is pressed,
  * or optionally, on blur. Only the top-most overlay will close at once.
  */
-export function createOverlay(
-  props: AriaOverlayProps,
-  ref: () => Element | null
-): OverlayAria {
+export function createOverlay(props: AriaOverlayProps, ref: () => Element | null): OverlayAria {
   const onClose = () => props.onClose;
   const shouldCloseOnBlur = () => props.shouldCloseOnBlur;
   const isOpen = () => props.isOpen ?? false;
@@ -138,7 +135,7 @@ export function createOverlay(
 
   // Handle the escape key
   const onKeyDown: JSX.EventHandler<HTMLElement, KeyboardEvent> = (e) => {
-    if (e.key === 'Escape' && !isKeyboardDismissDisabled() && !e.isComposing) {
+    if (e.key === "Escape" && !isKeyboardDismissDisabled() && !e.isComposing) {
       e.stopPropagation();
       e.preventDefault();
       onHide();

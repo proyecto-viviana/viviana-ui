@@ -3,8 +3,8 @@
  * Based on @react-aria/interactions useInteractOutside.
  */
 
-import { createEffect, onCleanup } from 'solid-js';
-import { getOwnerDocument } from '../utils';
+import { createEffect, onCleanup } from "solid-js";
+import { getOwnerDocument } from "../utils";
 
 export interface InteractOutsideProps {
   /** Reference to the element to detect interactions outside of. */
@@ -51,7 +51,7 @@ export function createInteractOutside(props: InteractOutsideProps): void {
     };
 
     // Use pointer events if available. Otherwise, fall back to mouse and touch events.
-    if (typeof PointerEvent !== 'undefined') {
+    if (typeof PointerEvent !== "undefined") {
       const onClick = (e: PointerEvent) => {
         if (isPointerDown && isValidEvent(e, ref)) {
           triggerInteractOutside(e);
@@ -61,12 +61,12 @@ export function createInteractOutside(props: InteractOutsideProps): void {
 
       // Use click instead of pointerup to avoid Android Chrome issue
       // https://issues.chromium.org/issues/40732224
-      documentObject.addEventListener('pointerdown', onPointerDown as EventListener, true);
-      documentObject.addEventListener('click', onClick as EventListener, true);
+      documentObject.addEventListener("pointerdown", onPointerDown as EventListener, true);
+      documentObject.addEventListener("click", onClick as EventListener, true);
 
       onCleanup(() => {
-        documentObject.removeEventListener('pointerdown', onPointerDown as EventListener, true);
-        documentObject.removeEventListener('click', onClick as EventListener, true);
+        documentObject.removeEventListener("pointerdown", onPointerDown as EventListener, true);
+        documentObject.removeEventListener("click", onClick as EventListener, true);
       });
     } else {
       // Fallback for environments without PointerEvent (mainly tests)
@@ -105,24 +105,27 @@ export function createInteractOutside(props: InteractOutsideProps): void {
         }
       };
 
-      documentObject.addEventListener('mousedown', onMouseDown as EventListener, true);
-      documentObject.addEventListener('mouseup', onMouseUp as EventListener, true);
-      documentObject.addEventListener('touchstart', onTouchStart as EventListener, true);
-      documentObject.addEventListener('touchend', onTouchEnd as EventListener, true);
+      documentObject.addEventListener("mousedown", onMouseDown as EventListener, true);
+      documentObject.addEventListener("mouseup", onMouseUp as EventListener, true);
+      documentObject.addEventListener("touchstart", onTouchStart as EventListener, true);
+      documentObject.addEventListener("touchend", onTouchEnd as EventListener, true);
 
       onCleanup(() => {
-        documentObject.removeEventListener('mousedown', onMouseDown as EventListener, true);
-        documentObject.removeEventListener('mouseup', onMouseUp as EventListener, true);
-        documentObject.removeEventListener('touchstart', onTouchStart as EventListener, true);
-        documentObject.removeEventListener('touchend', onTouchEnd as EventListener, true);
+        documentObject.removeEventListener("mousedown", onMouseDown as EventListener, true);
+        documentObject.removeEventListener("mouseup", onMouseUp as EventListener, true);
+        documentObject.removeEventListener("touchstart", onTouchStart as EventListener, true);
+        documentObject.removeEventListener("touchend", onTouchEnd as EventListener, true);
       });
     }
   });
 }
 
-function isValidEvent(event: PointerEvent | MouseEvent | TouchEvent, ref: () => Element | null): boolean {
+function isValidEvent(
+  event: PointerEvent | MouseEvent | TouchEvent,
+  ref: () => Element | null,
+): boolean {
   // Only handle primary button clicks
-  if ('button' in event && event.button > 0) {
+  if ("button" in event && event.button > 0) {
     return false;
   }
 
@@ -133,7 +136,7 @@ function isValidEvent(event: PointerEvent | MouseEvent | TouchEvent, ref: () => 
       return false;
     }
     // If the target is within a top layer element (e.g. toasts), ignore
-    if ((event.target as Element).closest?.('[data-solidaria-top-layer]')) {
+    if ((event.target as Element).closest?.("[data-solidaria-top-layer]")) {
       return false;
     }
   }

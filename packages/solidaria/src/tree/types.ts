@@ -3,8 +3,8 @@
  * Based on @react-aria/tree.
  */
 
-import type { JSX } from 'solid-js';
-import type { Key, TreeNode } from '@proyecto-viviana/solid-stately';
+import type { JSX } from "solid-js";
+import type { Key, TreeNode } from "@proyecto-viviana/solid-stately";
 
 /**
  * Props for createTree.
@@ -13,11 +13,11 @@ export interface AriaTreeProps {
   /** The unique id for the tree. */
   id?: string;
   /** Label for accessibility. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** ID of an element that labels the tree. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** ID of an element that describes the tree. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Whether the tree is virtualized. */
   isVirtualized?: boolean;
   /** Handler called when an item action is triggered. */
@@ -25,7 +25,7 @@ export interface AriaTreeProps {
   /** Whether the tree is disabled. */
   isDisabled?: boolean;
   /** The writing direction for the tree. Determines expand/collapse key mapping. */
-  direction?: 'ltr' | 'rtl';
+  direction?: "ltr" | "rtl";
 }
 
 /**

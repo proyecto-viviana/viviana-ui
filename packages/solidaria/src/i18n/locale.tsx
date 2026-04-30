@@ -16,15 +16,15 @@ import {
   createSignal,
   onCleanup,
   useContext,
-} from 'solid-js';
-import { isRTL } from './utils';
+} from "solid-js";
+import { isRTL } from "./utils";
 
 // ============================================
 // TYPES
 // ============================================
 
 /** Text direction: left-to-right or right-to-left. */
-export type Direction = 'ltr' | 'rtl';
+export type Direction = "ltr" | "rtl";
 
 /** Locale information including language code and text direction. */
 export interface Locale {
@@ -44,7 +44,7 @@ export interface I18nProviderProps extends ParentProps {
 // ============================================
 
 // Symbol for server-provided locale
-const localeSymbol = Symbol.for('solidaria.i18n.locale');
+const localeSymbol = Symbol.for("solidaria.i18n.locale");
 
 let currentLocale: Locale | null = null;
 const listeners = new Set<(locale: Locale) => void>();
@@ -54,23 +54,22 @@ const listeners = new Set<(locale: Locale) => void>();
  */
 export function getDefaultLocale(): Locale {
   let locale =
-    (typeof window !== 'undefined' &&
+    (typeof window !== "undefined" &&
       (window as unknown as Record<symbol, string>)[localeSymbol]) ||
-    (typeof navigator !== 'undefined' &&
-      (navigator.language ||
-        (navigator as unknown as { userLanguage?: string }).userLanguage)) ||
-    'en-US';
+    (typeof navigator !== "undefined" &&
+      (navigator.language || (navigator as unknown as { userLanguage?: string }).userLanguage)) ||
+    "en-US";
 
   // Validate the locale is supported
   try {
     Intl.DateTimeFormat.supportedLocalesOf([locale]);
   } catch {
-    locale = 'en-US';
+    locale = "en-US";
   }
 
   return {
     locale,
-    direction: isRTL(locale) ? 'rtl' : 'ltr',
+    direction: isRTL(locale) ? "rtl" : "ltr",
   };
 }
 
@@ -109,12 +108,12 @@ export function createDefaultLocale(): Accessor<Locale> {
   const [locale, setLocale] = createSignal<Locale>(currentLocale);
 
   createEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
     if (listeners.size === 0) {
-      window.addEventListener('languagechange', updateLocale);
+      window.addEventListener("languagechange", updateLocale);
     }
 
     listeners.add(setLocale);
@@ -122,7 +121,7 @@ export function createDefaultLocale(): Accessor<Locale> {
     onCleanup(() => {
       listeners.delete(setLocale);
       if (listeners.size === 0) {
-        window.removeEventListener('languagechange', updateLocale);
+        window.removeEventListener("languagechange", updateLocale);
       }
     });
   });
@@ -174,15 +173,11 @@ export function I18nProvider(props: I18nProviderProps): JSX.Element {
     if (props.locale) {
       return {
         locale: props.locale,
-        direction: isRTL(props.locale) ? 'rtl' : 'ltr',
+        direction: isRTL(props.locale) ? "rtl" : "ltr",
       };
     }
     return defaultLocale();
   });
 
-  return (
-    <I18nContext.Provider value={locale}>
-      {props.children}
-    </I18nContext.Provider>
-  );
+  return <I18nContext.Provider value={locale}>{props.children}</I18nContext.Provider>;
 }

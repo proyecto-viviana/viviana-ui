@@ -241,14 +241,17 @@ function VirtualizerPage() {
 
       <h2>Context</h2>
       <p class="text-sm text-primary-400 mb-4">
-        Child components can access virtualizer state via <code>useVirtualizerContext()</code>.
-        This provides <code>getVisibleRange()</code>, <code>getLayoutInfo()</code>, and
-        drop target resolution for building custom virtualized collection components.
+        Child components can access virtualizer state via <code>useVirtualizerContext()</code>. This
+        provides <code>getVisibleRange()</code>, <code>getLayoutInfo()</code>, and drop target
+        resolution for building custom virtualized collection components.
       </p>
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Keyboard navigation works seamlessly across virtualized items using <code>aria-activedescendant</code></li>
+          <li>
+            Keyboard navigation works seamlessly across virtualized items using{" "}
+            <code>aria-activedescendant</code>
+          </li>
           <li>Focus management preserves scroll position when items are focused via keyboard</li>
           <li>Screen readers announce the total item count and current position</li>
           <li>Drag and drop indicators are announced to assistive technologies</li>

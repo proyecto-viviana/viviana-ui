@@ -11,4 +11,4 @@ export {
   type TabAria,
   type AriaTabPanelProps,
   type TabPanelAria,
-} from './createTabs';
+} from "./createTabs";

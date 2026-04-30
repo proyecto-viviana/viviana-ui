@@ -1,4 +1,4 @@
-import { type Accessor, createSignal, For, JSX, Show, Suspense, lazy } from 'solid-js'
+import { type Accessor, createSignal, For, JSX, Show, Suspense, lazy } from "solid-js";
 import {
   Button,
   Meter,
@@ -60,13 +60,13 @@ import {
   Provider,
   useTheme,
   TextField,
-} from '@proyecto-viviana/solid-spectrum'
+} from "@proyecto-viviana/solid-spectrum";
 import {
   createCheckboxGroup,
   createCheckboxGroupItem,
   createCheckboxGroupState,
   type CheckboxGroupState,
-} from '@proyecto-viviana/solidaria'
+} from "@proyecto-viviana/solidaria";
 import {
   ListBox,
   ListBoxOption,
@@ -105,7 +105,7 @@ import {
   ColorField,
   ColorFieldInput,
   ColorSwatch,
-} from '@proyecto-viviana/solidaria-components'
+} from "@proyecto-viviana/solidaria-components";
 import {
   CalendarDateClass as CalendarDate,
   type DateValue,
@@ -114,650 +114,876 @@ import {
   type TimeValue,
   parseColor,
   type Color,
-} from '@proyecto-viviana/solid-stately'
-import { Section, type SectionId } from '@/components/playground/sections'
+} from "@proyecto-viviana/solid-stately";
+import { Section, type SectionId } from "@/components/playground/sections";
 
 export interface PlaygroundAdvancedSectionsProps {
-  visibleSections: Accessor<Set<SectionId>>
-  onLastAction: (value: string) => void
+  visibleSections: Accessor<Set<SectionId>>;
+  onLastAction: (value: string) => void;
 }
 
 const DATA_COLOR_SECTION_IDS: SectionId[] = [
-  'table',
-  'gridlist',
-  'tree',
-  'rangecalendar',
-  'datefield',
-  'timefield',
-  'colorslider',
-  'colorarea',
-  'colorwheel',
-  'colorfield',
-  'colorswatch',
-  'daterangepicker',
-  'colorswatchpicker',
-  'coloreditor',
-]
+  "table",
+  "gridlist",
+  "tree",
+  "rangecalendar",
+  "datefield",
+  "timefield",
+  "colorslider",
+  "colorarea",
+  "colorwheel",
+  "colorfield",
+  "colorswatch",
+  "daterangepicker",
+  "colorswatchpicker",
+  "coloreditor",
+];
 
 const PlaygroundDataColorSections = lazy(() =>
-  import('@/components/playground/advanced-data-color-sections').then((module) => ({
+  import("@/components/playground/advanced-data-color-sections").then((module) => ({
     default: module.PlaygroundDataColorSections,
-  }))
-)
+  })),
+);
 
 export function PlaygroundAdvancedSections(props: PlaygroundAdvancedSectionsProps) {
   const hasVisibleDataColorSections = () =>
-    DATA_COLOR_SECTION_IDS.some((id) => props.visibleSections().has(id))
+    DATA_COLOR_SECTION_IDS.some((id) => props.visibleSections().has(id));
 
   return (
     <>
-          <Section id="createcheckboxgroup-hook" visibleSections={props.visibleSections} title="createCheckboxGroup Hook" description="Accessible checkbox group with ARIA support" class="lg:col-span-2">
-            <CheckboxGroupDemo onSelectionChange={(values) => props.onLastAction(`Selected: ${values.join(', ') || 'none'}`)} />
-          </Section>
+      <Section
+        id="createcheckboxgroup-hook"
+        visibleSections={props.visibleSections}
+        title="createCheckboxGroup Hook"
+        description="Accessible checkbox group with ARIA support"
+        class="lg:col-span-2"
+      >
+        <CheckboxGroupDemo
+          onSelectionChange={(values) =>
+            props.onLastAction(`Selected: ${values.join(", ") || "none"}`)
+          }
+        />
+      </Section>
 
-          <Section id="listbox" visibleSections={props.visibleSections} title="ListBox" description="Accessible list with keyboard navigation and selection">
-            <ListBoxDemo onSelectionChange={(key) => props.onLastAction(`ListBox selected: ${key}`)} />
-          </Section>
+      <Section
+        id="listbox"
+        visibleSections={props.visibleSections}
+        title="ListBox"
+        description="Accessible list with keyboard navigation and selection"
+      >
+        <ListBoxDemo onSelectionChange={(key) => props.onLastAction(`ListBox selected: ${key}`)} />
+      </Section>
 
-          <Section id="menu" visibleSections={props.visibleSections} title="Menu" description="Dropdown menu with keyboard navigation">
-            <MenuDemo onAction={(action) => props.onLastAction(`Menu action: ${action}`)} />
-          </Section>
+      <Section
+        id="menu"
+        visibleSections={props.visibleSections}
+        title="Menu"
+        description="Dropdown menu with keyboard navigation"
+      >
+        <MenuDemo onAction={(action) => props.onLastAction(`Menu action: ${action}`)} />
+      </Section>
 
-          {/* Select (headless) works fine */}
-          <Section id="select" visibleSections={props.visibleSections} title="Select" description="Accessible dropdown select with keyboard support" class="lg:col-span-2">
-            <SelectDemo onSelectionChange={(key) => props.onLastAction(`Select changed: ${key}`)} />
-          </Section>
+      {/* Select (headless) works fine */}
+      <Section
+        id="select"
+        visibleSections={props.visibleSections}
+        title="Select"
+        description="Accessible dropdown select with keyboard support"
+        class="lg:col-span-2"
+      >
+        <SelectDemo onSelectionChange={(key) => props.onLastAction(`Select changed: ${key}`)} />
+      </Section>
 
-          {/* TESTING: Styled Select re-enabled after fixing inline arrow functions */}
-          <Section id="styled-select" visibleSections={props.visibleSections} title="Styled Select (ui)" description="Pre-styled select with size variants">
-            <StyledSelectDemo onSelectionChange={(key) => props.onLastAction(`Styled Select: ${key}`)} />
-          </Section>
+      {/* TESTING: Styled Select re-enabled after fixing inline arrow functions */}
+      <Section
+        id="styled-select"
+        visibleSections={props.visibleSections}
+        title="Styled Select (ui)"
+        description="Pre-styled select with size variants"
+      >
+        <StyledSelectDemo
+          onSelectionChange={(key) => props.onLastAction(`Styled Select: ${key}`)}
+        />
+      </Section>
 
-          <Section id="styled-menu" visibleSections={props.visibleSections} title="Styled Menu (ui)" description="Pre-styled dropdown menu with variants">
-            <StyledMenuDemo onAction={(action) => props.onLastAction(`Styled Menu: ${action}`)} />
-          </Section>
+      <Section
+        id="styled-menu"
+        visibleSections={props.visibleSections}
+        title="Styled Menu (ui)"
+        description="Pre-styled dropdown menu with variants"
+      >
+        <StyledMenuDemo onAction={(action) => props.onLastAction(`Styled Menu: ${action}`)} />
+      </Section>
 
-          <Section id="styled-listbox" visibleSections={props.visibleSections} title="Styled ListBox (ui)" description="Pre-styled list with selection" class="lg:col-span-2">
-            <StyledListBoxDemo onSelectionChange={(key) => props.onLastAction(`Styled ListBox: ${key}`)} />
-          </Section>
+      <Section
+        id="styled-listbox"
+        visibleSections={props.visibleSections}
+        title="Styled ListBox (ui)"
+        description="Pre-styled list with selection"
+        class="lg:col-span-2"
+      >
+        <StyledListBoxDemo
+          onSelectionChange={(key) => props.onLastAction(`Styled ListBox: ${key}`)}
+        />
+      </Section>
 
-          <Section id="styled-tabs" visibleSections={props.visibleSections} title="Styled Tabs (ui)" description="Pre-styled tabs with variants" class="lg:col-span-2">
-            <StyledTabsDemo onSelectionChange={(key) => props.onLastAction(`Styled Tab: ${key}`)} />
-          </Section>
+      <Section
+        id="styled-tabs"
+        visibleSections={props.visibleSections}
+        title="Styled Tabs (ui)"
+        description="Pre-styled tabs with variants"
+        class="lg:col-span-2"
+      >
+        <StyledTabsDemo onSelectionChange={(key) => props.onLastAction(`Styled Tab: ${key}`)} />
+      </Section>
 
-          <Section id="styled-breadcrumbs" visibleSections={props.visibleSections} title="Styled Breadcrumbs (ui)" description="Pre-styled navigation breadcrumbs" class="lg:col-span-2">
-            <StyledBreadcrumbsDemo onNavigate={(path) => props.onLastAction(`Navigate: ${path}`)} />
-          </Section>
+      <Section
+        id="styled-breadcrumbs"
+        visibleSections={props.visibleSections}
+        title="Styled Breadcrumbs (ui)"
+        description="Pre-styled navigation breadcrumbs"
+        class="lg:col-span-2"
+      >
+        <StyledBreadcrumbsDemo onNavigate={(path) => props.onLastAction(`Navigate: ${path}`)} />
+      </Section>
 
-          <Section id="styled-numberfield" visibleSections={props.visibleSections} title="Styled NumberField (ui)" description="Number input with increment/decrement buttons" class="lg:col-span-2">
-            <StyledNumberFieldDemo onChange={(value) => props.onLastAction(`NumberField: ${value}`)} />
-          </Section>
+      <Section
+        id="styled-numberfield"
+        visibleSections={props.visibleSections}
+        title="Styled NumberField (ui)"
+        description="Number input with increment/decrement buttons"
+        class="lg:col-span-2"
+      >
+        <StyledNumberFieldDemo onChange={(value) => props.onLastAction(`NumberField: ${value}`)} />
+      </Section>
 
-          <Section id="styled-searchfield" visibleSections={props.visibleSections} title="Styled SearchField (ui)" description="Search input with clear button" class="lg:col-span-2">
-            <StyledSearchFieldDemo onSearch={(value) => props.onLastAction(`Search: ${value}`)} />
-          </Section>
+      <Section
+        id="styled-searchfield"
+        visibleSections={props.visibleSections}
+        title="Styled SearchField (ui)"
+        description="Search input with clear button"
+        class="lg:col-span-2"
+      >
+        <StyledSearchFieldDemo onSearch={(value) => props.onLastAction(`Search: ${value}`)} />
+      </Section>
 
-          <Section id="styled-slider" visibleSections={props.visibleSections} title="Styled Slider (ui)" description="Range input with draggable thumb" class="lg:col-span-2">
-            <StyledSliderDemo onChange={(value) => props.onLastAction(`Slider: ${value}`)} />
-          </Section>
+      <Section
+        id="styled-slider"
+        visibleSections={props.visibleSections}
+        title="Styled Slider (ui)"
+        description="Range input with draggable thumb"
+        class="lg:col-span-2"
+      >
+        <StyledSliderDemo onChange={(value) => props.onLastAction(`Slider: ${value}`)} />
+      </Section>
 
-          <Section id="styled-combobox" visibleSections={props.visibleSections} title="Styled ComboBox (ui)" description="Filterable dropdown with text input" class="lg:col-span-2">
-            <StyledComboBoxDemo onSelectionChange={(key) => props.onLastAction(`ComboBox: ${key}`)} />
-          </Section>
+      <Section
+        id="styled-combobox"
+        visibleSections={props.visibleSections}
+        title="Styled ComboBox (ui)"
+        description="Filterable dropdown with text input"
+        class="lg:col-span-2"
+      >
+        <StyledComboBoxDemo onSelectionChange={(key) => props.onLastAction(`ComboBox: ${key}`)} />
+      </Section>
 
-          <Section id="actiongroup" visibleSections={props.visibleSections} title="ActionGroup (ui)" description="Toolbar-like action cluster with optional selection modes" class="lg:col-span-2">
-            <ActionGroupDemo onLastAction={props.onLastAction} />
-          </Section>
+      <Section
+        id="actiongroup"
+        visibleSections={props.visibleSections}
+        title="ActionGroup (ui)"
+        description="Toolbar-like action cluster with optional selection modes"
+        class="lg:col-span-2"
+      >
+        <ActionGroupDemo onLastAction={props.onLastAction} />
+      </Section>
 
-          <Section id="toolbar" visibleSections={props.visibleSections} title="Toolbar (ui)" description="Keyboard-navigable toolbar with orientation variants" class="lg:col-span-2">
-            <ToolbarDemo onLastAction={props.onLastAction} />
-          </Section>
+      <Section
+        id="toolbar"
+        visibleSections={props.visibleSections}
+        title="Toolbar (ui)"
+        description="Keyboard-navigable toolbar with orientation variants"
+        class="lg:col-span-2"
+      >
+        <ToolbarDemo onLastAction={props.onLastAction} />
+      </Section>
 
-          <Section id="actionbar" visibleSections={props.visibleSections} title="ActionBar (ui)" description="Selection-aware bulk actions with escape-to-clear support" class="lg:col-span-2">
-            <ActionBarDemo onLastAction={props.onLastAction} />
-          </Section>
+      <Section
+        id="actionbar"
+        visibleSections={props.visibleSections}
+        title="ActionBar (ui)"
+        description="Selection-aware bulk actions with escape-to-clear support"
+        class="lg:col-span-2"
+      >
+        <ActionBarDemo onLastAction={props.onLastAction} />
+      </Section>
 
-          {/* Disclosure Section */}
-          <Section id="disclosure" visibleSections={props.visibleSections} title="Disclosure" description="Expandable/collapsible content panels" class="lg:col-span-2">
-            <div class="space-y-6">
-              {/* Headless Disclosure */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Headless Disclosure</h4>
-                <HeadlessDisclosure>
-                  <HeadlessDisclosureTrigger class="w-full text-left p-3 bg-bg-400 rounded hover:bg-bg-300 transition-colors">
-                    Headless Toggle
-                  </HeadlessDisclosureTrigger>
-                  <HeadlessDisclosurePanel class="p-3 mt-1 bg-bg-300 rounded">
-                    This is a headless disclosure panel built from primitives.
-                  </HeadlessDisclosurePanel>
-                </HeadlessDisclosure>
-              </div>
+      {/* Disclosure Section */}
+      <Section
+        id="disclosure"
+        visibleSections={props.visibleSections}
+        title="Disclosure"
+        description="Expandable/collapsible content panels"
+        class="lg:col-span-2"
+      >
+        <div class="space-y-6">
+          {/* Headless Disclosure */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Headless Disclosure</h4>
+            <HeadlessDisclosure>
+              <HeadlessDisclosureTrigger class="w-full text-left p-3 bg-bg-400 rounded hover:bg-bg-300 transition-colors">
+                Headless Toggle
+              </HeadlessDisclosureTrigger>
+              <HeadlessDisclosurePanel class="p-3 mt-1 bg-bg-300 rounded">
+                This is a headless disclosure panel built from primitives.
+              </HeadlessDisclosurePanel>
+            </HeadlessDisclosure>
+          </div>
 
-              {/* Single Disclosure */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Single Disclosure (Styled)</h4>
-                <Disclosure variant="bordered">
-                  <DisclosureTrigger>What is a Disclosure?</DisclosureTrigger>
-                  <DisclosurePanel>
-                    A disclosure is a widget that can be toggled to show or hide content.
-                    It's useful for FAQs, collapsible sections, and progressive disclosure patterns.
-                  </DisclosurePanel>
-                </Disclosure>
-              </div>
+          {/* Single Disclosure */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Single Disclosure (Styled)</h4>
+            <Disclosure variant="bordered">
+              <DisclosureTrigger>What is a Disclosure?</DisclosureTrigger>
+              <DisclosurePanel>
+                A disclosure is a widget that can be toggled to show or hide content. It's useful
+                for FAQs, collapsible sections, and progressive disclosure patterns.
+              </DisclosurePanel>
+            </Disclosure>
+          </div>
 
-              {/* Accordion (DisclosureGroup) */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Accordion (Single Expand)</h4>
-                <DisclosureGroup variant="bordered">
-                  <Disclosure id="section-1">
-                    <DisclosureTrigger>Section 1: Introduction</DisclosureTrigger>
-                    <DisclosurePanel>
-                      This is the content for section 1. Only one section can be expanded at a time
-                      in this accordion mode.
-                    </DisclosurePanel>
-                  </Disclosure>
-                  <Disclosure id="section-2">
-                    <DisclosureTrigger>Section 2: Features</DisclosureTrigger>
-                    <DisclosurePanel>
-                      This is the content for section 2. When you expand this, section 1 will collapse
-                      automatically.
-                    </DisclosurePanel>
-                  </Disclosure>
-                  <Disclosure id="section-3">
-                    <DisclosureTrigger>Section 3: Conclusion</DisclosureTrigger>
-                    <DisclosurePanel>
-                      This is the content for section 3. The accordion pattern is great for FAQs and
-                      settings pages.
-                    </DisclosurePanel>
-                  </Disclosure>
-                </DisclosureGroup>
-              </div>
+          {/* Accordion (DisclosureGroup) */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Accordion (Single Expand)</h4>
+            <DisclosureGroup variant="bordered">
+              <Disclosure id="section-1">
+                <DisclosureTrigger>Section 1: Introduction</DisclosureTrigger>
+                <DisclosurePanel>
+                  This is the content for section 1. Only one section can be expanded at a time in
+                  this accordion mode.
+                </DisclosurePanel>
+              </Disclosure>
+              <Disclosure id="section-2">
+                <DisclosureTrigger>Section 2: Features</DisclosureTrigger>
+                <DisclosurePanel>
+                  This is the content for section 2. When you expand this, section 1 will collapse
+                  automatically.
+                </DisclosurePanel>
+              </Disclosure>
+              <Disclosure id="section-3">
+                <DisclosureTrigger>Section 3: Conclusion</DisclosureTrigger>
+                <DisclosurePanel>
+                  This is the content for section 3. The accordion pattern is great for FAQs and
+                  settings pages.
+                </DisclosurePanel>
+              </Disclosure>
+            </DisclosureGroup>
+          </div>
 
-              {/* Multiple Expand Accordion */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Accordion (Multiple Expand)</h4>
-                <DisclosureGroup allowsMultipleExpanded variant="filled">
-                  <Disclosure id="multi-1">
-                    <DisclosureTrigger>Panel A</DisclosureTrigger>
-                    <DisclosurePanel>Multiple panels can be open at once in this mode.</DisclosurePanel>
-                  </Disclosure>
-                  <Disclosure id="multi-2">
-                    <DisclosureTrigger>Panel B</DisclosureTrigger>
-                    <DisclosurePanel>Try opening both panels!</DisclosurePanel>
-                  </Disclosure>
-                </DisclosureGroup>
-              </div>
+          {/* Multiple Expand Accordion */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Accordion (Multiple Expand)</h4>
+            <DisclosureGroup allowsMultipleExpanded variant="filled">
+              <Disclosure id="multi-1">
+                <DisclosureTrigger>Panel A</DisclosureTrigger>
+                <DisclosurePanel>Multiple panels can be open at once in this mode.</DisclosurePanel>
+              </Disclosure>
+              <Disclosure id="multi-2">
+                <DisclosureTrigger>Panel B</DisclosureTrigger>
+                <DisclosurePanel>Try opening both panels!</DisclosurePanel>
+              </Disclosure>
+            </DisclosureGroup>
+          </div>
 
-              {/* Variants */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Variants</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Disclosure variant="default">
-                    <DisclosureTrigger>Default Variant</DisclosureTrigger>
-                    <DisclosurePanel>Simple border-bottom style.</DisclosurePanel>
-                  </Disclosure>
-                  <Disclosure variant="bordered">
-                    <DisclosureTrigger>Bordered Variant</DisclosureTrigger>
-                    <DisclosurePanel>Full border with rounded corners.</DisclosurePanel>
-                  </Disclosure>
-                  <Disclosure variant="filled">
-                    <DisclosureTrigger>Filled Variant</DisclosureTrigger>
-                    <DisclosurePanel>Background fill style.</DisclosurePanel>
-                  </Disclosure>
-                  <Disclosure variant="ghost">
-                    <DisclosureTrigger>Ghost Variant</DisclosureTrigger>
-                    <DisclosurePanel>Minimal style with hover effects.</DisclosurePanel>
-                  </Disclosure>
-                </div>
-              </div>
+          {/* Variants */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Variants</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Disclosure variant="default">
+                <DisclosureTrigger>Default Variant</DisclosureTrigger>
+                <DisclosurePanel>Simple border-bottom style.</DisclosurePanel>
+              </Disclosure>
+              <Disclosure variant="bordered">
+                <DisclosureTrigger>Bordered Variant</DisclosureTrigger>
+                <DisclosurePanel>Full border with rounded corners.</DisclosurePanel>
+              </Disclosure>
+              <Disclosure variant="filled">
+                <DisclosureTrigger>Filled Variant</DisclosureTrigger>
+                <DisclosurePanel>Background fill style.</DisclosurePanel>
+              </Disclosure>
+              <Disclosure variant="ghost">
+                <DisclosureTrigger>Ghost Variant</DisclosureTrigger>
+                <DisclosurePanel>Minimal style with hover effects.</DisclosurePanel>
+              </Disclosure>
             </div>
-          </Section>
+          </div>
+        </div>
+      </Section>
 
-          {/* Meter Section */}
-          <Section id="meter" visibleSections={props.visibleSections} title="Meter" description="Display a quantity within a known range">
-            <div class="space-y-6">
-              {/* Primary variant */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Primary Variant</h4>
-                <div class="space-y-3">
-                  <Meter label="Storage Used" value={75} showValueLabel />
-                  <Meter label="Memory" value={45} size="sm" showValueLabel />
-                  <Meter label="CPU" value={90} size="lg" showValueLabel />
-                </div>
-              </div>
-
-              {/* Color variants */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Color Variants</h4>
-                <div class="space-y-3">
-                  <Meter label="Success" value={30} variant="success" showValueLabel />
-                  <Meter label="Warning" value={65} variant="warning" showValueLabel />
-                  <Meter label="Danger" value={85} variant="danger" showValueLabel />
-                  <Meter label="Info" value={50} variant="info" showValueLabel />
-                  <Meter label="Accent" value={40} variant="accent" showValueLabel />
-                </div>
-              </div>
-
-              {/* Without label */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Without Label</h4>
-                <Meter value={60} aria-label="Progress" />
-              </div>
+      {/* Meter Section */}
+      <Section
+        id="meter"
+        visibleSections={props.visibleSections}
+        title="Meter"
+        description="Display a quantity within a known range"
+      >
+        <div class="space-y-6">
+          {/* Primary variant */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Primary Variant</h4>
+            <div class="space-y-3">
+              <Meter label="Storage Used" value={75} showValueLabel />
+              <Meter label="Memory" value={45} size="sm" showValueLabel />
+              <Meter label="CPU" value={90} size="lg" showValueLabel />
             </div>
-          </Section>
+          </div>
 
-          {/* TagGroup Section */}
-          <Section id="taggroup" visibleSections={props.visibleSections} title="TagGroup" description="Selectable and removable tag collections">
-            <div class="space-y-6">
-              {/* Basic removable tags */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Removable Tags</h4>
-                <TagGroupDemo />
-              </div>
-
-              {/* Selection */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Selectable Tags</h4>
-                <TagGroupSelectionDemo />
-              </div>
-
-              {/* Variants */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Tag Variants</h4>
-                <div class="space-y-4">
-                  <TagGroup
-                    items={[{ id: '1', name: 'Default' }, { id: '2', name: 'Style' }]}
-                    variant="default"
-                    size="md"
-                  >
-                    {(item) => item.name}
-                  </TagGroup>
-                  <TagGroup
-                    items={[{ id: '1', name: 'Outline' }, { id: '2', name: 'Style' }]}
-                    variant="outline"
-                    size="md"
-                  >
-                    {(item) => item.name}
-                  </TagGroup>
-                  <TagGroup
-                    items={[{ id: '1', name: 'Solid' }, { id: '2', name: 'Style' }]}
-                    variant="solid"
-                    size="md"
-                  >
-                    {(item) => item.name}
-                  </TagGroup>
-                </div>
-              </div>
-
-              {/* Sizes */}
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Tag Sizes</h4>
-                <div class="space-y-4">
-                  <TagGroup
-                    items={[{ id: '1', name: 'Small' }, { id: '2', name: 'Tags' }]}
-                    size="sm"
-                  >
-                    {(item) => item.name}
-                  </TagGroup>
-                  <TagGroup
-                    items={[{ id: '1', name: 'Medium' }, { id: '2', name: 'Tags' }]}
-                    size="md"
-                  >
-                    {(item) => item.name}
-                  </TagGroup>
-                  <TagGroup
-                    items={[{ id: '1', name: 'Large' }, { id: '2', name: 'Tags' }]}
-                    size="lg"
-                  >
-                    {(item) => item.name}
-                  </TagGroup>
-                </div>
-              </div>
+          {/* Color variants */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Color Variants</h4>
+            <div class="space-y-3">
+              <Meter label="Success" value={30} variant="success" showValueLabel />
+              <Meter label="Warning" value={65} variant="warning" showValueLabel />
+              <Meter label="Danger" value={85} variant="danger" showValueLabel />
+              <Meter label="Info" value={50} variant="info" showValueLabel />
+              <Meter label="Accent" value={40} variant="accent" showValueLabel />
             </div>
-          </Section>
+          </div>
 
-          {/* Calendar Section */}
-          <Section id="calendar" visibleSections={props.visibleSections} title="Calendar" description="Date selection calendars with navigation">
-            <CalendarDemo />
-          </Section>
+          {/* Without label */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Without Label</h4>
+            <Meter value={60} aria-label="Progress" />
+          </div>
+        </div>
+      </Section>
 
-          {/* DatePicker Section */}
-          <Section id="datepicker" visibleSections={props.visibleSections} title="DatePicker" description="Date field with calendar popup">
-            <DatePickerDemo />
-          </Section>
+      {/* TagGroup Section */}
+      <Section
+        id="taggroup"
+        visibleSections={props.visibleSections}
+        title="TagGroup"
+        description="Selectable and removable tag collections"
+      >
+        <div class="space-y-6">
+          {/* Basic removable tags */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Removable Tags</h4>
+            <TagGroupDemo />
+          </div>
 
-          {/* Toast Section */}
-          <Section id="toast" visibleSections={props.visibleSections} title="Toast" description="Toast notifications with auto-dismiss and variants" class="lg:col-span-2">
+          {/* Selection */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Selectable Tags</h4>
+            <TagGroupSelectionDemo />
+          </div>
+
+          {/* Variants */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Tag Variants</h4>
             <div class="space-y-4">
-              <p class="text-sm text-primary-300 mb-3">Click buttons to show toast notifications</p>
-              <div class="flex flex-wrap gap-3">
-                <Button
-                  variant="primary"
-                  onPress={() => toastSuccess('Changes saved successfully!')}
-                >
-                  Success Toast
-                </Button>
-                <Button
-                  variant="negative"
-                  onPress={() => toastError('Something went wrong. Please try again.')}
-                >
-                  Error Toast
-                </Button>
-                <Button
-                  variant="secondary"
-                  onPress={() => toastWarning('Your session will expire in 5 minutes.')}
-                >
-                  Warning Toast
-                </Button>
-                <Button
-                  variant="secondary"
-                  buttonStyle="outline"
-                  onPress={() => toastInfo('New features are available!')}
-                >
-                  Info Toast
-                </Button>
-              </div>
-              <div class="flex flex-wrap gap-3">
-                <Button
-                  variant="secondary"
-                  buttonStyle="outline"
-                  onPress={() => addToast({
-                    title: 'Custom Toast',
-                    description: 'This toast has both title and description with a longer timeout.',
-                    type: 'info',
-                  }, { timeout: 10000 })}
-                >
-                  With Description
-                </Button>
-                <Button
-                  variant="secondary"
-                  buttonStyle="outline"
-                  onPress={() => addToast({
-                    title: 'Action Required',
-                    description: 'Click the button below to take action.',
-                    type: 'warning',
+              <TagGroup
+                items={[
+                  { id: "1", name: "Default" },
+                  { id: "2", name: "Style" },
+                ]}
+                variant="default"
+                size="md"
+              >
+                {(item) => item.name}
+              </TagGroup>
+              <TagGroup
+                items={[
+                  { id: "1", name: "Outline" },
+                  { id: "2", name: "Style" },
+                ]}
+                variant="outline"
+                size="md"
+              >
+                {(item) => item.name}
+              </TagGroup>
+              <TagGroup
+                items={[
+                  { id: "1", name: "Solid" },
+                  { id: "2", name: "Style" },
+                ]}
+                variant="solid"
+                size="md"
+              >
+                {(item) => item.name}
+              </TagGroup>
+            </div>
+          </div>
+
+          {/* Sizes */}
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Tag Sizes</h4>
+            <div class="space-y-4">
+              <TagGroup
+                items={[
+                  { id: "1", name: "Small" },
+                  { id: "2", name: "Tags" },
+                ]}
+                size="sm"
+              >
+                {(item) => item.name}
+              </TagGroup>
+              <TagGroup
+                items={[
+                  { id: "1", name: "Medium" },
+                  { id: "2", name: "Tags" },
+                ]}
+                size="md"
+              >
+                {(item) => item.name}
+              </TagGroup>
+              <TagGroup
+                items={[
+                  { id: "1", name: "Large" },
+                  { id: "2", name: "Tags" },
+                ]}
+                size="lg"
+              >
+                {(item) => item.name}
+              </TagGroup>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* Calendar Section */}
+      <Section
+        id="calendar"
+        visibleSections={props.visibleSections}
+        title="Calendar"
+        description="Date selection calendars with navigation"
+      >
+        <CalendarDemo />
+      </Section>
+
+      {/* DatePicker Section */}
+      <Section
+        id="datepicker"
+        visibleSections={props.visibleSections}
+        title="DatePicker"
+        description="Date field with calendar popup"
+      >
+        <DatePickerDemo />
+      </Section>
+
+      {/* Toast Section */}
+      <Section
+        id="toast"
+        visibleSections={props.visibleSections}
+        title="Toast"
+        description="Toast notifications with auto-dismiss and variants"
+        class="lg:col-span-2"
+      >
+        <div class="space-y-4">
+          <p class="text-sm text-primary-300 mb-3">Click buttons to show toast notifications</p>
+          <div class="flex flex-wrap gap-3">
+            <Button variant="primary" onPress={() => toastSuccess("Changes saved successfully!")}>
+              Success Toast
+            </Button>
+            <Button
+              variant="negative"
+              onPress={() => toastError("Something went wrong. Please try again.")}
+            >
+              Error Toast
+            </Button>
+            <Button
+              variant="secondary"
+              onPress={() => toastWarning("Your session will expire in 5 minutes.")}
+            >
+              Warning Toast
+            </Button>
+            <Button
+              variant="secondary"
+              buttonStyle="outline"
+              onPress={() => toastInfo("New features are available!")}
+            >
+              Info Toast
+            </Button>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <Button
+              variant="secondary"
+              buttonStyle="outline"
+              onPress={() =>
+                addToast(
+                  {
+                    title: "Custom Toast",
+                    description: "This toast has both title and description with a longer timeout.",
+                    type: "info",
+                  },
+                  { timeout: 10000 },
+                )
+              }
+            >
+              With Description
+            </Button>
+            <Button
+              variant="secondary"
+              buttonStyle="outline"
+              onPress={() =>
+                addToast(
+                  {
+                    title: "Action Required",
+                    description: "Click the button below to take action.",
+                    type: "warning",
                     action: {
-                      label: 'Take Action',
-                      onAction: () => props.onLastAction('Toast action clicked!'),
+                      label: "Take Action",
+                      onAction: () => props.onLastAction("Toast action clicked!"),
                     },
-                  }, { timeout: 15000 })}
-                >
-                  With Action
-                </Button>
-              </div>
+                  },
+                  { timeout: 15000 },
+                )
+              }
+            >
+              With Action
+            </Button>
+          </div>
+        </div>
+      </Section>
+
+      {/* DropZone Section */}
+      <Section
+        id="dropzone"
+        visibleSections={props.visibleSections}
+        title="DropZone"
+        description="Drag and drop target for files"
+        class="lg:col-span-2"
+      >
+        <div class="space-y-4">
+          <DropZone
+            data-testid="dropzone-active"
+            aria-label="Upload files drop zone"
+            onDrop={() => props.onLastAction("DropZone: drop event")}
+            class="min-h-[120px] flex items-center justify-center"
+          >
+            <div class="text-center">
+              <p class="text-primary-200 font-medium">Drop files here</p>
+              <p class="text-primary-400 text-sm mt-1">or drag items over this area</p>
             </div>
-          </Section>
+          </DropZone>
+          <DropZone
+            data-testid="dropzone-disabled"
+            aria-label="Disabled drop zone"
+            isDisabled
+            class="min-h-[80px] flex items-center justify-center"
+          >
+            <p class="text-primary-300 text-sm">Disabled drop zone</p>
+          </DropZone>
+        </div>
+      </Section>
 
-          {/* DropZone Section */}
-          <Section id="dropzone" visibleSections={props.visibleSections} title="DropZone" description="Drag and drop target for files" class="lg:col-span-2">
-            <div class="space-y-4">
-              <DropZone
-                data-testid="dropzone-active"
-                aria-label="Upload files drop zone"
-                onDrop={() => props.onLastAction('DropZone: drop event')}
-                class="min-h-[120px] flex items-center justify-center"
-              >
-                <div class="text-center">
-                  <p class="text-primary-200 font-medium">Drop files here</p>
-                  <p class="text-primary-400 text-sm mt-1">or drag items over this area</p>
-                </div>
-              </DropZone>
-              <DropZone
-                data-testid="dropzone-disabled"
-                aria-label="Disabled drop zone"
-                isDisabled
-                class="min-h-[80px] flex items-center justify-center"
-              >
-                <p class="text-primary-300 text-sm">Disabled drop zone</p>
-              </DropZone>
+      {/* FileTrigger Section */}
+      <Section
+        id="filetrigger"
+        visibleSections={props.visibleSections}
+        title="FileTrigger"
+        description="Open native file picker from custom trigger"
+        class="lg:col-span-2"
+      >
+        <div class="space-y-4">
+          <FileTrigger
+            acceptedFileTypes={["image/png", "image/jpeg"]}
+            onSelect={(files) => {
+              const first = files?.[0];
+              props.onLastAction(
+                first ? `File selected: ${first.name}` : "File selection canceled",
+              );
+            }}
+          >
+            <Button variant="primary">Choose file</Button>
+          </FileTrigger>
+          <FileTrigger disabled>
+            <Button variant="secondary" buttonStyle="outline">
+              Disabled picker
+            </Button>
+          </FileTrigger>
+        </div>
+      </Section>
+
+      {/* ============================================ */}
+      {/* TEXTAREA */}
+      {/* ============================================ */}
+      <Section
+        id="textarea"
+        visibleSections={props.visibleSections}
+        title="TextArea"
+        description="Multi-line text input with auto-resize"
+        class="lg:col-span-2"
+      >
+        <div class="space-y-6">
+          <div class="grid gap-6 sm:grid-cols-2">
+            <TextArea
+              label="Description"
+              placeholder="Enter a description..."
+              description="Tell us about yourself"
+            />
+            <TextArea
+              label="With Validation"
+              placeholder="Required field..."
+              isRequired
+              isInvalid
+              errorMessage="This field is required"
+            />
+          </div>
+          <div class="grid gap-6 sm:grid-cols-3">
+            <TextArea label="Small" size="sm" placeholder="Small..." />
+            <TextArea label="Medium" size="md" placeholder="Medium..." />
+            <TextArea label="Large" size="lg" placeholder="Large..." />
+          </div>
+          <TextArea label="Disabled" value="Cannot edit this" isDisabled />
+        </div>
+      </Section>
+
+      {/* ============================================ */}
+      {/* ALERT DIALOG */}
+      {/* ============================================ */}
+      <Section
+        id="alertdialog"
+        visibleSections={props.visibleSections}
+        title="Alert Dialog"
+        description="Confirmation dialog requiring user action"
+      >
+        <div class="space-y-4">
+          <AlertDialog
+            title="Delete Item"
+            variant="destructive"
+            primaryActionLabel="Delete"
+            cancelLabel="Cancel"
+            onPrimaryAction={() => props.onLastAction("AlertDialog: deleted")}
+            onCancel={() => props.onLastAction("AlertDialog: cancelled")}
+            trigger={<Button variant="negative">Delete Item</Button>}
+          >
+            Are you sure you want to delete this item? This action cannot be undone.
+          </AlertDialog>
+          <AlertDialog
+            title="Save Changes"
+            variant="confirmation"
+            primaryActionLabel="Save"
+            cancelLabel="Discard"
+            onPrimaryAction={() => props.onLastAction("AlertDialog: saved")}
+            onCancel={() => props.onLastAction("AlertDialog: discarded")}
+            trigger={<Button variant="primary">Save Changes</Button>}
+          >
+            You have unsaved changes. Would you like to save them before leaving?
+          </AlertDialog>
+        </div>
+      </Section>
+
+      {/* ============================================ */}
+      {/* ACTION MENU */}
+      {/* ============================================ */}
+      <Section
+        id="actionmenu"
+        visibleSections={props.visibleSections}
+        title="Action Menu"
+        description="Simplified menu trigger with action items"
+      >
+        <div class="flex flex-wrap gap-4">
+          <ActionMenu
+            label="Actions"
+            onAction={(key) => props.onLastAction(`ActionMenu: ${key}`)}
+            items={[
+              { id: "edit", label: "Edit" },
+              { id: "duplicate", label: "Duplicate" },
+              { id: "archive", label: "Archive" },
+              { id: "delete", label: "Delete" },
+            ]}
+          />
+          <ActionMenu
+            label="More Options"
+            onAction={(key) => props.onLastAction(`ActionMenu: ${key}`)}
+            items={[
+              { id: "settings", label: "Settings" },
+              { id: "help", label: "Help" },
+              { id: "about", label: "About" },
+            ]}
+          />
+        </div>
+      </Section>
+
+      {/* ============================================ */}
+      {/* RANGE SLIDER */}
+      {/* ============================================ */}
+      <Section
+        id="rangeslider"
+        visibleSections={props.visibleSections}
+        title="Range Slider"
+        description="Dual-thumb slider for selecting a range"
+        class="lg:col-span-2"
+      >
+        <RangeSliderDemo onChange={(start, end) => props.onLastAction(`Range: ${start}–${end}`)} />
+      </Section>
+
+      {/* ============================================ */}
+      {/* CONTEXTUAL HELP */}
+      {/* ============================================ */}
+      <Section
+        id="contextualhelp"
+        visibleSections={props.visibleSections}
+        title="Contextual Help"
+        description="Help button with popover content"
+      >
+        <div class="flex flex-wrap gap-4 items-center">
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-primary-200">Setting Name</span>
+            <ContextualHelpTrigger
+              title="What is this?"
+              content="This setting controls the behavior of the feature. Enabling it will allow the system to process requests in real-time."
+            />
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-primary-200">Advanced Option</span>
+            <ContextualHelpTrigger
+              title="Advanced Configuration"
+              content="This option is for advanced users. Changing it may affect system performance."
+              variant="info"
+            />
+          </div>
+        </div>
+      </Section>
+
+      {/* ============================================ */}
+      {/* FLEX LAYOUT */}
+      {/* ============================================ */}
+      <Section
+        id="flex"
+        visibleSections={props.visibleSections}
+        title="Flex Layout"
+        description="Flexible box layout component"
+        class="lg:col-span-2"
+      >
+        <div class="space-y-6">
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Row (default)</h4>
+            <Flex gap="md" wrap>
+              <Button variant="primary">Item 1</Button>
+              <Button variant="secondary">Item 2</Button>
+              <Button variant="accent">Item 3</Button>
+            </Flex>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Column with alignment</h4>
+            <Flex direction="column" gap="sm" alignItems="start">
+              <Button variant="primary">First</Button>
+              <Button variant="secondary">Second</Button>
+              <Button variant="accent">Third</Button>
+            </Flex>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Space between</h4>
+            <Flex justifyContent="between" alignItems="center" class="bg-bg-300 p-4 rounded-lg">
+              <span class="text-primary-200">Left</span>
+              <span class="text-primary-200">Center</span>
+              <span class="text-primary-200">Right</span>
+            </Flex>
+          </div>
+        </div>
+      </Section>
+
+      {/* ============================================ */}
+      {/* GRID LAYOUT */}
+      {/* ============================================ */}
+      <Section
+        id="grid"
+        visibleSections={props.visibleSections}
+        title="Grid Layout"
+        description="CSS Grid layout component"
+        class="lg:col-span-2"
+      >
+        <div class="space-y-6">
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">3-column grid</h4>
+            <Grid columns={3} gap="md">
+              <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">1</div>
+              <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">2</div>
+              <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">3</div>
+              <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">4</div>
+              <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">5</div>
+              <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">6</div>
+            </Grid>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-primary-300 mb-2">Auto-fill responsive</h4>
+            <Grid columns="repeat(auto-fill, minmax(120px, 1fr))" gap="sm">
+              <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">
+                A
+              </div>
+              <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">
+                B
+              </div>
+              <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">
+                C
+              </div>
+              <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">
+                D
+              </div>
+              <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">
+                E
+              </div>
+            </Grid>
+          </div>
+        </div>
+      </Section>
+
+      {/* ============================================ */}
+      {/* THEME / PROVIDER */}
+      {/* ============================================ */}
+      <Section
+        id="theme"
+        visibleSections={props.visibleSections}
+        title="Theme / Provider"
+        description="Theme context and color scheme switching"
+        class="lg:col-span-2"
+      >
+        <div class="space-y-6">
+          <p class="text-sm text-primary-300">
+            The Provider component wraps your application and provides theme context including color
+            scheme (light/dark) and scale.
+          </p>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="p-4 rounded-lg bg-bg-200 border border-primary-700/30">
+              <h4 class="text-sm font-medium text-primary-200 mb-2">Current Theme</h4>
+              <ThemeInfoDisplay />
             </div>
-          </Section>
-
-          {/* FileTrigger Section */}
-          <Section id="filetrigger" visibleSections={props.visibleSections} title="FileTrigger" description="Open native file picker from custom trigger" class="lg:col-span-2">
-            <div class="space-y-4">
-              <FileTrigger
-                acceptedFileTypes={['image/png', 'image/jpeg']}
-                onSelect={(files) => {
-                  const first = files?.[0];
-                  props.onLastAction(first ? `File selected: ${first.name}` : 'File selection canceled');
-                }}
-              >
-                <Button variant="primary">Choose file</Button>
-              </FileTrigger>
-              <FileTrigger disabled>
-                <Button variant="secondary" buttonStyle="outline">Disabled picker</Button>
-              </FileTrigger>
-            </div>
-          </Section>
-
-          {/* ============================================ */}
-          {/* TEXTAREA */}
-          {/* ============================================ */}
-          <Section id="textarea" visibleSections={props.visibleSections} title="TextArea" description="Multi-line text input with auto-resize" class="lg:col-span-2">
-            <div class="space-y-6">
-              <div class="grid gap-6 sm:grid-cols-2">
-                <TextArea
-                  label="Description"
-                  placeholder="Enter a description..."
-                  description="Tell us about yourself"
-                />
-                <TextArea
-                  label="With Validation"
-                  placeholder="Required field..."
-                  isRequired
-                  isInvalid
-                  errorMessage="This field is required"
-                />
-              </div>
-              <div class="grid gap-6 sm:grid-cols-3">
-                <TextArea label="Small" size="sm" placeholder="Small..." />
-                <TextArea label="Medium" size="md" placeholder="Medium..." />
-                <TextArea label="Large" size="lg" placeholder="Large..." />
-              </div>
-              <TextArea label="Disabled" value="Cannot edit this" isDisabled />
-            </div>
-          </Section>
-
-          {/* ============================================ */}
-          {/* ALERT DIALOG */}
-          {/* ============================================ */}
-          <Section id="alertdialog" visibleSections={props.visibleSections} title="Alert Dialog" description="Confirmation dialog requiring user action">
-            <div class="space-y-4">
-              <AlertDialog
-                title="Delete Item"
-                variant="destructive"
-                primaryActionLabel="Delete"
-                cancelLabel="Cancel"
-                onPrimaryAction={() => props.onLastAction('AlertDialog: deleted')}
-                onCancel={() => props.onLastAction('AlertDialog: cancelled')}
-                trigger={<Button variant="negative">Delete Item</Button>}
-              >
-                Are you sure you want to delete this item? This action cannot be undone.
-              </AlertDialog>
-              <AlertDialog
-                title="Save Changes"
-                variant="confirmation"
-                primaryActionLabel="Save"
-                cancelLabel="Discard"
-                onPrimaryAction={() => props.onLastAction('AlertDialog: saved')}
-                onCancel={() => props.onLastAction('AlertDialog: discarded')}
-                trigger={<Button variant="primary">Save Changes</Button>}
-              >
-                You have unsaved changes. Would you like to save them before leaving?
-              </AlertDialog>
-            </div>
-          </Section>
-
-          {/* ============================================ */}
-          {/* ACTION MENU */}
-          {/* ============================================ */}
-          <Section id="actionmenu" visibleSections={props.visibleSections} title="Action Menu" description="Simplified menu trigger with action items">
-            <div class="flex flex-wrap gap-4">
-              <ActionMenu
-                label="Actions"
-                onAction={(key) => props.onLastAction(`ActionMenu: ${key}`)}
-                items={[
-                  { id: 'edit', label: 'Edit' },
-                  { id: 'duplicate', label: 'Duplicate' },
-                  { id: 'archive', label: 'Archive' },
-                  { id: 'delete', label: 'Delete' },
-                ]}
-              />
-              <ActionMenu
-                label="More Options"
-                onAction={(key) => props.onLastAction(`ActionMenu: ${key}`)}
-                items={[
-                  { id: 'settings', label: 'Settings' },
-                  { id: 'help', label: 'Help' },
-                  { id: 'about', label: 'About' },
-                ]}
-              />
-            </div>
-          </Section>
-
-          {/* ============================================ */}
-          {/* RANGE SLIDER */}
-          {/* ============================================ */}
-          <Section id="rangeslider" visibleSections={props.visibleSections} title="Range Slider" description="Dual-thumb slider for selecting a range" class="lg:col-span-2">
-            <RangeSliderDemo onChange={(start, end) => props.onLastAction(`Range: ${start}–${end}`)} />
-          </Section>
-
-          {/* ============================================ */}
-          {/* CONTEXTUAL HELP */}
-          {/* ============================================ */}
-          <Section id="contextualhelp" visibleSections={props.visibleSections} title="Contextual Help" description="Help button with popover content">
-            <div class="flex flex-wrap gap-4 items-center">
-              <div class="flex items-center gap-2">
-                <span class="text-sm text-primary-200">Setting Name</span>
-                <ContextualHelpTrigger
-                  title="What is this?"
-                  content="This setting controls the behavior of the feature. Enabling it will allow the system to process requests in real-time."
-                />
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-sm text-primary-200">Advanced Option</span>
-                <ContextualHelpTrigger
-                  title="Advanced Configuration"
-                  content="This option is for advanced users. Changing it may affect system performance."
-                  variant="info"
-                />
-              </div>
-            </div>
-          </Section>
-
-          {/* ============================================ */}
-          {/* FLEX LAYOUT */}
-          {/* ============================================ */}
-          <Section id="flex" visibleSections={props.visibleSections} title="Flex Layout" description="Flexible box layout component" class="lg:col-span-2">
-            <div class="space-y-6">
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Row (default)</h4>
-                <Flex gap="md" wrap>
-                  <Button variant="primary">Item 1</Button>
-                  <Button variant="secondary">Item 2</Button>
-                  <Button variant="accent">Item 3</Button>
-                </Flex>
-              </div>
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Column with alignment</h4>
-                <Flex direction="column" gap="sm" alignItems="start">
-                  <Button variant="primary">First</Button>
-                  <Button variant="secondary">Second</Button>
-                  <Button variant="accent">Third</Button>
-                </Flex>
-              </div>
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Space between</h4>
-                <Flex justifyContent="between" alignItems="center" class="bg-bg-300 p-4 rounded-lg">
-                  <span class="text-primary-200">Left</span>
-                  <span class="text-primary-200">Center</span>
-                  <span class="text-primary-200">Right</span>
-                </Flex>
-              </div>
-            </div>
-          </Section>
-
-          {/* ============================================ */}
-          {/* GRID LAYOUT */}
-          {/* ============================================ */}
-          <Section id="grid" visibleSections={props.visibleSections} title="Grid Layout" description="CSS Grid layout component" class="lg:col-span-2">
-            <div class="space-y-6">
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">3-column grid</h4>
-                <Grid columns={3} gap="md">
-                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">1</div>
-                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">2</div>
-                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">3</div>
-                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">4</div>
-                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">5</div>
-                  <div class="bg-accent/20 p-4 rounded-lg text-center text-primary-200">6</div>
-                </Grid>
-              </div>
-              <div>
-                <h4 class="text-sm font-medium text-primary-300 mb-2">Auto-fill responsive</h4>
-                <Grid columns="repeat(auto-fill, minmax(120px, 1fr))" gap="sm">
-                  <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">A</div>
-                  <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">B</div>
-                  <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">C</div>
-                  <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">D</div>
-                  <div class="bg-primary-700/30 p-3 rounded text-center text-primary-300 text-sm">E</div>
-                </Grid>
-              </div>
-            </div>
-          </Section>
-
-          {/* ============================================ */}
-          {/* THEME / PROVIDER */}
-          {/* ============================================ */}
-          <Section id="theme" visibleSections={props.visibleSections} title="Theme / Provider" description="Theme context and color scheme switching" class="lg:col-span-2">
-            <div class="space-y-6">
-              <p class="text-sm text-primary-300">
-                The Provider component wraps your application and provides theme context including color scheme (light/dark) and scale.
-              </p>
-              <div class="grid gap-4 sm:grid-cols-2">
-                <div class="p-4 rounded-lg bg-bg-200 border border-primary-700/30">
-                  <h4 class="text-sm font-medium text-primary-200 mb-2">Current Theme</h4>
-                  <ThemeInfoDisplay />
-                </div>
-                <div class="p-4 rounded-lg bg-bg-200 border border-primary-700/30">
-                  <h4 class="text-sm font-medium text-primary-200 mb-2">Usage</h4>
-                  <pre class="text-xs text-primary-400 font-mono whitespace-pre-wrap">{`<Provider colorScheme="dark">
+            <div class="p-4 rounded-lg bg-bg-200 border border-primary-700/30">
+              <h4 class="text-sm font-medium text-primary-200 mb-2">Usage</h4>
+              <pre class="text-xs text-primary-400 font-mono whitespace-pre-wrap">{`<Provider colorScheme="dark">
   <App />
 </Provider>`}</pre>
-                </div>
-              </div>
             </div>
-          </Section>
+          </div>
+        </div>
+      </Section>
 
-          {/* ============================================ */}
-          {/* NEW COMPONENTS (Phases 8-11) */}
-          {/* ============================================ */}
-          <Show when={hasVisibleDataColorSections()}>
-            <Suspense
-              fallback={(
-                <div class="lg:col-span-2 rounded-xl border border-primary-700/30 bg-bg-300/40 p-4 text-sm text-primary-400">
-                  Loading data/color sections...
-                </div>
-              )}
-            >
-              <PlaygroundDataColorSections visibleSections={props.visibleSections} />
-            </Suspense>
-          </Show>
+      {/* ============================================ */}
+      {/* NEW COMPONENTS (Phases 8-11) */}
+      {/* ============================================ */}
+      <Show when={hasVisibleDataColorSections()}>
+        <Suspense
+          fallback={
+            <div class="lg:col-span-2 rounded-xl border border-primary-700/30 bg-bg-300/40 p-4 text-sm text-primary-400">
+              Loading data/color sections...
+            </div>
+          }
+        >
+          <PlaygroundDataColorSections visibleSections={props.visibleSections} />
+        </Suspense>
+      </Show>
     </>
-  )
+  );
 }
 
 function CheckboxGroupDemo(props: { onSelectionChange?: (values: string[]) => void }) {
   const state = createCheckboxGroupState(() => ({
-    defaultValue: ['notifications'],
+    defaultValue: ["notifications"],
     onChange: props.onSelectionChange,
-  }))
+  }));
 
-  const { groupProps, labelProps } = createCheckboxGroup(
-    () => ({ label: 'Preferences' }),
-    state
-  )
+  const { groupProps, labelProps } = createCheckboxGroup(() => ({ label: "Preferences" }), state);
 
   return (
     <div class="space-y-6">
@@ -778,9 +1004,7 @@ function CheckboxGroupDemo(props: { onSelectionChange?: (values: string[]) => vo
             Marketing communications
           </CustomCheckbox>
         </div>
-        <p class="mt-2 text-xs text-primary-400">
-          Selected: {state.value().join(', ') || 'none'}
-        </p>
+        <p class="mt-2 text-xs text-primary-400">Selected: {state.value().join(", ") || "none"}</p>
       </div>
 
       {/* Disabled & Read-only Examples */}
@@ -795,17 +1019,17 @@ function CheckboxGroupDemo(props: { onSelectionChange?: (values: string[]) => vo
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function CustomCheckbox(props: {
-  value: string
-  state: CheckboxGroupState
-  children: JSX.Element
-  isDisabled?: boolean
-  isReadOnly?: boolean
+  value: string;
+  state: CheckboxGroupState;
+  children: JSX.Element;
+  isDisabled?: boolean;
+  isReadOnly?: boolean;
 }) {
-  let inputRef: HTMLInputElement | null = null
+  let inputRef: HTMLInputElement | null = null;
 
   const result = createCheckboxGroupItem(
     () => ({
@@ -815,16 +1039,16 @@ function CustomCheckbox(props: {
       children: props.children,
     }),
     props.state,
-    () => inputRef
-  )
+    () => inputRef,
+  );
 
-  const isChecked = () => props.state.value().includes(props.value)
-  const getInputProps = () => result.inputProps
+  const isChecked = () => props.state.value().includes(props.value);
+  const getInputProps = () => result.inputProps;
 
   return (
     <label
       class={`flex items-center gap-3 cursor-pointer group ${
-        props.isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+        props.isDisabled ? "opacity-50 cursor-not-allowed" : ""
       }`}
     >
       <div class="relative">
@@ -837,11 +1061,12 @@ function CustomCheckbox(props: {
         />
         <div
           class={`w-5 h-5 rounded border-2 transition-all flex items-center justify-center
-            ${isChecked()
-              ? 'bg-accent border-accent'
-              : 'border-primary-400 group-hover:border-primary-200'
+            ${
+              isChecked()
+                ? "bg-accent border-accent"
+                : "border-primary-400 group-hover:border-primary-200"
             }
-            ${props.isDisabled ? '' : 'peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-bg-200'}
+            ${props.isDisabled ? "" : "peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-bg-200"}
           `}
         >
           {isChecked() && (
@@ -859,16 +1084,16 @@ function CustomCheckbox(props: {
       </div>
       <span class="text-sm text-primary-200">{props.children}</span>
     </label>
-  )
+  );
 }
 
 function DisabledCheckboxDemo() {
   const state = createCheckboxGroupState(() => ({
-    defaultValue: ['option1'],
+    defaultValue: ["option1"],
     isDisabled: true,
-  }))
+  }));
 
-  const { groupProps } = createCheckboxGroup(() => ({}), state)
+  const { groupProps } = createCheckboxGroup(() => ({}), state);
 
   return (
     <div {...(groupProps as unknown as JSX.HTMLAttributes<HTMLDivElement>)} class="space-y-2">
@@ -879,16 +1104,16 @@ function DisabledCheckboxDemo() {
         Disabled (unchecked)
       </CustomCheckbox>
     </div>
-  )
+  );
 }
 
 function ReadonlyCheckboxDemo() {
   const state = createCheckboxGroupState(() => ({
-    defaultValue: ['readonly1'],
+    defaultValue: ["readonly1"],
     isReadOnly: true,
-  }))
+  }));
 
-  const { groupProps } = createCheckboxGroup(() => ({}), state)
+  const { groupProps } = createCheckboxGroup(() => ({}), state);
 
   return (
     <div {...(groupProps as unknown as JSX.HTMLAttributes<HTMLDivElement>)} class="space-y-2">
@@ -899,7 +1124,7 @@ function ReadonlyCheckboxDemo() {
         Read-only (unchecked)
       </CustomCheckbox>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -907,12 +1132,20 @@ function ReadonlyCheckboxDemo() {
 // ============================================
 
 const listBoxItems = [
-  { id: 'react', name: 'React', description: 'A JavaScript library for building user interfaces' },
-  { id: 'solid', name: 'SolidJS', description: 'Simple and performant reactivity for building user interfaces' },
-  { id: 'vue', name: 'Vue', description: 'The progressive JavaScript framework' },
-  { id: 'svelte', name: 'Svelte', description: 'Cybernetically enhanced web apps' },
-  { id: 'angular', name: 'Angular', description: 'Platform for building mobile and desktop web applications' },
-]
+  { id: "react", name: "React", description: "A JavaScript library for building user interfaces" },
+  {
+    id: "solid",
+    name: "SolidJS",
+    description: "Simple and performant reactivity for building user interfaces",
+  },
+  { id: "vue", name: "Vue", description: "The progressive JavaScript framework" },
+  { id: "svelte", name: "Svelte", description: "Cybernetically enhanced web apps" },
+  {
+    id: "angular",
+    name: "Angular",
+    description: "Platform for building mobile and desktop web applications",
+  },
+];
 
 function ListBoxDemo(props: { onSelectionChange?: (key: string | number) => void }) {
   return (
@@ -922,8 +1155,8 @@ function ListBoxDemo(props: { onSelectionChange?: (key: string | number) => void
         getKey={(item) => item.id}
         selectionMode="single"
         onSelectionChange={(keys) => {
-          const key = [...keys][0]
-          if (key) props.onSelectionChange?.(key)
+          const key = [...keys][0];
+          if (key) props.onSelectionChange?.(key);
         }}
         aria-label="Choose a framework"
         class="border border-primary-600 rounded-lg overflow-hidden bg-bg-300 max-h-64 overflow-y-auto"
@@ -943,11 +1176,9 @@ function ListBoxDemo(props: { onSelectionChange?: (key: string | number) => void
           </ListBoxOption>
         )}
       </ListBox>
-      <p class="text-xs text-primary-400">
-        Use arrow keys to navigate, Enter/Space to select
-      </p>
+      <p class="text-xs text-primary-400">Use arrow keys to navigate, Enter/Space to select</p>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -955,20 +1186,20 @@ function ListBoxDemo(props: { onSelectionChange?: (key: string | number) => void
 // ============================================
 
 const menuItems = [
-  { id: 'edit', label: 'Edit', variant: 'default' },
-  { id: 'duplicate', label: 'Duplicate', variant: 'default' },
-  { id: 'share', label: 'Share', variant: 'default' },
-  { id: 'delete', label: 'Delete', variant: 'danger' },
-]
+  { id: "edit", label: "Edit", variant: "default" },
+  { id: "duplicate", label: "Duplicate", variant: "default" },
+  { id: "share", label: "Share", variant: "default" },
+  { id: "delete", label: "Delete", variant: "danger" },
+];
 
 // Menu items with some disabled for testing disabled key navigation
 const menuItemsWithDisabled = [
-  { id: 'item1', label: 'First Item' },
-  { id: 'item2', label: 'Second Item (disabled)' },
-  { id: 'item3', label: 'Third Item (disabled)' },
-  { id: 'item4', label: 'Fourth Item' },
-  { id: 'item5', label: 'Fifth Item' },
-]
+  { id: "item1", label: "First Item" },
+  { id: "item2", label: "Second Item (disabled)" },
+  { id: "item3", label: "Third Item (disabled)" },
+  { id: "item4", label: "Fourth Item" },
+  { id: "item5", label: "Fifth Item" },
+];
 
 function MenuDemo(props: { onAction?: (action: string) => void }) {
   return (
@@ -992,9 +1223,9 @@ function MenuDemo(props: { onAction?: (action: string) => void }) {
               <MenuItem
                 id={item.id}
                 class={`px-4 py-2 cursor-pointer outline-none transition-colors ${
-                  item.variant === 'danger'
-                    ? 'data-focused:bg-danger/20 text-danger'
-                    : 'data-focused:bg-primary-700 text-primary-100'
+                  item.variant === "danger"
+                    ? "data-focused:bg-danger/20 text-danger"
+                    : "data-focused:bg-primary-700 text-primary-100"
                 }`}
               >
                 {item.label}
@@ -1008,16 +1239,14 @@ function MenuDemo(props: { onAction?: (action: string) => void }) {
       <div>
         <h4 class="text-sm font-medium text-primary-200 mb-2">Menu with Disabled Items</h4>
         <MenuTrigger>
-          <MenuButton
-            class="px-4 py-2 bg-primary-700 hover:bg-primary-600 text-primary-100 rounded-lg border border-primary-500 transition-colors flex items-center gap-2"
-          >
+          <MenuButton class="px-4 py-2 bg-primary-700 hover:bg-primary-600 text-primary-100 rounded-lg border border-primary-500 transition-colors flex items-center gap-2">
             Menu with Disabled
             <span class="text-xs">▼</span>
           </MenuButton>
           <Menu
             items={menuItemsWithDisabled}
             getKey={(item) => item.id}
-            disabledKeys={['item2', 'item3']}
+            disabledKeys={["item2", "item3"]}
             onAction={(key) => props.onAction?.(String(key))}
             aria-label="Menu with disabled items"
             class="absolute mt-1 min-w-48 bg-bg-200 border border-primary-600 rounded-lg shadow-xl overflow-hidden z-50"
@@ -1041,7 +1270,7 @@ function MenuDemo(props: { onAction?: (action: string) => void }) {
         Click button to open, use arrow keys to navigate, Enter to select, Escape to close
       </p>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -1049,21 +1278,21 @@ function MenuDemo(props: { onAction?: (action: string) => void }) {
 // ============================================
 
 const selectItems = [
-  { id: 'sm', label: 'Small', size: '640px' },
-  { id: 'md', label: 'Medium', size: '768px' },
-  { id: 'lg', label: 'Large', size: '1024px' },
-  { id: 'xl', label: 'Extra Large', size: '1280px' },
-  { id: '2xl', label: '2X Large', size: '1536px' },
-]
-type SelectDemoItem = (typeof selectItems)[number]
+  { id: "sm", label: "Small", size: "640px" },
+  { id: "md", label: "Medium", size: "768px" },
+  { id: "lg", label: "Large", size: "1024px" },
+  { id: "xl", label: "Extra Large", size: "1280px" },
+  { id: "2xl", label: "2X Large", size: "1536px" },
+];
+type SelectDemoItem = (typeof selectItems)[number];
 
 function SelectDemo(props: { onSelectionChange?: (key: string | number | null) => void }) {
-  const [selectedKey, setSelectedKey] = createSignal<string | number | null>('md')
+  const [selectedKey, setSelectedKey] = createSignal<string | number | null>("md");
 
   const handleChange = (key: string | number | null) => {
-    setSelectedKey(key)
-    props.onSelectionChange?.(key)
-  }
+    setSelectedKey(key);
+    props.onSelectionChange?.(key);
+  };
 
   return (
     <div class="space-y-6">
@@ -1116,7 +1345,11 @@ function SelectDemo(props: { onSelectionChange?: (key: string | number | null) =
               <span class="text-primary-400">▼</span>
             </SelectTrigger>
             <SelectListBox class="hidden">
-              {(item: SelectDemoItem) => <SelectOption id={item.id} item={item}>{item.label}</SelectOption>}
+              {(item: SelectDemoItem) => (
+                <SelectOption id={item.id} item={item}>
+                  {item.label}
+                </SelectOption>
+              )}
             </SelectListBox>
           </Select>
         </div>
@@ -1124,12 +1357,13 @@ function SelectDemo(props: { onSelectionChange?: (key: string | number | null) =
 
       <div>
         <p class="text-xs text-primary-400">
-          Click to open dropdown, use arrow keys to navigate options, Enter/Space to select, Escape to close.
-          The selected value is: <strong class="text-primary-200">{selectedKey() || 'none'}</strong>
+          Click to open dropdown, use arrow keys to navigate options, Enter/Space to select, Escape
+          to close. The selected value is:{" "}
+          <strong class="text-primary-200">{selectedKey() || "none"}</strong>
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -1137,25 +1371,25 @@ function SelectDemo(props: { onSelectionChange?: (key: string | number | null) =
 // ============================================
 
 interface FruitItem {
-  id: string
-  label: string
+  id: string;
+  label: string;
 }
 
 const styledSelectItems: FruitItem[] = [
-  { id: 'apple', label: 'Apple' },
-  { id: 'banana', label: 'Banana' },
-  { id: 'cherry', label: 'Cherry' },
-  { id: 'date', label: 'Date' },
-  { id: 'elderberry', label: 'Elderberry' },
-]
+  { id: "apple", label: "Apple" },
+  { id: "banana", label: "Banana" },
+  { id: "cherry", label: "Cherry" },
+  { id: "date", label: "Date" },
+  { id: "elderberry", label: "Elderberry" },
+];
 
 function StyledSelectDemo(props: { onSelectionChange?: (key: string | number | null) => void }) {
-  const [selectedKey, setSelectedKey] = createSignal<string | number | null>(null)
+  const [selectedKey, setSelectedKey] = createSignal<string | number | null>(null);
 
   const handleChange = (key: string | number | null) => {
-    setSelectedKey(key)
-    props.onSelectionChange?.(key)
-  }
+    setSelectedKey(key);
+    props.onSelectionChange?.(key);
+  };
 
   return (
     <div class="space-y-6">
@@ -1224,10 +1458,11 @@ function StyledSelectDemo(props: { onSelectionChange?: (key: string | number | n
         </StyledSelect>
       </div>
       <p class="text-xs text-primary-400">
-        Pre-styled Select with size variants. Selected: <strong class="text-primary-200">{selectedKey() || 'none'}</strong>
+        Pre-styled Select with size variants. Selected:{" "}
+        <strong class="text-primary-200">{selectedKey() || "none"}</strong>
       </p>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -1235,24 +1470,24 @@ function StyledSelectDemo(props: { onSelectionChange?: (key: string | number | n
 // ============================================
 
 interface MenuItemData {
-  id: string
-  label: string
-  shortcut?: string
-  isSeparator?: boolean
-  isDestructive?: boolean
+  id: string;
+  label: string;
+  shortcut?: string;
+  isSeparator?: boolean;
+  isDestructive?: boolean;
 }
 
 const styledMenuItems: MenuItemData[] = [
-  { id: 'new', label: 'New File', shortcut: '⌘N' },
-  { id: 'open', label: 'Open...', shortcut: '⌘O' },
-  { id: 'save', label: 'Save', shortcut: '⌘S' },
-  { id: 'separator', label: '', isSeparator: true },
-  { id: 'delete', label: 'Delete', isDestructive: true },
-]
+  { id: "new", label: "New File", shortcut: "⌘N" },
+  { id: "open", label: "Open...", shortcut: "⌘O" },
+  { id: "save", label: "Save", shortcut: "⌘S" },
+  { id: "separator", label: "", isSeparator: true },
+  { id: "delete", label: "Delete", isDestructive: true },
+];
 
 interface SimpleMenuItem {
-  id: string
-  label: string
+  id: string;
+  label: string;
 }
 
 function StyledMenuDemo(props: { onAction?: (action: string) => void }) {
@@ -1261,9 +1496,7 @@ function StyledMenuDemo(props: { onAction?: (action: string) => void }) {
       <div class="flex gap-4 flex-wrap">
         {/* Primary variant */}
         <StyledMenuTrigger size="md">
-          <StyledMenuButton variant="primary">
-            File Menu
-          </StyledMenuButton>
+          <StyledMenuButton variant="primary">File Menu</StyledMenuButton>
           <StyledMenu<MenuItemData>
             items={styledMenuItems.filter((i: MenuItemData) => !i.isSeparator)}
             getKey={(item: MenuItemData) => item.id}
@@ -1284,46 +1517,34 @@ function StyledMenuDemo(props: { onAction?: (action: string) => void }) {
 
         {/* Secondary variant */}
         <StyledMenuTrigger size="md">
-          <StyledMenuButton variant="secondary">
-            Edit Menu
-          </StyledMenuButton>
+          <StyledMenuButton variant="secondary">Edit Menu</StyledMenuButton>
           <StyledMenu<SimpleMenuItem>
             items={[
-              { id: 'cut', label: 'Cut' },
-              { id: 'copy', label: 'Copy' },
-              { id: 'paste', label: 'Paste' },
+              { id: "cut", label: "Cut" },
+              { id: "copy", label: "Copy" },
+              { id: "paste", label: "Paste" },
             ]}
             getKey={(item: SimpleMenuItem) => item.id}
             onAction={(key: string | number) => props.onAction?.(String(key))}
             aria-label="Edit menu"
           >
-            {(item: SimpleMenuItem) => (
-              <StyledMenuItem id={item.id}>
-                {item.label}
-              </StyledMenuItem>
-            )}
+            {(item: SimpleMenuItem) => <StyledMenuItem id={item.id}>{item.label}</StyledMenuItem>}
           </StyledMenu>
         </StyledMenuTrigger>
 
         {/* Quiet variant */}
         <StyledMenuTrigger size="sm">
-          <StyledMenuButton variant="quiet">
-            More
-          </StyledMenuButton>
+          <StyledMenuButton variant="quiet">More</StyledMenuButton>
           <StyledMenu<SimpleMenuItem>
             items={[
-              { id: 'settings', label: 'Settings' },
-              { id: 'help', label: 'Help' },
+              { id: "settings", label: "Settings" },
+              { id: "help", label: "Help" },
             ]}
             getKey={(item: SimpleMenuItem) => item.id}
             onAction={(key: string | number) => props.onAction?.(String(key))}
             aria-label="More options"
           >
-            {(item: SimpleMenuItem) => (
-              <StyledMenuItem id={item.id}>
-                {item.label}
-              </StyledMenuItem>
-            )}
+            {(item: SimpleMenuItem) => <StyledMenuItem id={item.id}>{item.label}</StyledMenuItem>}
           </StyledMenu>
         </StyledMenuTrigger>
       </div>
@@ -1331,7 +1552,7 @@ function StyledMenuDemo(props: { onAction?: (action: string) => void }) {
         Pre-styled Menu with button variants (primary, secondary, quiet) and size options.
       </p>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -1339,20 +1560,20 @@ function StyledMenuDemo(props: { onAction?: (action: string) => void }) {
 // ============================================
 
 interface MailboxItem {
-  id: string
-  label: string
-  description: string
+  id: string;
+  label: string;
+  description: string;
 }
 
 const styledListBoxItems: MailboxItem[] = [
-  { id: 'inbox', label: 'Inbox', description: '24 unread messages' },
-  { id: 'drafts', label: 'Drafts', description: '3 draft messages' },
-  { id: 'sent', label: 'Sent', description: '156 sent messages' },
-  { id: 'archive', label: 'Archive', description: '1,234 archived' },
-  { id: 'trash', label: 'Trash', description: '12 items' },
-]
+  { id: "inbox", label: "Inbox", description: "24 unread messages" },
+  { id: "drafts", label: "Drafts", description: "3 draft messages" },
+  { id: "sent", label: "Sent", description: "156 sent messages" },
+  { id: "archive", label: "Archive", description: "1,234 archived" },
+  { id: "trash", label: "Trash", description: "12 items" },
+];
 
-type SelectionKeys = 'all' | Set<string | number>
+type SelectionKeys = "all" | Set<string | number>;
 
 function StyledListBoxDemo(props: { onSelectionChange?: (key: string | number) => void }) {
   return (
@@ -1366,9 +1587,9 @@ function StyledListBoxDemo(props: { onSelectionChange?: (key: string | number) =
         size="sm"
         label="Small ListBox"
         onSelectionChange={(keys: SelectionKeys) => {
-          if (keys !== 'all') {
-            const key = [...keys][0]
-            if (key) props.onSelectionChange?.(key)
+          if (keys !== "all") {
+            const key = [...keys][0];
+            if (key) props.onSelectionChange?.(key);
           }
         }}
       >
@@ -1388,9 +1609,9 @@ function StyledListBoxDemo(props: { onSelectionChange?: (key: string | number) =
         size="md"
         label="Medium ListBox"
         onSelectionChange={(keys: SelectionKeys) => {
-          if (keys !== 'all') {
-            const key = [...keys][0]
-            if (key) props.onSelectionChange?.(key)
+          if (keys !== "all") {
+            const key = [...keys][0];
+            if (key) props.onSelectionChange?.(key);
           }
         }}
       >
@@ -1410,9 +1631,9 @@ function StyledListBoxDemo(props: { onSelectionChange?: (key: string | number) =
         size="lg"
         label="Large ListBox"
         onSelectionChange={(keys: SelectionKeys) => {
-          if (keys !== 'all') {
-            const key = [...keys][0]
-            if (key) props.onSelectionChange?.(key)
+          if (keys !== "all") {
+            const key = [...keys][0];
+            if (key) props.onSelectionChange?.(key);
           }
         }}
       >
@@ -1423,7 +1644,7 @@ function StyledListBoxDemo(props: { onSelectionChange?: (key: string | number) =
         )}
       </StyledListBox>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -1431,25 +1652,42 @@ function StyledListBoxDemo(props: { onSelectionChange?: (key: string | number) =
 // ============================================
 
 interface TabItem {
-  id: string
-  label: string
-  content: string
+  id: string;
+  label: string;
+  content: string;
 }
 
 const tabItems: TabItem[] = [
-  { id: 'overview', label: 'Overview', content: 'This is the overview panel content. It provides a summary of all features.' },
-  { id: 'features', label: 'Features', content: 'Explore the rich features including accessibility, keyboard navigation, and customization.' },
-  { id: 'specs', label: 'Specifications', content: 'Technical specifications and requirements for integration.' },
-  { id: 'reviews', label: 'Reviews', content: 'User reviews and testimonials about the component library.' },
-]
+  {
+    id: "overview",
+    label: "Overview",
+    content: "This is the overview panel content. It provides a summary of all features.",
+  },
+  {
+    id: "features",
+    label: "Features",
+    content:
+      "Explore the rich features including accessibility, keyboard navigation, and customization.",
+  },
+  {
+    id: "specs",
+    label: "Specifications",
+    content: "Technical specifications and requirements for integration.",
+  },
+  {
+    id: "reviews",
+    label: "Reviews",
+    content: "User reviews and testimonials about the component library.",
+  },
+];
 
 function StyledTabsDemo(props: { onSelectionChange?: (key: string | number) => void }) {
-  const [selectedKey, setSelectedKey] = createSignal<string | number>('overview')
+  const [selectedKey, setSelectedKey] = createSignal<string | number>("overview");
 
   const handleChange = (key: string | number) => {
-    setSelectedKey(key)
-    props.onSelectionChange?.(key)
-  }
+    setSelectedKey(key);
+    props.onSelectionChange?.(key);
+  };
 
   return (
     <div class="space-y-8">
@@ -1465,14 +1703,12 @@ function StyledTabsDemo(props: { onSelectionChange?: (key: string | number) => v
           variant="underline"
         >
           <StyledTabList>
-            {(item: TabItem) => (
-              <StyledTab id={item.id}>{item.label}</StyledTab>
-            )}
+            {(item: TabItem) => <StyledTab id={item.id}>{item.label}</StyledTab>}
           </StyledTabList>
           <StyledTabPanel>
             {() => {
-              const selected = tabItems.find((item: TabItem) => item.id === selectedKey())
-              return <p class="text-primary-300">{selected?.content}</p>
+              const selected = tabItems.find((item: TabItem) => item.id === selectedKey());
+              return <p class="text-primary-300">{selected?.content}</p>;
             }}
           </StyledTabPanel>
         </StyledTabs>
@@ -1489,9 +1725,7 @@ function StyledTabsDemo(props: { onSelectionChange?: (key: string | number) => v
           variant="pill"
         >
           <StyledTabList>
-            {(item: TabItem) => (
-              <StyledTab id={item.id}>{item.label}</StyledTab>
-            )}
+            {(item: TabItem) => <StyledTab id={item.id}>{item.label}</StyledTab>}
           </StyledTabList>
           <StyledTabPanel>
             <p class="text-primary-300">{tabItems[1].content}</p>
@@ -1513,9 +1747,7 @@ function StyledTabsDemo(props: { onSelectionChange?: (key: string | number) => v
             size="sm"
           >
             <StyledTabList>
-              {(item: TabItem) => (
-                <StyledTab id={item.id}>{item.label}</StyledTab>
-              )}
+              {(item: TabItem) => <StyledTab id={item.id}>{item.label}</StyledTab>}
             </StyledTabList>
             <StyledTabPanel>
               <p class="text-primary-400 text-sm">Small tabs content</p>
@@ -1532,9 +1764,7 @@ function StyledTabsDemo(props: { onSelectionChange?: (key: string | number) => v
             size="md"
           >
             <StyledTabList>
-              {(item: TabItem) => (
-                <StyledTab id={item.id}>{item.label}</StyledTab>
-              )}
+              {(item: TabItem) => <StyledTab id={item.id}>{item.label}</StyledTab>}
             </StyledTabList>
             <StyledTabPanel>
               <p class="text-primary-300">Medium tabs content</p>
@@ -1551,9 +1781,7 @@ function StyledTabsDemo(props: { onSelectionChange?: (key: string | number) => v
             size="lg"
           >
             <StyledTabList>
-              {(item: TabItem) => (
-                <StyledTab id={item.id}>{item.label}</StyledTab>
-              )}
+              {(item: TabItem) => <StyledTab id={item.id}>{item.label}</StyledTab>}
             </StyledTabList>
             <StyledTabPanel>
               <p class="text-primary-200">Large tabs content</p>
@@ -1563,10 +1791,11 @@ function StyledTabsDemo(props: { onSelectionChange?: (key: string | number) => v
       </div>
 
       <p class="text-xs text-primary-400">
-        Pre-styled Tabs with variants (underline, pill, boxed) and sizes (sm, md, lg). Use arrow keys to navigate between tabs.
+        Pre-styled Tabs with variants (underline, pill, boxed) and sizes (sm, md, lg). Use arrow
+        keys to navigate between tabs.
       </p>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -1574,18 +1803,18 @@ function StyledTabsDemo(props: { onSelectionChange?: (key: string | number) => v
 // ============================================
 
 interface BreadcrumbData {
-  id: string
-  label: string
-  href?: string
-  isCurrent?: boolean
+  id: string;
+  label: string;
+  href?: string;
+  isCurrent?: boolean;
 }
 
 const breadcrumbItems: BreadcrumbData[] = [
-  { id: 'home', label: 'Home', href: '/' },
-  { id: 'products', label: 'Products', href: '/products' },
-  { id: 'category', label: 'Electronics', href: '/products/electronics' },
-  { id: 'item', label: 'Smartphones', isCurrent: true },
-]
+  { id: "home", label: "Home", href: "/" },
+  { id: "products", label: "Products", href: "/products" },
+  { id: "category", label: "Electronics", href: "/products/electronics" },
+  { id: "item", label: "Smartphones", isCurrent: true },
+];
 
 function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
   return (
@@ -1645,10 +1874,7 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
               aria-label="Small breadcrumbs demo"
             >
               {(item: BreadcrumbData) => (
-                <StyledBreadcrumbItem
-                  isCurrent={item.id === 'category'}
-                  href={item.href}
-                >
+                <StyledBreadcrumbItem isCurrent={item.id === "category"} href={item.href}>
                   {item.label}
                 </StyledBreadcrumbItem>
               )}
@@ -1665,10 +1891,7 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
               aria-label="Medium breadcrumbs demo"
             >
               {(item: BreadcrumbData) => (
-                <StyledBreadcrumbItem
-                  isCurrent={item.id === 'category'}
-                  href={item.href}
-                >
+                <StyledBreadcrumbItem isCurrent={item.id === "category"} href={item.href}>
                   {item.label}
                 </StyledBreadcrumbItem>
               )}
@@ -1685,10 +1908,7 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
               aria-label="Large breadcrumbs demo"
             >
               {(item: BreadcrumbData) => (
-                <StyledBreadcrumbItem
-                  isCurrent={item.id === 'category'}
-                  href={item.href}
-                >
+                <StyledBreadcrumbItem isCurrent={item.id === "category"} href={item.href}>
                   {item.label}
                 </StyledBreadcrumbItem>
               )}
@@ -1698,10 +1918,11 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
       </div>
 
       <p class="text-xs text-primary-400">
-        Pre-styled Breadcrumbs with variants (default, subtle) and sizes (sm, md, lg). Click items to navigate.
+        Pre-styled Breadcrumbs with variants (default, subtle) and sizes (sm, md, lg). Click items
+        to navigate.
       </p>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -1709,13 +1930,13 @@ function StyledBreadcrumbsDemo(props: { onNavigate?: (path: string) => void }) {
 // ============================================
 
 function StyledNumberFieldDemo(props: { onChange?: (value: number) => void }) {
-  const [value, setValue] = createSignal(50)
-  const [currencyValue, setCurrencyValue] = createSignal(99.99)
+  const [value, setValue] = createSignal(50);
+  const [currencyValue, setCurrencyValue] = createSignal(99.99);
 
   const handleChange = (newValue: number) => {
-    setValue(newValue)
-    props.onChange?.(newValue)
-  }
+    setValue(newValue);
+    props.onChange?.(newValue);
+  };
 
   return (
     <div class="space-y-8">
@@ -1738,13 +1959,7 @@ function StyledNumberFieldDemo(props: { onChange?: (value: number) => void }) {
       <div>
         <h4 class="text-sm font-medium text-primary-200 mb-3">Size Variants</h4>
         <div class="grid gap-6 sm:grid-cols-3">
-          <StyledNumberField
-            label="Small"
-            defaultValue={10}
-            size="sm"
-            minValue={0}
-            maxValue={50}
-          />
+          <StyledNumberField label="Small" defaultValue={10} size="sm" minValue={0} maxValue={50} />
           <StyledNumberField
             label="Medium (default)"
             defaultValue={25}
@@ -1752,13 +1967,7 @@ function StyledNumberFieldDemo(props: { onChange?: (value: number) => void }) {
             minValue={0}
             maxValue={50}
           />
-          <StyledNumberField
-            label="Large"
-            defaultValue={40}
-            size="lg"
-            minValue={0}
-            maxValue={50}
-          />
+          <StyledNumberField label="Large" defaultValue={40} size="lg" minValue={0} maxValue={50} />
         </div>
       </div>
 
@@ -1788,8 +1997,8 @@ function StyledNumberFieldDemo(props: { onChange?: (value: number) => void }) {
             minValue={0}
             step={0.01}
             formatOptions={{
-              style: 'currency',
-              currency: 'USD',
+              style: "currency",
+              currency: "USD",
             }}
           />
         </div>
@@ -1806,7 +2015,7 @@ function StyledNumberFieldDemo(props: { onChange?: (value: number) => void }) {
             maxValue={1}
             step={0.01}
             formatOptions={{
-              style: 'percent',
+              style: "percent",
             }}
           />
         </div>
@@ -1816,11 +2025,7 @@ function StyledNumberFieldDemo(props: { onChange?: (value: number) => void }) {
       <div>
         <h4 class="text-sm font-medium text-primary-200 mb-3">States</h4>
         <div class="grid gap-6 sm:grid-cols-2">
-          <StyledNumberField
-            label="Disabled"
-            defaultValue={42}
-            isDisabled
-          />
+          <StyledNumberField label="Disabled" defaultValue={42} isDisabled />
           <StyledNumberField
             label="Invalid"
             defaultValue={-5}
@@ -1844,11 +2049,12 @@ function StyledNumberFieldDemo(props: { onChange?: (value: number) => void }) {
       </div>
 
       <p class="text-xs text-primary-400">
-        NumberField with increment/decrement buttons. Supports keyboard navigation (arrows, Page Up/Down, Home/End),
-        number formatting (currency, percent), min/max constraints, and step values.
+        NumberField with increment/decrement buttons. Supports keyboard navigation (arrows, Page
+        Up/Down, Home/End), number formatting (currency, percent), min/max constraints, and step
+        values.
       </p>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -1856,11 +2062,11 @@ function StyledNumberFieldDemo(props: { onChange?: (value: number) => void }) {
 // ============================================
 
 function StyledSearchFieldDemo(props: { onSearch?: (value: string) => void }) {
-  const [value, setValue] = createSignal('')
+  const [value, setValue] = createSignal("");
 
   const handleSubmit = (searchValue: string) => {
-    props.onSearch?.(searchValue)
-  }
+    props.onSearch?.(searchValue);
+  };
 
   return (
     <div class="space-y-8">
@@ -1874,7 +2080,7 @@ function StyledSearchFieldDemo(props: { onSearch?: (value: string) => void }) {
             value={value()}
             onChange={setValue}
             onSubmit={handleSubmit}
-            onClear={() => setValue('')}
+            onClear={() => setValue("")}
           />
         </div>
       </div>
@@ -1970,11 +2176,11 @@ function StyledSearchFieldDemo(props: { onSearch?: (value: string) => void }) {
       </div>
 
       <p class="text-xs text-primary-400">
-        SearchField with clear button. Press Enter to submit, Escape to clear.
-        The clear button appears when there's text in the field.
+        SearchField with clear button. Press Enter to submit, Escape to clear. The clear button
+        appears when there's text in the field.
       </p>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -1986,41 +2192,41 @@ function StyledSearchFieldDemo(props: { onSearch?: (value: string) => void }) {
 // ============================================
 
 interface ComboBoxItem {
-  id: string
-  name: string
-  category: string
+  id: string;
+  name: string;
+  category: string;
 }
 
 const comboBoxItems: ComboBoxItem[] = [
-  { id: 'apple', name: 'Apple', category: 'Fruit' },
-  { id: 'banana', name: 'Banana', category: 'Fruit' },
-  { id: 'cherry', name: 'Cherry', category: 'Fruit' },
-  { id: 'carrot', name: 'Carrot', category: 'Vegetable' },
-  { id: 'celery', name: 'Celery', category: 'Vegetable' },
-  { id: 'cucumber', name: 'Cucumber', category: 'Vegetable' },
-  { id: 'date', name: 'Date', category: 'Fruit' },
-  { id: 'elderberry', name: 'Elderberry', category: 'Fruit' },
-]
+  { id: "apple", name: "Apple", category: "Fruit" },
+  { id: "banana", name: "Banana", category: "Fruit" },
+  { id: "cherry", name: "Cherry", category: "Fruit" },
+  { id: "carrot", name: "Carrot", category: "Vegetable" },
+  { id: "celery", name: "Celery", category: "Vegetable" },
+  { id: "cucumber", name: "Cucumber", category: "Vegetable" },
+  { id: "date", name: "Date", category: "Fruit" },
+  { id: "elderberry", name: "Elderberry", category: "Fruit" },
+];
 
 function StyledComboBoxDemo(props: { onSelectionChange?: (key: string | number | null) => void }) {
-  const [selectedKey, setSelectedKey] = createSignal<string | number | null>(null)
-  const [requiredKey, setRequiredKey] = createSignal<string | number | null>(null)
-  const [requiredTouched, setRequiredTouched] = createSignal(false)
+  const [selectedKey, setSelectedKey] = createSignal<string | number | null>(null);
+  const [requiredKey, setRequiredKey] = createSignal<string | number | null>(null);
+  const [requiredTouched, setRequiredTouched] = createSignal(false);
 
   const handleChange = (key: string | number | null) => {
-    setSelectedKey(key)
-    props.onSelectionChange?.(key)
-  }
+    setSelectedKey(key);
+    props.onSelectionChange?.(key);
+  };
 
   const handleRequiredChange = (key: string | number | null) => {
-    setRequiredKey(key)
-  }
+    setRequiredKey(key);
+  };
 
   const handleRequiredBlur = () => {
-    setRequiredTouched(true)
-  }
+    setRequiredTouched(true);
+  };
 
-  const isRequiredInvalid = () => requiredTouched() && !requiredKey()
+  const isRequiredInvalid = () => requiredTouched() && !requiredKey();
 
   return (
     <div class="space-y-8">
@@ -2198,20 +2404,21 @@ function StyledComboBoxDemo(props: { onSelectionChange?: (key: string | number |
       </div>
 
       <p class="text-xs text-primary-400">
-        ComboBox combines a text input with a filterable listbox. Type to filter options, use arrow keys to navigate,
-        Enter to select, Escape to close. Selected: <strong class="text-primary-200">{selectedKey() || 'none'}</strong>
+        ComboBox combines a text input with a filterable listbox. Type to filter options, use arrow
+        keys to navigate, Enter to select, Escape to close. Selected:{" "}
+        <strong class="text-primary-200">{selectedKey() || "none"}</strong>
       </p>
     </div>
-  )
+  );
 }
 
 function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
-  const [value, setValue] = createSignal(50)
+  const [value, setValue] = createSignal(50);
 
   const handleChange = (newValue: number) => {
-    setValue(newValue)
-    props.onChange?.(newValue)
-  }
+    setValue(newValue);
+    props.onChange?.(newValue);
+  };
 
   return (
     <div class="space-y-8">
@@ -2219,11 +2426,7 @@ function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
       <div>
         <h4 class="text-sm font-medium text-primary-200 mb-3">Basic Slider</h4>
         <div class="max-w-md">
-          <StyledSlider
-            label="Volume"
-            value={value()}
-            onChange={handleChange}
-          />
+          <StyledSlider label="Volume" value={value()} onChange={handleChange} />
         </div>
       </div>
 
@@ -2231,24 +2434,14 @@ function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
       <div>
         <h4 class="text-sm font-medium text-primary-200 mb-3">Size Variants</h4>
         <div class="grid gap-6">
-          <StyledSlider
-            label="Small"
-            defaultValue={30}
-            size="sm"
-            onChange={props.onChange}
-          />
+          <StyledSlider label="Small" defaultValue={30} size="sm" onChange={props.onChange} />
           <StyledSlider
             label="Medium (default)"
             defaultValue={50}
             size="md"
             onChange={props.onChange}
           />
-          <StyledSlider
-            label="Large"
-            defaultValue={70}
-            size="lg"
-            onChange={props.onChange}
-          />
+          <StyledSlider label="Large" defaultValue={70} size="lg" onChange={props.onChange} />
         </div>
       </div>
 
@@ -2306,7 +2499,7 @@ function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
             minValue={0}
             maxValue={1000}
             step={50}
-            formatOptions={{ style: 'currency', currency: 'USD' }}
+            formatOptions={{ style: "currency", currency: "USD" }}
             onChange={props.onChange}
           />
           <StyledSlider
@@ -2314,7 +2507,7 @@ function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
             defaultValue={25}
             minValue={0}
             maxValue={100}
-            formatOptions={{ style: 'percent', maximumFractionDigits: 0 }}
+            formatOptions={{ style: "percent", maximumFractionDigits: 0 }}
             onChange={(v) => props.onChange?.(v / 100)}
           />
         </div>
@@ -2324,11 +2517,7 @@ function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
       <div>
         <h4 class="text-sm font-medium text-primary-200 mb-3">Disabled</h4>
         <div class="max-w-md">
-          <StyledSlider
-            label="Disabled Slider"
-            defaultValue={50}
-            isDisabled
-          />
+          <StyledSlider label="Disabled Slider" defaultValue={50} isDisabled />
         </div>
       </div>
 
@@ -2350,54 +2539,54 @@ function StyledSliderDemo(props: { onChange?: (value: number) => void }) {
         Supports custom ranges, steps, and number formatting.
       </p>
     </div>
-  )
+  );
 }
 
 interface DemoActionItem {
-  id: string
-  label: string
-  [key: string]: unknown
+  id: string;
+  label: string;
+  [key: string]: unknown;
 }
 
 function ActionGroupDemo(props: { onLastAction: (value: string) => void }) {
   const items: DemoActionItem[] = [
-    { id: 'cut', label: 'Cut' },
-    { id: 'copy', label: 'Copy' },
-    { id: 'paste', label: 'Paste' },
-  ]
+    { id: "cut", label: "Cut" },
+    { id: "copy", label: "Copy" },
+    { id: "paste", label: "Paste" },
+  ];
 
-  const [selectionMode, setSelectionMode] = createSignal<'none' | 'single' | 'multiple'>('single')
-  const [selectedKeys, setSelectedKeys] = createSignal<Set<string | number>>(new Set(['copy']))
+  const [selectionMode, setSelectionMode] = createSignal<"none" | "single" | "multiple">("single");
+  const [selectedKeys, setSelectedKeys] = createSignal<Set<string | number>>(new Set(["copy"]));
 
-  const handleSelectionChange = (keys: 'all' | Set<string | number>) => {
-    if (keys === 'all') {
-      return
+  const handleSelectionChange = (keys: "all" | Set<string | number>) => {
+    if (keys === "all") {
+      return;
     }
-    setSelectedKeys(keys)
-    props.onLastAction(`ActionGroup selection: ${Array.from(keys).join(', ') || 'none'}`)
-  }
+    setSelectedKeys(keys);
+    props.onLastAction(`ActionGroup selection: ${Array.from(keys).join(", ") || "none"}`);
+  };
 
   return (
     <div class="space-y-4">
       <div class="flex flex-wrap gap-2">
         <Button
-          variant={selectionMode() === 'none' ? 'primary' : 'secondary'}
+          variant={selectionMode() === "none" ? "primary" : "secondary"}
           size="sm"
-          onPress={() => setSelectionMode('none')}
+          onPress={() => setSelectionMode("none")}
         >
           No selection
         </Button>
         <Button
-          variant={selectionMode() === 'single' ? 'primary' : 'secondary'}
+          variant={selectionMode() === "single" ? "primary" : "secondary"}
           size="sm"
-          onPress={() => setSelectionMode('single')}
+          onPress={() => setSelectionMode("single")}
         >
           Single
         </Button>
         <Button
-          variant={selectionMode() === 'multiple' ? 'primary' : 'secondary'}
+          variant={selectionMode() === "multiple" ? "primary" : "secondary"}
           size="sm"
-          onPress={() => setSelectionMode('multiple')}
+          onPress={() => setSelectionMode("multiple")}
         >
           Multiple
         </Button>
@@ -2415,10 +2604,10 @@ function ActionGroupDemo(props: { onLastAction: (value: string) => void }) {
       </StyledActionGroup>
 
       <p class="text-xs text-primary-400">
-        Mode: {selectionMode()} | Selected: {Array.from(selectedKeys()).join(', ') || 'none'}
+        Mode: {selectionMode()} | Selected: {Array.from(selectedKeys()).join(", ") || "none"}
       </p>
     </div>
-  )
+  );
 }
 
 function ToolbarDemo(props: { onLastAction: (value: string) => void }) {
@@ -2430,21 +2619,21 @@ function ToolbarDemo(props: { onLastAction: (value: string) => void }) {
           <button
             type="button"
             class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100"
-            onClick={() => props.onLastAction('Toolbar: bold')}
+            onClick={() => props.onLastAction("Toolbar: bold")}
           >
             Bold
           </button>
           <button
             type="button"
             class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100"
-            onClick={() => props.onLastAction('Toolbar: italic')}
+            onClick={() => props.onLastAction("Toolbar: italic")}
           >
             Italic
           </button>
           <button
             type="button"
             class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100"
-            onClick={() => props.onLastAction('Toolbar: underline')}
+            onClick={() => props.onLastAction("Toolbar: underline")}
           >
             Underline
           </button>
@@ -2454,30 +2643,53 @@ function ToolbarDemo(props: { onLastAction: (value: string) => void }) {
       <div>
         <h4 class="text-sm font-medium text-primary-300 mb-2">Vertical Toolbar</h4>
         <StyledToolbar orientation="vertical" variant="bordered" aria-label="Edit toolbar">
-          <button type="button" class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100">Cut</button>
-          <button type="button" class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100">Copy</button>
-          <button type="button" class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100">Paste</button>
+          <button
+            type="button"
+            class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100"
+          >
+            Cut
+          </button>
+          <button
+            type="button"
+            class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100"
+          >
+            Copy
+          </button>
+          <button
+            type="button"
+            class="rounded bg-bg-200 px-3 py-1 text-sm text-primary-200 hover:bg-bg-100"
+          >
+            Paste
+          </button>
         </StyledToolbar>
       </div>
     </div>
-  )
+  );
 }
 
 function ActionBarDemo(props: { onLastAction: (value: string) => void }) {
-  const [selectedCount, setSelectedCount] = createSignal(2)
+  const [selectedCount, setSelectedCount] = createSignal(2);
 
   const clearSelection = () => {
-    setSelectedCount(0)
-    props.onLastAction('ActionBar: clear selection')
-  }
+    setSelectedCount(0);
+    props.onLastAction("ActionBar: clear selection");
+  };
 
   return (
     <div class="space-y-4">
       <div class="flex flex-wrap gap-2">
-        <Button size="sm" variant="secondary" onPress={() => setSelectedCount((c) => Math.max(c - 1, 0))}>
+        <Button
+          size="sm"
+          variant="secondary"
+          onPress={() => setSelectedCount((c) => Math.max(c - 1, 0))}
+        >
           -1 selected
         </Button>
-        <Button size="sm" variant="secondary" onPress={() => setSelectedCount((c) => Math.min(c + 1, 9))}>
+        <Button
+          size="sm"
+          variant="secondary"
+          onPress={() => setSelectedCount((c) => Math.min(c + 1, 9))}
+        >
           +1 selected
         </Button>
         <Button size="sm" variant="secondary" onPress={clearSelection}>
@@ -2497,71 +2709,67 @@ function ActionBarDemo(props: { onLastAction: (value: string) => void }) {
           <button
             type="button"
             class="rounded bg-bg-400 px-3 py-1 text-sm text-primary-100 hover:bg-bg-500"
-            onClick={() => props.onLastAction('ActionBar: archive')}
+            onClick={() => props.onLastAction("ActionBar: archive")}
           >
             Archive
           </button>
           <button
             type="button"
             class="rounded bg-bg-400 px-3 py-1 text-sm text-primary-100 hover:bg-bg-500"
-            onClick={() => props.onLastAction('ActionBar: delete')}
+            onClick={() => props.onLastAction("ActionBar: delete")}
           >
             Delete
           </button>
         </StyledActionBar>
       </StyledActionBarContainer>
     </div>
-  )
+  );
 }
 
 // TagGroup Demo Components
 interface TagItem {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 function TagGroupDemo() {
   const [tags, setTags] = createSignal<TagItem[]>([
-    { id: '1', name: 'React' },
-    { id: '2', name: 'SolidJS' },
-    { id: '3', name: 'Vue' },
-    { id: '4', name: 'Angular' },
-    { id: '5', name: 'Svelte' },
-  ])
+    { id: "1", name: "React" },
+    { id: "2", name: "SolidJS" },
+    { id: "3", name: "Vue" },
+    { id: "4", name: "Angular" },
+    { id: "5", name: "Svelte" },
+  ]);
 
   const handleRemove = (keys: Set<string | number>) => {
-    setTags((prev) => prev.filter((tag) => !keys.has(tag.id)))
-  }
+    setTags((prev) => prev.filter((tag) => !keys.has(tag.id)));
+  };
 
   return (
-    <TagGroup
-      label="Frameworks"
-      items={tags()}
-      onRemove={handleRemove}
-    >
+    <TagGroup label="Frameworks" items={tags()} onRemove={handleRemove}>
       {(item) => item.name}
     </TagGroup>
-  )
+  );
 }
 
 function TagGroupSelectionDemo() {
-  const [selectedKeys, setSelectedKeys] = createSignal<Set<string | number>>(new Set(['ts']))
+  const [selectedKeys, setSelectedKeys] = createSignal<Set<string | number>>(new Set(["ts"]));
 
   const items: TagItem[] = [
-    { id: 'ts', name: 'TypeScript' },
-    { id: 'js', name: 'JavaScript' },
-    { id: 'rust', name: 'Rust' },
-    { id: 'go', name: 'Go' },
-    { id: 'py', name: 'Python' },
-  ]
+    { id: "ts", name: "TypeScript" },
+    { id: "js", name: "JavaScript" },
+    { id: "rust", name: "Rust" },
+    { id: "go", name: "Go" },
+    { id: "py", name: "Python" },
+  ];
 
-  const handleSelectionChange = (keys: 'all' | Set<string | number>) => {
-    if (keys === 'all') {
-      setSelectedKeys(new Set(items.map((i) => i.id)))
+  const handleSelectionChange = (keys: "all" | Set<string | number>) => {
+    if (keys === "all") {
+      setSelectedKeys(new Set(items.map((i) => i.id)));
     } else {
-      setSelectedKeys(keys)
+      setSelectedKeys(keys);
     }
-  }
+  };
 
   return (
     <div class="space-y-2">
@@ -2576,10 +2784,10 @@ function TagGroupSelectionDemo() {
         {(item) => item.name}
       </TagGroup>
       <p class="text-xs text-primary-400">
-        Selected: {Array.from(selectedKeys()).join(', ') || 'None'}
+        Selected: {Array.from(selectedKeys()).join(", ") || "None"}
       </p>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -2587,32 +2795,30 @@ function TagGroupSelectionDemo() {
 // ============================================
 
 function CalendarDemo() {
-  const [selectedDate, setSelectedDate] = createSignal<DateValue | null>(null)
+  const [selectedDate, setSelectedDate] = createSignal<DateValue | null>(null);
 
   return (
     <div class="space-y-2">
-      <Calendar
-        aria-label="Select a date"
-        value={selectedDate()}
-        onChange={setSelectedDate}
-      />
-      <p class="text-xs text-primary-400">
-        Selected: {selectedDate()?.toString() || 'None'}
-      </p>
+      <Calendar aria-label="Select a date" value={selectedDate()} onChange={setSelectedDate} />
+      <p class="text-xs text-primary-400">Selected: {selectedDate()?.toString() || "None"}</p>
     </div>
-  )
+  );
 }
 
 function CalendarDisabledDemo() {
-  const today = new CalendarDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate())
+  const today = new CalendarDate(
+    new Date().getFullYear(),
+    new Date().getMonth() + 1,
+    new Date().getDate(),
+  );
 
   // Disable weekends
   const isDateUnavailable = (date: DateValue) => {
-    const d = date as CalendarDateType
-    const jsDate = new Date(d.year, d.month - 1, d.day)
-    const day = jsDate.getDay()
-    return day === 0 || day === 6 // Sunday = 0, Saturday = 6
-  }
+    const d = date as CalendarDateType;
+    const jsDate = new Date(d.year, d.month - 1, d.day);
+    const day = jsDate.getDay();
+    return day === 0 || day === 6; // Sunday = 0, Saturday = 6
+  };
 
   return (
     <Calendar
@@ -2620,7 +2826,7 @@ function CalendarDisabledDemo() {
       isDateUnavailable={isDateUnavailable}
       defaultValue={today}
     />
-  )
+  );
 }
 
 // ============================================
@@ -2628,26 +2834,24 @@ function CalendarDisabledDemo() {
 // ============================================
 
 function DatePickerDemo() {
-  const [selectedDate, setSelectedDate] = createSignal<DateValue | null>(null)
+  const [selectedDate, setSelectedDate] = createSignal<DateValue | null>(null);
 
   return (
     <div class="space-y-2">
-      <DatePicker
-        label="Event Date"
-        value={selectedDate()}
-        onChange={setSelectedDate}
-      />
-      <p class="text-xs text-primary-400">
-        Selected: {selectedDate()?.toString() || 'None'}
-      </p>
+      <DatePicker label="Event Date" value={selectedDate()} onChange={setSelectedDate} />
+      <p class="text-xs text-primary-400">Selected: {selectedDate()?.toString() || "None"}</p>
     </div>
-  )
+  );
 }
 
 function DatePickerRangeDemo() {
-  const today = new CalendarDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate())
-  const minDate = today
-  const maxDate = new CalendarDate(today.year, today.month + 3, today.day)
+  const today = new CalendarDate(
+    new Date().getFullYear(),
+    new Date().getMonth() + 1,
+    new Date().getDate(),
+  );
+  const minDate = today;
+  const maxDate = new CalendarDate(today.year, today.month + 3, today.day);
 
   return (
     <DatePicker
@@ -2656,7 +2860,7 @@ function DatePickerRangeDemo() {
       maxValue={maxDate}
       placeholderValue={today}
     />
-  )
+  );
 }
 
 // ============================================
@@ -2664,7 +2868,7 @@ function DatePickerRangeDemo() {
 // ============================================
 
 function RangeSliderDemo(props: { onChange?: (start: number, end: number) => void }) {
-  const [range, setRange] = createSignal({ start: 20, end: 80 })
+  const [range, setRange] = createSignal({ start: 20, end: 80 });
 
   return (
     <div class="space-y-8">
@@ -2675,8 +2879,8 @@ function RangeSliderDemo(props: { onChange?: (start: number, end: number) => voi
             label="Price Range"
             value={range()}
             onChange={(val) => {
-              setRange(val)
-              props.onChange?.(val.start, val.end)
+              setRange(val);
+              props.onChange?.(val.start, val.end);
             }}
           />
         </div>
@@ -2690,7 +2894,7 @@ function RangeSliderDemo(props: { onChange?: (start: number, end: number) => voi
             minValue={0}
             maxValue={1000}
             step={50}
-            formatOptions={{ style: 'currency', currency: 'USD' }}
+            formatOptions={{ style: "currency", currency: "USD" }}
           />
         </div>
       </div>
@@ -2698,7 +2902,7 @@ function RangeSliderDemo(props: { onChange?: (start: number, end: number) => voi
         Range: {range().start} – {range().end}
       </p>
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -2707,16 +2911,18 @@ function RangeSliderDemo(props: { onChange?: (start: number, end: number) => voi
 
 function ThemeInfoDisplay() {
   try {
-    const theme = useTheme()
+    const theme = useTheme();
     return (
       <div class="space-y-1 text-sm text-primary-300">
-        <p>Color scheme: <strong class="text-primary-200">{theme?.colorScheme ?? 'default'}</strong></p>
-        <p>Scale: <strong class="text-primary-200">{theme?.scale ?? 'medium'}</strong></p>
+        <p>
+          Color scheme: <strong class="text-primary-200">{theme?.colorScheme ?? "default"}</strong>
+        </p>
+        <p>
+          Scale: <strong class="text-primary-200">{theme?.scale ?? "medium"}</strong>
+        </p>
       </div>
-    )
+    );
   } catch {
-    return (
-      <p class="text-sm text-primary-400">No Provider context available — using defaults.</p>
-    )
+    return <p class="text-sm text-primary-400">No Provider context available — using defaults.</p>;
   }
 }

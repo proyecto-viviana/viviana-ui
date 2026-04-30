@@ -3,12 +3,12 @@
  * Based on @react-aria/tree/useTreeItem.
  */
 
-import { createMemo, createSignal, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { createId } from '@proyecto-viviana/solid-stately';
-import type { TreeState, TreeCollection } from '@proyecto-viviana/solid-stately';
-import type { AriaTreeItemProps, TreeItemAria } from './types';
-import { getTreeData } from './createTree';
+import { createMemo, createSignal, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import { createId } from "@proyecto-viviana/solid-stately";
+import type { TreeState, TreeCollection } from "@proyecto-viviana/solid-stately";
+import type { AriaTreeItemProps, TreeItemAria } from "./types";
+import { getTreeData } from "./createTree";
 
 /**
  * Creates accessibility props for a tree item.
@@ -16,7 +16,7 @@ import { getTreeData } from './createTree';
 export function createTreeItem<T extends object, C extends TreeCollection<T> = TreeCollection<T>>(
   props: Accessor<AriaTreeItemProps<T>>,
   state: Accessor<TreeState<T, C>>,
-  _ref: Accessor<HTMLDivElement | null>
+  _ref: Accessor<HTMLDivElement | null>,
 ): TreeItemAria {
   const [isPressed, setIsPressed] = createSignal(false);
   const rowId = createId();
@@ -68,14 +68,14 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
     const onAction = treeData?.actions.onAction;
 
     // Handle selection
-    if (s.selectionMode !== 'none') {
-      if (e.shiftKey && s.selectionMode === 'multiple') {
+    if (s.selectionMode !== "none") {
+      if (e.shiftKey && s.selectionMode === "multiple") {
         s.extendSelection(p.node.key);
       } else if (e.ctrlKey || e.metaKey) {
         s.toggleSelection(p.node.key);
       } else {
         // Replace selection or toggle if already selected
-        if (isSelected() && s.selectedKeys !== 'all') {
+        if (isSelected() && s.selectedKeys !== "all") {
           const selectedKeys = s.selectedKeys as Set<unknown>;
           if (selectedKeys.size === 1) {
             // Single selection, trigger action
@@ -109,7 +109,7 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
 
     if (isDisabled()) return;
 
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       // Get tree metadata for actions
       const treeData = getTreeData(s);
       const onAction = treeData?.actions.onAction;
@@ -125,9 +125,9 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
           p.onAction();
         }
       }
-    } else if (e.key === ' ' || e.key === 'Space' || e.key === 'Spacebar') {
+    } else if (e.key === " " || e.key === "Space" || e.key === "Spacebar") {
       // Space toggles selection
-      if (s.selectionMode !== 'none') {
+      if (s.selectionMode !== "none") {
         e.preventDefault();
         s.toggleSelection(p.node.key);
       }
@@ -184,15 +184,15 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
     const textValue = p.textValue ?? node.textValue;
 
     const baseProps: Record<string, unknown> = {
-      role: 'row',
+      role: "row",
       id: rowId,
-      'aria-label': textValue || undefined,
-      'aria-selected': s.selectionMode !== 'none' ? isSelected() : undefined,
-      'aria-disabled': isDisabled() || undefined,
-      'aria-expanded': isExpandable() ? isExpanded() : undefined,
-      'aria-level': node.level + 1, // 1-based for ARIA
-      'aria-posinset': posinset,
-      'aria-setsize': setsize,
+      "aria-label": textValue || undefined,
+      "aria-selected": s.selectionMode !== "none" ? isSelected() : undefined,
+      "aria-disabled": isDisabled() || undefined,
+      "aria-expanded": isExpandable() ? isExpanded() : undefined,
+      "aria-level": node.level + 1, // 1-based for ARIA
+      "aria-posinset": posinset,
+      "aria-setsize": setsize,
       tabIndex: isFocused() ? 0 : -1,
       onClick,
       onKeyDown,
@@ -203,7 +203,7 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
 
     // Add aria-rowindex for virtualized trees
     if (p.isVirtualized && node.rowIndex != null) {
-      baseProps['aria-rowindex'] = node.rowIndex + 1; // 1-based
+      baseProps["aria-rowindex"] = node.rowIndex + 1; // 1-based
     }
 
     return baseProps as JSX.HTMLAttributes<HTMLDivElement>;
@@ -211,7 +211,7 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
 
   const gridCellProps = createMemo(() => {
     return {
-      role: 'gridcell',
+      role: "gridcell",
     } as JSX.HTMLAttributes<HTMLDivElement>;
   });
 
@@ -234,17 +234,17 @@ export function createTreeItem<T extends object, C extends TreeCollection<T> = T
 
   const expandButtonProps = createMemo(() => {
     const baseProps: Record<string, unknown> = {
-      type: 'button',
+      type: "button",
       id: expandButtonId,
-      'aria-label': isExpanded() ? 'Collapse' : 'Expand',
-      'aria-labelledby': isExpandable() ? `${expandButtonId} ${rowId}` : undefined,
+      "aria-label": isExpanded() ? "Collapse" : "Expand",
+      "aria-labelledby": isExpandable() ? `${expandButtonId} ${rowId}` : undefined,
       onClick: onExpandClick,
       onPointerDown: stopPointerPropagation,
       onPointerUp: stopPointerPropagation,
       onMouseDown: stopPointerPropagation,
       onMouseUp: stopPointerPropagation,
       tabIndex: -1, // Not in tab order, use arrow keys
-      'aria-hidden': !isExpandable() ? true : undefined,
+      "aria-hidden": !isExpandable() ? true : undefined,
     };
 
     return baseProps as JSX.ButtonHTMLAttributes<HTMLButtonElement>;

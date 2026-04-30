@@ -4,8 +4,8 @@
  * Higher-level helpers for simulating user interactions in tests.
  */
 
-import userEvent, { type UserEvent, PointerEventsCheckLevel } from '@testing-library/user-event';
-import { pointerMap } from './pointer';
+import userEvent, { type UserEvent, PointerEventsCheckLevel } from "@testing-library/user-event";
+import { pointerMap } from "./pointer";
 
 /**
  * Type for the userEvent instance
@@ -43,9 +43,9 @@ export function setupUser(): UserEventInstance {
  */
 export interface PressOptions {
   /** Pointer type to use */
-  pointerType?: 'mouse' | 'touch' | 'pen';
+  pointerType?: "mouse" | "touch" | "pen";
   /** Button to press (for mouse) */
-  button?: 'left' | 'right' | 'middle';
+  button?: "left" | "right" | "middle";
   /** Whether to hold shift key */
   shift?: boolean;
   /** Whether to hold ctrl/cmd key */
@@ -67,25 +67,25 @@ export interface PressOptions {
 export async function press(
   user: UserEventInstance,
   element: Element,
-  options: PressOptions = {}
+  options: PressOptions = {},
 ): Promise<void> {
-  const { pointerType = 'mouse', button = 'left', shift, ctrlOrCmd, alt } = options;
+  const { pointerType = "mouse", button = "left", shift, ctrlOrCmd, alt } = options;
 
   const modifiers: string[] = [];
-  if (shift) modifiers.push('Shift');
-  if (ctrlOrCmd) modifiers.push('Control'); // Or Meta on Mac
-  if (alt) modifiers.push('Alt');
+  if (shift) modifiers.push("Shift");
+  if (ctrlOrCmd) modifiers.push("Control"); // Or Meta on Mac
+  if (alt) modifiers.push("Alt");
 
   const keyName =
-    pointerType === 'mouse'
-      ? button === 'left'
-        ? 'MouseLeft'
-        : button === 'right'
-          ? 'MouseRight'
-          : 'MouseMiddle'
-      : pointerType === 'touch'
-        ? 'TouchA'
-        : 'PenA';
+    pointerType === "mouse"
+      ? button === "left"
+        ? "MouseLeft"
+        : button === "right"
+          ? "MouseRight"
+          : "MouseMiddle"
+      : pointerType === "touch"
+        ? "TouchA"
+        : "PenA";
 
   // Hold modifier keys if specified
   for (const mod of modifiers) {
@@ -120,20 +120,20 @@ export interface LongPressOptions extends PressOptions {
 export async function longPress(
   user: UserEventInstance,
   element: Element,
-  options: LongPressOptions = {}
+  options: LongPressOptions = {},
 ): Promise<void> {
-  const { duration = 500, pointerType = 'mouse', button = 'left' } = options;
+  const { duration = 500, pointerType = "mouse", button = "left" } = options;
 
   const keyName =
-    pointerType === 'mouse'
-      ? button === 'left'
-        ? 'MouseLeft'
-        : button === 'right'
-          ? 'MouseRight'
-          : 'MouseMiddle'
-      : pointerType === 'touch'
-        ? 'TouchA'
-        : 'PenA';
+    pointerType === "mouse"
+      ? button === "left"
+        ? "MouseLeft"
+        : button === "right"
+          ? "MouseRight"
+          : "MouseMiddle"
+      : pointerType === "touch"
+        ? "TouchA"
+        : "PenA";
 
   // Press down
   await user.pointer({ target: element, keys: `[${keyName}>]` });
@@ -166,7 +166,7 @@ export interface HoverOptions {
 export async function hover(
   user: UserEventInstance,
   element: Element,
-  options: HoverOptions = {}
+  options: HoverOptions = {},
 ): Promise<void> {
   const { duration = 0 } = options;
 
@@ -215,7 +215,7 @@ export async function tabTo(user: UserEventInstance, count: number = 1): Promise
 export async function typeText(
   user: UserEventInstance,
   element: Element,
-  text: string
+  text: string,
 ): Promise<void> {
   await user.click(element);
   await user.keyboard(text);
@@ -227,7 +227,7 @@ export async function typeText(
 export async function clearAndType(
   user: UserEventInstance,
   element: Element,
-  text: string
+  text: string,
 ): Promise<void> {
   await user.click(element);
   await user.clear(element);
@@ -271,10 +271,7 @@ export async function pressKeys(user: UserEventInstance, keys: string[]): Promis
  * await pressKeyCombo(user, ['Shift', 'Tab']);
  * ```
  */
-export async function pressKeyCombo(
-  user: UserEventInstance,
-  keys: string[]
-): Promise<void> {
+export async function pressKeyCombo(user: UserEventInstance, keys: string[]): Promise<void> {
   if (keys.length === 0) return;
 
   // Build the key sequence
@@ -300,7 +297,7 @@ export async function pressKeyCombo(
  * Virtual clicks have zero dimensions and detail=0.
  */
 export function createVirtualClick(target: Element): MouseEvent {
-  return new MouseEvent('click', {
+  return new MouseEvent("click", {
     bubbles: true,
     cancelable: true,
     view: window,

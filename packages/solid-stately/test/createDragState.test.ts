@@ -1,12 +1,12 @@
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot } from 'solid-js';
-import { createDragState } from '../src/dnd/createDragState';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot } from "solid-js";
+import { createDragState } from "../src/dnd/createDragState";
 
-describe('createDragState', () => {
-  it('should initialize with isDragging false', () => {
+describe("createDragState", () => {
+  it("should initialize with isDragging false", () => {
     createRoot((dispose) => {
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
       }));
 
       expect(state.isDragging).toBe(false);
@@ -14,10 +14,10 @@ describe('createDragState', () => {
     });
   });
 
-  it('should set isDragging true when startDrag is called', () => {
+  it("should set isDragging true when startDrag is called", () => {
     createRoot((dispose) => {
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
       }));
 
       state.startDrag(100, 100);
@@ -26,17 +26,17 @@ describe('createDragState', () => {
     });
   });
 
-  it('should call onDragStart callback', () => {
+  it("should call onDragStart callback", () => {
     createRoot((dispose) => {
       const onDragStart = vi.fn();
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
         onDragStart,
       }));
 
       state.startDrag(100, 200);
       expect(onDragStart).toHaveBeenCalledWith({
-        type: 'dragstart',
+        type: "dragstart",
         x: 100,
         y: 200,
       });
@@ -44,18 +44,18 @@ describe('createDragState', () => {
     });
   });
 
-  it('should call onDragMove callback', () => {
+  it("should call onDragMove callback", () => {
     createRoot((dispose) => {
       const onDragMove = vi.fn();
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
         onDragMove,
       }));
 
       state.startDrag(100, 100);
       state.moveDrag(150, 150);
       expect(onDragMove).toHaveBeenCalledWith({
-        type: 'dragmove',
+        type: "dragmove",
         x: 150,
         y: 150,
       });
@@ -63,11 +63,11 @@ describe('createDragState', () => {
     });
   });
 
-  it('should not call onDragMove if not dragging', () => {
+  it("should not call onDragMove if not dragging", () => {
     createRoot((dispose) => {
       const onDragMove = vi.fn();
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
         onDragMove,
       }));
 
@@ -77,34 +77,34 @@ describe('createDragState', () => {
     });
   });
 
-  it('should call onDragEnd callback and set isDragging to false', () => {
+  it("should call onDragEnd callback and set isDragging to false", () => {
     createRoot((dispose) => {
       const onDragEnd = vi.fn();
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
         onDragEnd,
       }));
 
       state.startDrag(100, 100);
       expect(state.isDragging).toBe(true);
 
-      state.endDrag(200, 200, 'move');
+      state.endDrag(200, 200, "move");
       expect(state.isDragging).toBe(false);
       expect(onDragEnd).toHaveBeenCalledWith({
-        type: 'dragend',
+        type: "dragend",
         x: 200,
         y: 200,
-        dropOperation: 'move',
+        dropOperation: "move",
       });
       dispose();
     });
   });
 
-  it('should cancel drag operation', () => {
+  it("should cancel drag operation", () => {
     createRoot((dispose) => {
       const onDragEnd = vi.fn();
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
         onDragEnd,
       }));
 
@@ -112,20 +112,20 @@ describe('createDragState', () => {
       state.cancelDrag();
       expect(state.isDragging).toBe(false);
       expect(onDragEnd).toHaveBeenCalledWith({
-        type: 'dragend',
+        type: "dragend",
         x: 0,
         y: 0,
-        dropOperation: 'cancel',
+        dropOperation: "cancel",
       });
       dispose();
     });
   });
 
-  it('should not start drag when disabled', () => {
+  it("should not start drag when disabled", () => {
     createRoot((dispose) => {
       const onDragStart = vi.fn();
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
         onDragStart,
         isDisabled: true,
       }));
@@ -137,11 +137,9 @@ describe('createDragState', () => {
     });
   });
 
-  it('should return items from getItems', () => {
+  it("should return items from getItems", () => {
     createRoot((dispose) => {
-      const items = [
-        { 'text/plain': 'hello', 'text/html': '<b>hello</b>' },
-      ];
+      const items = [{ "text/plain": "hello", "text/html": "<b>hello</b>" }];
       const state = createDragState(() => ({
         getItems: () => items,
       }));
@@ -151,33 +149,33 @@ describe('createDragState', () => {
     });
   });
 
-  it('should return allowed drop operations', () => {
+  it("should return allowed drop operations", () => {
     createRoot((dispose) => {
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
-        getAllowedDropOperations: () => ['copy', 'link'],
+        getItems: () => [{ "text/plain": "test" }],
+        getAllowedDropOperations: () => ["copy", "link"],
       }));
 
-      expect(state.getAllowedDropOperations()).toEqual(['copy', 'link']);
+      expect(state.getAllowedDropOperations()).toEqual(["copy", "link"]);
       dispose();
     });
   });
 
-  it('should return default allowed operations when not specified', () => {
+  it("should return default allowed operations when not specified", () => {
     createRoot((dispose) => {
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
       }));
 
-      expect(state.getAllowedDropOperations()).toEqual(['move', 'copy', 'link']);
+      expect(state.getAllowedDropOperations()).toEqual(["move", "copy", "link"]);
       dispose();
     });
   });
 
-  it('should expose isDisabled state', () => {
+  it("should expose isDisabled state", () => {
     createRoot((dispose) => {
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
         isDisabled: true,
       }));
 
@@ -186,10 +184,10 @@ describe('createDragState', () => {
     });
   });
 
-  it('should expose hasDragButton state', () => {
+  it("should expose hasDragButton state", () => {
     createRoot((dispose) => {
       const state = createDragState(() => ({
-        getItems: () => [{ 'text/plain': 'test' }],
+        getItems: () => [{ "text/plain": "test" }],
         hasDragButton: true,
       }));
 

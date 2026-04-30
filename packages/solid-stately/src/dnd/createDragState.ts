@@ -4,7 +4,7 @@
  * Provides reactive state for drag operations.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from "solid-js";
 import type {
   DragItem,
   DragStartEvent,
@@ -12,7 +12,7 @@ import type {
   DragEndEvent,
   DropOperation,
   DragPreviewRenderer,
-} from './types';
+} from "./types";
 
 export interface DragStateOptions {
   /** A function that returns the items being dragged. */
@@ -62,9 +62,7 @@ export interface DragState {
  * @param props - Accessor returning drag state options
  * @returns Drag state object
  */
-export function createDragState(
-  props: Accessor<DragStateOptions>
-): DragState {
+export function createDragState(props: Accessor<DragStateOptions>): DragState {
   const getProps = createMemo(() => props());
 
   const [isDragging, setIsDragging] = createSignal(false);
@@ -75,9 +73,9 @@ export function createDragState(
 
     setIsDragging(true);
 
-    if (typeof p.onDragStart === 'function') {
+    if (typeof p.onDragStart === "function") {
       p.onDragStart({
-        type: 'dragstart',
+        type: "dragstart",
         x,
         y,
       });
@@ -88,9 +86,9 @@ export function createDragState(
     const p = getProps();
     if (!isDragging() || p.isDisabled) return;
 
-    if (typeof p.onDragMove === 'function') {
+    if (typeof p.onDragMove === "function") {
       p.onDragMove({
-        type: 'dragmove',
+        type: "dragmove",
         x,
         y,
       });
@@ -103,9 +101,9 @@ export function createDragState(
 
     setIsDragging(false);
 
-    if (typeof p.onDragEnd === 'function') {
+    if (typeof p.onDragEnd === "function") {
       p.onDragEnd({
-        type: 'dragend',
+        type: "dragend",
         x,
         y,
         dropOperation,
@@ -114,7 +112,7 @@ export function createDragState(
   };
 
   const cancelDrag = () => {
-    endDrag(0, 0, 'cancel');
+    endDrag(0, 0, "cancel");
   };
 
   const getItems = () => {
@@ -124,10 +122,10 @@ export function createDragState(
 
   const getAllowedDropOperations = (): DropOperation[] => {
     const p = getProps();
-    if (typeof p.getAllowedDropOperations === 'function') {
+    if (typeof p.getAllowedDropOperations === "function") {
       return p.getAllowedDropOperations();
     }
-    return ['move', 'copy', 'link'];
+    return ["move", "copy", "link"];
   };
 
   return {

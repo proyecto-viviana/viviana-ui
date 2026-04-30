@@ -10,7 +10,7 @@ export {
   DisclosureTrigger as DisclosureTitle,
   DisclosurePanel as AccordionPanel,
   DisclosurePanel,
-} from '../disclosure';
+} from "../disclosure";
 export type {
   DisclosureGroupProps as AccordionProps,
   DisclosureProps as AccordionItemProps,
@@ -21,4 +21,4 @@ export type {
   DisclosurePanelProps,
   DisclosureSize as AccordionSize,
   DisclosureVariant as AccordionVariant,
-} from '../disclosure';
+} from "../disclosure";

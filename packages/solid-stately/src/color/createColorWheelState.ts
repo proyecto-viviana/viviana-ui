@@ -3,9 +3,9 @@
  * Based on @react-stately/color useColorWheelState.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
-import type { Color, ColorChannel } from './types';
-import { normalizeColor } from './Color';
+import { createSignal, createMemo, type Accessor } from "solid-js";
+import type { Color, ColorChannel } from "./types";
+import { normalizeColor } from "./Color";
 
 export interface ColorWheelStateOptions {
   /** The current color value (controlled). */
@@ -53,9 +53,7 @@ export interface ColorWheelState {
 /**
  * Creates state for a color wheel (circular hue picker).
  */
-export function createColorWheelState(
-  options: Accessor<ColorWheelStateOptions>
-): ColorWheelState {
+export function createColorWheelState(options: Accessor<ColorWheelStateOptions>): ColorWheelState {
   const getOptions = () => options();
 
   // Internal value state
@@ -85,13 +83,13 @@ export function createColorWheelState(
     if (opts.value !== undefined) {
       return normalizeColor(opts.value);
     }
-    return internalValue() ?? normalizeColor('#ff0000');
+    return internalValue() ?? normalizeColor("#ff0000");
   });
 
   const isDisabled = createMemo(() => getOptions().isDisabled ?? false);
 
   // Hue step and page step
-  const hueRange = createMemo(() => value().getChannelRange('hue'));
+  const hueRange = createMemo(() => value().getChannelRange("hue"));
   const step = createMemo(() => hueRange().step);
   const pageStep = createMemo(() => hueRange().pageSize);
 
@@ -111,7 +109,7 @@ export function createColorWheelState(
   };
 
   // Get hue value (0-360)
-  const getHue = () => value().getChannelValue('hue');
+  const getHue = () => value().getChannelValue("hue");
 
   // Set hue value
   const setHue = (newValue: number) => {
@@ -123,7 +121,7 @@ export function createColorWheelState(
     const range = hueRange();
     const rounded = Math.round(hue / range.step) * range.step;
 
-    const newColor = value().withChannelValue('hue', rounded);
+    const newColor = value().withChannelValue("hue", rounded);
     updateValue(newColor);
   };
 
@@ -178,9 +176,9 @@ export function createColorWheelState(
     // For display, we want the color at full saturation and brightness
     // to show the pure hue on the wheel
     return value()
-      .withChannelValue('saturation', 100)
-      .withChannelValue('brightness', 100)
-      .withChannelValue('alpha', 1);
+      .withChannelValue("saturation", 100)
+      .withChannelValue("brightness", 100)
+      .withChannelValue("alpha", 1);
   };
 
   return {

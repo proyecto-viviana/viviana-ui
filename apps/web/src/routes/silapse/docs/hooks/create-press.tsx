@@ -202,9 +202,7 @@ return (
       />
 
       <h2>Pointer Type Handling</h2>
-      <p>
-        The hook normalizes interactions across different input methods:
-      </p>
+      <p>The hook normalizes interactions across different input methods:</p>
       <ul class="list-disc pl-6 space-y-2 my-4">
         <li>
           <strong>mouse</strong> - Desktop mouse clicks
@@ -228,7 +226,8 @@ return (
           <li>Supports keyboard activation via Enter and Space keys</li>
           <li>Works with screen reader virtual clicks</li>
           <li>
-            Remember to add <code>role="button"</code> and <code>tabIndex={0}</code> for non-button elements
+            Remember to add <code>role="button"</code> and <code>tabIndex={0}</code> for non-button
+            elements
           </li>
           <li>Press is cancelled if pointer exits element (prevents accidental activation)</li>
           <li>Prevents text selection during press for better UX</li>
@@ -271,9 +270,7 @@ function PressStateDemo() {
         {events().length === 0 ? (
           <p class="text-bg-300">No events yet...</p>
         ) : (
-          events().map((event, i) => (
-            <p class="text-bg-600">{event}</p>
-          ))
+          events().map((event, i) => <p class="text-bg-600">{event}</p>)
         )}
       </div>
     </div>

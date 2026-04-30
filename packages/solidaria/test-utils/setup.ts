@@ -9,13 +9,13 @@
  * jsdom doesn't support PointerEvent by default.
  */
 export function installPointerEventPolyfill(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   // Check if PointerEvent is already properly implemented
-  if (typeof window.PointerEvent === 'function') {
+  if (typeof window.PointerEvent === "function") {
     try {
       // Test if it works
-      new window.PointerEvent('pointerdown');
+      new window.PointerEvent("pointerdown");
       return;
     } catch {
       // Fall through to install polyfill
@@ -45,7 +45,7 @@ export function installPointerEventPolyfill(): void {
       this.tiltX = params.tiltX ?? 0;
       this.tiltY = params.tiltY ?? 0;
       this.twist = params.twist ?? 0;
-      this.pointerType = params.pointerType ?? '';
+      this.pointerType = params.pointerType ?? "";
       this.isPrimary = params.isPrimary ?? false;
     }
 
@@ -66,8 +66,8 @@ export function installPointerEventPolyfill(): void {
  * Install ResizeObserver polyfill for jsdom.
  */
 export function installResizeObserverPolyfill(): void {
-  if (typeof window === 'undefined') return;
-  if (typeof window.ResizeObserver === 'function') return;
+  if (typeof window === "undefined") return;
+  if (typeof window.ResizeObserver === "function") return;
 
   class FakeResizeObserver {
     private callback: ResizeObserverCallback;
@@ -98,8 +98,8 @@ export function installResizeObserverPolyfill(): void {
  * Install IntersectionObserver polyfill for jsdom.
  */
 export function installIntersectionObserverPolyfill(): void {
-  if (typeof window === 'undefined') return;
-  if (typeof window.IntersectionObserver === 'function') return;
+  if (typeof window === "undefined") return;
+  if (typeof window.IntersectionObserver === "function") return;
 
   class FakeIntersectionObserver {
     readonly root: Element | Document | null;
@@ -108,13 +108,10 @@ export function installIntersectionObserverPolyfill(): void {
     private callback: IntersectionObserverCallback;
     private observedElements: Set<Element> = new Set();
 
-    constructor(
-      callback: IntersectionObserverCallback,
-      options?: IntersectionObserverInit
-    ) {
+    constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
       this.callback = callback;
       this.root = options?.root ?? null;
-      this.rootMargin = options?.rootMargin ?? '0px';
+      this.rootMargin = options?.rootMargin ?? "0px";
       this.thresholds = Array.isArray(options?.threshold)
         ? options.threshold
         : [options?.threshold ?? 0];
@@ -156,10 +153,10 @@ export function installIntersectionObserverPolyfill(): void {
  * Install matchMedia mock for jsdom.
  */
 export function installMatchMediaMock(): void {
-  if (typeof window === 'undefined') return;
-  if (typeof window.matchMedia === 'function') {
+  if (typeof window === "undefined") return;
+  if (typeof window.matchMedia === "function") {
     try {
-      window.matchMedia('(min-width: 0px)');
+      window.matchMedia("(min-width: 0px)");
       return;
     } catch {
       // Fall through to install mock
@@ -184,8 +181,8 @@ export function installMatchMediaMock(): void {
  * Install scrollIntoView mock for jsdom.
  */
 export function installScrollIntoViewMock(): void {
-  if (typeof window === 'undefined') return;
-  if (typeof Element.prototype.scrollIntoView === 'function') return;
+  if (typeof window === "undefined") return;
+  if (typeof Element.prototype.scrollIntoView === "function") return;
 
   Element.prototype.scrollIntoView = function () {
     // No-op in tests
@@ -196,17 +193,17 @@ export function installScrollIntoViewMock(): void {
  * Install scroll methods mock for jsdom.
  */
 export function installScrollMock(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
-  if (typeof window.scrollTo !== 'function') {
+  if (typeof window.scrollTo !== "function") {
     window.scrollTo = () => {};
   }
 
-  if (typeof Element.prototype.scroll !== 'function') {
+  if (typeof Element.prototype.scroll !== "function") {
     Element.prototype.scroll = function () {};
   }
 
-  if (typeof Element.prototype.scrollTo !== 'function') {
+  if (typeof Element.prototype.scrollTo !== "function") {
     Element.prototype.scrollTo = function () {};
   }
 }
@@ -249,7 +246,7 @@ export function cleanupTestEnvironment(): void {
  * controllable values.
  */
 export function createComputedStyleMock(
-  styles: Partial<CSSStyleDeclaration> = {}
+  styles: Partial<CSSStyleDeclaration> = {},
 ): typeof window.getComputedStyle {
   const originalGetComputedStyle = window.getComputedStyle;
 
@@ -273,7 +270,7 @@ export function mockPrefersReducedMotion(prefers: boolean): () => void {
   const originalMatchMedia = window.matchMedia;
 
   window.matchMedia = (query: string): MediaQueryList => {
-    if (query === '(prefers-reduced-motion: reduce)') {
+    if (query === "(prefers-reduced-motion: reduce)") {
       return {
         matches: prefers,
         media: query,
@@ -296,16 +293,16 @@ export function mockPrefersReducedMotion(prefers: boolean): () => void {
 /**
  * Utility to mock prefers-color-scheme media query.
  */
-export function mockPrefersColorScheme(scheme: 'light' | 'dark'): () => void {
+export function mockPrefersColorScheme(scheme: "light" | "dark"): () => void {
   const originalMatchMedia = window.matchMedia;
 
   window.matchMedia = (query: string): MediaQueryList => {
-    const isDark = query === '(prefers-color-scheme: dark)';
-    const isLight = query === '(prefers-color-scheme: light)';
+    const isDark = query === "(prefers-color-scheme: dark)";
+    const isLight = query === "(prefers-color-scheme: light)";
 
     if (isDark || isLight) {
       return {
-        matches: scheme === 'dark' ? isDark : isLight,
+        matches: scheme === "dark" ? isDark : isLight,
         media: query,
         onchange: null,
         addListener: () => {},
@@ -328,7 +325,7 @@ export function mockPrefersColorScheme(scheme: 'light' | 'dark'): () => void {
  */
 export function waitFor(
   condition: () => boolean,
-  options: { timeout?: number; interval?: number } = {}
+  options: { timeout?: number; interval?: number } = {},
 ): Promise<void> {
   const { timeout = 1000, interval = 50 } = options;
 
@@ -342,7 +339,7 @@ export function waitFor(
       }
 
       if (Date.now() - startTime >= timeout) {
-        reject(new Error('Timeout waiting for condition'));
+        reject(new Error("Timeout waiting for condition"));
         return;
       }
 

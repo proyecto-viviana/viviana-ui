@@ -7,8 +7,8 @@
 
 import { readFile } from "node:fs/promises";
 
-const RAC_INDEX = 'react-spectrum/packages/react-aria-components/src/index.ts';
-const SOLIDARIA_INDEX = 'packages/solidaria-components/src/index.ts';
+const RAC_INDEX = "react-spectrum/packages/react-aria-components/src/index.ts";
+const SOLIDARIA_INDEX = "packages/solidaria-components/src/index.ts";
 
 function parseNamedValueExports(source: string): Set<string> {
   const symbols = new Set<string>();
@@ -18,20 +18,20 @@ function parseNamedValueExports(source: string): Set<string> {
 
   while ((match = exportRegex.exec(source)) !== null) {
     const [, exportClause, fromPath] = match;
-    if (!fromPath.startsWith('./')) continue;
-    if (match[0].startsWith('export type')) continue;
+    if (!fromPath.startsWith("./")) continue;
+    if (match[0].startsWith("export type")) continue;
 
     const cleanedClause = exportClause
-      .replace(/\/\*[\s\S]*?\*\//g, '')
-      .replace(/^\s*\/\/.*$/gm, '');
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/^\s*\/\/.*$/gm, "");
 
     const specifiers = cleanedClause
-      .split(',')
+      .split(",")
       .map((part) => part.trim())
       .filter(Boolean);
 
     for (const specifier of specifiers) {
-      if (specifier.startsWith('type ')) continue;
+      if (specifier.startsWith("type ")) continue;
       const parts = specifier.split(/\s+as\s+/i).map((part) => part.trim());
       const exportedName = parts.length === 2 ? parts[1] : parts[0];
       if (exportedName) symbols.add(exportedName);
@@ -42,8 +42,11 @@ function parseNamedValueExports(source: string): Set<string> {
 }
 
 function formatList(values: string[], limit = 50): string {
-  if (values.length === 0) return '  - (none)';
-  const shown = values.slice(0, limit).map((value) => `  - ${value}`).join('\n');
+  if (values.length === 0) return "  - (none)";
+  const shown = values
+    .slice(0, limit)
+    .map((value) => `  - ${value}`)
+    .join("\n");
   if (values.length > limit) {
     return `${shown}\n  - ... (${values.length - limit} more)`;
   }
@@ -61,17 +64,17 @@ const solidariaExports = parseNamedValueExports(solidariaSource);
 const missingInSolidaria = [...racExports].filter((name) => !solidariaExports.has(name)).sort();
 const extraInSolidaria = [...solidariaExports].filter((name) => !racExports.has(name)).sort();
 
-console.log('RAC full export-gap report (report-only)');
+console.log("RAC full export-gap report (report-only)");
 console.log(`- RAC index: ${RAC_INDEX}`);
 console.log(`- solidaria index: ${SOLIDARIA_INDEX}`);
-console.log('');
+console.log("");
 console.log(`RAC named exports (local modules only): ${racExports.size}`);
 console.log(`solidaria-components named exports: ${solidariaExports.size}`);
 console.log(`Missing in solidaria-components: ${missingInSolidaria.length}`);
 console.log(`Extra in solidaria-components: ${extraInSolidaria.length}`);
-console.log('');
-console.log('Missing in solidaria-components:');
+console.log("");
+console.log("Missing in solidaria-components:");
 console.log(formatList(missingInSolidaria));
-console.log('');
-console.log('Extra in solidaria-components:');
+console.log("");
+console.log("Extra in solidaria-components:");
 console.log(formatList(extraInSolidaria));

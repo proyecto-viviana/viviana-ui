@@ -5,63 +5,63 @@
  * This is a 1:1 port of @react-aria/utils filterDOMProps.
  */
 
-const DOMPropNames = new Set(['id']);
+const DOMPropNames = new Set(["id"]);
 
 const labelablePropNames = new Set([
-  'aria-label',
-  'aria-labelledby',
-  'aria-describedby',
-  'aria-details',
+  "aria-label",
+  "aria-labelledby",
+  "aria-describedby",
+  "aria-details",
 ]);
 
 // See LinkDOMProps in dom.d.ts.
 const linkPropNames = new Set([
-  'href',
-  'hrefLang',
-  'target',
-  'rel',
-  'download',
-  'ping',
-  'referrerPolicy',
+  "href",
+  "hrefLang",
+  "target",
+  "rel",
+  "download",
+  "ping",
+  "referrerPolicy",
 ]);
 
-const globalAttrs = new Set(['dir', 'lang', 'hidden', 'inert', 'translate']);
+const globalAttrs = new Set(["dir", "lang", "hidden", "inert", "translate"]);
 
 const globalEvents = new Set([
-  'onClick',
-  'onAuxClick',
-  'onContextMenu',
-  'onDoubleClick',
-  'onMouseDown',
-  'onMouseEnter',
-  'onMouseLeave',
-  'onMouseMove',
-  'onMouseOut',
-  'onMouseOver',
-  'onMouseUp',
-  'onTouchCancel',
-  'onTouchEnd',
-  'onTouchMove',
-  'onTouchStart',
-  'onPointerDown',
-  'onPointerMove',
-  'onPointerUp',
-  'onPointerCancel',
-  'onPointerEnter',
-  'onPointerLeave',
-  'onPointerOver',
-  'onPointerOut',
-  'onGotPointerCapture',
-  'onLostPointerCapture',
-  'onScroll',
-  'onWheel',
-  'onAnimationStart',
-  'onAnimationEnd',
-  'onAnimationIteration',
-  'onTransitionCancel',
-  'onTransitionEnd',
-  'onTransitionRun',
-  'onTransitionStart',
+  "onClick",
+  "onAuxClick",
+  "onContextMenu",
+  "onDoubleClick",
+  "onMouseDown",
+  "onMouseEnter",
+  "onMouseLeave",
+  "onMouseMove",
+  "onMouseOut",
+  "onMouseOver",
+  "onMouseUp",
+  "onTouchCancel",
+  "onTouchEnd",
+  "onTouchMove",
+  "onTouchStart",
+  "onPointerDown",
+  "onPointerMove",
+  "onPointerUp",
+  "onPointerCancel",
+  "onPointerEnter",
+  "onPointerLeave",
+  "onPointerOver",
+  "onPointerOut",
+  "onGotPointerCapture",
+  "onLostPointerCapture",
+  "onScroll",
+  "onWheel",
+  "onAnimationStart",
+  "onAnimationEnd",
+  "onAnimationIteration",
+  "onTransitionCancel",
+  "onTransitionEnd",
+  "onTransitionRun",
+  "onTransitionStart",
 ]);
 
 const propRe = /^(data-.*)$/;
@@ -90,7 +90,7 @@ export interface FilterDOMPropsOptions {
  */
 export function filterDOMProps<T extends object>(
   props: T,
-  opts: FilterDOMPropsOptions = {}
+  opts: FilterDOMPropsOptions = {},
 ): Partial<T> {
   const { labelable, isLink, global, events = global, propNames } = opts;
   const filteredProps: Partial<T> = {};
@@ -104,7 +104,7 @@ export function filterDOMProps<T extends object>(
         (global && globalAttrs.has(prop)) ||
         (events &&
           (globalEvents.has(prop) ||
-            (prop.endsWith('Capture') && globalEvents.has(prop.slice(0, -7))))) ||
+            (prop.endsWith("Capture") && globalEvents.has(prop.slice(0, -7))))) ||
         propNames?.has(prop) ||
         propRe.test(prop))
     ) {

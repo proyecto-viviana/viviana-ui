@@ -3,13 +3,13 @@
  * Based on @react-stately/table and @react-types/table.
  */
 
-import type { Key, FocusStrategy } from '../collections/types';
-import type { GridState, GridCollection, GridNode, GridNodeType } from '../grid/types';
+import type { Key, FocusStrategy } from "../collections/types";
+import type { GridState, GridCollection, GridNode, GridNodeType } from "../grid/types";
 
 /**
  * Sort direction for table columns.
  */
-export type SortDirection = 'ascending' | 'descending';
+export type SortDirection = "ascending" | "descending";
 
 /**
  * Describes which column to sort by and in what direction.
@@ -52,8 +52,10 @@ export interface TableCollection<T = unknown> extends GridCollection<T> {
  * State for a table component.
  * Extends GridState with table-specific functionality.
  */
-export interface TableState<T, C extends TableCollection<T> = TableCollection<T>>
-  extends Omit<GridState<T, GridCollection<T>>, 'collection'> {
+export interface TableState<T, C extends TableCollection<T> = TableCollection<T>> extends Omit<
+  GridState<T, GridCollection<T>>,
+  "collection"
+> {
   /** The table collection. */
   readonly collection: C;
   /** Whether the row selection checkboxes should be displayed. */
@@ -67,26 +69,28 @@ export interface TableState<T, C extends TableCollection<T> = TableCollection<T>
 /**
  * Options for creating table state.
  */
-export interface TableStateOptions<T, C extends TableCollection<T> = TableCollection<T>>
-  extends Sortable {
+export interface TableStateOptions<
+  T,
+  C extends TableCollection<T> = TableCollection<T>,
+> extends Sortable {
   /** The table collection. */
   collection: C;
   /** Keys of disabled rows. */
   disabledKeys?: Iterable<Key>;
   /** Focus mode: 'row' or 'cell'. */
-  focusMode?: 'row' | 'cell';
+  focusMode?: "row" | "cell";
   /** Selection mode. */
-  selectionMode?: 'none' | 'single' | 'multiple';
+  selectionMode?: "none" | "single" | "multiple";
   /** Selection behavior. */
-  selectionBehavior?: 'toggle' | 'replace';
+  selectionBehavior?: "toggle" | "replace";
   /** Whether empty selection is disallowed. */
   disallowEmptySelection?: boolean;
   /** Currently selected keys (controlled). */
-  selectedKeys?: 'all' | Iterable<Key>;
+  selectedKeys?: "all" | Iterable<Key>;
   /** Default selected keys (uncontrolled). */
-  defaultSelectedKeys?: 'all' | Iterable<Key>;
+  defaultSelectedKeys?: "all" | Iterable<Key>;
   /** Handler for selection changes. */
-  onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  onSelectionChange?: (keys: "all" | Set<Key>) => void;
   /** Whether the row selection checkboxes should be displayed. */
   showSelectionCheckboxes?: boolean;
 }

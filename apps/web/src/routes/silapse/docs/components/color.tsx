@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For } from "solid-js";
-import { ColorSwatchPicker, ColorSwatchPickerItem, ColorEditor } from "@proyecto-viviana/solid-spectrum";
+import {
+  ColorSwatchPicker,
+  ColorSwatchPickerItem,
+  ColorEditor,
+} from "@proyecto-viviana/solid-spectrum";
 import {
   ColorSlider,
   ColorSliderTrack,
@@ -23,8 +27,14 @@ export const Route = createFileRoute("/silapse/docs/components/color")({
 });
 
 const swatchColors = [
-  "#ef4444", "#f97316", "#eab308", "#22c55e",
-  "#3b82f6", "#8b5cf6", "#ec4899", "#6b7280",
+  "#ef4444",
+  "#f97316",
+  "#eab308",
+  "#22c55e",
+  "#3b82f6",
+  "#8b5cf6",
+  "#ec4899",
+  "#6b7280",
 ];
 
 function ColorPage() {
@@ -72,13 +82,18 @@ import { parseColor, type Color } from '@proyecto-viviana/solid-stately';`}
                   <span>{Math.round(sliderColor().getChannelValue("hue"))}°</span>
                 </div>
                 <ColorSliderTrack class="h-6 rounded-md">
-                  {() => <ColorSliderThumb class="w-4 h-4 rounded-full border-2 border-white shadow-md transform -translate-y-1/2 top-1/2" />}
+                  {() => (
+                    <ColorSliderThumb class="w-4 h-4 rounded-full border-2 border-white shadow-md transform -translate-y-1/2 top-1/2" />
+                  )}
                 </ColorSliderTrack>
               </>
             )}
           </ColorSlider>
           <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded border border-bg-400" style={{ background: sliderColor().toString("css") }} />
+            <div
+              class="w-8 h-8 rounded border border-bg-400"
+              style={{ background: sliderColor().toString("css") }}
+            />
             <span class="text-xs text-primary-400">{sliderColor().toString("css")}</span>
           </div>
         </div>
@@ -112,7 +127,10 @@ import { parseColor, type Color } from '@proyecto-viviana/solid-stately';`}
             )}
           </ColorArea>
           <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded border border-bg-400" style={{ background: areaColor().toString("css") }} />
+            <div
+              class="w-8 h-8 rounded border border-bg-400"
+              style={{ background: areaColor().toString("css") }}
+            />
             <span class="text-xs text-primary-400">{areaColor().toString("css")}</span>
           </div>
         </div>
@@ -140,8 +158,13 @@ import { parseColor, type Color } from '@proyecto-viviana/solid-stately';`}
             )}
           </ColorWheel>
           <div class="space-y-1">
-            <div class="w-10 h-10 rounded border border-bg-400" style={{ background: wheelColor().toString("css") }} />
-            <span class="text-xs text-primary-400 block">Hue: {Math.round(wheelColor().getChannelValue("hue"))}°</span>
+            <div
+              class="w-10 h-10 rounded border border-bg-400"
+              style={{ background: wheelColor().toString("css") }}
+            />
+            <span class="text-xs text-primary-400 block">
+              Hue: {Math.round(wheelColor().getChannelValue("hue"))}°
+            </span>
           </div>
         </div>
       </Example>
@@ -164,7 +187,10 @@ import { parseColor, type Color } from '@proyecto-viviana/solid-stately';`}
               <>
                 <div class="text-xs text-primary-400 mb-1">Color</div>
                 <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded border border-bg-400 shrink-0" style={{ background: fieldColor()?.toString("css") || "transparent" }} />
+                  <div
+                    class="w-8 h-8 rounded border border-bg-400 shrink-0"
+                    style={{ background: fieldColor()?.toString("css") || "transparent" }}
+                  />
                   <ColorFieldInput class="flex-1 px-3 py-2 rounded-md border border-primary-700 bg-bg-200 text-primary-100 text-sm focus:outline-none focus:border-accent" />
                 </div>
               </>
@@ -180,9 +206,7 @@ import { parseColor, type Color } from '@proyecto-viviana/solid-stately';`}
       >
         <div class="flex flex-wrap gap-3">
           <For each={swatchColors}>
-            {(c) => (
-              <ColorSwatch color={parseColor(c)} class="w-10 h-10 rounded-lg" />
-            )}
+            {(c) => <ColorSwatch color={parseColor(c)} class="w-10 h-10 rounded-lg" />}
           </For>
         </div>
       </Example>
@@ -196,13 +220,18 @@ import { parseColor, type Color } from '@proyecto-viviana/solid-stately';`}
 </ColorSwatchPicker>`}
       >
         <div class="space-y-3">
-          <ColorSwatchPicker value={pickerColor()} onChange={setPickerColor} aria-label="Pick a color">
-            <For each={swatchColors}>
-              {(c) => <ColorSwatchPickerItem color={parseColor(c)} />}
-            </For>
+          <ColorSwatchPicker
+            value={pickerColor()}
+            onChange={setPickerColor}
+            aria-label="Pick a color"
+          >
+            <For each={swatchColors}>{(c) => <ColorSwatchPickerItem color={parseColor(c)} />}</For>
           </ColorSwatchPicker>
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded border border-bg-400" style={{ background: pickerColor().toString("css") }} />
+            <div
+              class="w-6 h-6 rounded border border-bg-400"
+              style={{ background: pickerColor().toString("css") }}
+            />
             <span class="text-xs text-primary-400">{pickerColor().toString("css")}</span>
           </div>
         </div>
@@ -216,7 +245,10 @@ import { parseColor, type Color } from '@proyecto-viviana/solid-stately';`}
         <div class="space-y-3">
           <ColorEditor value={editorColor()} onChange={setEditorColor} />
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded border border-bg-400" style={{ background: editorColor().toString("css") }} />
+            <div
+              class="w-6 h-6 rounded border border-bg-400"
+              style={{ background: editorColor().toString("css") }}
+            />
             <span class="text-xs text-primary-400">{editorColor().toString("css")}</span>
           </div>
         </div>
@@ -230,7 +262,9 @@ import { parseColor, type Color } from '@proyecto-viviana/solid-stately';`}
           <li>ColorWheel: Arrow keys rotate the hue</li>
           <li>ColorField: Standard text input semantics with format validation</li>
           <li>ColorSwatchPicker: Arrow keys navigate swatches, Enter/Space selects</li>
-          <li>Current color value is announced via <code>aria-valuetext</code></li>
+          <li>
+            Current color value is announced via <code>aria-valuetext</code>
+          </li>
         </ul>
       </AccessibilitySection>
     </DocPage>

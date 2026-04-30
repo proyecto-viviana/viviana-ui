@@ -3,9 +3,6 @@ export {
   type FormValidationProps,
   type ValidatableElement,
   type ValidationBehavior,
-} from './createFormValidation';
+} from "./createFormValidation";
 
-export {
-  createFormReset,
-  type FormResetOptions,
-} from './createFormReset';
+export { createFormReset, type FormResetOptions } from "./createFormReset";

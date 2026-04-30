@@ -6,13 +6,13 @@ This is the controlling direction for the styled packages and the comparison app
 
 ## Package Decisions
 
-| Layer | Package | Role |
-| --- | --- | --- |
-| State | `@proyecto-viviana/solid-stately` | Solid state primitives aligned with React Stately concepts. |
-| Behavior | `@proyecto-viviana/solidaria` | ARIA behavior hooks and interaction logic. |
-| Headless components | `@proyecto-viviana/solidaria-components` | Pre-wired, unstyled components with public styling hooks. |
-| Spectrum styled components | `@proyecto-viviana/solid-spectrum` | Spectrum 2-compatible styled Solid components. |
-| Viviana design system | `@proyecto-viviana/viviana-ui` | Proyecto Viviana's own product design system. |
+| Layer                      | Package                                  | Role                                                        |
+| -------------------------- | ---------------------------------------- | ----------------------------------------------------------- |
+| State                      | `@proyecto-viviana/solid-stately`        | Solid state primitives aligned with React Stately concepts. |
+| Behavior                   | `@proyecto-viviana/solidaria`            | ARIA behavior hooks and interaction logic.                  |
+| Headless components        | `@proyecto-viviana/solidaria-components` | Pre-wired, unstyled components with public styling hooks.   |
+| Spectrum styled components | `@proyecto-viviana/solid-spectrum`       | Spectrum 2-compatible styled Solid components.              |
+| Viviana design system      | `@proyecto-viviana/viviana-ui`           | Proyecto Viviana's own product design system.               |
 
 `silapse` is retired as a name. New docs, routes, package references, and comparison surfaces should use `viviana-ui` or `solid-spectrum` depending on the layer they mean.
 
@@ -21,7 +21,7 @@ This is the controlling direction for the styled packages and the comparison app
 The current Spectrum 2 styling policy is macro-based, not selector-based. Adobe documents `@react-spectrum/s2/style` as a build-time `style` macro that emits atomic CSS from Spectrum 2 tokens. Component examples use imports such as:
 
 ```tsx
-import {style} from '@react-spectrum/s2/style' with {type: 'macro'};
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 ```
 
 For Spectrum components themselves, customization is deliberately constrained. The public prop is `styles`, and Adobe documents it as accepting only layout, spacing, sizing, and positioning properties. Colors, internal padding, and other component internals are not customization hooks.

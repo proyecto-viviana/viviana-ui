@@ -6,9 +6,9 @@
  * Port of @react-aria/i18n useNumberFormatter.
  */
 
-import { createMemo } from 'solid-js';
-import { useLocale } from './locale';
-import { NumberFormatter, type NumberFormatOptions } from '@internationalized/number';
+import { createMemo } from "solid-js";
+import { useLocale } from "./locale";
+import { NumberFormatter, type NumberFormatOptions } from "@internationalized/number";
 
 /**
  * Provides localized number formatting for the current locale.
@@ -43,9 +43,7 @@ import { NumberFormatter, type NumberFormatOptions } from '@internationalized/nu
  * tempFormatter().format(25); // '25°C'
  * ```
  */
-export function createNumberFormatter(
-  options: NumberFormatOptions = {}
-): () => NumberFormatter {
+export function createNumberFormatter(options: NumberFormatOptions = {}): () => NumberFormatter {
   const locale = useLocale();
 
   return createMemo(() => new NumberFormatter(locale().locale, options));

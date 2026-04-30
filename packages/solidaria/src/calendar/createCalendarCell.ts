@@ -5,11 +5,11 @@
  * Based on @react-aria/calendar useCalendarCell
  */
 
-import { createSignal, createMemo, createEffect } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { focusSafely } from '../utils/focus';
-import type { CalendarState, CalendarDate, DateValue } from '@proyecto-viviana/solid-stately';
-import { isToday as isTodayUtil, DateFormatter, getLocalTimeZone } from '@internationalized/date';
+import { createSignal, createMemo, createEffect } from "solid-js";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { focusSafely } from "../utils/focus";
+import type { CalendarState, CalendarDate, DateValue } from "@proyecto-viviana/solid-stately";
+import { isToday as isTodayUtil, DateFormatter, getLocalTimeZone } from "@internationalized/date";
 
 // ============================================
 // TYPES
@@ -57,7 +57,7 @@ export interface CalendarCellAria {
 export function createCalendarCell<T extends CalendarState>(
   props: MaybeAccessor<AriaCalendarCellProps>,
   state: T,
-  ref?: () => HTMLElement | null
+  ref?: () => HTMLElement | null,
 ): CalendarCellAria {
   const getProps = () => access(props);
   const [isPressed, setIsPressed] = createSignal(false);
@@ -73,7 +73,9 @@ export function createCalendarCell<T extends CalendarState>(
     return getProps().isDisabled || state.isCellDisabled(date());
   });
   const isUnavailable = createMemo(() => state.isCellUnavailable(date()));
-  const isOutsideMonth = createMemo(() => getProps().isOutsideMonth ?? state.isOutsideVisibleRange(date()));
+  const isOutsideMonth = createMemo(
+    () => getProps().isOutsideMonth ?? state.isOutsideVisibleRange(date()),
+  );
   const isToday = createMemo(() => isTodayUtil(date(), timeZone));
 
   // Format the date for display
@@ -122,27 +124,27 @@ export function createCalendarCell<T extends CalendarState>(
 
   // Cell props (for the td element)
   const cellProps = createMemo(() => ({
-    role: 'gridcell',
-    'aria-disabled': isDisabled() || undefined,
-    'aria-selected': isSelected() || undefined,
+    role: "gridcell",
+    "aria-disabled": isDisabled() || undefined,
+    "aria-selected": isSelected() || undefined,
   }));
 
   // Button props (for the interactive element inside)
   const buttonProps = createMemo(() => {
     const d = date();
-    const formatter = new DateFormatter('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    const formatter = new DateFormatter("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
 
     return {
-      role: 'button',
+      role: "button",
       tabIndex: isFocused() ? 0 : -1,
-      'aria-label': formatter.format(d.toDate(timeZone)),
-      'aria-disabled': isDisabled() || undefined,
-      'aria-pressed': isPressed() || undefined,
+      "aria-label": formatter.format(d.toDate(timeZone)),
+      "aria-disabled": isDisabled() || undefined,
+      "aria-pressed": isPressed() || undefined,
       disabled: isDisabled(),
       onClick: handleClick,
       onPointerDown: handlePointerDown,

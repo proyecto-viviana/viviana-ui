@@ -1,35 +1,35 @@
-import type { JSX } from 'solid-js'
-import { Show, For } from 'solid-js'
-import { Avatar } from '../../avatar'
-import { Button as HeadlessButton } from '@proyecto-viviana/solidaria-components'
+import type { JSX } from "solid-js";
+import { Show, For } from "solid-js";
+import { Avatar } from "../../avatar";
+import { Button as HeadlessButton } from "@proyecto-viviana/solidaria-components";
 
 export interface EventCardProps {
-  title: string
-  image?: string
-  date?: string
-  author?: string
-  authorAvatar?: string
-  attendees?: { avatar?: string; name: string }[]
-  attendeeCount?: number
-  decorationImage?: string
+  title: string;
+  image?: string;
+  date?: string;
+  author?: string;
+  authorAvatar?: string;
+  attendees?: { avatar?: string; name: string }[];
+  attendeeCount?: number;
+  decorationImage?: string;
   /**
    * Actions to display below the event.
    * Use a function returning JSX for SSR compatibility: `actions={() => <Button>...</Button>}`
    */
-  actions?: JSX.Element | (() => JSX.Element)
-  class?: string
+  actions?: JSX.Element | (() => JSX.Element);
+  class?: string;
 }
 
 export function EventCard(props: EventCardProps) {
-  const displayedAttendees = () => props.attendees?.slice(0, 3) ?? []
+  const displayedAttendees = () => props.attendees?.slice(0, 3) ?? [];
   const remainingCount = () => {
-    const total = props.attendeeCount ?? props.attendees?.length ?? 0
-    const displayed = displayedAttendees().length
-    return total - displayed
-  }
+    const total = props.attendeeCount ?? props.attendees?.length ?? 0;
+    const displayed = displayedAttendees().length;
+    return total - displayed;
+  };
 
   return (
-    <div class={`relative bg-bg-200 rounded-3xl overflow-hidden ${props.class ?? ''}`}>
+    <div class={`relative bg-bg-200 rounded-3xl overflow-hidden ${props.class ?? ""}`}>
       {/* Decoration image (fire gif, etc) */}
       <Show when={props.decorationImage}>
         <div class="absolute -top-2 -right-2 z-10 flex flex-col gap-1">
@@ -41,11 +41,7 @@ export function EventCard(props: EventCardProps) {
 
       <Show when={props.image}>
         <div class="relative h-32 w-full">
-          <img
-            src={props.image}
-            alt={props.title}
-            class="w-full h-full object-cover"
-          />
+          <img src={props.image} alt={props.title} class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-gradient-to-t from-bg-200 via-transparent to-transparent" />
         </div>
       </Show>
@@ -76,50 +72,42 @@ export function EventCard(props: EventCardProps) {
           <div class="flex items-center mt-3">
             <div class="flex -space-x-2">
               <For each={displayedAttendees()}>
-                {(attendee) => (
-                  <Avatar src={attendee.avatar} alt={attendee.name} size="sm" />
-                )}
+                {(attendee) => <Avatar src={attendee.avatar} alt={attendee.name} size="sm" />}
               </For>
             </div>
             <Show when={remainingCount() > 0}>
-              <span class="ml-2 text-sm text-primary-300">
-                +{remainingCount()} más
-              </span>
+              <span class="ml-2 text-sm text-primary-300">+{remainingCount()} más</span>
             </Show>
           </div>
         </Show>
 
         <Show when={props.actions}>
           <div class="mt-4 flex gap-2">
-            {typeof props.actions === 'function' ? props.actions() : props.actions}
+            {typeof props.actions === "function" ? props.actions() : props.actions}
           </div>
         </Show>
       </div>
     </div>
-  )
+  );
 }
 
 export interface EventListItemProps {
-  title: string
-  image?: string
-  subtitle?: string
-  onClick?: () => void
-  class?: string
+  title: string;
+  image?: string;
+  subtitle?: string;
+  onClick?: () => void;
+  class?: string;
 }
 
 export function EventListItem(props: EventListItemProps) {
   return (
     <HeadlessButton
-      class={`flex items-center gap-3 w-full p-2 rounded-lg hover:bg-bg-300 transition-colors text-left ${props.class ?? ''}`}
+      class={`flex items-center gap-3 w-full p-2 rounded-lg hover:bg-bg-300 transition-colors text-left ${props.class ?? ""}`}
       onPress={() => props.onClick?.()}
     >
       <Show when={props.image}>
         <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-          <img
-            src={props.image}
-            alt={props.title}
-            class="w-full h-full object-cover"
-          />
+          <img src={props.image} alt={props.title} class="w-full h-full object-cover" />
         </div>
       </Show>
       <div class="flex-1 min-w-0">
@@ -129,5 +117,5 @@ export function EventListItem(props: EventListItemProps) {
         </Show>
       </div>
     </HeadlessButton>
-  )
+  );
 }

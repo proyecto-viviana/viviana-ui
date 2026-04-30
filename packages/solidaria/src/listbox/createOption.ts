@@ -3,14 +3,14 @@
  * Based on @react-aria/listbox useOption.
  */
 
-import { type JSX, type Accessor } from 'solid-js';
-import { createPress } from '../interactions/createPress';
-import { createHover } from '../interactions/createHover';
-import { createFocusRing } from '../interactions/createFocusRing';
-import { mergeProps } from '../utils/mergeProps';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { getListBoxData } from './createListBox';
-import type { ListState, Key } from '@proyecto-viviana/solid-stately';
+import { type JSX, type Accessor } from "solid-js";
+import { createPress } from "../interactions/createPress";
+import { createHover } from "../interactions/createHover";
+import { createFocusRing } from "../interactions/createFocusRing";
+import { mergeProps } from "../utils/mergeProps";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { getListBoxData } from "./createListBox";
+import type { ListState, Key } from "@proyecto-viviana/solid-stately";
 
 export interface AriaOptionProps {
   /** The unique key for the option. */
@@ -18,7 +18,7 @@ export interface AriaOptionProps {
   /** Whether the option is disabled. */
   isDisabled?: boolean;
   /** An accessible label for the option. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Whether selection should occur on press up. */
   shouldSelectOnPressUp?: boolean;
   /** Whether to focus the option on hover. */
@@ -52,7 +52,7 @@ export interface OptionAria {
 export function createOption<T>(
   props: MaybeAccessor<AriaOptionProps>,
   state: ListState<T>,
-  _ref?: () => HTMLElement | null
+  _ref?: () => HTMLElement | null,
 ): OptionAria {
   const getProps = () => access(props);
 
@@ -61,7 +61,9 @@ export function createOption<T>(
 
   // Computed states
   const isDisabled: Accessor<boolean> = () => {
-    return Boolean(getData()?.isDisabled || getProps().isDisabled || state.isDisabled(getProps().key));
+    return Boolean(
+      getData()?.isDisabled || getProps().isDisabled || state.isDisabled(getProps().key),
+    );
   };
 
   const isSelected: Accessor<boolean> = () => {
@@ -78,7 +80,7 @@ export function createOption<T>(
 
   const selectAndAction = () => {
     const key = getProps().key;
-    if (state.selectionMode() !== 'none') {
+    if (state.selectionMode() !== "none") {
       state.select(key);
     }
     getProps().onAction?.();
@@ -91,12 +93,12 @@ export function createOption<T>(
       return isDisabled();
     },
     onPressStart(e) {
-      if (!shouldSelectOnPressUp() && e.pointerType !== 'keyboard' && e.pointerType !== 'virtual') {
+      if (!shouldSelectOnPressUp() && e.pointerType !== "keyboard" && e.pointerType !== "virtual") {
         selectAndAction();
       }
     },
     onPress(e) {
-      if (shouldSelectOnPressUp() || e.pointerType === 'keyboard' || e.pointerType === 'virtual') {
+      if (shouldSelectOnPressUp() || e.pointerType === "keyboard" || e.pointerType === "virtual") {
         selectAndAction();
       }
     },
@@ -126,28 +128,28 @@ export function createOption<T>(
     get optionProps() {
       const key = getProps().key;
       const selectionMode = state.selectionMode();
-      const ariaLabel = getProps()['aria-label'];
+      const ariaLabel = getProps()["aria-label"];
 
       return mergeProps(
         pressProps as Record<string, unknown>,
         hoverProps as Record<string, unknown>,
         focusProps as Record<string, unknown>,
         {
-          role: 'option',
+          role: "option",
           id: String(key),
-          'aria-selected': selectionMode !== 'none' ? isSelected() : undefined,
-          'aria-disabled': isDisabled() || undefined,
-          'aria-label': ariaLabel,
-          'aria-labelledby': !ariaLabel ? labelId : undefined,
-          'aria-describedby': descriptionId,
+          "aria-selected": selectionMode !== "none" ? isSelected() : undefined,
+          "aria-disabled": isDisabled() || undefined,
+          "aria-label": ariaLabel,
+          "aria-labelledby": !ariaLabel ? labelId : undefined,
+          "aria-describedby": descriptionId,
           tabIndex: isFocused() ? 0 : -1,
-          'data-selected': isSelected() || undefined,
-          'data-focused': isFocused() || undefined,
-          'data-focus-visible': isFocusVisible() || undefined,
-          'data-pressed': isPressed() || undefined,
-          'data-disabled': isDisabled() || undefined,
-          'data-hovered': isHovered() || undefined,
-        } as Record<string, unknown>
+          "data-selected": isSelected() || undefined,
+          "data-focused": isFocused() || undefined,
+          "data-focus-visible": isFocusVisible() || undefined,
+          "data-pressed": isPressed() || undefined,
+          "data-disabled": isDisabled() || undefined,
+          "data-hovered": isHovered() || undefined,
+        } as Record<string, unknown>,
       ) as JSX.HTMLAttributes<HTMLElement>;
     },
     labelProps: {

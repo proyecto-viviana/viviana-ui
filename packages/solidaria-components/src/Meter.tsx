@@ -8,16 +8,8 @@
  * Unlike progress bars, meters represent a current value rather than progress toward a goal.
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-} from 'solid-js';
-import {
-  createMeter,
-  type AriaMeterProps,
-} from '@proyecto-viviana/solidaria';
+import { type JSX, createContext, createMemo, splitProps } from "solid-js";
+import { createMeter, type AriaMeterProps } from "@proyecto-viviana/solidaria";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -25,7 +17,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -38,9 +30,7 @@ export interface MeterRenderProps {
   valueText: string | undefined;
 }
 
-export interface MeterProps
-  extends AriaMeterProps,
-    SlotProps {
+export interface MeterProps extends AriaMeterProps, SlotProps {
   /** The children of the component. A function may be provided to receive render props. */
   children?: RenderChildren<MeterRenderProps>;
   /** The CSS className for the element. */
@@ -90,12 +80,7 @@ function getSafeRange(min: number, max: number): number {
  * ```
  */
 export function Meter(props: MeterProps): JSX.Element {
-  const [local, ariaProps] = splitProps(props, [
-    'children',
-    'class',
-    'style',
-    'slot',
-  ]);
+  const [local, ariaProps] = splitProps(props, ["children", "class", "style", "slot"]);
 
   // Get values for calculations
   const value = () => ariaProps.value ?? 0;
@@ -104,16 +89,36 @@ export function Meter(props: MeterProps): JSX.Element {
 
   // Create meter aria props
   const meterAria = createMeter({
-    get value() { return ariaProps.value; },
-    get minValue() { return ariaProps.minValue; },
-    get maxValue() { return ariaProps.maxValue; },
-    get valueLabel() { return ariaProps.valueLabel; },
-    get formatOptions() { return ariaProps.formatOptions; },
-    get label() { return ariaProps.label; },
-    get 'aria-label'() { return ariaProps['aria-label']; },
-    get 'aria-labelledby'() { return ariaProps['aria-labelledby']; },
-    get 'aria-describedby'() { return ariaProps['aria-describedby']; },
-    get 'aria-details'() { return ariaProps['aria-details']; },
+    get value() {
+      return ariaProps.value;
+    },
+    get minValue() {
+      return ariaProps.minValue;
+    },
+    get maxValue() {
+      return ariaProps.maxValue;
+    },
+    get valueLabel() {
+      return ariaProps.valueLabel;
+    },
+    get formatOptions() {
+      return ariaProps.formatOptions;
+    },
+    get label() {
+      return ariaProps.label;
+    },
+    get "aria-label"() {
+      return ariaProps["aria-label"];
+    },
+    get "aria-labelledby"() {
+      return ariaProps["aria-labelledby"];
+    },
+    get "aria-describedby"() {
+      return ariaProps["aria-describedby"];
+    },
+    get "aria-details"() {
+      return ariaProps["aria-details"];
+    },
   });
 
   // Calculate percentage
@@ -124,7 +129,7 @@ export function Meter(props: MeterProps): JSX.Element {
 
   // Get value text from aria props
   const valueText = createMemo(() => {
-    return meterAria.meterProps['aria-valuetext'] as string | undefined;
+    return meterAria.meterProps["aria-valuetext"] as string | undefined;
   });
 
   // Render props values
@@ -139,9 +144,9 @@ export function Meter(props: MeterProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Meter',
+      defaultClassName: "solidaria-Meter",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props

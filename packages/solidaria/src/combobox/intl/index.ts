@@ -3,11 +3,11 @@
  * Based on @react-aria/combobox/intl
  */
 
-import type { LocalizedStrings } from '@internationalized/string';
+import type { LocalizedStrings } from "@internationalized/string";
 
 // Import locale files
-import enUS from './en-US.json' with { type: 'json' };
-import esES from './es-ES.json' with { type: 'json' };
+import enUS from "./en-US.json" with { type: "json" };
+import esES from "./es-ES.json" with { type: "json" };
 
 export type ComboBoxIntlStrings = {
   focusAnnouncement: string;
@@ -18,6 +18,6 @@ export type ComboBoxIntlStrings = {
 };
 
 export const comboBoxIntlStrings: LocalizedStrings<keyof ComboBoxIntlStrings, string> = {
-  'en-US': enUS,
-  'es-ES': esES,
+  "en-US": enUS,
+  "es-ES": esES,
 };

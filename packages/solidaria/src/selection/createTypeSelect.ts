@@ -6,8 +6,8 @@
  * item text values. Supports multi-character search with debouncing.
  */
 
-import type { JSX, Accessor } from 'solid-js';
-import type { Key, Collection, CollectionNode } from '@proyecto-viviana/solid-stately';
+import type { JSX, Accessor } from "solid-js";
+import type { Key, Collection, CollectionNode } from "@proyecto-viviana/solid-stately";
 
 /**
  * Controls how long to wait before clearing the typeahead buffer.
@@ -53,7 +53,7 @@ function getStringForKey(key: string): string {
   if (key.length === 1 || !/^[A-Z]/i.test(key)) {
     return key;
   }
-  return '';
+  return "";
 }
 
 /**
@@ -64,14 +64,14 @@ function getKeyForSearch<T>(
   collection: Collection<T>,
   search: string,
   fromKey: Key | null,
-  isKeyDisabled?: (key: Key) => boolean
+  isKeyDisabled?: (key: Key) => boolean,
 ): Key | null {
   const searchLower = search.toLowerCase();
 
   // Collect all items in order
   const items: CollectionNode<T>[] = [];
   for (const item of collection) {
-    if (item.type === 'item') {
+    if (item.type === "item") {
       items.push(item);
     }
   }
@@ -81,7 +81,7 @@ function getKeyForSearch<T>(
   // Find the starting index
   let startIndex = 0;
   if (fromKey != null) {
-    const fromIndex = items.findIndex(item => item.key === fromKey);
+    const fromIndex = items.findIndex((item) => item.key === fromKey);
     if (fromIndex !== -1) {
       // Start searching from the item AFTER the current one
       startIndex = (fromIndex + 1) % items.length;
@@ -99,7 +99,7 @@ function getKeyForSearch<T>(
     }
 
     // Check if the text value starts with the search string
-    const textValue = item.textValue || '';
+    const textValue = item.textValue || "";
     if (textValue.toLowerCase().startsWith(searchLower)) {
       return item.key;
     }
@@ -125,7 +125,7 @@ function getKeyForSearch<T>(
 export function createTypeSelect<T>(options: TypeSelectOptions<T>): TypeSelectAria {
   // Create mutable state object to persist across keystrokes
   const state: TypeSelectState = {
-    search: '',
+    search: "",
     timeout: undefined,
   };
 
@@ -147,13 +147,13 @@ export function createTypeSelect<T>(options: TypeSelectOptions<T>): TypeSelectAr
     }
 
     // Don't start search with space (common action key)
-    if (state.search.length === 0 && character === ' ') {
+    if (state.search.length === 0 && character === " ") {
       return;
     }
 
     // If there's already search text and the user types a space,
     // prevent it from triggering selection and include it in the search
-    if (character === ' ' && state.search.trim().length > 0) {
+    if (character === " " && state.search.trim().length > 0) {
       e.preventDefault();
       e.stopPropagation();
     }
@@ -183,7 +183,7 @@ export function createTypeSelect<T>(options: TypeSelectOptions<T>): TypeSelectAr
       clearTimeout(state.timeout);
     }
     state.timeout = setTimeout(() => {
-      state.search = '';
+      state.search = "";
     }, TYPEAHEAD_DEBOUNCE_WAIT_MS);
   };
 

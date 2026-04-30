@@ -3,11 +3,11 @@
  * Based on @react-aria/grid/useGridRow.
  */
 
-import { createMemo, createSignal, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import type { GridState, GridCollection } from '@proyecto-viviana/solid-stately';
-import type { GridRowProps, GridRowAria } from './types';
-import { getGridData } from './createGrid';
+import { createMemo, createSignal, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import type { GridState, GridCollection } from "@proyecto-viviana/solid-stately";
+import type { GridRowProps, GridRowAria } from "./types";
+import { getGridData } from "./createGrid";
 
 /**
  * Creates accessibility props for a grid row.
@@ -15,7 +15,7 @@ import { getGridData } from './createGrid';
 export function createGridRow<T extends object>(
   props: Accessor<GridRowProps>,
   state: Accessor<GridState<T, GridCollection<T>>>,
-  _ref: Accessor<HTMLElement | null>
+  _ref: Accessor<HTMLElement | null>,
 ): GridRowAria {
   const [isPressed, setIsPressed] = createSignal(false);
 
@@ -49,8 +49,8 @@ export function createGridRow<T extends object>(
     const onRowAction = gridData?.actions.onRowAction;
 
     // Handle selection
-    if (s.selectionMode !== 'none') {
-      if (e.shiftKey && s.selectionMode === 'multiple') {
+    if (s.selectionMode !== "none") {
+      if (e.shiftKey && s.selectionMode === "multiple") {
         s.extendSelection(p.key);
       } else if (e.ctrlKey || e.metaKey) {
         s.toggleSelection(p.key);
@@ -76,7 +76,7 @@ export function createGridRow<T extends object>(
 
     if (isDisabled()) return;
 
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
 
       // Get grid metadata for actions
@@ -84,7 +84,7 @@ export function createGridRow<T extends object>(
       const onRowAction = gridData?.actions.onRowAction;
 
       // Handle selection
-      if (s.selectionMode !== 'none') {
+      if (s.selectionMode !== "none") {
         s.toggleSelection(p.key);
       }
 
@@ -118,9 +118,9 @@ export function createGridRow<T extends object>(
     const p = props();
 
     const baseProps: Record<string, unknown> = {
-      role: 'row',
-      'aria-selected': s.selectionMode !== 'none' ? isSelected() : undefined,
-      'aria-disabled': isDisabled() || undefined,
+      role: "row",
+      "aria-selected": s.selectionMode !== "none" ? isSelected() : undefined,
+      "aria-disabled": isDisabled() || undefined,
       tabIndex: isFocused() ? 0 : -1,
       onClick,
       onKeyDown,
@@ -130,7 +130,7 @@ export function createGridRow<T extends object>(
     };
 
     if (p.isVirtualized && p.index != null) {
-      baseProps['aria-rowindex'] = p.index + 1; // aria-rowindex is 1-based
+      baseProps["aria-rowindex"] = p.index + 1; // aria-rowindex is 1-based
     }
 
     return baseProps as JSX.HTMLAttributes<HTMLElement>;

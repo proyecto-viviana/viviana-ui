@@ -7,17 +7,14 @@
  * - Section visibility management
  */
 
-import { type Page, type Locator, expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
+import { type Page, type Locator, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 /**
  * Ensure a playground section is visible, toggling it on if necessary.
  * Reuses the pattern from playground-components.spec.ts.
  */
-export async function ensureSectionVisible(
-  page: Page,
-  sectionId: string,
-): Promise<Locator> {
+export async function ensureSectionVisible(page: Page, sectionId: string): Promise<Locator> {
   const section = page.locator(`section[data-testid="section-${sectionId}"]`);
   if (await section.count()) {
     await expect(section.first()).toBeVisible();
@@ -49,14 +46,11 @@ export async function scanSectionAxe(
   section: Locator,
   options: { tags?: string[] } = {},
 ): Promise<AxeScanResult> {
-  const tags = options.tags ?? ['wcag2a', 'wcag2aa'];
-  const testId = await section.getAttribute('data-testid');
-  const selector = testId ? `section[data-testid="${testId}"]` : 'section';
+  const tags = options.tags ?? ["wcag2a", "wcag2aa"];
+  const testId = await section.getAttribute("data-testid");
+  const selector = testId ? `section[data-testid="${testId}"]` : "section";
 
-  const results = await new AxeBuilder({ page })
-    .include(selector)
-    .withTags(tags)
-    .analyze();
+  const results = await new AxeBuilder({ page }).include(selector).withTags(tags).analyze();
 
   return {
     violations: results.violations.map((v) => ({
@@ -86,21 +80,21 @@ export async function checkSectionAriaIds(
   page: Page,
   section: Locator,
 ): Promise<AriaIdCheckResult> {
-  const testId = await section.getAttribute('data-testid');
-  const selector = testId ? `section[data-testid="${testId}"]` : 'section';
+  const testId = await section.getAttribute("data-testid");
+  const selector = testId ? `section[data-testid="${testId}"]` : "section";
 
   return page.evaluate((sel) => {
     const container = document.querySelector(sel);
     if (!container) return { danglingRefs: [], totalRefsChecked: 0, ok: true };
 
     const ATTRS = [
-      'aria-labelledby',
-      'aria-controls',
-      'aria-describedby',
-      'aria-owns',
-      'aria-activedescendant',
-      'aria-errormessage',
-      'for',
+      "aria-labelledby",
+      "aria-controls",
+      "aria-describedby",
+      "aria-owns",
+      "aria-activedescendant",
+      "aria-errormessage",
+      "for",
     ];
 
     const danglingRefs: Array<{ attribute: string; missingId: string; elementDesc: string }> = [];
@@ -111,17 +105,17 @@ export async function checkSectionAriaIds(
         const value = el.getAttribute(attr);
         if (!value) continue;
 
-        const ids = attr === 'aria-activedescendant' ? [value] : value.split(/\s+/).filter(Boolean);
+        const ids = attr === "aria-activedescendant" ? [value] : value.split(/\s+/).filter(Boolean);
         for (const id of ids) {
           totalRefsChecked++;
           if (!document.getElementById(id)) {
             const tag = el.tagName.toLowerCase();
-            const elId = el.id ? `#${el.id}` : '';
-            const role = el.getAttribute('role') || '';
+            const elId = el.id ? `#${el.id}` : "";
+            const role = el.getAttribute("role") || "";
             danglingRefs.push({
               attribute: attr,
               missingId: id,
-              elementDesc: `${tag}${elId}${role ? `[role="${role}"]` : ''}`,
+              elementDesc: `${tag}${elId}${role ? `[role="${role}"]` : ""}`,
             });
           }
         }

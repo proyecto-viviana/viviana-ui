@@ -5,32 +5,32 @@
 
 // Types
 export type Placement =
-  | 'bottom'
-  | 'bottom left'
-  | 'bottom right'
-  | 'bottom start'
-  | 'bottom end'
-  | 'top'
-  | 'top left'
-  | 'top right'
-  | 'top start'
-  | 'top end'
-  | 'left'
-  | 'left top'
-  | 'left bottom'
-  | 'right'
-  | 'right top'
-  | 'right bottom'
-  | 'start'
-  | 'start top'
-  | 'start bottom'
-  | 'end'
-  | 'end top'
-  | 'end bottom';
+  | "bottom"
+  | "bottom left"
+  | "bottom right"
+  | "bottom start"
+  | "bottom end"
+  | "top"
+  | "top left"
+  | "top right"
+  | "top start"
+  | "top end"
+  | "left"
+  | "left top"
+  | "left bottom"
+  | "right"
+  | "right top"
+  | "right bottom"
+  | "start"
+  | "start top"
+  | "start bottom"
+  | "end"
+  | "end top"
+  | "end bottom";
 
-export type PlacementAxis = 'top' | 'bottom' | 'left' | 'right';
-export type Axis = 'top' | 'left';
-export type SizeAxis = 'width' | 'height';
+export type PlacementAxis = "top" | "bottom" | "left" | "right";
+export type Axis = "top" | "left";
+export type SizeAxis = "width" | "height";
 
 interface Position {
   top?: number;
@@ -51,7 +51,7 @@ interface Dimensions {
 
 interface ParsedPlacement {
   placement: PlacementAxis;
-  crossPlacement: PlacementAxis | 'center';
+  crossPlacement: PlacementAxis | "center";
   axis: Axis;
   crossAxis: Axis;
   size: SizeAxis;
@@ -80,7 +80,7 @@ export interface PositionOpts {
   arrowBoundaryOffset?: number;
 }
 
-type HeightGrowthDirection = 'top' | 'bottom';
+type HeightGrowthDirection = "top" | "bottom";
 
 export interface PositionResult {
   position: Position;
@@ -93,32 +93,32 @@ export interface PositionResult {
 
 // Constants
 const AXIS: Record<string, Axis> = {
-  top: 'top',
-  bottom: 'top',
-  left: 'left',
-  right: 'left',
+  top: "top",
+  bottom: "top",
+  left: "left",
+  right: "left",
 };
 
 const FLIPPED_DIRECTION: Record<string, string> = {
-  top: 'bottom',
-  bottom: 'top',
-  left: 'right',
-  right: 'left',
+  top: "bottom",
+  bottom: "top",
+  left: "right",
+  right: "left",
 };
 
 const CROSS_AXIS: Record<string, Axis> = {
-  top: 'left',
-  left: 'top',
+  top: "left",
+  left: "top",
 };
 
 const AXIS_SIZE: Record<string, SizeAxis> = {
-  top: 'height',
-  left: 'width',
+  top: "height",
+  left: "width",
 };
 
-const TOTAL_SIZE: Record<SizeAxis, 'totalWidth' | 'totalHeight'> = {
-  width: 'totalWidth',
-  height: 'totalHeight',
+const TOTAL_SIZE: Record<SizeAxis, "totalWidth" | "totalHeight"> = {
+  width: "totalWidth",
+  height: "totalHeight",
 };
 
 const PARSED_PLACEMENT_CACHE: Record<string, ParsedPlacement> = {};
@@ -128,15 +128,14 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 function isWebKit(): boolean {
-  return typeof window !== 'undefined' && 'WebkitAppearance' in document.documentElement.style;
+  return typeof window !== "undefined" && "WebkitAppearance" in document.documentElement.style;
 }
 
-const getVisualViewport = () =>
-  typeof document !== 'undefined' ? window.visualViewport : null;
+const getVisualViewport = () => (typeof document !== "undefined" ? window.visualViewport : null);
 
 function getContainerDimensions(
   containerNode: Element,
-  visualViewport: VisualViewport | null
+  visualViewport: VisualViewport | null,
 ): Dimensions {
   let width = 0,
     height = 0,
@@ -147,7 +146,7 @@ function getContainerDimensions(
   const scroll: Position = {};
   const isPinchZoomedIn = (visualViewport?.scale ?? 1) > 1;
 
-  if (containerNode.tagName === 'BODY' || containerNode.tagName === 'HTML') {
+  if (containerNode.tagName === "BODY" || containerNode.tagName === "HTML") {
     const documentElement = document.documentElement;
     totalWidth = documentElement.clientWidth;
     totalHeight = documentElement.clientHeight;
@@ -170,7 +169,7 @@ function getContainerDimensions(
 
   if (
     isWebKit() &&
-    (containerNode.tagName === 'BODY' || containerNode.tagName === 'HTML') &&
+    (containerNode.tagName === "BODY" || containerNode.tagName === "HTML") &&
     isPinchZoomedIn
   ) {
     scroll.top = 0;
@@ -198,15 +197,13 @@ function getDelta(
   boundaryDimensions: Dimensions,
   containerDimensions: Dimensions,
   padding: number,
-  containerOffsetWithBoundary: Offset
+  containerOffsetWithBoundary: Offset,
 ): number {
   const containerScroll = containerDimensions.scroll[axis] ?? 0;
   const boundarySize = boundaryDimensions[AXIS_SIZE[axis]];
 
   const boundaryStartEdge =
-    containerOffsetWithBoundary[axis] +
-    (boundaryDimensions.scroll[AXIS[axis]] ?? 0) +
-    padding;
+    containerOffsetWithBoundary[axis] + (boundaryDimensions.scroll[AXIS[axis]] ?? 0) + padding;
   const boundaryEndEdge =
     containerOffsetWithBoundary[axis] +
     (boundaryDimensions.scroll[AXIS[axis]] ?? 0) +
@@ -251,11 +248,11 @@ function parsePlacement(input: Placement): ParsedPlacement {
     return PARSED_PLACEMENT_CACHE[input];
   }
 
-  const [placement, crossPlacement = 'center'] = input.split(' ') as [PlacementAxis, string];
-  const axis: Axis = AXIS[placement] || 'right';
+  const [placement, crossPlacement = "center"] = input.split(" ") as [PlacementAxis, string];
+  const axis: Axis = AXIS[placement] || "right";
   const crossAxis: Axis = CROSS_AXIS[axis];
 
-  let resolvedCrossPlacement: PlacementAxis | 'center' = 'center';
+  let resolvedCrossPlacement: PlacementAxis | "center" = "center";
   if (AXIS[crossPlacement]) {
     resolvedCrossPlacement = crossPlacement as PlacementAxis;
   }
@@ -284,13 +281,13 @@ function computePosition(
   isContainerPositioned: boolean,
   arrowSize: number,
   arrowBoundaryOffset: number,
-  containerDimensions: Dimensions
+  containerDimensions: Dimensions,
 ): Position {
   const { placement, crossPlacement, axis, crossAxis, size, crossSize } = placementInfo;
   const position: Position = {};
 
   position[crossAxis] = childOffset[crossAxis] ?? 0;
-  if (crossPlacement === 'center') {
+  if (crossPlacement === "center") {
     position[crossAxis]! += ((childOffset[crossSize] ?? 0) - (overlaySize[crossSize] ?? 0)) / 2;
   } else if (crossPlacement !== crossAxis) {
     position[crossAxis]! += (childOffset[crossSize] ?? 0) - (overlaySize[crossSize] ?? 0);
@@ -309,7 +306,7 @@ function computePosition(
       ? containerDimensions[size]
       : containerDimensions[TOTAL_SIZE[size]];
     position[FLIPPED_DIRECTION[axis] as keyof Position] = Math.floor(
-      containerHeight - childOffset[axis] + offset
+      containerHeight - childOffset[axis] + offset,
     );
   } else {
     position[axis] = Math.floor(childOffset[axis] + childOffset[size] + offset);
@@ -328,14 +325,13 @@ function getMaxHeight(
   heightGrowthDirection: HeightGrowthDirection,
   containerDimensions: Dimensions,
   isContainerDescendentOfBoundary: boolean,
-  visualViewport: VisualViewport | null
+  visualViewport: VisualViewport | null,
 ): number {
   const overlayTop =
     (position.top != null
       ? position.top
-      : containerDimensions[TOTAL_SIZE.height] -
-        (position.bottom ?? 0) -
-        overlayHeight) - (containerDimensions.scroll.top ?? 0);
+      : containerDimensions[TOTAL_SIZE.height] - (position.bottom ?? 0) - overlayHeight) -
+    (containerDimensions.scroll.top ?? 0);
 
   const boundaryToContainerTransformOffset = isContainerDescendentOfBoundary
     ? containerOffsetWithBoundary.top
@@ -343,28 +339,26 @@ function getMaxHeight(
   const boundingRect = {
     top: Math.max(
       boundaryDimensions.top + boundaryToContainerTransformOffset,
-      (visualViewport?.offsetTop ?? boundaryDimensions.top) + boundaryToContainerTransformOffset
+      (visualViewport?.offsetTop ?? boundaryDimensions.top) + boundaryToContainerTransformOffset,
     ),
     bottom: Math.min(
       boundaryDimensions.top + boundaryDimensions.height + boundaryToContainerTransformOffset,
-      (visualViewport?.offsetTop ?? 0) + (visualViewport?.height ?? 0)
+      (visualViewport?.offsetTop ?? 0) + (visualViewport?.height ?? 0),
     ),
   };
 
   const maxHeight =
-    heightGrowthDirection !== 'top'
+    heightGrowthDirection !== "top"
       ? Math.max(
           0,
-          boundingRect.bottom -
-            overlayTop -
-            ((margins.top ?? 0) + (margins.bottom ?? 0) + padding)
+          boundingRect.bottom - overlayTop - ((margins.top ?? 0) + (margins.bottom ?? 0) + padding),
         )
       : Math.max(
           0,
           overlayTop +
             overlayHeight -
             boundingRect.top -
-            ((margins.top ?? 0) + (margins.bottom ?? 0) + padding)
+            ((margins.top ?? 0) + (margins.bottom ?? 0) + padding),
         );
   return maxHeight;
 }
@@ -377,7 +371,7 @@ function getAvailableSpace(
   padding: number,
   placementInfo: ParsedPlacement,
   containerDimensions: Dimensions,
-  isContainerDescendentOfBoundary: boolean
+  isContainerDescendentOfBoundary: boolean,
 ): number {
   const { placement, axis, size } = placementInfo;
   if (placement === axis) {
@@ -389,7 +383,7 @@ function getAvailableSpace(
           (isContainerDescendentOfBoundary ? containerOffsetWithBoundary[axis] : 0)) -
         (margins[axis] ?? 0) -
         (margins[FLIPPED_DIRECTION[axis] as keyof Position] ?? 0) -
-        padding
+        padding,
     );
   }
 
@@ -403,7 +397,7 @@ function getAvailableSpace(
       (containerDimensions.scroll[axis] ?? 0) -
       (margins[axis] ?? 0) -
       (margins[FLIPPED_DIRECTION[axis] as keyof Position] ?? 0) -
-      padding
+      padding,
   );
 }
 
@@ -425,7 +419,7 @@ export function calculatePositionInternal(
   arrowSize: number,
   arrowBoundaryOffset: number,
   isContainerDescendentOfBoundary: boolean,
-  visualViewport: VisualViewport | null
+  visualViewport: VisualViewport | null,
 ): PositionResult {
   let placementInfo = parsePlacement(placementInput);
   let { size, crossAxis, crossSize, placement, crossPlacement } = placementInfo;
@@ -440,7 +434,7 @@ export function calculatePositionInternal(
     isContainerPositioned,
     arrowSize,
     arrowBoundaryOffset,
-    containerDimensions
+    containerDimensions,
   );
   let normalizedOffset = offset;
   const space = getAvailableSpace(
@@ -451,12 +445,12 @@ export function calculatePositionInternal(
     padding + offset,
     placementInfo,
     containerDimensions,
-    isContainerDescendentOfBoundary
+    isContainerDescendentOfBoundary,
   );
 
   if (flip && overlaySize[size] > space) {
     const flippedPlacementInfo = parsePlacement(
-      `${FLIPPED_DIRECTION[placement]} ${crossPlacement}` as Placement
+      `${FLIPPED_DIRECTION[placement]} ${crossPlacement}` as Placement,
     );
     const flippedPosition = computePosition(
       childOffset,
@@ -469,7 +463,7 @@ export function calculatePositionInternal(
       isContainerPositioned,
       arrowSize,
       arrowBoundaryOffset,
-      containerDimensions
+      containerDimensions,
     );
 
     const flippedSpace = getAvailableSpace(
@@ -480,7 +474,7 @@ export function calculatePositionInternal(
       padding + offset,
       flippedPlacementInfo,
       containerDimensions,
-      isContainerDescendentOfBoundary
+      isContainerDescendentOfBoundary,
     );
 
     if (flippedSpace > space) {
@@ -490,18 +484,18 @@ export function calculatePositionInternal(
     }
   }
 
-  let heightGrowthDirection: HeightGrowthDirection = 'bottom';
-  if (placementInfo.axis === 'top') {
-    if (placementInfo.placement === 'top') {
-      heightGrowthDirection = 'top';
-    } else if (placementInfo.placement === 'bottom') {
-      heightGrowthDirection = 'bottom';
+  let heightGrowthDirection: HeightGrowthDirection = "bottom";
+  if (placementInfo.axis === "top") {
+    if (placementInfo.placement === "top") {
+      heightGrowthDirection = "top";
+    } else if (placementInfo.placement === "bottom") {
+      heightGrowthDirection = "bottom";
     }
-  } else if (placementInfo.crossAxis === 'top') {
-    if (placementInfo.crossPlacement === 'top') {
-      heightGrowthDirection = 'bottom';
-    } else if (placementInfo.crossPlacement === 'bottom') {
-      heightGrowthDirection = 'top';
+  } else if (placementInfo.crossAxis === "top") {
+    if (placementInfo.crossPlacement === "top") {
+      heightGrowthDirection = "bottom";
+    } else if (placementInfo.crossPlacement === "bottom") {
+      heightGrowthDirection = "top";
     }
   }
 
@@ -512,7 +506,7 @@ export function calculatePositionInternal(
     boundaryDimensions,
     containerDimensions,
     padding,
-    containerOffsetWithBoundary
+    containerOffsetWithBoundary,
   );
   position[crossAxis]! += delta;
 
@@ -527,7 +521,7 @@ export function calculatePositionInternal(
     heightGrowthDirection,
     containerDimensions,
     isContainerDescendentOfBoundary,
-    visualViewport
+    visualViewport,
   );
 
   if (userSetMaxHeight && userSetMaxHeight < maxHeight) {
@@ -547,7 +541,7 @@ export function calculatePositionInternal(
     isContainerPositioned,
     arrowSize,
     arrowBoundaryOffset,
-    containerDimensions
+    containerDimensions,
   );
   delta = getDelta(
     crossAxis,
@@ -556,7 +550,7 @@ export function calculatePositionInternal(
     boundaryDimensions,
     containerDimensions,
     padding,
-    containerOffsetWithBoundary
+    containerOffsetWithBoundary,
   );
   position[crossAxis]! += delta;
 
@@ -568,7 +562,7 @@ export function calculatePositionInternal(
 
   const arrowMinPosition = arrowSize / 2 + arrowBoundaryOffset;
   const overlayMargin =
-    AXIS[crossAxis] === 'left'
+    AXIS[crossAxis] === "left"
       ? (margins.left ?? 0) + (margins.right ?? 0)
       : (margins.top ?? 0) + (margins.bottom ?? 0);
   const arrowMaxPosition =
@@ -587,22 +581,26 @@ export function calculatePositionInternal(
   const arrowPositionOverlappingChild = clamp(
     preferredArrowPosition,
     arrowOverlappingChildMinEdge,
-    arrowOverlappingChildMaxEdge
+    arrowOverlappingChildMaxEdge,
   );
-  arrowPosition[crossAxis] = clamp(arrowPositionOverlappingChild, arrowMinPosition, arrowMaxPosition);
+  arrowPosition[crossAxis] = clamp(
+    arrowPositionOverlappingChild,
+    arrowMinPosition,
+    arrowMaxPosition,
+  );
 
   if (arrowSize) {
     origin = arrowPosition[crossAxis]!;
-  } else if (crossPlacement === 'right' || crossPlacement === 'bottom') {
+  } else if (crossPlacement === "right" || crossPlacement === "bottom") {
     origin += childOffset[crossSize];
-  } else if (crossPlacement === 'center') {
+  } else if (crossPlacement === "center") {
     origin += childOffset[crossSize] / 2;
   }
 
-  const crossOrigin = placement === 'left' || placement === 'top' ? overlaySize[size] : 0;
+  const crossOrigin = placement === "left" || placement === "top" ? overlaySize[size] : 0;
   const triggerAnchorPoint = {
-    x: placement === 'top' || placement === 'bottom' ? origin : crossOrigin,
-    y: placement === 'left' || placement === 'right' ? origin : crossOrigin,
+    x: placement === "top" || placement === "bottom" ? origin : crossOrigin,
+    y: placement === "left" || placement === "right" ? origin : crossOrigin,
   };
 
   return {
@@ -642,7 +640,7 @@ function getElementOffset(node: Element, ignoreScale: boolean): Offset {
 function getPosition(node: Element, parent: Element, ignoreScale: boolean): Offset {
   const style = window.getComputedStyle(node);
   let offset: Offset;
-  if (style.position === 'fixed') {
+  if (style.position === "fixed") {
     offset = getRect(node, ignoreScale);
   } else {
     offset = getElementOffset(node, ignoreScale);
@@ -667,7 +665,7 @@ function getContainingBlock(node: HTMLElement): Element {
   if (
     offsetParent &&
     offsetParent === document.body &&
-    window.getComputedStyle(offsetParent).position === 'static' &&
+    window.getComputedStyle(offsetParent).position === "static" &&
     !isContainingBlock(offsetParent)
   ) {
     offsetParent = document.documentElement;
@@ -686,12 +684,13 @@ function getContainingBlock(node: HTMLElement): Element {
 function isContainingBlock(node: Element): boolean {
   const style = window.getComputedStyle(node);
   return (
-    style.transform !== 'none' ||
+    style.transform !== "none" ||
     /transform|perspective/.test(style.willChange) ||
-    style.filter !== 'none' ||
-    style.contain === 'paint' ||
-    ('backdropFilter' in style && style.getPropertyValue('backdrop-filter') !== 'none') ||
-    ('WebkitBackdropFilter' in style && style.getPropertyValue('-webkit-backdrop-filter') !== 'none')
+    style.filter !== "none" ||
+    style.contain === "paint" ||
+    ("backdropFilter" in style && style.getPropertyValue("backdrop-filter") !== "none") ||
+    ("WebkitBackdropFilter" in style &&
+      style.getPropertyValue("-webkit-backdrop-filter") !== "none")
   );
 }
 
@@ -716,12 +715,10 @@ export function calculatePosition(opts: PositionOpts): PositionResult {
 
   const visualViewport = getVisualViewport();
   const container =
-    overlayNode instanceof HTMLElement
-      ? getContainingBlock(overlayNode)
-      : document.documentElement;
+    overlayNode instanceof HTMLElement ? getContainingBlock(overlayNode) : document.documentElement;
   const isViewportContainer = container === document.documentElement;
   const containerPositionStyle = window.getComputedStyle(container).position;
-  const isContainerPositioned = !!containerPositionStyle && containerPositionStyle !== 'static';
+  const isContainerPositioned = !!containerPositionStyle && containerPositionStyle !== "static";
   const childOffset: Offset = isViewportContainer
     ? getElementOffset(targetNode, false)
     : getPosition(targetNode, container, false);
@@ -761,6 +758,6 @@ export function calculatePosition(opts: PositionOpts): PositionResult {
     arrowSize,
     arrowBoundaryOffset,
     isContainerDescendentOfBoundary,
-    visualViewport
+    visualViewport,
   );
 }

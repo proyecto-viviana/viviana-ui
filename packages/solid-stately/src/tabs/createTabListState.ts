@@ -3,19 +3,19 @@
  * Based on @react-stately/tabs.
  */
 
-import { createComputed, createMemo, createSignal, type Accessor } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
-import { ListCollection } from '../collections/ListCollection';
+import { createComputed, createMemo, createSignal, type Accessor } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
+import { ListCollection } from "../collections/ListCollection";
 import type {
   Collection,
   CollectionItemLike,
   CollectionNode,
   Key,
   FocusStrategy,
-} from '../collections/types';
+} from "../collections/types";
 
-export type KeyboardActivation = 'automatic' | 'manual';
-export type TabOrientation = 'horizontal' | 'vertical';
+export type KeyboardActivation = "automatic" | "manual";
+export type TabOrientation = "horizontal" | "vertical";
 
 export interface TabListStateProps<T = unknown> {
   /** The items in the tab list. */
@@ -77,7 +77,7 @@ export interface TabListState<T = unknown> {
  * Creates state for a tab list component.
  */
 export function createTabListState<T = unknown>(
-  props: MaybeAccessor<TabListStateProps<T>>
+  props: MaybeAccessor<TabListStateProps<T>>,
 ): TabListState<T> {
   const getProps = () => access(props);
 
@@ -89,12 +89,11 @@ export function createTabListState<T = unknown>(
     const nodes: CollectionNode<T>[] = items.map((item, index) => {
       const o = item as CollectionItemLike;
       const key = p.getKey?.(item) ?? o.key ?? o.id ?? index;
-      const textValue =
-        p.getTextValue?.(item) ?? o.textValue ?? o.label ?? String(item);
+      const textValue = p.getTextValue?.(item) ?? o.textValue ?? o.label ?? String(item);
       const isDisabled = p.getDisabled?.(item) ?? o.isDisabled ?? false;
 
       return {
-        type: 'item' as const,
+        type: "item" as const,
         key,
         value: item,
         textValue,
@@ -164,7 +163,7 @@ export function createTabListState<T = unknown>(
 
   // Selection state
   const [selectedKeyInternal, setSelectedKeyInternal] = createSignal<Key | null>(
-    getInitialSelectedKey()
+    getInitialSelectedKey(),
   );
 
   // Compute actual selected key (controlled vs uncontrolled)
@@ -203,11 +202,10 @@ export function createTabListState<T = unknown>(
 
   // Keyboard activation accessor
   const keyboardActivation: Accessor<KeyboardActivation> = () =>
-    getProps().keyboardActivation ?? 'automatic';
+    getProps().keyboardActivation ?? "automatic";
 
   // Orientation accessor
-  const orientation: Accessor<TabOrientation> = () =>
-    getProps().orientation ?? 'horizontal';
+  const orientation: Accessor<TabOrientation> = () => getProps().orientation ?? "horizontal";
 
   // Focus state
   const [isFocused, setIsFocused] = createSignal(false);
@@ -220,7 +218,7 @@ export function createTabListState<T = unknown>(
 
     // In automatic mode, selecting follows focus
     if (
-      keyboardActivation() === 'automatic' &&
+      keyboardActivation() === "automatic" &&
       key !== null &&
       key !== selectedKey() &&
       !isKeyDisabled(key)

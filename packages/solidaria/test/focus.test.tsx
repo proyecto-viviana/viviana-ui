@@ -2,8 +2,8 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { createRoot, createSignal } from "solid-js";
 import {
   // Focus Restoration
   createFocusRestore,
@@ -17,13 +17,13 @@ import {
   createAutoFocus,
   clearAutoFocusQueue,
   getAutoFocusQueueLength,
-} from '../src/focus';
+} from "../src/focus";
 
 // ============================================
 // FOCUS RESTORATION
 // ============================================
 
-describe('createFocusRestore', () => {
+describe("createFocusRestore", () => {
   beforeEach(() => {
     clearFocusStack();
   });
@@ -32,10 +32,10 @@ describe('createFocusRestore', () => {
     clearFocusStack();
   });
 
-  it('should save the currently focused element on mount', async () => {
+  it("should save the currently focused element on mount", async () => {
     await new Promise<void>((resolve) => {
       // Create a button and focus it
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
       button.focus();
 
@@ -52,9 +52,9 @@ describe('createFocusRestore', () => {
     });
   });
 
-  it('should restore focus when calling restore()', async () => {
+  it("should restore focus when calling restore()", async () => {
     await new Promise<void>((resolve) => {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
       button.focus();
 
@@ -63,7 +63,7 @@ describe('createFocusRestore', () => {
 
         setTimeout(() => {
           // Focus something else
-          const input = document.createElement('input');
+          const input = document.createElement("input");
           document.body.appendChild(input);
           input.focus();
 
@@ -83,9 +83,9 @@ describe('createFocusRestore', () => {
     });
   });
 
-  it('should call onRestore callback when focus is restored', async () => {
+  it("should call onRestore callback when focus is restored", async () => {
     await new Promise<void>((resolve) => {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
       button.focus();
 
@@ -109,9 +109,9 @@ describe('createFocusRestore', () => {
     });
   });
 
-  it('should return false if element is removed', async () => {
+  it("should return false if element is removed", async () => {
     await new Promise<void>((resolve) => {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
       button.focus();
 
@@ -138,9 +138,9 @@ describe('createFocusRestore', () => {
     });
   });
 
-  it('should clear saved element when calling clear()', async () => {
+  it("should clear saved element when calling clear()", async () => {
     await new Promise<void>((resolve) => {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
       button.focus();
 
@@ -161,7 +161,7 @@ describe('createFocusRestore', () => {
   });
 });
 
-describe('focus stack', () => {
+describe("focus stack", () => {
   beforeEach(() => {
     clearFocusStack();
   });
@@ -170,9 +170,9 @@ describe('focus stack', () => {
     clearFocusStack();
   });
 
-  it('should push and pop elements from the stack', () => {
-    const button1 = document.createElement('button');
-    const button2 = document.createElement('button');
+  it("should push and pop elements from the stack", () => {
+    const button1 = document.createElement("button");
+    const button2 = document.createElement("button");
 
     pushFocusStack(button1);
     expect(getFocusStackLength()).toBe(1);
@@ -187,9 +187,9 @@ describe('focus stack', () => {
     expect(getFocusStackLength()).toBe(0);
   });
 
-  it('should clear the entire stack', () => {
-    const button1 = document.createElement('button');
-    const button2 = document.createElement('button');
+  it("should clear the entire stack", () => {
+    const button1 = document.createElement("button");
+    const button2 = document.createElement("button");
 
     pushFocusStack(button1);
     pushFocusStack(button2);
@@ -204,32 +204,32 @@ describe('focus stack', () => {
 // VIRTUAL FOCUS
 // ============================================
 
-describe('createVirtualFocus', () => {
+describe("createVirtualFocus", () => {
   const createItems = () => [
-    { id: '1', name: 'Item 1', disabled: false },
-    { id: '2', name: 'Item 2', disabled: false },
-    { id: '3', name: 'Item 3', disabled: true },
-    { id: '4', name: 'Item 4', disabled: false },
+    { id: "1", name: "Item 1", disabled: false },
+    { id: "2", name: "Item 2", disabled: false },
+    { id: "3", name: "Item 3", disabled: true },
+    { id: "4", name: "Item 4", disabled: false },
   ];
 
-  it('should track focused key', () => {
+  it("should track focused key", () => {
     createRoot((dispose) => {
       const items = createItems();
 
       const virtualFocus = createVirtualFocus({
         items: () => items,
         getKey: (item) => item.id,
-        defaultFocusedKey: '1',
+        defaultFocusedKey: "1",
       });
 
-      expect(virtualFocus.focusedKey()).toBe('1');
-      expect(virtualFocus.focusedItem()?.name).toBe('Item 1');
+      expect(virtualFocus.focusedKey()).toBe("1");
+      expect(virtualFocus.focusedItem()?.name).toBe("Item 1");
 
       dispose();
     });
   });
 
-  it('should focus next item', () => {
+  it("should focus next item", () => {
     createRoot((dispose) => {
       const items = createItems();
 
@@ -237,21 +237,21 @@ describe('createVirtualFocus', () => {
         items: () => items,
         getKey: (item) => item.id,
         isDisabled: (item) => item.disabled,
-        defaultFocusedKey: '1',
+        defaultFocusedKey: "1",
       });
 
       virtualFocus.focusNext();
-      expect(virtualFocus.focusedKey()).toBe('2');
+      expect(virtualFocus.focusedKey()).toBe("2");
 
       // Should skip disabled item (id: 3)
       virtualFocus.focusNext();
-      expect(virtualFocus.focusedKey()).toBe('4');
+      expect(virtualFocus.focusedKey()).toBe("4");
 
       dispose();
     });
   });
 
-  it('should focus previous item', () => {
+  it("should focus previous item", () => {
     createRoot((dispose) => {
       const items = createItems();
 
@@ -259,35 +259,35 @@ describe('createVirtualFocus', () => {
         items: () => items,
         getKey: (item) => item.id,
         isDisabled: (item) => item.disabled,
-        defaultFocusedKey: '4',
+        defaultFocusedKey: "4",
       });
 
       virtualFocus.focusPrevious();
       // Should skip disabled item (id: 3)
-      expect(virtualFocus.focusedKey()).toBe('2');
+      expect(virtualFocus.focusedKey()).toBe("2");
 
       dispose();
     });
   });
 
-  it('should focus first item', () => {
+  it("should focus first item", () => {
     createRoot((dispose) => {
       const items = createItems();
 
       const virtualFocus = createVirtualFocus({
         items: () => items,
         getKey: (item) => item.id,
-        defaultFocusedKey: '4',
+        defaultFocusedKey: "4",
       });
 
       virtualFocus.focusFirst();
-      expect(virtualFocus.focusedKey()).toBe('1');
+      expect(virtualFocus.focusedKey()).toBe("1");
 
       dispose();
     });
   });
 
-  it('should focus last item', () => {
+  it("should focus last item", () => {
     createRoot((dispose) => {
       const items = createItems();
 
@@ -295,17 +295,17 @@ describe('createVirtualFocus', () => {
         items: () => items,
         getKey: (item) => item.id,
         isDisabled: (item) => item.disabled,
-        defaultFocusedKey: '1',
+        defaultFocusedKey: "1",
       });
 
       virtualFocus.focusLast();
-      expect(virtualFocus.focusedKey()).toBe('4');
+      expect(virtualFocus.focusedKey()).toBe("4");
 
       dispose();
     });
   });
 
-  it('should wrap focus when wrap is true', () => {
+  it("should wrap focus when wrap is true", () => {
     createRoot((dispose) => {
       const items = createItems();
 
@@ -313,18 +313,18 @@ describe('createVirtualFocus', () => {
         items: () => items,
         getKey: (item) => item.id,
         isDisabled: (item) => item.disabled,
-        defaultFocusedKey: '4',
+        defaultFocusedKey: "4",
         wrap: true,
       });
 
       virtualFocus.focusNext();
-      expect(virtualFocus.focusedKey()).toBe('1');
+      expect(virtualFocus.focusedKey()).toBe("1");
 
       dispose();
     });
   });
 
-  it('should not wrap focus when wrap is false', () => {
+  it("should not wrap focus when wrap is false", () => {
     createRoot((dispose) => {
       const items = createItems();
 
@@ -332,22 +332,22 @@ describe('createVirtualFocus', () => {
         items: () => items,
         getKey: (item) => item.id,
         isDisabled: (item) => item.disabled,
-        defaultFocusedKey: '4',
+        defaultFocusedKey: "4",
         wrap: false,
       });
 
       virtualFocus.focusNext();
       // Should stay on last item
-      expect(virtualFocus.focusedKey()).toBe('4');
+      expect(virtualFocus.focusedKey()).toBe("4");
 
       dispose();
     });
   });
 
-  it('should work with controlled focus', () => {
+  it("should work with controlled focus", () => {
     createRoot((dispose) => {
       const items = createItems();
-      const [focusedKey, setFocusedKey] = createSignal<string | null>('1');
+      const [focusedKey, setFocusedKey] = createSignal<string | null>("1");
 
       const onFocusChange = vi.fn((key: string | null) => setFocusedKey(key));
 
@@ -359,48 +359,48 @@ describe('createVirtualFocus', () => {
       });
 
       virtualFocus.focusNext();
-      expect(onFocusChange).toHaveBeenCalledWith('2');
-      expect(focusedKey()).toBe('2');
+      expect(onFocusChange).toHaveBeenCalledWith("2");
+      expect(focusedKey()).toBe("2");
 
       dispose();
     });
   });
 
-  it('should check if key is focused', () => {
+  it("should check if key is focused", () => {
     createRoot((dispose) => {
       const items = createItems();
 
       const virtualFocus = createVirtualFocus({
         items: () => items,
         getKey: (item) => item.id,
-        defaultFocusedKey: '2',
+        defaultFocusedKey: "2",
       });
 
-      expect(virtualFocus.isFocused('1')).toBe(false);
-      expect(virtualFocus.isFocused('2')).toBe(true);
-      expect(virtualFocus.isFocused('3')).toBe(false);
+      expect(virtualFocus.isFocused("1")).toBe(false);
+      expect(virtualFocus.isFocused("2")).toBe(true);
+      expect(virtualFocus.isFocused("3")).toBe(false);
 
       dispose();
     });
   });
 
-  it('should provide container props with aria-activedescendant', () => {
+  it("should provide container props with aria-activedescendant", () => {
     createRoot((dispose) => {
       const items = createItems();
 
       const virtualFocus = createVirtualFocus({
         items: () => items,
         getKey: (item) => item.id,
-        defaultFocusedKey: '2',
+        defaultFocusedKey: "2",
       });
 
-      expect(virtualFocus.containerProps['aria-activedescendant']()).toBe('item-2');
+      expect(virtualFocus.containerProps["aria-activedescendant"]()).toBe("item-2");
 
       dispose();
     });
   });
 
-  it('should provide item props with id', () => {
+  it("should provide item props with id", () => {
     createRoot((dispose) => {
       const items = createItems();
 
@@ -409,14 +409,14 @@ describe('createVirtualFocus', () => {
         getKey: (item) => item.id,
       });
 
-      expect(virtualFocus.getItemProps('1').id).toBe('item-1');
-      expect(virtualFocus.getItemProps('2').id).toBe('item-2');
+      expect(virtualFocus.getItemProps("1").id).toBe("item-1");
+      expect(virtualFocus.getItemProps("2").id).toBe("item-2");
 
       dispose();
     });
   });
 
-  it('should handle keyboard navigation', () => {
+  it("should handle keyboard navigation", () => {
     createRoot((dispose) => {
       const items = createItems();
 
@@ -424,34 +424,34 @@ describe('createVirtualFocus', () => {
         items: () => items,
         getKey: (item) => item.id,
         isDisabled: (item) => item.disabled,
-        defaultFocusedKey: '1',
+        defaultFocusedKey: "1",
       });
 
       const keyDown = virtualFocus.containerProps.onKeyDown;
 
       // Arrow down
-      const downEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
-      Object.defineProperty(downEvent, 'preventDefault', { value: vi.fn() });
+      const downEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      Object.defineProperty(downEvent, "preventDefault", { value: vi.fn() });
       keyDown(downEvent);
-      expect(virtualFocus.focusedKey()).toBe('2');
+      expect(virtualFocus.focusedKey()).toBe("2");
 
       // Arrow up
-      const upEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
-      Object.defineProperty(upEvent, 'preventDefault', { value: vi.fn() });
+      const upEvent = new KeyboardEvent("keydown", { key: "ArrowUp" });
+      Object.defineProperty(upEvent, "preventDefault", { value: vi.fn() });
       keyDown(upEvent);
-      expect(virtualFocus.focusedKey()).toBe('1');
+      expect(virtualFocus.focusedKey()).toBe("1");
 
       // Home
-      const homeEvent = new KeyboardEvent('keydown', { key: 'Home' });
-      Object.defineProperty(homeEvent, 'preventDefault', { value: vi.fn() });
+      const homeEvent = new KeyboardEvent("keydown", { key: "Home" });
+      Object.defineProperty(homeEvent, "preventDefault", { value: vi.fn() });
       keyDown(homeEvent);
-      expect(virtualFocus.focusedKey()).toBe('1');
+      expect(virtualFocus.focusedKey()).toBe("1");
 
       // End
-      const endEvent = new KeyboardEvent('keydown', { key: 'End' });
-      Object.defineProperty(endEvent, 'preventDefault', { value: vi.fn() });
+      const endEvent = new KeyboardEvent("keydown", { key: "End" });
+      Object.defineProperty(endEvent, "preventDefault", { value: vi.fn() });
       keyDown(endEvent);
-      expect(virtualFocus.focusedKey()).toBe('4');
+      expect(virtualFocus.focusedKey()).toBe("4");
 
       dispose();
     });
@@ -462,7 +462,7 @@ describe('createVirtualFocus', () => {
 // AUTO FOCUS
 // ============================================
 
-describe('createAutoFocus', () => {
+describe("createAutoFocus", () => {
   beforeEach(() => {
     clearAutoFocusQueue();
   });
@@ -471,9 +471,9 @@ describe('createAutoFocus', () => {
     clearAutoFocusQueue();
   });
 
-  it('should focus element on mount', async () => {
+  it("should focus element on mount", async () => {
     await new Promise<void>((resolve) => {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       createRoot((dispose) => {
@@ -491,9 +491,9 @@ describe('createAutoFocus', () => {
     });
   });
 
-  it('should not focus when isEnabled is false', async () => {
+  it("should not focus when isEnabled is false", async () => {
     await new Promise<void>((resolve) => {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       createRoot((dispose) => {
@@ -511,14 +511,14 @@ describe('createAutoFocus', () => {
     });
   });
 
-  it('should respect priority when multiple elements request auto-focus', async () => {
+  it("should respect priority when multiple elements request auto-focus", async () => {
     await new Promise<void>((resolve) => {
-      const button1 = document.createElement('button');
-      button1.id = 'low-priority';
+      const button1 = document.createElement("button");
+      button1.id = "low-priority";
       document.body.appendChild(button1);
 
-      const button2 = document.createElement('button');
-      button2.id = 'high-priority';
+      const button2 = document.createElement("button");
+      button2.id = "high-priority";
       document.body.appendChild(button2);
 
       createRoot((dispose) => {
@@ -543,9 +543,9 @@ describe('createAutoFocus', () => {
     });
   });
 
-  it('should call onFocus callback when focused', async () => {
+  it("should call onFocus callback when focused", async () => {
     await new Promise<void>((resolve) => {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       const onFocus = vi.fn();
@@ -565,12 +565,12 @@ describe('createAutoFocus', () => {
     });
   });
 
-  it('should call onSkip callback when skipped due to lower priority', async () => {
+  it("should call onSkip callback when skipped due to lower priority", async () => {
     await new Promise<void>((resolve) => {
-      const button1 = document.createElement('button');
+      const button1 = document.createElement("button");
       document.body.appendChild(button1);
 
-      const button2 = document.createElement('button');
+      const button2 = document.createElement("button");
       document.body.appendChild(button2);
 
       const onSkip = vi.fn();
@@ -598,9 +598,9 @@ describe('createAutoFocus', () => {
     });
   });
 
-  it('should allow manual focus trigger', () => {
+  it("should allow manual focus trigger", () => {
     createRoot((dispose) => {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       const autoFocus = createAutoFocus(() => button, {
@@ -616,9 +616,9 @@ describe('createAutoFocus', () => {
     });
   });
 
-  it('should allow canceling auto-focus', async () => {
+  it("should allow canceling auto-focus", async () => {
     await new Promise<void>((resolve) => {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       createRoot((dispose) => {
@@ -639,9 +639,9 @@ describe('createAutoFocus', () => {
     });
   });
 
-  it('should delay focus when delay option is set', async () => {
+  it("should delay focus when delay option is set", async () => {
     await new Promise<void>((resolve) => {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       document.body.appendChild(button);
 
       createRoot((dispose) => {
@@ -666,7 +666,7 @@ describe('createAutoFocus', () => {
   });
 });
 
-describe('auto-focus queue utilities', () => {
+describe("auto-focus queue utilities", () => {
   beforeEach(() => {
     clearAutoFocusQueue();
   });
@@ -675,11 +675,11 @@ describe('auto-focus queue utilities', () => {
     clearAutoFocusQueue();
   });
 
-  it('should report queue length', () => {
+  it("should report queue length", () => {
     expect(getAutoFocusQueueLength()).toBe(0);
   });
 
-  it('should clear the queue', () => {
+  it("should clear the queue", () => {
     clearAutoFocusQueue();
     expect(getAutoFocusQueueLength()).toBe(0);
   });

@@ -4,7 +4,7 @@
  * Styling-only empty-state/message primitive.
  */
 
-import { type JSX, Show, splitProps } from 'solid-js';
+import { type JSX, Show, splitProps } from "solid-js";
 
 export interface IllustratedMessageProps extends JSX.HTMLAttributes<HTMLDivElement> {
   illustration?: JSX.Element;
@@ -15,17 +15,17 @@ export interface IllustratedMessageProps extends JSX.HTMLAttributes<HTMLDivEleme
 
 export function IllustratedMessage(props: IllustratedMessageProps): JSX.Element {
   const [local, domProps] = splitProps(props, [
-    'illustration',
-    'heading',
-    'description',
-    'class',
-    'children',
+    "illustration",
+    "heading",
+    "description",
+    "class",
+    "children",
   ]);
 
   return (
     <div
       {...domProps}
-      class={`flex flex-col items-center justify-center gap-3 rounded-lg border border-primary-600 bg-bg-300 p-6 text-center ${local.class ?? ''}`}
+      class={`flex flex-col items-center justify-center gap-3 rounded-lg border border-primary-600 bg-bg-300 p-6 text-center ${local.class ?? ""}`}
     >
       <Show when={local.illustration}>
         <div class="text-primary-300">{local.illustration}</div>

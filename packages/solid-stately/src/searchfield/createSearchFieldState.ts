@@ -3,8 +3,8 @@
  * Based on @react-stately/searchfield useSearchFieldState.
  */
 
-import { type Accessor, createSignal, createMemo } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
+import { type Accessor, createSignal, createMemo } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
 
 export interface SearchFieldStateProps {
   /** The current value (controlled). */
@@ -26,7 +26,7 @@ export interface SearchFieldState {
  * Provides state management for a search field.
  */
 export function createSearchFieldState(
-  props: MaybeAccessor<SearchFieldStateProps>
+  props: MaybeAccessor<SearchFieldStateProps>,
 ): SearchFieldState {
   const getProps = () => access(props);
 
@@ -34,14 +34,12 @@ export function createSearchFieldState(
   const isControlled = () => getProps().value !== undefined;
 
   // Internal signal for uncontrolled mode
-  const [internalValue, setInternalValue] = createSignal(
-    getProps().defaultValue ?? ''
-  );
+  const [internalValue, setInternalValue] = createSignal(getProps().defaultValue ?? "");
 
   // Current value accessor
   const value = createMemo(() => {
     const p = getProps();
-    return isControlled() ? (p.value ?? '') : internalValue();
+    return isControlled() ? (p.value ?? "") : internalValue();
   });
 
   // Set value function

@@ -1,16 +1,16 @@
-import { createRouter } from '@tanstack/solid-router'
-import { routeTree } from './routeTree.gen'
+import { createRouter } from "@tanstack/solid-router";
+import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
   const router = createRouter({
     routeTree,
     scrollRestoration: true,
-  })
-  return router
+  });
+  return router;
 }
 
-declare module '@tanstack/solid-router' {
+declare module "@tanstack/solid-router" {
   interface Register {
-    router: ReturnType<typeof getRouter>
+    router: ReturnType<typeof getRouter>;
   }
 }

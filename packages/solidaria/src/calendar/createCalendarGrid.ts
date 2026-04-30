@@ -5,9 +5,9 @@
  * Based on @react-aria/calendar useCalendarGrid
  */
 
-import { createMemo } from 'solid-js';
-import { type MaybeAccessor } from '../utils/reactivity';
-import type { CalendarState, CalendarDate } from '@proyecto-viviana/solid-stately';
+import { createMemo } from "solid-js";
+import { type MaybeAccessor } from "../utils/reactivity";
+import type { CalendarState, CalendarDate } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
@@ -19,7 +19,7 @@ export interface AriaCalendarGridProps {
   /** The end date of the grid (defaults to end of focused month). */
   endDate?: CalendarDate;
   /** The number of weeks to display. */
-  weekdayStyle?: 'narrow' | 'short' | 'long';
+  weekdayStyle?: "narrow" | "short" | "long";
 }
 
 export interface CalendarGridAria {
@@ -41,7 +41,7 @@ export interface CalendarGridAria {
 export function createCalendarGrid<T extends CalendarState>(
   _props: MaybeAccessor<AriaCalendarGridProps>,
   state: T,
-  ref?: () => HTMLElement | null
+  ref?: () => HTMLElement | null,
 ): CalendarGridAria {
   // Week days for headers
   const weekDays = createMemo(() => state.weekDays());
@@ -49,16 +49,16 @@ export function createCalendarGrid<T extends CalendarState>(
   // Handle keyboard navigation
   const isRTL = (): boolean => {
     const element = ref?.();
-    const scopedDirection = element?.closest('[dir]')?.getAttribute('dir');
-    const documentDirection = typeof document !== 'undefined' ? document.dir : '';
-    return (scopedDirection ?? documentDirection) === 'rtl';
+    const scopedDirection = element?.closest("[dir]")?.getAttribute("dir");
+    const documentDirection = typeof document !== "undefined" ? document.dir : "";
+    return (scopedDirection ?? documentDirection) === "rtl";
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (state.isDisabled()) return;
 
     switch (e.key) {
-      case 'ArrowLeft':
+      case "ArrowLeft":
         e.preventDefault();
         if (isRTL()) {
           state.focusNextDay();
@@ -66,7 +66,7 @@ export function createCalendarGrid<T extends CalendarState>(
           state.focusPreviousDay();
         }
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         e.preventDefault();
         if (isRTL()) {
           state.focusPreviousDay();
@@ -74,15 +74,15 @@ export function createCalendarGrid<T extends CalendarState>(
           state.focusNextDay();
         }
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         state.focusPreviousWeek();
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         state.focusNextWeek();
         break;
-      case 'PageUp':
+      case "PageUp":
         e.preventDefault();
         if (e.shiftKey) {
           state.focusPreviousSection(); // Previous year
@@ -90,7 +90,7 @@ export function createCalendarGrid<T extends CalendarState>(
           state.focusPreviousPage(); // Previous month
         }
         break;
-      case 'PageDown':
+      case "PageDown":
         e.preventDefault();
         if (e.shiftKey) {
           state.focusNextSection(); // Next year
@@ -98,21 +98,21 @@ export function createCalendarGrid<T extends CalendarState>(
           state.focusNextPage(); // Next month
         }
         break;
-      case 'Home':
+      case "Home":
         e.preventDefault();
         state.focusPageStart();
         break;
-      case 'End':
+      case "End":
         e.preventDefault();
         state.focusPageEnd();
         break;
-      case 'Enter':
-      case ' ':
+      case "Enter":
+      case " ":
         e.preventDefault();
         state.selectFocusedDate();
         break;
-      case 'Escape':
-        if ('setAnchorDate' in state && typeof state.setAnchorDate === 'function') {
+      case "Escape":
+        if ("setAnchorDate" in state && typeof state.setAnchorDate === "function") {
           e.preventDefault();
           state.setAnchorDate(null);
         }
@@ -122,9 +122,9 @@ export function createCalendarGrid<T extends CalendarState>(
 
   // Grid props
   const gridProps = createMemo(() => ({
-    role: 'grid',
-    'aria-readonly': state.isReadOnly() || undefined,
-    'aria-disabled': state.isDisabled() || undefined,
+    role: "grid",
+    "aria-readonly": state.isReadOnly() || undefined,
+    "aria-disabled": state.isDisabled() || undefined,
     tabIndex: state.isFocused() ? 0 : -1,
     onFocus: () => state.setFocused(true),
     onBlur: () => state.setFocused(false),

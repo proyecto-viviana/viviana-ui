@@ -4,7 +4,7 @@
  * This is a 1-1 port of React-Aria's useKeyboard hook adapted for SolidJS.
  */
 
-import { JSX } from 'solid-js';
+import { JSX } from "solid-js";
 
 /**
  * Keyboard event with continuePropagation support.
@@ -37,7 +37,7 @@ export interface KeyboardResult {
  * and support continuePropagation instead.
  */
 function createEventHandler<T extends globalThis.KeyboardEvent>(
-  handler?: (e: KeyboardEvent) => void
+  handler?: (e: KeyboardEvent) => void,
 ): ((e: T) => void) | undefined {
   if (!handler) {
     return undefined;

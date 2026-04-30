@@ -1,6 +1,13 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Menu, MenuItem, MenuTrigger, MenuButton, MenuSeparator, Button } from "@proyecto-viviana/solid-spectrum";
+import {
+  Menu,
+  MenuItem,
+  MenuTrigger,
+  MenuButton,
+  MenuSeparator,
+  Button,
+} from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 type MenuDocItem = {
@@ -253,7 +260,9 @@ function MenuPage() {
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Uses ARIA menu pattern with <code>menu</code> and <code>menuitem</code> roles</li>
+          <li>
+            Uses ARIA menu pattern with <code>menu</code> and <code>menuitem</code> roles
+          </li>
           <li>Arrow keys navigate between items</li>
           <li>Home/End keys jump to first/last item</li>
           <li>Escape closes the menu and returns focus to trigger</li>

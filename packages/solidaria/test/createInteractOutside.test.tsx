@@ -5,10 +5,10 @@
  * Used for closing dialogs, popovers, etc. when clicking outside.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, cleanup, fireEvent } from '@solidjs/testing-library';
-import { createInteractOutside } from '../src/overlays/createInteractOutside';
-import { createSignal, type Component } from 'solid-js';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, cleanup, fireEvent } from "@solidjs/testing-library";
+import { createInteractOutside } from "../src/overlays/createInteractOutside";
+import { createSignal, type Component } from "solid-js";
 
 // Helper to create a pointer event
 function pointerEvent(type: string, opts: Partial<PointerEventInit> = {}) {
@@ -22,7 +22,7 @@ function pointerEvent(type: string, opts: Partial<PointerEventInit> = {}) {
   return evt;
 }
 
-const originalPointerEvent = typeof PointerEvent !== 'undefined' ? PointerEvent : undefined;
+const originalPointerEvent = typeof PointerEvent !== "undefined" ? PointerEvent : undefined;
 
 function disablePointerEvents() {
   try {
@@ -60,7 +60,7 @@ const Example: Component<ExampleProps> = (props) => {
   );
 };
 
-describe('createInteractOutside', () => {
+describe("createInteractOutside", () => {
   afterEach(() => {
     cleanup();
   });
@@ -69,58 +69,58 @@ describe('createInteractOutside', () => {
   // POINTER EVENTS
   // ============================================
 
-  describe('pointer events', () => {
-    it('should fire interact outside events based on pointer events', () => {
+  describe("pointer events", () => {
+    it("should fire interact outside events based on pointer events", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example onInteractOutside={onInteractOutside} />);
 
       // Click inside - should not fire
       const el = document.querySelector('[data-testid="example"]')!;
-      fireEvent(el, pointerEvent('pointerdown'));
-      fireEvent(el, pointerEvent('pointerup'));
+      fireEvent(el, pointerEvent("pointerdown"));
+      fireEvent(el, pointerEvent("pointerup"));
       fireEvent.click(el);
       expect(onInteractOutside).not.toHaveBeenCalled();
 
       // Click outside - should fire
-      fireEvent(document.body, pointerEvent('pointerdown'));
-      fireEvent(document.body, pointerEvent('pointerup'));
+      fireEvent(document.body, pointerEvent("pointerdown"));
+      fireEvent(document.body, pointerEvent("pointerup"));
       fireEvent.click(document.body);
       expect(onInteractOutside).toHaveBeenCalledTimes(1);
     });
 
-    it('should only listen for the left mouse button', () => {
+    it("should only listen for the left mouse button", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example onInteractOutside={onInteractOutside} />);
 
       // Right click outside - should not fire
-      fireEvent(document.body, pointerEvent('pointerdown', { button: 1 }));
-      fireEvent(document.body, pointerEvent('pointerup', { button: 1 }));
+      fireEvent(document.body, pointerEvent("pointerdown", { button: 1 }));
+      fireEvent(document.body, pointerEvent("pointerup", { button: 1 }));
       fireEvent.click(document.body, { button: 1 });
       expect(onInteractOutside).not.toHaveBeenCalled();
 
       // Left click outside - should fire
-      fireEvent(document.body, pointerEvent('pointerdown', { button: 0 }));
-      fireEvent(document.body, pointerEvent('pointerup', { button: 0 }));
+      fireEvent(document.body, pointerEvent("pointerdown", { button: 0 }));
+      fireEvent(document.body, pointerEvent("pointerup", { button: 0 }));
       fireEvent.click(document.body, { button: 0 });
       expect(onInteractOutside).toHaveBeenCalledTimes(1);
     });
 
-    it('should not fire interact outside if there is a pointer up without pointer down first', () => {
+    it("should not fire interact outside if there is a pointer up without pointer down first", () => {
       // Fire pointer down before component is mounted
-      fireEvent(document.body, pointerEvent('pointerdown'));
+      fireEvent(document.body, pointerEvent("pointerdown"));
 
       const onInteractOutside = vi.fn();
       render(() => <Example onInteractOutside={onInteractOutside} />);
 
       // Fire pointer up / click - should not fire because pointerdown wasn't tracked
-      fireEvent(document.body, pointerEvent('pointerup'));
+      fireEvent(document.body, pointerEvent("pointerup"));
       fireEvent.click(document.body);
       expect(onInteractOutside).not.toHaveBeenCalled();
     });
 
-    it('should call onInteractOutsideStart when interaction starts', () => {
+    it("should call onInteractOutsideStart when interaction starts", () => {
       const onInteractOutsideStart = vi.fn();
       const onInteractOutside = vi.fn();
 
@@ -131,7 +131,7 @@ describe('createInteractOutside', () => {
         />
       ));
 
-      fireEvent(document.body, pointerEvent('pointerdown'));
+      fireEvent(document.body, pointerEvent("pointerdown"));
       expect(onInteractOutsideStart).toHaveBeenCalledTimes(1);
 
       fireEvent.click(document.body);
@@ -143,7 +143,7 @@ describe('createInteractOutside', () => {
   // MOUSE EVENTS (FALLBACK)
   // ============================================
 
-  describe('mouse events', () => {
+  describe("mouse events", () => {
     beforeEach(() => {
       disablePointerEvents();
     });
@@ -152,7 +152,7 @@ describe('createInteractOutside', () => {
       restorePointerEvents();
     });
 
-    it('should fire interact outside events based on mouse events', () => {
+    it("should fire interact outside events based on mouse events", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example onInteractOutside={onInteractOutside} />);
@@ -167,7 +167,7 @@ describe('createInteractOutside', () => {
       expect(onInteractOutside).toHaveBeenCalledTimes(1);
     });
 
-    it('should only listen for the left mouse button', () => {
+    it("should only listen for the left mouse button", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example onInteractOutside={onInteractOutside} />);
@@ -181,7 +181,7 @@ describe('createInteractOutside', () => {
       expect(onInteractOutside).toHaveBeenCalledTimes(1);
     });
 
-    it('should not fire interact outside if there is a mouse up without mouse down first', () => {
+    it("should not fire interact outside if there is a mouse up without mouse down first", () => {
       fireEvent.mouseDown(document.body);
 
       const onInteractOutside = vi.fn();
@@ -196,7 +196,7 @@ describe('createInteractOutside', () => {
   // TOUCH EVENTS
   // ============================================
 
-  describe('touch events', () => {
+  describe("touch events", () => {
     beforeEach(() => {
       disablePointerEvents();
     });
@@ -205,7 +205,7 @@ describe('createInteractOutside', () => {
       restorePointerEvents();
     });
 
-    it('should fire interact outside events based on touch events', () => {
+    it("should fire interact outside events based on touch events", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example onInteractOutside={onInteractOutside} />);
@@ -220,7 +220,7 @@ describe('createInteractOutside', () => {
       expect(onInteractOutside).toHaveBeenCalledTimes(1);
     });
 
-    it('should ignore emulated mouse events', () => {
+    it("should ignore emulated mouse events", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example onInteractOutside={onInteractOutside} />);
@@ -237,7 +237,7 @@ describe('createInteractOutside', () => {
       expect(onInteractOutside).toHaveBeenCalledTimes(1);
     });
 
-    it('should not fire interact outside if there is a touch end without touch start first', () => {
+    it("should not fire interact outside if there is a touch end without touch start first", () => {
       fireEvent.touchStart(document.body);
 
       const onInteractOutside = vi.fn();
@@ -252,18 +252,18 @@ describe('createInteractOutside', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('does not handle pointer events if disabled', () => {
+  describe("disabled state", () => {
+    it("does not handle pointer events if disabled", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example isDisabled onInteractOutside={onInteractOutside} />);
 
-      fireEvent(document.body, pointerEvent('pointerdown'));
+      fireEvent(document.body, pointerEvent("pointerdown"));
       fireEvent.click(document.body);
       expect(onInteractOutside).not.toHaveBeenCalled();
     });
 
-    it('does not handle mouse events if disabled', () => {
+    it("does not handle mouse events if disabled", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example isDisabled onInteractOutside={onInteractOutside} />);
@@ -273,7 +273,7 @@ describe('createInteractOutside', () => {
       expect(onInteractOutside).not.toHaveBeenCalled();
     });
 
-    it('does not handle touch events if disabled', () => {
+    it("does not handle touch events if disabled", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example isDisabled onInteractOutside={onInteractOutside} />);
@@ -288,11 +288,13 @@ describe('createInteractOutside', () => {
   // EDGE CASES
   // ============================================
 
-  describe('edge cases', () => {
-    it('should not fire when clicking inside nested elements', () => {
+  describe("edge cases", () => {
+    it("should not fire when clicking inside nested elements", () => {
       const onInteractOutside = vi.fn();
 
-      const NestedExample: Component<{ onInteractOutside: (e: PointerEvent) => void }> = (props) => {
+      const NestedExample: Component<{ onInteractOutside: (e: PointerEvent) => void }> = (
+        props,
+      ) => {
         const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
 
         createInteractOutside({
@@ -313,23 +315,23 @@ describe('createInteractOutside', () => {
 
       // Click on nested button - should not fire (it's inside the tracked element)
       const button = document.querySelector('[data-testid="nested-button"]')!;
-      fireEvent(button, pointerEvent('pointerdown'));
+      fireEvent(button, pointerEvent("pointerdown"));
       fireEvent.click(button);
       expect(onInteractOutside).not.toHaveBeenCalled();
 
       // Click outside - should fire
-      fireEvent(document.body, pointerEvent('pointerdown'));
+      fireEvent(document.body, pointerEvent("pointerdown"));
       fireEvent.click(document.body);
       expect(onInteractOutside).toHaveBeenCalledTimes(1);
     });
 
-    it('should handle element removal during interaction', () => {
+    it("should handle element removal during interaction", () => {
       const onInteractOutside = vi.fn();
 
       const { unmount } = render(() => <Example onInteractOutside={onInteractOutside} />);
 
       // Start interaction
-      fireEvent(document.body, pointerEvent('pointerdown'));
+      fireEvent(document.body, pointerEvent("pointerdown"));
 
       // Unmount the component
       unmount();
@@ -341,10 +343,12 @@ describe('createInteractOutside', () => {
       expect(true).toBe(true);
     });
 
-    it('should not fire when ref is null', () => {
+    it("should not fire when ref is null", () => {
       const onInteractOutside = vi.fn();
 
-      const NullRefExample: Component<{ onInteractOutside: (e: PointerEvent) => void }> = (props) => {
+      const NullRefExample: Component<{ onInteractOutside: (e: PointerEvent) => void }> = (
+        props,
+      ) => {
         createInteractOutside({
           ref: () => null,
           onInteractOutside: props.onInteractOutside,
@@ -355,24 +359,24 @@ describe('createInteractOutside', () => {
 
       render(() => <NullRefExample onInteractOutside={onInteractOutside} />);
 
-      fireEvent(document.body, pointerEvent('pointerdown'));
+      fireEvent(document.body, pointerEvent("pointerdown"));
       fireEvent.click(document.body);
 
       // Should not fire because ref is null
       expect(onInteractOutside).not.toHaveBeenCalled();
     });
 
-    it('should ignore events in top layer elements', () => {
+    it("should ignore events in top layer elements", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example onInteractOutside={onInteractOutside} />);
 
-      const topLayer = document.createElement('div');
-      topLayer.setAttribute('data-solidaria-top-layer', 'true');
+      const topLayer = document.createElement("div");
+      topLayer.setAttribute("data-solidaria-top-layer", "true");
       document.body.appendChild(topLayer);
 
-      fireEvent(topLayer, pointerEvent('pointerdown'));
-      fireEvent(topLayer, pointerEvent('pointerup'));
+      fireEvent(topLayer, pointerEvent("pointerdown"));
+      fireEvent(topLayer, pointerEvent("pointerup"));
       fireEvent.click(topLayer);
 
       expect(onInteractOutside).not.toHaveBeenCalled();
@@ -384,7 +388,7 @@ describe('createInteractOutside', () => {
   // SHADOW DOM
   // ============================================
 
-  describe('shadow dom', () => {
+  describe("shadow dom", () => {
     beforeEach(() => {
       disablePointerEvents();
     });
@@ -394,10 +398,10 @@ describe('createInteractOutside', () => {
     });
 
     function createShadowRoot() {
-      const host = document.createElement('div');
+      const host = document.createElement("div");
       document.body.appendChild(host);
-      const shadowRoot = host.attachShadow({ mode: 'open' });
-      const container = document.createElement('div');
+      const shadowRoot = host.attachShadow({ mode: "open" });
+      const container = document.createElement("div");
       shadowRoot.appendChild(container);
       return {
         host,
@@ -422,13 +426,13 @@ describe('createInteractOutside', () => {
       );
     };
 
-    it('does not trigger when clicking inside shadow root', () => {
+    it("does not trigger when clicking inside shadow root", () => {
       const onInteractOutside = vi.fn();
       const { shadowRoot, container, cleanup: cleanupShadow } = createShadowRoot();
 
       render(() => <ShadowExample onInteractOutside={onInteractOutside} />, { container });
 
-      const inside = shadowRoot.getElementById('inside-popover')!;
+      const inside = shadowRoot.getElementById("inside-popover")!;
       fireEvent.mouseDown(inside);
       fireEvent.mouseUp(inside);
 
@@ -436,7 +440,7 @@ describe('createInteractOutside', () => {
       cleanupShadow();
     });
 
-    it('triggers when clicking outside shadow root', () => {
+    it("triggers when clicking outside shadow root", () => {
       const onInteractOutside = vi.fn();
       const { container, cleanup: cleanupShadow } = createShadowRoot();
 
@@ -454,8 +458,8 @@ describe('createInteractOutside', () => {
   // INTERACTION SEQUENCE
   // ============================================
 
-  describe('interaction sequence', () => {
-    it('should require pointerdown followed by click', () => {
+  describe("interaction sequence", () => {
+    it("should require pointerdown followed by click", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example onInteractOutside={onInteractOutside} />);
@@ -465,23 +469,23 @@ describe('createInteractOutside', () => {
       expect(onInteractOutside).not.toHaveBeenCalled();
 
       // Complete sequence - should fire
-      fireEvent(document.body, pointerEvent('pointerdown'));
+      fireEvent(document.body, pointerEvent("pointerdown"));
       fireEvent.click(document.body);
       expect(onInteractOutside).toHaveBeenCalledTimes(1);
     });
 
-    it('should reset state after each interaction', () => {
+    it("should reset state after each interaction", () => {
       const onInteractOutside = vi.fn();
 
       render(() => <Example onInteractOutside={onInteractOutside} />);
 
       // First interaction
-      fireEvent(document.body, pointerEvent('pointerdown'));
+      fireEvent(document.body, pointerEvent("pointerdown"));
       fireEvent.click(document.body);
       expect(onInteractOutside).toHaveBeenCalledTimes(1);
 
       // Second interaction - should work again
-      fireEvent(document.body, pointerEvent('pointerdown'));
+      fireEvent(document.body, pointerEvent("pointerdown"));
       fireEvent.click(document.body);
       expect(onInteractOutside).toHaveBeenCalledTimes(2);
     });

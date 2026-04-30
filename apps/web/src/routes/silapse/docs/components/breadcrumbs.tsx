@@ -43,11 +43,7 @@ function BreadcrumbsPage() {
     if (idx >= 0) {
       const trimmed = crumbs().slice(0, idx + 1);
       const last = trimmed[trimmed.length - 1];
-      setCrumbs(
-        trimmed.map((c, i) =>
-          i === trimmed.length - 1 ? { ...c, href: undefined } : c
-        )
-      );
+      setCrumbs(trimmed.map((c, i) => (i === trimmed.length - 1 ? { ...c, href: undefined } : c)));
       setCurrentPage(last.label);
     }
   }

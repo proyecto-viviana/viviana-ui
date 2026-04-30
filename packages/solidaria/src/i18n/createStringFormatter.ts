@@ -8,19 +8,24 @@ import {
   LocalizedStringDictionary,
   LocalizedStringFormatter,
   type LocalizedStrings,
-} from '@internationalized/string';
-import { createMemo, type Accessor } from 'solid-js';
-import { useLocale } from './locale';
+} from "@internationalized/string";
+import { createMemo, type Accessor } from "solid-js";
+import { useLocale } from "./locale";
 
 // Cache for dictionaries to avoid recreating them
-const cache = new WeakMap<LocalizedStrings<string, LocalizedString>, LocalizedStringDictionary<string, LocalizedString>>();
+const cache = new WeakMap<
+  LocalizedStrings<string, LocalizedString>,
+  LocalizedStringDictionary<string, LocalizedString>
+>();
 
 function getCachedDictionary<K extends string, T extends LocalizedString>(
-  strings: LocalizedStrings<K, T>
+  strings: LocalizedStrings<K, T>,
 ): LocalizedStringDictionary<K, T> {
   let dictionary = cache.get(strings as LocalizedStrings<string, LocalizedString>);
   if (!dictionary) {
-    dictionary = new LocalizedStringDictionary(strings as LocalizedStrings<string, LocalizedString>);
+    dictionary = new LocalizedStringDictionary(
+      strings as LocalizedStrings<string, LocalizedString>,
+    );
     cache.set(strings as LocalizedStrings<string, LocalizedString>, dictionary);
   }
   return dictionary as LocalizedStringDictionary<K, T>;
@@ -29,10 +34,10 @@ function getCachedDictionary<K extends string, T extends LocalizedString>(
 /**
  * Returns a cached LocalizedStringDictionary for the given strings.
  */
-export function createStringDictionary<K extends string = string, T extends LocalizedString = string>(
-  strings: LocalizedStrings<K, T>,
-  packageName?: string
-): LocalizedStringDictionary<K, T> {
+export function createStringDictionary<
+  K extends string = string,
+  T extends LocalizedString = string,
+>(strings: LocalizedStrings<K, T>, packageName?: string): LocalizedStringDictionary<K, T> {
   return (
     (packageName && LocalizedStringDictionary.getGlobalDictionaryForPackage(packageName)) ||
     getCachedDictionary(strings)
@@ -68,10 +73,10 @@ export function createStringDictionary<K extends string = string, T extends Loca
  * }
  * ```
  */
-export function createStringFormatter<K extends string = string, T extends LocalizedString = string>(
-  strings: LocalizedStrings<K, T>,
-  packageName?: string
-): Accessor<LocalizedStringFormatter<K, T>> {
+export function createStringFormatter<
+  K extends string = string,
+  T extends LocalizedString = string,
+>(strings: LocalizedStrings<K, T>, packageName?: string): Accessor<LocalizedStringFormatter<K, T>> {
   const localeAccessor = useLocale();
   const dictionary = createStringDictionary(strings, packageName);
 

@@ -4,7 +4,7 @@
  * Provides reactive state for dragging items from a collection.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
+import { createSignal, createMemo, type Accessor } from "solid-js";
 import type {
   DragItem,
   DraggableCollectionStartEvent,
@@ -12,7 +12,7 @@ import type {
   DraggableCollectionEndEvent,
   DropOperation,
   DragPreviewRenderer,
-} from './types';
+} from "./types";
 
 export interface DraggableCollectionStateOptions<T = object> {
   /** A function that returns the items being dragged. */
@@ -61,14 +61,12 @@ export interface DraggableCollectionState {
  * @returns Draggable collection state object
  */
 export function createDraggableCollectionState<T = object>(
-  props: Accessor<DraggableCollectionStateOptions<T>>
+  props: Accessor<DraggableCollectionStateOptions<T>>,
 ): DraggableCollectionState {
   const getProps = createMemo(() => props());
 
   const [isDragging, setIsDragging] = createSignal(false);
-  const [draggingKeys, setDraggingKeys] = createSignal<Set<string | number>>(
-    new Set()
-  );
+  const [draggingKeys, setDraggingKeys] = createSignal<Set<string | number>>(new Set());
 
   const startDrag = (keys: Set<string | number>, x: number, y: number) => {
     const p = getProps();
@@ -77,9 +75,9 @@ export function createDraggableCollectionState<T = object>(
     setIsDragging(true);
     setDraggingKeys(keys);
 
-    if (typeof p.onDragStart === 'function') {
+    if (typeof p.onDragStart === "function") {
       p.onDragStart({
-        type: 'dragstart',
+        type: "dragstart",
         x,
         y,
         keys,
@@ -91,9 +89,9 @@ export function createDraggableCollectionState<T = object>(
     const p = getProps();
     if (!isDragging() || p.isDisabled) return;
 
-    if (typeof p.onDragMove === 'function') {
+    if (typeof p.onDragMove === "function") {
       p.onDragMove({
-        type: 'dragmove',
+        type: "dragmove",
         x,
         y,
         keys: draggingKeys(),
@@ -101,21 +99,16 @@ export function createDraggableCollectionState<T = object>(
     }
   };
 
-  const endDrag = (
-    x: number,
-    y: number,
-    dropOperation: DropOperation,
-    isInternal: boolean
-  ) => {
+  const endDrag = (x: number, y: number, dropOperation: DropOperation, isInternal: boolean) => {
     const p = getProps();
     const keys = draggingKeys();
 
     setIsDragging(false);
     setDraggingKeys(new Set<string | number>());
 
-    if (typeof p.onDragEnd === 'function') {
+    if (typeof p.onDragEnd === "function") {
       p.onDragEnd({
-        type: 'dragend',
+        type: "dragend",
         x,
         y,
         dropOperation,
@@ -126,7 +119,7 @@ export function createDraggableCollectionState<T = object>(
   };
 
   const cancelDrag = () => {
-    endDrag(0, 0, 'cancel', false);
+    endDrag(0, 0, "cancel", false);
   };
 
   const getItems = (keys: Set<string | number>) => {
@@ -136,10 +129,10 @@ export function createDraggableCollectionState<T = object>(
 
   const getAllowedDropOperations = (): DropOperation[] => {
     const p = getProps();
-    if (typeof p.getAllowedDropOperations === 'function') {
+    if (typeof p.getAllowedDropOperations === "function") {
       return p.getAllowedDropOperations();
     }
-    return ['move', 'copy', 'link'];
+    return ["move", "copy", "link"];
   };
 
   return {

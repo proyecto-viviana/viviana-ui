@@ -80,7 +80,7 @@ export function isPointOverTarget(point: EventPoint, target: Element): boolean {
       bottom: rect.bottom,
       left: rect.left,
     },
-    pointRect
+    pointRect,
   );
 }
 

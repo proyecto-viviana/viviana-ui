@@ -1,4 +1,4 @@
-import { test, expect, type Page, type Locator } from '@playwright/test';
+import { test, expect, type Page, type Locator } from "@playwright/test";
 
 /**
  * Docs navigation tests focused on stable contracts:
@@ -10,12 +10,12 @@ import { test, expect, type Page, type Locator } from '@playwright/test';
 async function setupErrorCapture(page: Page) {
   const errors: string[] = [];
 
-  page.on('pageerror', (err) => {
+  page.on("pageerror", (err) => {
     errors.push(err.message);
   });
 
-  page.on('console', (msg) => {
-    if (msg.type() === 'error') {
+  page.on("console", (msg) => {
+    if (msg.type() === "error") {
       errors.push(msg.text());
     }
   });
@@ -24,37 +24,35 @@ async function setupErrorCapture(page: Page) {
 }
 
 async function checkNoHydrationErrors(errors: string[]) {
-  const hydrationErrors = errors.filter((e) =>
-    /template2|hydration|Hydration/.test(e),
-  );
+  const hydrationErrors = errors.filter((e) => /template2|hydration|Hydration/.test(e));
   expect(hydrationErrors).toHaveLength(0);
 }
 
 async function waitForPageReady(page: Page) {
-  await page.waitForLoadState('domcontentloaded');
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState("domcontentloaded");
+  await page.waitForLoadState("networkidle");
 }
 
 function docsSidebar(page: Page): Locator {
   return page
-    .locator('nav')
+    .locator("nav")
     .filter({ has: page.locator('a[href="/docs/components/button"]') })
     .first();
 }
 
-test.describe('Docs Menu', () => {
+test.describe("Docs Menu", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/docs');
+    await page.goto("/docs");
     await waitForPageReady(page);
   });
 
-  test('renders docs sidebar navigation links', async ({ page }) => {
+  test("renders docs sidebar navigation links", async ({ page }) => {
     const errors = await setupErrorCapture(page);
     const sidebar = docsSidebar(page);
 
     await expect(sidebar).toBeVisible();
-    await expect(sidebar.getByRole('link', { name: 'Getting Started' })).toBeVisible();
-    await expect(sidebar.getByRole('link', { name: 'Installation' })).toBeVisible();
+    await expect(sidebar.getByRole("link", { name: "Getting Started" })).toBeVisible();
+    await expect(sidebar.getByRole("link", { name: "Installation" })).toBeVisible();
     await expect(sidebar.locator('a[href="/docs/components/button"]')).toBeVisible();
     await expect(sidebar.locator('a[href="/docs/components/checkbox"]')).toBeVisible();
     await expect(sidebar.locator('a[href="/docs/hooks/create-button"]')).toBeVisible();
@@ -63,7 +61,7 @@ test.describe('Docs Menu', () => {
     await checkNoHydrationErrors(errors);
   });
 
-  test('navigates from getting started to a component page', async ({ page }) => {
+  test("navigates from getting started to a component page", async ({ page }) => {
     const errors = await setupErrorCapture(page);
     const sidebar = docsSidebar(page);
 
@@ -78,10 +76,10 @@ test.describe('Docs Menu', () => {
     await checkNoHydrationErrors(errors);
   });
 
-  test('keeps current docs route after refresh', async ({ page }) => {
+  test("keeps current docs route after refresh", async ({ page }) => {
     const errors = await setupErrorCapture(page);
 
-    await page.goto('/docs/components/button');
+    await page.goto("/docs/components/button");
     await waitForPageReady(page);
 
     const sidebar = docsSidebar(page);
@@ -98,7 +96,7 @@ test.describe('Docs Menu', () => {
     await checkNoHydrationErrors(errors);
   });
 
-  test('navigates component and hook pages from sidebar', async ({ page }) => {
+  test("navigates component and hook pages from sidebar", async ({ page }) => {
     const errors = await setupErrorCapture(page);
     const sidebar = docsSidebar(page);
 

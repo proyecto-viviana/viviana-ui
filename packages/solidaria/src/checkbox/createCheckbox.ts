@@ -8,12 +8,12 @@
  * This is a 1:1 port of @react-aria/checkbox's useCheckbox hook.
  */
 
-import { JSX, Accessor, createEffect } from 'solid-js';
-import { createToggle, type AriaToggleProps } from '../toggle';
-import { type ToggleState } from '@proyecto-viviana/solid-stately';
-import { createPress } from '../interactions/createPress';
-import { mergeProps } from '../utils/mergeProps';
-import { type MaybeAccessor, access } from '../utils/reactivity';
+import { JSX, Accessor, createEffect } from "solid-js";
+import { createToggle, type AriaToggleProps } from "../toggle";
+import { type ToggleState } from "@proyecto-viviana/solid-stately";
+import { createPress } from "../interactions/createPress";
+import { mergeProps } from "../utils/mergeProps";
+import { type MaybeAccessor, access } from "../utils/reactivity";
 
 // ============================================
 // TYPES
@@ -33,7 +33,7 @@ export interface AriaCheckboxProps extends AriaToggleProps {
    * The validation behavior for the checkbox.
    * @default 'aria'
    */
-  validationBehavior?: 'aria' | 'native';
+  validationBehavior?: "aria" | "native";
 }
 
 export interface CheckboxAria {
@@ -69,7 +69,7 @@ export interface CheckboxAria {
 export function createCheckbox(
   props: MaybeAccessor<AriaCheckboxProps>,
   state: ToggleState,
-  inputRef: () => HTMLInputElement | null
+  inputRef: () => HTMLInputElement | null,
 ): CheckboxAria {
   const getProps = () => access(props);
 
@@ -114,16 +114,16 @@ export function createCheckbox(
         // Prevent label from being focused when mouse down on it.
         // Note, this does not prevent the input from being focused in the `click` event.
         onMouseDown: (e: MouseEvent) => e.preventDefault(),
-      } as Record<string, unknown>
+      } as Record<string, unknown>,
     ) as JSX.LabelHTMLAttributes<HTMLLabelElement>,
     get inputProps() {
       const p = getProps();
-      const { isRequired, validationBehavior = 'aria' } = p;
+      const { isRequired, validationBehavior = "aria" } = p;
 
       return mergeProps(toggleResult.inputProps, {
         checked: isSelected(),
-        'aria-required': (isRequired && validationBehavior === 'aria') || undefined,
-        required: isRequired && validationBehavior === 'native',
+        "aria-required": (isRequired && validationBehavior === "aria") || undefined,
+        required: isRequired && validationBehavior === "native",
       }) as JSX.InputHTMLAttributes<HTMLInputElement>;
     },
     isSelected,

@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's ComboBox component patterns.
  */
 
-import { type JSX, splitProps, createContext, useContext, Show } from 'solid-js'
+import { type JSX, splitProps, createContext, useContext, Show } from "solid-js";
 import {
   ComboBox as HeadlessComboBox,
   ComboBoxInput as HeadlessComboBoxInput,
@@ -30,55 +30,61 @@ import {
   type ComboBoxButtonRenderProps,
   type ComboBoxListBoxRenderProps,
   type ComboBoxOptionRenderProps,
-} from '@proyecto-viviana/solidaria-components'
-import type { Key, FilterFn, MenuTriggerAction } from '@proyecto-viviana/solid-stately'
-import { useProviderProps } from '../provider'
+} from "@proyecto-viviana/solidaria-components";
+import type { Key, FilterFn, MenuTriggerAction } from "@proyecto-viviana/solid-stately";
+import { useProviderProps } from "../provider";
 
 // ============================================
 // SIZE CONTEXT
 // ============================================
 
-export type ComboBoxSize = 'sm' | 'md' | 'lg'
+export type ComboBoxSize = "sm" | "md" | "lg";
 
-const ComboBoxSizeContext = createContext<ComboBoxSize>('md')
+const ComboBoxSizeContext = createContext<ComboBoxSize>("md");
 
 // ============================================
 // TYPES
 // ============================================
 
-export interface ComboBoxProps<T> extends Omit<HeadlessComboBoxProps<T>, 'class' | 'style'> {
+export interface ComboBoxProps<T> extends Omit<HeadlessComboBoxProps<T>, "class" | "style"> {
   /** The size of the combobox. */
-  size?: ComboBoxSize
+  size?: ComboBoxSize;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Label for the combobox. */
-  label?: string
+  label?: string;
   /** Description for the combobox. */
-  description?: string
+  description?: string;
   /** Error message when invalid. */
-  errorMessage?: string
+  errorMessage?: string;
   /** Whether the combobox is invalid. */
-  isInvalid?: boolean
+  isInvalid?: boolean;
 }
 
-export interface ComboBoxInputProps extends Omit<HeadlessComboBoxInputProps, 'class' | 'style'> {
+export interface ComboBoxInputProps extends Omit<HeadlessComboBoxInputProps, "class" | "style"> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
-export interface ComboBoxButtonProps extends Omit<HeadlessComboBoxButtonProps, 'class' | 'style'> {
+export interface ComboBoxButtonProps extends Omit<HeadlessComboBoxButtonProps, "class" | "style"> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
-export interface ComboBoxListBoxProps<T> extends Omit<HeadlessComboBoxListBoxProps<T>, 'class' | 'style'> {
+export interface ComboBoxListBoxProps<T> extends Omit<
+  HeadlessComboBoxListBoxProps<T>,
+  "class" | "style"
+> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
-export interface ComboBoxOptionProps<T> extends Omit<HeadlessComboBoxOptionProps<T>, 'class' | 'style'> {
+export interface ComboBoxOptionProps<T> extends Omit<
+  HeadlessComboBoxOptionProps<T>,
+  "class" | "style"
+> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
 // ============================================
@@ -87,30 +93,30 @@ export interface ComboBoxOptionProps<T> extends Omit<HeadlessComboBoxOptionProps
 
 const sizeStyles = {
   sm: {
-    wrapper: 'h-8',
-    input: 'h-8 text-sm pl-3 pr-8',
-    button: 'h-8 w-8',
-    label: 'text-sm',
-    option: 'text-sm py-1.5 px-3',
-    icon: 'h-4 w-4',
+    wrapper: "h-8",
+    input: "h-8 text-sm pl-3 pr-8",
+    button: "h-8 w-8",
+    label: "text-sm",
+    option: "text-sm py-1.5 px-3",
+    icon: "h-4 w-4",
   },
   md: {
-    wrapper: 'h-10',
-    input: 'h-10 text-base pl-4 pr-10',
-    button: 'h-10 w-10',
-    label: 'text-base',
-    option: 'text-base py-2 px-4',
-    icon: 'h-5 w-5',
+    wrapper: "h-10",
+    input: "h-10 text-base pl-4 pr-10",
+    button: "h-10 w-10",
+    label: "text-base",
+    option: "text-base py-2 px-4",
+    icon: "h-5 w-5",
   },
   lg: {
-    wrapper: 'h-12',
-    input: 'h-12 text-lg pl-5 pr-12',
-    button: 'h-12 w-12',
-    label: 'text-lg',
-    option: 'text-lg py-2.5 px-5',
-    icon: 'h-6 w-6',
+    wrapper: "h-12",
+    input: "h-12 text-lg pl-5 pr-12",
+    button: "h-12 w-12",
+    label: "text-lg",
+    option: "text-lg py-2.5 px-5",
+    icon: "h-6 w-6",
   },
-}
+};
 
 // ============================================
 // COMBOBOX COMPONENT
@@ -122,24 +128,24 @@ const sizeStyles = {
  * Built on solidaria-components ComboBox for full accessibility support.
  */
 export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
-  const mergedProps = useProviderProps(props)
+  const mergedProps = useProviderProps(props);
   const [local, headlessProps] = splitProps(mergedProps, [
-    'size',
-    'class',
-    'label',
-    'description',
-    'errorMessage',
-    'isInvalid',
-  ])
+    "size",
+    "class",
+    "label",
+    "description",
+    "errorMessage",
+    "isInvalid",
+  ]);
 
-  const size = local.size ?? 'md'
-  const customClass = local.class ?? ''
+  const size = local.size ?? "md";
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: ComboBoxRenderProps): string => {
-    const base = 'relative inline-flex flex-col gap-1.5'
-    const disabledClass = renderProps.isDisabled ? 'opacity-50' : ''
-    return [base, disabledClass, customClass].filter(Boolean).join(' ')
-  }
+    const base = "relative inline-flex flex-col gap-1.5";
+    const disabledClass = renderProps.isDisabled ? "opacity-50" : "";
+    return [base, disabledClass, customClass].filter(Boolean).join(" ");
+  };
 
   return (
     <ComboBoxSizeContext.Provider value={size}>
@@ -169,7 +175,7 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
         </Show>
       </HeadlessComboBox>
     </ComboBoxSizeContext.Provider>
-  )
+  );
 }
 
 // ============================================
@@ -180,14 +186,14 @@ export function ComboBox<T>(props: ComboBoxProps<T>): JSX.Element {
  * A wrapper for the input and button that provides proper styling.
  */
 export function ComboBoxInputGroup(props: { children: JSX.Element; class?: string }): JSX.Element {
-  const size = useContext(ComboBoxSizeContext)
-  const styles = () => sizeStyles[size]
+  const size = useContext(ComboBoxSizeContext);
+  const styles = () => sizeStyles[size];
 
   return (
-    <div class={`relative flex items-center ${styles().wrapper} ${props.class ?? ''}`}>
+    <div class={`relative flex items-center ${styles().wrapper} ${props.class ?? ""}`}>
       {props.children}
     </div>
-  )
+  );
 }
 
 // ============================================
@@ -198,40 +204,35 @@ export function ComboBoxInputGroup(props: { children: JSX.Element; class?: strin
  * The text input for a combobox.
  */
 export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
-  const mergedProps = useProviderProps(props)
-  const [local, headlessProps] = splitProps(mergedProps, ['class'])
-  const size = useContext(ComboBoxSizeContext)
-  const styles = () => sizeStyles[size]
-  const customClass = local.class ?? ''
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, ["class"]);
+  const size = useContext(ComboBoxSizeContext);
+  const styles = () => sizeStyles[size];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: ComboBoxInputRenderProps): string => {
-    const base = 'w-full rounded-lg border-2 transition-all duration-200 outline-none'
-    const sizeClass = styles().input
+    const base = "w-full rounded-lg border-2 transition-all duration-200 outline-none";
+    const sizeClass = styles().input;
 
-    let colorClass: string
+    let colorClass: string;
     if (renderProps.isDisabled) {
-      colorClass = 'border-bg-300 bg-bg-200 text-primary-500 cursor-not-allowed'
+      colorClass = "border-bg-300 bg-bg-200 text-primary-500 cursor-not-allowed";
     } else if (renderProps.isOpen) {
-      colorClass = 'border-accent bg-bg-300 text-primary-100'
+      colorClass = "border-accent bg-bg-300 text-primary-100";
     } else if (renderProps.isHovered) {
-      colorClass = 'border-accent-300 bg-bg-300 text-primary-100'
+      colorClass = "border-accent-300 bg-bg-300 text-primary-100";
     } else {
-      colorClass = 'border-primary-600 bg-bg-400 text-primary-200'
+      colorClass = "border-primary-600 bg-bg-400 text-primary-200";
     }
 
     const focusClass = renderProps.isFocusVisible
-      ? 'ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400'
-      : ''
+      ? "ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400"
+      : "";
 
-    return [base, sizeClass, colorClass, focusClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, sizeClass, colorClass, focusClass, customClass].filter(Boolean).join(" ");
+  };
 
-  return (
-    <HeadlessComboBoxInput
-      {...headlessProps}
-      class={getClassName}
-    />
-  )
+  return <HeadlessComboBoxInput {...headlessProps} class={getClassName} />;
 }
 
 // ============================================
@@ -243,38 +244,40 @@ export function ComboBoxInput(props: ComboBoxInputProps): JSX.Element {
  * SSR-compatible - renders children or chevron icon directly without render props.
  */
 export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
-  const mergedProps = useProviderProps(props)
-  const [local, headlessProps] = splitProps(mergedProps, ['class'])
-  const size = useContext(ComboBoxSizeContext)
-  const sizeStyle = sizeStyles[size]
-  const customClass = local.class ?? ''
+  const mergedProps = useProviderProps(props);
+  const [local, headlessProps] = splitProps(mergedProps, ["class"]);
+  const size = useContext(ComboBoxSizeContext);
+  const sizeStyle = sizeStyles[size];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: ComboBoxButtonRenderProps): string => {
-    const base = 'absolute right-0 top-0 flex items-center justify-center transition-all duration-200 rounded-r-lg'
-    const sizeClass = sizeStyle.button
+    const base =
+      "absolute right-0 top-0 flex items-center justify-center transition-all duration-200 rounded-r-lg";
+    const sizeClass = sizeStyle.button;
 
-    let colorClass: string
+    let colorClass: string;
     if (renderProps.isDisabled) {
-      colorClass = 'text-primary-500 cursor-not-allowed'
+      colorClass = "text-primary-500 cursor-not-allowed";
     } else if (renderProps.isOpen) {
-      colorClass = 'text-accent'
+      colorClass = "text-accent";
     } else if (renderProps.isHovered) {
-      colorClass = 'text-accent-300 cursor-pointer'
+      colorClass = "text-accent-300 cursor-pointer";
     } else {
-      colorClass = 'text-primary-400 cursor-pointer hover:text-primary-200'
+      colorClass = "text-primary-400 cursor-pointer hover:text-primary-200";
     }
 
-    return [base, sizeClass, colorClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, sizeClass, colorClass, customClass].filter(Boolean).join(" ");
+  };
 
   return (
-    <HeadlessComboBoxButton
-      {...headlessProps}
-      class={getClassName}
-    >
-      {props.children || <ChevronIcon class={`${sizeStyle.icon} transition-transform duration-200 data-open:rotate-180`} />}
+    <HeadlessComboBoxButton {...headlessProps} class={getClassName}>
+      {props.children || (
+        <ChevronIcon
+          class={`${sizeStyle.icon} transition-transform duration-200 data-open:rotate-180`}
+        />
+      )}
     </HeadlessComboBoxButton>
-  )
+  );
 }
 
 // ============================================
@@ -285,21 +288,18 @@ export function ComboBoxButton(props: ComboBoxButtonProps): JSX.Element {
  * The listbox popup for a combobox.
  */
 export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
-  const customClass = local.class ?? ''
+  const [local, headlessProps] = splitProps(props, ["class"]);
+  const customClass = local.class ?? "";
 
   const getClassName = (_renderProps: ComboBoxListBoxRenderProps): string => {
-    const base = 'absolute z-50 mt-1 w-full rounded-lg border-2 border-primary-600 bg-bg-400 py-1 shadow-lg max-h-60 overflow-auto'
-    return [base, customClass].filter(Boolean).join(' ')
-  }
+    const base =
+      "absolute z-50 mt-1 w-full rounded-lg border-2 border-primary-600 bg-bg-400 py-1 shadow-lg max-h-60 overflow-auto";
+    return [base, customClass].filter(Boolean).join(" ");
+  };
 
   return (
-    <HeadlessComboBoxListBox
-      {...headlessProps}
-      class={getClassName}
-      children={props.children}
-    />
-  )
+    <HeadlessComboBoxListBox {...headlessProps} class={getClassName} children={props.children} />
+  );
 }
 
 // ============================================
@@ -311,104 +311,102 @@ export function ComboBoxListBox<T>(props: ComboBoxListBoxProps<T>): JSX.Element 
  * SSR-compatible - renders check icon and content directly without render props.
  */
 export function ComboBoxOption<T>(props: ComboBoxOptionProps<T>): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['class'])
-  const size = useContext(ComboBoxSizeContext)
-  const sizeStyle = sizeStyles[size]
-  const customClass = local.class ?? ''
+  const [local, headlessProps] = splitProps(props, ["class"]);
+  const size = useContext(ComboBoxSizeContext);
+  const sizeStyle = sizeStyles[size];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: ComboBoxOptionRenderProps): string => {
-    const base = 'flex items-center gap-2 cursor-pointer transition-colors duration-150'
-    const sizeClass = sizeStyle.option
+    const base = "flex items-center gap-2 cursor-pointer transition-colors duration-150";
+    const sizeClass = sizeStyle.option;
 
-    let colorClass: string
+    let colorClass: string;
     if (renderProps.isDisabled) {
-      colorClass = 'text-primary-500 cursor-not-allowed'
+      colorClass = "text-primary-500 cursor-not-allowed";
     } else if (renderProps.isSelected) {
-      colorClass = 'bg-accent/20 text-accent'
+      colorClass = "bg-accent/20 text-accent";
     } else if (renderProps.isFocused || renderProps.isHovered) {
-      colorClass = 'bg-bg-300 text-primary-100'
+      colorClass = "bg-bg-300 text-primary-100";
     } else {
-      colorClass = 'text-primary-200'
+      colorClass = "text-primary-200";
     }
 
-    const focusClass = renderProps.isFocusVisible
-      ? 'ring-2 ring-inset ring-accent-300'
-      : ''
+    const focusClass = renderProps.isFocusVisible ? "ring-2 ring-inset ring-accent-300" : "";
 
-    return [base, sizeClass, colorClass, focusClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, sizeClass, colorClass, focusClass, customClass].filter(Boolean).join(" ");
+  };
 
   // Compute padding for non-selected items to align with check icon
   const iconPadding: Record<ComboBoxSize, string> = {
-    sm: 'pl-6',  // h-4 icon + gap
-    md: 'pl-7',  // h-5 icon + gap
-    lg: 'pl-8',  // h-6 icon + gap
-  }
+    sm: "pl-6", // h-4 icon + gap
+    md: "pl-7", // h-5 icon + gap
+    lg: "pl-8", // h-6 icon + gap
+  };
 
   return (
-    <HeadlessComboBoxOption
-      {...headlessProps}
-      class={getClassName}
-    >
+    <HeadlessComboBoxOption {...headlessProps} class={getClassName}>
       <CheckIcon class={`${sizeStyle.icon} text-accent shrink-0 hidden data-selected:block`} />
       <span class={`flex-1 data-selected:pl-0 ${iconPadding[size]}`}>
         {props.children as JSX.Element}
       </span>
     </HeadlessComboBoxOption>
-  )
+  );
 }
 
 // ============================================
 // COMBOBOX TAG GROUP COMPONENT
 // ============================================
 
-export interface ComboBoxTagGroupProps extends Omit<HeadlessComboBoxTagGroupProps, 'class' | 'style'> {
+export interface ComboBoxTagGroupProps extends Omit<
+  HeadlessComboBoxTagGroupProps,
+  "class" | "style"
+> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
 /**
  * Renders selected items as removable tags/pills in multi-select mode.
  */
 export function ComboBoxTagGroup(props: ComboBoxTagGroupProps): JSX.Element {
-  const customClass = props.class ?? ''
+  const customClass = props.class ?? "";
 
   return (
     <HeadlessComboBoxTagGroup
       {...props}
       class={`flex flex-wrap gap-1 py-1 ${customClass}`.trim()}
     />
-  )
+  );
 }
 
 // ============================================
 // COMBOBOX TAG COMPONENT
 // ============================================
 
-export interface ComboBoxTagProps extends Omit<HeadlessComboBoxTagProps, 'class' | 'style'> {
+export interface ComboBoxTagProps extends Omit<HeadlessComboBoxTagProps, "class" | "style"> {
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
 /**
  * A styled tag/pill representing a selected item in a multi-select combobox.
  */
 export function ComboBoxTag(props: ComboBoxTagProps): JSX.Element {
-  const size = useContext(ComboBoxSizeContext)
-  const customClass = props.class ?? ''
+  const size = useContext(ComboBoxSizeContext);
+  const customClass = props.class ?? "";
 
   const sizeTagStyles: Record<ComboBoxSize, string> = {
-    sm: 'text-xs px-1.5 py-0.5 gap-0.5',
-    md: 'text-sm px-2 py-0.5 gap-1',
-    lg: 'text-base px-2.5 py-1 gap-1',
-  }
+    sm: "text-xs px-1.5 py-0.5 gap-0.5",
+    md: "text-sm px-2 py-0.5 gap-1",
+    lg: "text-base px-2.5 py-1 gap-1",
+  };
 
   return (
     <HeadlessComboBoxTag
       {...props}
       class={`inline-flex items-center rounded-full bg-accent/20 text-accent font-medium ${sizeTagStyles[size]} ${customClass}`.trim()}
     />
-  )
+  );
 }
 
 // ============================================
@@ -417,43 +415,31 @@ export function ComboBoxTag(props: ComboBoxTagProps): JSX.Element {
 
 function ChevronIcon(props: { class?: string }): JSX.Element {
   return (
-    <svg
-      class={props.class}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      stroke-width="2"
-    >
+    <svg class={props.class} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
     </svg>
-  )
+  );
 }
 
 function CheckIcon(props: { class?: string }): JSX.Element {
   return (
-    <svg
-      class={props.class}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      stroke-width="2"
-    >
+    <svg class={props.class} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
     </svg>
-  )
+  );
 }
 
 // Attach sub-components for convenience
-ComboBox.InputGroup = ComboBoxInputGroup
-ComboBox.Input = ComboBoxInput
-ComboBox.Button = ComboBoxButton
-ComboBox.ListBox = ComboBoxListBox
-ComboBox.Option = ComboBoxOption
-ComboBox.TagGroup = ComboBoxTagGroup
-ComboBox.Tag = ComboBoxTag
+ComboBox.InputGroup = ComboBoxInputGroup;
+ComboBox.Input = ComboBoxInput;
+ComboBox.Button = ComboBoxButton;
+ComboBox.ListBox = ComboBoxListBox;
+ComboBox.Option = ComboBoxOption;
+ComboBox.TagGroup = ComboBoxTagGroup;
+ComboBox.Tag = ComboBoxTag;
 
-export const Item = ComboBoxOption
+export const Item = ComboBoxOption;
 
 // Re-export types and utilities for convenience
-export type { Key, FilterFn, MenuTriggerAction }
-export { defaultContainsFilter }
+export type { Key, FilterFn, MenuTriggerAction };
+export { defaultContainsFilter };

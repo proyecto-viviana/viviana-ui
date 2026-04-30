@@ -5,7 +5,7 @@
  * Parity target: react-aria-components/src/DropZone.tsx
  */
 
-import { type JSX, createContext, createMemo, createSignal, splitProps } from 'solid-js';
+import { type JSX, createContext, createMemo, createSignal, splitProps } from "solid-js";
 import {
   createDrop,
   createFocusRing,
@@ -13,7 +13,7 @@ import {
   readFromDataTransfer,
   type HoverEvents,
   type AriaDropOptions,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
@@ -21,8 +21,8 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
-import { VisuallyHidden } from './VisuallyHidden';
+} from "./utils";
+import { VisuallyHidden } from "./VisuallyHidden";
 
 export interface DropZoneRenderProps {
   isHovered: boolean;
@@ -33,8 +33,9 @@ export interface DropZoneRenderProps {
 }
 
 export interface DropZoneProps
-  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'style' | 'onDrop'>,
-    Omit<AriaDropOptions, 'hasDropButton'>,
+  extends
+    Omit<JSX.HTMLAttributes<HTMLDivElement>, "children" | "class" | "style" | "onDrop">,
+    Omit<AriaDropOptions, "hasDropButton">,
     HoverEvents,
     SlotProps {
   children?: RenderChildren<DropZoneRenderProps>;
@@ -43,16 +44,16 @@ export interface DropZoneProps
 }
 
 export const DropZoneContext = createContext<DropZoneProps | null>(null);
-const DEFAULT_DROPZONE_LABEL = 'Drop files';
+const DEFAULT_DROPZONE_LABEL = "Drop files";
 const FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button:not([disabled])',
+  "a[href]",
+  "button:not([disabled])",
   'input:not([disabled]):not([type="hidden"])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
+  "select:not([disabled])",
+  "textarea:not([disabled])",
   '[tabindex]:not([tabindex="-1"])',
   '[contenteditable="true"]',
-].join(',');
+].join(",");
 
 function isFocusableElement(target: Element): boolean {
   return target instanceof HTMLElement && target.matches(FOCUSABLE_SELECTOR);
@@ -64,9 +65,18 @@ function isFocusableElement(target: Element): boolean {
 export function DropZone(props: DropZoneProps): JSX.Element {
   const [local, dropProps, hoverEventProps, domProps] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot', 'aria-label', 'aria-labelledby'],
-    ['getDropOperation', 'getDropOperationForPoint', 'onDropEnter', 'onDropMove', 'onDropActivate', 'onDropExit', 'onDrop', 'isDisabled'],
-    ['onHoverStart', 'onHoverEnd', 'onHoverChange']
+    ["children", "class", "style", "slot", "aria-label", "aria-labelledby"],
+    [
+      "getDropOperation",
+      "getDropOperationForPoint",
+      "onDropEnter",
+      "onDropMove",
+      "onDropActivate",
+      "onDropExit",
+      "onDrop",
+      "isDisabled",
+    ],
+    ["onHoverStart", "onHoverEnd", "onHoverChange"],
   );
 
   const [dropZoneRef, setDropZoneRef] = createSignal<HTMLDivElement | null>(null);
@@ -105,9 +115,9 @@ export function DropZone(props: DropZoneProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-DropZone',
+      defaultClassName: "solidaria-DropZone",
     },
-    renderValues
+    renderValues,
   );
 
   const filteredDomProps = createMemo(() => filterDOMProps(domProps, { global: true }));
@@ -169,16 +179,16 @@ export function DropZone(props: DropZoneProps): JSX.Element {
 
     e.preventDefault();
     dropProps.onDrop?.({
-      type: 'drop',
+      type: "drop",
       x: 0,
       y: 0,
       items,
-      dropOperation: 'copy',
+      dropOperation: "copy",
     });
   };
 
   const dropButtonAriaLabel = createMemo(
-    () => local['aria-label'] ?? (!local['aria-labelledby'] ? DEFAULT_DROPZONE_LABEL : undefined)
+    () => local["aria-label"] ?? (!local["aria-labelledby"] ? DEFAULT_DROPZONE_LABEL : undefined),
   );
 
   return (
@@ -203,7 +213,7 @@ export function DropZone(props: DropZoneProps): JSX.Element {
           {...cleanDropButtonProps()}
           {...cleanFocusProps()}
           aria-label={dropButtonAriaLabel()}
-          aria-labelledby={local['aria-labelledby']}
+          aria-labelledby={local["aria-labelledby"]}
           onPaste={onHiddenButtonPaste}
         />
       </VisuallyHidden>

@@ -30,7 +30,9 @@ function App() {
       >
         <div class="rounded-lg bg-bg-300 p-4 text-sm text-primary-300">
           <p>Provider is typically used at the root of your app — not rendered inline.</p>
-          <p class="mt-2">It establishes the theme context consumed by all Proyecto Viviana components.</p>
+          <p class="mt-2">
+            It establishes the theme context consumed by all Proyecto Viviana components.
+          </p>
         </div>
       </Example>
 
@@ -67,11 +69,15 @@ function App() {
         <div class="space-y-3">
           <div class="p-3 rounded border border-primary-700/30">
             <p class="text-xs text-primary-500 mb-2">scale: "medium" (default)</p>
-            <Button variant="secondary" size="md">Medium Scale</Button>
+            <Button variant="secondary" size="md">
+              Medium Scale
+            </Button>
           </div>
           <div class="p-3 rounded border border-primary-700/30">
             <p class="text-xs text-primary-500 mb-2">scale: "large" (touch-optimized)</p>
-            <Button variant="secondary" size="lg">Large Scale</Button>
+            <Button variant="secondary" size="lg">
+              Large Scale
+            </Button>
           </div>
         </div>
       </Example>
@@ -87,11 +93,11 @@ function MyComponent() {
 }`}
       >
         <div class="rounded-lg bg-bg-300 p-4 font-mono text-sm text-primary-300">
-          <p>{'// Import the hook'}</p>
+          <p>{"// Import the hook"}</p>
           <p>{"import { useTheme } from '@proyecto-viviana/solid-spectrum';"}</p>
           <br />
-          <p>{'// Inside any descendant component:'}</p>
-          <p>{'const theme = useTheme();'}</p>
+          <p>{"// Inside any descendant component:"}</p>
+          <p>{"const theme = useTheme();"}</p>
           <p>{"// theme.colorScheme → 'light' | 'dark'"}</p>
           <p>{"// theme.scale → 'medium' | 'large'"}</p>
         </div>
@@ -99,17 +105,40 @@ function MyComponent() {
 
       <PropsTable
         props={[
-          { name: "colorScheme", type: "'light' | 'dark'", default: "'light'", description: "Color scheme selection for built-in themes" },
-          { name: "scale", type: "'medium' | 'large'", default: "'medium'", description: "Interface density scale" },
-          { name: "locale", type: "string", description: "BCP 47 locale string for date/number formatting (e.g. 'en-US')" },
-          { name: "children", type: "JSX.Element", description: "Application tree to provide context to" },
+          {
+            name: "colorScheme",
+            type: "'light' | 'dark'",
+            default: "'light'",
+            description: "Color scheme selection for built-in themes",
+          },
+          {
+            name: "scale",
+            type: "'medium' | 'large'",
+            default: "'medium'",
+            description: "Interface density scale",
+          },
+          {
+            name: "locale",
+            type: "string",
+            description: "BCP 47 locale string for date/number formatting (e.g. 'en-US')",
+          },
+          {
+            name: "children",
+            type: "JSX.Element",
+            description: "Application tree to provide context to",
+          },
         ]}
       />
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Respects system color scheme preference via <code>prefers-color-scheme</code> when not explicitly set</li>
-          <li>The <code>scale</code> prop increases touch target sizes for WCAG 2.5.5 compliance</li>
+          <li>
+            Respects system color scheme preference via <code>prefers-color-scheme</code> when not
+            explicitly set
+          </li>
+          <li>
+            The <code>scale</code> prop increases touch target sizes for WCAG 2.5.5 compliance
+          </li>
           <li>Locale affects date/number formatting and text direction for RTL languages</li>
         </ul>
       </AccessibilitySection>

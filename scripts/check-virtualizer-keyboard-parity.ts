@@ -39,22 +39,37 @@ const results: CheckResult[] = [
     ok:
       has(virtualizerSource, /getKeyboardNavigationTarget\s*=\s*\(/) &&
       has(virtualizerSource, /const\s+oppositeDirection:\s*'next'\s*\|\s*'previous'/) &&
-      has(virtualizerSource, /scanFromIndex\(clampedStart\s*-\s*delta,\s*-delta,\s*oppositeDirection\)/),
+      has(
+        virtualizerSource,
+        /scanFromIndex\(clampedStart\s*-\s*delta,\s*-delta,\s*oppositeDirection\)/,
+      ),
     detail: "keyboard navigation delegate includes opposite-direction fallback scan",
   },
   {
     target: virtualizerPath,
     ok:
       has(virtualizerSource, /getKeyboardPageNavigationTarget\s*=\s*\(/) &&
-      has(virtualizerSource, /const\s+primaryTarget\s*=\s*scanFromIndex\(clampedStart,\s*delta\)/) &&
-      has(virtualizerSource, /const\s+oppositeTarget\s*=\s*scanFromIndex\(clampedStart\s*-\s*delta,\s*-delta\)/),
+      has(
+        virtualizerSource,
+        /const\s+primaryTarget\s*=\s*scanFromIndex\(clampedStart,\s*delta\)/,
+      ) &&
+      has(
+        virtualizerSource,
+        /const\s+oppositeTarget\s*=\s*scanFromIndex\(clampedStart\s*-\s*delta,\s*-delta\)/,
+      ),
     detail: "page navigation delegate includes opposite-direction fallback scan",
   },
   {
     target: testsPath,
     ok:
-      has(testsSource, /keyboard delegate falls back to opposite direction when forward scan has no valid targets/) &&
-      has(testsSource, /keyboard page delegate falls back to opposite direction when forward scan has no valid targets/),
+      has(
+        testsSource,
+        /keyboard delegate falls back to opposite direction when forward scan has no valid targets/,
+      ) &&
+      has(
+        testsSource,
+        /keyboard page delegate falls back to opposite direction when forward scan has no valid targets/,
+      ),
     detail: "regression tests cover opposite-direction fallback for keyboard + page delegates",
   },
   {
@@ -71,7 +86,10 @@ const results: CheckResult[] = [
     ok:
       has(testsSource, /tree keyboard DnD navigates into expanded children/) &&
       has(testsSource, /tree keyboard DnD traverses up to parent sibling/) &&
-      has(testsSource, /tree keyboard DnD previous from child goes to deepest last expanded descendant/),
+      has(
+        testsSource,
+        /tree keyboard DnD previous from child goes to deepest last expanded descendant/,
+      ),
     detail: "regression tests cover tree branch-boundary wrapping edge cases",
   },
   {

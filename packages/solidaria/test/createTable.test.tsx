@@ -9,11 +9,11 @@
  * These tests verify that the announcement infrastructure is properly set up.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { cleanup } from '@solidjs/testing-library';
-import { announce, clearAnnouncer } from '../src/live-announcer';
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { cleanup } from "@solidjs/testing-library";
+import { announce, clearAnnouncer } from "../src/live-announcer";
 
-describe('createTable announcement infrastructure', () => {
+describe("createTable announcement infrastructure", () => {
   beforeEach(() => {
     clearAnnouncer();
   });
@@ -23,74 +23,74 @@ describe('createTable announcement infrastructure', () => {
     clearAnnouncer();
   });
 
-  describe('announce function', () => {
-    it('exists and can be called with assertive mode', () => {
-      expect(typeof announce).toBe('function');
+  describe("announce function", () => {
+    it("exists and can be called with assertive mode", () => {
+      expect(typeof announce).toBe("function");
 
       // Should not throw
       expect(() => {
-        announce('Test announcement', 'assertive', 500);
+        announce("Test announcement", "assertive", 500);
       }).not.toThrow();
     });
 
-    it('can be called with polite mode', () => {
+    it("can be called with polite mode", () => {
       expect(() => {
-        announce('Polite announcement', 'polite', 500);
+        announce("Polite announcement", "polite", 500);
       }).not.toThrow();
     });
 
-    it('can be called with custom timeout', () => {
+    it("can be called with custom timeout", () => {
       expect(() => {
-        announce('Timed announcement', 'assertive', 1000);
+        announce("Timed announcement", "assertive", 1000);
       }).not.toThrow();
     });
   });
 
-  describe('sort announcement format', () => {
+  describe("sort announcement format", () => {
     // The createTable hook announces sort changes using:
     // announce(`Sorted by ${columnName}, ${directionText}`, 'assertive', 500);
 
-    it('produces correct ascending announcement', () => {
-      const columnName = 'Name';
-      const direction = 'ascending';
+    it("produces correct ascending announcement", () => {
+      const columnName = "Name";
+      const direction = "ascending";
       const message = `Sorted by ${columnName}, ${direction}`;
 
-      expect(message).toBe('Sorted by Name, ascending');
+      expect(message).toBe("Sorted by Name, ascending");
     });
 
-    it('produces correct descending announcement', () => {
-      const columnName = 'Price';
-      const direction = 'descending';
+    it("produces correct descending announcement", () => {
+      const columnName = "Price";
+      const direction = "descending";
       const message = `Sorted by ${columnName}, ${direction}`;
 
-      expect(message).toBe('Sorted by Price, descending');
+      expect(message).toBe("Sorted by Price, descending");
     });
 
-    it('handles column names with spaces', () => {
-      const columnName = 'First Name';
-      const direction = 'ascending';
+    it("handles column names with spaces", () => {
+      const columnName = "First Name";
+      const direction = "ascending";
       const message = `Sorted by ${columnName}, ${direction}`;
 
-      expect(message).toBe('Sorted by First Name, ascending');
+      expect(message).toBe("Sorted by First Name, ascending");
     });
   });
 
-  describe('clearAnnouncer function', () => {
-    it('exists and can be called', () => {
-      expect(typeof clearAnnouncer).toBe('function');
+  describe("clearAnnouncer function", () => {
+    it("exists and can be called", () => {
+      expect(typeof clearAnnouncer).toBe("function");
 
       expect(() => {
-        clearAnnouncer('assertive');
+        clearAnnouncer("assertive");
       }).not.toThrow();
     });
 
-    it('can clear polite announcements', () => {
+    it("can clear polite announcements", () => {
       expect(() => {
-        clearAnnouncer('polite');
+        clearAnnouncer("polite");
       }).not.toThrow();
     });
 
-    it('can clear all announcements', () => {
+    it("can clear all announcements", () => {
       expect(() => {
         clearAnnouncer();
       }).not.toThrow();

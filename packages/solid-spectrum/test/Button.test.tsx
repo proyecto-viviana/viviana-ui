@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
-import { Button } from '../src/button';
-import { setupUser } from '@proyecto-viviana/solid-spectrum-test-utils';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen } from "@solidjs/testing-library";
+import { Button } from "../src/button";
+import { setupUser } from "@proyecto-viviana/solid-spectrum-test-utils";
 
 // setupUser is consolidated in solid-spectrum-test-utils.
 
-describe('Button', () => {
+describe("Button", () => {
   let onPressSpy = vi.fn();
   let onPressStartSpy = vi.fn();
   let onPressEndSpy = vi.fn();
@@ -25,18 +25,18 @@ describe('Button', () => {
     onPressChangeSpy.mockClear();
   });
 
-  it('handles defaults', async () => {
+  it("handles defaults", async () => {
     render(() => <Button onPress={onPressSpy}>Click Me</Button>);
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole("button");
     await user.click(button);
     expect(onPressSpy).toHaveBeenCalledTimes(1);
 
-    const text = screen.getByText('Click Me');
+    const text = screen.getByText("Click Me");
     expect(text).not.toBeNull();
   });
 
-  it('supports press events', async () => {
+  it("supports press events", async () => {
     render(() => (
       <Button
         onPress={onPressSpy}
@@ -49,7 +49,7 @@ describe('Button', () => {
       </Button>
     ));
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole("button");
     await user.click(button);
 
     expect(onPressStartSpy).toHaveBeenCalledTimes(1);
@@ -59,7 +59,7 @@ describe('Button', () => {
     expect(onPressChangeSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('keyboard press with Enter key', async () => {
+  it("keyboard press with Enter key", async () => {
     render(() => (
       <Button
         onPress={onPressSpy}
@@ -72,11 +72,11 @@ describe('Button', () => {
       </Button>
     ));
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole("button");
     await user.tab();
     expect(document.activeElement).toBe(button);
 
-    await user.keyboard('{Enter}');
+    await user.keyboard("{Enter}");
     expect(onPressStartSpy).toHaveBeenCalledTimes(1);
     expect(onPressSpy).toHaveBeenCalledTimes(1);
     expect(onPressEndSpy).toHaveBeenCalledTimes(1);
@@ -84,7 +84,7 @@ describe('Button', () => {
     expect(onPressChangeSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('keyboard press with Space key', async () => {
+  it("keyboard press with Space key", async () => {
     render(() => (
       <Button
         onPress={onPressSpy}
@@ -97,11 +97,11 @@ describe('Button', () => {
       </Button>
     ));
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole("button");
     await user.tab();
     expect(document.activeElement).toBe(button);
 
-    await user.keyboard('{ }');
+    await user.keyboard("{ }");
     expect(onPressStartSpy).toHaveBeenCalledTimes(1);
     expect(onPressSpy).toHaveBeenCalledTimes(1);
     expect(onPressEndSpy).toHaveBeenCalledTimes(1);
@@ -111,47 +111,51 @@ describe('Button', () => {
 
   // autoFocus works via onMount + focusSafely() which calls element.focus()
   // We verify autoFocus works by spying on the focus method
-  it('supports autoFocus', () => {
+  it("supports autoFocus", () => {
     // Create a spy on HTMLElement.prototype.focus before rendering
-    const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus');
+    const focusSpy = vi.spyOn(HTMLElement.prototype, "focus");
 
     render(() => <Button autoFocus>Click Me</Button>);
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole("button");
     // Verify focus was called on the button element
     expect(focusSpy).toHaveBeenCalled();
-    expect(focusSpy.mock.calls.some(call => call[0]?.preventScroll === true || focusSpy.mock.instances.includes(button))).toBe(true);
+    expect(
+      focusSpy.mock.calls.some(
+        (call) => call[0]?.preventScroll === true || focusSpy.mock.instances.includes(button),
+      ),
+    ).toBe(true);
 
     focusSpy.mockRestore();
   });
 
-  it('handles touch press', async () => {
+  it("handles touch press", async () => {
     render(() => <Button onPress={onPressSpy}>Touch Me</Button>);
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole("button");
     await user.pointer([
-      { keys: '[TouchA>]', target: button },
-      { keys: '[/TouchA]', target: button },
+      { keys: "[TouchA>]", target: button },
+      { keys: "[/TouchA]", target: button },
     ]);
 
     expect(onPressSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('allows custom props to be passed through to the button', () => {
+  it("allows custom props to be passed through to the button", () => {
     render(() => <Button data-foo="bar">Click Me</Button>);
 
-    const button = screen.getByRole('button');
-    expect(button).toHaveAttribute('data-foo', 'bar');
+    const button = screen.getByRole("button");
+    expect(button).toHaveAttribute("data-foo", "bar");
   });
 
-  it('supports aria-label', () => {
+  it("supports aria-label", () => {
     render(() => <Button aria-label="Test" />);
 
-    const button = screen.getByRole('button');
-    expect(button).toHaveAttribute('aria-label', 'Test');
+    const button = screen.getByRole("button");
+    expect(button).toHaveAttribute("aria-label", "Test");
   });
 
-  it('supports aria-labelledby', () => {
+  it("supports aria-labelledby", () => {
     render(() => (
       <>
         <span id="test">Test</span>
@@ -159,11 +163,11 @@ describe('Button', () => {
       </>
     ));
 
-    const button = screen.getByRole('button');
-    expect(button).toHaveAttribute('aria-labelledby', 'test');
+    const button = screen.getByRole("button");
+    expect(button).toHaveAttribute("aria-labelledby", "test");
   });
 
-  it('supports aria-describedby', () => {
+  it("supports aria-describedby", () => {
     render(() => (
       <>
         <span id="test">Test</span>
@@ -171,170 +175,174 @@ describe('Button', () => {
       </>
     ));
 
-    const button = screen.getByRole('button');
-    expect(button).toHaveAttribute('aria-describedby', 'test');
+    const button = screen.getByRole("button");
+    expect(button).toHaveAttribute("aria-describedby", "test");
   });
 
-  it('does not respond when disabled', async () => {
+  it("does not respond when disabled", async () => {
     render(() => (
       <Button onPress={onPressSpy} isDisabled>
         Click Me
       </Button>
     ));
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole("button");
     await user.click(button);
     expect(button).toBeDisabled();
     expect(onPressSpy).not.toHaveBeenCalled();
   });
 
-  describe('variants', () => {
-    it('renders with primary variant by default', () => {
+  describe("variants", () => {
+    it("renders with primary variant by default", () => {
       render(() => <Button>Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-variant', 'primary');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-variant", "primary");
     });
 
-    it('renders with secondary variant', () => {
+    it("renders with secondary variant", () => {
       render(() => <Button variant="secondary">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-variant', 'secondary');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-variant", "secondary");
     });
 
-    it('renders with all React Spectrum S2 variants', () => {
-      const variants = ['primary', 'secondary', 'accent', 'negative', 'premium', 'genai'] as const;
+    it("renders with all React Spectrum S2 variants", () => {
+      const variants = ["primary", "secondary", "accent", "negative", "premium", "genai"] as const;
 
       for (const variant of variants) {
         const { unmount } = render(() => <Button variant={variant}>Click Me</Button>);
-        const button = screen.getByRole('button');
-        expect(button).toHaveAttribute('data-variant', variant);
+        const button = screen.getByRole("button");
+        expect(button).toHaveAttribute("data-variant", variant);
         expect(button.className).toContain(`vui-button--${variant}`);
         unmount();
       }
     });
 
-    it('renders with danger variant', () => {
+    it("renders with danger variant", () => {
       render(() => <Button variant="danger">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-variant', 'danger');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-variant", "danger");
     });
 
-    it('renders with success variant', () => {
+    it("renders with success variant", () => {
       render(() => <Button variant="success">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-variant', 'success');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-variant", "success");
     });
 
-    it('renders with ghost variant', () => {
+    it("renders with ghost variant", () => {
       render(() => <Button variant="ghost">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-variant', 'ghost');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-variant", "ghost");
     });
 
-    it('renders with link variant', () => {
+    it("renders with link variant", () => {
       render(() => <Button variant="link">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-variant', 'link');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-variant", "link");
     });
   });
 
-  describe('styles', () => {
-    it('renders with fill style by default', () => {
+  describe("styles", () => {
+    it("renders with fill style by default", () => {
       render(() => <Button>Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-style', 'fill');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-style", "fill");
     });
 
-    it('renders with outline style', () => {
+    it("renders with outline style", () => {
       render(() => <Button buttonStyle="outline">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-style', 'outline');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-style", "outline");
     });
 
-    it('supports React Spectrum S2 fillStyle', () => {
+    it("supports React Spectrum S2 fillStyle", () => {
       render(() => <Button fillStyle="outline">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-style', 'outline');
-      expect(button.className).toContain('vui-button--outline');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-style", "outline");
+      expect(button.className).toContain("vui-button--outline");
     });
   });
 
-  describe('sizes', () => {
-    it('maps React Spectrum S2 sizes to stable style classes', () => {
+  describe("sizes", () => {
+    it("maps React Spectrum S2 sizes to stable style classes", () => {
       const cases = [
-        ['S', 'sm'],
-        ['M', 'md'],
-        ['L', 'lg'],
-        ['XL', 'xl'],
+        ["S", "sm"],
+        ["M", "md"],
+        ["L", "lg"],
+        ["XL", "xl"],
       ] as const;
 
       for (const [size, classSuffix] of cases) {
         const { unmount } = render(() => <Button size={size}>Click Me</Button>);
-        const button = screen.getByRole('button');
+        const button = screen.getByRole("button");
         expect(button.className).toContain(`vui-button--${classSuffix}`);
         unmount();
       }
     });
   });
 
-  describe('static colors', () => {
-    it('renders with white static color', () => {
+  describe("static colors", () => {
+    it("renders with white static color", () => {
       render(() => <Button staticColor="white">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-static-color', 'white');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-static-color", "white");
     });
 
-    it('renders with black static color', () => {
+    it("renders with black static color", () => {
       render(() => <Button staticColor="black">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-static-color', 'black');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-static-color", "black");
     });
 
-    it('renders with auto static color', () => {
+    it("renders with auto static color", () => {
       render(() => <Button staticColor="auto">Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-static-color', 'auto');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-static-color", "auto");
     });
   });
 
-  describe('button type', () => {
+  describe("button type", () => {
     it('defaults to type="button"', () => {
       render(() => <Button>Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('type', 'button');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("type", "button");
     });
 
     it('supports type="submit"', () => {
       render(() => <Button type="submit">Submit</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('type', 'submit');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("type", "submit");
     });
 
     it('supports type="reset"', () => {
       render(() => <Button type="reset">Reset</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('type', 'reset');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("type", "reset");
     });
   });
 
-  describe('excludeFromTabOrder', () => {
-    it('removes button from tab order when excludeFromTabOrder is true', () => {
+  describe("excludeFromTabOrder", () => {
+    it("removes button from tab order when excludeFromTabOrder is true", () => {
       render(() => <Button excludeFromTabOrder>Click Me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('tabindex', '-1');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("tabindex", "-1");
     });
   });
 
-  describe('pending', () => {
-    it('sets data-pending when isPending is true', () => {
+  describe("pending", () => {
+    it("sets data-pending when isPending is true", () => {
       render(() => <Button isPending>Loading</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-pending');
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("data-pending");
     });
 
-    it('does not call onPress while pending', async () => {
-      render(() => <Button isPending onPress={onPressSpy}>Loading</Button>);
-      const button = screen.getByRole('button');
+    it("does not call onPress while pending", async () => {
+      render(() => (
+        <Button isPending onPress={onPressSpy}>
+          Loading
+        </Button>
+      ));
+      const button = screen.getByRole("button");
 
       await user.click(button);
       expect(onPressSpy).not.toHaveBeenCalled();

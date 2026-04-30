@@ -7,10 +7,10 @@
  * This is a 1:1 port of @react-aria/switch's useSwitch hook.
  */
 
-import { JSX, Accessor } from 'solid-js';
-import { createToggle, type AriaToggleProps } from '../toggle/createToggle';
-import { type ToggleState } from '@proyecto-viviana/solid-stately';
-import { type MaybeAccessor } from '../utils/reactivity';
+import { JSX, Accessor } from "solid-js";
+import { createToggle, type AriaToggleProps } from "../toggle/createToggle";
+import { type ToggleState } from "@proyecto-viviana/solid-stately";
+import { type MaybeAccessor } from "../utils/reactivity";
 
 // ============================================
 // TYPES
@@ -48,7 +48,7 @@ export interface SwitchAria {
 export function createSwitch(
   props: MaybeAccessor<AriaSwitchProps>,
   state: ToggleState,
-  ref: () => HTMLInputElement | null
+  ref: () => HTMLInputElement | null,
 ): SwitchAria {
   // Don't destructure inputProps - it's a getter that needs to be evaluated each time
   const toggle = createToggle(props, state, ref);
@@ -60,7 +60,7 @@ export function createSwitch(
       const baseProps = toggle.inputProps;
       return {
         ...baseProps,
-        role: 'switch' as const,
+        role: "switch" as const,
         checked: toggle.isSelected(),
       };
     },

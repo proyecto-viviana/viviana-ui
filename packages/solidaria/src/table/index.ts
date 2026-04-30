@@ -3,15 +3,15 @@
  * Based on @react-aria/table.
  */
 
-export { createTable, getTableData } from './createTable';
-export { createTableHeaderRow } from './createTableHeaderRow';
-export { createTableColumnHeader } from './createTableColumnHeader';
-export { createTableRow } from './createTableRow';
-export { createTableCell } from './createTableCell';
-export { createTableRowGroup } from './createTableRowGroup';
-export { createTableSelectionCheckbox } from './createTableSelectionCheckbox';
-export { createTableSelectAllCheckbox } from './createTableSelectAllCheckbox';
-export { createTableColumnResize } from './createTableColumnResize';
+export { createTable, getTableData } from "./createTable";
+export { createTableHeaderRow } from "./createTableHeaderRow";
+export { createTableColumnHeader } from "./createTableColumnHeader";
+export { createTableRow } from "./createTableRow";
+export { createTableCell } from "./createTableCell";
+export { createTableRowGroup } from "./createTableRowGroup";
+export { createTableSelectionCheckbox } from "./createTableSelectionCheckbox";
+export { createTableSelectAllCheckbox } from "./createTableSelectAllCheckbox";
+export { createTableColumnResize } from "./createTableColumnResize";
 export type {
   AriaTableProps,
   TableAria,
@@ -28,8 +28,8 @@ export type {
   AriaTableSelectionCheckboxProps,
   TableSelectionCheckboxAria,
   TableSelectAllCheckboxAria,
-} from './types';
+} from "./types";
 export type {
   CreateTableColumnResizeProps,
   TableColumnResizeResult,
-} from './createTableColumnResize';
+} from "./createTableColumnResize";

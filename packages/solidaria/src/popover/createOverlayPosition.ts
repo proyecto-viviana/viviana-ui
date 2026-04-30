@@ -5,15 +5,15 @@
  * Ported from @react-aria/overlays useOverlayPosition.
  */
 
-import { createEffect, createSignal, onCleanup, type JSX } from 'solid-js';
-import { useLocale } from '../i18n';
+import { createEffect, createSignal, onCleanup, type JSX } from "solid-js";
+import { useLocale } from "../i18n";
 import {
   calculatePosition,
   getRect,
   type Placement,
   type PlacementAxis,
   type PositionResult,
-} from './calculatePosition';
+} from "./calculatePosition";
 
 export interface PositionProps {
   /**
@@ -109,13 +109,13 @@ export interface PositionAria {
   updatePosition: () => void;
 }
 
-const visualViewport = typeof document !== 'undefined' ? window.visualViewport : null;
+const visualViewport = typeof document !== "undefined" ? window.visualViewport : null;
 
 function translateRTL(position: string, direction: string): string {
-  if (direction === 'rtl') {
-    return position.replace('start', 'right').replace('end', 'left');
+  if (direction === "rtl") {
+    return position.replace("start", "right").replace("end", "left");
   }
-  return position.replace('start', 'left').replace('end', 'right');
+  return position.replace("start", "left").replace("end", "right");
 }
 
 /**
@@ -131,11 +131,11 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
   const overlayRef = () => props.overlayRef();
   const arrowRef = () => props.arrowRef?.() ?? null;
   const scrollRef = () => props.scrollRef?.() ?? overlayRef();
-  const placement = () => (props.placement ?? 'bottom') as Placement;
+  const placement = () => (props.placement ?? "bottom") as Placement;
   const containerPadding = () => props.containerPadding ?? 12;
   const shouldFlip = () => props.shouldFlip ?? true;
   const boundaryElement = () =>
-    props.boundaryElement ?? (typeof document !== 'undefined' ? document.body : null);
+    props.boundaryElement ?? (typeof document !== "undefined" ? document.body : null);
   const offset = () => props.offset ?? 0;
   const crossOffset = () => props.crossOffset ?? 0;
   const shouldUpdatePosition = () => props.shouldUpdatePosition ?? true;
@@ -174,9 +174,9 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
     // Reset overlay's previous max height
     const overlay = overlayNode as HTMLElement;
     if (!maxHeight() && overlayNode) {
-      overlay.style.top = '0px';
-      overlay.style.bottom = '';
-      overlay.style.maxHeight = (window.visualViewport?.height ?? window.innerHeight) + 'px';
+      overlay.style.top = "0px";
+      overlay.style.bottom = "";
+      overlay.style.maxHeight = (window.visualViewport?.height ?? window.innerHeight) + "px";
     }
 
     const result = calculatePosition({
@@ -199,16 +199,16 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
     }
 
     // Apply styles directly for immediate positioning
-    overlay.style.top = '';
-    overlay.style.bottom = '';
-    overlay.style.left = '';
-    overlay.style.right = '';
+    overlay.style.top = "";
+    overlay.style.bottom = "";
+    overlay.style.left = "";
+    overlay.style.right = "";
 
     const pos = result.position as Record<string, number | undefined>;
     Object.keys(pos).forEach((key) => {
-      overlay.style.setProperty(key, pos[key] + 'px');
+      overlay.style.setProperty(key, pos[key] + "px");
     });
-    overlay.style.maxHeight = result.maxHeight != null ? result.maxHeight + 'px' : '';
+    overlay.style.maxHeight = result.maxHeight != null ? result.maxHeight + "px" : "";
 
     setPosition(result);
   };
@@ -240,10 +240,10 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
     if (!isOpen()) return;
 
     const handleResize = () => updatePosition();
-    window.addEventListener('resize', handleResize, false);
+    window.addEventListener("resize", handleResize, false);
 
     onCleanup(() => {
-      window.removeEventListener('resize', handleResize, false);
+      window.removeEventListener("resize", handleResize, false);
     });
   });
 
@@ -295,12 +295,12 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
       }
     };
 
-    visualViewport?.addEventListener('resize', onResize);
-    visualViewport?.addEventListener('scroll', onScroll);
+    visualViewport?.addEventListener("resize", onResize);
+    visualViewport?.addEventListener("scroll", onScroll);
 
     onCleanup(() => {
-      visualViewport?.removeEventListener('resize', onResize);
-      visualViewport?.removeEventListener('scroll', onScroll);
+      visualViewport?.removeEventListener("resize", onResize);
+      visualViewport?.removeEventListener("scroll", onScroll);
       clearTimeout(timeout);
     });
   });
@@ -325,10 +325,10 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
       }
     };
 
-    document.addEventListener('scroll', handleScroll, true);
+    document.addEventListener("scroll", handleScroll, true);
 
     onCleanup(() => {
-      document.removeEventListener('scroll', handleScroll, true);
+      document.removeEventListener("scroll", handleScroll, true);
     });
   });
 
@@ -337,19 +337,19 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
       get style(): JSX.CSSProperties {
         const current = position();
         return {
-          position: current ? 'absolute' : 'fixed',
+          position: current ? "absolute" : "fixed",
           top: !current ? 0 : undefined,
           left: !current ? 0 : undefined,
-          'z-index': 100000,
-          'max-height': current?.maxHeight ?? '100vh',
+          "z-index": 100000,
+          "max-height": current?.maxHeight ?? "100vh",
         } as JSX.CSSProperties;
       },
     },
     placement: () => position()?.placement ?? null,
     triggerAnchorPoint: () => position()?.triggerAnchorPoint ?? null,
     arrowProps: {
-      'aria-hidden': 'true',
-      role: 'presentation',
+      "aria-hidden": "true",
+      role: "presentation",
       get style(): JSX.CSSProperties {
         const current = position();
         return {
@@ -362,4 +362,4 @@ export function createOverlayPosition(props: AriaPositionProps): PositionAria {
   };
 }
 
-export { type Placement, type PlacementAxis } from './calculatePosition';
+export { type Placement, type PlacementAxis } from "./calculatePosition";

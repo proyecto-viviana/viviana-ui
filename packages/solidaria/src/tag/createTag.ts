@@ -7,15 +7,15 @@
  * Based on @react-aria/tag useTag
  */
 
-import { createMemo } from 'solid-js';
-import { createFocusable } from '../interactions/createFocusable';
-import { createPress } from '../interactions/createPress';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { mergeProps } from '../utils/mergeProps';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { getTagGroupData } from './createTagGroup';
-import type { ListState, Key } from '@proyecto-viviana/solid-stately';
+import { createMemo } from "solid-js";
+import { createFocusable } from "../interactions/createFocusable";
+import { createPress } from "../interactions/createPress";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { mergeProps } from "../utils/mergeProps";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { getTagGroupData } from "./createTagGroup";
+import type { ListState, Key } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
@@ -60,7 +60,7 @@ export interface TagAria {
 export function createTag<T>(
   props: MaybeAccessor<AriaTagProps>,
   state: ListState<T>,
-  ref: () => HTMLElement | null
+  ref: () => HTMLElement | null,
 ): TagAria {
   const getProps = () => access(props);
   const rowId = createId();
@@ -83,7 +83,7 @@ export function createTag<T>(
     return state.isSelected(key());
   });
 
-  const isSelectable = createMemo(() => state.selectionMode() !== 'none');
+  const isSelectable = createMemo(() => state.selectionMode() !== "none");
 
   const isFocused = createMemo(() => {
     return state.focusedKey() === key();
@@ -157,8 +157,9 @@ export function createTag<T>(
       return;
     }
 
-    const nextTag = Array.from(tagList.querySelectorAll<HTMLElement>('[role="option"]'))
-      .find((el) => el.getAttribute('data-key') === String(nextKey));
+    const nextTag = Array.from(tagList.querySelectorAll<HTMLElement>('[role="option"]')).find(
+      (el) => el.getAttribute("data-key") === String(nextKey),
+    );
 
     nextTag?.focus();
   };
@@ -175,33 +176,36 @@ export function createTag<T>(
   });
 
   // Handle focusable
-  const { focusableProps } = createFocusable({
-    isDisabled,
-    onFocus: () => {
-      state.setFocusedKey(key());
+  const { focusableProps } = createFocusable(
+    {
+      isDisabled,
+      onFocus: () => {
+        state.setFocusedKey(key());
+      },
     },
-  }, ref);
+    ref,
+  );
 
   // Handle keyboard for navigation and removal
   const handleKeyDown = (e: KeyboardEvent) => {
     if (isDisabled()) return;
 
     switch (e.key) {
-      case 'ArrowRight':
-      case 'ArrowDown':
+      case "ArrowRight":
+      case "ArrowDown":
         e.preventDefault();
         focusKey(getNextFocusableKey(key()));
         return;
-      case 'ArrowLeft':
-      case 'ArrowUp':
+      case "ArrowLeft":
+      case "ArrowUp":
         e.preventDefault();
         focusKey(getPreviousFocusableKey(key()));
         return;
-      case 'Home':
+      case "Home":
         e.preventDefault();
         focusKey(getFirstFocusableKey());
         return;
-      case 'End':
+      case "End":
         e.preventDefault();
         focusKey(getLastFocusableKey());
         return;
@@ -209,16 +213,17 @@ export function createTag<T>(
         break;
     }
 
-    if (e.key === 'Delete' || e.key === 'Backspace') {
+    if (e.key === "Delete" || e.key === "Backspace") {
       e.preventDefault();
       const data = getData();
       if (data?.onRemove) {
         // Remove selected keys if this tag is selected, otherwise just this tag
         if (isSelected()) {
           const selection = state.selectedKeys();
-          const keysToRemove = selection === 'all'
-            ? new Set(Array.from(state.collection()).map(item => (item as { key: Key }).key))
-            : new Set(selection);
+          const keysToRemove =
+            selection === "all"
+              ? new Set(Array.from(state.collection()).map((item) => (item as { key: Key }).key))
+              : new Set(selection);
           data.onRemove(keysToRemove);
         } else {
           data.onRemove(new Set([key()]));
@@ -242,7 +247,7 @@ export function createTag<T>(
     const collection = state.collection();
     let defaultTabStop: Key | null = null;
 
-    if (state.selectionMode() !== 'none') {
+    if (state.selectionMode() !== "none") {
       for (const item of collection) {
         if (!state.isDisabled(item.key) && state.isSelected(item.key)) {
           defaultTabStop = item.key;
@@ -273,29 +278,34 @@ export function createTag<T>(
 
   return {
     get rowProps() {
-      return mergeProps(domProps(), focusableProps as Record<string, unknown>, pressProps as Record<string, unknown>, {
-        id: rowId,
-        role: 'option',
-        tabIndex: tabIndex(),
-        'data-key': String(key()),
-        'aria-selected': isSelectable() ? isSelected() : undefined,
-        'aria-disabled': isDisabled() || undefined,
-        onKeyDown: handleKeyDown,
-      });
+      return mergeProps(
+        domProps(),
+        focusableProps as Record<string, unknown>,
+        pressProps as Record<string, unknown>,
+        {
+          id: rowId,
+          role: "option",
+          tabIndex: tabIndex(),
+          "data-key": String(key()),
+          "aria-selected": isSelectable() ? isSelected() : undefined,
+          "aria-disabled": isDisabled() || undefined,
+          onKeyDown: handleKeyDown,
+        },
+      );
     },
     get gridCellProps() {
       return {
         id: cellId,
-        role: 'presentation',
-        'aria-describedby': allowsRemoving() ? removeButtonId : undefined,
+        role: "presentation",
+        "aria-describedby": allowsRemoving() ? removeButtonId : undefined,
       };
     },
     get removeButtonProps() {
       const data = getData();
       return {
         id: removeButtonId,
-        'aria-label': 'Remove',
-        'aria-labelledby': `${removeButtonId} ${rowId}`,
+        "aria-label": "Remove",
+        "aria-labelledby": `${removeButtonId} ${rowId}`,
         isDisabled: isDisabled(),
         onPress: () => {
           if (data?.onRemove && !isDisabled()) {

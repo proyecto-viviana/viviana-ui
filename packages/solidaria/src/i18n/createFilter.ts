@@ -6,8 +6,8 @@
  * Port of @react-aria/i18n useFilter.
  */
 
-import { createMemo } from 'solid-js';
-import { createCollator } from './createCollator';
+import { createMemo } from "solid-js";
+import { createCollator } from "./createCollator";
 
 // ============================================
 // TYPES
@@ -68,7 +68,7 @@ export interface Filter {
  */
 export function createFilter(options?: Intl.CollatorOptions): () => Filter {
   const collator = createCollator({
-    usage: 'search',
+    usage: "search",
     ...options,
   });
 
@@ -81,13 +81,10 @@ export function createFilter(options?: Intl.CollatorOptions): () => Filter {
       }
 
       // Normalize both strings for safe slicing
-      const normalizedStr = str.normalize('NFC');
-      const normalizedSub = substring.normalize('NFC');
+      const normalizedStr = str.normalize("NFC");
+      const normalizedSub = substring.normalize("NFC");
 
-      return (
-        coll.compare(normalizedStr.slice(0, normalizedSub.length), normalizedSub) ===
-        0
-      );
+      return coll.compare(normalizedStr.slice(0, normalizedSub.length), normalizedSub) === 0;
     };
 
     const endsWith = (str: string, substring: string): boolean => {
@@ -95,12 +92,10 @@ export function createFilter(options?: Intl.CollatorOptions): () => Filter {
         return true;
       }
 
-      const normalizedStr = str.normalize('NFC');
-      const normalizedSub = substring.normalize('NFC');
+      const normalizedStr = str.normalize("NFC");
+      const normalizedSub = substring.normalize("NFC");
 
-      return (
-        coll.compare(normalizedStr.slice(-normalizedSub.length), normalizedSub) === 0
-      );
+      return coll.compare(normalizedStr.slice(-normalizedSub.length), normalizedSub) === 0;
     };
 
     const contains = (str: string, substring: string): boolean => {
@@ -108,8 +103,8 @@ export function createFilter(options?: Intl.CollatorOptions): () => Filter {
         return true;
       }
 
-      const normalizedStr = str.normalize('NFC');
-      const normalizedSub = substring.normalize('NFC');
+      const normalizedStr = str.normalize("NFC");
+      const normalizedSub = substring.normalize("NFC");
       const sliceLen = normalizedSub.length;
 
       for (let scan = 0; scan + sliceLen <= normalizedStr.length; scan++) {

@@ -1,6 +1,12 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Select, SelectTrigger, SelectValue, SelectListBox, SelectOption } from "@proyecto-viviana/solid-spectrum";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectListBox,
+  SelectOption,
+} from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 type SelectItem = {
@@ -273,9 +279,7 @@ function SelectPage() {
           </li>
           <li>Full keyboard navigation: Arrow keys, Home, End, Page Up/Down</li>
           <li>Type-ahead search to quickly find options</li>
-          <li>
-            Announces selection changes to screen readers
-          </li>
+          <li>Announces selection changes to screen readers</li>
           <li>Focus trapped within popover when open</li>
         </ul>
       </AccessibilitySection>

@@ -4,20 +4,19 @@
  * Ported from @react-stately/calendar's useRangeCalendarState.
  * Tests follow the same patterns as @react-stately tests.
  */
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
-import { createRangeCalendarState, type RangeValue } from '../src/calendar/createRangeCalendarState';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot, createSignal } from "solid-js";
 import {
-  CalendarDate,
-  today,
-  getLocalTimeZone,
-} from '@internationalized/date';
+  createRangeCalendarState,
+  type RangeValue,
+} from "../src/calendar/createRangeCalendarState";
+import { CalendarDate, today, getLocalTimeZone } from "@internationalized/date";
 
-describe('createRangeCalendarState', () => {
+describe("createRangeCalendarState", () => {
   const timeZone = getLocalTimeZone();
 
-  describe('basic state management', () => {
-    it('should return null by default', () => {
+  describe("basic state management", () => {
+    it("should return null by default", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
 
@@ -27,14 +26,14 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should use defaultValue for initial uncontrolled value', () => {
+    it("should use defaultValue for initial uncontrolled value", () => {
       createRoot((dispose) => {
         const defaultRange = {
           start: new CalendarDate(2024, 6, 10),
           end: new CalendarDate(2024, 6, 20),
         };
         const state = createRangeCalendarState({
-          defaultValue: defaultRange
+          defaultValue: defaultRange,
         });
 
         expect(state.value()?.start).toEqual(defaultRange.start);
@@ -44,14 +43,14 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should use value for controlled mode', () => {
+    it("should use value for controlled mode", () => {
       createRoot((dispose) => {
         const controlledRange = {
           start: new CalendarDate(2024, 6, 10),
           end: new CalendarDate(2024, 6, 20),
         };
         const state = createRangeCalendarState({
-          value: controlledRange
+          value: controlledRange,
         });
 
         expect(state.value()?.start).toEqual(controlledRange.start);
@@ -61,10 +60,10 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should handle controlled null state', () => {
+    it("should handle controlled null state", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState({
-          value: null
+          value: null,
         });
 
         expect(state.value()).toBe(null);
@@ -74,8 +73,8 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('focused date', () => {
-    it('should default to today when no value or focusedValue is provided', () => {
+  describe("focused date", () => {
+    it("should default to today when no value or focusedValue is provided", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
         const todayDate = today(timeZone);
@@ -88,11 +87,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should use defaultFocusedValue for initial focus', () => {
+    it("should use defaultFocusedValue for initial focus", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 3, 10);
         const state = createRangeCalendarState({
-          defaultFocusedValue: focusDate
+          defaultFocusedValue: focusDate,
         });
 
         expect(state.focusedDate()).toEqual(focusDate);
@@ -101,11 +100,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should use focusedValue for controlled focus', () => {
+    it("should use focusedValue for controlled focus", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 3, 10);
         const state = createRangeCalendarState({
-          focusedValue: focusDate
+          focusedValue: focusDate,
         });
 
         expect(state.focusedDate()).toEqual(focusDate);
@@ -114,14 +113,14 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should use range start as initial focused date when no focused value provided', () => {
+    it("should use range start as initial focused date when no focused value provided", () => {
       createRoot((dispose) => {
         const range = {
           start: new CalendarDate(2024, 6, 10),
           end: new CalendarDate(2024, 6, 20),
         };
         const state = createRangeCalendarState({
-          defaultValue: range
+          defaultValue: range,
         });
 
         expect(state.focusedDate()).toEqual(range.start);
@@ -131,8 +130,8 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('range selection', () => {
-    it('should set anchor date on first click', () => {
+  describe("range selection", () => {
+    it("should set anchor date on first click", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
         const date = new CalendarDate(2024, 6, 15);
@@ -149,7 +148,7 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should complete range on second click', () => {
+    it("should complete range on second click", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
         const startDate = new CalendarDate(2024, 6, 10);
@@ -167,7 +166,7 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should swap dates if end is before start', () => {
+    it("should swap dates if end is before start", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
         const laterDate = new CalendarDate(2024, 6, 20);
@@ -186,7 +185,7 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should update highlighted range during selection', () => {
+    it("should update highlighted range during selection", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
         const startDate = new CalendarDate(2024, 6, 10);
@@ -203,7 +202,7 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should call onChange when range is completed', () => {
+    it("should call onChange when range is completed", () => {
       createRoot((dispose) => {
         const onChange = vi.fn();
         const state = createRangeCalendarState({ onChange });
@@ -223,11 +222,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should select focused date', () => {
+    it("should select focused date", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: focusDate
+          defaultFocusedValue: focusDate,
         });
 
         state.selectFocusedDate();
@@ -240,11 +239,11 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('readonly and disabled behavior', () => {
-    it('should ignore selection when disabled', () => {
+  describe("readonly and disabled behavior", () => {
+    it("should ignore selection when disabled", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState({
-          isDisabled: true
+          isDisabled: true,
         });
         const date = new CalendarDate(2024, 6, 15);
 
@@ -256,10 +255,10 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should ignore selection when readonly', () => {
+    it("should ignore selection when readonly", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState({
-          isReadOnly: true
+          isReadOnly: true,
         });
         const date = new CalendarDate(2024, 6, 15);
 
@@ -271,7 +270,7 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should not complete range when disabled', () => {
+    it("should not complete range when disabled", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
         const startDate = new CalendarDate(2024, 6, 10);
@@ -282,7 +281,7 @@ describe('createRangeCalendarState', () => {
 
         // Dynamically disable - simulated by creating new state
         const disabledState = createRangeCalendarState({
-          isDisabled: true
+          isDisabled: true,
         });
         disabledState.setAnchorDate(startDate);
 
@@ -297,12 +296,12 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('navigation', () => {
-    it('should move to previous month', () => {
+  describe("navigation", () => {
+    it("should move to previous month", () => {
       createRoot((dispose) => {
         const initialDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: initialDate
+          defaultFocusedValue: initialDate,
         });
 
         state.focusPreviousPage();
@@ -313,11 +312,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should move to next month', () => {
+    it("should move to next month", () => {
       createRoot((dispose) => {
         const initialDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: initialDate
+          defaultFocusedValue: initialDate,
         });
 
         state.focusNextPage();
@@ -328,11 +327,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should move to previous year', () => {
+    it("should move to previous year", () => {
       createRoot((dispose) => {
         const initialDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: initialDate
+          defaultFocusedValue: initialDate,
         });
 
         state.focusPreviousSection();
@@ -343,11 +342,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should move to next year', () => {
+    it("should move to next year", () => {
       createRoot((dispose) => {
         const initialDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: initialDate
+          defaultFocusedValue: initialDate,
         });
 
         state.focusNextSection();
@@ -358,11 +357,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should move to previous day', () => {
+    it("should move to previous day", () => {
       createRoot((dispose) => {
         const initialDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: initialDate
+          defaultFocusedValue: initialDate,
         });
 
         state.focusPreviousDay();
@@ -372,11 +371,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should move to next day', () => {
+    it("should move to next day", () => {
       createRoot((dispose) => {
         const initialDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: initialDate
+          defaultFocusedValue: initialDate,
         });
 
         state.focusNextDay();
@@ -386,11 +385,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should move to previous week', () => {
+    it("should move to previous week", () => {
       createRoot((dispose) => {
         const initialDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: initialDate
+          defaultFocusedValue: initialDate,
         });
 
         state.focusPreviousWeek();
@@ -400,11 +399,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should move to next week', () => {
+    it("should move to next week", () => {
       createRoot((dispose) => {
         const initialDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: initialDate
+          defaultFocusedValue: initialDate,
         });
 
         state.focusNextWeek();
@@ -414,11 +413,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should move to start of month', () => {
+    it("should move to start of month", () => {
       createRoot((dispose) => {
         const initialDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: initialDate
+          defaultFocusedValue: initialDate,
         });
 
         state.focusPageStart();
@@ -429,11 +428,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should move to end of month', () => {
+    it("should move to end of month", () => {
       createRoot((dispose) => {
         const initialDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: initialDate
+          defaultFocusedValue: initialDate,
         });
 
         state.focusPageEnd();
@@ -445,13 +444,13 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('min/max constraints', () => {
-    it('should constrain focus to min date', () => {
+  describe("min/max constraints", () => {
+    it("should constrain focus to min date", () => {
       createRoot((dispose) => {
         const minDate = new CalendarDate(2024, 6, 10);
         const state = createRangeCalendarState({
           minValue: minDate,
-          defaultFocusedValue: new CalendarDate(2024, 6, 15)
+          defaultFocusedValue: new CalendarDate(2024, 6, 15),
         });
 
         // Try to focus before min
@@ -462,12 +461,12 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should constrain focus to max date', () => {
+    it("should constrain focus to max date", () => {
       createRoot((dispose) => {
         const maxDate = new CalendarDate(2024, 6, 20);
         const state = createRangeCalendarState({
           maxValue: maxDate,
-          defaultFocusedValue: new CalendarDate(2024, 6, 15)
+          defaultFocusedValue: new CalendarDate(2024, 6, 15),
         });
 
         // Try to focus after max
@@ -478,11 +477,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should mark dates before min as disabled', () => {
+    it("should mark dates before min as disabled", () => {
       createRoot((dispose) => {
         const minDate = new CalendarDate(2024, 6, 10);
         const state = createRangeCalendarState({
-          minValue: minDate
+          minValue: minDate,
         });
 
         expect(state.isCellDisabled(new CalendarDate(2024, 6, 5))).toBe(true);
@@ -493,11 +492,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should mark dates after max as disabled', () => {
+    it("should mark dates after max as disabled", () => {
       createRoot((dispose) => {
         const maxDate = new CalendarDate(2024, 6, 20);
         const state = createRangeCalendarState({
-          maxValue: maxDate
+          maxValue: maxDate,
         });
 
         expect(state.isCellDisabled(new CalendarDate(2024, 6, 25))).toBe(true);
@@ -508,11 +507,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should not select disabled dates', () => {
+    it("should not select disabled dates", () => {
       createRoot((dispose) => {
         const minDate = new CalendarDate(2024, 6, 10);
         const state = createRangeCalendarState({
-          minValue: minDate
+          minValue: minDate,
         });
 
         const disabledDate = new CalendarDate(2024, 6, 5);
@@ -525,15 +524,15 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('cell state checks', () => {
-    it('should check if date is selected (in range)', () => {
+  describe("cell state checks", () => {
+    it("should check if date is selected (in range)", () => {
       createRoot((dispose) => {
         const range = {
           start: new CalendarDate(2024, 6, 10),
           end: new CalendarDate(2024, 6, 20),
         };
         const state = createRangeCalendarState({
-          defaultValue: range
+          defaultValue: range,
         });
 
         expect(state.isSelected(new CalendarDate(2024, 6, 5))).toBe(false);
@@ -546,14 +545,14 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should check if date is selection start', () => {
+    it("should check if date is selection start", () => {
       createRoot((dispose) => {
         const range = {
           start: new CalendarDate(2024, 6, 10),
           end: new CalendarDate(2024, 6, 20),
         };
         const state = createRangeCalendarState({
-          defaultValue: range
+          defaultValue: range,
         });
 
         expect(state.isSelectionStart(new CalendarDate(2024, 6, 10))).toBe(true);
@@ -564,14 +563,14 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should check if date is selection end', () => {
+    it("should check if date is selection end", () => {
       createRoot((dispose) => {
         const range = {
           start: new CalendarDate(2024, 6, 10),
           end: new CalendarDate(2024, 6, 20),
         };
         const state = createRangeCalendarState({
-          defaultValue: range
+          defaultValue: range,
         });
 
         expect(state.isSelectionEnd(new CalendarDate(2024, 6, 10))).toBe(false);
@@ -582,11 +581,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should check if date is focused', () => {
+    it("should check if date is focused", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: focusDate
+          defaultFocusedValue: focusDate,
         });
 
         expect(state.isCellFocused(new CalendarDate(2024, 6, 14))).toBe(false);
@@ -597,13 +596,13 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should check if date is unavailable', () => {
+    it("should check if date is unavailable", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState({
           isDateUnavailable: (date) => {
             const calDate = date as CalendarDate;
             return calDate.day === 15;
-          }
+          },
         });
 
         expect(state.isCellUnavailable(new CalendarDate(2024, 6, 14))).toBe(false);
@@ -614,13 +613,13 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should mark unavailable dates as invalid', () => {
+    it("should mark unavailable dates as invalid", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState({
           isDateUnavailable: (date) => {
             const calDate = date as CalendarDate;
             return calDate.day === 15;
-          }
+          },
         });
 
         expect(state.isInvalid(new CalendarDate(2024, 6, 14))).toBe(false);
@@ -630,13 +629,13 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should not select unavailable dates', () => {
+    it("should not select unavailable dates", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState({
           isDateUnavailable: (date) => {
             const calDate = date as CalendarDate;
             return calDate.day === 15;
-          }
+          },
         });
 
         const unavailableDate = new CalendarDate(2024, 6, 15);
@@ -649,12 +648,12 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('visible range', () => {
-    it('should return correct visible range for single month', () => {
+  describe("visible range", () => {
+    it("should return correct visible range for single month", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: focusDate
+          defaultFocusedValue: focusDate,
         });
 
         const range = state.visibleRange();
@@ -669,12 +668,12 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should extend visible range for multiple months', () => {
+    it("should extend visible range for multiple months", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
           defaultFocusedValue: focusDate,
-          visibleMonths: 2
+          visibleMonths: 2,
         });
 
         const range = state.visibleRange();
@@ -686,11 +685,11 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should check if date is outside visible range', () => {
+    it("should check if date is outside visible range", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: focusDate
+          defaultFocusedValue: focusDate,
         });
 
         expect(state.isOutsideVisibleRange(new CalendarDate(2024, 5, 15))).toBe(true);
@@ -702,8 +701,8 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('focus state', () => {
-    it('should track focus state', () => {
+  describe("focus state", () => {
+    it("should track focus state", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
 
@@ -719,12 +718,12 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should call onFocusChange when focus changes', () => {
+    it("should call onFocusChange when focus changes", () => {
       createRoot((dispose) => {
         const onFocusChange = vi.fn();
         const state = createRangeCalendarState({
           onFocusChange,
-          defaultFocusedValue: new CalendarDate(2024, 6, 15)
+          defaultFocusedValue: new CalendarDate(2024, 6, 15),
         });
 
         const newDate = new CalendarDate(2024, 6, 20);
@@ -737,8 +736,8 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('controlled vs uncontrolled modes', () => {
-    it('should not change internal state in controlled mode', () => {
+  describe("controlled vs uncontrolled modes", () => {
+    it("should not change internal state in controlled mode", () => {
       createRoot((dispose) => {
         const range = {
           start: new CalendarDate(2024, 6, 10),
@@ -747,7 +746,7 @@ describe('createRangeCalendarState', () => {
         const onChange = vi.fn();
         const state = createRangeCalendarState({
           value: range,
-          onChange
+          onChange,
         });
 
         // Try to set new value
@@ -767,14 +766,16 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should be possible to control the value', () => {
+    it("should be possible to control the value", () => {
       createRoot((dispose) => {
         const [value, setValue] = createSignal<RangeValue<CalendarDate> | null>({
           start: new CalendarDate(2024, 6, 10),
           end: new CalendarDate(2024, 6, 20),
         });
         const state = createRangeCalendarState({
-          get value() { return value(); }
+          get value() {
+            return value();
+          },
         });
 
         expect(state.value()?.start.day).toBe(10);
@@ -793,7 +794,7 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should update in uncontrolled mode', () => {
+    it("should update in uncontrolled mode", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
         const startDate = new CalendarDate(2024, 6, 10);
@@ -810,10 +811,10 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('week days', () => {
-    it('should return week day names', () => {
+  describe("week days", () => {
+    it("should return week day names", () => {
       createRoot((dispose) => {
-        const state = createRangeCalendarState({ locale: 'en-US' });
+        const state = createRangeCalendarState({ locale: "en-US" });
 
         const days = state.weekDays();
         expect(days).toHaveLength(7);
@@ -823,45 +824,45 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('title', () => {
-    it('should return formatted title', () => {
+  describe("title", () => {
+    it("should return formatted title", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
           defaultFocusedValue: focusDate,
-          locale: 'en-US'
+          locale: "en-US",
         });
 
-        expect(state.title()).toBe('June 2024');
+        expect(state.title()).toBe("June 2024");
 
         dispose();
       });
     });
 
-    it('should update title when focused date changes', () => {
+    it("should update title when focused date changes", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
           defaultFocusedValue: focusDate,
-          locale: 'en-US'
+          locale: "en-US",
         });
 
-        expect(state.title()).toBe('June 2024');
+        expect(state.title()).toBe("June 2024");
 
         state.focusNextPage();
-        expect(state.title()).toBe('July 2024');
+        expect(state.title()).toBe("July 2024");
 
         dispose();
       });
     });
   });
 
-  describe('getDatesInWeek', () => {
-    it('should return dates for a week', () => {
+  describe("getDatesInWeek", () => {
+    it("should return dates for a week", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: focusDate
+          defaultFocusedValue: focusDate,
         });
 
         const week = state.getDatesInWeek(0);
@@ -872,12 +873,12 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('getWeeksInMonth', () => {
-    it('should return correct number of weeks', () => {
+  describe("getWeeksInMonth", () => {
+    it("should return correct number of weeks", () => {
       createRoot((dispose) => {
         const focusDate = new CalendarDate(2024, 6, 15);
         const state = createRangeCalendarState({
-          defaultFocusedValue: focusDate
+          defaultFocusedValue: focusDate,
         });
 
         const weeks = state.getWeeksInMonth();
@@ -889,8 +890,8 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('dragging state', () => {
-    it('should track dragging state during selection', () => {
+  describe("dragging state", () => {
+    it("should track dragging state during selection", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
 
@@ -908,7 +909,7 @@ describe('createRangeCalendarState', () => {
       });
     });
 
-    it('should allow manual dragging control', () => {
+    it("should allow manual dragging control", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
 
@@ -923,8 +924,8 @@ describe('createRangeCalendarState', () => {
     });
   });
 
-  describe('anchor date', () => {
-    it('should allow manual anchor date control', () => {
+  describe("anchor date", () => {
+    it("should allow manual anchor date control", () => {
       createRoot((dispose) => {
         const state = createRangeCalendarState();
         const anchorDate = new CalendarDate(2024, 6, 15);

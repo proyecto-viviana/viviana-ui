@@ -1,1 +1,1 @@
-export * from '../../solidaria/test-utils/index';
+export * from "../../solidaria/test-utils/index";

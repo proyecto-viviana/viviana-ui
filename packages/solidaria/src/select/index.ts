@@ -1,9 +1,4 @@
-export {
-  createSelect,
-  getSelectData,
-  type AriaSelectProps,
-  type SelectAria,
-} from './createSelect';
+export { createSelect, getSelectData, type AriaSelectProps, type SelectAria } from "./createSelect";
 
 export {
   createHiddenSelect,
@@ -11,4 +6,4 @@ export {
   type AriaHiddenSelectProps,
   type HiddenSelectAria,
   type HiddenSelectProps,
-} from './createHiddenSelect.jsx';
+} from "./createHiddenSelect.jsx";

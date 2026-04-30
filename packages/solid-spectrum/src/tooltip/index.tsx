@@ -5,38 +5,38 @@
  * Built on top of solidaria-components for accessibility.
  */
 
-import { type JSX, Show, splitProps } from 'solid-js'
+import { type JSX, Show, splitProps } from "solid-js";
 import {
   Tooltip as HeadlessTooltip,
   TooltipTrigger as HeadlessTooltipTrigger,
   type TooltipProps as HeadlessTooltipProps,
   type TooltipTriggerComponentProps as HeadlessTooltipTriggerProps,
   type TooltipRenderProps,
-} from '@proyecto-viviana/solidaria-components'
+} from "@proyecto-viviana/solidaria-components";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right'
-export type TooltipVariant = 'default' | 'neutral' | 'info'
+export type TooltipPlacement = "top" | "bottom" | "left" | "right";
+export type TooltipVariant = "default" | "neutral" | "info";
 
 export interface TooltipTriggerProps extends HeadlessTooltipTriggerProps {
   /** The children of the tooltip trigger (trigger element and tooltip). */
-  children: JSX.Element
+  children: JSX.Element;
 }
 
-export interface TooltipProps extends Omit<HeadlessTooltipProps, 'class' | 'style' | 'children'> {
+export interface TooltipProps extends Omit<HeadlessTooltipProps, "class" | "style" | "children"> {
   /** The content of the tooltip. */
-  children: JSX.Element
+  children: JSX.Element;
   /** The position of the tooltip relative to the trigger. */
-  placement?: TooltipPlacement
+  placement?: TooltipPlacement;
   /** Visual variant of the tooltip. */
-  variant?: TooltipVariant
+  variant?: TooltipVariant;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Whether to show an arrow pointing to the trigger. */
-  showArrow?: boolean
+  showArrow?: boolean;
 }
 
 // ============================================
@@ -46,35 +46,37 @@ export interface TooltipProps extends Omit<HeadlessTooltipProps, 'class' | 'styl
 // Note: Position is now calculated by the headless layer (solidaria-components)
 // so we don't need CSS positioning classes here
 const baseStyles = [
-  'px-3 py-2 rounded-lg',
-  'text-sm font-medium',
-  'shadow-lg',
-  'pointer-events-auto',
-  'animate-in fade-in-0 zoom-in-95',
-  'data-[exiting]:animate-out data-[exiting]:fade-out-0 data-[exiting]:zoom-out-95',
-].join(' ')
+  "px-3 py-2 rounded-lg",
+  "text-sm font-medium",
+  "shadow-lg",
+  "pointer-events-auto",
+  "animate-in fade-in-0 zoom-in-95",
+  "data-[exiting]:animate-out data-[exiting]:fade-out-0 data-[exiting]:zoom-out-95",
+].join(" ");
 
 const variantStyles: Record<TooltipVariant, string> = {
-  default: 'bg-neutral-900 text-on-color dark:bg-neutral-100 dark:text-neutral-900',
-  neutral: 'bg-neutral-800 text-neutral-100 dark:bg-neutral-200 dark:text-neutral-900',
-  info: 'bg-blue-600 text-on-color dark:bg-blue-500',
-}
+  default: "bg-neutral-900 text-on-color dark:bg-neutral-100 dark:text-neutral-900",
+  neutral: "bg-neutral-800 text-neutral-100 dark:bg-neutral-200 dark:text-neutral-900",
+  info: "bg-blue-600 text-on-color dark:bg-blue-500",
+};
 
 const arrowStyles: Record<TooltipPlacement, string> = {
-  top: 'bottom-0 left-1/2 -translate-x-1/2 translate-y-full border-l-transparent border-r-transparent border-b-transparent',
-  bottom: 'top-0 left-1/2 -translate-x-1/2 -translate-y-full border-l-transparent border-r-transparent border-t-transparent',
-  left: 'right-0 top-1/2 -translate-y-1/2 translate-x-full border-t-transparent border-b-transparent border-r-transparent',
-  right: 'left-0 top-1/2 -translate-y-1/2 -translate-x-full border-t-transparent border-b-transparent border-l-transparent',
-}
+  top: "bottom-0 left-1/2 -translate-x-1/2 translate-y-full border-l-transparent border-r-transparent border-b-transparent",
+  bottom:
+    "top-0 left-1/2 -translate-x-1/2 -translate-y-full border-l-transparent border-r-transparent border-t-transparent",
+  left: "right-0 top-1/2 -translate-y-1/2 translate-x-full border-t-transparent border-b-transparent border-r-transparent",
+  right:
+    "left-0 top-1/2 -translate-y-1/2 -translate-x-full border-t-transparent border-b-transparent border-l-transparent",
+};
 
 const getArrowBorderColor = (variant: TooltipVariant): string => {
   const colors: Record<TooltipVariant, string> = {
-    default: 'border-neutral-900 dark:border-neutral-100',
-    neutral: 'border-neutral-800 dark:border-neutral-200',
-    info: 'border-blue-600 dark:border-blue-500',
-  }
-  return colors[variant]
-}
+    default: "border-neutral-900 dark:border-neutral-100",
+    neutral: "border-neutral-800 dark:border-neutral-200",
+    info: "border-blue-600 dark:border-blue-500",
+  };
+  return colors[variant];
+};
 
 // ============================================
 // COMPONENTS
@@ -94,7 +96,7 @@ const getArrowBorderColor = (variant: TooltipVariant): string => {
  * ```
  */
 export function TooltipTrigger(props: TooltipTriggerProps): JSX.Element {
-  return <HeadlessTooltipTrigger {...props} />
+  return <HeadlessTooltipTrigger {...props} />;
 }
 
 /**
@@ -109,27 +111,20 @@ export function TooltipTrigger(props: TooltipTriggerProps): JSX.Element {
  * ```
  */
 export function Tooltip(props: TooltipProps): JSX.Element {
-  const [local, rest] = splitProps(props, [
-    'placement',
-    'variant',
-    'class',
-    'showArrow',
-  ])
+  const [local, rest] = splitProps(props, ["placement", "variant", "class", "showArrow"]);
 
-  const placement = () => local.placement ?? 'top'
-  const variant = () => local.variant ?? 'default'
+  const placement = () => local.placement ?? "top";
+  const variant = () => local.variant ?? "default";
 
   return (
     <HeadlessTooltip
       {...rest}
       placement={placement()}
       class={(_renderProps: TooltipRenderProps) => {
-        const classes = [
-          baseStyles,
-          variantStyles[variant()],
-          local.class ?? '',
-        ].filter(Boolean).join(' ')
-        return classes
+        const classes = [baseStyles, variantStyles[variant()], local.class ?? ""]
+          .filter(Boolean)
+          .join(" ");
+        return classes;
       }}
     >
       {(renderProps: TooltipRenderProps) => (
@@ -138,16 +133,16 @@ export function Tooltip(props: TooltipProps): JSX.Element {
           <Show when={local.showArrow}>
             <div
               class={[
-                'absolute w-0 h-0 border-4',
+                "absolute w-0 h-0 border-4",
                 arrowStyles[renderProps.placement ?? placement()],
                 getArrowBorderColor(variant()),
-              ].join(' ')}
+              ].join(" ")}
             />
           </Show>
         </>
       )}
     </HeadlessTooltip>
-  )
+  );
 }
 
 // ============================================
@@ -156,13 +151,13 @@ export function Tooltip(props: TooltipProps): JSX.Element {
 
 export interface SimpleTooltipProps {
   /** The content to show in the tooltip */
-  label: string
+  label: string;
   /** The trigger element */
-  children: JSX.Element
+  children: JSX.Element;
   /** Position of the tooltip */
-  position?: 'top' | 'bottom'
+  position?: "top" | "bottom";
   /** Additional CSS class */
-  class?: string
+  class?: string;
 }
 
 /**
@@ -179,19 +174,17 @@ export interface SimpleTooltipProps {
  * ```
  */
 export function SimpleTooltip(props: SimpleTooltipProps): JSX.Element {
-  const position = () => props.position ?? 'bottom'
+  const position = () => props.position ?? "bottom";
 
   return (
-    <div class={`vui-tooltip ${props.class ?? ''}`}>
-      <div class="vui-tooltip__trigger">
-        {props.children}
-      </div>
+    <div class={`vui-tooltip ${props.class ?? ""}`}>
+      <div class="vui-tooltip__trigger">{props.children}</div>
       <div class={`vui-tooltip__content vui-tooltip__content--${position()}`}>
         <span>{props.label}</span>
       </div>
     </div>
-  )
+  );
 }
 
 // Re-export types
-export type { TooltipRenderProps }
+export type { TooltipRenderProps };

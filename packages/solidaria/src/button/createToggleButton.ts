@@ -1,10 +1,10 @@
-import { Accessor, createSignal } from 'solid-js';
-import { createButton } from './createButton';
-import { mergeProps } from '../utils';
-import type { AriaButtonProps, ButtonAria } from './types';
-import type { PressEvent } from '../interactions';
+import { Accessor, createSignal } from "solid-js";
+import { createButton } from "./createButton";
+import { mergeProps } from "../utils";
+import type { AriaButtonProps, ButtonAria } from "./types";
+import type { PressEvent } from "../interactions";
 
-export interface AriaToggleButtonProps extends Omit<AriaButtonProps, 'aria-pressed'> {
+export interface AriaToggleButtonProps extends Omit<AriaButtonProps, "aria-pressed"> {
   /** Whether the button is selected (controlled). */
   isSelected?: Accessor<boolean> | boolean;
   /** Handler called when the button's selection state changes. */
@@ -19,7 +19,7 @@ export interface ToggleButtonAria extends ButtonAria {
 }
 
 function getSelectedValue(isSelected: Accessor<boolean> | boolean | undefined): boolean {
-  if (typeof isSelected === 'function') {
+  if (typeof isSelected === "function") {
     return isSelected();
   }
   return isSelected ?? false;
@@ -54,7 +54,7 @@ export function createToggleButton(props: AriaToggleButtonProps = {}): ToggleBut
   // Handle controlled vs uncontrolled state
   const isControlled = props.isSelected !== undefined;
   const [uncontrolledSelected, setUncontrolledSelected] = createSignal(
-    props.defaultSelected ?? false
+    props.defaultSelected ?? false,
   );
 
   const isSelected = (): boolean => {
@@ -82,13 +82,13 @@ export function createToggleButton(props: AriaToggleButtonProps = {}): ToggleBut
   const { buttonProps: baseButtonProps, isPressed } = createButton(
     mergeProps(props, {
       onPress,
-    }) as AriaButtonProps
+    }) as AriaButtonProps,
   );
 
   // Create buttonProps with a getter for aria-pressed so it stays reactive
   const buttonProps = {
     ...baseButtonProps,
-    get 'aria-pressed'() {
+    get "aria-pressed"() {
       return isSelected();
     },
   };

@@ -6,11 +6,11 @@
  * Port of @react-aria/disclosure useDisclosure.
  */
 
-import { type JSX, createEffect } from 'solid-js';
-import { type DisclosureState } from '@proyecto-viviana/solid-stately';
-import { createId, canUseDOM } from '../ssr';
-import { createPress } from '../interactions/createPress';
-import { mergeProps } from '../utils/mergeProps';
+import { type JSX, createEffect } from "solid-js";
+import { type DisclosureState } from "@proyecto-viviana/solid-stately";
+import { createId, canUseDOM } from "../ssr";
+import { createPress } from "../interactions/createPress";
+import { mergeProps } from "../utils/mergeProps";
 
 // ============================================
 // TYPES
@@ -66,10 +66,10 @@ export interface DisclosureAria {
 export function createDisclosure(
   props: AriaDisclosureProps | (() => AriaDisclosureProps),
   state: DisclosureState,
-  panelRef: () => HTMLElement | null
+  panelRef: () => HTMLElement | null,
 ): DisclosureAria {
   // Handle both plain object and accessor function patterns
-  const getProps = typeof props === 'function' ? props : () => props;
+  const getProps = typeof props === "function" ? props : () => props;
 
   const triggerId = createId();
   const panelId = createId();
@@ -82,10 +82,10 @@ export function createDisclosure(
     if (!panel) return;
 
     if (state.isExpanded()) {
-      panel.removeAttribute('hidden');
+      panel.removeAttribute("hidden");
     } else {
       // Use 'until-found' for find-in-page support where available
-      panel.setAttribute('hidden', 'until-found');
+      panel.setAttribute("hidden", "until-found");
     }
   });
 
@@ -111,19 +111,19 @@ export function createDisclosure(
         pressProps as Record<string, unknown>,
         {
           id: triggerId,
-          type: 'button',
-          'aria-expanded': state.isExpanded(),
-          'aria-controls': panelId,
+          type: "button",
+          "aria-expanded": state.isExpanded(),
+          "aria-controls": panelId,
           disabled: p.isDisabled,
-        } as Record<string, unknown>
+        } as Record<string, unknown>,
       ) as JSX.ButtonHTMLAttributes<HTMLButtonElement>;
     },
     // Panel props
     get panelProps(): JSX.HTMLAttributes<HTMLElement> {
       return {
         id: panelId,
-        role: 'region',
-        'aria-labelledby': triggerId,
+        role: "region",
+        "aria-labelledby": triggerId,
         hidden: !state.isExpanded() || undefined,
       };
     },

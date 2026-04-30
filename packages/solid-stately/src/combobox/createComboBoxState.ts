@@ -6,20 +6,20 @@
  * either type to filter options or select from a list.
  */
 
-import { createSignal, createMemo, createEffect, type Accessor } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
-import { createListState } from '../collections/createListState';
-import { createOverlayTriggerState } from '../overlays';
-import type { Key, CollectionNode, Collection, FocusStrategy } from '../collections/types';
+import { createSignal, createMemo, createEffect, type Accessor } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
+import { createListState } from "../collections/createListState";
+import { createOverlayTriggerState } from "../overlays";
+import type { Key, CollectionNode, Collection, FocusStrategy } from "../collections/types";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type MenuTriggerAction = 'focus' | 'input' | 'manual';
+export type MenuTriggerAction = "focus" | "input" | "manual";
 
 // Re-export FocusStrategy for convenience
-export type { FocusStrategy } from '../collections/types';
+export type { FocusStrategy } from "../collections/types";
 
 export type FilterFn = (textValue: string, inputValue: string) => boolean;
 
@@ -37,7 +37,7 @@ export interface ComboBoxStateProps<T = unknown> {
   /** Keys of disabled items. */
   disabledKeys?: Iterable<Key>;
   /** The selection mode for the combobox. */
-  selectionMode?: 'single' | 'multiple';
+  selectionMode?: "single" | "multiple";
   /** The currently selected key (controlled, single mode). */
   selectedKey?: Key | null;
   /** The default selected key (uncontrolled, single mode). */
@@ -130,7 +130,7 @@ export interface ComboBoxState<T = unknown> {
   /** Select a key and close the menu (for ListState compatibility). */
   select(key: Key): void;
   /** The selection mode. */
-  readonly selectionMode: Accessor<'single' | 'multiple'>;
+  readonly selectionMode: Accessor<"single" | "multiple">;
   /** Check if a key is selected. */
   isSelected(key: Key): boolean;
   /** Whether the combobox is disabled. */
@@ -161,16 +161,16 @@ export const defaultContainsFilter: FilterFn = (textValue, inputValue) => {
  * Combines list state with input value management and filtering.
  */
 export function createComboBoxState<T = unknown>(
-  props: MaybeAccessor<ComboBoxStateProps<T>>
+  props: MaybeAccessor<ComboBoxStateProps<T>>,
 ): ComboBoxState<T> {
   const getProps = () => access(props);
 
   // Extract options with defaults
-  const menuTrigger = () => getProps().menuTrigger ?? 'input';
+  const menuTrigger = () => getProps().menuTrigger ?? "input";
   const allowsEmptyCollection = () => getProps().allowsEmptyCollection ?? false;
   const allowsCustomValue = () => getProps().allowsCustomValue ?? false;
   const shouldCloseOnBlur = () => getProps().shouldCloseOnBlur ?? true;
-  const isMultiple = () => getProps().selectionMode === 'multiple';
+  const isMultiple = () => getProps().selectionMode === "multiple";
 
   // Track focus strategy for list navigation
   const [focusStrategy, setFocusStrategy] = createSignal<FocusStrategy | null>(null);
@@ -179,12 +179,12 @@ export function createComboBoxState<T = unknown>(
   const [showAllItems, setShowAllItems] = createSignal(false);
 
   // Track the menu open trigger
-  let menuOpenTrigger: MenuTriggerAction = 'focus';
+  let menuOpenTrigger: MenuTriggerAction = "focus";
 
   // ---- Multi-select State ----
   const isMultiSelectionControlled = () => getProps().selectedKeys !== undefined;
   const [internalSelectedKeys, setInternalSelectedKeys] = createSignal<Set<Key>>(
-    new Set(getProps().defaultSelectedKeys ?? [])
+    new Set(getProps().defaultSelectedKeys ?? []),
   );
 
   const selectedKeys: Accessor<Set<Key>> = () => {
@@ -204,7 +204,7 @@ export function createComboBoxState<T = unknown>(
   // Note: Selection state is initialized first because input value may depend on it
   const isSelectionControlled = () => getProps().selectedKey !== undefined;
   const [internalSelectedKey, setInternalSelectedKey] = createSignal<Key | null>(
-    getProps().defaultSelectedKey ?? null
+    getProps().defaultSelectedKey ?? null,
   );
 
   // ---- Input Value State ----
@@ -213,13 +213,13 @@ export function createComboBoxState<T = unknown>(
 
   // We'll set the proper initial value after collection is created
   const [internalInputValue, setInternalInputValue] = createSignal(
-    getProps().defaultInputValue ?? ''
+    getProps().defaultInputValue ?? "",
   );
   // Track if we've initialized input from selection
   let inputInitialized = false;
 
   const inputValue: Accessor<string> = () => {
-    return isInputControlled() ? (getProps().inputValue ?? '') : internalInputValue();
+    return isInputControlled() ? (getProps().inputValue ?? "") : internalInputValue();
   };
 
   const setInputValue = (value: string) => {
@@ -275,7 +275,7 @@ export function createComboBoxState<T = unknown>(
       return getProps().disabledKeys;
     },
     get selectionMode() {
-      return isMultiple() ? 'multiple' as const : 'single' as const;
+      return isMultiple() ? ("multiple" as const) : ("single" as const);
     },
     disallowEmptySelection: false,
     get selectedKeys() {
@@ -286,7 +286,7 @@ export function createComboBoxState<T = unknown>(
       return key != null ? [key] : [];
     },
     onSelectionChange(keys) {
-      if (keys === 'all') return;
+      if (keys === "all") return;
 
       if (isMultiple()) {
         // In multiple mode, toggle selections
@@ -367,7 +367,7 @@ export function createComboBoxState<T = unknown>(
   // ---- Helper Functions ----
   const resetInputValue = () => {
     const item = selectedItem();
-    const textValue = item?.textValue ?? '';
+    const textValue = item?.textValue ?? "";
     setLastValue(textValue);
     setInputValue(textValue);
   };
@@ -380,14 +380,13 @@ export function createComboBoxState<T = unknown>(
 
   // ---- Open/Toggle Logic ----
   const open = (strategy: FocusStrategy | null = null, trigger?: MenuTriggerAction) => {
-    const displayAll = trigger === 'manual' || (trigger === 'focus' && menuTrigger() === 'focus');
+    const displayAll = trigger === "manual" || (trigger === "focus" && menuTrigger() === "focus");
 
     // Check if we should open
     const filtered = filteredCollection();
     const original = originalCollection();
-    const canOpen = allowsEmptyCollection() ||
-                    filtered.size > 0 ||
-                    (displayAll && original.size > 0);
+    const canOpen =
+      allowsEmptyCollection() || filtered.size > 0 || (displayAll && original.size > 0);
 
     if (!canOpen) return;
 
@@ -395,20 +394,19 @@ export function createComboBoxState<T = unknown>(
       setShowAllItems(true);
     }
 
-    menuOpenTrigger = trigger ?? 'focus';
+    menuOpenTrigger = trigger ?? "focus";
     setFocusStrategy(strategy);
     overlayState.open();
   };
 
   const toggle = (strategy: FocusStrategy | null = null, trigger?: MenuTriggerAction) => {
-    const displayAll = trigger === 'manual' || (trigger === 'focus' && menuTrigger() === 'focus');
+    const displayAll = trigger === "manual" || (trigger === "focus" && menuTrigger() === "focus");
 
     // Check if we can open (if closed)
     const filtered = filteredCollection();
     const original = originalCollection();
-    const canOpen = allowsEmptyCollection() ||
-                    filtered.size > 0 ||
-                    (displayAll && original.size > 0);
+    const canOpen =
+      allowsEmptyCollection() || filtered.size > 0 || (displayAll && original.size > 0);
 
     if (!canOpen && !overlayState.isOpen()) return;
 
@@ -417,7 +415,7 @@ export function createComboBoxState<T = unknown>(
     }
 
     if (!overlayState.isOpen()) {
-      menuOpenTrigger = trigger ?? 'focus';
+      menuOpenTrigger = trigger ?? "focus";
     }
 
     setFocusStrategy(strategy);
@@ -435,7 +433,7 @@ export function createComboBoxState<T = unknown>(
     if (isSelectionControlled() && isInputControlled()) {
       getProps().onSelectionChange?.(selectedKey());
       const item = selectedItem();
-      setLastValue(item?.textValue ?? '');
+      setLastValue(item?.textValue ?? "");
       closeMenu();
     } else {
       // Reset input to selected item's text
@@ -447,7 +445,7 @@ export function createComboBoxState<T = unknown>(
   const commitValue = () => {
     if (allowsCustomValue()) {
       const item = selectedItem();
-      const itemText = item?.textValue ?? '';
+      const itemText = item?.textValue ?? "";
       if (inputValue() === itemText) {
         commitSelection();
       } else {
@@ -492,13 +490,13 @@ export function createComboBoxState<T = unknown>(
 
   // ---- Focus Handling ----
   const [isFocused, setIsFocused] = createSignal(false);
-  let valueOnFocus = '';
+  let valueOnFocus = "";
 
   const setFocused = (focused: boolean) => {
     if (focused) {
       valueOnFocus = inputValue();
-      if (menuTrigger() === 'focus' && !getProps().isReadOnly) {
-        open(null, 'focus');
+      if (menuTrigger() === "focus" && !getProps().isReadOnly) {
+        open(null, "focus");
       }
     } else {
       if (shouldCloseOnBlur()) {
@@ -522,18 +520,13 @@ export function createComboBoxState<T = unknown>(
       (filtered.size > 0 || allowsEmptyCollection()) &&
       !isOpen &&
       input !== last &&
-      menuTrigger() !== 'manual'
+      menuTrigger() !== "manual"
     ) {
-      open(null, 'input');
+      open(null, "input");
     }
 
     // Auto-close when empty (unless showing all)
-    if (
-      !showAllItems() &&
-      !allowsEmptyCollection() &&
-      isOpen &&
-      filtered.size === 0
-    ) {
+    if (!showAllItems() && !allowsEmptyCollection() && isOpen && filtered.size === 0) {
       closeMenu();
     }
 
@@ -543,7 +536,7 @@ export function createComboBoxState<T = unknown>(
       setShowAllItems(false);
 
       // Clear selection when input is cleared (if not fully controlled)
-      if (input === '' && (!isInputControlled() || !isSelectionControlled())) {
+      if (input === "" && (!isInputControlled() || !isSelectionControlled())) {
         setSelectedKey(null);
       }
 
@@ -556,7 +549,7 @@ export function createComboBoxState<T = unknown>(
     if (isMultiple()) return;
     const key = selectedKey();
     const item = key != null ? originalCollection().getItem(key) : null;
-    const textValue = item?.textValue ?? '';
+    const textValue = item?.textValue ?? "";
 
     // Only update if selection changed and not fully controlled
     if (!isInputControlled() || !isSelectionControlled()) {
@@ -604,8 +597,7 @@ export function createComboBoxState<T = unknown>(
     }
   };
 
-  const selectionMode: Accessor<'single' | 'multiple'> = () =>
-    getProps().selectionMode ?? 'single';
+  const selectionMode: Accessor<"single" | "multiple"> = () => getProps().selectionMode ?? "single";
 
   const isSelected = (key: Key) => {
     if (isMultiple()) {
@@ -629,7 +621,7 @@ export function createComboBoxState<T = unknown>(
     selectedItems,
     removeSelectedKey,
     inputValue,
-    defaultInputValue: getProps().defaultInputValue ?? '',
+    defaultInputValue: getProps().defaultInputValue ?? "",
     setInputValue,
     focusedKey: listState.focusedKey,
     setFocusedKey: listState.setFocusedKey,
@@ -665,7 +657,7 @@ export function createComboBoxState<T = unknown>(
 function filterCollection<T>(
   collection: Collection<T>,
   inputValue: string,
-  filter: FilterFn
+  filter: FilterFn,
 ): Collection<T> {
   if (!inputValue) {
     return collection;
@@ -674,12 +666,12 @@ function filterCollection<T>(
   const filteredItems: CollectionNode<T>[] = [];
 
   for (const item of collection) {
-    if (item.type === 'section') {
+    if (item.type === "section") {
       // Filter section children
       const filteredChildren: CollectionNode<T>[] = [];
       if (item.childNodes) {
         for (const child of item.childNodes) {
-          if (child.type === 'item' && filter(child.textValue, inputValue)) {
+          if (child.type === "item" && filter(child.textValue, inputValue)) {
             filteredChildren.push(child);
           }
         }
@@ -691,7 +683,7 @@ function filterCollection<T>(
           childNodes: filteredChildren,
         });
       }
-    } else if (item.type === 'item') {
+    } else if (item.type === "item") {
       if (filter(item.textValue, inputValue)) {
         filteredItems.push(item);
       }
@@ -707,7 +699,7 @@ function filterCollection<T>(
  */
 function createFilteredCollection<T>(
   items: CollectionNode<T>[],
-  original: Collection<T>
+  original: Collection<T>,
 ): Collection<T> {
   const itemMap = new Map<Key, CollectionNode<T>>();
 
@@ -724,10 +716,10 @@ function createFilteredCollection<T>(
     get size() {
       let count = 0;
       for (const item of items) {
-        if (item.type === 'item') {
+        if (item.type === "item") {
           count++;
         } else if (item.childNodes) {
-          count += Array.from(item.childNodes).filter(c => c.type === 'item').length;
+          count += Array.from(item.childNodes).filter((c) => c.type === "item").length;
         }
       }
       return count;
@@ -740,10 +732,10 @@ function createFilteredCollection<T>(
     },
     getFirstKey() {
       for (const item of items) {
-        if (item.type === 'item') return item.key;
+        if (item.type === "item") return item.key;
         if (item.childNodes) {
           for (const child of item.childNodes) {
-            if (child.type === 'item') return child.key;
+            if (child.type === "item") return child.key;
           }
         }
       }
@@ -752,11 +744,11 @@ function createFilteredCollection<T>(
     getLastKey() {
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
-        if (item.type === 'item') return item.key;
+        if (item.type === "item") return item.key;
         if (item.childNodes) {
           const children = Array.from(item.childNodes);
           for (let j = children.length - 1; j >= 0; j--) {
-            if (children[j].type === 'item') return children[j].key;
+            if (children[j].type === "item") return children[j].key;
           }
         }
       }
@@ -772,12 +764,12 @@ function createFilteredCollection<T>(
       // Flatten items for indexing
       let currentIndex = 0;
       for (const item of items) {
-        if (item.type === 'item') {
+        if (item.type === "item") {
           if (currentIndex === index) return item;
           currentIndex++;
         } else if (item.childNodes) {
           for (const child of item.childNodes) {
-            if (child.type === 'item') {
+            if (child.type === "item") {
               if (currentIndex === index) return child;
               currentIndex++;
             }
@@ -792,7 +784,7 @@ function createFilteredCollection<T>(
     },
     getTextValue(key: Key) {
       const item = itemMap.get(key);
-      return item?.textValue ?? '';
+      return item?.textValue ?? "";
     },
     [Symbol.iterator]() {
       return items[Symbol.iterator]();

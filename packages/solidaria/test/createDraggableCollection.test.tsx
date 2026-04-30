@@ -1,5 +1,5 @@
-import { describe, it, expect, afterEach } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
+import { describe, it, expect, afterEach } from "vitest";
+import { createRoot, createSignal } from "solid-js";
 import {
   createDraggableCollection,
   getGlobalDraggingCollectionRef,
@@ -8,7 +8,7 @@ import {
   setGlobalDraggingCollectionRef,
   setGlobalDraggingKeys,
   setGlobalDraggingTypes,
-} from '../src/dnd/createDraggableCollection';
+} from "../src/dnd/createDraggableCollection";
 
 afterEach(() => {
   setGlobalDraggingCollectionRef(null);
@@ -16,10 +16,10 @@ afterEach(() => {
   setGlobalDraggingTypes(new Set());
 });
 
-describe('createDraggableCollection', () => {
-  it('tracks and clears global drag state as dragging keys change', async () => {
+describe("createDraggableCollection", () => {
+  it("tracks and clears global drag state as dragging keys change", async () => {
     createRoot((dispose) => {
-      const refEl = document.createElement('div');
+      const refEl = document.createElement("div");
       const [draggingKeys, setDraggingKeys] = createSignal<Set<string | number>>(new Set());
 
       createDraggableCollection(
@@ -31,21 +31,21 @@ describe('createDraggableCollection', () => {
             return draggingKeys();
           },
           getItems(keys: Set<string | number>) {
-            return Array.from(keys).map((key) => ({ 'text/plain': String(key) }));
+            return Array.from(keys).map((key) => ({ "text/plain": String(key) }));
           },
-        } as any
+        } as any,
       );
 
       expect(getGlobalDraggingCollectionRef()).toBeNull();
       expect(getGlobalDraggingKeys().size).toBe(0);
       expect(getGlobalDraggingTypes().size).toBe(0);
 
-      const nextKeys = new Set<string | number>(['a', 1]);
+      const nextKeys = new Set<string | number>(["a", 1]);
       setDraggingKeys(nextKeys);
       queueMicrotask(() => {
         expect(getGlobalDraggingCollectionRef()).toBe(refEl);
         expect(getGlobalDraggingKeys()).toEqual(nextKeys);
-        expect(getGlobalDraggingTypes()).toEqual(new Set(['text/plain']));
+        expect(getGlobalDraggingTypes()).toEqual(new Set(["text/plain"]));
 
         setDraggingKeys(new Set());
         queueMicrotask(() => {
@@ -60,10 +60,10 @@ describe('createDraggableCollection', () => {
     await Promise.resolve();
   });
 
-  it('clears global drag state on cleanup', async () => {
+  it("clears global drag state on cleanup", async () => {
     createRoot((dispose) => {
-      const refEl = document.createElement('div');
-      const [draggingKeys] = createSignal<Set<string | number>>(new Set(['z']));
+      const refEl = document.createElement("div");
+      const [draggingKeys] = createSignal<Set<string | number>>(new Set(["z"]));
 
       createDraggableCollection(
         {
@@ -74,15 +74,15 @@ describe('createDraggableCollection', () => {
             return draggingKeys();
           },
           getItems(keys: Set<string | number>) {
-            return Array.from(keys).map((key) => ({ 'text/plain': String(key) }));
+            return Array.from(keys).map((key) => ({ "text/plain": String(key) }));
           },
-        } as any
+        } as any,
       );
 
       queueMicrotask(() => {
         expect(getGlobalDraggingCollectionRef()).toBe(refEl);
-        expect(getGlobalDraggingKeys()).toEqual(new Set(['z']));
-        expect(getGlobalDraggingTypes()).toEqual(new Set(['text/plain']));
+        expect(getGlobalDraggingKeys()).toEqual(new Set(["z"]));
+        expect(getGlobalDraggingTypes()).toEqual(new Set(["text/plain"]));
 
         dispose();
 

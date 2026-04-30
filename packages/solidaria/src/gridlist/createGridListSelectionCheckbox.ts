@@ -3,18 +3,21 @@
  * Based on @react-aria/gridlist.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { createId } from '@proyecto-viviana/solid-stately';
-import type { GridState, GridCollection } from '@proyecto-viviana/solid-stately';
-import type { AriaGridListSelectionCheckboxProps, GridListSelectionCheckboxAria } from './types';
+import { createMemo, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import { createId } from "@proyecto-viviana/solid-stately";
+import type { GridState, GridCollection } from "@proyecto-viviana/solid-stately";
+import type { AriaGridListSelectionCheckboxProps, GridListSelectionCheckboxAria } from "./types";
 
 /**
  * Creates accessibility props for a grid list item selection checkbox.
  */
-export function createGridListSelectionCheckbox<T extends object, C extends GridCollection<T> = GridCollection<T>>(
+export function createGridListSelectionCheckbox<
+  T extends object,
+  C extends GridCollection<T> = GridCollection<T>,
+>(
   props: Accessor<AriaGridListSelectionCheckboxProps>,
-  state: Accessor<GridState<T, C>>
+  state: Accessor<GridState<T, C>>,
 ): GridListSelectionCheckboxAria {
   const checkboxId = createId();
 
@@ -41,11 +44,11 @@ export function createGridListSelectionCheckbox<T extends object, C extends Grid
   const checkboxProps = createMemo(() => {
     const baseProps: Record<string, unknown> = {
       id: checkboxId,
-      type: 'checkbox',
+      type: "checkbox",
       checked: isSelected(),
       disabled: isDisabled(),
       onChange,
-      'aria-label': 'Select',
+      "aria-label": "Select",
     };
 
     return baseProps as JSX.InputHTMLAttributes<HTMLInputElement>;

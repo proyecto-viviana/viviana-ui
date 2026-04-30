@@ -107,13 +107,42 @@ function TextAreaPage() {
           { name: "label", type: "string", description: "Visible label" },
           { name: "value", type: "string", description: "Controlled value" },
           { name: "defaultValue", type: "string", description: "Uncontrolled initial value" },
-          { name: "onChange", type: "(value: string) => void", description: "Called on every keystroke" },
+          {
+            name: "onChange",
+            type: "(value: string) => void",
+            description: "Called on every keystroke",
+          },
           { name: "placeholder", type: "string", description: "Placeholder text" },
-          { name: "size", type: "'sm' | 'md' | 'lg'", default: "'md'", description: "Size variant" },
-          { name: "variant", type: "'outline' | 'filled'", default: "'outline'", description: "Visual style" },
-          { name: "isDisabled", type: "boolean", default: "false", description: "Prevents interaction" },
-          { name: "isRequired", type: "boolean", default: "false", description: "Marks field as required" },
-          { name: "isInvalid", type: "boolean", default: "false", description: "Shows error styling" },
+          {
+            name: "size",
+            type: "'sm' | 'md' | 'lg'",
+            default: "'md'",
+            description: "Size variant",
+          },
+          {
+            name: "variant",
+            type: "'outline' | 'filled'",
+            default: "'outline'",
+            description: "Visual style",
+          },
+          {
+            name: "isDisabled",
+            type: "boolean",
+            default: "false",
+            description: "Prevents interaction",
+          },
+          {
+            name: "isRequired",
+            type: "boolean",
+            default: "false",
+            description: "Marks field as required",
+          },
+          {
+            name: "isInvalid",
+            type: "boolean",
+            default: "false",
+            description: "Shows error styling",
+          },
           { name: "errorMessage", type: "string", description: "Validation error message" },
           { name: "description", type: "string", description: "Helper text below the field" },
           { name: "rows", type: "number", description: "Initial number of visible text rows" },
@@ -122,11 +151,21 @@ function TextAreaPage() {
 
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Uses native <code>&lt;textarea&gt;</code> for proper semantics</li>
-          <li>Label is associated via <code>htmlFor</code> / <code>id</code></li>
-          <li>Error messages linked with <code>aria-describedby</code></li>
-          <li>Required state communicated via <code>aria-required</code></li>
-          <li>Invalid state communicated via <code>aria-invalid</code></li>
+          <li>
+            Uses native <code>&lt;textarea&gt;</code> for proper semantics
+          </li>
+          <li>
+            Label is associated via <code>htmlFor</code> / <code>id</code>
+          </li>
+          <li>
+            Error messages linked with <code>aria-describedby</code>
+          </li>
+          <li>
+            Required state communicated via <code>aria-required</code>
+          </li>
+          <li>
+            Invalid state communicated via <code>aria-invalid</code>
+          </li>
         </ul>
       </AccessibilitySection>
     </DocPage>

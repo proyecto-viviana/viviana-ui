@@ -9,7 +9,7 @@ export {
   createSelectionState,
   type SelectionStateProps,
   type SelectionState,
-} from '../collections/createSelectionState';
+} from "../collections/createSelectionState";
 
 export type {
   Key,
@@ -18,11 +18,10 @@ export type {
   SelectionBehavior,
   DisabledBehavior,
   FocusStrategy,
-} from '../collections/types';
+} from "../collections/types";
 
-export type MultipleSelectionStateProps = import('../collections/createSelectionState').SelectionStateProps;
-export type MultipleSelectionState = import('../collections/createSelectionState').SelectionState;
+export type MultipleSelectionStateProps =
+  import("../collections/createSelectionState").SelectionStateProps;
+export type MultipleSelectionState = import("../collections/createSelectionState").SelectionState;
 
-export {
-  createSelectionState as useMultipleSelectionState,
-} from '../collections/createSelectionState';
+export { createSelectionState as useMultipleSelectionState } from "../collections/createSelectionState";

@@ -5,24 +5,15 @@
  * Port of react-aria-components/src/NumberField.tsx
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-  useContext,
-} from 'solid-js';
+import { type JSX, createContext, createMemo, splitProps, useContext } from "solid-js";
 import {
   createNumberField,
   createFocusRing,
   createHover,
   createPress,
   type AriaNumberFieldProps,
-} from '@proyecto-viviana/solidaria';
-import {
-  createNumberFieldState,
-  type NumberFieldState,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solidaria";
+import { createNumberFieldState, type NumberFieldState } from "@proyecto-viviana/solid-stately";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
@@ -30,7 +21,7 @@ import {
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -49,7 +40,7 @@ export interface NumberFieldRenderProps {
   value: number;
 }
 
-export interface NumberFieldProps extends Omit<AriaNumberFieldProps, 'label'>, SlotProps {
+export interface NumberFieldProps extends Omit<AriaNumberFieldProps, "label">, SlotProps {
   /** The current value (controlled). */
   value?: number;
   /** The default value (uncontrolled). */
@@ -156,32 +147,41 @@ export const NumberFieldStateContext = createContext<NumberFieldState | null>(nu
 export function NumberField(props: NumberFieldProps): JSX.Element {
   const [local, stateProps, ariaProps, rest] = splitProps(
     props,
-    ['children', 'class', 'style', 'slot'],
-    ['value', 'defaultValue', 'onChange', 'minValue', 'maxValue', 'step', 'locale', 'formatOptions'],
+    ["children", "class", "style", "slot"],
     [
-      'label',
-      'aria-label',
-      'aria-labelledby',
-      'aria-describedby',
-      'isDisabled',
-      'isReadOnly',
-      'isRequired',
-      'isInvalid',
-      'description',
-      'errorMessage',
-      'id',
-      'autoFocus',
-      'name',
-      'form',
-      'onFocus',
-      'onBlur',
-      'onFocusChange',
-      'onKeyDown',
-      'onKeyUp',
-      'onPaste',
-      'onCopy',
-      'onCut',
-    ]
+      "value",
+      "defaultValue",
+      "onChange",
+      "minValue",
+      "maxValue",
+      "step",
+      "locale",
+      "formatOptions",
+    ],
+    [
+      "label",
+      "aria-label",
+      "aria-labelledby",
+      "aria-describedby",
+      "isDisabled",
+      "isReadOnly",
+      "isRequired",
+      "isInvalid",
+      "description",
+      "errorMessage",
+      "id",
+      "autoFocus",
+      "name",
+      "form",
+      "onFocus",
+      "onBlur",
+      "onFocusChange",
+      "onKeyDown",
+      "onKeyUp",
+      "onPaste",
+      "onCopy",
+      "onCut",
+    ],
   );
 
   // Create number field state
@@ -230,14 +230,14 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
       get label() {
         return ariaProps.label;
       },
-      get 'aria-label'() {
-        return ariaProps['aria-label'];
+      get "aria-label"() {
+        return ariaProps["aria-label"];
       },
-      get 'aria-labelledby'() {
-        return ariaProps['aria-labelledby'];
+      get "aria-labelledby"() {
+        return ariaProps["aria-labelledby"];
       },
-      get 'aria-describedby'() {
-        return ariaProps['aria-describedby'];
+      get "aria-describedby"() {
+        return ariaProps["aria-describedby"];
       },
       get isDisabled() {
         return ariaProps.isDisabled;
@@ -295,7 +295,7 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
       },
     },
     state,
-    () => inputRef ?? null
+    () => inputRef ?? null,
   );
 
   // Render props values
@@ -313,13 +313,15 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-NumberField',
+      defaultClassName: "solidaria-NumberField",
     },
-    renderValues
+    renderValues,
   );
 
   // Filter DOM props
-  const domProps = createMemo(() => filterDOMProps(rest as Record<string, unknown>, { global: true }));
+  const domProps = createMemo(() =>
+    filterDOMProps(rest as Record<string, unknown>, { global: true }),
+  );
 
   const contextValue: NumberFieldContextValue = {
     state,
@@ -381,16 +383,20 @@ export function NumberField(props: NumberFieldProps): JSX.Element {
 /**
  * The label for a number field.
  */
-export function NumberFieldLabel(props: { children?: JSX.Element; class?: string; style?: JSX.CSSProperties }): JSX.Element {
+export function NumberFieldLabel(props: {
+  children?: JSX.Element;
+  class?: string;
+  style?: JSX.CSSProperties;
+}): JSX.Element {
   const context = useContext(NumberFieldContext);
   if (!context) {
-    throw new Error('NumberFieldLabel must be used within a NumberField');
+    throw new Error("NumberFieldLabel must be used within a NumberField");
   }
 
   return (
     <span
       {...context.labelProps}
-      class={props.class ?? 'solidaria-NumberField-label'}
+      class={props.class ?? "solidaria-NumberField-label"}
       style={props.style}
     >
       {props.children}
@@ -401,10 +407,14 @@ export function NumberFieldLabel(props: { children?: JSX.Element; class?: string
 /**
  * The input group for a number field (contains input and buttons).
  */
-export function NumberFieldGroup(props: { children?: JSX.Element; class?: string; style?: JSX.CSSProperties }): JSX.Element {
+export function NumberFieldGroup(props: {
+  children?: JSX.Element;
+  class?: string;
+  style?: JSX.CSSProperties;
+}): JSX.Element {
   const context = useContext(NumberFieldContext);
   if (!context) {
-    throw new Error('NumberFieldGroup must be used within a NumberField');
+    throw new Error("NumberFieldGroup must be used within a NumberField");
   }
 
   // Extract ref to avoid type issues
@@ -416,7 +426,7 @@ export function NumberFieldGroup(props: { children?: JSX.Element; class?: string
   return (
     <div
       {...cleanGroupProps()}
-      class={props.class ?? 'solidaria-NumberField-group'}
+      class={props.class ?? "solidaria-NumberField-group"}
       style={props.style}
     >
       {props.children}
@@ -428,11 +438,11 @@ export function NumberFieldGroup(props: { children?: JSX.Element; class?: string
  * The input element for a number field.
  */
 export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot"]);
 
   const context = useContext(NumberFieldContext);
   if (!context) {
-    throw new Error('NumberFieldInput must be used within a NumberField');
+    throw new Error("NumberFieldInput must be used within a NumberField");
   }
 
   // Create focus ring
@@ -459,9 +469,9 @@ export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-NumberField-input',
+      defaultClassName: "solidaria-NumberField-input",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -500,11 +510,11 @@ export function NumberFieldInput(props: NumberFieldInputProps): JSX.Element {
  * The increment button for a number field.
  */
 export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(NumberFieldContext);
   if (!context) {
-    throw new Error('NumberFieldIncrementButton must be used within a NumberField');
+    throw new Error("NumberFieldIncrementButton must be used within a NumberField");
   }
 
   // Create press
@@ -539,9 +549,9 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-NumberField-increment',
+      defaultClassName: "solidaria-NumberField-increment",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props
@@ -579,11 +589,11 @@ export function NumberFieldIncrementButton(props: NumberFieldIncrementButtonProp
  * The decrement button for a number field.
  */
 export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['class', 'style', 'slot', 'children']);
+  const [local, domProps] = splitProps(props, ["class", "style", "slot", "children"]);
 
   const context = useContext(NumberFieldContext);
   if (!context) {
-    throw new Error('NumberFieldDecrementButton must be used within a NumberField');
+    throw new Error("NumberFieldDecrementButton must be used within a NumberField");
   }
 
   // Create press
@@ -618,9 +628,9 @@ export function NumberFieldDecrementButton(props: NumberFieldDecrementButtonProp
       children: props.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-NumberField-decrement',
+      defaultClassName: "solidaria-NumberField-decrement",
     },
-    renderValues
+    renderValues,
   );
 
   // Remove ref from spread props

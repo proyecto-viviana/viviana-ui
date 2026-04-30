@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-import { Disclosure, DisclosureGroup, DisclosureTrigger, DisclosurePanel } from "@proyecto-viviana/solid-spectrum";
+import {
+  Disclosure,
+  DisclosureGroup,
+  DisclosureTrigger,
+  DisclosurePanel,
+} from "@proyecto-viviana/solid-spectrum";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 type FaqEntry = {
@@ -99,9 +104,9 @@ function DisclosurePage() {
             </DisclosureTrigger>
             <DisclosurePanel>
               <div class="py-3 text-sm text-bg-600 leading-relaxed">
-                This content is revealed when the disclosure is expanded. It can
-                contain any content including text, images, forms, or other
-                components. Click the trigger again to collapse this section.
+                This content is revealed when the disclosure is expanded. It can contain any content
+                including text, images, forms, or other components. Click the trigger again to
+                collapse this section.
               </div>
             </DisclosurePanel>
           </Disclosure>
@@ -133,9 +138,7 @@ function DisclosurePage() {
                   <span class="font-medium">{faq.question}</span>
                 </DisclosureTrigger>
                 <DisclosurePanel>
-                  <div class="py-3 text-sm text-bg-600 leading-relaxed">
-                    {faq.answer}
-                  </div>
+                  <div class="py-3 text-sm text-bg-600 leading-relaxed">{faq.answer}</div>
                 </DisclosurePanel>
               </Disclosure>
             ))}
@@ -167,9 +170,7 @@ function DisclosurePage() {
                   <span class="font-medium">{section.title}</span>
                 </DisclosureTrigger>
                 <DisclosurePanel>
-                  <div class="py-3 text-sm text-bg-600 leading-relaxed">
-                    {section.content}
-                  </div>
+                  <div class="py-3 text-sm text-bg-600 leading-relaxed">{section.content}</div>
                 </DisclosurePanel>
               </Disclosure>
             ))}
@@ -177,11 +178,7 @@ function DisclosurePage() {
           <div class="mt-3 flex gap-2">
             <button
               class="text-xs px-2 py-1 rounded bg-bg-100 text-bg-600 hover:bg-bg-200"
-              onClick={() =>
-                setExpandedKeys(
-                  new Set(settingsSections.map((s) => s.id))
-                )
-              }
+              onClick={() => setExpandedKeys(new Set(settingsSections.map((s) => s.id)))}
             >
               Expand All
             </button>
@@ -256,7 +253,8 @@ function DisclosurePage() {
           {
             name: "id",
             type: "string",
-            description: "Unique identifier for the disclosure, required when used inside a DisclosureGroup",
+            description:
+              "Unique identifier for the disclosure, required when used inside a DisclosureGroup",
           },
           {
             name: "variant",

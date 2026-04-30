@@ -4,12 +4,12 @@ SolidJS port of Adobe's React Aria and Spectrum 2 stack. The repo is layered as 
 
 ## Packages
 
-| Package | npm | Purpose |
-|---|---|---|
-| [`solid-stately`](./packages/solid-stately) | `@proyecto-viviana/solid-stately` | State hooks — port of `@react-stately/*` |
-| [`solidaria`](./packages/solidaria) | `@proyecto-viviana/solidaria` | ARIA behavior hooks — port of `@react-aria/*` |
+| Package                                                   | npm                                      | Purpose                                                        |
+| --------------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------- |
+| [`solid-stately`](./packages/solid-stately)               | `@proyecto-viviana/solid-stately`        | State hooks — port of `@react-stately/*`                       |
+| [`solidaria`](./packages/solidaria)                       | `@proyecto-viviana/solidaria`            | ARIA behavior hooks — port of `@react-aria/*`                  |
 | [`solidaria-components`](./packages/solidaria-components) | `@proyecto-viviana/solidaria-components` | Headless/stylable components — port of `react-aria-components` |
-| [`solid-spectrum`](./packages/solid-spectrum) | `@proyecto-viviana/solid-spectrum` | Spectrum 2-compatible styled Solid components |
+| [`solid-spectrum`](./packages/solid-spectrum)             | `@proyecto-viviana/solid-spectrum`       | Spectrum 2-compatible styled Solid components                  |
 
 ```
 solid-spectrum        Spectrum 2-compatible styled components

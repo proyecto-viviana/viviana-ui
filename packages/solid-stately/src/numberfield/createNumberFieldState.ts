@@ -3,8 +3,8 @@
  * Based on @react-stately/numberfield useNumberFieldState.
  */
 
-import { createSignal, createMemo, type Accessor } from 'solid-js';
-import { access, type MaybeAccessor } from '../utils';
+import { createSignal, createMemo, type Accessor } from "solid-js";
+import { access, type MaybeAccessor } from "../utils";
 
 export interface NumberFieldStateProps {
   /** The current value (controlled). */
@@ -65,15 +65,11 @@ export interface NumberFieldState {
 /**
  * Handles decimal operations to avoid floating point errors.
  */
-function handleDecimalOperation(
-  operator: '+' | '-',
-  value1: number,
-  value2: number
-): number {
+function handleDecimalOperation(operator: "+" | "-", value1: number, value2: number): number {
   // Find the number of decimal places
   const getDecimals = (n: number) => {
     const str = String(n);
-    const idx = str.indexOf('.');
+    const idx = str.indexOf(".");
     return idx === -1 ? 0 : str.length - idx - 1;
   };
 
@@ -83,7 +79,7 @@ function handleDecimalOperation(
   const int1 = Math.round(value1 * multiplier);
   const int2 = Math.round(value2 * multiplier);
 
-  const result = operator === '+' ? int1 + int2 : int1 - int2;
+  const result = operator === "+" ? int1 + int2 : int1 - int2;
   return result / multiplier;
 }
 
@@ -104,7 +100,7 @@ function snapToStep(value: number, step: number, min?: number): number {
   const base = min ?? 0;
   const diff = value - base;
   const steps = Math.round(diff / step);
-  return handleDecimalOperation('+', base, steps * step);
+  return handleDecimalOperation("+", base, steps * step);
 }
 
 function isValidStep(step: number | undefined): step is number {
@@ -115,12 +111,12 @@ function isValidStep(step: number | undefined): step is number {
  * Creates state for a number field.
  */
 export function createNumberFieldState(
-  props: MaybeAccessor<NumberFieldStateProps>
+  props: MaybeAccessor<NumberFieldStateProps>,
 ): NumberFieldState {
   const getProps = () => access(props);
 
   // Get locale and formatter
-  const locale = () => getProps().locale ?? 'en-US';
+  const locale = () => getProps().locale ?? "en-US";
   const formatOptions = () => getProps().formatOptions ?? {};
 
   // Create number formatter
@@ -130,7 +126,7 @@ export function createNumberFieldState(
 
   // Create number parser (simplified - real implementation would be more robust)
   const parseNumber = (value: string): number => {
-    if (!value || value === '' || value === '-') return NaN;
+    if (!value || value === "" || value === "-") return NaN;
 
     // Handle locale-specific decimal separators
     const opts = formatOptions();
@@ -139,17 +135,17 @@ export function createNumberFieldState(
 
     // Normalize the input
     let normalized = value;
-    if (decimalSeparator !== '.') {
-      normalized = normalized.replace(decimalSeparator, '.');
+    if (decimalSeparator !== ".") {
+      normalized = normalized.replace(decimalSeparator, ".");
     }
 
     // Remove grouping separators and currency symbols
-    normalized = normalized.replace(/[^\d.\-]/g, '');
+    normalized = normalized.replace(/[^\d.-]/g, "");
 
     const parsed = parseFloat(normalized);
     if (isNaN(parsed)) return parsed;
 
-    if (opts.style === 'percent') {
+    if (opts.style === "percent") {
       return parsed / 100;
     }
 
@@ -158,7 +154,7 @@ export function createNumberFieldState(
 
   // Format a number to string
   const formatNumber = (value: number): string => {
-    if (isNaN(value)) return '';
+    if (isNaN(value)) return "";
     return formatter().format(value);
   };
 
@@ -169,12 +165,12 @@ export function createNumberFieldState(
     const p = getProps();
     if (hasCustomStep()) return p.step as number;
     // Default step for percent is 0.01
-    if (p.formatOptions?.style === 'percent') return 0.01;
+    if (p.formatOptions?.style === "percent") return 0.01;
     return 1;
   });
 
   // Internal signals
-  const [inputValue, setInputValueInternal] = createSignal<string>('');
+  const [inputValue, setInputValueInternal] = createSignal<string>("");
   const [numberValue, setNumberValue] = createSignal<number>(NaN);
 
   const applyConstraints = (value: number): number => {
@@ -242,7 +238,7 @@ export function createNumberFieldState(
 
   // Validate partial input
   const validate = (value: string): boolean => {
-    if (value === '' || value === '-') return true;
+    if (value === "" || value === "-") return true;
 
     // Allow partial decimal input like "1."
     const opts = formatOptions();
@@ -251,7 +247,7 @@ export function createNumberFieldState(
 
     // Check if it's a valid partial number
     const pattern = new RegExp(
-      `^-?\\d*${decimalSeparator === '.' ? '\\.' : decimalSeparator}?\\d*$`
+      `^-?\\d*${decimalSeparator === "." ? "\\." : decimalSeparator}?\\d*$`,
     );
     return pattern.test(value);
   };
@@ -270,10 +266,10 @@ export function createNumberFieldState(
     const p = getProps();
     const input = inputValue();
 
-    if (input === '' || input === '-') {
+    if (input === "" || input === "-") {
       // Clear value
       setNumberValue(NaN);
-      setInputValueInternal(p.value === undefined ? '' : formatNumber(actualNumberValue()));
+      setInputValueInternal(p.value === undefined ? "" : formatNumber(actualNumberValue()));
       p.onChange?.(NaN);
       return;
     }
@@ -308,7 +304,7 @@ export function createNumberFieldState(
     if (p.maxValue == null) return true;
     return (
       snapToStep(current, step(), p.minValue) > current ||
-      handleDecimalOperation('+', current, step()) <= p.maxValue
+      handleDecimalOperation("+", current, step()) <= p.maxValue
     );
   });
 
@@ -324,11 +320,11 @@ export function createNumberFieldState(
     if (p.minValue == null) return true;
     return (
       snapToStep(current, step(), p.minValue) < current ||
-      handleDecimalOperation('-', current, step()) >= p.minValue
+      handleDecimalOperation("-", current, step()) >= p.minValue
     );
   });
 
-  const safeNextStep = (operation: '+' | '-', minOrMaxValue: number = 0): number => {
+  const safeNextStep = (operation: "+" | "-", minOrMaxValue: number = 0): number => {
     const p = getProps();
     const parsed = parsedInputValue();
 
@@ -338,7 +334,7 @@ export function createNumberFieldState(
     }
 
     const snapped = snapToStep(parsed, step(), p.minValue);
-    if ((operation === '+' && snapped > parsed) || (operation === '-' && snapped < parsed)) {
+    if ((operation === "+" && snapped > parsed) || (operation === "-" && snapped < parsed)) {
       return clamp(snapped, p.minValue, p.maxValue);
     }
 
@@ -353,7 +349,7 @@ export function createNumberFieldState(
     const p = getProps();
     if (p.isDisabled || p.isReadOnly) return;
 
-    const current = safeNextStep('+', p.minValue);
+    const current = safeNextStep("+", p.minValue);
     setNumberValue(current);
     setInputValueInternal(formatNumber(current));
     p.onChange?.(current);
@@ -366,7 +362,7 @@ export function createNumberFieldState(
     const p = getProps();
     if (p.isDisabled || p.isReadOnly) return;
 
-    const current = safeNextStep('-', p.maxValue);
+    const current = safeNextStep("-", p.maxValue);
     setNumberValue(current);
     setInputValueInternal(formatNumber(current));
     p.onChange?.(current);

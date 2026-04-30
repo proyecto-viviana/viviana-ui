@@ -57,14 +57,8 @@ import {
   TextField as HeadlessTextField,
   ToggleButton as HeadlessToggleButton,
 } from "@proyecto-viviana/solidaria-components";
-import {
-  createButton,
-  UNSAFE_PortalProvider,
-} from "@proyecto-viviana/solidaria";
-import type {
-  ComparisonLayerId,
-  ComparisonSlug,
-} from "@comparison/data/comparison-manifest";
+import { createButton, UNSAFE_PortalProvider } from "@proyecto-viviana/solidaria";
+import type { ComparisonLayerId, ComparisonSlug } from "@comparison/data/comparison-manifest";
 import {
   comparisonActionItems as actionItems,
   comparisonReferenceDataset,
@@ -100,11 +94,7 @@ export default function ComparisonIsland(props: ComparisonIslandProps) {
   return h(
     "div",
     { class: "comparison-island" },
-    h(
-      UNSAFE_PortalProvider,
-      { getContainer: () => overlayRoot ?? null },
-      renderLayer(props),
-    ),
+    h(UNSAFE_PortalProvider, { getContainer: () => overlayRoot ?? null }, renderLayer(props)),
     h("div", {
       class: "comparison-overlay-root",
       ref: (element: HTMLDivElement) => {
@@ -126,12 +116,15 @@ function renderLayer(props: ComparisonIslandProps) {
     rendered = emptyState("This layer is tracked in the manifest but not rendered yet.");
   }
 
-  return comparisonReferenceFrame({
-    componentSlug: props.componentSlug,
-    framework: "solid",
-    layer: props.layer,
-    reference: getComparisonReferenceKind("solid", props.layer, props.componentSlug),
-  }, rendered);
+  return comparisonReferenceFrame(
+    {
+      componentSlug: props.componentSlug,
+      framework: "solid",
+      layer: props.layer,
+      reference: getComparisonReferenceKind("solid", props.layer, props.componentSlug),
+    },
+    rendered,
+  );
 }
 
 function comparisonReferenceFrame(
@@ -162,11 +155,7 @@ function renderStyled(componentSlug: ComparisonSlug) {
         h(
           "div",
           { class: "comparison-provider-stack" },
-          h(
-            "div",
-            { class: "comparison-provider-caption" },
-            "Outer provider: dark / medium scale",
-          ),
+          h("div", { class: "comparison-provider-caption" }, "Outer provider: dark / medium scale"),
           h(SolidSpectrumButton, { variant: "primary" }, "Inherited Action"),
           h(
             SolidSpectrumProvider,
@@ -201,10 +190,8 @@ function renderStyled(componentSlug: ComparisonSlug) {
             getKey: (item: TabItem) => item.id,
             getTextValue: (item: TabItem) => item.label,
           },
-          h(
-            TabList,
-            { "aria-label": "Solid Spectrum tabs" },
-            (item: TabItem) => h(Tab, { id: item.id }, item.label),
+          h(TabList, { "aria-label": "Solid Spectrum tabs" }, (item: TabItem) =>
+            h(Tab, { id: item.id }, item.label),
           ),
           tabItems.map((item) => h(TabPanel, { id: item.id }, item.content)),
         ),
@@ -276,7 +263,13 @@ function SolidDialogDemo() {
                 }
               },
             },
-            [h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, "Open Dialog")],
+            [
+              h(
+                "span",
+                { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" },
+                "Open Dialog",
+              ),
+            ],
           ),
           hc(
             HeadlessModalOverlay,
@@ -285,27 +278,19 @@ function SolidDialogDemo() {
               class: "comparison-dialog-underlay",
             },
             [
-              hc(
-                "div",
-                { class: "comparison-dialog-positioner" },
-                [
+              hc("div", { class: "comparison-dialog-positioner" }, [
+                hc(HeadlessModal, { class: "comparison-dialog-modal" }, [
                   hc(
-                    HeadlessModal,
-                    { class: "comparison-dialog-modal" },
-                    [
-                      hc(
-                        Dialog,
-                        {
-                          title: "Review Changes",
-                          isDismissable: true,
-                          class: `comparison-dialog-surface ${comparisonSpectrumSkin.dialogClass}`,
-                        },
-                        ["Dialog focus and dismissal are compared from this island."],
-                      ),
-                    ],
+                    Dialog,
+                    {
+                      title: "Review Changes",
+                      isDismissable: true,
+                      class: `comparison-dialog-surface ${comparisonSpectrumSkin.dialogClass}`,
+                    },
+                    ["Dialog focus and dismissal are compared from this island."],
                   ),
-                ],
-              ),
+                ]),
+              ]),
             ],
           ),
         ],
@@ -366,74 +351,52 @@ function SolidDatePickerDemo() {
             { class: "comparison-spectrum-Field-label", "data-slot": "label" },
             ["Due date"],
           ),
-          hc(
-            "div",
-            { class: "comparison-datepicker-group" },
-            [
-              hc(
-                HeadlessDateInput,
-                {
-                  class: "comparison-date-input",
-                  children: renderProp((segment: unknown) => h(HeadlessDateSegment, { segment })),
-                },
-              ),
-              hc(
-                HeadlessDatePickerButton,
-                {
-                  class: "comparison-field-button",
-                  "aria-label": "Calendar",
-                },
-                [hCalendarIcon()],
-              ),
-            ],
-          ),
+          hc("div", { class: "comparison-datepicker-group" }, [
+            hc(HeadlessDateInput, {
+              class: "comparison-date-input",
+              children: renderProp((segment: unknown) => h(HeadlessDateSegment, { segment })),
+            }),
+            hc(
+              HeadlessDatePickerButton,
+              {
+                class: "comparison-field-button",
+                "aria-label": "Calendar",
+              },
+              [hCalendarIcon()],
+            ),
+          ]),
           hc(
             HeadlessDatePickerContent,
             { class: "comparison-popover comparison-datepicker-popover" },
             [
-              hc(
-                "div",
-                { class: "comparison-popover-dialog" },
-                [
-                  hc(
-                    HeadlessCalendar,
-                    {},
-                    [
-                      hc(
-                        "header",
-                        { class: "comparison-datepicker-header" },
-                        [
-                          hc(
-                            HeadlessCalendarButton,
-                            {
-                              slot: "previous",
-                              class: "comparison-rac-button comparison-calendar-nav-button",
-                              "aria-label": "Previous",
-                            },
-                            [hChevronIcon("left")],
-                          ),
-                          hc(HeadlessCalendarHeading, { class: "comparison-popover-title" }),
-                          hc(
-                            HeadlessCalendarButton,
-                            {
-                              slot: "next",
-                              class: "comparison-rac-button comparison-calendar-nav-button",
-                              "aria-label": "Next",
-                            },
-                            [hChevronIcon("right")],
-                          ),
-                        ],
-                      ),
-                      hc(
-                        HeadlessCalendarGrid,
-                        {
-                          children: renderProp((date: unknown) => h(HeadlessCalendarCell, { date })),
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              hc("div", { class: "comparison-popover-dialog" }, [
+                hc(HeadlessCalendar, {}, [
+                  hc("header", { class: "comparison-datepicker-header" }, [
+                    hc(
+                      HeadlessCalendarButton,
+                      {
+                        slot: "previous",
+                        class: "comparison-rac-button comparison-calendar-nav-button",
+                        "aria-label": "Previous",
+                      },
+                      [hChevronIcon("left")],
+                    ),
+                    hc(HeadlessCalendarHeading, { class: "comparison-popover-title" }),
+                    hc(
+                      HeadlessCalendarButton,
+                      {
+                        slot: "next",
+                        class: "comparison-rac-button comparison-calendar-nav-button",
+                        "aria-label": "Next",
+                      },
+                      [hChevronIcon("right")],
+                    ),
+                  ]),
+                  hc(HeadlessCalendarGrid, {
+                    children: renderProp((date: unknown) => h(HeadlessCalendarCell, { date })),
+                  }),
+                ]),
+              ]),
             ],
           ),
         ],
@@ -629,23 +592,24 @@ function SolidToastDemo() {
   const showToast = () => {
     const count = shownCount() + 1;
     setShownCount(count);
-    const key = addToast({
-      title: `Saved successfully ${count}`,
-      description: "Toast region renders inside the comparison island.",
-      type: "success",
-    }, { timeout: 0 });
+    const key = addToast(
+      {
+        title: `Saved successfully ${count}`,
+        description: "Toast region renders inside the comparison island.",
+        type: "success",
+      },
+      { timeout: 0 },
+    );
     toastKeys.push(key);
   };
 
-  const toastRegion = createMemo(() => (
+  const toastRegion = createMemo(() =>
     visibleCount() > 0
-      ? hc(
-        ToastProvider,
-        { useGlobalQueue: true },
-        [hc(ToastRegion, { portal: false, placement: "bottom-start" })],
-      )
-      : null
-  ));
+      ? hc(ToastProvider, { useGlobalQueue: true }, [
+          hc(ToastRegion, { portal: false, placement: "bottom-start" }),
+        ])
+      : null,
+  );
 
   return hc(
     "div",
@@ -659,7 +623,9 @@ function SolidToastDemo() {
       },
     },
     [
-      hc("button", { type: "button", class: "comparison-rac-button", onClick: showToast }, ["Show toast"]),
+      hc("button", { type: "button", class: "comparison-rac-button", onClick: showToast }, [
+        "Show toast",
+      ]),
       toastRegion,
     ],
   );
@@ -723,56 +689,55 @@ function SolidariaSpectrumButtonDemo() {
       },
     },
     [
-      hc(
-        "div",
-        { class: "comparison-button-row" },
-        [
-          hc(
-            HeadlessButton,
-            {
-              get isDisabled() {
-                return demoProps().isDisabled;
-              },
-              class: comparisonSpectrumSkin.buttonClass,
-              style: (renderProps: ButtonRenderProps) => buttonPressStyle(renderProps, demoProps().children),
-              get "aria-disabled"() {
-                return demoProps().isPending ? "true" : undefined;
-              },
-              get "data-variant"() {
-                return demoProps().variant;
-              },
-              get "data-style"() {
-                return demoProps().fillStyle;
-              },
-              get "data-size"() {
-                return demoProps().size;
-              },
-              get "data-static-color"() {
-                return demoProps().staticColor;
-              },
-              get "data-pending-visible"() {
-                return showPendingSpinner() ? "true" : undefined;
-              },
-              onPress: (_event: unknown) => {
-                if (!demoProps().isPending) {
-                  setActionCount((count) => count + 1);
-                }
-              },
+      hc("div", { class: "comparison-button-row" }, [
+        hc(
+          HeadlessButton,
+          {
+            get isDisabled() {
+              return demoProps().isDisabled;
             },
-            [
-              h(
-                "span",
-                {
-                  class: comparisonSpectrumSkin.labelClass,
-                  "data-slot": "label",
-                  "data-rsp-slot": "text",
-                  get style() {
-                    return showPendingSpinner() ? { visibility: "hidden" } : undefined;
-                  },
+            class: comparisonSpectrumSkin.buttonClass,
+            style: (renderProps: ButtonRenderProps) =>
+              buttonPressStyle(renderProps, demoProps().children),
+            get "aria-disabled"() {
+              return demoProps().isPending ? "true" : undefined;
+            },
+            get "data-variant"() {
+              return demoProps().variant;
+            },
+            get "data-style"() {
+              return demoProps().fillStyle;
+            },
+            get "data-size"() {
+              return demoProps().size;
+            },
+            get "data-static-color"() {
+              return demoProps().staticColor;
+            },
+            get "data-pending-visible"() {
+              return showPendingSpinner() ? "true" : undefined;
+            },
+            onPress: (_event: unknown) => {
+              if (!demoProps().isPending) {
+                setActionCount((count) => count + 1);
+              }
+            },
+          },
+          [
+            h(
+              "span",
+              {
+                class: comparisonSpectrumSkin.labelClass,
+                "data-slot": "label",
+                "data-rsp-slot": "text",
+                get style() {
+                  return showPendingSpinner() ? { visibility: "hidden" } : undefined;
                 },
-                () => demoProps().children,
-              ),
-              () => showPendingSpinner()
+              },
+              () => demoProps().children,
+            ),
+            () =>
+              showPendingSpinner()
                 ? h(
                     "div",
                     { class: "comparison-spectrum-Button-pendingSpinner" },
@@ -785,40 +750,35 @@ function SolidariaSpectrumButtonDemo() {
                         "aria-valuemin": "0",
                         "aria-valuemax": "100",
                       },
-                      h(
-                        "svg",
-                        { fill: "none", width: "100%", height: "100%" },
-                        [
-                          h("circle", {
-                            cx: "50%",
-                            cy: "50%",
-                            r: "calc(50% - 0.0625rem)",
-                            class: "comparison-spectrum-Button-progressCircleTrackTransparent",
-                          }),
-                          h("circle", {
-                            cx: "50%",
-                            cy: "50%",
-                            r: "calc(50% - 0.0625rem)",
-                            class: "comparison-spectrum-Button-progressCircleTrack",
-                          }),
-                          h("circle", {
-                            cx: "50%",
-                            cy: "50%",
-                            r: "calc(50% - 0.0625rem)",
-                            pathLength: "100",
-                            "stroke-dasharray": "100 200",
-                            "stroke-linecap": "round",
-                            class: "comparison-spectrum-Button-progressCircleFill",
-                          }),
-                        ],
-                      ),
+                      h("svg", { fill: "none", width: "100%", height: "100%" }, [
+                        h("circle", {
+                          cx: "50%",
+                          cy: "50%",
+                          r: "calc(50% - 0.0625rem)",
+                          class: "comparison-spectrum-Button-progressCircleTrackTransparent",
+                        }),
+                        h("circle", {
+                          cx: "50%",
+                          cy: "50%",
+                          r: "calc(50% - 0.0625rem)",
+                          class: "comparison-spectrum-Button-progressCircleTrack",
+                        }),
+                        h("circle", {
+                          cx: "50%",
+                          cy: "50%",
+                          r: "calc(50% - 0.0625rem)",
+                          pathLength: "100",
+                          "stroke-dasharray": "100 200",
+                          "stroke-linecap": "round",
+                          class: "comparison-spectrum-Button-progressCircleFill",
+                        }),
+                      ]),
                     ),
                   )
                 : null,
-            ],
-          ),
-        ],
-      ),
+          ],
+        ),
+      ]),
     ],
   );
 }
@@ -835,9 +795,12 @@ function SolidariaSpectrumActionButtonDemo() {
       },
     },
     [
-      hSpectrumActionButton({
-        onPress: (_event: unknown) => setActionCount((count) => count + 1),
-      }, "Inspect"),
+      hSpectrumActionButton(
+        {
+          onPress: (_event: unknown) => setActionCount((count) => count + 1),
+        },
+        "Inspect",
+      ),
     ],
   );
 }
@@ -882,7 +845,13 @@ function SolidariaSpectrumActionButtonGroupDemo() {
               },
               onPress: (_event: unknown) => toggleKey(item.id),
             },
-            [h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, item.label)],
+            [
+              h(
+                "span",
+                { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" },
+                item.label,
+              ),
+            ],
           ),
         ),
       ),
@@ -906,16 +875,22 @@ function SolidariaSpectrumButtonGroupDemo() {
         SolidSpectrumButtonGroup,
         { class: comparisonSpectrumSkin.buttonGroupClass, "aria-label": "Approval actions" },
         [
-          hSpectrumButton({
-            variant: "primary",
-            fillStyle: "outline",
-            onPress: (_event: unknown) => setActionKey("save"),
-          }, "Save"),
-          hSpectrumButton({
-            variant: "secondary",
-            fillStyle: "outline",
-            onPress: (_event: unknown) => setActionKey("cancel"),
-          }, "Cancel"),
+          hSpectrumButton(
+            {
+              variant: "primary",
+              fillStyle: "outline",
+              onPress: (_event: unknown) => setActionKey("save"),
+            },
+            "Save",
+          ),
+          hSpectrumButton(
+            {
+              variant: "secondary",
+              fillStyle: "outline",
+              onPress: (_event: unknown) => setActionKey("cancel"),
+            },
+            "Cancel",
+          ),
         ],
       ),
     ],
@@ -992,14 +967,12 @@ function hSpectrumButton(
 function buttonPressStyle(renderProps: ButtonRenderProps, label: string) {
   return {
     "will-change": "transform",
-    ...(
-      renderProps.isPressed
-        ? {
-            "user-select": "none",
-            transform: `perspective(${buttonPressPerspective(label)}px) translate3d(0px, 0px, -2px)`,
-          }
-        : {}
-    ),
+    ...(renderProps.isPressed
+      ? {
+          "user-select": "none",
+          transform: `perspective(${buttonPressPerspective(label)}px) translate3d(0px, 0px, -2px)`,
+        }
+      : {}),
   };
 }
 
@@ -1040,35 +1013,37 @@ function SolidariaSpectrumTextFieldDemo() {
         return value();
       },
     },
-    [hc(
-      HeadlessTextField,
-      {
-        class: comparisonSpectrumSkin.fieldRootClass,
-        defaultValue: "Quarterly report",
-        "aria-label": "Name",
-        "data-size": "medium",
-        "data-variant": "default",
-      },
-      [
-        h(
-          HeadlessLabel,
-          {
-            for: "solidaria-spectrum-textfield-name",
-            class: comparisonSpectrumSkin.fieldLabelClass,
-            "data-slot": "label",
-          },
-          "Name",
-        ),
-        h(HeadlessInput, {
-          id: "solidaria-spectrum-textfield-name",
-          class: comparisonSpectrumSkin.fieldInputClass,
-          "data-slot": "input",
-          onInput: (event: InputEvent) => {
-            setValue((event.currentTarget as HTMLInputElement).value);
-          },
-        }),
-      ],
-    )],
+    [
+      hc(
+        HeadlessTextField,
+        {
+          class: comparisonSpectrumSkin.fieldRootClass,
+          defaultValue: "Quarterly report",
+          "aria-label": "Name",
+          "data-size": "medium",
+          "data-variant": "default",
+        },
+        [
+          h(
+            HeadlessLabel,
+            {
+              for: "solidaria-spectrum-textfield-name",
+              class: comparisonSpectrumSkin.fieldLabelClass,
+              "data-slot": "label",
+            },
+            "Name",
+          ),
+          h(HeadlessInput, {
+            id: "solidaria-spectrum-textfield-name",
+            class: comparisonSpectrumSkin.fieldInputClass,
+            "data-slot": "input",
+            onInput: (event: InputEvent) => {
+              setValue((event.currentTarget as HTMLInputElement).value);
+            },
+          }),
+        ],
+      ),
+    ],
   );
 }
 
@@ -1083,52 +1058,53 @@ function SolidariaSpectrumSelectDemo() {
         return selectedKey() ?? "";
       },
     },
-    [hc(
-      HeadlessSelect,
-      {
-        class: comparisonSpectrumSkin.selectRootClass,
-        items: selectItems,
-        defaultSelectedKey: "bravo",
-        onSelectionChange: (key: string | number | null) => {
-          setSelectedKey(key == null ? null : String(key));
-        },
-        getKey: (item: (typeof selectItems)[number]) => item.id,
-        getTextValue: (item: (typeof selectItems)[number]) => item.label,
-        "data-size": "medium",
-        "data-variant": "default",
-      },
-      [
-        hc(
-          HeadlessLabel,
-          {
-            class: comparisonSpectrumSkin.fieldLabelClass,
-            "data-slot": "label",
+    [
+      hc(
+        HeadlessSelect,
+        {
+          class: comparisonSpectrumSkin.selectRootClass,
+          items: selectItems,
+          defaultSelectedKey: "bravo",
+          onSelectionChange: (key: string | number | null) => {
+            setSelectedKey(key == null ? null : String(key));
           },
-          ["Channel"],
-        ),
-        hc(
-          HeadlessSelectTrigger,
-          { class: comparisonSpectrumSkin.selectTriggerClass },
-          [h(HeadlessSelectValue, {
-            class: comparisonSpectrumSkin.selectValueClass,
-            "data-slot": "value",
-          })],
-        ),
-        hc(
-          HeadlessSelectListBox,
-          { class: comparisonSpectrumSkin.selectListBoxClass },
-          renderProp((item: (typeof selectItems)[number]) =>
-            h(
-              HeadlessSelectOption,
-              {
-                id: item.id,
-                class: comparisonSpectrumSkin.selectOptionClass,
-              },
-              item.label,
-            )),
-        ),
-      ],
-    )],
+          getKey: (item: (typeof selectItems)[number]) => item.id,
+          getTextValue: (item: (typeof selectItems)[number]) => item.label,
+          "data-size": "medium",
+          "data-variant": "default",
+        },
+        [
+          hc(
+            HeadlessLabel,
+            {
+              class: comparisonSpectrumSkin.fieldLabelClass,
+              "data-slot": "label",
+            },
+            ["Channel"],
+          ),
+          hc(HeadlessSelectTrigger, { class: comparisonSpectrumSkin.selectTriggerClass }, [
+            h(HeadlessSelectValue, {
+              class: comparisonSpectrumSkin.selectValueClass,
+              "data-slot": "value",
+            }),
+          ]),
+          hc(
+            HeadlessSelectListBox,
+            { class: comparisonSpectrumSkin.selectListBoxClass },
+            renderProp((item: (typeof selectItems)[number]) =>
+              h(
+                HeadlessSelectOption,
+                {
+                  id: item.id,
+                  class: comparisonSpectrumSkin.selectOptionClass,
+                },
+                item.label,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ],
   );
 }
 
@@ -1217,11 +1193,7 @@ function renderComponents(componentSlug: ComparisonSlug) {
             h(
               "div",
               { class: "comparison-popover-dialog" },
-              h(
-                "div",
-                { class: "comparison-popover-title" },
-                "Confirm Action",
-              ),
+              h("div", { class: "comparison-popover-title" }, "Confirm Action"),
               h(
                 "p",
                 {},
@@ -1241,32 +1213,19 @@ function renderComponents(componentSlug: ComparisonSlug) {
           getKey: (item: TabItem) => item.id,
           getTextValue: (item: TabItem) => item.label,
         },
-        h(
-          HeadlessTabList,
-          { class: "comparison-rac-tab-list" },
-          (item: TabItem) =>
-            h(
-              HeadlessTab,
-              { id: item.id, class: "comparison-rac-tab" },
-              item.label,
-            ),
+        h(HeadlessTabList, { class: "comparison-rac-tab-list" }, (item: TabItem) =>
+          h(HeadlessTab, { id: item.id, class: "comparison-rac-tab" }, item.label),
         ),
         h(
           HeadlessTabPanels,
           { class: "comparison-tab-panels" },
           tabItems.map((item) =>
-            h(
-              HeadlessTabPanel,
-              { id: item.id, class: "comparison-tabs-panel" },
-              item.content,
-            ),
+            h(HeadlessTabPanel, { id: item.id, class: "comparison-tabs-panel" }, item.content),
           ),
         ),
       );
     default:
-      return emptyState(
-        "No component-layer Solid demo is wired for this component yet.",
-      );
+      return emptyState("No component-layer Solid demo is wired for this component yet.");
   }
 }
 

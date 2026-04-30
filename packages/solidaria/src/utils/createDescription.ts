@@ -23,15 +23,15 @@
  * ```
  */
 
-import { createSignal, createEffect, onCleanup, type Accessor } from 'solid-js';
-import { isServer } from 'solid-js/web';
+import { createSignal, createEffect, onCleanup, type Accessor } from "solid-js";
+import { isServer } from "solid-js/web";
 
 // ============================================
 // TYPES
 // ============================================
 
 export interface DescriptionProps {
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
 }
 
 // ============================================
@@ -84,9 +84,9 @@ export function createDescription(description: Accessor<string | undefined>): De
       const newId = `solidaria-description-${descriptionId++}`;
       setId(newId);
 
-      const element = document.createElement('div');
+      const element = document.createElement("div");
       element.id = newId;
-      element.style.display = 'none';
+      element.style.display = "none";
       element.textContent = desc;
       document.body.appendChild(element);
 
@@ -110,7 +110,7 @@ export function createDescription(description: Accessor<string | undefined>): De
 
   // Return reactive props object
   return {
-    get 'aria-describedby'() {
+    get "aria-describedby"() {
       const desc = description();
       return desc ? id() : undefined;
     },

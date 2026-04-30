@@ -5,11 +5,13 @@ Compares bundle sizes between Proyecto Viviana and React Spectrum across three s
 ## Methodology
 
 ### Tools
+
 - **esbuild** - Bundling and minification
 - **gzip-size** - Gzip compression (level 9)
 - **brotli-size** - Brotli compression (level 11)
 
 ### Build Configuration
+
 ```typescript
 {
   bundle: true,
@@ -24,18 +26,21 @@ Compares bundle sizes between Proyecto Viviana and React Spectrum across three s
 ### Scenarios
 
 #### 1. Single Button
+
 **What:** Minimal component import
 **PV:** `import { Button } from '@proyecto-viviana/silapse'`
 **RS:** `import { Button } from '@adobe/react-spectrum'`
 **Why:** Shows "cost to add one button" including runtime overhead
 
 #### 2. Multiple Components
+
 **What:** Realistic multi-component usage
 **PV:** Button + Select + DatePicker
 **RS:** Button + Picker + DatePicker
 **Why:** Shows how bundle size scales with component count (runtime amortization)
 
 #### 3. Full Library
+
 **What:** Import all exports
 **PV:** `export * from '@proyecto-viviana/silapse'`
 **RS:** `export * from '@adobe/react-spectrum'`
@@ -61,26 +66,34 @@ Results are saved to `results/bundle-sizes.json` and printed to console.
 ## Caveats
 
 ### ⚠️ Different Reactivity Models
+
 - **SolidJS** (PV): Fine-grained reactivity compiled at build time → smaller runtime
 - **React** (RS): Virtual DOM + reconciliation at runtime → larger runtime
 
 This is NOT a quality comparison. React's model provides different trade-offs:
+
 - React: More flexible, easier to debug, larger bundles
 - SolidJS: More performant, smaller bundles, steeper learning curve
 
 ### ⚠️ Runtime Amortization
+
 In real apps, the runtime cost is shared across ALL components:
+
 - Adding 1 button: React tax is visible (~40KB runtime)
 - Adding 10 components: Runtime cost is amortized (~4KB per component)
 
 ### ⚠️ Tree-Shaking Effectiveness
+
 Bundle size depends on:
+
 - How well the library is tree-shakeable
 - Whether unused code can be eliminated
 - Side effects that prevent dead code elimination
 
 ### ⚠️ Bundle Size ≠ Performance
+
 Smaller bundles load faster, but execution speed depends on:
+
 - Runtime efficiency (how fast code executes)
 - Reactivity model (how updates propagate)
 - Browser optimizations (JIT compilation)
@@ -96,6 +109,7 @@ A larger bundle may execute faster than a smaller one.
 ## Version Tracking
 
 Results include library versions to detect regressions:
+
 - Compare results across commits
 - Track performance impact of changes
 - Document when dependencies update

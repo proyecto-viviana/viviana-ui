@@ -18,8 +18,8 @@ import {
   onMount,
   useContext,
   createUniqueId,
-} from 'solid-js';
-import { isServer } from 'solid-js/web';
+} from "solid-js";
+import { isServer } from "solid-js/web";
 
 // ============================================
 // TYPES
@@ -40,7 +40,7 @@ export interface SSRContextValue {
 
 const SSRContext = createContext<SSRContextValue>({
   isSSR: isServer,
-  prefix: '',
+  prefix: "",
 });
 
 // ============================================
@@ -130,11 +130,7 @@ export function SSRProvider(props: SSRProviderProps & { prefix?: string }): JSX.
       : parentContext.prefix,
   }));
 
-  return (
-    <SSRContext.Provider value={value()}>
-      {props.children}
-    </SSRContext.Provider>
-  );
+  return <SSRContext.Provider value={value()}>{props.children}</SSRContext.Provider>;
 }
 
 // ============================================
@@ -234,7 +230,7 @@ export function createBrowserEffect(fn: () => void | (() => void)): void {
 
   createEffect(() => {
     const cleanup = fn();
-    if (typeof cleanup === 'function') {
+    if (typeof cleanup === "function") {
       onCleanup(cleanup);
     }
   });
@@ -259,10 +255,7 @@ export function createBrowserEffect(fn: () => void | (() => void)): void {
  * }
  * ```
  */
-export function createBrowserValue<T>(
-  fn: () => T,
-  fallback: T
-): Accessor<T> {
+export function createBrowserValue<T>(fn: () => T, fallback: T): Accessor<T> {
   if (isServer) {
     return () => fallback;
   }
@@ -293,7 +286,7 @@ export function createBrowserValue<T>(
  * ```
  */
 export function getWindow(): Window | undefined {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     return window;
   }
   return undefined;
@@ -312,7 +305,7 @@ export function getWindow(): Window | undefined {
  * ```
  */
 export function getDocument(): Document | undefined {
-  if (typeof document !== 'undefined') {
+  if (typeof document !== "undefined") {
     return document;
   }
   return undefined;

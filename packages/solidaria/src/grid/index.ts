@@ -3,10 +3,10 @@
  * Based on @react-aria/grid.
  */
 
-export { createGrid, getGridData } from './createGrid';
-export { createGridRow } from './createGridRow';
-export { createGridCell } from './createGridCell';
-export { GridKeyboardDelegate } from './GridKeyboardDelegate';
+export { createGrid, getGridData } from "./createGrid";
+export { createGridRow } from "./createGridRow";
+export { createGridCell } from "./createGridCell";
+export { GridKeyboardDelegate } from "./GridKeyboardDelegate";
 export type {
   KeyboardDelegate,
   GridProps,
@@ -15,4 +15,4 @@ export type {
   GridRowAria,
   GridCellProps,
   GridCellAria,
-} from './types';
+} from "./types";

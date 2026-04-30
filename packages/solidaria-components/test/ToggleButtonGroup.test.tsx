@@ -1,116 +1,136 @@
 /**
  * Tests for solidaria-components ToggleButtonGroup
  */
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@solidjs/testing-library';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
-import { ToggleButton } from '../src/ToggleButton';
-import { ToggleButtonGroup } from '../src/ToggleButtonGroup';
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@solidjs/testing-library";
+import { setupUser } from "@proyecto-viviana/solidaria-test-utils";
+import { ToggleButton } from "../src/ToggleButton";
+import { ToggleButtonGroup } from "../src/ToggleButtonGroup";
 
-describe('ToggleButtonGroup', () => {
-  it('renders single mode as radiogroup with default class', () => {
+describe("ToggleButtonGroup", () => {
+  it("renders single mode as radiogroup with default class", () => {
     render(() => (
       <ToggleButtonGroup aria-label="Text align">
-        {() => <ToggleButton id="a" aria-label="A">A</ToggleButton>}
+        {() => (
+          <ToggleButton id="a" aria-label="A">
+            A
+          </ToggleButton>
+        )}
       </ToggleButtonGroup>
     ));
 
-    const group = screen.getByRole('radiogroup', { name: 'Text align' });
-    expect(group).toHaveClass('solidaria-ToggleButtonGroup');
-    expect(group).toHaveAttribute('data-orientation', 'horizontal');
+    const group = screen.getByRole("radiogroup", { name: "Text align" });
+    expect(group).toHaveClass("solidaria-ToggleButtonGroup");
+    expect(group).toHaveAttribute("data-orientation", "horizontal");
   });
 
-  it('supports single selection mode with radio semantics', async () => {
+  it("supports single selection mode with radio semantics", async () => {
     const user = setupUser();
     render(() => (
       <ToggleButtonGroup selectionMode="single" aria-label="Text align">
         {() => (
           <>
-            <ToggleButton id="a" aria-label="A">A</ToggleButton>
-            <ToggleButton id="b" aria-label="B">B</ToggleButton>
+            <ToggleButton id="a" aria-label="A">
+              A
+            </ToggleButton>
+            <ToggleButton id="b" aria-label="B">
+              B
+            </ToggleButton>
           </>
         )}
       </ToggleButtonGroup>
     ));
 
-    const radios = screen.getAllByRole('radio');
-    expect(radios[0]).toHaveAttribute('aria-checked', 'false');
-    expect(radios[0]).not.toHaveAttribute('aria-pressed');
+    const radios = screen.getAllByRole("radio");
+    expect(radios[0]).toHaveAttribute("aria-checked", "false");
+    expect(radios[0]).not.toHaveAttribute("aria-pressed");
 
     await user.click(radios[0]);
-    expect(radios[0]).toHaveAttribute('aria-checked', 'true');
-    expect(radios[1]).toHaveAttribute('aria-checked', 'false');
+    expect(radios[0]).toHaveAttribute("aria-checked", "true");
+    expect(radios[1]).toHaveAttribute("aria-checked", "false");
 
     await user.click(radios[1]);
-    expect(radios[0]).toHaveAttribute('aria-checked', 'false');
-    expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+    expect(radios[0]).toHaveAttribute("aria-checked", "false");
+    expect(radios[1]).toHaveAttribute("aria-checked", "true");
   });
 
-  it('supports multiple selection mode with toolbar semantics', async () => {
+  it("supports multiple selection mode with toolbar semantics", async () => {
     const user = setupUser();
     render(() => (
       <ToggleButtonGroup selectionMode="multiple" aria-label="Text style">
         {() => (
           <>
-            <ToggleButton id="a" aria-label="Bold">Bold</ToggleButton>
-            <ToggleButton id="b" aria-label="Italic">Italic</ToggleButton>
+            <ToggleButton id="a" aria-label="Bold">
+              Bold
+            </ToggleButton>
+            <ToggleButton id="b" aria-label="Italic">
+              Italic
+            </ToggleButton>
           </>
         )}
       </ToggleButtonGroup>
     ));
 
-    const group = screen.getByRole('toolbar', { name: 'Text style' });
+    const group = screen.getByRole("toolbar", { name: "Text style" });
     expect(group).toBeInTheDocument();
 
-    const buttons = screen.getAllByRole('button');
+    const buttons = screen.getAllByRole("button");
     await user.click(buttons[0]);
     await user.click(buttons[1]);
-    expect(buttons[0]).toHaveAttribute('aria-pressed', 'true');
-    expect(buttons[1]).toHaveAttribute('aria-pressed', 'true');
+    expect(buttons[0]).toHaveAttribute("aria-pressed", "true");
+    expect(buttons[1]).toHaveAttribute("aria-pressed", "true");
   });
 
-  it('supports controlled selectedKeys', async () => {
+  it("supports controlled selectedKeys", async () => {
     const user = setupUser();
     const onSelectionChange = vi.fn();
     render(() => (
       <ToggleButtonGroup
         selectionMode="multiple"
-        selectedKeys={new Set(['a'])}
+        selectedKeys={new Set(["a"])}
         onSelectionChange={onSelectionChange}
         aria-label="Formatting"
       >
         {() => (
           <>
-            <ToggleButton id="a" aria-label="A">A</ToggleButton>
-            <ToggleButton id="b" aria-label="B">B</ToggleButton>
+            <ToggleButton id="a" aria-label="A">
+              A
+            </ToggleButton>
+            <ToggleButton id="b" aria-label="B">
+              B
+            </ToggleButton>
           </>
         )}
       </ToggleButtonGroup>
     ));
 
-    const buttons = screen.getAllByRole('button');
-    expect(buttons[0]).toHaveAttribute('aria-pressed', 'true');
-    expect(buttons[1]).toHaveAttribute('aria-pressed', 'false');
+    const buttons = screen.getAllByRole("button");
+    expect(buttons[0]).toHaveAttribute("aria-pressed", "true");
+    expect(buttons[1]).toHaveAttribute("aria-pressed", "false");
 
     await user.click(buttons[1]);
-    expect(onSelectionChange).toHaveBeenCalledWith(new Set(['a', 'b']));
+    expect(onSelectionChange).toHaveBeenCalledWith(new Set(["a", "b"]));
   });
 
-  it('uses keyboard arrow navigation between items', () => {
+  it("uses keyboard arrow navigation between items", () => {
     render(() => (
       <ToggleButtonGroup selectionMode="multiple" aria-label="Formatting">
         {() => (
           <>
-            <ToggleButton id="a" aria-label="A">A</ToggleButton>
-            <ToggleButton id="b" aria-label="B">B</ToggleButton>
+            <ToggleButton id="a" aria-label="A">
+              A
+            </ToggleButton>
+            <ToggleButton id="b" aria-label="B">
+              B
+            </ToggleButton>
           </>
         )}
       </ToggleButtonGroup>
     ));
 
-    const buttons = screen.getAllByRole('button');
+    const buttons = screen.getAllByRole("button");
     buttons[0].focus();
-    fireEvent.keyDown(buttons[0], { key: 'ArrowRight' });
+    fireEvent.keyDown(buttons[0], { key: "ArrowRight" });
     expect(document.activeElement).toBe(buttons[1]);
   });
 });

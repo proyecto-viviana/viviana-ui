@@ -4,20 +4,20 @@
  * Provides accessibility props for items that can receive drops.
  */
 
-import { createMemo, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createMemo, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
 import type {
   DroppableCollectionState,
   DropTarget,
   DropOperation,
-} from '@proyecto-viviana/solid-stately';
+} from "@proyecto-viviana/solid-stately";
 import {
   DragTypesImpl,
   DROP_OPERATION,
   DROP_OPERATION_ALLOWED,
   DROP_OPERATION_TO_DROP_EFFECT,
   getGlobalAllowedDropOperations,
-} from './utils';
+} from "./utils";
 
 export interface DroppableItemOptions {
   /** The unique key of the item. */
@@ -44,34 +44,30 @@ export interface DroppableItemAria {
  */
 export function createDroppableItem(
   options: Accessor<DroppableItemOptions>,
-  state: DroppableCollectionState
+  state: DroppableCollectionState,
 ): DroppableItemAria {
   const getOptions = createMemo(() => options());
 
   const isDropTarget = createMemo(() => {
     const { key } = getOptions();
     const target = state.target;
-    return target?.type === 'item' && target.key === key;
+    return target?.type === "item" && target.key === key;
   });
 
-  const getTarget = (dropPosition: 'before' | 'on' | 'after'): DropTarget => {
+  const getTarget = (dropPosition: "before" | "on" | "after"): DropTarget => {
     const { key } = getOptions();
     return {
-      type: 'item',
+      type: "item",
       key,
       dropPosition,
     };
   };
 
-  const getDropOperation = (
-    e: DragEvent,
-    target: DropTarget
-  ): DropOperation => {
-    if (!e.dataTransfer) return 'cancel';
+  const getDropOperation = (e: DragEvent, target: DropTarget): DropOperation => {
+    if (!e.dataTransfer) return "cancel";
 
     const types = new DragTypesImpl(e.dataTransfer);
-    let allowedBits =
-      DROP_OPERATION_ALLOWED[e.dataTransfer.effectAllowed] || DROP_OPERATION.all;
+    let allowedBits = DROP_OPERATION_ALLOWED[e.dataTransfer.effectAllowed] || DROP_OPERATION.all;
 
     // Use global allowed operations for internal drags
     const globalAllowed = getGlobalAllowedDropOperations();
@@ -80,9 +76,9 @@ export function createDroppableItem(
     }
 
     const allowedOperations: DropOperation[] = [];
-    if (allowedBits & DROP_OPERATION.move) allowedOperations.push('move');
-    if (allowedBits & DROP_OPERATION.copy) allowedOperations.push('copy');
-    if (allowedBits & DROP_OPERATION.link) allowedOperations.push('link');
+    if (allowedBits & DROP_OPERATION.move) allowedOperations.push("move");
+    if (allowedBits & DROP_OPERATION.copy) allowedOperations.push("copy");
+    if (allowedBits & DROP_OPERATION.link) allowedOperations.push("link");
 
     return state.getDropOperation(target, types, allowedOperations);
   };
@@ -103,21 +99,23 @@ export function createDroppableItem(
     const y = e.clientY - rect.y;
     const height = rect.height;
 
-    let dropPosition: 'before' | 'on' | 'after';
+    let dropPosition: "before" | "on" | "after";
     if (y < height * 0.25) {
-      dropPosition = 'before';
+      dropPosition = "before";
     } else if (y > height * 0.75) {
-      dropPosition = 'after';
+      dropPosition = "after";
     } else {
-      dropPosition = 'on';
+      dropPosition = "on";
     }
 
     const target = getTarget(dropPosition);
     const operation = getDropOperation(e, target);
 
-    if (operation !== 'cancel') {
+    if (operation !== "cancel") {
       state.setTarget(target);
-      e.dataTransfer!.dropEffect = DROP_OPERATION_TO_DROP_EFFECT[operation] as DataTransfer['dropEffect'];
+      e.dataTransfer!.dropEffect = DROP_OPERATION_TO_DROP_EFFECT[
+        operation
+      ] as DataTransfer["dropEffect"];
     }
   };
 
@@ -134,31 +132,33 @@ export function createDroppableItem(
     const y = e.clientY - rect.y;
     const height = rect.height;
 
-    let dropPosition: 'before' | 'on' | 'after';
+    let dropPosition: "before" | "on" | "after";
     if (y < height * 0.25) {
-      dropPosition = 'before';
+      dropPosition = "before";
     } else if (y > height * 0.75) {
-      dropPosition = 'after';
+      dropPosition = "after";
     } else {
-      dropPosition = 'on';
+      dropPosition = "on";
     }
 
     const target = getTarget(dropPosition);
     const operation = getDropOperation(e, target);
 
-    if (operation !== 'cancel') {
+    if (operation !== "cancel") {
       state.setTarget(target);
-      e.dataTransfer!.dropEffect = DROP_OPERATION_TO_DROP_EFFECT[operation] as DataTransfer['dropEffect'];
+      e.dataTransfer!.dropEffect = DROP_OPERATION_TO_DROP_EFFECT[
+        operation
+      ] as DataTransfer["dropEffect"];
 
       // Handle drop activate for 'on' position
       clearTimeout(dropActivateTimer);
-      if (dropPosition === 'on') {
+      if (dropPosition === "on") {
         dropActivateTimer = setTimeout(() => {
           state.activateTarget(x, y);
         }, DROP_ACTIVATE_TIMEOUT);
       }
     } else {
-      e.dataTransfer!.dropEffect = 'none';
+      e.dataTransfer!.dropEffect = "none";
     }
   };
 
@@ -174,7 +174,7 @@ export function createDroppableItem(
     if (!relatedTarget || !currentTarget.contains(relatedTarget)) {
       // Clear if no longer over this item
       const { key } = getOptions();
-      if (state.target?.type === 'item' && state.target.key === key) {
+      if (state.target?.type === "item" && state.target.key === key) {
         // State clearing handled by parent collection
       }
     }
@@ -206,7 +206,7 @@ export function createDroppableItem(
 
   return {
     get dropProps() {
-      return dropProps() as DroppableItemAria['dropProps'];
+      return dropProps() as DroppableItemAria["dropProps"];
     },
     get isDropTarget() {
       return isDropTarget();

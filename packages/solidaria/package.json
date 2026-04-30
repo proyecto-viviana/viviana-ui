@@ -2,7 +2,26 @@
   "name": "@proyecto-viviana/solidaria",
   "version": "0.2.8",
   "description": "A 1-1 SolidJS port of React Aria - accessible UI primitives",
+  "keywords": [
+    "a11y",
+    "accessibility",
+    "aria",
+    "react-aria",
+    "solid",
+    "solidjs"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/proyecto-viviana/proyecto-viviana.git",
+    "directory": "packages/solidaria"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,43 +33,24 @@
       "default": "./dist/index.js"
     }
   },
-  "files": [
-    "dist",
-    "src"
-  ],
-  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup && rm -f tsconfig.build.tsbuildinfo && tsc -p tsconfig.build.json",
     "dev": "tsup --watch",
     "prepublishOnly": "echo 'Use the root Changesets npm release workflow'"
   },
   "dependencies": {
-    "@proyecto-viviana/solid-stately": "workspace:*",
     "@internationalized/date": "^3.8.0",
     "@internationalized/number": "^3.6.0",
-    "@internationalized/string": "^3.2.5"
-  },
-  "peerDependencies": {
-    "solid-js": "^1.9.0"
+    "@internationalized/string": "^3.2.5",
+    "@proyecto-viviana/solid-stately": "workspace:*"
   },
   "devDependencies": {
     "solid-js": "^1.9.11"
   },
-  "keywords": [
-    "solid",
-    "solidjs",
-    "aria",
-    "accessibility",
-    "a11y",
-    "react-aria"
-  ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/proyecto-viviana/proyecto-viviana.git",
-    "directory": "packages/solidaria"
-  },
-  "publishConfig": {
-    "access": "public"
+  "peerDependencies": {
+    "solid-js": "^1.9.0"
   }
 }

@@ -5,30 +5,20 @@
  * Renders an ordered list of steps with completion tracking.
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-  useContext,
-  For,
-} from 'solid-js';
+import { type JSX, createContext, createMemo, splitProps, useContext, For } from "solid-js";
 import {
   createStepListState,
   type StepListState,
   type StepListStateProps,
   type Key,
-} from '@proyecto-viviana/solid-stately';
-import {
-  createStepList,
-  type AriaStepListProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solid-stately";
+import { createStepList, type AriaStepListProps } from "@proyecto-viviana/solidaria";
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -105,7 +95,7 @@ export const StepListContext = createContext<{} | null>(null);
 
 export function useStepListState(): StepListState {
   const ctx = useContext(StepListStateContext);
-  if (!ctx) throw new Error('useStepListState must be used within a StepList');
+  if (!ctx) throw new Error("useStepListState must be used within a StepList");
   return ctx;
 }
 
@@ -117,26 +107,26 @@ export function useStepListState(): StepListState {
  * StepList displays a sequence of steps with completion tracking and selection.
  */
 export function StepList<T extends { key: Key; label: string }>(
-  props: StepListProps<T>
+  props: StepListProps<T>,
 ): JSX.Element {
   const [local, ariaProps, domRest] = splitProps(
     props,
     [
-      'items',
-      'selectedKey',
-      'defaultSelectedKey',
-      'onSelectionChange',
-      'lastCompletedStep',
-      'defaultLastCompletedStep',
-      'onLastCompletedStepChange',
-      'isDisabled',
-      'isReadOnly',
-      'disabledKeys',
-      'children',
-      'class',
-      'style',
+      "items",
+      "selectedKey",
+      "defaultSelectedKey",
+      "onSelectionChange",
+      "lastCompletedStep",
+      "defaultLastCompletedStep",
+      "onLastCompletedStepChange",
+      "isDisabled",
+      "isReadOnly",
+      "disabledKeys",
+      "children",
+      "class",
+      "style",
     ],
-    ['aria-label', 'aria-labelledby']
+    ["aria-label", "aria-labelledby"],
   );
 
   // Create state
@@ -158,14 +148,14 @@ export function StepList<T extends { key: Key; label: string }>(
   // Create ARIA props
   const { stepListProps } = createStepList(
     {
-      get 'aria-label'() {
-        return ariaProps['aria-label'];
+      get "aria-label"() {
+        return ariaProps["aria-label"];
       },
-      get 'aria-labelledby'() {
-        return ariaProps['aria-labelledby'];
+      get "aria-labelledby"() {
+        return ariaProps["aria-labelledby"];
       },
     },
-    state
+    state,
   );
 
   // Render props
@@ -177,13 +167,13 @@ export function StepList<T extends { key: Key; label: string }>(
     {
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-StepList',
+      defaultClassName: "solidaria-StepList",
     },
-    renderValues
+    renderValues,
   );
 
   const domProps = createMemo(() =>
-    filterDOMProps(domRest as Record<string, unknown>, { global: true })
+    filterDOMProps(domRest as Record<string, unknown>, { global: true }),
   );
 
   return (
@@ -202,15 +192,25 @@ export function StepList<T extends { key: Key; label: string }>(
             // Build render props as a static snapshot for the initial render.
             // The Step component handles its own reactivity via context.
             const renderProps: StepListItemRenderProps = {
-              get isSelected() { return state.selectedKey() === item.key; },
-              get isCompleted() { return state.isCompleted(item.key); },
-              get isDisabled() { return state.isDisabled() || !state.isSelectable(item.key); },
-              get isSelectable() { return state.isSelectable(item.key); },
-              get stepNumber() { return stepNumber(); },
+              get isSelected() {
+                return state.selectedKey() === item.key;
+              },
+              get isCompleted() {
+                return state.isCompleted(item.key);
+              },
+              get isDisabled() {
+                return state.isDisabled() || !state.isSelectable(item.key);
+              },
+              get isSelectable() {
+                return state.isSelectable(item.key);
+              },
+              get stepNumber() {
+                return stepNumber();
+              },
               get stepStateText() {
-                if (state.selectedKey() === item.key) return 'Current';
-                if (state.isCompleted(item.key)) return 'Completed';
-                return 'Not completed';
+                if (state.selectedKey() === item.key) return "Current";
+                if (state.isCompleted(item.key)) return "Completed";
+                return "Not completed";
               },
             };
 
@@ -227,13 +227,7 @@ export function StepList<T extends { key: Key; label: string }>(
  * Renders as an `<li>` wrapping an `<a>` with accessible step props.
  */
 export function Step(props: StepProps): JSX.Element {
-  const [local, domProps] = splitProps(props, [
-    'item',
-    'stepNumber',
-    'children',
-    'class',
-    'style',
-  ]);
+  const [local, domProps] = splitProps(props, ["item", "stepNumber", "children", "class", "style"]);
 
   const state = useStepListState();
 
@@ -249,11 +243,11 @@ export function Step(props: StepProps): JSX.Element {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
       e.preventDefault();
       return;
     }
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       if (selectable()) {
         state.setSelectedKey(local.item.key);
@@ -262,9 +256,9 @@ export function Step(props: StepProps): JSX.Element {
   };
 
   const stepStateText = () => {
-    if (isSelected()) return 'Current';
-    if (isCompleted()) return 'Completed';
-    return 'Not completed';
+    if (isSelected()) return "Current";
+    if (isCompleted()) return "Completed";
+    return "Not completed";
   };
 
   return (
@@ -279,7 +273,7 @@ export function Step(props: StepProps): JSX.Element {
     >
       <a
         role="link"
-        aria-current={isSelected() ? 'step' : undefined}
+        aria-current={isSelected() ? "step" : undefined}
         aria-disabled={!selectable() ? true : undefined}
         tabIndex={selectable() ? 0 : undefined}
         onClick={handleClick}

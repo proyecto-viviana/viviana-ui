@@ -5,16 +5,9 @@
  * Section / Header / Group.
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-  useContext,
-  For,
-} from 'solid-js';
-import type { Key } from '@proyecto-viviana/solid-stately';
-import type { DragTypes, DropOperation, DropTarget } from '@proyecto-viviana/solid-stately';
+import { type JSX, createContext, createMemo, splitProps, useContext, For } from "solid-js";
+import type { Key } from "@proyecto-viviana/solid-stately";
+import type { DragTypes, DropOperation, DropTarget } from "@proyecto-viviana/solid-stately";
 import {
   Collection as AriaCollection,
   CollectionBuilder as AriaCollectionBuilder,
@@ -22,14 +15,14 @@ import {
   createBranchComponent,
   type CollectionProps as AriaCollectionProps,
   type CollectionBuilderProps as AriaCollectionBuilderProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 import {
   type ClassNameOrFunction,
   type StyleOrFunction,
   type SlotProps,
   useRenderProps,
   filterDOMProps,
-} from './utils';
+} from "./utils";
 
 // ============================================
 // TYPES
@@ -44,7 +37,7 @@ type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
 
 function assignRef<T>(ref: RefLike<T>, el: T): void {
   if (!ref) return;
-  if (typeof ref === 'function') ref(el);
+  if (typeof ref === "function") ref(el);
   else ref.current = el;
 }
 
@@ -52,22 +45,22 @@ export interface CollectionDropTargetDelegate {
   getDropTargetFromPoint(
     x: number,
     y: number,
-    isValidDropTarget: (target: DropTarget) => boolean
+    isValidDropTarget: (target: DropTarget) => boolean,
   ): DropTarget | null;
   getDropOperation(
     target: DropTarget,
     types: DragTypes,
-    allowedOperations: DropOperation[]
+    allowedOperations: DropOperation[],
   ): DropOperation;
   getKeyboardNavigationTarget?(
     target: DropTarget | null,
-    direction: 'next' | 'previous',
-    isValidDropTarget: (target: DropTarget) => boolean
+    direction: "next" | "previous",
+    isValidDropTarget: (target: DropTarget) => boolean,
   ): DropTarget | null;
   getKeyboardPageNavigationTarget?(
     target: DropTarget | null,
-    direction: 'next' | 'previous',
-    isValidDropTarget: (target: DropTarget) => boolean
+    direction: "next" | "previous",
+    isValidDropTarget: (target: DropTarget) => boolean,
   ): DropTarget | null;
 }
 
@@ -81,7 +74,10 @@ export interface CollectionRendererContextValue<T> {
   /** Optional drop target delegate used by DnD-aware collection paths. */
   dropTargetDelegate?: CollectionDropTargetDelegate;
   /** Optional drop indicator renderer for DnD-aware collection paths. */
-  renderDropIndicator?: (index: number, position: 'before' | 'after' | 'on') => JSX.Element | undefined;
+  renderDropIndicator?: (
+    index: number,
+    position: "before" | "after" | "on",
+  ) => JSX.Element | undefined;
 }
 
 export type CollectionEntry<T> = T | CollectionSection<T>;
@@ -92,7 +88,7 @@ export interface CollectionSection<T> {
   /** Optional section header title. */
   title?: JSX.Element;
   /** Optional aria-label for section grouping. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Items contained in the section. */
   items: T[];
 }
@@ -112,7 +108,7 @@ export interface HeaderProps extends SlotProps {
   /** Header contents, usually section title text. */
   children?: JSX.Element;
   /** Optional heading level when rendered as a heading role. */
-  'aria-level'?: number;
+  "aria-level"?: number;
   /** The CSS className for the element. */
   class?: ClassNameOrFunction<CollectionPrimitiveRenderProps>;
   /** The inline style for the element. */
@@ -136,13 +132,21 @@ interface SectionContextValue {
 export interface CollectionBranchProps<T> {
   collection: Iterable<T>;
   parent?: unknown;
-  renderDropIndicator?: (target: { type: 'item'; key: Key; dropPosition: 'before' | 'after' | 'on' }) => JSX.Element | undefined;
+  renderDropIndicator?: (target: {
+    type: "item";
+    key: Key;
+    dropPosition: "before" | "after" | "on";
+  }) => JSX.Element | undefined;
 }
 
 export interface CollectionRootProps<T> {
   collection: Iterable<T>;
   persistedKeys?: Set<Key> | null;
-  renderDropIndicator?: (target: { type: 'item'; key: Key; dropPosition: 'before' | 'after' | 'on' }) => JSX.Element | undefined;
+  renderDropIndicator?: (target: {
+    type: "item";
+    key: Key;
+    dropPosition: "before" | "after" | "on";
+  }) => JSX.Element | undefined;
 }
 
 export interface CollectionRenderer<T = unknown> {
@@ -157,7 +161,8 @@ export interface CollectionRenderer<T = unknown> {
 // CONTEXT
 // ============================================
 
-export const CollectionRendererContext = createContext<CollectionRendererContextValue<unknown> | null>(null);
+export const CollectionRendererContext =
+  createContext<CollectionRendererContextValue<unknown> | null>(null);
 export const SelectableCollectionContext = CollectionRendererContext;
 export const SectionContext = createContext<SectionContextValue | null>(null);
 export const GroupContext = createContext<Partial<GroupProps> | null>(null);
@@ -173,7 +178,11 @@ export function useCollectionRenderer<T>(): CollectionRendererContextValue<T> | 
 // ============================================
 
 export function isCollectionSection<T>(entry: CollectionEntry<T>): entry is CollectionSection<T> {
-  return typeof entry === 'object' && entry !== null && Array.isArray((entry as CollectionSection<T>).items);
+  return (
+    typeof entry === "object" &&
+    entry !== null &&
+    Array.isArray((entry as CollectionSection<T>).items)
+  );
 }
 
 export function flattenCollectionEntries<T>(entries: CollectionEntry<T>[]): T[] {
@@ -187,23 +196,27 @@ export function flattenCollectionEntries<T>(entries: CollectionEntry<T>[]): T[] 
 
 function renderCollectionItems<T>(
   collection: Iterable<T>,
-  renderDropIndicator?: (target: { type: 'item'; key: Key; dropPosition: 'before' | 'after' | 'on' }) => JSX.Element | undefined
+  renderDropIndicator?: (target: {
+    type: "item";
+    key: Key;
+    dropPosition: "before" | "after" | "on";
+  }) => JSX.Element | undefined,
 ): JSX.Element {
   const items = Array.from(collection);
   return (
     <For each={items}>
       {(item, index) => {
         const node = item as { type?: unknown; key?: Key };
-        if (node.type === 'content') {
+        if (node.type === "content") {
           // Content rows are rendered by their owning item/section branch.
           return <></>;
         }
         const key = node.key ?? index();
         return (
           <>
-            {renderDropIndicator?.({ type: 'item', key, dropPosition: 'before' })}
-            {(item as unknown as JSX.Element)}
-            {renderDropIndicator?.({ type: 'item', key, dropPosition: 'after' })}
+            {renderDropIndicator?.({ type: "item", key, dropPosition: "before" })}
+            {item as unknown as JSX.Element}
+            {renderDropIndicator?.({ type: "item", key, dropPosition: "after" })}
           </>
         );
       }}
@@ -240,14 +253,15 @@ export { createLeafComponent, createBranchComponent };
 export function Section(props: SectionProps): JSX.Element {
   const sectionContext = useContext(SectionContext);
   if (sectionContext) {
-    const nodeEnv = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV;
-    if (nodeEnv !== 'production') {
+    const nodeEnv = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env
+      ?.NODE_ENV;
+    if (nodeEnv !== "production") {
       console.warn(`<Section> is deprecated. Please use <${sectionContext.name}> instead.`);
     }
-    return sectionContext.render(props, 'solidaria-Section');
+    return sectionContext.render(props, "solidaria-Section");
   }
 
-  const [local, domProps] = splitProps(props, ['children', 'class', 'style', 'slot', 'ref']);
+  const [local, domProps] = splitProps(props, ["children", "class", "style", "slot", "ref"]);
 
   const renderValues = createMemo<CollectionPrimitiveRenderProps>(() => ({
     hasChildren: local.children != null,
@@ -258,9 +272,9 @@ export function Section(props: SectionProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Section',
+      defaultClassName: "solidaria-Section",
     },
-    renderValues
+    renderValues,
   );
 
   const filteredDomProps = createMemo(() => filterDOMProps(domProps, { global: true }));
@@ -283,7 +297,7 @@ export function Section(props: SectionProps): JSX.Element {
  * A header/title primitive for collection sections.
  */
 export function Header(props: HeaderProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ["children", "class", "style", "slot"]);
 
   const renderValues = createMemo<CollectionPrimitiveRenderProps>(() => ({
     hasChildren: local.children != null,
@@ -294,9 +308,9 @@ export function Header(props: HeaderProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Header',
+      defaultClassName: "solidaria-Header",
     },
-    renderValues
+    renderValues,
   );
 
   const filteredDomProps = createMemo(() => filterDOMProps(domProps, { global: true }));
@@ -319,7 +333,7 @@ export function Header(props: HeaderProps): JSX.Element {
  * A grouping primitive for section item containers.
  */
 export function Group(props: GroupProps): JSX.Element {
-  const [local, domProps] = splitProps(props, ['children', 'class', 'style', 'slot']);
+  const [local, domProps] = splitProps(props, ["children", "class", "style", "slot"]);
 
   const renderValues = createMemo<CollectionPrimitiveRenderProps>(() => ({
     hasChildren: local.children != null,
@@ -330,9 +344,9 @@ export function Group(props: GroupProps): JSX.Element {
       children: local.children,
       class: local.class,
       style: local.style,
-      defaultClassName: 'solidaria-Group',
+      defaultClassName: "solidaria-Group",
     },
-    renderValues
+    renderValues,
   );
 
   const filteredDomProps = createMemo(() => filterDOMProps(domProps, { global: true }));

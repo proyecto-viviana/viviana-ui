@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
 import { DateField } from "@proyecto-viviana/solid-spectrum";
-import {
-  CalendarDateClass as CalendarDate,
-  type DateValue,
-} from "@proyecto-viviana/solid-stately";
+import { CalendarDateClass as CalendarDate, type DateValue } from "@proyecto-viviana/solid-stately";
 import { DocPage, Example, PropsTable, AccessibilitySection } from "@/components/docs";
 
 export const Route = createFileRoute("/silapse/docs/components/datefield")({
@@ -35,11 +32,7 @@ import { CalendarDateClass as CalendarDate } from '@proyecto-viviana/solid-state
 <p>Selected: {date()?.toString() ?? "None"}</p>`}
       >
         <div class="flex flex-col gap-4 max-w-xs">
-          <DateField
-            label="Birth date"
-            value={date()}
-            onChange={setDate}
-          />
+          <DateField label="Birth date" value={date()} onChange={setDate} />
           <p class="text-sm text-bg-500">
             Entered date: {date() ? `${date()!.month}/${date()!.day}/${date()!.year}` : "None"}
           </p>
@@ -74,11 +67,7 @@ import { CalendarDateClass as CalendarDate } from '@proyecto-viviana/solid-state
 />`}
       >
         <div class="max-w-xs">
-          <DateField
-            label="Locked date"
-            isDisabled
-            value={new CalendarDate(2026, 2, 17)}
-          />
+          <DateField label="Locked date" isDisabled value={new CalendarDate(2026, 2, 17)} />
         </div>
       </Example>
 
@@ -174,8 +163,8 @@ import { CalendarDateClass as CalendarDate } from '@proyecto-viviana/solid-state
       <AccessibilitySection>
         <ul class="list-disc pl-5 space-y-1 text-sm">
           <li>
-            Each date segment uses a <code>spinbutton</code> role with proper <code>aria-valuemin</code>,{" "}
-            <code>aria-valuemax</code>, and <code>aria-valuenow</code>
+            Each date segment uses a <code>spinbutton</code> role with proper{" "}
+            <code>aria-valuemin</code>, <code>aria-valuemax</code>, and <code>aria-valuenow</code>
           </li>
           <li>Arrow Up/Down increments or decrements the focused segment</li>
           <li>Tab moves focus between segments (month, day, year)</li>

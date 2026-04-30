@@ -2,19 +2,19 @@
  * Tests for createSelectState.
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { createRoot, createSignal } from 'solid-js';
-import { createSelectState } from '../src/select/createSelectState';
+import { describe, it, expect, vi } from "vitest";
+import { createRoot, createSignal } from "solid-js";
+import { createSelectState } from "../src/select/createSelectState";
 
-describe('createSelectState', () => {
+describe("createSelectState", () => {
   const items = [
-    { key: 'a', label: 'Apple' },
-    { key: 'b', label: 'Banana' },
-    { key: 'c', label: 'Cherry' },
+    { key: "a", label: "Apple" },
+    { key: "b", label: "Banana" },
+    { key: "c", label: "Cherry" },
   ];
 
-  describe('overlay state', () => {
-    it('starts closed by default', () => {
+  describe("overlay state", () => {
+    it("starts closed by default", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -26,7 +26,7 @@ describe('createSelectState', () => {
       });
     });
 
-    it('respects defaultOpen', () => {
+    it("respects defaultOpen", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -39,7 +39,7 @@ describe('createSelectState', () => {
       });
     });
 
-    it('open() opens the dropdown', () => {
+    it("open() opens the dropdown", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -53,7 +53,7 @@ describe('createSelectState', () => {
       });
     });
 
-    it('close() closes the dropdown', () => {
+    it("close() closes the dropdown", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -68,7 +68,7 @@ describe('createSelectState', () => {
       });
     });
 
-    it('toggle() toggles the dropdown', () => {
+    it("toggle() toggles the dropdown", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -84,7 +84,7 @@ describe('createSelectState', () => {
       });
     });
 
-    it('calls onOpenChange when open state changes', () => {
+    it("calls onOpenChange when open state changes", () => {
       const onOpenChange = vi.fn();
 
       createRoot((dispose) => {
@@ -103,7 +103,7 @@ describe('createSelectState', () => {
       });
     });
 
-    it('supports controlled isOpen', () => {
+    it("supports controlled isOpen", () => {
       createRoot((dispose) => {
         const [isOpen, setIsOpen] = createSignal(false);
 
@@ -124,8 +124,8 @@ describe('createSelectState', () => {
     });
   });
 
-  describe('selection state', () => {
-    it('has no selection by default', () => {
+  describe("selection state", () => {
+    it("has no selection by default", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -138,35 +138,35 @@ describe('createSelectState', () => {
       });
     });
 
-    it('respects defaultSelectedKey', () => {
+    it("respects defaultSelectedKey", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
           getKey: (item) => item.key,
-          defaultSelectedKey: 'b',
+          defaultSelectedKey: "b",
         });
 
-        expect(state.selectedKey()).toBe('b');
-        expect(state.selectedItem()?.value).toEqual({ key: 'b', label: 'Banana' });
+        expect(state.selectedKey()).toBe("b");
+        expect(state.selectedItem()?.value).toEqual({ key: "b", label: "Banana" });
         dispose();
       });
     });
 
-    it('setSelectedKey updates selection', () => {
+    it("setSelectedKey updates selection", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
           getKey: (item) => item.key,
         });
 
-        state.setSelectedKey('c');
-        expect(state.selectedKey()).toBe('c');
-        expect(state.selectedItem()?.value).toEqual({ key: 'c', label: 'Cherry' });
+        state.setSelectedKey("c");
+        expect(state.selectedKey()).toBe("c");
+        expect(state.selectedItem()?.value).toEqual({ key: "c", label: "Cherry" });
         dispose();
       });
     });
 
-    it('calls onSelectionChange when selection changes', () => {
+    it("calls onSelectionChange when selection changes", () => {
       const onSelectionChange = vi.fn();
 
       createRoot((dispose) => {
@@ -176,15 +176,15 @@ describe('createSelectState', () => {
           onSelectionChange,
         });
 
-        state.setSelectedKey('a');
-        expect(onSelectionChange).toHaveBeenCalledWith('a');
+        state.setSelectedKey("a");
+        expect(onSelectionChange).toHaveBeenCalledWith("a");
         dispose();
       });
     });
 
-    it('supports controlled selectedKey', () => {
+    it("supports controlled selectedKey", () => {
       createRoot((dispose) => {
-        const [selectedKey, setSelectedKey] = createSignal<string | null>('a');
+        const [selectedKey, setSelectedKey] = createSignal<string | null>("a");
 
         const state = createSelectState({
           items,
@@ -194,17 +194,17 @@ describe('createSelectState', () => {
           },
         });
 
-        expect(state.selectedKey()).toBe('a');
+        expect(state.selectedKey()).toBe("a");
 
-        setSelectedKey('b');
-        expect(state.selectedKey()).toBe('b');
+        setSelectedKey("b");
+        expect(state.selectedKey()).toBe("b");
         dispose();
       });
     });
   });
 
-  describe('collection', () => {
-    it('provides collection accessor', () => {
+  describe("collection", () => {
+    it("provides collection accessor", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -213,12 +213,12 @@ describe('createSelectState', () => {
 
         const collection = state.collection();
         expect(collection.size).toBe(3);
-        expect(collection.getItem('a')?.value).toEqual({ key: 'a', label: 'Apple' });
+        expect(collection.getItem("a")?.value).toEqual({ key: "a", label: "Apple" });
         dispose();
       });
     });
 
-    it('updates collection when items change', () => {
+    it("updates collection when items change", () => {
       createRoot((dispose) => {
         const [itemList, setItemList] = createSignal(items);
 
@@ -231,15 +231,15 @@ describe('createSelectState', () => {
 
         expect(state.collection().size).toBe(3);
 
-        setItemList([...items, { key: 'd', label: 'Date' }]);
+        setItemList([...items, { key: "d", label: "Date" }]);
         expect(state.collection().size).toBe(4);
         dispose();
       });
     });
   });
 
-  describe('focus state', () => {
-    it('tracks focus state', () => {
+  describe("focus state", () => {
+    it("tracks focus state", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -253,7 +253,7 @@ describe('createSelectState', () => {
       });
     });
 
-    it('tracks focused key', () => {
+    it("tracks focused key", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -261,15 +261,15 @@ describe('createSelectState', () => {
         });
 
         expect(state.focusedKey()).toBe(null);
-        state.setFocusedKey('b');
-        expect(state.focusedKey()).toBe('b');
+        state.setFocusedKey("b");
+        expect(state.focusedKey()).toBe("b");
         dispose();
       });
     });
   });
 
-  describe('disabled state', () => {
-    it('isDisabled defaults to false', () => {
+  describe("disabled state", () => {
+    it("isDisabled defaults to false", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -281,7 +281,7 @@ describe('createSelectState', () => {
       });
     });
 
-    it('respects isDisabled prop', () => {
+    it("respects isDisabled prop", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -294,27 +294,27 @@ describe('createSelectState', () => {
       });
     });
 
-    it('checks if individual keys are disabled', () => {
+    it("checks if individual keys are disabled", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
           getKey: (item) => item.key,
-          disabledKeys: ['b'],
+          disabledKeys: ["b"],
         });
 
-        expect(state.isKeyDisabled('a')).toBe(false);
-        expect(state.isKeyDisabled('b')).toBe(true);
-        expect(state.isKeyDisabled('c')).toBe(false);
+        expect(state.isKeyDisabled("a")).toBe(false);
+        expect(state.isKeyDisabled("b")).toBe(true);
+        expect(state.isKeyDisabled("c")).toBe(false);
         dispose();
       });
     });
 
-    it('supports getDisabled function', () => {
+    it("supports getDisabled function", () => {
       createRoot((dispose) => {
         const itemsWithDisabled = [
-          { key: 'a', label: 'Apple', disabled: false },
-          { key: 'b', label: 'Banana', disabled: true },
-          { key: 'c', label: 'Cherry', disabled: false },
+          { key: "a", label: "Apple", disabled: false },
+          { key: "b", label: "Banana", disabled: true },
+          { key: "c", label: "Cherry", disabled: false },
         ];
 
         const state = createSelectState({
@@ -323,16 +323,16 @@ describe('createSelectState', () => {
           getDisabled: (item) => item.disabled,
         });
 
-        expect(state.isKeyDisabled('a')).toBe(false);
-        expect(state.isKeyDisabled('b')).toBe(true);
-        expect(state.isKeyDisabled('c')).toBe(false);
+        expect(state.isKeyDisabled("a")).toBe(false);
+        expect(state.isKeyDisabled("b")).toBe(true);
+        expect(state.isKeyDisabled("c")).toBe(false);
         dispose();
       });
     });
   });
 
-  describe('required state', () => {
-    it('isRequired defaults to false', () => {
+  describe("required state", () => {
+    it("isRequired defaults to false", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -344,7 +344,7 @@ describe('createSelectState', () => {
       });
     });
 
-    it('respects isRequired prop', () => {
+    it("respects isRequired prop", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -358,8 +358,8 @@ describe('createSelectState', () => {
     });
   });
 
-  describe('text values', () => {
-    it('uses getTextValue for text content', () => {
+  describe("text values", () => {
+    it("uses getTextValue for text content", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
@@ -367,62 +367,62 @@ describe('createSelectState', () => {
           getTextValue: (item) => item.label,
         });
 
-        expect(state.collection().getItem('a')?.textValue).toBe('Apple');
+        expect(state.collection().getItem("a")?.textValue).toBe("Apple");
         dispose();
       });
     });
   });
 
-  describe('multiple selection mode', () => {
-    it('supports defaultSelectedKeys', () => {
+  describe("multiple selection mode", () => {
+    it("supports defaultSelectedKeys", () => {
       createRoot((dispose) => {
         const state = createSelectState({
           items,
           getKey: (item) => item.key,
-          selectionMode: 'multiple',
-          defaultSelectedKeys: ['a', 'c'],
+          selectionMode: "multiple",
+          defaultSelectedKeys: ["a", "c"],
         });
 
-        expect(state.selectionMode()).toBe('multiple');
-        expect(state.selectedKeys()).toEqual(new Set(['a', 'c']));
-        expect(state.selectedItems().map((item) => item.key)).toEqual(['a', 'c']);
+        expect(state.selectionMode()).toBe("multiple");
+        expect(state.selectedKeys()).toEqual(new Set(["a", "c"]));
+        expect(state.selectedItems().map((item) => item.key)).toEqual(["a", "c"]);
         dispose();
       });
     });
 
-    it('supports controlled selectedKeys', () => {
+    it("supports controlled selectedKeys", () => {
       createRoot((dispose) => {
-        const [selectedKeys, setSelectedKeys] = createSignal(new Set(['a']));
+        const [selectedKeys, setSelectedKeys] = createSignal(new Set(["a"]));
 
         const state = createSelectState({
           items,
           getKey: (item) => item.key,
-          selectionMode: 'multiple',
+          selectionMode: "multiple",
           get selectedKeys() {
             return selectedKeys();
           },
         });
 
-        expect(state.selectedKeys()).toEqual(new Set(['a']));
-        setSelectedKeys(new Set(['b', 'c']));
-        expect(state.selectedKeys()).toEqual(new Set(['b', 'c']));
+        expect(state.selectedKeys()).toEqual(new Set(["a"]));
+        setSelectedKeys(new Set(["b", "c"]));
+        expect(state.selectedKeys()).toEqual(new Set(["b", "c"]));
         dispose();
       });
     });
 
-    it('calls onSelectionChangeKeys for list interactions', () => {
+    it("calls onSelectionChangeKeys for list interactions", () => {
       const onSelectionChangeKeys = vi.fn();
 
       createRoot((dispose) => {
         const state = createSelectState({
           items,
           getKey: (item) => item.key,
-          selectionMode: 'multiple',
+          selectionMode: "multiple",
           onSelectionChangeKeys,
         });
 
-        state.setSelectedKeys(['a', 'b']);
-        expect(onSelectionChangeKeys).toHaveBeenCalledWith(new Set(['a', 'b']));
+        state.setSelectedKeys(["a", "b"]);
+        expect(onSelectionChangeKeys).toHaveBeenCalledWith(new Set(["a", "b"]));
         dispose();
       });
     });

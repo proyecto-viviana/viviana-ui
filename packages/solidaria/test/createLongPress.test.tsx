@@ -2,13 +2,13 @@
  * createLongPress tests - Port of React Aria's useLongPress.test.js
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@solidjs/testing-library';
-import { createLongPress, type LongPressEvent } from '../src/interactions/createLongPress';
-import { createPress, type PressEvent } from '../src/interactions/createPress';
-import { mergeProps } from '../src/utils/mergeProps';
-import { Dynamic } from 'solid-js/web';
-import type { Component } from 'solid-js';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, cleanup, fireEvent } from "@solidjs/testing-library";
+import { createLongPress, type LongPressEvent } from "../src/interactions/createLongPress";
+import { createPress, type PressEvent } from "../src/interactions/createPress";
+import { mergeProps } from "../src/utils/mergeProps";
+import { Dynamic } from "solid-js/web";
+import type { Component } from "solid-js";
 
 interface ExampleProps {
   elementType?: string;
@@ -31,7 +31,7 @@ const Example: Component<ExampleProps> = (props) => {
   });
 
   return (
-    <Dynamic component={props.elementType ?? 'div'} {...longPressProps} tabIndex={0}>
+    <Dynamic component={props.elementType ?? "div"} {...longPressProps} tabIndex={0}>
       test
     </Dynamic>
   );
@@ -58,7 +58,7 @@ const ExampleWithPress: Component<ExampleWithPressProps> = (props) => {
 
   return (
     <Dynamic
-      component={props.elementType ?? 'div'}
+      component={props.elementType ?? "div"}
       {...mergeProps(longPressProps, pressProps)}
       tabIndex={0}
     >
@@ -67,7 +67,7 @@ const ExampleWithPress: Component<ExampleWithPressProps> = (props) => {
   );
 };
 
-describe('createLongPress', () => {
+describe("createLongPress", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -78,21 +78,21 @@ describe('createLongPress', () => {
     cleanup();
   });
 
-  it('should perform a long press', () => {
+  it("should perform a long press", () => {
     const events: LongPressEvent[] = [];
     const addEvent = (e: LongPressEvent) => events.push(e);
     render(() => (
       <Example onLongPressStart={addEvent} onLongPressEnd={addEvent} onLongPress={addEvent} />
     ));
 
-    const el = screen.getByText('test');
+    const el = screen.getByText("test");
 
-    fireEvent.pointerDown(el, { pointerType: 'touch' });
+    fireEvent.pointerDown(el, { pointerType: "touch" });
     expect(events).toEqual([
       {
-        type: 'longpressstart',
+        type: "longpressstart",
         target: el,
-        pointerType: 'touch',
+        pointerType: "touch",
         ctrlKey: false,
         metaKey: false,
         shiftKey: false,
@@ -108,9 +108,9 @@ describe('createLongPress', () => {
     vi.advanceTimersByTime(200);
     expect(events).toEqual([
       {
-        type: 'longpressstart',
+        type: "longpressstart",
         target: el,
-        pointerType: 'touch',
+        pointerType: "touch",
         ctrlKey: false,
         metaKey: false,
         shiftKey: false,
@@ -119,9 +119,9 @@ describe('createLongPress', () => {
         y: 0,
       },
       {
-        type: 'longpressend',
+        type: "longpressend",
         target: el,
-        pointerType: 'touch',
+        pointerType: "touch",
         ctrlKey: false,
         metaKey: false,
         shiftKey: false,
@@ -130,9 +130,9 @@ describe('createLongPress', () => {
         y: 0,
       },
       {
-        type: 'longpress',
+        type: "longpress",
         target: el,
-        pointerType: 'touch',
+        pointerType: "touch",
         ctrlKey: false,
         metaKey: false,
         shiftKey: false,
@@ -142,29 +142,29 @@ describe('createLongPress', () => {
       },
     ]);
 
-    fireEvent.pointerUp(el, { pointerType: 'touch' });
+    fireEvent.pointerUp(el, { pointerType: "touch" });
     expect(events).toHaveLength(3);
   });
 
-  it('should cancel if pointer ends before timeout', () => {
+  it("should cancel if pointer ends before timeout", () => {
     const events: LongPressEvent[] = [];
     const addEvent = (e: LongPressEvent) => events.push(e);
     render(() => (
       <Example onLongPressStart={addEvent} onLongPressEnd={addEvent} onLongPress={addEvent} />
     ));
 
-    const el = screen.getByText('test');
+    const el = screen.getByText("test");
 
-    fireEvent.pointerDown(el, { pointerType: 'touch' });
+    fireEvent.pointerDown(el, { pointerType: "touch" });
     vi.advanceTimersByTime(200);
-    fireEvent.pointerUp(el, { pointerType: 'touch' });
+    fireEvent.pointerUp(el, { pointerType: "touch" });
 
     vi.advanceTimersByTime(800);
     expect(events).toEqual([
       {
-        type: 'longpressstart',
+        type: "longpressstart",
         target: el,
-        pointerType: 'touch',
+        pointerType: "touch",
         ctrlKey: false,
         metaKey: false,
         shiftKey: false,
@@ -173,9 +173,9 @@ describe('createLongPress', () => {
         y: 0,
       },
       {
-        type: 'longpressend',
+        type: "longpressend",
         target: el,
-        pointerType: 'touch',
+        pointerType: "touch",
         ctrlKey: false,
         metaKey: false,
         shiftKey: false,
@@ -186,7 +186,7 @@ describe('createLongPress', () => {
     ]);
   });
 
-  it('should cancel other press events', () => {
+  it("should cancel other press events", () => {
     const events: Array<LongPressEvent | PressEvent> = [];
     const addEvent = (e: LongPressEvent | PressEvent) => events.push(e);
     render(() => (
@@ -200,22 +200,22 @@ describe('createLongPress', () => {
       />
     ));
 
-    const el = screen.getByText('test');
+    const el = screen.getByText("test");
 
-    fireEvent.pointerDown(el, { pointerType: 'touch' });
+    fireEvent.pointerDown(el, { pointerType: "touch" });
     vi.advanceTimersByTime(600);
-    fireEvent.pointerUp(el, { pointerType: 'touch' });
+    fireEvent.pointerUp(el, { pointerType: "touch" });
 
     expect(events.map((event) => event.type)).toEqual([
-      'longpressstart',
-      'pressstart',
-      'longpressend',
-      'pressend',
-      'longpress',
+      "longpressstart",
+      "pressstart",
+      "longpressend",
+      "pressend",
+      "longpress",
     ]);
   });
 
-  it('should not cancel press events if pointer ends before timer', () => {
+  it("should not cancel press events if pointer ends before timer", () => {
     const events: Array<LongPressEvent | PressEvent> = [];
     const addEvent = (e: LongPressEvent | PressEvent) => events.push(e);
     render(() => (
@@ -229,23 +229,23 @@ describe('createLongPress', () => {
       />
     ));
 
-    const el = screen.getByText('test');
+    const el = screen.getByText("test");
 
-    fireEvent.pointerDown(el, { pointerType: 'touch' });
+    fireEvent.pointerDown(el, { pointerType: "touch" });
     vi.advanceTimersByTime(300);
-    fireEvent.pointerUp(el, { pointerType: 'touch' });
+    fireEvent.pointerUp(el, { pointerType: "touch" });
     fireEvent.click(el, { detail: 1 });
 
     expect(events.map((event) => event.type)).toEqual([
-      'longpressstart',
-      'pressstart',
-      'longpressend',
-      'pressend',
-      'press',
+      "longpressstart",
+      "pressstart",
+      "longpressend",
+      "pressend",
+      "press",
     ]);
   });
 
-  it('allows changing the threshold', () => {
+  it("allows changing the threshold", () => {
     const events: LongPressEvent[] = [];
     const addEvent = (e: LongPressEvent) => events.push(e);
     render(() => (
@@ -257,15 +257,15 @@ describe('createLongPress', () => {
       />
     ));
 
-    const el = screen.getByText('test');
+    const el = screen.getByText("test");
 
-    fireEvent.pointerDown(el, { pointerType: 'touch' });
+    fireEvent.pointerDown(el, { pointerType: "touch" });
     vi.advanceTimersByTime(600);
     expect(events).toEqual([
       {
-        type: 'longpressstart',
+        type: "longpressstart",
         target: el,
-        pointerType: 'touch',
+        pointerType: "touch",
         ctrlKey: false,
         metaKey: false,
         shiftKey: false,
@@ -277,25 +277,25 @@ describe('createLongPress', () => {
 
     vi.advanceTimersByTime(800);
     expect(events.map((event) => event.type)).toEqual([
-      'longpressstart',
-      'longpressend',
-      'longpress',
+      "longpressstart",
+      "longpressend",
+      "longpress",
     ]);
   });
 
-  it('supports accessibilityDescription', () => {
+  it("supports accessibilityDescription", () => {
     render(() => (
       <Example accessibilityDescription="Long press to open menu" onLongPress={() => {}} />
     ));
 
-    const el = screen.getByText('test');
-    expect(el).toHaveAttribute('aria-describedby');
+    const el = screen.getByText("test");
+    expect(el).toHaveAttribute("aria-describedby");
 
-    const description = document.getElementById(el.getAttribute('aria-describedby')!);
-    expect(description).toHaveTextContent('Long press to open menu');
+    const description = document.getElementById(el.getAttribute("aria-describedby")!);
+    expect(description).toHaveTextContent("Long press to open menu");
   });
 
-  it('does not show accessibilityDescription if disabled', () => {
+  it("does not show accessibilityDescription if disabled", () => {
     render(() => (
       <Example
         accessibilityDescription="Long press to open menu"
@@ -304,31 +304,31 @@ describe('createLongPress', () => {
       />
     ));
 
-    const el = screen.getByText('test');
-    expect(el).not.toHaveAttribute('aria-describedby');
+    const el = screen.getByText("test");
+    expect(el).not.toHaveAttribute("aria-describedby");
   });
 
-  it('does not show accessibilityDescription if no onLongPress handler', () => {
+  it("does not show accessibilityDescription if no onLongPress handler", () => {
     render(() => <Example accessibilityDescription="Long press to open menu" />);
 
-    const el = screen.getByText('test');
-    expect(el).not.toHaveAttribute('aria-describedby');
+    const el = screen.getByText("test");
+    expect(el).not.toHaveAttribute("aria-describedby");
   });
 
-  it('prevents context menu events on touch', () => {
+  it("prevents context menu events on touch", () => {
     render(() => <Example onLongPress={() => {}} />);
 
-    const el = screen.getByText('test');
-    fireEvent.pointerDown(el, { pointerType: 'touch' });
+    const el = screen.getByText("test");
+    fireEvent.pointerDown(el, { pointerType: "touch" });
     vi.advanceTimersByTime(600);
 
     const performDefault = fireEvent.contextMenu(el);
     expect(performDefault).toBe(false);
 
-    fireEvent.pointerUp(el, { pointerType: 'touch' });
+    fireEvent.pointerUp(el, { pointerType: "touch" });
   });
 
-  it('should not fire any events for keyboard interactions', () => {
+  it("should not fire any events for keyboard interactions", () => {
     const events: LongPressEvent[] = [];
     const addEvent = (e: LongPressEvent) => events.push(e);
     render(() => (
@@ -340,10 +340,10 @@ describe('createLongPress', () => {
       />
     ));
 
-    const el = screen.getByText('test');
-    fireEvent.keyDown(el, { key: ' ' });
+    const el = screen.getByText("test");
+    fireEvent.keyDown(el, { key: " " });
     vi.advanceTimersByTime(600);
-    fireEvent.keyUp(el, { key: ' ' });
+    fireEvent.keyUp(el, { key: " " });
 
     expect(events).toHaveLength(0);
   });

@@ -4,16 +4,16 @@
  * Based on @react-aria/listbox useListBox.
  */
 
-import { createEffect, onCleanup, type JSX } from 'solid-js';
-import { createFocusWithin } from '../interactions/createFocusWithin';
-import { createLabel } from '../label/createLabel';
-import { createTypeSelect } from '../selection/createTypeSelect';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { mergeProps } from '../utils/mergeProps';
-import { createId } from '../ssr';
-import { access, type MaybeAccessor } from '../utils/reactivity';
-import { isDevEnv } from '../utils/env';
-import type { ListState, Key } from '@proyecto-viviana/solid-stately';
+import { createEffect, onCleanup, type JSX } from "solid-js";
+import { createFocusWithin } from "../interactions/createFocusWithin";
+import { createLabel } from "../label/createLabel";
+import { createTypeSelect } from "../selection/createTypeSelect";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { mergeProps } from "../utils/mergeProps";
+import { createId } from "../ssr";
+import { access, type MaybeAccessor } from "../utils/reactivity";
+import { isDevEnv } from "../utils/env";
+import type { ListState, Key } from "@proyecto-viviana/solid-stately";
 
 export interface AriaListBoxProps {
   /** An ID for the listbox. */
@@ -23,11 +23,11 @@ export interface AriaListBoxProps {
   /** The label for the listbox. */
   label?: JSX.Element;
   /** An accessible label for the listbox when no visible label is provided. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** The ID of an element that labels the listbox. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** The ID of an element that describes the listbox. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Handler called when focus moves into the listbox. */
   onFocus?: (e: FocusEvent) => void;
   /** Handler called when focus moves out of the listbox. */
@@ -71,16 +71,16 @@ export function getListBoxData(state: ListState): ListBoxData | undefined {
 function findNextEnabledKey<T>(
   state: ListState<T>,
   currentKey: Key | null,
-  direction: 'next' | 'prev',
-  wrap: boolean
+  direction: "next" | "prev",
+  wrap: boolean,
 ): Key | null {
   const collection = state.collection();
-  const getAdjacentKey = direction === 'next'
-    ? (key: Key) => collection.getKeyAfter(key)
-    : (key: Key) => collection.getKeyBefore(key);
-  const getBoundaryKey = direction === 'next'
-    ? () => collection.getFirstKey()
-    : () => collection.getLastKey();
+  const getAdjacentKey =
+    direction === "next"
+      ? (key: Key) => collection.getKeyAfter(key)
+      : (key: Key) => collection.getKeyBefore(key);
+  const getBoundaryKey =
+    direction === "next" ? () => collection.getFirstKey() : () => collection.getLastKey();
 
   let key = currentKey != null ? getAdjacentKey(currentKey) : getBoundaryKey();
   while (key != null && state.isDisabled(key)) {
@@ -104,7 +104,7 @@ function findNextEnabledKey<T>(
 export function createListBox<T>(
   props: MaybeAccessor<AriaListBoxProps>,
   state: ListState<T>,
-  _ref?: () => HTMLElement | null
+  _ref?: () => HTMLElement | null,
 ): ListBoxAria {
   const getProps = () => access(props);
   const id = createId(getProps().id);
@@ -112,15 +112,16 @@ export function createListBox<T>(
   // Development-time warning for missing accessibility labels
   if (isDevEnv()) {
     const p = getProps();
-    if (!p.label && !p['aria-label'] && !p['aria-labelledby']) {
+    if (!p.label && !p["aria-label"] && !p["aria-labelledby"]) {
       console.warn(
-        '[solidaria] A ListBox requires an aria-label or aria-labelledby attribute for accessibility.'
+        "[solidaria] A ListBox requires an aria-label or aria-labelledby attribute for accessibility.",
       );
     }
   }
 
   // Filter DOM props
-  const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
+  const domProps = () =>
+    filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
   const updateSharedData = () => {
     const p = getProps();
@@ -163,13 +164,13 @@ export function createListBox<T>(
     get label() {
       return getProps().label;
     },
-    get 'aria-label'() {
-      return getProps()['aria-label'];
+    get "aria-label"() {
+      return getProps()["aria-label"];
     },
-    get 'aria-labelledby'() {
-      return getProps()['aria-labelledby'];
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
     },
-    labelElementType: 'span',
+    labelElementType: "span",
   });
 
   // Type-to-select
@@ -192,80 +193,80 @@ export function createListBox<T>(
     const shouldWrap = p.shouldFocusWrap ?? false;
 
     switch (e.key) {
-      case 'ArrowDown': {
+      case "ArrowDown": {
         e.preventDefault();
-        const nextKey = findNextEnabledKey(state, state.focusedKey(), 'next', shouldWrap);
+        const nextKey = findNextEnabledKey(state, state.focusedKey(), "next", shouldWrap);
         if (nextKey != null) {
           state.setFocusedKey(nextKey);
-          if (!e.shiftKey && state.selectionMode() === 'single') {
+          if (!e.shiftKey && state.selectionMode() === "single") {
             state.replaceSelection(nextKey);
-          } else if (e.shiftKey && state.selectionMode() === 'multiple') {
+          } else if (e.shiftKey && state.selectionMode() === "multiple") {
             state.extendSelection(nextKey, collection);
           }
         }
         break;
       }
-      case 'ArrowUp': {
+      case "ArrowUp": {
         e.preventDefault();
-        const prevKey = findNextEnabledKey(state, state.focusedKey(), 'prev', shouldWrap);
+        const prevKey = findNextEnabledKey(state, state.focusedKey(), "prev", shouldWrap);
         if (prevKey != null) {
           state.setFocusedKey(prevKey);
-          if (!e.shiftKey && state.selectionMode() === 'single') {
+          if (!e.shiftKey && state.selectionMode() === "single") {
             state.replaceSelection(prevKey);
-          } else if (e.shiftKey && state.selectionMode() === 'multiple') {
+          } else if (e.shiftKey && state.selectionMode() === "multiple") {
             state.extendSelection(prevKey, collection);
           }
         }
         break;
       }
-      case 'Home': {
+      case "Home": {
         e.preventDefault();
-        const firstKey = findNextEnabledKey(state, null, 'next', false);
+        const firstKey = findNextEnabledKey(state, null, "next", false);
         if (firstKey != null) {
           state.setFocusedKey(firstKey);
-          if (e.ctrlKey && e.shiftKey && state.selectionMode() === 'multiple') {
+          if (e.ctrlKey && e.shiftKey && state.selectionMode() === "multiple") {
             // Select from current to first
             state.extendSelection(firstKey, collection);
-          } else if (!e.shiftKey && state.selectionMode() === 'single') {
+          } else if (!e.shiftKey && state.selectionMode() === "single") {
             state.replaceSelection(firstKey);
           }
         }
         break;
       }
-      case 'End': {
+      case "End": {
         e.preventDefault();
-        const lastKey = findNextEnabledKey(state, null, 'prev', false);
+        const lastKey = findNextEnabledKey(state, null, "prev", false);
         if (lastKey != null) {
           state.setFocusedKey(lastKey);
-          if (e.ctrlKey && e.shiftKey && state.selectionMode() === 'multiple') {
+          if (e.ctrlKey && e.shiftKey && state.selectionMode() === "multiple") {
             // Select from current to last
             state.extendSelection(lastKey, collection);
-          } else if (!e.shiftKey && state.selectionMode() === 'single') {
+          } else if (!e.shiftKey && state.selectionMode() === "single") {
             state.replaceSelection(lastKey);
           }
         }
         break;
       }
-      case ' ':
-      case 'Enter': {
+      case " ":
+      case "Enter": {
         e.preventDefault();
         const focusedKey = state.focusedKey();
         if (focusedKey != null && !state.isDisabled(focusedKey)) {
-          if (state.selectionMode() !== 'none') {
+          if (state.selectionMode() !== "none") {
             state.toggleSelection(focusedKey);
           }
           p.onAction?.(focusedKey);
         }
         break;
       }
-      case 'a': {
-        if ((e.ctrlKey || e.metaKey) && state.selectionMode() === 'multiple') {
+      case "a": {
+        if ((e.ctrlKey || e.metaKey) && state.selectionMode() === "multiple") {
           e.preventDefault();
           state.selectAll();
         }
         break;
       }
-      case 'Escape': {
+      case "Escape": {
         e.preventDefault();
         if (!state.disallowEmptySelection()) {
           state.clearSelection();
@@ -288,18 +289,22 @@ export function createListBox<T>(
         focusWithinProps as Record<string, unknown>,
         fieldProps as Record<string, unknown>,
         {
-          role: 'listbox',
+          role: "listbox",
           tabIndex: p.isDisabled ? undefined : 0,
-          'aria-disabled': p.isDisabled || undefined,
-          'aria-multiselectable': selectionMode === 'multiple' ? true : undefined,
-          'aria-activedescendant': state.focusedKey() != null ? String(state.focusedKey()) : undefined,
+          "aria-disabled": p.isDisabled || undefined,
+          "aria-multiselectable": selectionMode === "multiple" ? true : undefined,
+          "aria-activedescendant":
+            state.focusedKey() != null ? String(state.focusedKey()) : undefined,
           onKeyDown,
-        }
+        },
       );
 
       // Add type-select props if enabled
       if (!p.disallowTypeAhead) {
-        return mergeProps(baseProps, typeSelectProps as Record<string, unknown>) as JSX.HTMLAttributes<HTMLElement>;
+        return mergeProps(
+          baseProps,
+          typeSelectProps as Record<string, unknown>,
+        ) as JSX.HTMLAttributes<HTMLElement>;
       }
 
       return baseProps as JSX.HTMLAttributes<HTMLElement>;

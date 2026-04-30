@@ -6,9 +6,9 @@
  * correct ARIA attributes for screen readers.
  */
 
-import { createSignal, createMemo, type Accessor, type JSX } from 'solid-js';
-import type { Key, TableColumnResizeState } from '@proyecto-viviana/solid-stately';
-import { useLocale } from '../i18n';
+import { createSignal, createMemo, type Accessor, type JSX } from "solid-js";
+import type { Key, TableColumnResizeState } from "@proyecto-viviana/solid-stately";
+import { useLocale } from "../i18n";
 
 // ============================================
 // TYPES
@@ -18,7 +18,7 @@ export interface CreateTableColumnResizeProps {
   /** The column being resized. */
   column: { key: Key };
   /** Accessible label for the resizer. */
-  'aria-label': string;
+  "aria-label": string;
   /** Whether resizing is disabled. */
   isDisabled?: boolean;
   /** Called when a resize operation starts. */
@@ -65,13 +65,11 @@ export function createTableColumnResize(
   const [isPointerDragging, setIsPointerDragging] = createSignal(false);
   const [isKeyboardResizing, setIsKeyboardResizing] = createSignal(false);
 
-  const isResizing = createMemo(
-    () => getState().resizingColumn() === getProps().column.key,
-  );
+  const isResizing = createMemo(() => getState().resizingColumn() === getProps().column.key);
 
   const isRtl = createMemo(() => {
     const l = locale();
-    return l?.direction === 'rtl';
+    return l?.direction === "rtl";
   });
 
   // ---- Pointer (mouse/touch) drag ----
@@ -126,7 +124,7 @@ export function createTableColumnResize(
     const rtlMul = isRtl() ? -1 : 1;
 
     switch (e.key) {
-      case 'Enter': {
+      case "Enter": {
         if (isKeyboardResizing()) {
           // End resize
           setIsKeyboardResizing(false);
@@ -141,7 +139,7 @@ export function createTableColumnResize(
         e.preventDefault();
         break;
       }
-      case 'Escape': {
+      case "Escape": {
         if (isKeyboardResizing()) {
           setIsKeyboardResizing(false);
           getState().endResize();
@@ -150,7 +148,7 @@ export function createTableColumnResize(
         }
         break;
       }
-      case 'Tab': {
+      case "Tab": {
         if (isKeyboardResizing()) {
           setIsKeyboardResizing(false);
           getState().endResize();
@@ -159,7 +157,7 @@ export function createTableColumnResize(
         // Let Tab propagate for focus management
         break;
       }
-      case 'ArrowRight': {
+      case "ArrowRight": {
         if (isKeyboardResizing()) {
           const currentWidth = getState().getColumnWidth(key);
           const widths = getState().updateResizedColumns(
@@ -171,7 +169,7 @@ export function createTableColumnResize(
         }
         break;
       }
-      case 'ArrowLeft': {
+      case "ArrowLeft": {
         if (isKeyboardResizing()) {
           const currentWidth = getState().getColumnWidth(key);
           const widths = getState().updateResizedColumns(
@@ -208,12 +206,12 @@ export function createTableColumnResize(
 
   // Resizer div props
   const resizerProps: JSX.HTMLAttributes<HTMLDivElement> = {
-    role: 'separator',
-    'aria-orientation': 'vertical' as const,
+    role: "separator",
+    "aria-orientation": "vertical" as const,
     tabIndex: -1,
     style: {
-      'touch-action': 'none',
-      cursor: 'col-resize',
+      "touch-action": "none",
+      cursor: "col-resize",
     },
     onPointerDown,
     onPointerMove,
@@ -222,27 +220,41 @@ export function createTableColumnResize(
 
   // Visually hidden range input props
   const inputProps: JSX.InputHTMLAttributes<HTMLInputElement> = {
-    get type() { return 'range'; },
-    get tabIndex() { return getProps().isDisabled ? -1 : 0; },
-    get disabled() { return getProps().isDisabled; },
-    get 'aria-label'() { return getProps()['aria-label']; },
-    get 'aria-orientation'() { return 'horizontal' as const; },
-    get min() { return getState().getColumnMinWidth(getProps().column.key); },
+    get type() {
+      return "range";
+    },
+    get tabIndex() {
+      return getProps().isDisabled ? -1 : 0;
+    },
+    get disabled() {
+      return getProps().isDisabled;
+    },
+    get "aria-label"() {
+      return getProps()["aria-label"];
+    },
+    get "aria-orientation"() {
+      return "horizontal" as const;
+    },
+    get min() {
+      return getState().getColumnMinWidth(getProps().column.key);
+    },
     get max() {
       const maxW = getState().getColumnMaxWidth(getProps().column.key);
       return maxW === Infinity ? 9999 : maxW;
     },
-    get value() { return getState().getColumnWidth(getProps().column.key); },
+    get value() {
+      return getState().getColumnWidth(getProps().column.key);
+    },
     style: {
-      position: 'absolute',
-      width: '1px',
-      height: '1px',
-      padding: '0',
-      margin: '-1px',
-      overflow: 'hidden',
-      clip: 'rect(0, 0, 0, 0)',
-      'white-space': 'nowrap',
-      'border-width': '0',
+      position: "absolute",
+      width: "1px",
+      height: "1px",
+      padding: "0",
+      margin: "-1px",
+      overflow: "hidden",
+      clip: "rect(0, 0, 0, 0)",
+      "white-space": "nowrap",
+      "border-width": "0",
     },
     onKeyDown,
     onChange: onInputChange,

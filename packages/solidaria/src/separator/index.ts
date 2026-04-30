@@ -3,4 +3,4 @@ export {
   type AriaSeparatorProps,
   type SeparatorAria,
   type Orientation,
-} from './createSeparator';
+} from "./createSeparator";

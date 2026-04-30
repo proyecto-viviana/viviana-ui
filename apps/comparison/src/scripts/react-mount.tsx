@@ -2,9 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import ComparisonIsland from "../components/react/ComparisonIsland.jsx";
 
-for (
-  const mountNode of document.querySelectorAll<HTMLElement>(".js-react-mount")
-) {
+for (const mountNode of document.querySelectorAll<HTMLElement>(".js-react-mount")) {
   if (mountNode.dataset.mounted) {
     continue;
   }

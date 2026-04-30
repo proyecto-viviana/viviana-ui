@@ -9,22 +9,24 @@
  * - ARIA attributes
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, cleanup, fireEvent, waitFor } from '@solidjs/testing-library';
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { render, screen, cleanup, fireEvent, waitFor } from "@solidjs/testing-library";
 import {
   SearchField,
   SearchFieldLabel,
   SearchFieldInput,
   SearchFieldClearButton,
-} from '../src/SearchField';
-import { setupUser, assertNoA11yViolations, assertAriaIdIntegrity } from '@proyecto-viviana/solidaria-test-utils';
+} from "../src/SearchField";
+import {
+  setupUser,
+  assertNoA11yViolations,
+  assertAriaIdIntegrity,
+} from "@proyecto-viviana/solidaria-test-utils";
 
 // setupUser is consolidated in solidaria-test-utils.
 
 // Helper component for testing - SearchField uses render props pattern
-function TestSearchField(props: {
-  fieldProps?: Partial<Parameters<typeof SearchField>[0]>;
-}) {
+function TestSearchField(props: { fieldProps?: Partial<Parameters<typeof SearchField>[0]> }) {
   return (
     <SearchField aria-label="Test Search" {...props.fieldProps}>
       {() => (
@@ -37,7 +39,7 @@ function TestSearchField(props: {
   );
 }
 
-describe('SearchField', () => {
+describe("SearchField", () => {
   let user: ReturnType<typeof setupUser>;
 
   beforeEach(() => {
@@ -52,22 +54,22 @@ describe('SearchField', () => {
   // RENDERING
   // ============================================
 
-  describe('rendering', () => {
-    it('should render with default class', () => {
+  describe("rendering", () => {
+    it("should render with default class", () => {
       render(() => <TestSearchField />);
 
-      const field = document.querySelector('.solidaria-SearchField');
+      const field = document.querySelector(".solidaria-SearchField");
       expect(field).toBeInTheDocument();
     });
 
-    it('should render input with searchbox role', () => {
+    it("should render input with searchbox role", () => {
       render(() => <TestSearchField />);
 
-      const input = screen.getByRole('searchbox');
+      const input = screen.getByRole("searchbox");
       expect(input).toBeInTheDocument();
     });
 
-    it('should render with label', () => {
+    it("should render with label", () => {
       render(() => (
         <SearchField aria-label="Search">
           {() => (
@@ -79,21 +81,21 @@ describe('SearchField', () => {
         </SearchField>
       ));
 
-      expect(screen.getByText('Search')).toBeInTheDocument();
+      expect(screen.getByText("Search")).toBeInTheDocument();
     });
 
-    it('should render with custom class', () => {
-      render(() => <TestSearchField fieldProps={{ class: 'my-search-field' }} />);
+    it("should render with custom class", () => {
+      render(() => <TestSearchField fieldProps={{ class: "my-search-field" }} />);
 
-      const field = document.querySelector('.my-search-field');
+      const field = document.querySelector(".my-search-field");
       expect(field).toBeInTheDocument();
     });
 
-    it('should not render clear button when empty', () => {
+    it("should not render clear button when empty", () => {
       render(() => <TestSearchField />);
 
       // Clear button uses aria-label "Clear search"
-      const clearButton = screen.queryByRole('button');
+      const clearButton = screen.queryByRole("button");
       expect(clearButton).not.toBeInTheDocument();
     });
   });
@@ -102,41 +104,41 @@ describe('SearchField', () => {
   // VALUE INPUT
   // ============================================
 
-  describe('value input', () => {
-    it('should display defaultValue', () => {
-      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello' }} />);
+  describe("value input", () => {
+    it("should display defaultValue", () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: "hello" }} />);
 
-      const input = screen.getByRole('searchbox');
-      expect(input).toHaveValue('hello');
+      const input = screen.getByRole("searchbox");
+      expect(input).toHaveValue("hello");
     });
 
-    it('should display controlled value', () => {
-      render(() => <TestSearchField fieldProps={{ value: 'world' }} />);
+    it("should display controlled value", () => {
+      render(() => <TestSearchField fieldProps={{ value: "world" }} />);
 
-      const input = screen.getByRole('searchbox');
-      expect(input).toHaveValue('world');
+      const input = screen.getByRole("searchbox");
+      expect(input).toHaveValue("world");
     });
 
-    it('should fire onChange when typing', async () => {
+    it("should fire onChange when typing", async () => {
       const onChange = vi.fn();
-      render(() => <TestSearchField fieldProps={{ defaultValue: '', onChange }} />);
+      render(() => <TestSearchField fieldProps={{ defaultValue: "", onChange }} />);
 
-      const input = screen.getByRole('searchbox') as HTMLInputElement;
+      const input = screen.getByRole("searchbox") as HTMLInputElement;
       // Use fireEvent.change for more reliable input event firing in jsdom
-      fireEvent.change(input, { target: { value: 'test' } });
+      fireEvent.change(input, { target: { value: "test" } });
 
       await waitFor(() => {
-        expect(onChange).toHaveBeenCalledWith('test');
+        expect(onChange).toHaveBeenCalledWith("test");
       });
     });
 
-    it('should update value on type', async () => {
-      render(() => <TestSearchField fieldProps={{ defaultValue: '' }} />);
+    it("should update value on type", async () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: "" }} />);
 
-      const input = screen.getByRole('searchbox');
-      await user.type(input, 'test');
+      const input = screen.getByRole("searchbox");
+      await user.type(input, "test");
 
-      expect(input).toHaveValue('test');
+      expect(input).toHaveValue("test");
     });
   });
 
@@ -144,47 +146,47 @@ describe('SearchField', () => {
   // CLEAR BUTTON
   // ============================================
 
-  describe('clear button', () => {
-    it('should show clear button when value is present', () => {
-      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello' }} />);
+  describe("clear button", () => {
+    it("should show clear button when value is present", () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: "hello" }} />);
 
-      const clearButton = screen.getByRole('button');
+      const clearButton = screen.getByRole("button");
       expect(clearButton).toBeInTheDocument();
     });
 
-    it('should clear value on clear button click', async () => {
+    it("should clear value on clear button click", async () => {
       const onClear = vi.fn();
       const onChange = vi.fn();
-      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello', onClear, onChange }} />);
+      render(() => <TestSearchField fieldProps={{ defaultValue: "hello", onClear, onChange }} />);
 
-      const input = screen.getByRole('searchbox');
-      const clearButton = screen.getByRole('button');
+      const input = screen.getByRole("searchbox");
+      const clearButton = screen.getByRole("button");
       await user.click(clearButton);
 
       // Verify the clear callback was called
       expect(onClear).toHaveBeenCalled();
-      expect(input).toHaveValue('');
+      expect(input).toHaveValue("");
       // After clicking clear, the clear button should no longer be visible (since value is empty)
       await waitFor(() => {
-        expect(screen.queryByRole('button')).not.toBeInTheDocument();
+        expect(screen.queryByRole("button")).not.toBeInTheDocument();
       });
     });
 
-    it('should fire onClear callback', async () => {
+    it("should fire onClear callback", async () => {
       const onClear = vi.fn();
-      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello', onClear }} />);
+      render(() => <TestSearchField fieldProps={{ defaultValue: "hello", onClear }} />);
 
-      const clearButton = screen.getByRole('button');
+      const clearButton = screen.getByRole("button");
       await user.click(clearButton);
 
       expect(onClear).toHaveBeenCalled();
     });
 
-    it('should have aria-label on clear button', () => {
-      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello' }} />);
+    it("should have aria-label on clear button", () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: "hello" }} />);
 
-      const clearButton = screen.getByRole('button');
-      expect(clearButton).toHaveAttribute('aria-label');
+      const clearButton = screen.getByRole("button");
+      expect(clearButton).toHaveAttribute("aria-label");
     });
   });
 
@@ -192,24 +194,24 @@ describe('SearchField', () => {
   // SUBMIT BEHAVIOR
   // ============================================
 
-  describe('submit behavior', () => {
-    it('should fire onSubmit on Enter', async () => {
+  describe("submit behavior", () => {
+    it("should fire onSubmit on Enter", async () => {
       const onSubmit = vi.fn();
-      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello', onSubmit }} />);
+      render(() => <TestSearchField fieldProps={{ defaultValue: "hello", onSubmit }} />);
 
-      const input = screen.getByRole('searchbox');
+      const input = screen.getByRole("searchbox");
       input.focus();
-      await user.keyboard('{Enter}');
+      await user.keyboard("{Enter}");
 
-      expect(onSubmit).toHaveBeenCalledWith('hello');
+      expect(onSubmit).toHaveBeenCalledWith("hello");
     });
 
-    it('should forward onKeyDown to the input element', async () => {
+    it("should forward onKeyDown to the input element", async () => {
       const onKeyDown = vi.fn();
       render(() => <TestSearchField fieldProps={{ onKeyDown }} />);
 
-      const input = screen.getByRole('searchbox');
-      await user.type(input, 'a');
+      const input = screen.getByRole("searchbox");
+      await user.type(input, "a");
 
       expect(onKeyDown).toHaveBeenCalled();
     });
@@ -219,28 +221,28 @@ describe('SearchField', () => {
   // DISABLED STATE
   // ============================================
 
-  describe('disabled state', () => {
-    it('should support isDisabled', () => {
+  describe("disabled state", () => {
+    it("should support isDisabled", () => {
       render(() => <TestSearchField fieldProps={{ isDisabled: true }} />);
 
-      const input = screen.getByRole('searchbox');
+      const input = screen.getByRole("searchbox");
       expect(input).toBeDisabled();
     });
 
-    it('should have data-disabled attribute on field', () => {
+    it("should have data-disabled attribute on field", () => {
       render(() => <TestSearchField fieldProps={{ isDisabled: true }} />);
 
-      const field = document.querySelector('.solidaria-SearchField');
-      expect(field).toHaveAttribute('data-disabled');
+      const field = document.querySelector(".solidaria-SearchField");
+      expect(field).toHaveAttribute("data-disabled");
     });
 
-    it('should not allow typing when disabled', async () => {
-      render(() => <TestSearchField fieldProps={{ isDisabled: true, defaultValue: '' }} />);
+    it("should not allow typing when disabled", async () => {
+      render(() => <TestSearchField fieldProps={{ isDisabled: true, defaultValue: "" }} />);
 
-      const input = screen.getByRole('searchbox');
-      await user.type(input, 'test');
+      const input = screen.getByRole("searchbox");
+      await user.type(input, "test");
 
-      expect(input).toHaveValue('');
+      expect(input).toHaveValue("");
     });
   });
 
@@ -248,19 +250,19 @@ describe('SearchField', () => {
   // READ ONLY STATE
   // ============================================
 
-  describe('read only state', () => {
-    it('should support isReadOnly', () => {
+  describe("read only state", () => {
+    it("should support isReadOnly", () => {
       render(() => <TestSearchField fieldProps={{ isReadOnly: true }} />);
 
-      const input = screen.getByRole('searchbox');
-      expect(input).toHaveAttribute('readonly');
+      const input = screen.getByRole("searchbox");
+      expect(input).toHaveAttribute("readonly");
     });
 
-    it('should have data-readonly attribute on field', () => {
+    it("should have data-readonly attribute on field", () => {
       render(() => <TestSearchField fieldProps={{ isReadOnly: true }} />);
 
-      const field = document.querySelector('.solidaria-SearchField');
-      expect(field).toHaveAttribute('data-readonly');
+      const field = document.querySelector(".solidaria-SearchField");
+      expect(field).toHaveAttribute("data-readonly");
     });
   });
 
@@ -268,19 +270,19 @@ describe('SearchField', () => {
   // REQUIRED STATE
   // ============================================
 
-  describe('required state', () => {
-    it('should support isRequired', () => {
+  describe("required state", () => {
+    it("should support isRequired", () => {
       render(() => <TestSearchField fieldProps={{ isRequired: true }} />);
 
-      const input = screen.getByRole('searchbox');
-      expect(input).toHaveAttribute('aria-required', 'true');
+      const input = screen.getByRole("searchbox");
+      expect(input).toHaveAttribute("aria-required", "true");
     });
 
-    it('should have data-required attribute on field', () => {
+    it("should have data-required attribute on field", () => {
       render(() => <TestSearchField fieldProps={{ isRequired: true }} />);
 
-      const field = document.querySelector('.solidaria-SearchField');
-      expect(field).toHaveAttribute('data-required');
+      const field = document.querySelector(".solidaria-SearchField");
+      expect(field).toHaveAttribute("data-required");
     });
   });
 
@@ -288,19 +290,19 @@ describe('SearchField', () => {
   // INVALID STATE
   // ============================================
 
-  describe('invalid state', () => {
-    it('should support isInvalid', () => {
+  describe("invalid state", () => {
+    it("should support isInvalid", () => {
       render(() => <TestSearchField fieldProps={{ isInvalid: true }} />);
 
-      const input = screen.getByRole('searchbox');
-      expect(input).toHaveAttribute('aria-invalid', 'true');
+      const input = screen.getByRole("searchbox");
+      expect(input).toHaveAttribute("aria-invalid", "true");
     });
 
-    it('should have data-invalid attribute on field', () => {
+    it("should have data-invalid attribute on field", () => {
       render(() => <TestSearchField fieldProps={{ isInvalid: true }} />);
 
-      const field = document.querySelector('.solidaria-SearchField');
-      expect(field).toHaveAttribute('data-invalid');
+      const field = document.querySelector(".solidaria-SearchField");
+      expect(field).toHaveAttribute("data-invalid");
     });
   });
 
@@ -308,26 +310,26 @@ describe('SearchField', () => {
   // ARIA ATTRIBUTES
   // ============================================
 
-  describe('aria attributes', () => {
-    it('should have searchbox role on input', () => {
+  describe("aria attributes", () => {
+    it("should have searchbox role on input", () => {
       render(() => <TestSearchField />);
 
-      const input = screen.getByRole('searchbox');
+      const input = screen.getByRole("searchbox");
       expect(input).toBeInTheDocument();
     });
 
-    it('should have aria-label when provided', () => {
+    it("should have aria-label when provided", () => {
       render(() => <TestSearchField />);
 
-      const input = screen.getByRole('searchbox');
-      expect(input).toHaveAttribute('aria-label', 'Test Search');
+      const input = screen.getByRole("searchbox");
+      expect(input).toHaveAttribute("aria-label", "Test Search");
     });
 
-    it('should have search type on input', () => {
+    it("should have search type on input", () => {
       render(() => <TestSearchField />);
 
-      const input = screen.getByRole('searchbox');
-      expect(input).toHaveAttribute('type', 'search');
+      const input = screen.getByRole("searchbox");
+      expect(input).toHaveAttribute("type", "search");
     });
   });
 
@@ -335,52 +337,54 @@ describe('SearchField', () => {
   // DATA ATTRIBUTES
   // ============================================
 
-  describe('data attributes', () => {
-    it('should have data-empty when empty', () => {
+  describe("data attributes", () => {
+    it("should have data-empty when empty", () => {
       render(() => <TestSearchField />);
 
-      const field = document.querySelector('.solidaria-SearchField');
-      expect(field).toHaveAttribute('data-empty');
+      const field = document.querySelector(".solidaria-SearchField");
+      expect(field).toHaveAttribute("data-empty");
     });
 
-    it('should not have data-empty when has value', () => {
-      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello' }} />);
+    it("should not have data-empty when has value", () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: "hello" }} />);
 
-      const field = document.querySelector('.solidaria-SearchField');
-      expect(field).not.toHaveAttribute('data-empty');
+      const field = document.querySelector(".solidaria-SearchField");
+      expect(field).not.toHaveAttribute("data-empty");
     });
   });
 
-  describe('a11y validation', () => {
-    it('axe: empty state', async () => {
+  describe("a11y validation", () => {
+    it("axe: empty state", async () => {
       const { container } = render(() => <TestSearchField />);
       await assertNoA11yViolations(container);
     });
 
-    it('axe: with value (clear button visible)', async () => {
-      const { container } = render(() => <TestSearchField fieldProps={{ defaultValue: 'query' }} />);
+    it("axe: with value (clear button visible)", async () => {
+      const { container } = render(() => (
+        <TestSearchField fieldProps={{ defaultValue: "query" }} />
+      ));
       await assertNoA11yViolations(container);
     });
 
-    it('axe: disabled', async () => {
+    it("axe: disabled", async () => {
       const { container } = render(() => <TestSearchField fieldProps={{ isDisabled: true }} />);
       await assertNoA11yViolations(container);
     });
 
-    it('axe: invalid', async () => {
+    it("axe: invalid", async () => {
       const { container } = render(() => <TestSearchField fieldProps={{ isInvalid: true }} />);
       await assertNoA11yViolations(container);
     });
 
-    it('ARIA ID: no dangling refs', () => {
-      render(() => <TestSearchField fieldProps={{ defaultValue: 'hello' }} />);
+    it("ARIA ID: no dangling refs", () => {
+      render(() => <TestSearchField fieldProps={{ defaultValue: "hello" }} />);
       assertAriaIdIntegrity(document.body);
     });
 
-    it('DOM: data-testid forwards', () => {
-      render(() => <TestSearchField fieldProps={{ 'data-testid': 'search' } as any} />);
-      const field = document.querySelector('.solidaria-SearchField');
-      expect(field).toHaveAttribute('data-testid', 'search');
+    it("DOM: data-testid forwards", () => {
+      render(() => <TestSearchField fieldProps={{ "data-testid": "search" } as any} />);
+      const field = document.querySelector(".solidaria-SearchField");
+      expect(field).toHaveAttribute("data-testid", "search");
     });
   });
 });

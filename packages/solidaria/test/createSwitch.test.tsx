@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@solidjs/testing-library';
-import { createSwitch, createToggleState } from '../src';
-import { setupUser } from '@proyecto-viviana/solidaria-test-utils';
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@solidjs/testing-library";
+import { createSwitch, createToggleState } from "../src";
+import { setupUser } from "@proyecto-viviana/solidaria-test-utils";
 
 // Test component that uses createSwitch
 function TestSwitch(props: {
@@ -10,7 +10,7 @@ function TestSwitch(props: {
   onChange?: (isSelected: boolean) => void;
   isDisabled?: boolean;
   isReadOnly?: boolean;
-  'aria-label'?: string;
+  "aria-label"?: string;
   children?: string;
 }) {
   let inputRef: HTMLInputElement | null = null;
@@ -26,11 +26,11 @@ function TestSwitch(props: {
     () => ({
       isDisabled: props.isDisabled,
       isReadOnly: props.isReadOnly,
-      'aria-label': props['aria-label'],
+      "aria-label": props["aria-label"],
       children: props.children,
     }),
     state,
-    () => inputRef
+    () => inputRef,
   );
 
   // Create local accessor for checked state (same pattern as checkbox tests)
@@ -48,8 +48,8 @@ function TestSwitch(props: {
         checked={isChecked()}
         disabled={getInputProps().disabled}
         tabIndex={getInputProps().tabIndex}
-        aria-label={getInputProps()['aria-label']}
-        aria-readonly={getInputProps()['aria-readonly']}
+        aria-label={getInputProps()["aria-label"]}
+        aria-readonly={getInputProps()["aria-readonly"]}
         onClick={getInputProps().onClick}
         onChange={getInputProps().onChange}
       />
@@ -58,34 +58,34 @@ function TestSwitch(props: {
   );
 }
 
-describe('createSwitch', () => {
-  describe('accessibility', () => {
+describe("createSwitch", () => {
+  describe("accessibility", () => {
     it('has role="switch"', () => {
       render(() => <TestSwitch aria-label="Test switch" />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeInTheDocument();
     });
 
-    it('has aria-checked matching selection state', () => {
+    it("has aria-checked matching selection state", () => {
       render(() => <TestSwitch aria-label="Test switch" defaultSelected />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeChecked();
     });
 
-    it('supports aria-label', () => {
+    it("supports aria-label", () => {
       render(() => <TestSwitch aria-label="Toggle notifications" />);
-      const switchEl = screen.getByRole('switch');
-      expect(switchEl).toHaveAttribute('aria-label', 'Toggle notifications');
+      const switchEl = screen.getByRole("switch");
+      expect(switchEl).toHaveAttribute("aria-label", "Toggle notifications");
     });
   });
 
-  describe('uncontrolled mode', () => {
-    it('toggles on click', async () => {
+  describe("uncontrolled mode", () => {
+    it("toggles on click", async () => {
       const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSwitch aria-label="Test switch" onChange={onChange} />);
 
-      const switchEl = screen.getByRole('switch') as HTMLInputElement;
+      const switchEl = screen.getByRole("switch") as HTMLInputElement;
       expect(switchEl).not.toBeChecked();
 
       await user.click(switchEl);
@@ -105,26 +105,26 @@ describe('createSwitch', () => {
       expect(onChange).toHaveBeenCalledWith(false);
     });
 
-    it('respects defaultSelected', () => {
+    it("respects defaultSelected", () => {
       render(() => <TestSwitch aria-label="Test switch" defaultSelected />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeChecked();
     });
   });
 
-  describe('controlled mode', () => {
-    it('reflects controlled isSelected value', () => {
+  describe("controlled mode", () => {
+    it("reflects controlled isSelected value", () => {
       render(() => <TestSwitch aria-label="Test switch" isSelected={true} />);
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeChecked();
     });
 
-    it('calls onChange but does not change internal state in controlled mode', async () => {
+    it("calls onChange but does not change internal state in controlled mode", async () => {
       const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSwitch aria-label="Test switch" isSelected={false} onChange={onChange} />);
 
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).not.toBeChecked();
 
       await user.click(switchEl);
@@ -133,13 +133,13 @@ describe('createSwitch', () => {
     });
   });
 
-  describe('disabled state', () => {
-    it('does not toggle when disabled', async () => {
+  describe("disabled state", () => {
+    it("does not toggle when disabled", async () => {
       const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSwitch aria-label="Test switch" isDisabled onChange={onChange} />);
 
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       expect(switchEl).toBeDisabled();
 
       await user.click(switchEl);
@@ -147,30 +147,30 @@ describe('createSwitch', () => {
     });
   });
 
-  describe('readonly state', () => {
-    it('does not toggle when readonly', async () => {
+  describe("readonly state", () => {
+    it("does not toggle when readonly", async () => {
       const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSwitch aria-label="Test switch" isReadOnly onChange={onChange} />);
 
-      const switchEl = screen.getByRole('switch');
-      expect(switchEl).toHaveAttribute('aria-readonly', 'true');
+      const switchEl = screen.getByRole("switch");
+      expect(switchEl).toHaveAttribute("aria-readonly", "true");
 
       await user.click(switchEl);
       expect(onChange).not.toHaveBeenCalled();
     });
   });
 
-  describe('keyboard interaction', () => {
-    it('toggles on Space key', async () => {
+  describe("keyboard interaction", () => {
+    it("toggles on Space key", async () => {
       const user = setupUser();
       const onChange = vi.fn();
       render(() => <TestSwitch aria-label="Test switch" onChange={onChange} />);
 
-      const switchEl = screen.getByRole('switch');
+      const switchEl = screen.getByRole("switch");
       switchEl.focus();
 
-      await user.keyboard(' ');
+      await user.keyboard(" ");
       expect(onChange).toHaveBeenCalled();
     });
   });

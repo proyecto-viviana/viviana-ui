@@ -5,18 +5,18 @@
  * Meters represent a quantity within a known range (unlike progress bars which show progress toward a goal).
  */
 
-import { type JSX, splitProps, Show, createUniqueId } from 'solid-js';
+import { type JSX, splitProps, Show, createUniqueId } from "solid-js";
 import {
   Meter as HeadlessMeter,
   type MeterRenderProps as HeadlessMeterRenderProps,
-} from '@proyecto-viviana/solidaria-components';
+} from "@proyecto-viviana/solidaria-components";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type MeterSize = 'sm' | 'md' | 'lg';
-export type MeterVariant = 'primary' | 'accent' | 'success' | 'warning' | 'danger' | 'info';
+export type MeterSize = "sm" | "md" | "lg";
+export type MeterVariant = "primary" | "accent" | "success" | "warning" | "danger" | "info";
 
 export interface MeterProps {
   /** The current value (controlled). @default 0 */
@@ -38,9 +38,9 @@ export interface MeterProps {
   /** Additional CSS class name. */
   class?: string;
   /** An accessibility label. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Reference to external label element. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
 }
 
 // ============================================
@@ -49,26 +49,26 @@ export interface MeterProps {
 
 const sizeStyles = {
   sm: {
-    track: 'h-1',
-    text: 'text-xs',
+    track: "h-1",
+    text: "text-xs",
   },
   md: {
-    track: 'h-2',
-    text: 'text-sm',
+    track: "h-2",
+    text: "text-sm",
   },
   lg: {
-    track: 'h-3',
-    text: 'text-base',
+    track: "h-3",
+    text: "text-base",
   },
 };
 
 const variantStyles = {
-  primary: 'bg-primary-500',
-  accent: 'bg-accent',
-  success: 'bg-green-500',
-  warning: 'bg-yellow-500',
-  danger: 'bg-red-500',
-  info: 'bg-blue-500',
+  primary: "bg-primary-500",
+  accent: "bg-accent",
+  success: "bg-green-500",
+  warning: "bg-yellow-500",
+  danger: "bg-red-500",
+  info: "bg-blue-500",
 };
 
 // ============================================
@@ -93,15 +93,15 @@ const variantStyles = {
  */
 export function Meter(props: MeterProps): JSX.Element {
   const [local, headlessProps] = splitProps(props, [
-    'size',
-    'variant',
-    'label',
-    'showValueLabel',
-    'class',
+    "size",
+    "variant",
+    "label",
+    "showValueLabel",
+    "class",
   ]);
 
-  const size = () => local.size ?? 'md';
-  const variant = () => local.variant ?? 'primary';
+  const size = () => local.size ?? "md";
+  const variant = () => local.variant ?? "primary";
   const sizeConfig = () => sizeStyles[size()];
   const labelId = createUniqueId();
   const renderChildren = ({ valueText, percentage }: HeadlessMeterRenderProps) => {
@@ -111,7 +111,9 @@ export function Meter(props: MeterProps): JSX.Element {
         <Show when={local.label || showValueLabel}>
           <div class={`flex justify-between items-center mb-1 ${sizeConfig().text}`}>
             <Show when={local.label}>
-              <span id={labelId} class="text-primary-200 font-medium">{local.label}</span>
+              <span id={labelId} class="text-primary-200 font-medium">
+                {local.label}
+              </span>
             </Show>
             <Show when={showValueLabel}>
               <span class="text-primary-300">{valueText}</span>
@@ -132,9 +134,12 @@ export function Meter(props: MeterProps): JSX.Element {
   return (
     <HeadlessMeter
       {...headlessProps}
-      aria-labelledby={headlessProps['aria-labelledby'] ?? (!headlessProps['aria-label'] && local.label ? labelId : undefined)}
-      aria-label={headlessProps['aria-label']}
-      class={`w-full ${local.class ?? ''}`}
+      aria-labelledby={
+        headlessProps["aria-labelledby"] ??
+        (!headlessProps["aria-label"] && local.label ? labelId : undefined)
+      }
+      aria-label={headlessProps["aria-label"]}
+      class={`w-full ${local.class ?? ""}`}
       children={renderChildren}
     />
   );

@@ -5,9 +5,9 @@
  * component like ListBox, GridList, or Table.
  */
 
-import { createMemo, createEffect, onCleanup, type Accessor } from 'solid-js';
-import type { DraggableCollectionState } from '@proyecto-viviana/solid-stately';
-import { getTypes } from './utils';
+import { createMemo, createEffect, onCleanup, type Accessor } from "solid-js";
+import type { DraggableCollectionState } from "@proyecto-viviana/solid-stately";
+import { getTypes } from "./utils";
 
 // Global state for tracking the dragging collection
 let globalDraggingCollectionRef: HTMLElement | null = null;
@@ -57,7 +57,7 @@ export interface DraggableCollectionAria {
  */
 export function createDraggableCollection(
   options: DraggableCollectionOptions,
-  state: DraggableCollectionState
+  state: DraggableCollectionState,
 ): DraggableCollectionAria {
   const ref = createMemo(() => options.ref());
 

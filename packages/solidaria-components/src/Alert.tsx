@@ -6,27 +6,21 @@
  * for styling/composition only.
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-  useContext,
-} from 'solid-js';
+import { type JSX, createContext, createMemo, splitProps, useContext } from "solid-js";
 import {
   type RenderChildren,
   type ClassNameOrFunction,
   type StyleOrFunction,
   type SlotProps,
   filterDOMProps,
-} from './utils';
-import { Button, type ButtonProps } from './Button';
+} from "./utils";
+import { Button, type ButtonProps } from "./Button";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type AlertVariant = 'info' | 'success' | 'warning' | 'error';
+export type AlertVariant = "info" | "success" | "warning" | "error";
 
 export interface AlertRenderProps {
   /** The variant of the alert. */
@@ -84,16 +78,16 @@ export const AlertContext = createContext<AlertContextValue | null>(null);
  */
 export function Alert(props: AlertProps): JSX.Element {
   const [local, rest] = splitProps(props, [
-    'children',
-    'class',
-    'style',
-    'slot',
-    'variant',
-    'isDismissible',
-    'onDismiss',
+    "children",
+    "class",
+    "style",
+    "slot",
+    "variant",
+    "isDismissible",
+    "onDismiss",
   ]);
 
-  const variant = () => local.variant ?? 'info';
+  const variant = () => local.variant ?? "info";
   const isDismissible = () => !!local.isDismissible;
 
   // Render props values
@@ -108,12 +102,12 @@ export function Alert(props: AlertProps): JSX.Element {
   // is in scope, breaking context for sub-components.
   const computedClass = createMemo(() => {
     const cls = local.class;
-    return typeof cls === 'function' ? cls(renderValues()) : cls ?? 'solidaria-Alert';
+    return typeof cls === "function" ? cls(renderValues()) : (cls ?? "solidaria-Alert");
   });
 
   const computedStyle = createMemo(() => {
     const s = local.style;
-    return typeof s === 'function' ? s(renderValues()) : s;
+    return typeof s === "function" ? s(renderValues()) : s;
   });
 
   // Filter DOM props
@@ -138,7 +132,7 @@ export function Alert(props: AlertProps): JSX.Element {
         data-variant={variant()}
         data-dismissible={isDismissible() || undefined}
       >
-        {typeof local.children === 'function'
+        {typeof local.children === "function"
           ? (local.children as (props: AlertRenderProps) => JSX.Element)(renderValues())
           : local.children}
       </div>
@@ -150,7 +144,7 @@ export function Alert(props: AlertProps): JSX.Element {
 // ALERT DISMISS BUTTON
 // ============================================
 
-export interface AlertDismissButtonProps extends Omit<ButtonProps, 'onPress'> {}
+export interface AlertDismissButtonProps extends Omit<ButtonProps, "onPress"> {}
 
 /**
  * A dismiss button for use inside an Alert.
@@ -170,7 +164,7 @@ export function AlertDismissButton(props: AlertDismissButtonProps): JSX.Element 
   return (
     <Button
       {...props}
-      aria-label={props['aria-label'] ?? 'Dismiss'}
+      aria-label={props["aria-label"] ?? "Dismiss"}
       onPress={() => context?.onDismiss?.()}
     />
   );

@@ -3,19 +3,22 @@
  * Based on @react-aria/gridlist/useGridListItem.
  */
 
-import { createMemo, createSignal, type Accessor } from 'solid-js';
-import type { JSX } from 'solid-js';
-import type { GridState, GridCollection } from '@proyecto-viviana/solid-stately';
-import type { AriaGridListItemProps, GridListItemAria } from './types';
-import { getGridListData } from './createGridList';
+import { createMemo, createSignal, type Accessor } from "solid-js";
+import type { JSX } from "solid-js";
+import type { GridState, GridCollection } from "@proyecto-viviana/solid-stately";
+import type { AriaGridListItemProps, GridListItemAria } from "./types";
+import { getGridListData } from "./createGridList";
 
 /**
  * Creates accessibility props for a grid list item.
  */
-export function createGridListItem<T extends object, C extends GridCollection<T> = GridCollection<T>>(
+export function createGridListItem<
+  T extends object,
+  C extends GridCollection<T> = GridCollection<T>,
+>(
   props: Accessor<AriaGridListItemProps>,
   state: Accessor<GridState<T, C>>,
-  _ref: Accessor<HTMLLIElement | null>
+  _ref: Accessor<HTMLLIElement | null>,
 ): GridListItemAria {
   const [isPressed, setIsPressed] = createSignal(false);
 
@@ -49,14 +52,14 @@ export function createGridListItem<T extends object, C extends GridCollection<T>
     const onAction = gridListData?.actions.onAction;
 
     // Handle selection
-    if (s.selectionMode !== 'none') {
-      if (e.shiftKey && s.selectionMode === 'multiple') {
+    if (s.selectionMode !== "none") {
+      if (e.shiftKey && s.selectionMode === "multiple") {
         s.extendSelection(p.node.key);
       } else if (e.ctrlKey || e.metaKey) {
         s.toggleSelection(p.node.key);
       } else {
         // Replace selection or toggle if already selected
-        if (isSelected() && s.selectedKeys !== 'all') {
+        if (isSelected() && s.selectedKeys !== "all") {
           const selectedKeys = s.selectedKeys as Set<unknown>;
           if (selectedKeys.size === 1) {
             // Single selection, trigger action
@@ -90,7 +93,7 @@ export function createGridListItem<T extends object, C extends GridCollection<T>
 
     if (isDisabled()) return;
 
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       // Get grid list metadata for actions
       const gridListData = getGridListData(s);
       const onAction = gridListData?.actions.onAction;
@@ -106,9 +109,9 @@ export function createGridListItem<T extends object, C extends GridCollection<T>
           p.onAction();
         }
       }
-    } else if (e.key === ' ' || e.key === 'Space' || e.key === 'Spacebar') {
+    } else if (e.key === " " || e.key === "Space" || e.key === "Spacebar") {
       // Space toggles selection
-      if (s.selectionMode !== 'none') {
+      if (s.selectionMode !== "none") {
         e.preventDefault();
         s.toggleSelection(p.node.key);
       }
@@ -135,9 +138,9 @@ export function createGridListItem<T extends object, C extends GridCollection<T>
     const node = p.node;
 
     const baseProps: Record<string, unknown> = {
-      role: 'row',
-      'aria-selected': s.selectionMode !== 'none' ? isSelected() : undefined,
-      'aria-disabled': isDisabled() || undefined,
+      role: "row",
+      "aria-selected": s.selectionMode !== "none" ? isSelected() : undefined,
+      "aria-disabled": isDisabled() || undefined,
       tabIndex: isFocused() ? 0 : -1,
       onClick,
       onKeyDown,
@@ -148,7 +151,7 @@ export function createGridListItem<T extends object, C extends GridCollection<T>
 
     // Add aria-rowindex for virtualized lists
     if (p.isVirtualized && node.rowIndex != null) {
-      baseProps['aria-rowindex'] = node.rowIndex + 1; // 1-based
+      baseProps["aria-rowindex"] = node.rowIndex + 1; // 1-based
     }
 
     return baseProps as JSX.HTMLAttributes<HTMLLIElement>;
@@ -156,7 +159,7 @@ export function createGridListItem<T extends object, C extends GridCollection<T>
 
   const gridCellProps = createMemo(() => {
     return {
-      role: 'gridcell',
+      role: "gridcell",
     } as JSX.HTMLAttributes<HTMLDivElement>;
   });
 

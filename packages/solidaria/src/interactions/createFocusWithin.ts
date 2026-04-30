@@ -4,9 +4,9 @@
  * This is a 1-1 port of React-Aria's useFocusWithin hook adapted for SolidJS.
  */
 
-import { JSX, onCleanup } from 'solid-js';
-import { getOwnerDocument, getEventTarget, nodeContains, createGlobalListeners } from '../utils';
-import { setEventTarget } from '../utils/events';
+import { JSX, onCleanup } from "solid-js";
+import { getOwnerDocument, getEventTarget, nodeContains, createGlobalListeners } from "../utils";
+import { setEventTarget } from "../utils/events";
 
 export interface FocusWithinProps {
   /** Whether the focus within events should be disabled. */
@@ -32,7 +32,10 @@ function getActiveElement(doc: Document): Element | null {
   return activeElement;
 }
 
-function createSyntheticBlurHandler(): (_e: FocusEvent, target: Element) => (() => void) | undefined {
+function createSyntheticBlurHandler(): (
+  _e: FocusEvent,
+  target: Element,
+) => (() => void) | undefined {
   let isFocused = false;
   let observer: MutationObserver | null = null;
 
@@ -54,7 +57,7 @@ function createSyntheticBlurHandler(): (_e: FocusEvent, target: Element) => (() 
         }
       };
 
-      target.addEventListener('focusout', onBlurHandler, { once: true });
+      target.addEventListener("focusout", onBlurHandler, { once: true });
 
       observer = new MutationObserver(() => {
         if (isFocused && (target as HTMLButtonElement).disabled) {
@@ -62,13 +65,14 @@ function createSyntheticBlurHandler(): (_e: FocusEvent, target: Element) => (() 
           observer?.disconnect();
           observer = null;
           const ownerDocument = target.ownerDocument;
-          const relatedTarget = target === ownerDocument.activeElement ? null : ownerDocument.activeElement;
-          target.dispatchEvent(new FocusEvent('blur', { relatedTarget }));
-          target.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget }));
+          const relatedTarget =
+            target === ownerDocument.activeElement ? null : ownerDocument.activeElement;
+          target.dispatchEvent(new FocusEvent("blur", { relatedTarget }));
+          target.dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget }));
         }
       });
 
-      observer.observe(target, { attributes: true, attributeFilter: ['disabled'] });
+      observer.observe(target, { attributes: true, attributeFilter: ["disabled"] });
 
       return () => {
         if (observer) {
@@ -158,13 +162,16 @@ export function createFocusWithin(props: FocusWithinProps = {}): FocusWithinResu
       const currentTarget = e.currentTarget;
 
       addGlobalListener(
-        'focus',
+        "focus",
         (focusEvent: Event) => {
-          if (isFocusWithin && !nodeContains(currentTarget, (focusEvent as FocusEvent).target as Element)) {
+          if (
+            isFocusWithin &&
+            !nodeContains(currentTarget, (focusEvent as FocusEvent).target as Element)
+          ) {
             // Create a synthetic blur event
             const window = ownerDocument?.defaultView;
             if (window) {
-              const nativeEvent = new window.FocusEvent('blur', {
+              const nativeEvent = new window.FocusEvent("blur", {
                 relatedTarget: (focusEvent as FocusEvent).target as Element,
               });
               setEventTarget(nativeEvent, currentTarget);
@@ -184,7 +191,7 @@ export function createFocusWithin(props: FocusWithinProps = {}): FocusWithinResu
             }
           }
         },
-        { capture: true }
+        { capture: true },
       );
     }
   };

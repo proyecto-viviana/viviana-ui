@@ -4,21 +4,21 @@
  * Styled link component built on top of solidaria-components.
  */
 
-import { type JSX, splitProps } from 'solid-js';
+import { type JSX, splitProps } from "solid-js";
 import {
   Link as HeadlessLink,
   type LinkProps as HeadlessLinkProps,
   type LinkRenderProps,
-} from '@proyecto-viviana/solidaria-components';
-import { useProviderProps } from '../provider';
+} from "@proyecto-viviana/solidaria-components";
+import { useProviderProps } from "../provider";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type LinkVariant = 'primary' | 'secondary' | 'subtle';
+export type LinkVariant = "primary" | "secondary" | "subtle";
 
-export interface LinkProps extends Omit<HeadlessLinkProps, 'class' | 'style' | 'children'> {
+export interface LinkProps extends Omit<HeadlessLinkProps, "class" | "style" | "children"> {
   /** The visual style of the link. @default 'primary' */
   variant?: LinkVariant;
   /** Whether the link is on its own vs inside a longer string of text. */
@@ -36,9 +36,9 @@ export interface LinkProps extends Omit<HeadlessLinkProps, 'class' | 'style' | '
 // ============================================
 
 const variantStyles = {
-  primary: 'text-accent hover:text-accent-300',
-  secondary: 'text-primary-300 hover:text-primary-200',
-  subtle: 'text-primary-400 hover:text-primary-300',
+  primary: "text-accent hover:text-accent-300",
+  secondary: "text-primary-300 hover:text-primary-200",
+  subtle: "text-primary-400 hover:text-primary-300",
 };
 
 // ============================================
@@ -65,18 +65,18 @@ const variantStyles = {
 export function Link(props: LinkProps): JSX.Element {
   const mergedProps = useProviderProps(props);
   const [local, headlessProps] = splitProps(mergedProps, [
-    'variant',
-    'isStandalone',
-    'isQuiet',
-    'class',
+    "variant",
+    "isStandalone",
+    "isQuiet",
+    "class",
   ]);
 
-  const variant = local.variant ?? 'primary';
-  const customClass = local.class ?? '';
+  const variant = local.variant ?? "primary";
+  const customClass = local.class ?? "";
 
   // Generate class based on render props
   const getClassName = (renderProps: LinkRenderProps): string => {
-    const base = 'transition-colors duration-200 cursor-pointer rounded-sm outline-none';
+    const base = "transition-colors duration-200 cursor-pointer rounded-sm outline-none";
 
     // Variant colors
     const variantClass = variantStyles[variant];
@@ -85,29 +85,26 @@ export function Link(props: LinkProps): JSX.Element {
     let underlineClass: string;
     if (local.isStandalone && local.isQuiet) {
       // Quiet standalone: no underline by default, underline on hover/focus
-      underlineClass = renderProps.isHovered || renderProps.isFocusVisible
-        ? 'underline'
-        : 'no-underline';
+      underlineClass =
+        renderProps.isHovered || renderProps.isFocusVisible ? "underline" : "no-underline";
     } else {
       // Inline links always have underline for accessibility
-      underlineClass = 'underline';
+      underlineClass = "underline";
     }
 
     // Font weight for standalone
-    const weightClass = local.isStandalone ? 'font-medium' : '';
+    const weightClass = local.isStandalone ? "font-medium" : "";
 
     // Focus ring
     const focusClass = renderProps.isFocusVisible
-      ? 'ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400'
-      : '';
+      ? "ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400"
+      : "";
 
     // Disabled state
-    const disabledClass = renderProps.isDisabled
-      ? 'opacity-50 cursor-not-allowed'
-      : '';
+    const disabledClass = renderProps.isDisabled ? "opacity-50 cursor-not-allowed" : "";
 
     // Pressed state
-    const pressedClass = renderProps.isPressed ? 'opacity-80' : '';
+    const pressedClass = renderProps.isPressed ? "opacity-80" : "";
 
     return [
       base,
@@ -118,14 +115,13 @@ export function Link(props: LinkProps): JSX.Element {
       disabledClass,
       pressedClass,
       customClass,
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(" ");
   };
 
   return (
-    <HeadlessLink
-      {...headlessProps}
-      class={getClassName}
-    >
+    <HeadlessLink {...headlessProps} class={getClassName}>
       {props.children}
     </HeadlessLink>
   );

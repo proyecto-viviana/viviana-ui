@@ -7,8 +7,8 @@
  * as used by @react-aria/textfield.
  */
 
-import { createSignal, Accessor } from 'solid-js';
-import { type MaybeAccessor, access } from '../utils';
+import { createSignal, Accessor } from "solid-js";
+import { type MaybeAccessor, access } from "../utils";
 
 // ============================================
 // TYPES
@@ -38,12 +38,14 @@ export interface TextFieldState {
  * Provides state management for text input components.
  * Supports both controlled and uncontrolled modes.
  */
-export function createTextFieldState(props: MaybeAccessor<TextFieldStateOptions> = {}): TextFieldState {
+export function createTextFieldState(
+  props: MaybeAccessor<TextFieldStateOptions> = {},
+): TextFieldState {
   const getProps = () => access(props);
 
   // Get initial value
   const initialProps = getProps();
-  const initialValue = initialProps.value ?? initialProps.defaultValue ?? '';
+  const initialValue = initialProps.value ?? initialProps.defaultValue ?? "";
 
   // Create internal signal for uncontrolled mode
   const [internalValue, setInternalValue] = createSignal(initialValue);
@@ -54,7 +56,7 @@ export function createTextFieldState(props: MaybeAccessor<TextFieldStateOptions>
   // Get current value
   const value: Accessor<string> = () => {
     const p = getProps();
-    return isControlled() ? (p.value ?? '') : internalValue();
+    return isControlled() ? (p.value ?? "") : internalValue();
   };
 
   // Update value

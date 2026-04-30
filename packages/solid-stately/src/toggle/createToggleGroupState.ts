@@ -7,9 +7,9 @@
  * This is a port of @react-stately/toggle's useToggleGroupState.
  */
 
-import { createSignal } from 'solid-js';
-import type { Key } from '../collections';
-import { type MaybeAccessor, access } from '../utils';
+import { createSignal } from "solid-js";
+import type { Key } from "../collections";
+import { type MaybeAccessor, access } from "../utils";
 
 // ============================================
 // TYPES
@@ -20,7 +20,7 @@ export interface ToggleGroupProps {
    * Whether single or multiple selection is enabled.
    * @default 'single'
    */
-  selectionMode?: 'single' | 'multiple';
+  selectionMode?: "single" | "multiple";
   /** Whether empty selection is disallowed. */
   disallowEmptySelection?: boolean;
   /** Controlled selected keys. */
@@ -35,7 +35,7 @@ export interface ToggleGroupProps {
 
 export interface ToggleGroupState {
   /** Whether single or multiple selection is enabled. */
-  readonly selectionMode: 'single' | 'multiple';
+  readonly selectionMode: "single" | "multiple";
   /** Whether all items are disabled. */
   readonly isDisabled: boolean;
   /** Current selected keys. */
@@ -60,13 +60,13 @@ function toKeySet(keys?: Iterable<Key>): Set<Key> {
  * Manages state for a group of toggle buttons.
  */
 export function createToggleGroupState(
-  props: MaybeAccessor<ToggleGroupProps> = {}
+  props: MaybeAccessor<ToggleGroupProps> = {},
 ): ToggleGroupState {
   const getProps = () => access(props);
 
   const initialProps = getProps();
   const [internalSelectedKeys, setInternalSelectedKeys] = createSignal<Set<Key>>(
-    toKeySet(initialProps.defaultSelectedKeys)
+    toKeySet(initialProps.defaultSelectedKeys),
   );
 
   const isControlled = () => getProps().selectedKeys !== undefined;
@@ -83,12 +83,12 @@ export function createToggleGroupState(
 
   function toggleKey(key: Key): void {
     const props = getProps();
-    const mode = props.selectionMode ?? 'single';
+    const mode = props.selectionMode ?? "single";
     const disallowEmptySelection = props.disallowEmptySelection ?? false;
     const currentKeys = selectedKeys();
 
     let nextKeys: Set<Key>;
-    if (mode === 'multiple') {
+    if (mode === "multiple") {
       nextKeys = new Set(currentKeys);
       if (nextKeys.has(key) && (!disallowEmptySelection || nextKeys.size > 1)) {
         nextKeys.delete(key);
@@ -96,9 +96,7 @@ export function createToggleGroupState(
         nextKeys.add(key);
       }
     } else {
-      nextKeys = new Set(
-        currentKeys.has(key) && !disallowEmptySelection ? [] : [key]
-      );
+      nextKeys = new Set(currentKeys.has(key) && !disallowEmptySelection ? [] : [key]);
     }
 
     setSelectedKeys(nextKeys);
@@ -112,7 +110,7 @@ export function createToggleGroupState(
 
   return {
     get selectionMode() {
-      return getProps().selectionMode ?? 'single';
+      return getProps().selectionMode ?? "single";
     },
     get isDisabled() {
       return getProps().isDisabled ?? false;

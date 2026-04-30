@@ -5,22 +5,14 @@
  * Port of react-aria-components/src/Separator.tsx
  */
 
-import {
-  type JSX,
-  createContext,
-  createMemo,
-  splitProps,
-} from 'solid-js';
-import { Dynamic } from 'solid-js/web';
+import { type JSX, createContext, createMemo, splitProps } from "solid-js";
+import { Dynamic } from "solid-js/web";
 import {
   createSeparator,
   type AriaSeparatorProps,
   type Orientation,
-} from '@proyecto-viviana/solidaria';
-import {
-  type SlotProps,
-  filterDOMProps,
-} from './utils';
+} from "@proyecto-viviana/solidaria";
+import { type SlotProps, filterDOMProps } from "./utils";
 
 // ============================================
 // TYPES
@@ -31,9 +23,7 @@ export interface SeparatorRenderProps {
   orientation: Orientation;
 }
 
-export interface SeparatorProps
-  extends AriaSeparatorProps,
-    SlotProps {
+export interface SeparatorProps extends AriaSeparatorProps, SlotProps {
   /** The CSS className for the element. A function may be provided to receive render props. */
   class?: string | ((renderProps: SeparatorRenderProps) => string);
   /** The inline style for the element. A function may be provided to receive render props. */
@@ -66,49 +56,55 @@ export const SeparatorContext = createContext<SeparatorProps | null>(null);
  * ```
  */
 export function Separator(props: SeparatorProps): JSX.Element {
-  const [local, ariaProps] = splitProps(props, [
-    'class',
-    'style',
-    'slot',
-  ]);
+  const [local, ariaProps] = splitProps(props, ["class", "style", "slot"]);
 
   // Determine the element type
   const elementType = createMemo(() => {
-    let element = ariaProps.elementType || 'hr';
+    let element = ariaProps.elementType || "hr";
     // If vertical and using hr, switch to div since hr is inherently horizontal
-    if (element === 'hr' && ariaProps.orientation === 'vertical') {
-      element = 'div';
+    if (element === "hr" && ariaProps.orientation === "vertical") {
+      element = "div";
     }
     return element;
   });
 
   // Create separator aria props
   const separatorAria = createSeparator({
-    get orientation() { return ariaProps.orientation; },
-    get elementType() { return elementType(); },
-    get 'aria-label'() { return ariaProps['aria-label']; },
-    get 'aria-labelledby'() { return ariaProps['aria-labelledby']; },
-    get id() { return ariaProps.id; },
+    get orientation() {
+      return ariaProps.orientation;
+    },
+    get elementType() {
+      return elementType();
+    },
+    get "aria-label"() {
+      return ariaProps["aria-label"];
+    },
+    get "aria-labelledby"() {
+      return ariaProps["aria-labelledby"];
+    },
+    get id() {
+      return ariaProps.id;
+    },
   });
 
   // Render props values
   const renderValues = createMemo<SeparatorRenderProps>(() => ({
-    orientation: ariaProps.orientation ?? 'horizontal',
+    orientation: ariaProps.orientation ?? "horizontal",
   }));
 
   // Resolve class
   const resolvedClass = createMemo(() => {
     const cls = local.class;
-    if (typeof cls === 'function') {
+    if (typeof cls === "function") {
       return cls(renderValues());
     }
-    return cls ?? 'solidaria-Separator';
+    return cls ?? "solidaria-Separator";
   });
 
   // Resolve style
   const resolvedStyle = createMemo(() => {
     const style = local.style;
-    if (typeof style === 'function') {
+    if (typeof style === "function") {
       return style(renderValues());
     }
     return style;

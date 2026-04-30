@@ -4,7 +4,7 @@
  * Styled time field component with segment-based editing.
  */
 
-import { type JSX, splitProps } from 'solid-js';
+import { type JSX, splitProps } from "solid-js";
 import {
   TimeField as HeadlessTimeField,
   TimeFieldLabel,
@@ -14,17 +14,19 @@ import {
   TimeSegment,
   type TimeFieldProps as HeadlessTimeFieldProps,
   type TimeValue,
-} from '@proyecto-viviana/solidaria-components';
-import { useProviderProps } from '../provider';
+} from "@proyecto-viviana/solidaria-components";
+import { useProviderProps } from "../provider";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type TimeFieldSize = 'sm' | 'md' | 'lg';
+export type TimeFieldSize = "sm" | "md" | "lg";
 
-export interface TimeFieldProps<T extends TimeValue = TimeValue>
-  extends Omit<HeadlessTimeFieldProps<T>, 'class' | 'style' | 'children'> {
+export interface TimeFieldProps<T extends TimeValue = TimeValue> extends Omit<
+  HeadlessTimeFieldProps<T>,
+  "class" | "style" | "children"
+> {
   /** The size of the field. @default 'md' */
   size?: TimeFieldSize;
   /** Additional CSS class name. */
@@ -43,22 +45,22 @@ export interface TimeFieldProps<T extends TimeValue = TimeValue>
 
 const sizeStyles = {
   sm: {
-    container: 'text-sm',
-    input: 'px-2 py-1 gap-0.5',
-    segment: 'px-0.5',
-    label: 'text-xs',
+    container: "text-sm",
+    input: "px-2 py-1 gap-0.5",
+    segment: "px-0.5",
+    label: "text-xs",
   },
   md: {
-    container: 'text-base',
-    input: 'px-3 py-2 gap-1',
-    segment: 'px-1',
-    label: 'text-sm',
+    container: "text-base",
+    input: "px-3 py-2 gap-1",
+    segment: "px-1",
+    label: "text-sm",
   },
   lg: {
-    container: 'text-lg',
-    input: 'px-4 py-3 gap-1.5',
-    segment: 'px-1.5',
-    label: 'text-base',
+    container: "text-lg",
+    input: "px-4 py-3 gap-1.5",
+    segment: "px-1.5",
+    label: "text-base",
   },
 };
 
@@ -87,20 +89,18 @@ const sizeStyles = {
  * />
  * ```
  */
-export function TimeField<T extends TimeValue = TimeValue>(
-  props: TimeFieldProps<T>
-): JSX.Element {
+export function TimeField<T extends TimeValue = TimeValue>(props: TimeFieldProps<T>): JSX.Element {
   const mergedProps = useProviderProps(props);
   const [local, rest] = splitProps(mergedProps, [
-    'size',
-    'class',
-    'label',
-    'description',
-    'errorMessage',
-    'isInvalid',
+    "size",
+    "class",
+    "label",
+    "description",
+    "errorMessage",
+    "isInvalid",
   ]);
 
-  const size = () => local.size ?? 'md';
+  const size = () => local.size ?? "md";
   const sizeConfig = () => sizeStyles[size()];
   const isInvalid = () => local.isInvalid || !!local.errorMessage;
 
@@ -114,7 +114,7 @@ export function TimeField<T extends TimeValue = TimeValue>(
       class={`
         flex flex-col gap-1
         ${sizeConfig().container}
-        ${local.class ?? ''}
+        ${local.class ?? ""}
       `}
     >
       {/* Label */}
@@ -135,20 +135,16 @@ export function TimeField<T extends TimeValue = TimeValue>(
             transition-colors duration-150
           `;
 
-          let borderClass = 'border-primary-600';
+          let borderClass = "border-primary-600";
           if (isInvalid()) {
-            borderClass = 'border-red-500';
+            borderClass = "border-red-500";
           } else if (isFocused) {
-            borderClass = 'border-accent';
+            borderClass = "border-accent";
           }
 
-          const disabledClass = isDisabled
-            ? 'opacity-50 cursor-not-allowed'
-            : '';
+          const disabledClass = isDisabled ? "opacity-50 cursor-not-allowed" : "";
 
-          const focusClass = isFocused
-            ? 'ring-2 ring-accent/30'
-            : '';
+          const focusClass = isFocused ? "ring-2 ring-accent/30" : "";
 
           return `${base} ${borderClass} ${disabledClass} ${focusClass}`.trim();
         }}
@@ -164,18 +160,16 @@ export function TimeField<T extends TimeValue = TimeValue>(
                 tabular-nums
               `;
 
-              let stateClass = '';
-              if (segment.type === 'literal') {
-                stateClass = 'text-primary-400';
+              let stateClass = "";
+              if (segment.type === "literal") {
+                stateClass = "text-primary-400";
               } else if (isPlaceholder) {
-                stateClass = 'text-primary-500 italic';
+                stateClass = "text-primary-500 italic";
               } else {
-                stateClass = 'text-primary-100';
+                stateClass = "text-primary-100";
               }
 
-              const focusClass = isFocused && isEditable
-                ? 'bg-accent text-bg-400'
-                : '';
+              const focusClass = isFocused && isEditable ? "bg-accent text-bg-400" : "";
 
               return `${base} ${stateClass} ${focusClass}`.trim();
             }}

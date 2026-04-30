@@ -5,9 +5,9 @@
   "compatibility_date": "2026-02-28",
   "assets": {
     "binding": "ASSETS",
-    "directory": "./dist"
+    "directory": "./dist",
   },
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
 }

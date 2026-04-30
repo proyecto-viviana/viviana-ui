@@ -7,16 +7,16 @@
  * This is a 1:1 port of @react-aria/radio's useRadioGroup hook.
  */
 
-import { JSX } from 'solid-js';
-import { createField } from '../label/createField';
-import { createFocusWithin } from '../interactions/createFocusWithin';
-import { mergeProps } from '../utils/mergeProps';
-import { filterDOMProps } from '../utils/filterDOMProps';
-import { focusSafely, getEventTarget } from '../utils';
-import { useLocale } from '../i18n';
-import { createId } from '../ssr';
-import { type MaybeAccessor, access } from '../utils/reactivity';
-import { type RadioGroupState, type ValidityState } from '@proyecto-viviana/solid-stately';
+import { JSX } from "solid-js";
+import { createField } from "../label/createField";
+import { createFocusWithin } from "../interactions/createFocusWithin";
+import { mergeProps } from "../utils/mergeProps";
+import { filterDOMProps } from "../utils/filterDOMProps";
+import { focusSafely, getEventTarget } from "../utils";
+import { useLocale } from "../i18n";
+import { createId } from "../ssr";
+import { type MaybeAccessor, access } from "../utils/reactivity";
+import { type RadioGroupState, type ValidityState } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // TYPES
@@ -28,7 +28,9 @@ export interface AriaRadioGroupProps {
   /** A description for the radio group. Provides additional context. */
   description?: JSX.Element;
   /** An error message for the radio group. */
-  errorMessage?: JSX.Element | ((validation: { isInvalid: boolean; validationErrors: string[] }) => JSX.Element);
+  errorMessage?:
+    | JSX.Element
+    | ((validation: { isInvalid: boolean; validationErrors: string[] }) => JSX.Element);
   /** Whether the radio group is disabled. */
   isDisabled?: boolean;
   /** Whether the radio group is read only. */
@@ -38,13 +40,13 @@ export interface AriaRadioGroupProps {
   /** Whether the radio group is invalid. */
   isInvalid?: boolean;
   /** The axis the Radio Button(s) should align with. Defaults to 'vertical'. */
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   /** The name of the radio group, used when submitting an HTML form. */
   name?: string;
   /** The form to associate the radio group with. */
   form?: string;
   /** Validation behavior for the radio group. */
-  validationBehavior?: 'aria' | 'native';
+  validationBehavior?: "aria" | "native";
   /** Handler that is called when the radio group receives focus. */
   onFocus?: (e: FocusEvent) => void;
   /** Handler that is called when the radio group loses focus. */
@@ -52,13 +54,13 @@ export interface AriaRadioGroupProps {
   /** Handler that is called when the radio group's focus status changes. */
   onFocusChange?: (isFocused: boolean) => void;
   /** Defines a string value that labels the current element. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Identifies the element (or elements) that labels the current element. */
-  'aria-labelledby'?: string;
+  "aria-labelledby"?: string;
   /** Identifies the element (or elements) that describes the object. */
-  'aria-describedby'?: string;
+  "aria-describedby"?: string;
   /** Identifies the element (or elements) that provide an error message for the object. */
-  'aria-errormessage'?: string;
+  "aria-errormessage"?: string;
   /** The element's unique identifier. */
   id?: string;
 }
@@ -86,7 +88,7 @@ interface RadioGroupData {
   form: string | undefined;
   descriptionId: string | undefined;
   errorMessageId: string | undefined;
-  validationBehavior: 'aria' | 'native';
+  validationBehavior: "aria" | "native";
 }
 
 export const radioGroupData: WeakMap<RadioGroupState, RadioGroupData> = new WeakMap();
@@ -101,16 +103,16 @@ export const radioGroupData: WeakMap<RadioGroupState, RadioGroupData> = new Weak
  */
 export function createRadioGroup(
   props: MaybeAccessor<AriaRadioGroupProps>,
-  state: RadioGroupState
+  state: RadioGroupState,
 ): RadioGroupAria {
   const getProps = () => access(props);
   const locale = useLocale();
 
-  const orientation = () => getProps().orientation ?? 'vertical';
+  const orientation = () => getProps().orientation ?? "vertical";
   const isReadOnly = () => getProps().isReadOnly ?? false;
   const isRequired = () => getProps().isRequired ?? false;
   const isDisabled = () => getProps().isDisabled ?? false;
-  const validationBehavior = () => getProps().validationBehavior ?? 'native';
+  const validationBehavior = () => getProps().validationBehavior ?? "native";
   const displayValidation = () => state.displayValidation();
   const validationErrors = () => displayValidation().validationErrors;
   const validationDetails = () => displayValidation().validationDetails;
@@ -122,16 +124,30 @@ export function createRadioGroup(
 
   // Use field for label, description, error message
   const { labelProps, fieldProps, descriptionProps, errorMessageProps } = createField({
-    get id() { return getProps().id; },
-    get label() { return getProps().label; },
-    get 'aria-label'() { return getProps()['aria-label']; },
-    get 'aria-labelledby'() { return getProps()['aria-labelledby']; },
-    get description() { return getProps().description; },
-    get errorMessage() { return getProps().errorMessage ?? fallbackErrorMessage(); },
-    get isInvalid() { return isInvalid(); },
+    get id() {
+      return getProps().id;
+    },
+    get label() {
+      return getProps().label;
+    },
+    get "aria-label"() {
+      return getProps()["aria-label"];
+    },
+    get "aria-labelledby"() {
+      return getProps()["aria-labelledby"];
+    },
+    get description() {
+      return getProps().description;
+    },
+    get errorMessage() {
+      return getProps().errorMessage ?? fallbackErrorMessage();
+    },
+    get isInvalid() {
+      return isInvalid();
+    },
     // Radio group is not an HTML input element so it
     // shouldn't be labeled by a <label> element.
-    labelElementType: 'span',
+    labelElementType: "span",
   });
 
   // Handle focus within - reset focusable radio when group loses focus and no selection
@@ -147,7 +163,8 @@ export function createRadioGroup(
   });
 
   // Filter DOM props
-  const domProps = () => filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
+  const domProps = () =>
+    filterDOMProps(getProps() as unknown as Record<string, unknown>, { labelable: true });
 
   // Generate group name
   const groupName = getProps().name ?? createId();
@@ -162,31 +179,32 @@ export function createRadioGroup(
   });
 
   const getNavigableRadios = (root: HTMLElement): HTMLInputElement[] => {
-    return Array.from(root.querySelectorAll('input[type="radio"]'))
-      .filter((el): el is HTMLInputElement => {
-        return el instanceof HTMLInputElement && !el.matches(':disabled');
-      });
+    return Array.from(root.querySelectorAll('input[type="radio"]')).filter(
+      (el): el is HTMLInputElement => {
+        return el instanceof HTMLInputElement && !el.matches(":disabled");
+      },
+    );
   };
 
   // Keyboard navigation parity with React Aria.
   const onKeyDown: JSX.EventHandler<HTMLDivElement, KeyboardEvent> = (e) => {
-    let nextDir: 'next' | 'prev' | null = null;
+    let nextDir: "next" | "prev" | null = null;
     const currentOrientation = orientation();
-    const isHorizontal = currentOrientation !== 'vertical';
-    const isRTL = locale().direction === 'rtl' && isHorizontal;
+    const isHorizontal = currentOrientation !== "vertical";
+    const isRTL = locale().direction === "rtl" && isHorizontal;
 
     switch (e.key) {
-      case 'ArrowRight':
-        nextDir = isRTL ? 'prev' : 'next';
+      case "ArrowRight":
+        nextDir = isRTL ? "prev" : "next";
         break;
-      case 'ArrowLeft':
-        nextDir = isRTL ? 'next' : 'prev';
+      case "ArrowLeft":
+        nextDir = isRTL ? "next" : "prev";
         break;
-      case 'ArrowDown':
-        nextDir = 'next';
+      case "ArrowDown":
+        nextDir = "next";
         break;
-      case 'ArrowUp':
-        nextDir = 'prev';
+      case "ArrowUp":
+        nextDir = "prev";
         break;
       default:
         return;
@@ -207,17 +225,21 @@ export function createRadioGroup(
     const eventTarget = getEventTarget<Element>(e);
     const activeElement = root.ownerDocument.activeElement;
 
-    const currentRadio = eventTarget instanceof HTMLInputElement && eventTarget.type === 'radio'
-      ? eventTarget
-      : (activeElement instanceof HTMLInputElement && activeElement.type === 'radio' ? activeElement : null);
+    const currentRadio =
+      eventTarget instanceof HTMLInputElement && eventTarget.type === "radio"
+        ? eventTarget
+        : activeElement instanceof HTMLInputElement && activeElement.type === "radio"
+          ? activeElement
+          : null;
 
     const currentIndex = currentRadio ? radios.indexOf(currentRadio) : -1;
 
     let nextIndex: number;
-    if (nextDir === 'next') {
+    if (nextDir === "next") {
       nextIndex = currentIndex >= 0 ? (currentIndex + 1) % radios.length : 0;
     } else {
-      nextIndex = currentIndex >= 0 ? (currentIndex - 1 + radios.length) % radios.length : radios.length - 1;
+      nextIndex =
+        currentIndex >= 0 ? (currentIndex - 1 + radios.length) % radios.length : radios.length - 1;
     }
 
     const nextRadio = radios[nextIndex];
@@ -231,21 +253,17 @@ export function createRadioGroup(
 
   return {
     get radioGroupProps() {
-      return mergeProps(
-        domProps(),
-        focusWithinProps as unknown as Record<string, unknown>,
-        {
-          role: 'radiogroup',
-          onKeyDown,
-          'aria-invalid': isInvalid() || undefined,
-          'aria-errormessage': getProps()['aria-errormessage'],
-          'aria-readonly': isReadOnly() || undefined,
-          'aria-required': isRequired() || undefined,
-          'aria-disabled': isDisabled() || undefined,
-          'aria-orientation': orientation(),
-          ...fieldProps,
-        }
-      ) as JSX.HTMLAttributes<HTMLDivElement>;
+      return mergeProps(domProps(), focusWithinProps as unknown as Record<string, unknown>, {
+        role: "radiogroup",
+        onKeyDown,
+        "aria-invalid": isInvalid() || undefined,
+        "aria-errormessage": getProps()["aria-errormessage"],
+        "aria-readonly": isReadOnly() || undefined,
+        "aria-required": isRequired() || undefined,
+        "aria-disabled": isDisabled() || undefined,
+        "aria-orientation": orientation(),
+        ...fieldProps,
+      }) as JSX.HTMLAttributes<HTMLDivElement>;
     },
     labelProps: labelProps as JSX.HTMLAttributes<HTMLElement>,
     descriptionProps,

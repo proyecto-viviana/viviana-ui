@@ -5,13 +5,19 @@
  * to make an element pressable. Port of React Aria's Pressable.
  */
 
-import { type JSX, children as resolveChildren, createEffect, onCleanup, splitProps } from 'solid-js';
+import {
+  type JSX,
+  children as resolveChildren,
+  createEffect,
+  onCleanup,
+  splitProps,
+} from "solid-js";
 import {
   createPress,
   createFocusable,
   type CreatePressProps,
   type CreateFocusableProps,
-} from '@proyecto-viviana/solidaria';
+} from "@proyecto-viviana/solidaria";
 
 // ============================================
 // TYPES
@@ -40,11 +46,14 @@ export interface PressableProps extends CreatePressProps {
  * ```
  */
 export function Pressable(props: PressableProps): JSX.Element {
-  const [local, pressProps] = splitProps(props, ['children', 'ref']);
+  const [local, pressProps] = splitProps(props, ["children", "ref"]);
 
   let ref!: HTMLElement;
   const { pressProps: domPressProps } = createPress(pressProps);
-  const { focusableProps: domFocusableProps } = createFocusable(pressProps as CreateFocusableProps, () => ref);
+  const { focusableProps: domFocusableProps } = createFocusable(
+    pressProps as CreateFocusableProps,
+    () => ref,
+  );
 
   const resolved = resolveChildren(() => local.children);
 
@@ -53,7 +62,7 @@ export function Pressable(props: PressableProps): JSX.Element {
     if (child instanceof HTMLElement) {
       ref = child;
       // Forward ref
-      if (typeof local.ref === 'function') {
+      if (typeof local.ref === "function") {
         local.ref(child);
       }
 
@@ -61,7 +70,7 @@ export function Pressable(props: PressableProps): JSX.Element {
       const allProps = { ...domFocusableProps, ...domPressProps };
       const listeners: Array<[string, EventListener]> = [];
       for (const [key, handler] of Object.entries(allProps)) {
-        if (key.startsWith('on') && typeof handler === 'function') {
+        if (key.startsWith("on") && typeof handler === "function") {
           const eventName = key.slice(2).toLowerCase();
           const listener = handler as EventListener;
           child.addEventListener(eventName, listener);
@@ -72,24 +81,24 @@ export function Pressable(props: PressableProps): JSX.Element {
       // Apply non-event press/focusable props (e.g. tabIndex/data attrs).
       // Keep explicit child tabIndex to mirror mergeProps(child.props precedence).
       for (const [key, value] of Object.entries(allProps)) {
-        if (key === 'ref' || (key.startsWith('on') && typeof value === 'function')) continue;
+        if (key === "ref" || (key.startsWith("on") && typeof value === "function")) continue;
 
-        if (key === 'tabIndex') {
-          if (child.hasAttribute('tabindex')) continue;
+        if (key === "tabIndex") {
+          if (child.hasAttribute("tabindex")) continue;
           if (value == null || value === false) {
-            child.removeAttribute('tabindex');
+            child.removeAttribute("tabindex");
           } else {
             child.tabIndex = Number(value);
           }
           continue;
         }
 
-        if (key.startsWith('aria-') || key.startsWith('data-') || key === 'id' || key === 'role') {
+        if (key.startsWith("aria-") || key.startsWith("data-") || key === "id" || key === "role") {
           if (child.hasAttribute(key)) continue;
           if (value == null || value === false) {
             child.removeAttribute(key);
           } else if (value === true) {
-            child.setAttribute(key, '');
+            child.setAttribute(key, "");
           } else {
             child.setAttribute(key, String(value));
           }

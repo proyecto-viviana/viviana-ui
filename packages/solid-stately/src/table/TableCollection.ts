@@ -3,14 +3,14 @@
  * Based on @react-stately/table/TableCollection.
  */
 
-import type { Key } from '../collections/types';
-import type { GridNode, GridNodeType } from '../grid/types';
+import type { Key } from "../collections/types";
+import type { GridNode, GridNodeType } from "../grid/types";
 import type {
   TableCollection as ITableCollection,
   TableCollectionOptions,
   ColumnDefinition,
   RowDefinition,
-} from './types';
+} from "./types";
 
 /**
  * Creates a table collection from column and row definitions.
@@ -47,16 +47,16 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
     // Build head node
     if (this._headerRows.length > 0) {
       this._head = {
-        type: 'headerrow' as GridNodeType,
-        key: 'header',
+        type: "headerrow" as GridNodeType,
+        key: "header",
         index: 0,
         level: 0,
         hasChildNodes: true,
         childNodes: this._headerRows,
         value: null,
-        textValue: '',
+        textValue: "",
       };
-      this._keyMap.set('header', this._head);
+      this._keyMap.set("header", this._head);
     }
 
     // Build body rows
@@ -65,16 +65,16 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
 
     // Build body node
     this._body = {
-      type: 'item' as GridNodeType,
-      key: 'body',
+      type: "item" as GridNodeType,
+      key: "body",
       index: this._headerRows.length,
       level: 0,
       hasChildNodes: true,
       childNodes: bodyRows,
       value: null,
-      textValue: '',
+      textValue: "",
     };
-    this._keyMap.set('body', this._body);
+    this._keyMap.set("body", this._body);
 
     // Combine all rows
     this._rows = [...this._headerRows, ...bodyRows];
@@ -82,7 +82,7 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
 
   private buildColumns(
     columns: ColumnDefinition<T>[],
-    showSelectionCheckboxes: boolean
+    showSelectionCheckboxes: boolean,
   ): GridNode<T>[] {
     const result: GridNode<T>[] = [];
     let colIndex = 0;
@@ -90,15 +90,15 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
     // Add selection column if needed
     if (showSelectionCheckboxes) {
       const selectionColumn: GridNode<T> = {
-        type: 'column' as GridNodeType,
-        key: '__selection__',
+        type: "column" as GridNodeType,
+        key: "__selection__",
         index: colIndex,
         column: 0,
         level: 0,
         hasChildNodes: false,
         childNodes: [],
         value: null,
-        textValue: 'Selection',
+        textValue: "Selection",
       };
       result.push(selectionColumn);
       this._keyMap.set(selectionColumn.key, selectionColumn);
@@ -117,7 +117,7 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
 
   private buildColumnNode(col: ColumnDefinition<T>, index: number): GridNode<T> {
     const node: GridNode<T> = {
-      type: 'column' as GridNodeType,
+      type: "column" as GridNodeType,
       key: col.key,
       index,
       column: index,
@@ -147,7 +147,7 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
   private getDefaultRowHeaderColumnKeys(): Set<Key> {
     // Default to first non-selection column as row header
     for (const col of this._columns) {
-      if (col.key !== '__selection__') {
+      if (col.key !== "__selection__") {
         return new Set([col.key]);
       }
     }
@@ -161,7 +161,7 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
 
     // Build a single header row containing all columns
     const headerCells: GridNode<T>[] = this._columns.map((col, index) => ({
-      type: 'column' as GridNodeType,
+      type: "column" as GridNodeType,
       key: `header-${col.key}`,
       index,
       column: index,
@@ -170,19 +170,19 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
       childNodes: [],
       value: null,
       textValue: col.textValue,
-      parentKey: 'headerrow-0',
+      parentKey: "headerrow-0",
     }));
 
     const headerRow: GridNode<T> = {
-      type: 'headerrow' as GridNodeType,
-      key: 'headerrow-0',
+      type: "headerrow" as GridNodeType,
+      key: "headerrow-0",
       index: 0,
       rowIndex: 0,
       level: 0,
       hasChildNodes: true,
       childNodes: headerCells,
       value: null,
-      textValue: '',
+      textValue: "",
     };
 
     this._keyMap.set(headerRow.key, headerRow);
@@ -194,7 +194,7 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
   private buildRows(
     rows: RowDefinition<T>[] | T[],
     getKey?: (item: T) => Key,
-    getTextValue?: (item: T, column: ColumnDefinition<T>) => string
+    getTextValue?: (item: T, column: ColumnDefinition<T>) => string,
   ): GridNode<T>[] {
     const result: GridNode<T>[] = [];
     const rowIndexOffset = this._headerRows.length;
@@ -203,11 +203,11 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
       const row = rows[i];
       const isRowDef = this.isRowDefinition(row);
 
-      const key = isRowDef ? row.key : getKey?.(row as T) ?? i;
+      const key = isRowDef ? row.key : (getKey?.(row as T) ?? i);
       const value = isRowDef ? row.value : (row as T);
       const textValue = isRowDef
         ? row.textValue
-        : typeof (row as Record<string, unknown>)?.textValue === 'string'
+        : typeof (row as Record<string, unknown>)?.textValue === "string"
           ? ((row as Record<string, unknown>).textValue as string)
           : undefined;
 
@@ -215,16 +215,16 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
       const cells: GridNode<T>[] = this._columns.map((col, colIndex) => {
         const cellKey = `${key}-${col.key}`;
         const cellTextValue =
-          col.key === '__selection__'
-            ? 'Selection'
+          col.key === "__selection__"
+            ? "Selection"
             : getTextValue
               ? getTextValue(value, { key: col.key } as ColumnDefinition<T>)
-              : String((value as Record<string, unknown>)?.[String(col.key)] ?? '');
+              : String((value as Record<string, unknown>)?.[String(col.key)] ?? "");
 
         const cell: GridNode<T> = {
           type: this._rowHeaderColumnKeys.has(col.key)
-            ? ('rowheader' as GridNodeType)
-            : ('cell' as GridNodeType),
+            ? ("rowheader" as GridNodeType)
+            : ("cell" as GridNodeType),
           key: cellKey,
           index: colIndex,
           column: colIndex,
@@ -241,7 +241,7 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
       });
 
       const rowNode: GridNode<T> = {
-        type: 'item' as GridNodeType,
+        type: "item" as GridNodeType,
         key,
         index: i,
         rowIndex: rowIndexOffset + i,
@@ -249,7 +249,7 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
         hasChildNodes: true,
         childNodes: cells,
         value,
-        textValue: textValue ?? cells.map((c) => c.textValue).join(' '),
+        textValue: textValue ?? cells.map((c) => c.textValue).join(" "),
       };
 
       this._keyMap.set(key, rowNode);
@@ -260,12 +260,7 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
   }
 
   private isRowDefinition(row: unknown): row is RowDefinition<T> {
-    return (
-      typeof row === 'object' &&
-      row !== null &&
-      'key' in row &&
-      'value' in row
-    );
+    return typeof row === "object" && row !== null && "key" in row && "value" in row;
   }
 
   // Collection interface implementation
@@ -328,7 +323,7 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
 
   getTextValue(key: Key): string {
     const node = this._keyMap.get(key);
-    return node?.textValue ?? '';
+    return node?.textValue ?? "";
   }
 
   getCell(rowKey: Key, columnKey: Key): GridNode<T> | null {
@@ -385,8 +380,6 @@ export class TableCollection<T = unknown> implements ITableCollection<T> {
 /**
  * Creates a table collection from options.
  */
-export function createTableCollection<T>(
-  options: TableCollectionOptions<T>
-): TableCollection<T> {
+export function createTableCollection<T>(options: TableCollectionOptions<T>): TableCollection<T> {
   return new TableCollection(options);
 }

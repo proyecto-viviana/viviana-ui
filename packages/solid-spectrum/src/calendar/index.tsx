@@ -5,7 +5,7 @@
  * A calendar displays a grid of days and allows users to select dates.
  */
 
-import { type JSX, splitProps } from 'solid-js';
+import { type JSX, splitProps } from "solid-js";
 import {
   Calendar as HeadlessCalendar,
   CalendarHeading,
@@ -14,18 +14,20 @@ import {
   CalendarCell,
   type CalendarDate,
   type DateValue,
-} from '@proyecto-viviana/solidaria-components';
-import type { CalendarStateProps } from '@proyecto-viviana/solid-stately';
-import { useProviderProps } from '../provider';
+} from "@proyecto-viviana/solidaria-components";
+import type { CalendarStateProps } from "@proyecto-viviana/solid-stately";
+import { useProviderProps } from "../provider";
 
 // ============================================
 // TYPES
 // ============================================
 
-export type CalendarSize = 'sm' | 'md' | 'lg';
+export type CalendarSize = "sm" | "md" | "lg";
 
-export interface CalendarProps<T extends DateValue = DateValue>
-  extends Omit<CalendarStateProps<T>, 'locale'> {
+export interface CalendarProps<T extends DateValue = DateValue> extends Omit<
+  CalendarStateProps<T>,
+  "locale"
+> {
   /** The size of the calendar. @default 'md' */
   size?: CalendarSize;
   /** Additional CSS class name. */
@@ -35,7 +37,7 @@ export interface CalendarProps<T extends DateValue = DateValue>
   /** The locale to use for formatting. */
   locale?: string;
   /** Custom aria label. */
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 // ============================================
@@ -44,22 +46,22 @@ export interface CalendarProps<T extends DateValue = DateValue>
 
 const sizeStyles = {
   sm: {
-    container: 'w-64',
-    header: 'text-sm',
-    cell: 'w-8 h-8 text-xs',
-    button: 'w-6 h-6',
+    container: "w-64",
+    header: "text-sm",
+    cell: "w-8 h-8 text-xs",
+    button: "w-6 h-6",
   },
   md: {
-    container: 'w-80',
-    header: 'text-base',
-    cell: 'w-10 h-10 text-sm',
-    button: 'w-8 h-8',
+    container: "w-80",
+    header: "text-base",
+    cell: "w-10 h-10 text-sm",
+    button: "w-8 h-8",
   },
   lg: {
-    container: 'w-96',
-    header: 'text-lg',
-    cell: 'w-12 h-12 text-base',
-    button: 'w-10 h-10',
+    container: "w-96",
+    header: "text-lg",
+    cell: "w-12 h-12 text-base",
+    button: "w-10 h-10",
   },
 };
 
@@ -92,28 +94,21 @@ const sizeStyles = {
  * />
  * ```
  */
-export function Calendar<T extends DateValue = CalendarDate>(
-  props: CalendarProps<T>
-): JSX.Element {
+export function Calendar<T extends DateValue = CalendarDate>(props: CalendarProps<T>): JSX.Element {
   const mergedProps = useProviderProps(props);
-  const [local, rest] = splitProps(mergedProps, [
-    'size',
-    'class',
-    'showWeekNumbers',
-    'aria-label',
-  ]);
+  const [local, rest] = splitProps(mergedProps, ["size", "class", "showWeekNumbers", "aria-label"]);
 
-  const size = () => local.size ?? 'md';
+  const size = () => local.size ?? "md";
   const sizeConfig = () => sizeStyles[size()];
 
   return (
     <HeadlessCalendar
       {...rest}
-      aria-label={local['aria-label']}
+      aria-label={local["aria-label"]}
       class={`
         ${sizeConfig().container}
         bg-bg-500 rounded-lg border border-primary-700 p-4
-        ${local.class ?? ''}
+        ${local.class ?? ""}
       `}
     >
       {/* Header with navigation */}
@@ -175,9 +170,7 @@ export function Calendar<T extends DateValue = CalendarDate>(
       </header>
 
       {/* Calendar grid */}
-      <CalendarGrid
-        class="w-full border-collapse"
-      >
+      <CalendarGrid class="w-full border-collapse">
         {(date) => (
           <CalendarCell
             date={date}
@@ -190,27 +183,23 @@ export function Calendar<T extends DateValue = CalendarDate>(
                 focus:outline-none
               `;
 
-              let stateClass = '';
+              let stateClass = "";
 
               if (isDisabled) {
-                stateClass = 'text-primary-600 cursor-not-allowed';
+                stateClass = "text-primary-600 cursor-not-allowed";
               } else if (isSelected) {
-                stateClass = 'bg-accent text-bg-400 font-medium';
+                stateClass = "bg-accent text-bg-400 font-medium";
               } else if (isOutsideMonth) {
-                stateClass = 'text-primary-600';
+                stateClass = "text-primary-600";
               } else if (isToday) {
-                stateClass = 'ring-1 ring-accent text-primary-100';
+                stateClass = "ring-1 ring-accent text-primary-100";
               } else {
-                stateClass = 'text-primary-200 hover:bg-bg-400';
+                stateClass = "text-primary-200 hover:bg-bg-400";
               }
 
-              const focusClass = isFocused && !isSelected
-                ? 'ring-2 ring-accent/50'
-                : '';
+              const focusClass = isFocused && !isSelected ? "ring-2 ring-accent/50" : "";
 
-              const pressedClass = isPressed && !isDisabled
-                ? 'scale-95'
-                : '';
+              const pressedClass = isPressed && !isDisabled ? "scale-95" : "";
 
               return `${base} ${stateClass} ${focusClass} ${pressedClass}`.trim();
             }}
@@ -221,8 +210,8 @@ export function Calendar<T extends DateValue = CalendarDate>(
   );
 }
 
-export { RangeCalendar } from './RangeCalendar';
-export type { RangeCalendarProps, RangeCalendarSize, RangeValue } from './RangeCalendar';
+export { RangeCalendar } from "./RangeCalendar";
+export type { RangeCalendarProps, RangeCalendarSize, RangeValue } from "./RangeCalendar";
 
 // Re-export types
 export type { CalendarDate, DateValue };

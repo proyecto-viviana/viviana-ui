@@ -5,7 +5,7 @@
  * Inspired by Spectrum 2's color picker patterns.
  */
 
-import { type JSX, splitProps, createContext, createMemo, useContext, Show } from 'solid-js'
+import { type JSX, splitProps, createContext, createMemo, useContext, Show } from "solid-js";
 import {
   ColorSlider as HeadlessColorSlider,
   ColorSliderTrack as HeadlessColorSliderTrack,
@@ -33,20 +33,20 @@ import {
   type ColorWheelThumbRenderProps,
   type ColorFieldRenderProps,
   type ColorSwatchRenderProps,
-} from '@proyecto-viviana/solidaria-components'
-import type { Color, ColorChannel, ColorFormat } from '@proyecto-viviana/solid-stately'
+} from "@proyecto-viviana/solidaria-components";
+import type { Color, ColorChannel, ColorFormat } from "@proyecto-viviana/solid-stately";
 
 // ============================================
 // SIZE CONTEXT
 // ============================================
 
-export type ColorSize = 'sm' | 'md' | 'lg'
+export type ColorSize = "sm" | "md" | "lg";
 
 interface ColorContextValue {
-  size: ColorSize
+  size: ColorSize;
 }
 
-const ColorSizeContext = createContext<ColorContextValue>({ size: 'md' })
+const ColorSizeContext = createContext<ColorContextValue>({ size: "md" });
 
 // ============================================
 // STYLES
@@ -55,80 +55,83 @@ const ColorSizeContext = createContext<ColorContextValue>({ size: 'md' })
 const sizeStyles = {
   sm: {
     slider: {
-      track: 'h-4 rounded',
-      thumb: 'w-4 h-4',
-      label: 'text-sm',
+      track: "h-4 rounded",
+      thumb: "w-4 h-4",
+      label: "text-sm",
     },
     area: {
-      container: 'w-48 h-48',
-      thumb: 'w-4 h-4',
+      container: "w-48 h-48",
+      thumb: "w-4 h-4",
     },
     wheel: {
-      container: 'w-48 h-48',
-      track: 'stroke-[16px]',
-      thumb: 'w-4 h-4',
+      container: "w-48 h-48",
+      track: "stroke-[16px]",
+      thumb: "w-4 h-4",
     },
     field: {
-      input: 'h-8 text-sm px-2',
-      label: 'text-sm',
+      input: "h-8 text-sm px-2",
+      label: "text-sm",
     },
-    swatch: 'w-8 h-8',
+    swatch: "w-8 h-8",
   },
   md: {
     slider: {
-      track: 'h-6 rounded-md',
-      thumb: 'w-5 h-5',
-      label: 'text-base',
+      track: "h-6 rounded-md",
+      thumb: "w-5 h-5",
+      label: "text-base",
     },
     area: {
-      container: 'w-64 h-64',
-      thumb: 'w-5 h-5',
+      container: "w-64 h-64",
+      thumb: "w-5 h-5",
     },
     wheel: {
-      container: 'w-64 h-64',
-      track: 'stroke-[20px]',
-      thumb: 'w-5 h-5',
+      container: "w-64 h-64",
+      track: "stroke-[20px]",
+      thumb: "w-5 h-5",
     },
     field: {
-      input: 'h-10 text-base px-3',
-      label: 'text-base',
+      input: "h-10 text-base px-3",
+      label: "text-base",
     },
-    swatch: 'w-10 h-10',
+    swatch: "w-10 h-10",
   },
   lg: {
     slider: {
-      track: 'h-8 rounded-lg',
-      thumb: 'w-6 h-6',
-      label: 'text-lg',
+      track: "h-8 rounded-lg",
+      thumb: "w-6 h-6",
+      label: "text-lg",
     },
     area: {
-      container: 'w-80 h-80',
-      thumb: 'w-6 h-6',
+      container: "w-80 h-80",
+      thumb: "w-6 h-6",
     },
     wheel: {
-      container: 'w-80 h-80',
-      track: 'stroke-[24px]',
-      thumb: 'w-6 h-6',
+      container: "w-80 h-80",
+      track: "stroke-[24px]",
+      thumb: "w-6 h-6",
     },
     field: {
-      input: 'h-12 text-lg px-4',
-      label: 'text-lg',
+      input: "h-12 text-lg px-4",
+      label: "text-lg",
     },
-    swatch: 'w-12 h-12',
+    swatch: "w-12 h-12",
   },
-}
+};
 
 // ============================================
 // COLOR SLIDER
 // ============================================
 
-export interface ColorSliderProps extends Omit<HeadlessColorSliderProps, 'class' | 'style' | 'children'> {
+export interface ColorSliderProps extends Omit<
+  HeadlessColorSliderProps,
+  "class" | "style" | "children"
+> {
   /** The size of the color slider. */
-  size?: ColorSize
+  size?: ColorSize;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Show the current value. */
-  showValue?: boolean
+  showValue?: boolean;
 }
 
 /**
@@ -147,22 +150,22 @@ export interface ColorSliderProps extends Omit<HeadlessColorSliderProps, 'class'
  * ```
  */
 export function ColorSlider(props: ColorSliderProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['size', 'class', 'showValue'])
+  const [local, headlessProps] = splitProps(props, ["size", "class", "showValue"]);
 
-  const size = () => local.size ?? 'md'
-  const styles = () => sizeStyles[size()]
-  const customClass = local.class ?? ''
+  const size = () => local.size ?? "md";
+  const styles = () => sizeStyles[size()];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: ColorSliderRenderProps): string => {
-    const base = 'flex flex-col gap-1.5'
-    let stateClass = ''
+    const base = "flex flex-col gap-1.5";
+    let stateClass = "";
     if (renderProps.isDisabled) {
-      stateClass = 'opacity-50'
+      stateClass = "opacity-50";
     }
-    return [base, stateClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, stateClass, customClass].filter(Boolean).join(" ");
+  };
 
-  const contextValue = createMemo(() => ({ size: size() }))
+  const contextValue = createMemo(() => ({ size: size() }));
 
   return (
     <ColorSizeContext.Provider value={contextValue()}>
@@ -181,65 +184,65 @@ export function ColorSlider(props: ColorSliderProps): JSX.Element {
                 </span>
               </Show>
             </div>
-            <ColorSliderTrack>
-              {() => <ColorSliderThumb />}
-            </ColorSliderTrack>
+            <ColorSliderTrack>{() => <ColorSliderThumb />}</ColorSliderTrack>
           </>
         )}
       </HeadlessColorSlider>
     </ColorSizeContext.Provider>
-  )
+  );
 }
 
 /**
  * The track component for a color slider.
  */
-export function ColorSliderTrack(props: { children?: JSX.Element | (() => JSX.Element); class?: string }): JSX.Element {
-  const context = useContext(ColorSizeContext)
-  const styles = sizeStyles[context.size]
-  const customClass = props.class ?? ''
+export function ColorSliderTrack(props: {
+  children?: JSX.Element | (() => JSX.Element);
+  class?: string;
+}): JSX.Element {
+  const context = useContext(ColorSizeContext);
+  const styles = sizeStyles[context.size];
+  const customClass = props.class ?? "";
 
   const getClassName = (renderProps: ColorSliderTrackRenderProps): string => {
-    const base = `relative ${styles.slider.track} shadow-inner border border-bg-300`
-    const dragClass = renderProps.isDragging ? 'cursor-grabbing' : 'cursor-pointer'
-    return [base, dragClass, customClass].filter(Boolean).join(' ')
-  }
+    const base = `relative ${styles.slider.track} shadow-inner border border-bg-300`;
+    const dragClass = renderProps.isDragging ? "cursor-grabbing" : "cursor-pointer";
+    return [base, dragClass, customClass].filter(Boolean).join(" ");
+  };
 
-  return (
-    <HeadlessColorSliderTrack class={getClassName}>
-      {props.children}
-    </HeadlessColorSliderTrack>
-  )
+  return <HeadlessColorSliderTrack class={getClassName}>{props.children}</HeadlessColorSliderTrack>;
 }
 
 /**
  * The thumb component for a color slider.
  */
 export function ColorSliderThumb(props: { class?: string }): JSX.Element {
-  const context = useContext(ColorSizeContext)
-  const styles = sizeStyles[context.size]
-  const customClass = props.class ?? ''
+  const context = useContext(ColorSizeContext);
+  const styles = sizeStyles[context.size];
+  const customClass = props.class ?? "";
 
   const getClassName = (renderProps: ColorSliderThumbRenderProps): string => {
-    const base = `${styles.slider.thumb} rounded-full border-2 border-on-color shadow-md cursor-grab`
-    const dragClass = renderProps.isDragging ? 'cursor-grabbing scale-110' : ''
-    const focusClass = renderProps.isFocusVisible ? 'ring-2 ring-accent-300 ring-offset-2' : ''
-    const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed' : ''
-    return [base, dragClass, focusClass, disabledClass, customClass].filter(Boolean).join(' ')
-  }
+    const base = `${styles.slider.thumb} rounded-full border-2 border-on-color shadow-md cursor-grab`;
+    const dragClass = renderProps.isDragging ? "cursor-grabbing scale-110" : "";
+    const focusClass = renderProps.isFocusVisible ? "ring-2 ring-accent-300 ring-offset-2" : "";
+    const disabledClass = renderProps.isDisabled ? "cursor-not-allowed" : "";
+    return [base, dragClass, focusClass, disabledClass, customClass].filter(Boolean).join(" ");
+  };
 
-  return <HeadlessColorSliderThumb class={getClassName} />
+  return <HeadlessColorSliderThumb class={getClassName} />;
 }
 
 // ============================================
 // COLOR AREA
 // ============================================
 
-export interface ColorAreaProps extends Omit<HeadlessColorAreaProps, 'class' | 'style' | 'children'> {
+export interface ColorAreaProps extends Omit<
+  HeadlessColorAreaProps,
+  "class" | "style" | "children"
+> {
   /** The size of the color area. */
-  size?: ColorSize
+  size?: ColorSize;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
 /**
@@ -258,22 +261,22 @@ export interface ColorAreaProps extends Omit<HeadlessColorAreaProps, 'class' | '
  * ```
  */
 export function ColorArea(props: ColorAreaProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['size', 'class'])
+  const [local, headlessProps] = splitProps(props, ["size", "class"]);
 
-  const size = () => local.size ?? 'md'
-  const styles = () => sizeStyles[size()]
-  const customClass = local.class ?? ''
+  const size = () => local.size ?? "md";
+  const styles = () => sizeStyles[size()];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: ColorAreaRenderProps): string => {
-    const base = `relative ${styles().area.container} rounded-lg overflow-hidden border border-bg-300 shadow-inner`
-    let stateClass = ''
+    const base = `relative ${styles().area.container} rounded-lg overflow-hidden border border-bg-300 shadow-inner`;
+    let stateClass = "";
     if (renderProps.isDisabled) {
-      stateClass = 'opacity-50 cursor-not-allowed'
+      stateClass = "opacity-50 cursor-not-allowed";
     }
-    return [base, stateClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, stateClass, customClass].filter(Boolean).join(" ");
+  };
 
-  const contextValue = createMemo(() => ({ size: size() }))
+  const contextValue = createMemo(() => ({ size: size() }));
 
   return (
     <ColorSizeContext.Provider value={contextValue()}>
@@ -286,47 +289,50 @@ export function ColorArea(props: ColorAreaProps): JSX.Element {
         )}
       </HeadlessColorArea>
     </ColorSizeContext.Provider>
-  )
+  );
 }
 
 /**
  * The gradient background for a color area.
  */
 export function ColorAreaGradient(props: { class?: string }): JSX.Element {
-  const customClass = props.class ?? ''
-  const className = `absolute inset-0 ${customClass}`
+  const customClass = props.class ?? "";
+  const className = `absolute inset-0 ${customClass}`;
 
-  return <HeadlessColorAreaGradient class={className} />
+  return <HeadlessColorAreaGradient class={className} />;
 }
 
 /**
  * The thumb component for a color area.
  */
 export function ColorAreaThumb(props: { class?: string }): JSX.Element {
-  const context = useContext(ColorSizeContext)
-  const styles = sizeStyles[context.size]
-  const customClass = props.class ?? ''
+  const context = useContext(ColorSizeContext);
+  const styles = sizeStyles[context.size];
+  const customClass = props.class ?? "";
 
   const getClassName = (renderProps: ColorAreaThumbRenderProps): string => {
-    const base = `${styles.area.thumb} rounded-full border-2 border-on-color shadow-md cursor-grab`
-    const dragClass = renderProps.isDragging ? 'cursor-grabbing scale-110' : ''
-    const focusClass = renderProps.isFocusVisible ? 'ring-2 ring-accent-300 ring-offset-2' : ''
-    const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed' : ''
-    return [base, dragClass, focusClass, disabledClass, customClass].filter(Boolean).join(' ')
-  }
+    const base = `${styles.area.thumb} rounded-full border-2 border-on-color shadow-md cursor-grab`;
+    const dragClass = renderProps.isDragging ? "cursor-grabbing scale-110" : "";
+    const focusClass = renderProps.isFocusVisible ? "ring-2 ring-accent-300 ring-offset-2" : "";
+    const disabledClass = renderProps.isDisabled ? "cursor-not-allowed" : "";
+    return [base, dragClass, focusClass, disabledClass, customClass].filter(Boolean).join(" ");
+  };
 
-  return <HeadlessColorAreaThumb class={getClassName} />
+  return <HeadlessColorAreaThumb class={getClassName} />;
 }
 
 // ============================================
 // COLOR WHEEL
 // ============================================
 
-export interface ColorWheelProps extends Omit<HeadlessColorWheelProps, 'class' | 'style' | 'children'> {
+export interface ColorWheelProps extends Omit<
+  HeadlessColorWheelProps,
+  "class" | "style" | "children"
+> {
   /** The size of the color wheel. */
-  size?: ColorSize
+  size?: ColorSize;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
 }
 
 /**
@@ -343,22 +349,22 @@ export interface ColorWheelProps extends Omit<HeadlessColorWheelProps, 'class' |
  * ```
  */
 export function ColorWheel(props: ColorWheelProps): JSX.Element {
-  const [local, headlessProps] = splitProps(props, ['size', 'class'])
+  const [local, headlessProps] = splitProps(props, ["size", "class"]);
 
-  const size = () => local.size ?? 'md'
-  const styles = () => sizeStyles[size()]
-  const customClass = local.class ?? ''
+  const size = () => local.size ?? "md";
+  const styles = () => sizeStyles[size()];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: ColorWheelRenderProps): string => {
-    const base = `relative ${styles().wheel.container}`
-    let stateClass = ''
+    const base = `relative ${styles().wheel.container}`;
+    let stateClass = "";
     if (renderProps.isDisabled) {
-      stateClass = 'opacity-50 cursor-not-allowed'
+      stateClass = "opacity-50 cursor-not-allowed";
     }
-    return [base, stateClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, stateClass, customClass].filter(Boolean).join(" ");
+  };
 
-  const contextValue = createMemo(() => ({ size: size() }))
+  const contextValue = createMemo(() => ({ size: size() }));
 
   return (
     <ColorSizeContext.Provider value={contextValue()}>
@@ -371,54 +377,57 @@ export function ColorWheel(props: ColorWheelProps): JSX.Element {
         )}
       </HeadlessColorWheel>
     </ColorSizeContext.Provider>
-  )
+  );
 }
 
 /**
  * The circular track for a color wheel.
  */
 export function ColorWheelTrack(props: { class?: string }): JSX.Element {
-  const context = useContext(ColorSizeContext)
-  const styles = sizeStyles[context.size]
-  const customClass = props.class ?? ''
+  const context = useContext(ColorSizeContext);
+  const styles = sizeStyles[context.size];
+  const customClass = props.class ?? "";
 
-  const className = `${styles.wheel.track} ${customClass}`
+  const className = `${styles.wheel.track} ${customClass}`;
 
-  return <HeadlessColorWheelTrack class={className} />
+  return <HeadlessColorWheelTrack class={className} />;
 }
 
 /**
  * The thumb component for a color wheel.
  */
 export function ColorWheelThumb(props: { class?: string }): JSX.Element {
-  const context = useContext(ColorSizeContext)
-  const styles = sizeStyles[context.size]
-  const customClass = props.class ?? ''
+  const context = useContext(ColorSizeContext);
+  const styles = sizeStyles[context.size];
+  const customClass = props.class ?? "";
 
   const getClassName = (renderProps: ColorWheelThumbRenderProps): string => {
-    const base = `${styles.wheel.thumb} rounded-full border-2 border-on-color shadow-md cursor-grab`
-    const dragClass = renderProps.isDragging ? 'cursor-grabbing scale-110' : ''
-    const focusClass = renderProps.isFocusVisible ? 'ring-2 ring-accent-300 ring-offset-2' : ''
-    const disabledClass = renderProps.isDisabled ? 'cursor-not-allowed' : ''
-    return [base, dragClass, focusClass, disabledClass, customClass].filter(Boolean).join(' ')
-  }
+    const base = `${styles.wheel.thumb} rounded-full border-2 border-on-color shadow-md cursor-grab`;
+    const dragClass = renderProps.isDragging ? "cursor-grabbing scale-110" : "";
+    const focusClass = renderProps.isFocusVisible ? "ring-2 ring-accent-300 ring-offset-2" : "";
+    const disabledClass = renderProps.isDisabled ? "cursor-not-allowed" : "";
+    return [base, dragClass, focusClass, disabledClass, customClass].filter(Boolean).join(" ");
+  };
 
-  return <HeadlessColorWheelThumb class={getClassName} />
+  return <HeadlessColorWheelThumb class={getClassName} />;
 }
 
 // ============================================
 // COLOR FIELD
 // ============================================
 
-export interface ColorFieldProps extends Omit<HeadlessColorFieldProps, 'class' | 'style' | 'children'> {
+export interface ColorFieldProps extends Omit<
+  HeadlessColorFieldProps,
+  "class" | "style" | "children"
+> {
   /** The size of the color field. */
-  size?: ColorSize
+  size?: ColorSize;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Description text below the input. */
-  description?: string
+  description?: string;
   /** Error message to display. */
-  errorMessage?: string
+  errorMessage?: string;
 }
 
 /**
@@ -437,26 +446,26 @@ export interface ColorFieldProps extends Omit<HeadlessColorFieldProps, 'class' |
  */
 export function ColorField(props: ColorFieldProps): JSX.Element {
   const [local, headlessProps] = splitProps(props, [
-    'size',
-    'class',
-    'description',
-    'errorMessage',
-  ])
+    "size",
+    "class",
+    "description",
+    "errorMessage",
+  ]);
 
-  const size = () => local.size ?? 'md'
-  const styles = () => sizeStyles[size()]
-  const customClass = local.class ?? ''
+  const size = () => local.size ?? "md";
+  const styles = () => sizeStyles[size()];
+  const customClass = local.class ?? "";
 
   const getClassName = (renderProps: ColorFieldRenderProps): string => {
-    const base = 'flex flex-col gap-1.5'
-    let stateClass = ''
+    const base = "flex flex-col gap-1.5";
+    let stateClass = "";
     if (renderProps.isDisabled) {
-      stateClass = 'opacity-50'
+      stateClass = "opacity-50";
     }
-    return [base, stateClass, customClass].filter(Boolean).join(' ')
-  }
+    return [base, stateClass, customClass].filter(Boolean).join(" ");
+  };
 
-  const contextValue = createMemo(() => ({ size: size() }))
+  const contextValue = createMemo(() => ({ size: size() }));
 
   return (
     <ColorSizeContext.Provider value={contextValue()}>
@@ -479,41 +488,41 @@ export function ColorField(props: ColorFieldProps): JSX.Element {
         )}
       </HeadlessColorField>
     </ColorSizeContext.Provider>
-  )
+  );
 }
 
 /**
  * The input component for a color field.
  */
 export function ColorFieldInput(props: { class?: string; isInvalid?: boolean }): JSX.Element {
-  const context = useContext(ColorSizeContext)
-  const styles = sizeStyles[context.size]
-  const customClass = props.class ?? ''
+  const context = useContext(ColorSizeContext);
+  const styles = sizeStyles[context.size];
+  const customClass = props.class ?? "";
 
-  const base = `${styles.field.input} w-full rounded-md border bg-bg-400 text-primary-200 placeholder:text-primary-500 focus:outline-none focus:ring-2 focus:ring-accent-300`
+  const base = `${styles.field.input} w-full rounded-md border bg-bg-400 text-primary-200 placeholder:text-primary-500 focus:outline-none focus:ring-2 focus:ring-accent-300`;
   const borderClass = props.isInvalid
-    ? 'border-danger-400'
-    : 'border-bg-300 focus:border-accent-300'
-  const className = [base, borderClass, customClass].filter(Boolean).join(' ')
+    ? "border-danger-400"
+    : "border-bg-300 focus:border-accent-300";
+  const className = [base, borderClass, customClass].filter(Boolean).join(" ");
 
-  return <HeadlessColorFieldInput class={className} />
+  return <HeadlessColorFieldInput class={className} />;
 }
 
 // ============================================
 // COLOR SWATCH
 // ============================================
 
-export interface ColorSwatchProps extends Omit<HeadlessColorSwatchProps, 'class' | 'style'> {
+export interface ColorSwatchProps extends Omit<HeadlessColorSwatchProps, "class" | "style"> {
   /** The size of the color swatch. */
-  size?: ColorSize
+  size?: ColorSize;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Whether the swatch is selectable. */
-  isSelectable?: boolean
+  isSelectable?: boolean;
   /** Whether the swatch is selected. */
-  isSelected?: boolean
+  isSelected?: boolean;
   /** Handler called when the swatch is clicked. */
-  onClick?: () => void
+  onClick?: () => void;
 }
 
 /**
@@ -534,34 +543,34 @@ export interface ColorSwatchProps extends Omit<HeadlessColorSwatchProps, 'class'
  */
 export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
   const [local, headlessProps] = splitProps(props, [
-    'size',
-    'class',
-    'isSelectable',
-    'isSelected',
-    'onClick',
-    'aria-label',
-  ])
+    "size",
+    "class",
+    "isSelectable",
+    "isSelected",
+    "onClick",
+    "aria-label",
+  ]);
 
-  const size = () => local.size ?? 'md'
-  const styles = () => sizeStyles[size()]
-  const customClass = local.class ?? ''
+  const size = () => local.size ?? "md";
+  const styles = () => sizeStyles[size()];
+  const customClass = local.class ?? "";
 
   const getClassName = (_renderProps: ColorSwatchRenderProps): string => {
-    const base = `${styles().swatch} rounded-md border border-bg-300 shadow-sm`
+    const base = `${styles().swatch} rounded-md border border-bg-300 shadow-sm`;
     const selectableClass = local.isSelectable
-      ? 'cursor-pointer hover:scale-105 transition-transform'
-      : ''
+      ? "cursor-pointer hover:scale-105 transition-transform"
+      : "";
     const selectedClass = local.isSelected
-      ? 'ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400'
-      : ''
-    return [base, selectableClass, selectedClass, customClass].filter(Boolean).join(' ')
-  }
+      ? "ring-2 ring-accent-300 ring-offset-2 ring-offset-bg-400"
+      : "";
+    return [base, selectableClass, selectedClass, customClass].filter(Boolean).join(" ");
+  };
 
   const handleClick = () => {
     if (local.isSelectable && local.onClick) {
-      local.onClick()
+      local.onClick();
     }
-  }
+  };
 
   if (local.isSelectable && local.onClick) {
     return (
@@ -570,24 +579,20 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
         class="inline-flex bg-transparent border-0 p-0 cursor-pointer"
         onClick={handleClick}
         aria-pressed={local.isSelected}
-        aria-label={local['aria-label']}
+        aria-label={local["aria-label"]}
       >
         <HeadlessColorSwatch
           {...headlessProps}
-          aria-label={local['aria-label']}
+          aria-label={local["aria-label"]}
           class={getClassName}
         />
       </button>
-    )
+    );
   }
 
   return (
-    <HeadlessColorSwatch
-      {...headlessProps}
-      aria-label={local['aria-label']}
-      class={getClassName}
-    />
-  )
+    <HeadlessColorSwatch {...headlessProps} aria-label={local["aria-label"]} class={getClassName} />
+  );
 }
 
 // ============================================
@@ -596,23 +601,23 @@ export function ColorSwatch(props: ColorSwatchProps): JSX.Element {
 
 export interface ColorPickerProps {
   /** The current color value (controlled). */
-  value?: Color | string
+  value?: Color | string;
   /** The default color value (uncontrolled). */
-  defaultValue?: Color | string
+  defaultValue?: Color | string;
   /** Handler called when the color changes. */
-  onChange?: (color: Color) => void
+  onChange?: (color: Color) => void;
   /** The size of the picker. */
-  size?: ColorSize
+  size?: ColorSize;
   /** Additional CSS class name. */
-  class?: string
+  class?: string;
   /** Whether the picker is disabled. */
-  isDisabled?: boolean
+  isDisabled?: boolean;
   /** A label for the picker. */
-  label?: string
+  label?: string;
   /** Whether to show the hex input field. */
-  showInput?: boolean
+  showInput?: boolean;
   /** Whether to show channel sliders. */
-  showSliders?: boolean
+  showSliders?: boolean;
 }
 
 /**
@@ -632,15 +637,13 @@ export interface ColorPickerProps {
  * ```
  */
 export function ColorPicker(props: ColorPickerProps): JSX.Element {
-  const size = () => props.size ?? 'md'
-  const styles = () => sizeStyles[size()]
+  const size = () => props.size ?? "md";
+  const styles = () => sizeStyles[size()];
 
   return (
-    <div class={`flex flex-col gap-4 ${props.class ?? ''}`}>
+    <div class={`flex flex-col gap-4 ${props.class ?? ""}`}>
       <Show when={props.label}>
-        <span class={`text-primary-200 font-medium ${styles().field.label}`}>
-          {props.label}
-        </span>
+        <span class={`text-primary-200 font-medium ${styles().field.label}`}>{props.label}</span>
       </Show>
 
       <ColorArea
@@ -683,7 +686,7 @@ export function ColorPicker(props: ColorPickerProps): JSX.Element {
           defaultValue={props.defaultValue}
           onChange={(color) => {
             if (color && props.onChange) {
-              props.onChange(color)
+              props.onChange(color);
             }
           }}
           label="Hex"
@@ -692,34 +695,34 @@ export function ColorPicker(props: ColorPickerProps): JSX.Element {
         />
       </Show>
     </div>
-  )
+  );
 }
 
 // Attach sub-components for convenience
-ColorSlider.Track = ColorSliderTrack
-ColorSlider.Thumb = ColorSliderThumb
-ColorArea.Gradient = ColorAreaGradient
-ColorArea.Thumb = ColorAreaThumb
-ColorWheel.Track = ColorWheelTrack
-ColorWheel.Thumb = ColorWheelThumb
-ColorField.Input = ColorFieldInput
+ColorSlider.Track = ColorSliderTrack;
+ColorSlider.Thumb = ColorSliderThumb;
+ColorArea.Gradient = ColorAreaGradient;
+ColorArea.Thumb = ColorAreaThumb;
+ColorWheel.Track = ColorWheelTrack;
+ColorWheel.Thumb = ColorWheelThumb;
+ColorField.Input = ColorFieldInput;
 
 // Re-export types for convenience
-export type { Color, ColorChannel, ColorFormat }
+export type { Color, ColorChannel, ColorFormat };
 
 // Re-exports from lower layers
-export { parseColor, getColorChannels } from '@proyecto-viviana/solid-stately';
+export { parseColor, getColorChannels } from "@proyecto-viviana/solid-stately";
 
 // ColorEditor
-export { ColorEditor } from './ColorEditor';
-export type { ColorEditorProps } from './ColorEditor';
+export { ColorEditor } from "./ColorEditor";
+export type { ColorEditorProps } from "./ColorEditor";
 
 // ColorSwatchPicker
-export { ColorSwatchPicker, ColorSwatchPickerItem } from './ColorSwatchPicker';
+export { ColorSwatchPicker, ColorSwatchPickerItem } from "./ColorSwatchPicker";
 export type {
   ColorSwatchPickerProps,
   ColorSwatchPickerItemProps,
   SwatchPickerSize,
   SwatchPickerDensity,
   SwatchPickerRounding,
-} from './ColorSwatchPicker';
+} from "./ColorSwatchPicker";

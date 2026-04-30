@@ -3,20 +3,20 @@
  * Based on @react-types/grid.
  */
 
-import type { Key, FocusStrategy } from '../collections/types';
+import type { Key, FocusStrategy } from "../collections/types";
 
 /**
  * Represents the type of a grid node.
  */
 export type GridNodeType =
-  | 'item'           // A selectable row
-  | 'cell'           // A cell within a row
-  | 'column'         // A column header
-  | 'rowheader'      // A cell that acts as a row header
-  | 'headerrow'      // A header row container
-  | 'section'        // A section/group
-  | 'content'        // A collection content placeholder
-  | 'placeholder';   // A placeholder (e.g., empty row)
+  | "item" // A selectable row
+  | "cell" // A cell within a row
+  | "column" // A column header
+  | "rowheader" // A cell that acts as a row header
+  | "headerrow" // A header row container
+  | "section" // A section/group
+  | "content" // A collection content placeholder
+  | "placeholder"; // A placeholder (e.g., empty row)
 
 /**
  * Represents a node in a grid collection.
@@ -49,7 +49,7 @@ export interface GridNode<T = unknown> {
   /** Whether this item is disabled. */
   isDisabled?: boolean;
   /** ARIA label for this node. */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Additional props for the node. */
   props?: Record<string, unknown>;
   /** Column index for cells. */
@@ -132,11 +132,11 @@ export interface GridState<T, C extends GridCollection<T> = GridCollection<T>> {
   /** Whether the grid is focused. */
   readonly isFocused: boolean;
   /** The selection mode. */
-  readonly selectionMode: 'none' | 'single' | 'multiple';
+  readonly selectionMode: "none" | "single" | "multiple";
   /** The selection behavior. */
-  readonly selectionBehavior: 'toggle' | 'replace';
+  readonly selectionBehavior: "toggle" | "replace";
   /** The currently selected keys. */
-  readonly selectedKeys: 'all' | Set<Key>;
+  readonly selectedKeys: "all" | Set<Key>;
   /** Check if a key is selected. */
   isSelected(key: Key): boolean;
   /** Check if a key is disabled. */
@@ -170,17 +170,17 @@ export interface GridStateOptions<T, C extends GridCollection<T> = GridCollectio
   /** Keys of disabled rows. */
   disabledKeys?: Iterable<Key>;
   /** Focus mode: 'row' or 'cell'. */
-  focusMode?: 'row' | 'cell';
+  focusMode?: "row" | "cell";
   /** Selection mode. */
-  selectionMode?: 'none' | 'single' | 'multiple';
+  selectionMode?: "none" | "single" | "multiple";
   /** Selection behavior. */
-  selectionBehavior?: 'toggle' | 'replace';
+  selectionBehavior?: "toggle" | "replace";
   /** Whether empty selection is disallowed. */
   disallowEmptySelection?: boolean;
   /** Currently selected keys (controlled). */
-  selectedKeys?: 'all' | Iterable<Key>;
+  selectedKeys?: "all" | Iterable<Key>;
   /** Default selected keys (uncontrolled). */
-  defaultSelectedKeys?: 'all' | Iterable<Key>;
+  defaultSelectedKeys?: "all" | Iterable<Key>;
   /** Handler for selection changes. */
-  onSelectionChange?: (keys: 'all' | Set<Key>) => void;
+  onSelectionChange?: (keys: "all" | Set<Key>) => void;
 }

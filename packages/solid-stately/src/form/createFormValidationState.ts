@@ -14,7 +14,7 @@ import {
   createMemo,
   createSignal,
   useContext,
-} from 'solid-js';
+} from "solid-js";
 
 // ============================================
 // TYPES
@@ -52,13 +52,13 @@ export type ValidationErrors = Record<string, string | string[]>;
 export type ValidationFunction<T> = (value: T) => boolean | string | string[] | null | undefined;
 
 /** Validation behavior mode. */
-export type ValidationBehavior = 'aria' | 'native';
+export type ValidationBehavior = "aria" | "native";
 
 export interface FormValidationProps<T> {
   /** Whether the value is invalid (controlled). */
   isInvalid?: boolean;
   /** @deprecated Use isInvalid instead. */
-  validationState?: 'valid' | 'invalid';
+  validationState?: "valid" | "invalid";
   /** Custom validation function. */
   validate?: ValidationFunction<T>;
   /** Validation behavior: 'aria' for realtime, 'native' for on submit. */
@@ -125,7 +125,7 @@ export const DEFAULT_VALIDATION_RESULT: ValidationResult = {
 export const FormValidationContext = createContext<ValidationErrors>({});
 
 /** Private prop key for passing validation state to children. */
-export const privateValidationStateProp = '__formValidationState' + Date.now();
+export const privateValidationStateProp = "__formValidationState" + Date.now();
 
 // ============================================
 // HELPERS
@@ -139,9 +139,9 @@ function asArray<T>(v: T | T[] | undefined): T[] {
 }
 
 function runValidate<T>(validate: ValidationFunction<T>, value: T): string[] {
-  if (typeof validate === 'function') {
+  if (typeof validate === "function") {
     const e = validate(value);
-    if (e && typeof e !== 'boolean') {
+    if (e && typeof e !== "boolean") {
       return asArray(e);
     }
   }
@@ -158,10 +158,7 @@ function getValidationResult(errors: string[]): ValidationResult | null {
     : null;
 }
 
-function isEqualValidation(
-  a: ValidationResult | null,
-  b: ValidationResult | null
-): boolean {
+function isEqualValidation(a: ValidationResult | null, b: ValidationResult | null): boolean {
   if (a === b) {
     return true;
   }
@@ -172,7 +169,7 @@ function isEqualValidation(
     a.validationErrors.length === b.validationErrors.length &&
     a.validationErrors.every((ae, i) => ae === b.validationErrors[i]) &&
     Object.entries(a.validationDetails).every(
-      ([k, v]) => b.validationDetails[k as keyof ValidityState] === v
+      ([k, v]) => b.validationDetails[k as keyof ValidityState] === v,
     )
   );
 }
@@ -201,21 +198,19 @@ function isEqualValidation(
  * const errors = () => validationState.displayValidation().validationErrors;
  * ```
  */
-export function createFormValidationState<T>(
-  props: FormValidationProps<T>
-): FormValidationState {
+export function createFormValidationState<T>(props: FormValidationProps<T>): FormValidationState {
   const {
     isInvalid,
     validationState,
     name,
     builtinValidation: builtinValidationProp,
     validate,
-    validationBehavior = 'aria',
+    validationBehavior = "aria",
   } = props;
 
   // Backward compatibility
   const isInvalidProp = createMemo(
-    () => isInvalid ?? (validationState === 'invalid' ? true : undefined)
+    () => isInvalid ?? (validationState === "invalid" ? true : undefined),
   );
 
   // Controlled error from isInvalid prop
@@ -226,7 +221,7 @@ export function createFormValidationState<T>(
           validationErrors: [],
           validationDetails: CUSTOM_VALIDITY_STATE,
         }
-      : null
+      : null,
   );
 
   // Client-side validation
@@ -269,13 +264,11 @@ export function createFormValidationState<T>(
   });
 
   const serverError = createMemo<ValidationResult | null>(() =>
-    getValidationResult(isServerErrorCleared() ? [] : serverErrorMessages())
+    getValidationResult(isServerErrorCleared() ? [] : serverErrorMessages()),
   );
 
   // Track validation state
-  const [currentValidity, setCurrentValidity] = createSignal(
-    DEFAULT_VALIDATION_RESULT
-  );
+  const [currentValidity, setCurrentValidity] = createSignal(DEFAULT_VALIDATION_RESULT);
   const [commitQueued, setCommitQueued] = createSignal(false);
 
   let nextValidation = DEFAULT_VALIDATION_RESULT;
@@ -301,15 +294,13 @@ export function createFormValidationState<T>(
       serverError() ||
       clientError() ||
       builtinValidation() ||
-      DEFAULT_VALIDATION_RESULT
+      DEFAULT_VALIDATION_RESULT,
   );
 
   // Display validation (what the user sees)
   const displayValidation = createMemo<ValidationResult>(() => {
-    if (validationBehavior === 'native') {
-      return (
-        controlledError() || serverError() || currentValidity()
-      );
+    if (validationBehavior === "native") {
+      return controlledError() || serverError() || currentValidity();
     }
     return (
       controlledError() ||
@@ -325,10 +316,7 @@ export function createFormValidationState<T>(
     displayValidation,
     updateValidation(value: ValidationResult) {
       // If validationBehavior is 'aria', update in realtime. Otherwise, store until commit.
-      if (
-        validationBehavior === 'aria' &&
-        !isEqualValidation(currentValidity(), value)
-      ) {
+      if (validationBehavior === "aria" && !isEqualValidation(currentValidity(), value)) {
         setCurrentValidity(value);
       } else {
         nextValidation = value;
@@ -342,14 +330,14 @@ export function createFormValidationState<T>(
         setCurrentValidity(error);
       }
       // Do not commit validation after the next render for native behavior.
-      if (validationBehavior === 'native') {
+      if (validationBehavior === "native") {
         setCommitQueued(false);
       }
       setServerErrorCleared(true);
     },
     commitValidation() {
       // Commit validation state so the user sees it on blur/change/submit.
-      if (validationBehavior === 'native') {
+      if (validationBehavior === "native") {
         const error = clientError() || builtinValidation() || nextValidation;
         if (!isEqualValidation(error, lastError)) {
           lastError = error;
@@ -365,9 +353,7 @@ export function createFormValidationState<T>(
 /**
  * Merges multiple validation results into one.
  */
-export function mergeValidation(
-  ...results: ValidationResult[]
-): ValidationResult {
+export function mergeValidation(...results: ValidationResult[]): ValidationResult {
   const errors = new Set<string>();
   let isInvalid = false;
   const validationDetails: ValidityState = { ...VALID_VALIDITY_STATE };
