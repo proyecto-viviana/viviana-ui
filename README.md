@@ -36,9 +36,10 @@ vp test run packages         # unit suite
 
 Tracked project docs live under [`docs/`](./docs):
 
-1. [`docs/s2-styling-and-package-plan.md`](./docs/s2-styling-and-package-plan.md)
-2. [`docs/release-policy.md`](./docs/release-policy.md)
-3. [`docs/tooling.md`](./docs/tooling.md)
+1. [`docs/adr/0001-s2-styling-source-of-truth.md`](./docs/adr/0001-s2-styling-source-of-truth.md)
+2. [`docs/s2-styling-and-package-plan.md`](./docs/s2-styling-and-package-plan.md)
+3. [`docs/release-policy.md`](./docs/release-policy.md)
+4. [`docs/tooling.md`](./docs/tooling.md)
 
 ## License
 
