@@ -1386,6 +1386,14 @@ a {
   background: #141414;
 }
 
+.s2-framework-panel .comparison-reference-frame[data-comparison-reference] {
+  min-height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--s2-text);
+}
+
 .comparison-reference-canvas {
   display: grid;
   align-content: start;
