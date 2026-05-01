@@ -1,4 +1,9 @@
 import {
+  actionButtonDemoDefaults,
+  actionButtonSizeOptions,
+  actionButtonStaticColorOptions,
+} from "./actionbutton-demo";
+import {
   buttonDemoDefaults,
   buttonFillStyleOptions,
   buttonSizeOptions,
@@ -124,7 +129,79 @@ const buttonControls: ComponentControlGroup = {
   note: "Modeled from the S2 Button docs control surface. Callback, form, and accessibility props are tracked as API coverage rather than visual controls.",
 };
 
+const actionButtonControls: ComponentControlGroup = {
+  slug: "actionbutton",
+  title: "ActionButton",
+  coverage: "modeled",
+  controls: [
+    {
+      name: "children",
+      label: "children",
+      kind: "text",
+      defaultValue: actionButtonDemoDefaults.children,
+    },
+    {
+      name: "size",
+      label: "size",
+      kind: "radio",
+      defaultValue: actionButtonDemoDefaults.size,
+      options: options(actionButtonSizeOptions),
+    },
+    {
+      name: "staticColor",
+      label: "staticColor",
+      kind: "radio",
+      defaultValue: "none",
+      options: [{ value: "none", label: "none" }, ...options(actionButtonStaticColorOptions)],
+    },
+    {
+      name: "isQuiet",
+      label: "isQuiet",
+      kind: "switch",
+      defaultValue: false,
+    },
+    {
+      name: "isDisabled",
+      label: "isDisabled",
+      kind: "switch",
+      defaultValue: false,
+    },
+    {
+      name: "isPending",
+      label: "isPending",
+      kind: "switch",
+      defaultValue: false,
+    },
+  ],
+  apiProps: [
+    "children",
+    "isPending",
+    "isDisabled",
+    "styles",
+    "size",
+    "staticColor",
+    "isQuiet",
+    "onPress",
+    "onPressStart",
+    "onPressEnd",
+    "onPressChange",
+    "onPressUp",
+    "onFocus",
+    "onBlur",
+    "onFocusChange",
+    "onKeyDown",
+    "onKeyUp",
+    "aria-label",
+    "aria-labelledby",
+    "aria-describedby",
+    "excludeFromTabOrder",
+    "preventFocusOnPress",
+  ],
+  note: "Modeled from the S2 ActionButton docs control surface. Icon, Avatar, and Badge content are tracked as visual content gaps until the comparison fixtures render those slots.",
+};
+
 export const componentControlGroups = {
+  actionbutton: actionButtonControls,
   button: buttonControls,
 } as const satisfies Record<string, ComponentControlGroup>;
 

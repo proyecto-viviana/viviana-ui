@@ -310,37 +310,48 @@ const layerTitles: Record<ComparisonLayerId, string> = {
       import "@comparison/scripts/docs-theme";
     </script>
     <script is:inline>
-      const panel = document.querySelector('[data-comparison-controls="button"]');
+      const panel = document.querySelector("[data-comparison-controls]");
       const form = panel instanceof HTMLFormElement ? panel : null;
       const resetButton = form?.querySelector("[data-reset-controls]");
-      const defaults = {
-        children: "Save",
-        variant: "primary",
-        fillStyle: "fill",
-        size: "M",
-        staticColor: "none",
-        isDisabled: false,
-        isPending: false,
+      const component = form?.dataset.comparisonControls;
+      const defaultsByComponent = {
+        actionbutton: {
+          children: "Inspect",
+          size: "M",
+          staticColor: "none",
+          isQuiet: false,
+          isDisabled: false,
+          isPending: false,
+        },
+        button: {
+          children: "Save",
+          variant: "primary",
+          fillStyle: "fill",
+          size: "M",
+          staticColor: "none",
+          isDisabled: false,
+          isPending: false,
+        },
       };
+      const defaults = defaultsByComponent[component] ?? {};
 
-      function readButtonControls() {
+      function readControls() {
         if (!form) {
           return defaults;
         }
 
         const data = new FormData(form);
-        return {
-          children: String(data.get("children") || defaults.children),
-          variant: String(data.get("variant") || defaults.variant),
-          fillStyle: String(data.get("fillStyle") || defaults.fillStyle),
-          size: String(data.get("size") || defaults.size),
-          staticColor: String(data.get("staticColor") || defaults.staticColor),
-          isDisabled: data.get("isDisabled") === "on",
-          isPending: data.get("isPending") === "on",
-        };
+        const values = {};
+        for (const [key, defaultValue] of Object.entries(defaults)) {
+          values[key] =
+            typeof defaultValue === "boolean"
+              ? data.get(key) === "on"
+              : String(data.get(key) || defaultValue);
+        }
+        return values;
       }
 
-      function writeButtonControls(values) {
+      function writeControls(values) {
         if (!form) {
           return;
         }
@@ -359,17 +370,15 @@ const layerTitles: Record<ComparisonLayerId, string> = {
         }
       }
 
-      function dispatchButtonControls(values, updateUrl = true) {
-        const props = {
-          children: values.children || defaults.children,
-          variant: values.variant,
-          fillStyle: values.fillStyle,
-          size: values.size,
-          staticColor: values.staticColor === "none" ? undefined : values.staticColor,
-          isDisabled: Boolean(values.isDisabled),
-          isPending: Boolean(values.isPending),
-        };
+      function toProps(values) {
+        const props = {};
+        for (const [key, value] of Object.entries(values)) {
+          props[key] = key === "staticColor" && value === "none" ? undefined : value;
+        }
+        return props;
+      }
 
+      function dispatchControls(values, updateUrl = true) {
         if (updateUrl) {
           const url = new URL(window.location.href);
           for (const [key, value] of Object.entries(values)) {
@@ -383,31 +392,28 @@ const layerTitles: Record<ComparisonLayerId, string> = {
         }
 
         window.dispatchEvent(new CustomEvent("comparison:controls-change", {
-          detail: { component: "button", props },
+          detail: { component, props: toProps(values) },
         }));
       }
 
-      if (form) {
+      if (form && component) {
         const params = new URLSearchParams(window.location.search);
-        const initial = {
-          ...defaults,
-          children: params.get("children") || defaults.children,
-          variant: params.get("variant") || defaults.variant,
-          fillStyle: params.get("fillStyle") || defaults.fillStyle,
-          size: params.get("size") || defaults.size,
-          staticColor: params.get("staticColor") || defaults.staticColor,
-          isDisabled: params.get("isDisabled") === "true",
-          isPending: params.get("isPending") === "true",
-        };
-        writeButtonControls(initial);
-        dispatchButtonControls(initial, false);
-        form.addEventListener("input", () => dispatchButtonControls(readButtonControls()));
-        form.addEventListener("change", () => dispatchButtonControls(readButtonControls()));
+        const initial = { ...defaults };
+        for (const [key, defaultValue] of Object.entries(defaults)) {
+          initial[key] =
+            typeof defaultValue === "boolean"
+              ? params.get(key) === "true"
+              : params.get(key) || defaultValue;
+        }
+        writeControls(initial);
+        dispatchControls(initial, false);
+        form.addEventListener("input", () => dispatchControls(readControls()));
+        form.addEventListener("change", () => dispatchControls(readControls()));
       }
 
       resetButton?.addEventListener("click", () => {
-        writeButtonControls(defaults);
-        dispatchButtonControls(defaults);
+        writeControls(defaults);
+        dispatchControls(defaults);
       });
     </script>
   </body>

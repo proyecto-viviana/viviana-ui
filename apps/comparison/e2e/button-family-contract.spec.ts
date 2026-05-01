@@ -73,6 +73,49 @@ test.describe("comparison button-family behavior contracts", () => {
     }
   });
 
+  test("ActionButton prop controls drive both implementations", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "actionbutton");
+
+    await page.locator('input[name="children"]').fill("Inspect item");
+    await page.locator('input[name="size"][value="XL"]').check();
+    await page.locator('input[name="staticColor"][value="white"]').check();
+    await page.locator('input[name="isQuiet"]').check();
+    await expect(page).toHaveURL(/children=Inspect\+item/);
+    await expect(page).toHaveURL(/size=XL/);
+    await expect(page).toHaveURL(/staticColor=white/);
+    await expect(page).toHaveURL(/isQuiet=true/);
+
+    for (const card of [cards.react, cards.solid]) {
+      await expect(card.getByRole("button", { name: "Inspect item" })).toBeVisible();
+      const root = card.locator("[data-comparison-actionbutton-props]").first();
+      await expect(root).toHaveAttribute(
+        "data-comparison-actionbutton-props",
+        JSON.stringify({
+          children: "Inspect item",
+          size: "XL",
+          staticColor: "white",
+          isQuiet: true,
+          isDisabled: false,
+          isPending: false,
+        }),
+      );
+    }
+  });
+
+  test("ActionButton pending remains focusable and suppresses press actions", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "actionbutton", "?isPending=true");
+
+    for (const card of [cards.react, cards.solid]) {
+      const root = card.locator("[data-comparison-action-count]").first();
+      const button = card.getByRole("button", { name: "Inspect" });
+      await expect(root).toHaveAttribute("data-comparison-action-count", "0");
+      await button.focus();
+      await expect(button).toBeFocused();
+      await button.click({ force: true });
+      await expect(root).toHaveAttribute("data-comparison-action-count", "0");
+    }
+  });
+
   test("ActionButtonGroup action callbacks update both stacks", async ({ page }) => {
     const cards = await buttonFamilyCards(page, "actionbuttongroup");
 

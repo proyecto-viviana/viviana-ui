@@ -198,7 +198,7 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
   actionbutton: [
     snapshottedDefaultState({
       slug: "actionbutton",
-      note: "ActionButton default screenshots are committed for both sides; hover, pressed, focus-visible, disabled, quiet, and static-color states remain planned.",
+      note: "ActionButton default screenshots are committed for both sides; hover, pressed, focus-visible, disabled, quiet, size, pending, and static-color visual states remain planned.",
     }),
     {
       id: "styled.action.press",
@@ -209,6 +209,35 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       pairDiff: "na",
       spec: "e2e/button-family-contract.spec.ts",
       note: "Press behavior updates the comparison action counter on both React Spectrum and Solid.",
+    },
+    {
+      id: "styled.props.controls",
+      label: "Interactive prop controls",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "The docs-style prop controls drive the same children, size, staticColor, quiet, disabled, and pending props into both stacks.",
+    },
+    {
+      id: "styled.pending.behavior",
+      label: "Pending focus and press suppression",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "Pending ActionButtons remain focusable and suppress press actions on both React Spectrum and Solid.",
+    },
+    {
+      id: "styled.test-plan",
+      label: "Component-specific test plan",
+      kind: "static",
+      react: "planned",
+      solid: "planned",
+      pairDiff: "planned",
+      note: "ActionButton's S2 plan covers children, icon/avatar/badge content, XS/S/M/L/XL sizes, staticColor black/white/auto, quiet, disabled, pending, hover, pressed, focus-visible, light/dark themes, and pending spinner timing.",
     },
   ],
   actionbuttongroup: [

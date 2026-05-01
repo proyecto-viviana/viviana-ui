@@ -70,6 +70,13 @@ import {
   type ComparisonReferenceKind,
 } from "@comparison/data/comparison-contract";
 import {
+  actionButtonDemoPropsFromWindow,
+  serializeActionButtonDemoProps,
+  type ActionButtonDemoProps,
+  type ActionButtonDemoSize,
+  type ActionButtonDemoStaticColor,
+} from "@comparison/data/actionbutton-demo";
+import {
   buttonDemoPropsFromWindow,
   comparisonControlsEvent,
   serializeButtonDemoProps,
@@ -806,21 +813,70 @@ function SolidariaSpectrumButtonDemo() {
 
 function SolidariaSpectrumActionButtonDemo() {
   const [actionCount, setActionCount] = createSignal(0);
+  const [demoProps, setDemoProps] = createSignal(actionButtonDemoPropsFromWindow());
+  const [colorScheme, setColorScheme] = createSignal<ComparisonResolvedTheme>(
+    getComparisonResolvedThemeFromDocument(),
+  );
+
+  onMount(() => {
+    const handleControlsChange = (event: Event) => {
+      if (event instanceof CustomEvent && event.detail?.component === "actionbutton") {
+        setDemoProps(event.detail.props as ActionButtonDemoProps);
+      }
+    };
+    const handleThemeChange = (event: Event) => {
+      if (event instanceof CustomEvent && event.detail?.resolvedTheme) {
+        setColorScheme(event.detail.resolvedTheme as ComparisonResolvedTheme);
+      }
+    };
+    window.addEventListener(comparisonControlsEvent, handleControlsChange);
+    window.addEventListener(comparisonThemeChangeEvent, handleThemeChange);
+    setColorScheme(getComparisonResolvedThemeFromDocument());
+    onCleanup(() => {
+      window.removeEventListener(comparisonControlsEvent, handleControlsChange);
+      window.removeEventListener(comparisonThemeChangeEvent, handleThemeChange);
+    });
+  });
 
   return hc(
     "div",
     {
       class: comparisonSpectrumSkin.rootClass,
+      get "data-comparison-color-scheme"() {
+        return colorScheme();
+      },
       get "data-comparison-action-count"() {
         return String(actionCount());
+      },
+      get "data-comparison-actionbutton-props"() {
+        return serializeActionButtonDemoProps(demoProps());
       },
     },
     [
       hSpectrumActionButton(
         {
-          onPress: (_event: unknown) => setActionCount((count) => count + 1),
+          get size() {
+            return demoProps().size;
+          },
+          get staticColor() {
+            return demoProps().staticColor;
+          },
+          get isQuiet() {
+            return demoProps().isQuiet;
+          },
+          get isDisabled() {
+            return demoProps().isDisabled;
+          },
+          get isPending() {
+            return demoProps().isPending;
+          },
+          onPress: (_event: unknown) => {
+            if (!demoProps().isPending) {
+              setActionCount((count) => count + 1);
+            }
+          },
         },
-        "Inspect",
+        () => demoProps().children,
       ),
     ],
   );
@@ -1007,19 +1063,39 @@ function buttonPressPerspective(label: string) {
 
 function hSpectrumActionButton(
   props: {
+    size?: ActionButtonDemoSize;
+    staticColor?: ActionButtonDemoStaticColor;
+    isQuiet?: boolean;
     isDisabled?: boolean;
+    isPending?: boolean;
     onPress?: (event: unknown) => void;
   },
-  label: string,
+  label: string | (() => string),
 ) {
+  const labelText = typeof label === "function" ? label : () => label;
+
   return hc(
     HeadlessButton,
     {
-      isDisabled: props.isDisabled,
+      get isDisabled() {
+        return props.isDisabled;
+      },
       class: comparisonSpectrumSkin.actionButtonClass,
       onPress: props.onPress,
+      get "data-size"() {
+        return props.size;
+      },
+      get "data-static-color"() {
+        return props.staticColor;
+      },
+      get "data-quiet"() {
+        return props.isQuiet ? "true" : undefined;
+      },
+      get "data-pending"() {
+        return props.isPending ? "true" : undefined;
+      },
     },
-    [h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, label)],
+    [h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, labelText)],
   );
 }
 

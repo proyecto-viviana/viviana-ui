@@ -43,6 +43,11 @@ import {
 } from "react-aria-components";
 import { UNSAFE_PortalProvider, useButton } from "react-aria";
 import {
+  actionButtonDemoPropsFromWindow,
+  comparisonControlsEvent as actionButtonControlsEvent,
+  serializeActionButtonDemoProps,
+} from "@comparison/data/actionbutton-demo";
+import {
   comparisonActionItems as actionItems,
   comparisonReferenceDataset,
   comparisonSelectItems as selectItems,
@@ -263,15 +268,37 @@ function useButtonDemoControls() {
 }
 function ReactActionButtonDemo() {
   const [actionCount, setActionCount] = useState(0);
+  const demoProps = useActionButtonDemoControls();
+  const colorScheme = useComparisonResolvedTheme();
   return renderReactSpectrumReference(
     /* @__PURE__ */ jsx("div", {
       "data-comparison-action-count": String(actionCount),
+      "data-comparison-actionbutton-props": serializeActionButtonDemoProps(demoProps),
       children: /* @__PURE__ */ jsx(SpectrumActionButton, {
+        size: demoProps.size,
+        staticColor: demoProps.staticColor,
+        isQuiet: demoProps.isQuiet,
+        isDisabled: demoProps.isDisabled,
+        isPending: demoProps.isPending,
         onPress: () => setActionCount((count) => count + 1),
-        children: "Inspect",
+        children: demoProps.children,
       }),
     }),
+    colorScheme,
   );
+}
+function useActionButtonDemoControls() {
+  const [demoProps, setDemoProps] = useState(actionButtonDemoPropsFromWindow);
+  useEffect(() => {
+    const handleControlsChange = (event) => {
+      if (event instanceof CustomEvent && event.detail?.component === "actionbutton") {
+        setDemoProps(event.detail.props);
+      }
+    };
+    window.addEventListener(actionButtonControlsEvent, handleControlsChange);
+    return () => window.removeEventListener(actionButtonControlsEvent, handleControlsChange);
+  }, []);
+  return demoProps;
 }
 function ReactActionButtonGroupDemo() {
   const [selectedKeys, setSelectedKeys] = useState(() => /* @__PURE__ */ new Set(["bold"]));
