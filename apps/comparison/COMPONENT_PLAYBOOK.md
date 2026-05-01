@@ -18,7 +18,49 @@ comparison entry complete.
   allowed in Solid Spectrum, but the comparison controls and fixtures use the S2 API
   names first.
 
-## 2. Wire Matching Behavior
+## 2. Plan Component-Specific Tests
+
+Do this before styling or fixing the Solid implementation. The plan must be
+specific to the component, because each S2 component exposes different visual
+states, interaction paths, overlays, and prop combinations.
+
+Write the plan from the React Spectrum S2 docs and the live React reference:
+
+- List the visual states: default, hover, pressed, focus-visible, disabled,
+  selected/checked/invalid/current, loading/pending, and open overlays when
+  applicable.
+- List the behavior states: value, selected keys, open/closed state, callbacks,
+  focus movement, keyboard navigation, dismissal, validation, and controlled
+  prop updates.
+- Identify the meaningful prop matrix. Cover every visually distinct state, but
+  avoid exploding combinations that do not change rendering or behavior.
+- Decide which checks are computed-style contracts, which are strict screenshots,
+  and which are behavior-only assertions.
+- Include light and dark theme coverage for the docs shell, React S2 fixture,
+  and Solid fixture. Theme background context is part of visual parity.
+- Include overlay-specific checks when relevant: portal root, backdrop, focus
+  trap, outside press dismissal, Escape dismissal, placement, and focus return.
+- Mark unsupported states as `missing`, `planned`, or `blocked` in
+  `src/data/visual-state-matrix.ts` before moving on. Gaps are acceptable only
+  when they are explicit.
+
+The output of this step should be a short component test plan in the issue,
+commit notes, or the state matrix entries for that component. Do not call a
+component complete because its default state matches.
+
+Examples:
+
+- Button: variants, fill/outline, sizes, staticColor, hover, pressed,
+  focus-visible, disabled, pending, delayed spinner, and light/dark theme.
+- DatePicker: closed field, open popover, selected date, calendar navigation,
+  invalid/disabled states, outside click, Escape, keyboard flow, and focus
+  return.
+- Dialog: trigger, open overlay, backdrop, close button, outside press, Escape,
+  focus containment, focus return, and theme overlay context.
+- Picker, ComboBox, and Menu: trigger, open popover, highlighted item, selected
+  item, keyboard navigation, typeahead, dismissal, and placement.
+
+## 3. Wire Matching Behavior
 
 - Give both React and Solid fixtures the same labels, values, selected keys,
   disabled flags, open state, and callbacks.
@@ -35,7 +77,7 @@ comparison entry complete.
 - For fields and selection components, assert value changes, keyboard paths,
   disabled/read-only behavior, and selection updates.
 
-## 3. Measure Before Styling
+## 4. Measure Before Styling
 
 - Inspect the React S2 side in browser with the reusable component controls and
   record computed styles for the default state and every state being
@@ -47,7 +89,7 @@ comparison entry complete.
   comparison app is intentionally skinning a headless Solid component to match
   S2.
 
-## 4. Keep Source Clean
+## 5. Keep Source Clean
 
 Cleanup is part of parity work. Every component pass should leave the touched
 code easier to audit against S2:
@@ -63,7 +105,7 @@ code easier to audit against S2:
 - Do not mix behavior changes into cleanup unless the component pass explicitly
   covers and tests that behavior.
 
-## 5. Add State Coverage
+## 6. Add State Coverage
 
 For every state, add both:
 
@@ -111,7 +153,7 @@ repositioned. Time-delayed states must wait for the intended visible phase
 before capture, such as waiting for pending progressbars before snapshotting a
 spinner state.
 
-## 6. Update The Matrix
+## 7. Update The Matrix
 
 Update `src/data/visual-state-matrix.ts` in the same change:
 
@@ -124,7 +166,7 @@ Update `src/data/visual-state-matrix.ts` in the same change:
 Large mismatches are failures for implemented states. They should never be
 documented as acceptable drift.
 
-## 7. Validate The Component
+## 8. Validate The Component
 
 Run the component-specific loop first, then the broader app checks:
 
@@ -165,6 +207,13 @@ Button is the pilot for this process:
 - The Button example owns the first theme contract: the page-level theme control
   drives the React `SpectrumProvider` color scheme and the Solid S2 comparison
   skin together.
+- Button caught two systemic risks that every component plan must account for:
+  the docs shell background can distort perceived component shape, and a
+  theme-specific interactive state can accidentally inherit styling from the
+  opposite theme.
+- Button light-mode hover is covered across primary, secondary, accent, and
+  negative variants in fill and outline styles. Do not rely on default-state
+  theme parity to prove interactive-state parity.
 - Button is not considered complete if a documented visual prop or visible
   intermediate state exists without a strict React-vs-Solid pair diff row in
   `src/data/visual-state-matrix.ts`.
