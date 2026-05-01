@@ -198,8 +198,18 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
   actionbutton: [
     snapshottedDefaultState({
       slug: "actionbutton",
-      note: "ActionButton default screenshots are committed for both sides; hover, pressed, focus-visible, disabled, quiet, size, pending, and static-color visual states remain planned.",
+      note: "ActionButton default screenshots are committed for both sides; computed S2 parity covers light/dark default, size, quiet, static-color, disabled, and pending states.",
     }),
+    {
+      id: "styled.props.computed-matrix",
+      label: "Computed visual prop matrix",
+      kind: "static",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/actionbutton-visual.spec.ts",
+      note: "React Spectrum and Solid Spectrum computed styles are matched across light/dark themes, XS/S/M/L/XL sizes, quiet, staticColor black/white/auto, disabled, and pending states.",
+    },
     {
       id: "styled.action.press",
       label: "Press action",

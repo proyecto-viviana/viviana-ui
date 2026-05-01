@@ -851,6 +851,9 @@ function SolidariaSpectrumActionButtonDemo() {
       get "data-comparison-actionbutton-props"() {
         return serializeActionButtonDemoProps(demoProps());
       },
+      get "data-comparison-actionbutton-pending"() {
+        return demoProps().isPending ? "true" : undefined;
+      },
     },
     [
       hSpectrumActionButton(
@@ -866,9 +869,6 @@ function SolidariaSpectrumActionButtonDemo() {
           },
           get isDisabled() {
             return demoProps().isDisabled;
-          },
-          get isPending() {
-            return demoProps().isPending;
           },
           onPress: (_event: unknown) => {
             if (!demoProps().isPending) {
@@ -1090,9 +1090,6 @@ function hSpectrumActionButton(
       },
       get "data-quiet"() {
         return props.isQuiet ? "true" : undefined;
-      },
-      get "data-pending"() {
-        return props.isPending ? "true" : undefined;
       },
     },
     [h("span", { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" }, labelText)],

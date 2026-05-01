@@ -274,6 +274,7 @@ function ReactActionButtonDemo() {
     /* @__PURE__ */ jsx("div", {
       "data-comparison-action-count": String(actionCount),
       "data-comparison-actionbutton-props": serializeActionButtonDemoProps(demoProps),
+      "data-comparison-actionbutton-pending": demoProps.isPending ? "true" : void 0,
       children: /* @__PURE__ */ jsx(SpectrumActionButton, {
         size: demoProps.size,
         staticColor: demoProps.staticColor,
