@@ -208,7 +208,7 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       solid: "snapshotted",
       pairDiff: "asserted",
       spec: "e2e/actionbutton-visual.spec.ts",
-      note: "Committed React/Solid screenshots cover default, XS/S/M/L/XL sizes, quiet, staticColor black/white/auto, disabled, pending, hover, focus-visible, and pressed states with a dedicated text-raster drift threshold.",
+      note: "Committed React/Solid screenshots cover default, XS/S/M/L/XL sizes, quiet, staticColor black/white/auto, disabled, pending, hover, focus-visible, and pressed states. The dedicated threshold remains until staticColor, pressed, and residual text/background raster differences become strict.",
     },
     {
       id: "styled.props.computed-matrix",
@@ -218,7 +218,7 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       solid: "asserted",
       pairDiff: "na",
       spec: "e2e/actionbutton-visual.spec.ts",
-      note: "React Spectrum and Solid Spectrum computed styles are matched across light/dark themes, XS/S/M/L/XL sizes, quiet, staticColor black/white/auto, disabled, and pending states.",
+      note: "React Spectrum and Solid Spectrum computed styles and rendered geometry are matched across light/dark themes, XS/S/M/L/XL sizes, quiet, staticColor black/white/auto, disabled, and pending states.",
     },
     {
       id: "styled.action.press",
@@ -257,7 +257,7 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       react: "planned",
       solid: "planned",
       pairDiff: "planned",
-      note: "Remaining ActionButton plan covers icon/avatar/badge content, light-theme screenshot baselines, and investigation into S2 text raster metrics for stricter screenshot thresholds.",
+      note: "Remaining ActionButton plan covers icon/avatar/badge content, light-theme screenshot baselines, and strict pair-diff work for staticColor, pressed, and residual raster differences.",
     },
   ],
   actionbuttongroup: [

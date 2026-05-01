@@ -67,6 +67,11 @@ async function setComparisonTheme(page: Page, theme: "light" | "dark") {
 async function actionButtonComputedContract(button: Locator) {
   return button.evaluate((element) => {
     const styles = window.getComputedStyle(element);
+    const label = element.querySelector<HTMLElement>("[data-rsp-slot='text'], [data-slot='label']");
+    const labelRange = document.createRange();
+    if (label) {
+      labelRange.selectNodeContents(label);
+    }
     return {
       backgroundColor: styles.backgroundColor,
       borderColor: styles.borderColor,
@@ -78,6 +83,9 @@ async function actionButtonComputedContract(button: Locator) {
       height: styles.height,
       lineHeight: styles.lineHeight,
       padding: styles.padding,
+      width: element.getBoundingClientRect().width,
+      labelWidth: label?.getBoundingClientRect().width ?? null,
+      labelTextWidth: label ? labelRange.getBoundingClientRect().width : null,
     };
   });
 }

@@ -140,6 +140,10 @@ should not reimplement pixel diff logic or their own theme initialization.
 For controlled props, add at least one Playwright assertion that changing the
 docs-style controls updates both implementations. When a prop produces a visual
 state, add or plan the matching strict pair screenshot row in the matrix.
+For size, density, label, or layout props, assert rendered geometry as well as
+computed styles: canvas width, root width, key slot widths, and text range
+widths should match before screenshots are accepted. A screenshot can hide a
+cropped reference if the captured canvas shrinkwraps smaller than the component.
 Capture each side once per assertion and use that same buffer for both the
 committed snapshot and the React-vs-Solid pair diff, so timing-sensitive states
 cannot pass the snapshot and fail the pair diff against a different frame.

@@ -328,6 +328,9 @@ body.s2-docs[data-theme="dark"] {
 }
 
 .s2-framework-panel .comparison-reference-canvas {
+  inline-size: max-content;
+  max-inline-size: 100%;
+  justify-self: center;
   place-items: center;
   min-height: auto;
 }
@@ -1432,7 +1435,7 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  inline-size: fit-content;
+  inline-size: max-content;
   max-inline-size: 100%;
 }
 
