@@ -1903,6 +1903,87 @@ a {
   border-color: var(--skin-button-primary-hover-border);
 }
 
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-hovered][data-style="fill"][data-variant="primary"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button:hover[data-style="fill"][data-variant="primary"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-focus-visible][data-style="fill"][data-variant="primary"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-pressed][data-style="fill"][data-variant="primary"] {
+  background: #131313;
+  border-color: #131313;
+  color: #ffffff;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-hovered][data-style="fill"][data-variant="secondary"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button:hover[data-style="fill"][data-variant="secondary"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-pressed][data-style="fill"][data-variant="secondary"] {
+  background: #e1e1e1;
+  border-color: #c6c6c6;
+  color: #131313;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-hovered][data-style="fill"][data-variant="accent"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button:hover[data-style="fill"][data-variant="accent"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-pressed][data-style="fill"][data-variant="accent"] {
+  background: #274dea;
+  border-color: #000000;
+  color: #ffffff;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-hovered][data-style="fill"][data-variant="negative"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button:hover[data-style="fill"][data-variant="negative"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-focus-visible][data-style="fill"][data-variant="negative"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-pressed][data-style="fill"][data-variant="negative"] {
+  background: #b72818;
+  border-color: #000000;
+  color: #ffffff;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-hovered][data-style="outline"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button:hover[data-style="outline"] {
+  background: #e9e9e9;
+  color: #131313;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-hovered][data-style="outline"][data-variant="primary"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button:hover[data-style="outline"][data-variant="primary"] {
+  border-color: #131313;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-hovered][data-style="outline"][data-variant="secondary"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button:hover[data-style="outline"][data-variant="secondary"] {
+  border-color: #c6c6c6;
+}
+
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-hovered][data-style="outline"][data-variant="accent"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button:hover[data-style="outline"][data-variant="accent"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button[data-hovered][data-style="outline"][data-variant="negative"],
+.comparison-spectrum-skin[data-comparison-color-scheme="light"]
+  .comparison-spectrum-Button:hover[data-style="outline"][data-variant="negative"] {
+  border-color: #000000;
+}
+
 .comparison-spectrum-skin
   .comparison-spectrum-Button[data-static-color="white"][data-style="fill"][data-variant="primary"],
 .comparison-spectrum-skin

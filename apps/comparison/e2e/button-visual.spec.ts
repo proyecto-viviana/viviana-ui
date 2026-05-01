@@ -414,6 +414,28 @@ test.describe("comparison Button visual parity", () => {
     }
   });
 
+  test("Button light theme hover styles match React Spectrum", async ({ page }) => {
+    const variants = ["primary", "secondary", "accent", "negative"] as const;
+    const fillStyles = ["fill", "outline"] as const;
+
+    for (const fillStyle of fillStyles) {
+      for (const variant of variants) {
+        const fixtures = await buttonFixtures(page, { variant, fillStyle });
+
+        await setComparisonTheme(page, "light");
+        await fixtures.reactButton.hover();
+        await expect(fixtures.reactButton).toHaveAttribute("data-hovered", "true");
+        await page.waitForTimeout(220);
+        const reactContract = await buttonComputedContract(fixtures.reactButton);
+
+        await fixtures.solidButton.hover();
+        await expect(fixtures.solidButton).toHaveAttribute("data-hovered", "true");
+        await page.waitForTimeout(220);
+        expect(await buttonComputedContract(fixtures.solidButton)).toEqual(reactContract);
+      }
+    }
+  });
+
   test("Button hover cursor and genai gradient match React Spectrum", async ({ page }) => {
     const fixtures = await buttonFixtures(page, { variant: "genai", fillStyle: "fill" });
 
