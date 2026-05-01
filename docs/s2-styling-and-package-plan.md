@@ -11,6 +11,26 @@ The controlling decision is
 declaration system. The comparison app verifies parity; it does not implement
 component styling.
 
+## Component Process
+
+For each component, first copy or port the S2 style declarations, tokens,
+generated CSS path, DOM slots, and state attributes. Do not tune colors,
+spacing, radius, motion, or overlays from screenshots.
+
+Before accepting a component, write its state plan:
+
+- Static visual states: documented props, themes, sizes, disabled/read-only,
+  validation, density, static color, and content slots.
+- Interaction states: hover, focus-visible, pointer down/pressed, keyboard
+  activation, drag, selected/open/expanded, overlays, dismiss behavior, and any
+  delayed or animated state.
+- Temporal behavior: transitions, press scale, overlay animation, pending
+  delays, loading spinners, and any frame where the UI changes during the
+  interaction.
+- Tests: strict React-vs-Solid screenshot pairs for stable states, computed CSS
+  assertions for source-of-truth tokens/classes, and Playwright interaction
+  replays for every state that only appears while the user is interacting.
+
 ## Current Migration State
 
 - The existing app-local Spectrum skin is legacy.

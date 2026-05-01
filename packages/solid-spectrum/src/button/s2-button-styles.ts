@@ -81,7 +81,12 @@ export const s2Button = style<S2ButtonStyleProps>(
         fill: {
           variant: {
             primary: baseColor("neutral"),
-            secondary: baseColor("gray-100"),
+            secondary: {
+              default: "gray-100",
+              isHovered: "gray-200",
+              isPressed: "gray-200",
+              isFocusVisible: "gray-200",
+            },
             accent: {
               default: lightDark("accent-900", "accent-700"),
               isHovered: lightDark("accent-1000", "accent-600"),

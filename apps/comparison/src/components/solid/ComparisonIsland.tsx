@@ -704,6 +704,8 @@ function SolidariaSpectrumButtonDemo() {
           get colorScheme() {
             return colorScheme();
           },
+          background: "base",
+          style: providerShellStyle,
         },
         [hc("div", { class: "comparison-button-row" }, [renderedButton])],
       ),

@@ -25,6 +25,17 @@ import {
 } from "./utils";
 import { DialogTriggerContext, PopoverTriggerContext } from "./contexts";
 
+type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
+
+function assignRef<T>(ref: RefLike<T>, el: T): void {
+  if (!ref) return;
+  if (typeof ref === "function") {
+    ref(el);
+  } else {
+    ref.current = el;
+  }
+}
+
 export interface ButtonRenderProps {
   /** Whether the button is currently hovered with a mouse. */
   isHovered: boolean;
@@ -52,6 +63,8 @@ export interface ButtonProps extends Omit<AriaButtonProps, "children">, SlotProp
     props: JSX.ButtonHTMLAttributes<HTMLButtonElement>,
     renderProps: ButtonRenderProps,
   ) => JSX.Element;
+  /** Ref for the underlying button element. */
+  ref?: RefLike<HTMLButtonElement>;
   /** Whether the button is in a pending state. */
   isPending?: boolean;
   /** Keeps pending buttons focusable by using aria-disabled without a native disabled attribute. */
@@ -104,6 +117,7 @@ export function Button(props: ButtonProps): JSX.Element {
     "class",
     "style",
     "render",
+    "ref",
     "slot",
     "isPending",
     "isPendingFocusable",
@@ -244,6 +258,7 @@ export function Button(props: ButtonProps): JSX.Element {
 
   const handleRef = (el: HTMLButtonElement) => {
     buttonEl = el;
+    assignRef(local.ref, el);
 
     buttonPropsRef?.(el);
     focusPropsRef?.(el);
@@ -307,6 +322,8 @@ export function Button(props: ButtonProps): JSX.Element {
     <button
       ref={handleRef}
       {...rootProps()}
+      class={renderProps.class()}
+      style={renderProps.style()}
       attr:data-pressed={(rootProps() as Record<string, unknown>)["data-pressed"] as string}
       attr:data-hovered={(rootProps() as Record<string, unknown>)["data-hovered"] as string}
       attr:data-focused={(rootProps() as Record<string, unknown>)["data-focused"] as string}

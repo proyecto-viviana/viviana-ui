@@ -1,6 +1,1 @@
-/*
- * Deprecated compatibility entry.
- *
- * Component styling now comes from vendored Spectrum 2 style declarations and
- * generated atomic CSS imported by styles.css.
- */
+@import "./styles.css";

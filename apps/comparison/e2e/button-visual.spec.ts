@@ -181,6 +181,8 @@ async function buttonComputedContract(button: Locator) {
       height: styles.height,
       padding: styles.padding,
       lineHeight: styles.lineHeight,
+      transform: styles.transform,
+      willChange: styles.willChange,
       textCenterDelta: centerDelta,
     };
   });
@@ -199,6 +201,62 @@ async function buttonGradientBackground(button: Locator) {
 
     return childGradient ?? pseudoGradient;
   });
+}
+
+async function buttonGradientContract(button: Locator) {
+  return button.evaluate((element) => {
+    const gradientElement = Array.from(element.children).find(
+      (child) => window.getComputedStyle(child).backgroundImage !== "none",
+    );
+    if (!gradientElement) {
+      return null;
+    }
+
+    const styles = window.getComputedStyle(gradientElement);
+    return {
+      backgroundImage: styles.backgroundImage,
+      colorScheme: styles.colorScheme,
+      g0: styles.getPropertyValue("--g0").trim(),
+      g1: styles.getPropertyValue("--g1").trim(),
+      g2: styles.getPropertyValue("--g2").trim(),
+      gp: styles.getPropertyValue("--gp").trim(),
+    };
+  });
+}
+
+async function buttonParityContract(reactButton: Locator, solidButton: Locator) {
+  const react = await buttonComputedContract(reactButton);
+  const solid = await buttonComputedContract(solidButton);
+  const reactGradient = await buttonGradientContract(reactButton);
+  const solidGradient = await buttonGradientContract(solidButton);
+
+  return {
+    buttonMatches: JSON.stringify(solid) === JSON.stringify(react),
+    gradientMatches: JSON.stringify(solidGradient) === JSON.stringify(reactGradient),
+    react,
+    solid,
+    reactGradient,
+    solidGradient,
+  };
+}
+
+async function buttonFullContract(button: Locator) {
+  return {
+    button: await buttonComputedContract(button),
+    gradient: await buttonGradientContract(button),
+  };
+}
+
+async function expectButtonParitySettled(reactButton: Locator, solidButton: Locator) {
+  await expect
+    .poll(() => buttonParityContract(reactButton, solidButton), {
+      intervals: [50, 100, 200, 300],
+      timeout: 1_500,
+    })
+    .toMatchObject({
+      buttonMatches: true,
+      gradientMatches: true,
+    });
 }
 
 async function expectComputedButtonParity(reactButton: Locator, solidButton: Locator) {
@@ -436,25 +494,41 @@ test.describe("comparison Button visual parity", () => {
     }
   });
 
-  test("Button hover cursor and genai gradient match React Spectrum", async ({ page }) => {
-    const fixtures = await buttonFixtures(page, { variant: "genai", fillStyle: "fill" });
+  test("Button premium and genai gradient states match React Spectrum", async ({ page }) => {
+    for (const colorScheme of ["light", "dark"] as const) {
+      for (const variant of ["premium", "genai"] as const) {
+        const fixtures = await buttonFixtures(page, { variant, fillStyle: "fill" });
+        await setComparisonTheme(page, colorScheme);
+        await clearPointer(page);
+        await expectButtonParitySettled(fixtures.reactButton, fixtures.solidButton);
 
-    await fixtures.reactButton.hover();
-    await expect(fixtures.reactButton).toHaveAttribute("data-hovered", "true");
-    await page.waitForTimeout(220);
-    const reactContract = await buttonComputedContract(fixtures.reactButton);
-    const reactGradient = await buttonGradientBackground(fixtures.reactButton);
+        await fixtures.reactButton.hover();
+        await expect(fixtures.reactButton).toHaveAttribute("data-hovered", "true");
+        await page.waitForTimeout(220);
+        const reactHover = await buttonFullContract(fixtures.reactButton);
 
-    await fixtures.solidButton.hover();
-    await expect(fixtures.solidButton).toHaveAttribute("data-hovered", "true");
-    await page.waitForTimeout(220);
-    await expect(buttonComputedContract(fixtures.solidButton)).resolves.toMatchObject({
-      cursor: reactContract.cursor,
-      backgroundColor: reactContract.backgroundColor,
-      color: reactContract.color,
-      borderColor: reactContract.borderColor,
-    });
-    await expect(buttonGradientBackground(fixtures.solidButton)).resolves.toBe(reactGradient);
+        await fixtures.solidButton.hover();
+        await expect(fixtures.solidButton).toHaveAttribute("data-hovered", "true");
+        await page.waitForTimeout(220);
+        expect(await buttonFullContract(fixtures.solidButton)).toEqual(reactHover);
+
+        await fixtures.reactButton.hover();
+        await page.waitForTimeout(220);
+        await page.mouse.down();
+        await expect(fixtures.reactButton).toHaveAttribute("data-pressed", "true");
+        await page.waitForTimeout(220);
+        const reactPressed = await buttonFullContract(fixtures.reactButton);
+        await page.mouse.up();
+
+        await fixtures.solidButton.hover();
+        await page.waitForTimeout(220);
+        await page.mouse.down();
+        await expect(fixtures.solidButton).toHaveAttribute("data-pressed", "true");
+        await page.waitForTimeout(220);
+        expect(await buttonFullContract(fixtures.solidButton)).toEqual(reactPressed);
+        await page.mouse.up();
+      }
+    }
   });
 
   test("Button outline L and XL text remains centered like React Spectrum", async ({ page }) => {

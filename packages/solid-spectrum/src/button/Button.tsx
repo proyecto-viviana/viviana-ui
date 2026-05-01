@@ -41,10 +41,15 @@ export function Button(props: ButtonProps): JSX.Element {
     "children",
     "isPending",
     "onPress",
+    "onPressChange",
+    "onHoverChange",
   ]);
 
-  const [isProgressVisible, setIsProgressVisible] = createSignal(false);
+  const [isProgressVisible, setIsProgressVisible] = createSignal(!!local.isPending);
+  const [isHovered, setIsHovered] = createSignal(false);
+  const [isPressed, setIsPressed] = createSignal(false);
   const resolvedChildren = resolveChildren(() => local.children);
+  let buttonElement: HTMLButtonElement | undefined;
 
   createEffect(() => {
     if (local.isPending) {
@@ -58,6 +63,17 @@ export function Button(props: ButtonProps): JSX.Element {
   const fillStyle = (): ButtonFillStyle => local.fillStyle ?? "fill";
   const size = (): ButtonSize => local.size ?? "M";
   const isStaticColor = () => !!local.staticColor;
+  const pendingCircleClass = () =>
+    ({
+      S: "  Zk13 Fl13 fa13",
+      M: "  Zl13 Fm13 fa13",
+      L: "  Zm13 Fn13 fa13",
+      XL: "  Zo13 Fp13 fa13",
+    })[size()];
+  const isDisabled = () => {
+    const disabled = headlessProps.isDisabled;
+    return typeof disabled === "function" ? disabled() : !!disabled;
+  };
 
   const getS2State = (renderProps: ButtonRenderProps): S2ButtonRenderState => ({
     isHovered: renderProps.isHovered,
@@ -86,32 +102,65 @@ export function Button(props: ButtonProps): JSX.Element {
       .filter(Boolean)
       .join(" ");
 
+  const getGradientState = (): S2ButtonRenderState => ({
+    isHovered: isHovered(),
+    isPressed: isPressed(),
+    isDisabled: isDisabled() || local.isPending,
+    isPending: local.isPending,
+  });
+
+  const getPressScaleStyle = (renderProps: ButtonRenderProps): JSX.CSSProperties => {
+    const style = { ...(local.UNSAFE_style ?? {}) } as JSX.CSSProperties;
+    const styleRecord = style as Record<string, string | number | undefined>;
+    const willChange = styleRecord["will-change"] ?? "";
+    styleRecord["will-change"] = `${willChange} transform`.trim();
+
+    if (renderProps.isPressed && buttonElement) {
+      const { width = 0, height = 0 } = buttonElement.getBoundingClientRect() ?? {};
+      const perspective = Math.max(height, width / 3, 24);
+      const transform = style.transform ?? "";
+      style.transform = `${transform} perspective(${perspective}px) translate3d(0, 0, -2px)`.trim();
+    }
+
+    return style;
+  };
+
   return (
     <HeadlessButton
       {...headlessProps}
       isPending={local.isPending}
       isPendingFocusable
+      ref={(element: HTMLButtonElement) => {
+        buttonElement = element;
+      }}
+      onHoverChange={(hovered) => {
+        setIsHovered(hovered);
+        local.onHoverChange?.(hovered);
+      }}
+      onPressChange={(pressed) => {
+        setIsPressed(pressed);
+        local.onPressChange?.(pressed);
+      }}
       onPress={(event) => {
         if (!local.isPending) {
           local.onPress?.(event);
         }
       }}
       class={getClassName}
-      style={local.UNSAFE_style}
+      style={getPressScaleStyle}
       data-variant={variant()}
       data-style={fillStyle()}
       data-size={size()}
       data-static-color={local.staticColor || undefined}
     >
-      {(renderProps) => {
-        const state = () => getS2State(renderProps);
+      {() => {
         const content = () => resolvedChildren();
         return (
           <>
             {variant() === "genai" || variant() === "premium" ? (
               <span
                 class={s2ButtonGradient({
-                  ...state(),
+                  ...getGradientState(),
                   variant: variant() as Extract<ButtonVariant, "premium" | "genai">,
                 })}
               />
@@ -127,19 +176,45 @@ export function Button(props: ButtonProps): JSX.Element {
               content()
             )}
             {local.isPending ? (
-              <span
+              <div
                 class={s2ButtonPendingIndicator({
                   isPending: local.isPending,
                   isProgressVisible: isProgressVisible(),
                 })}
               >
-                <span
+                <div
+                  class={pendingCircleClass()}
                   role="progressbar"
+                  data-rac=""
                   aria-label="pending"
                   aria-valuemin="0"
                   aria-valuemax="100"
-                />
-              </span>
+                >
+                  <svg fill="none" width="100%" height="100%">
+                    <circle
+                      cx="50%"
+                      cy="50%"
+                      r="calc(50% - 0.0625rem)"
+                      class="  VRWHrbc13 VlUG8Hlc13 _V7m7Gv13"
+                    />
+                    <circle
+                      cx="50%"
+                      cy="50%"
+                      r="calc(50% - 0.0625rem)"
+                      class="  Vf13 Vla13 _V7m7Gv13 _Vlai5a013"
+                    />
+                    <circle
+                      cx="50%"
+                      cy="50%"
+                      r="calc(50% - 0.0625rem)"
+                      class="  Vh13 VlUG8Hlc13 _Sa13 _0d13 _V7m7Gv13"
+                      pathLength="100"
+                      stroke-dasharray="100 200"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+              </div>
             ) : null}
           </>
         );

@@ -53,8 +53,9 @@ test.describe("comparison button-family behavior contracts", () => {
 
     for (const card of [cards.react, cards.solid]) {
       const root = card.locator("[data-comparison-action-count]").first();
-      const button = card.getByRole("button", { name: "Save" });
+      const button = card.locator("button").first();
       await expect(root).toHaveAttribute("data-comparison-action-count", "0");
+      await expect(card.getByRole("progressbar", { name: "pending" })).toBeVisible();
       await button.focus();
       await expect(button).toBeFocused();
       await button.click({ force: true });
