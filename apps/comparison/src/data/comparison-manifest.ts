@@ -5,7 +5,7 @@ import {
 } from "./react-spectrum-catalogue";
 
 export type ComparisonLayerId = "styled" | "components" | "headless" | "state";
-export type ComponentStatus = "parity" | "composition" | "solid-spectrum-native" | "tracked-gap";
+export type ComponentStatus = "parity" | "composition" | "tracked-gap";
 export type ComparisonSlug = string;
 export type ParityStatus = "matched" | "partial" | "gap";
 export type DemoStatus = "live" | "tracked" | "missing" | "na";

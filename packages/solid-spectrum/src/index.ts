@@ -678,9 +678,6 @@ export type { StoryErrorBoundaryProps } from "./story-utils/ErrorBoundary";
 export { generatePowerset } from "./story-utils/generatePowerset";
 export type { PropValues, PowersetItem } from "./story-utils/generatePowerset";
 
-// Style macro compatibility
-export { s1 } from "./style-macro-s1";
-
 // Provider
 export { Provider, useProvider, useProviderProps, useTheme, ThemeContext } from "./provider";
 export type {
@@ -692,39 +689,6 @@ export type {
   Scale,
   ValidationState,
 } from "./provider";
-
-// Theme compatibility (legacy)
-export { themeLightClass, lightTheme } from "./theme-light";
-export { themeDarkClass, darkTheme } from "./theme-dark";
-export { themeDefaultClass, defaultTheme } from "./theme-default";
-export type { Theme } from "./theme/types";
-
-// Theme system
-export {
-  // OKLCH utilities
-  hexToOklch,
-  oklchToHex,
-  oklchToCss,
-  hexToRgba,
-  // Generator
-  generateTheme,
-  applyThemeVars,
-  themeToCssString,
-  // Viviana preset
-  viviana,
-  VIVIANA_PRIMARY,
-  VIVIANA_ACCENT,
-  // Reactive hook
-  createSolidSpectrumTheme,
-} from "./theme";
-export type {
-  OKLCH,
-  ThemeInput,
-  CSSVarMap,
-  GeneratedTheme,
-  SolidSpectrumThemeResult,
-  ColorScheme as ThemeColorScheme,
-} from "./theme";
 
 // Chip
 export { Chip } from "./custom/chip";

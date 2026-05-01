@@ -22,14 +22,11 @@ describe("Provider parity", () => {
     ));
 
     const provider = screen.getByTestId("provider");
-    expect(provider.className).toContain("vui-provider");
-    expect(provider.className).toContain("vui-provider--large");
-    expect(provider.className).toContain("vui-theme-dark");
+    expect(provider.className).toBeTruthy();
+    expect(provider.className).not.toContain("vui-");
     expect(provider).toHaveAttribute("lang", "ar-SA");
     expect(provider).toHaveAttribute("dir", "rtl");
     expect(provider).toHaveAttribute("data-color-scheme", "dark");
-    expect(provider.style.getPropertyValue("color-scheme")).toBe("dark");
-    expect(provider.style.getPropertyValue("isolation")).toBe("isolate");
   });
 
   it("nested providers follow ancestor color scheme updates by default", async () => {
@@ -46,13 +43,13 @@ describe("Provider parity", () => {
       </>
     ));
 
-    expect(screen.getByTestId("outer").className).toContain("vui-theme-dark");
-    expect(screen.getByTestId("inner").className).toContain("vui-theme-dark");
+    expect(screen.getByTestId("outer")).toHaveAttribute("data-color-scheme", "dark");
+    expect(screen.getByTestId("inner")).toHaveAttribute("data-color-scheme", "dark");
 
     await setupUser().click(screen.getByRole("button", { name: "Switch" }));
 
-    expect(screen.getByTestId("outer").className).toContain("vui-theme-light");
-    expect(screen.getByTestId("inner").className).toContain("vui-theme-light");
+    expect(screen.getByTestId("outer")).toHaveAttribute("data-color-scheme", "light");
+    expect(screen.getByTestId("inner")).toHaveAttribute("data-color-scheme", "light");
   });
 
   it("nested providers can override inherited color scheme explicitly", () => {
@@ -64,8 +61,8 @@ describe("Provider parity", () => {
       </Provider>
     ));
 
-    expect(screen.getByTestId("outer").className).toContain("vui-theme-dark");
-    expect(screen.getByTestId("inner").className).toContain("vui-theme-light");
+    expect(screen.getByTestId("outer")).toHaveAttribute("data-color-scheme", "dark");
+    expect(screen.getByTestId("inner")).toHaveAttribute("data-color-scheme", "light");
   });
 
   it("exposes provider context and merges inherited props with explicit overrides", () => {

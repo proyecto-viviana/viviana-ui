@@ -1224,8 +1224,7 @@ a {
   border-color: rgba(255, 135, 135, 0.38);
 }
 
-.status-pill--na,
-.status-pill--solid-spectrum-native {
+.status-pill--na {
   color: var(--cmp-text-secondary);
 }
 

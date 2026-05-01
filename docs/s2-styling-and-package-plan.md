@@ -34,6 +34,8 @@ Before accepting a component, write its state plan:
 ## Current Migration State
 
 - The existing app-local Spectrum skin is legacy.
-- Components still depending on it should be treated as missing/gap during the
-  reset.
-- Provider/theme is the first target for the corrected styling system.
+- Components still depending on it are missing/gap, not valid styled parity.
+- Start each component from the headless Solid component plus copied/ported S2
+  style declarations.
+- Do not use the fallback skin as implementation scaffolding for new parity
+  work.

@@ -185,10 +185,7 @@ function ProviderRoot(props: ProviderRootProps): JSX.Element {
 }
 
 /**
- * Root provider for proyecto-viviana UI.
- *
- * Wraps I18nProvider for locale management, provides inherited component props,
- * and applies theme CSS custom properties to a scoped wrapper element.
+ * Root provider for Spectrum 2-compatible styling.
  */
 export function Provider(props: ProviderProps): JSX.Element {
   const parentProvider = useContext(ProviderContext);
