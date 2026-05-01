@@ -13,9 +13,16 @@ component styling.
 
 ## Component Process
 
-For each component, first copy or port the S2 style declarations, tokens,
-generated CSS path, DOM slots, and state attributes. Do not tune colors,
-spacing, radius, motion, or overlays from screenshots.
+For each component, first review the React Spectrum S2 source. Decide what S2 is
+actually doing: DOM structure, slots, provider/context use, overlay behavior,
+state handling, style declarations, tokens, and generated CSS path.
+
+Then implement the Solid Spectrum component that matches that contract. Use the
+headless Solid component where it fits, but do not assume the work is only a
+reskin. If S2 has wrapper structure, temporal behavior, DOM slots, or component
+logic above the headless layer, port that into `solid-spectrum`.
+
+Do not tune colors, spacing, radius, motion, or overlays from screenshots.
 
 Before accepting a component, write its state plan:
 
