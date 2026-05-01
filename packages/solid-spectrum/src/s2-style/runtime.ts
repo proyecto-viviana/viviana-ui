@@ -14,6 +14,8 @@
 import { StyleString } from "./types";
 // import {RuntimeStyleFunction, RenderProps} from './types';
 
+const env = typeof process !== "undefined" ? process.env : {};
+
 // taken from: https://stackoverflow.com/questions/51603250/typescript-3-parameter-list-intersection-type/51604379#51604379
 // type ArgTypes<T> = T extends (props: infer V) => any ? NullToObject<V> : never;
 // type NullToObject<T> = T extends (null | undefined) ? {} : T;
@@ -102,7 +104,7 @@ function parse(s: string) {
     }
 
     let property = s.slice(start, condition);
-    if (process.env.NODE_ENV !== "production" && property.startsWith("-macro-")) {
+    if (env.NODE_ENV !== "production" && property.startsWith("-macro-")) {
       let value = s.slice(start, i);
       properties.set(value, " " + value);
     } else {

@@ -48,13 +48,15 @@ interface MacroContext {
   addAsset(asset: { type: string; content: string }): void;
 }
 
+const env = typeof process !== "undefined" ? process.env : {};
+
 function pxToRem(px: string | number) {
   if (typeof px === "string") {
     px = parseFloat(px);
   }
 
   // In the docs, we need to be able to simulate font size adjustment.
-  if (process.env.DOCS_ENV) {
+  if (env.DOCS_ENV) {
     return `calc(${px / 16} * var(--rem, 1rem))`;
   }
 
@@ -63,7 +65,7 @@ function pxToRem(px: string | number) {
 
 function hcmColor(color: string) {
   // In the docs, HCM colors can be simulated.
-  if (process.env.DOCS_ENV) {
+  if (env.DOCS_ENV) {
     return `var(--hcm-${color.toLowerCase()}, ${color})`;
   }
 
@@ -956,7 +958,7 @@ export const style = createTheme({
         if (typeof value === "number") {
           return {
             "--fs": `pow(1.125, ${value})`,
-            fontSize: `round(${fontSizeCalc} / 16 * ${process.env.DOCS_ENV ? "var(--rem, 1rem)" : "1rem"}, 1px)`,
+            fontSize: `round(${fontSizeCalc} / 16 * ${env.DOCS_ENV ? "var(--rem, 1rem)" : "1rem"}, 1px)`,
           } as CSSProperties;
         }
 
@@ -1427,7 +1429,7 @@ export const style = createTheme({
   },
   conditions: {
     // In the docs we need to be able to simulate HCM.
-    forcedColors: process.env.DOCS_ENV
+    forcedColors: env.DOCS_ENV
       ? ["@media (forced-colors: active)", ":is([data-hcm], [data-hcm] *)"]
       : "@media (forced-colors: active)",
     // This detects touch primary devices as best as we can.

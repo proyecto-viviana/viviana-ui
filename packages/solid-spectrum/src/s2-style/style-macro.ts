@@ -29,6 +29,8 @@ import type {
 } from "./types";
 import * as propertyInfo from "./properties.json";
 
+const env = typeof process !== "undefined" ? process.env : {};
+
 // Postfix all class names with version for now.
 const POSTFIX = "13";
 
@@ -393,7 +395,7 @@ export function createTheme<T extends Theme>(
     // the defaults from the style definition are omitted.
     let allowedOverridesSet = new Set<string>();
     let js =
-      process.env.NODE_ENV !== "production"
+      env.NODE_ENV !== "production"
         ? 'let rules = " ", currentRules = {};\n'
         : 'let rules = " ";\n';
     if (allowedOverrides?.length) {
@@ -436,7 +438,7 @@ export function createTheme<T extends Theme>(
         }
       }
 
-      let macroPart = process.env.NODE_ENV !== "production" ? "|-macro\\$" : "";
+      let macroPart = env.NODE_ENV !== "production" ? "|-macro\\$" : "";
       let regex = `/(?:^|\\s)(${[...allowedOverridesSet].map((p) => classNamePrefix(p, p)).join("|")}${macroPart})[^\\s]+/g`;
       if (loop) {
         js += `let matches = String(overrides || '').matchAll(${regex});\n`;
@@ -468,7 +470,7 @@ export function createTheme<T extends Theme>(
     }
     // @ts-expect-error
     let loc = this?.loc?.filePath + ":" + this?.loc?.line + ":" + this?.loc?.col;
-    if (isStatic && process.env.NODE_ENV !== "production") {
+    if (isStatic && env.NODE_ENV !== "production") {
       let id = toBase62(hash(className + loc));
       css += `.-macro-static-${id} {
         --macro-data-${id}: ${JSON.stringify({ style, loc })};
@@ -488,14 +490,14 @@ export function createTheme<T extends Theme>(
       return className;
     }
 
-    if (process.env.NODE_ENV !== "production") {
+    if (env.NODE_ENV !== "production") {
       js += `let targetRules = rules + ${JSON.stringify(loc)};\n`;
       js +=
         "let hash = 5381;for (let i = 0; i < targetRules.length; i++) { hash = ((hash << 5) + hash) + targetRules.charCodeAt(i) >>> 0; }\n";
       js += "let hashStr = hash.toString(36);\n";
       js += 'rules += " -macro-dynamic-" + hashStr;\n';
       // Skip global __styleMacroDynamic__ in Jest so we dont' pollute the test environment and don't cause issues with timer advancement.
-      if (!process.env.JEST_WORKER_ID) {
+      if (!env.JEST_WORKER_ID) {
         js += 'if (typeof window !== "undefined") {\n';
         js += "  let g = window.__styleMacroDynamic__;\n";
         js += "  if (!g) {\n";
@@ -880,7 +882,7 @@ class StyleRule implements Rule {
     this.pseudos = "";
     this.property = property;
     this.value = value;
-    if (process.env.NODE_ENV !== "production" && isCompilingDependencies !== null) {
+    if (env.NODE_ENV !== "production" && isCompilingDependencies !== null) {
       this.themeProperty = themeProperty;
       this.themeValue = themeValue;
     }
@@ -936,7 +938,7 @@ class StyleRule implements Rule {
       res += `${indent}if (!${this.property.replace("--", "__")}) `;
     }
     res += `${indent}rules += ' ${this.className}';`;
-    if (process.env.NODE_ENV !== "production" && this.themeProperty) {
+    if (env.NODE_ENV !== "production" && this.themeProperty) {
       let name = this.themeProperty;
       if (this.pseudos) {
         conditionStack.push(this.pseudos);
