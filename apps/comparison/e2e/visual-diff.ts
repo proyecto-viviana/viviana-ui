@@ -1,5 +1,7 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
+export type ComparisonColorScheme = "light" | "dark";
+
 export type ScreenshotDiffResult = {
   reactWidth: number;
   reactHeight: number;
@@ -21,6 +23,153 @@ export type ScreenshotDiffThreshold = {
   maxDimensionDelta: number;
   pixelThreshold?: number;
 };
+
+export const exactPairDiff: ScreenshotDiffThreshold = {
+  maxMismatchRatio: 0,
+  maxDimensionDelta: 0,
+  pixelThreshold: 0,
+};
+
+export const currentButtonPairDiff: ScreenshotDiffThreshold = {
+  maxMismatchRatio: 0.001,
+  maxDimensionDelta: 4,
+  pixelThreshold: 64,
+};
+
+export async function pinComparisonTheme(page: Page, colorScheme: ComparisonColorScheme) {
+  await page.addInitScript((theme) => {
+    window.localStorage.setItem("solid-spectrum-theme", theme);
+  }, colorScheme);
+}
+
+export async function clearPointer(page: Page) {
+  await page.mouse.move(4, 4);
+  await page.waitForTimeout(50);
+}
+
+export async function normalizedElementScreenshot(target: Locator) {
+  const previousState = await target.evaluate((element) => {
+    const htmlElement = element as HTMLElement;
+    const state = {
+      className: htmlElement.getAttribute("class"),
+      style: htmlElement.getAttribute("style"),
+      dataAttrs: Array.from(htmlElement.attributes)
+        .filter((attribute) => attribute.name.startsWith("data-"))
+        .map((attribute) => [attribute.name, attribute.value] as const),
+    };
+
+    htmlElement.style.position = "fixed";
+    htmlElement.style.insetBlockStart = "64px";
+    htmlElement.style.insetInlineStart = "64px";
+    htmlElement.style.margin = "0";
+    htmlElement.style.zIndex = "2147483647";
+
+    return state;
+  });
+
+  try {
+    await target.evaluate(() => new Promise(requestAnimationFrame));
+    await target.evaluate((element, state) => {
+      const htmlElement = element as HTMLElement;
+
+      if (state.className === null) {
+        htmlElement.removeAttribute("class");
+      } else {
+        htmlElement.setAttribute("class", state.className);
+      }
+
+      for (const [name, value] of state.dataAttrs) {
+        htmlElement.setAttribute(name, value);
+      }
+
+      if (state.style === null) {
+        htmlElement.removeAttribute("style");
+      } else {
+        htmlElement.setAttribute("style", state.style);
+      }
+
+      htmlElement.style.position = "fixed";
+      htmlElement.style.insetBlockStart = "64px";
+      htmlElement.style.insetInlineStart = "64px";
+      htmlElement.style.margin = "0";
+      htmlElement.style.zIndex = "2147483647";
+    }, previousState);
+
+    return await target.screenshot({ animations: "disabled" });
+  } finally {
+    await target.evaluate((element, state) => {
+      const htmlElement = element as HTMLElement;
+
+      if (state.className === null) {
+        htmlElement.removeAttribute("class");
+      } else {
+        htmlElement.setAttribute("class", state.className);
+      }
+
+      for (const attribute of Array.from(htmlElement.attributes)) {
+        if (attribute.name.startsWith("data-")) {
+          htmlElement.removeAttribute(attribute.name);
+        }
+      }
+
+      for (const [name, value] of state.dataAttrs) {
+        htmlElement.setAttribute(name, value);
+      }
+
+      if (state.style === null) {
+        htmlElement.removeAttribute("style");
+        return;
+      }
+
+      htmlElement.setAttribute("style", state.style);
+    }, previousState);
+  }
+}
+
+export async function expectScreenshotPair(
+  page: Page,
+  reactTarget: Locator,
+  solidTarget: Locator,
+  label: string,
+  snapshotName: string,
+  threshold: ScreenshotDiffThreshold = exactPairDiff,
+) {
+  const [reactPng, solidPng] = await Promise.all([
+    normalizedElementScreenshot(reactTarget),
+    normalizedElementScreenshot(solidTarget),
+  ]);
+
+  await compareScreenshots(page, reactPng, solidPng, label, threshold);
+  expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
+  expect(solidPng).toMatchSnapshot(`${snapshotName}-solid.png`);
+}
+
+export async function expectPreparedScreenshotPair(
+  page: Page,
+  reactTarget: Locator,
+  solidTarget: Locator,
+  label: string,
+  snapshotName: string,
+  prepareReact: () => Promise<void>,
+  prepareSolid: () => Promise<void>,
+  threshold: ScreenshotDiffThreshold = exactPairDiff,
+) {
+  await clearPointer(page);
+  await prepareReact();
+  await page.waitForTimeout(220);
+  const reactPng = await normalizedElementScreenshot(reactTarget);
+
+  await page.mouse.up();
+  await clearPointer(page);
+  await prepareSolid();
+  await page.waitForTimeout(220);
+  const solidPng = await normalizedElementScreenshot(solidTarget);
+
+  await page.mouse.up();
+  await compareScreenshots(page, reactPng, solidPng, label, threshold);
+  expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
+  expect(solidPng).toMatchSnapshot(`${snapshotName}-solid.png`);
+}
 
 export async function diffScreenshots(
   page: Page,

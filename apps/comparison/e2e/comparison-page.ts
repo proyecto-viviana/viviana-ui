@@ -11,13 +11,18 @@ export async function styledSection(page: Page) {
   return section;
 }
 
-export async function frameworkCanvas(section: Locator, framework: FrameworkName) {
+export async function frameworkPanel(section: Locator, framework: FrameworkName) {
   const card = section.locator(
     framework === "React Spectrum stack"
       ? '.s2-framework-panel[data-framework="react"]'
       : '.s2-framework-panel[data-framework="solid"]',
   );
   await expect(card).toHaveCount(1);
+  return card;
+}
+
+export async function frameworkCanvas(section: Locator, framework: FrameworkName) {
+  const card = await frameworkPanel(section, framework);
   const canvas = card.locator(".comparison-reference-canvas");
   await expect(canvas).toBeVisible();
   return canvas;

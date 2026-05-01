@@ -2,7 +2,7 @@ import { writeFile } from "node:fs/promises";
 import { expect, test, type TestInfo } from "@playwright/test";
 import { defaultVisualCases } from "./default-state-cases";
 import { frameworkCanvas, styledSection } from "./comparison-page";
-import { diffScreenshots, type ScreenshotDiffResult } from "./visual-diff";
+import { diffScreenshots, pinComparisonTheme, type ScreenshotDiffResult } from "./visual-diff";
 
 type PairDiffPolicy = {
   maxMismatchRatio: number;
@@ -58,6 +58,7 @@ test.describe("comparison default pair diffs", () => {
     test(`${item.title} default state is pixel-identical React vs Solid`, async ({
       page,
     }, testInfo) => {
+      await pinComparisonTheme(page, "dark");
       const policy = strictPairDiffPolicy;
       testInfo.annotations.push({
         type: "strict-pair-diff",

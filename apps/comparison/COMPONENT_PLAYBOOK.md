@@ -90,6 +90,11 @@ Typical visual states:
 Every React-vs-Solid screenshot comparison is strict: `maxMismatchRatio: 0`,
 `maxDimensionDelta: 0`, and `pixelThreshold: 0`.
 
+Use the shared helpers in `e2e/visual-diff.ts` for new component visual tests:
+`pinComparisonTheme`, `expectScreenshotPair`,
+`expectPreparedScreenshotPair`, and `compareScreenshots`. Component specs
+should not reimplement pixel diff logic or their own theme initialization.
+
 For controlled props, add at least one Playwright assertion that changing the
 docs-style controls updates both implementations. When a prop produces a visual
 state, add or plan the matching strict pair screenshot row in the matrix.
@@ -125,6 +130,7 @@ Run the component-specific loop first, then the broader app checks:
 
 ```bash
 vp run comparison:typecheck
+vp run comparison:test:theme
 vp run comparison:test:<component>
 vp run comparison:report:gaps
 ```

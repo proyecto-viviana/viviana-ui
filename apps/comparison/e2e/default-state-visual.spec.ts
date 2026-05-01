@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { frameworkCanvas, styledSection } from "./comparison-page";
 import { defaultVisualCases } from "./default-state-cases";
+import { pinComparisonTheme } from "./visual-diff";
 
 test.describe("comparison default visual states", () => {
   for (const item of defaultVisualCases) {
     test(`${item.title} has committed React and Solid default screenshots`, async ({ page }) => {
+      await pinComparisonTheme(page, "dark");
       await page.goto(`/components/${item.slug}/`);
       await page.waitForLoadState("networkidle");
       await expect(page.locator("astro-island")).toHaveCount(0);

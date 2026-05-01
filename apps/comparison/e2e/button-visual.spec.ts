@@ -1,12 +1,12 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { frameworkCanvas, styledSection } from "./comparison-page";
-import { compareScreenshots } from "./visual-diff";
-
-const strictPairDiff = {
-  maxMismatchRatio: 0.001,
-  maxDimensionDelta: 4,
-  pixelThreshold: 64,
-};
+import {
+  clearPointer,
+  currentButtonPairDiff,
+  expectPreparedScreenshotPair,
+  expectScreenshotPair,
+  pinComparisonTheme,
+} from "./visual-diff";
 
 type ButtonMatrixCase = {
   id: string;
@@ -136,9 +136,7 @@ function buttonQuery(params: Record<string, string | boolean> = {}) {
 }
 
 async function buttonFixtures(page: Page, params: Record<string, string | boolean> = {}) {
-  await page.addInitScript(() => {
-    window.localStorage.setItem("solid-spectrum-theme", "dark");
-  });
+  await pinComparisonTheme(page, "dark");
   await page.goto(`/components/button/${buttonQuery(params)}`);
   await page.waitForLoadState("networkidle");
   await expect(page.locator("astro-island")).toHaveCount(0);
@@ -157,11 +155,6 @@ async function buttonFixtures(page: Page, params: Record<string, string | boolea
     reactButton: reactCard.getByRole("button", { name: "Save" }),
     solidButton: solidCard.getByRole("button", { name: "Save" }),
   };
-}
-
-async function clearPointer(page: Page) {
-  await page.mouse.move(4, 4);
-  await page.waitForTimeout(50);
 }
 
 async function buttonComputedContract(button: Locator) {
@@ -209,128 +202,6 @@ async function expectComputedButtonParity(reactButton: Locator, solidButton: Loc
   );
 }
 
-async function normalizedScreenshot(target: Locator) {
-  const previousState = await target.evaluate((element) => {
-    const htmlElement = element as HTMLElement;
-    const state = {
-      className: htmlElement.getAttribute("class"),
-      style: htmlElement.getAttribute("style"),
-      dataAttrs: Array.from(htmlElement.attributes)
-        .filter((attribute) => attribute.name.startsWith("data-"))
-        .map((attribute) => [attribute.name, attribute.value] as const),
-    };
-
-    htmlElement.style.position = "fixed";
-    htmlElement.style.insetBlockStart = "64px";
-    htmlElement.style.insetInlineStart = "64px";
-    htmlElement.style.margin = "0";
-    htmlElement.style.zIndex = "2147483647";
-
-    return state;
-  });
-
-  try {
-    await target.evaluate(() => new Promise(requestAnimationFrame));
-    await target.evaluate((element, state) => {
-      const htmlElement = element as HTMLElement;
-
-      if (state.className === null) {
-        htmlElement.removeAttribute("class");
-      } else {
-        htmlElement.setAttribute("class", state.className);
-      }
-
-      for (const [name, value] of state.dataAttrs) {
-        htmlElement.setAttribute(name, value);
-      }
-
-      if (state.style === null) {
-        htmlElement.removeAttribute("style");
-      } else {
-        htmlElement.setAttribute("style", state.style);
-      }
-
-      htmlElement.style.position = "fixed";
-      htmlElement.style.insetBlockStart = "64px";
-      htmlElement.style.insetInlineStart = "64px";
-      htmlElement.style.margin = "0";
-      htmlElement.style.zIndex = "2147483647";
-    }, previousState);
-
-    return await target.screenshot({ animations: "disabled" });
-  } finally {
-    await target.evaluate((element, state) => {
-      const htmlElement = element as HTMLElement;
-
-      if (state.className === null) {
-        htmlElement.removeAttribute("class");
-      } else {
-        htmlElement.setAttribute("class", state.className);
-      }
-
-      for (const attribute of Array.from(htmlElement.attributes)) {
-        if (attribute.name.startsWith("data-")) {
-          htmlElement.removeAttribute(attribute.name);
-        }
-      }
-
-      for (const [name, value] of state.dataAttrs) {
-        htmlElement.setAttribute(name, value);
-      }
-
-      if (state.style === null) {
-        htmlElement.removeAttribute("style");
-        return;
-      }
-
-      htmlElement.setAttribute("style", state.style);
-    }, previousState);
-  }
-}
-
-async function expectScreenshotPair(
-  page: Page,
-  reactTarget: Locator,
-  solidTarget: Locator,
-  label: string,
-  snapshotName: string,
-) {
-  const [reactPng, solidPng] = await Promise.all([
-    normalizedScreenshot(reactTarget),
-    normalizedScreenshot(solidTarget),
-  ]);
-
-  await compareScreenshots(page, reactPng, solidPng, label, strictPairDiff);
-  expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
-  expect(solidPng).toMatchSnapshot(`${snapshotName}-solid.png`);
-}
-
-async function expectPreparedScreenshotPair(
-  page: Page,
-  reactTarget: Locator,
-  solidTarget: Locator,
-  label: string,
-  snapshotName: string,
-  prepareReact: () => Promise<void>,
-  prepareSolid: () => Promise<void>,
-) {
-  await clearPointer(page);
-  await prepareReact();
-  await page.waitForTimeout(220);
-  const reactPng = await normalizedScreenshot(reactTarget);
-
-  await page.mouse.up();
-  await clearPointer(page);
-  await prepareSolid();
-  await page.waitForTimeout(220);
-  const solidPng = await normalizedScreenshot(solidTarget);
-
-  await page.mouse.up();
-  await compareScreenshots(page, reactPng, solidPng, label, strictPairDiff);
-  expect(reactPng).toMatchSnapshot(`${snapshotName}-react.png`);
-  expect(solidPng).toMatchSnapshot(`${snapshotName}-solid.png`);
-}
-
 test.describe("comparison Button visual parity", () => {
   test("Button default control is pixel-identical", async ({ page }) => {
     const fixtures = await buttonFixtures(page);
@@ -342,6 +213,7 @@ test.describe("comparison Button visual parity", () => {
       fixtures.solidRow,
       "Button default control",
       "button-default-control",
+      currentButtonPairDiff,
     );
   });
 
@@ -362,6 +234,7 @@ test.describe("comparison Button visual parity", () => {
         await fixtures.solidButton.hover();
         await expect(fixtures.solidButton).toHaveAttribute("data-hovered", "true");
       },
+      currentButtonPairDiff,
     );
   });
 
@@ -382,6 +255,7 @@ test.describe("comparison Button visual parity", () => {
         await fixtures.solidButton.focus();
         await expect(fixtures.solidButton).toHaveAttribute("data-focus-visible", "true");
       },
+      currentButtonPairDiff,
     );
   });
 
@@ -404,6 +278,7 @@ test.describe("comparison Button visual parity", () => {
         await page.mouse.down();
         await expect(fixtures.solidButton).toHaveAttribute("data-pressed", "true");
       },
+      currentButtonPairDiff,
     );
   });
 
@@ -418,6 +293,7 @@ test.describe("comparison Button visual parity", () => {
       fixtures.solidRow,
       "Button delayed pending spinner",
       "button-pending-spinner",
+      currentButtonPairDiff,
     );
   });
 
@@ -583,6 +459,7 @@ test.describe("comparison Button visual parity", () => {
         fixtures.solidRow,
         item.label,
         `button-${item.id}`,
+        currentButtonPairDiff,
       );
     });
   }
