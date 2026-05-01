@@ -53,7 +53,6 @@ export const comparisonActionItems = [
 
 export const comparisonSpectrumSkin = {
   rootClass: "comparison-spectrum-skin",
-  buttonClass: "solidaria-Button comparison-spectrum-Button",
   actionButtonClass: "solidaria-Button comparison-spectrum-ActionButton",
   actionButtonGroupClass: "solidaria-ActionButtonGroup comparison-spectrum-ActionButtonGroup",
   buttonGroupClass: "solidaria-ButtonGroup comparison-spectrum-ButtonGroup",
@@ -74,7 +73,12 @@ export const comparisonSpectrumSkin = {
   selectOptionClass: "solidaria-Select-option comparison-spectrum-Select-option",
 } as const;
 
-const nativeSolidSpectrumStyledSlugs = new Set<ComparisonSlug>(["provider", "tabs", "toast"]);
+const nativeSolidSpectrumStyledSlugs = new Set<ComparisonSlug>([
+  "provider",
+  "button",
+  "tabs",
+  "toast",
+]);
 
 export function getComparisonReferenceKind(
   framework: ComparisonFramework,

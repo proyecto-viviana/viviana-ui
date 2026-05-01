@@ -212,33 +212,8 @@ describe("Button", () => {
         const { unmount } = render(() => <Button variant={variant}>Click Me</Button>);
         const button = screen.getByRole("button");
         expect(button).toHaveAttribute("data-variant", variant);
-        expect(button.className).toContain(`vui-button--${variant}`);
         unmount();
       }
-    });
-
-    it("renders with danger variant", () => {
-      render(() => <Button variant="danger">Click Me</Button>);
-      const button = screen.getByRole("button");
-      expect(button).toHaveAttribute("data-variant", "danger");
-    });
-
-    it("renders with success variant", () => {
-      render(() => <Button variant="success">Click Me</Button>);
-      const button = screen.getByRole("button");
-      expect(button).toHaveAttribute("data-variant", "success");
-    });
-
-    it("renders with ghost variant", () => {
-      render(() => <Button variant="ghost">Click Me</Button>);
-      const button = screen.getByRole("button");
-      expect(button).toHaveAttribute("data-variant", "ghost");
-    });
-
-    it("renders with link variant", () => {
-      render(() => <Button variant="link">Click Me</Button>);
-      const button = screen.getByRole("button");
-      expect(button).toHaveAttribute("data-variant", "link");
     });
   });
 
@@ -249,33 +224,21 @@ describe("Button", () => {
       expect(button).toHaveAttribute("data-style", "fill");
     });
 
-    it("renders with outline style", () => {
-      render(() => <Button buttonStyle="outline">Click Me</Button>);
-      const button = screen.getByRole("button");
-      expect(button).toHaveAttribute("data-style", "outline");
-    });
-
     it("supports React Spectrum S2 fillStyle", () => {
       render(() => <Button fillStyle="outline">Click Me</Button>);
       const button = screen.getByRole("button");
       expect(button).toHaveAttribute("data-style", "outline");
-      expect(button.className).toContain("vui-button--outline");
     });
   });
 
   describe("sizes", () => {
-    it("maps React Spectrum S2 sizes to stable style classes", () => {
-      const cases = [
-        ["S", "sm"],
-        ["M", "md"],
-        ["L", "lg"],
-        ["XL", "xl"],
-      ] as const;
+    it("supports React Spectrum S2 sizes", () => {
+      const sizes = ["S", "M", "L", "XL"] as const;
 
-      for (const [size, classSuffix] of cases) {
+      for (const size of sizes) {
         const { unmount } = render(() => <Button size={size}>Click Me</Button>);
         const button = screen.getByRole("button");
-        expect(button.className).toContain(`vui-button--${classSuffix}`);
+        expect(button).toBeInTheDocument();
         unmount();
       }
     });

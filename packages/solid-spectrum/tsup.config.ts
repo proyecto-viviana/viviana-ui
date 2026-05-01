@@ -13,7 +13,7 @@ function copyCssFiles() {
     mkdirSync(distDir, { recursive: true });
   }
 
-  const cssFiles = ["theme.css", "styles.css", "components.css"];
+  const cssFiles = ["theme.css", "styles.css", "components.css", "s2-generated.css"];
   for (const file of cssFiles) {
     const src = resolve(__dirname, "src", file);
     const dest = resolve(distDir, file);
@@ -26,7 +26,7 @@ function copyCssFiles() {
 export default defineConfig([
   // DOM build
   {
-    entry: ["src/index.ts"],
+    entry: ["src/index.ts", "src/s2-style/index.ts", "src/s2-style/runtime.ts"],
     format: ["esm"],
     dts: false, // Use tsc separately for better tsx support
     target: "esnext",
@@ -47,7 +47,11 @@ export default defineConfig([
   },
   // SSR build
   {
-    entry: { "index.ssr": "src/index.ts" },
+    entry: {
+      "index.ssr": "src/index.ts",
+      "s2-style/index.ssr": "src/s2-style/index.ts",
+      "s2-style/runtime.ssr": "src/s2-style/runtime.ts",
+    },
     format: ["esm"],
     dts: false,
     target: "esnext",

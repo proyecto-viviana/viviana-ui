@@ -4,12 +4,7 @@ export type {
   ButtonFillStyle,
   ButtonProps,
   ButtonSize,
-  ButtonStyle,
   ButtonVariant,
-  LegacyButtonSize,
-  LegacyButtonVariant,
-  SpectrumButtonSize,
-  SpectrumButtonVariant,
   StaticColor,
 } from "./button";
 

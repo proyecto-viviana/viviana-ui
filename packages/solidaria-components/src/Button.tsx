@@ -54,6 +54,8 @@ export interface ButtonProps extends Omit<AriaButtonProps, "children">, SlotProp
   ) => JSX.Element;
   /** Whether the button is in a pending state. */
   isPending?: boolean;
+  /** Keeps pending buttons focusable by using aria-disabled without a native disabled attribute. */
+  isPendingFocusable?: boolean;
   /** Handler called when hover starts. */
   onHoverStart?: (e: HoverEvent) => void;
   /** Handler called when hover ends. */
@@ -104,6 +106,7 @@ export function Button(props: ButtonProps): JSX.Element {
     "render",
     "slot",
     "isPending",
+    "isPendingFocusable",
     "onHoverStart",
     "onHoverEnd",
     "onHoverChange",
@@ -265,6 +268,7 @@ export function Button(props: ButtonProps): JSX.Element {
           | "submit"
           | "reset"
           | undefined);
+  const dataState = (value: boolean) => (value ? "true" : undefined);
   const buttonChildren = () => renderProps.renderChildren();
   const rootProps = () =>
     ({
@@ -276,12 +280,18 @@ export function Button(props: ButtonProps): JSX.Element {
       class: renderProps.class(),
       style: renderProps.style(),
       slot: local.slot,
-      "data-pressed": (buttonAria.isPressed() && !resolvePending()) || undefined,
-      "data-hovered": isHovered() || undefined,
-      "data-focused": isFocused() || undefined,
-      "data-focus-visible": isFocusVisible() || undefined,
-      "data-disabled": resolveDisabled() || undefined,
-      "data-pending": resolvePending() || undefined,
+      disabled:
+        resolvePending() && local.isPendingFocusable ? undefined : cleanButtonProps().disabled,
+      "aria-disabled":
+        resolvePending() && local.isPendingFocusable
+          ? true
+          : (cleanButtonProps()["aria-disabled"] ?? ariaProps["aria-disabled"]),
+      "data-pressed": dataState(buttonAria.isPressed() && !resolvePending()),
+      "data-hovered": dataState(isHovered()),
+      "data-focused": dataState(isFocused()),
+      "data-focus-visible": dataState(isFocusVisible()),
+      "data-disabled": dataState(resolveDisabled()),
+      "data-pending": dataState(resolvePending()),
     }) as JSX.ButtonHTMLAttributes<HTMLButtonElement>;
   const customRootProps = () =>
     ({
@@ -294,7 +304,18 @@ export function Button(props: ButtonProps): JSX.Element {
   return local.render ? (
     customRendered()
   ) : (
-    <button ref={handleRef} {...rootProps()}>
+    <button
+      ref={handleRef}
+      {...rootProps()}
+      attr:data-pressed={(rootProps() as Record<string, unknown>)["data-pressed"] as string}
+      attr:data-hovered={(rootProps() as Record<string, unknown>)["data-hovered"] as string}
+      attr:data-focused={(rootProps() as Record<string, unknown>)["data-focused"] as string}
+      attr:data-focus-visible={
+        (rootProps() as Record<string, unknown>)["data-focus-visible"] as string
+      }
+      attr:data-disabled={(rootProps() as Record<string, unknown>)["data-disabled"] as string}
+      attr:data-pending={(rootProps() as Record<string, unknown>)["data-pending"] as string}
+    >
       {buttonChildren()}
     </button>
   );

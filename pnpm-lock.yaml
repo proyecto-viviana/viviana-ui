@@ -198,6 +198,9 @@ importers:
 
   packages/solid-spectrum:
     dependencies:
+      '@adobe/spectrum-tokens':
+        specifier: ^14.5.0
+        version: 14.5.0
       '@proyecto-viviana/solid-stately':
         specifier: workspace:*
         version: link:../solid-stately
@@ -207,6 +210,9 @@ importers:
       '@proyecto-viviana/solidaria-components':
         specifier: workspace:*
         version: link:../solidaria-components
+      csstype:
+        specifier: ^3.2.3
+        version: 3.2.3
     devDependencies:
       '@proyecto-viviana/solid-spectrum-test-utils':
         specifier: workspace:*
@@ -285,6 +291,9 @@ packages:
 
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
+
+  '@adobe/spectrum-tokens@14.5.0':
+    resolution: {integrity: sha512-1fZ2zV0iu6hnwqw9RRCFwxchPolwdmcHx+neFmcMtl4Y7YB2QuEAnomKQniClsbITohP8tdU7NWjbeIvPmbEUg==}
 
   '@asamuzakjp/css-color@5.1.11':
     resolution: {integrity: sha512-KVw6qIiCTUQhByfTd78h2yD1/00waTmm9uy/R7Ck/ctUyAPj+AEDLkQIdJW0T8+qGgj3j5bpNKK7Q3G+LedJWg==}
@@ -5510,6 +5519,8 @@ packages:
 snapshots:
 
   '@adobe/css-tools@4.4.4': {}
+
+  '@adobe/spectrum-tokens@14.5.0': {}
 
   '@asamuzakjp/css-color@5.1.11':
     dependencies:

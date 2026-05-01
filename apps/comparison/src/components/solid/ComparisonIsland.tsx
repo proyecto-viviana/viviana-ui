@@ -265,23 +265,14 @@ function SolidDialogDemo() {
             SolidSpectrumButton,
             {
               variant: "primary",
-              buttonStyle: "fill",
-              class: `${comparisonSpectrumSkin.buttonClass} comparison-spectrum-Button--trigger`,
-              "data-variant": "primary",
-              "data-style": "fill",
+              fillStyle: "fill",
               onFocus: () => {
                 if (!isOpen()) {
                   setFocusReturned(true);
                 }
               },
             },
-            [
-              h(
-                "span",
-                { class: comparisonSpectrumSkin.labelClass, "data-slot": "label" },
-                "Open Dialog",
-              ),
-            ],
+            ["Open Dialog"],
           ),
           hc(
             HeadlessModalOverlay,
@@ -570,7 +561,7 @@ function SolidToolbarDemo() {
             SolidSpectrumButton,
             {
               variant: "secondary",
-              buttonStyle: "outline",
+              fillStyle: "outline",
               onPress: (_event: unknown) => setActionCount((count) => count + 1),
             },
             ["Italic"],
@@ -649,8 +640,6 @@ function SolidariaSpectrumButtonDemo() {
   const [colorScheme, setColorScheme] = createSignal<ComparisonResolvedTheme>(
     getComparisonResolvedThemeFromDocument(),
   );
-  const [showPendingSpinner, setShowPendingSpinner] = createSignal(false);
-  let root: HTMLDivElement | undefined;
 
   onMount(() => {
     const handleControlsChange = (event: Event) => {
@@ -672,31 +661,26 @@ function SolidariaSpectrumButtonDemo() {
     });
   });
 
-  createEffect(() => {
+  const renderedButton = createMemo(() => {
     const props = demoProps();
-    const button = root?.querySelector<HTMLButtonElement>("button.comparison-spectrum-Button");
-    if (!button) {
-      return;
-    }
 
-    button.setAttribute("data-variant", props.variant);
-    button.setAttribute("data-style", props.fillStyle);
-    button.setAttribute("data-size", props.size);
-    if (props.staticColor) {
-      button.setAttribute("data-static-color", props.staticColor);
-    } else {
-      button.removeAttribute("data-static-color");
-    }
-  });
-
-  createEffect(() => {
-    setShowPendingSpinner(false);
-    if (!demoProps().isPending) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => setShowPendingSpinner(true), 1000);
-    onCleanup(() => window.clearTimeout(timeoutId));
+    return h(
+      SolidSpectrumButton,
+      {
+        isDisabled: props.isDisabled,
+        isPending: props.isPending,
+        variant: props.variant,
+        fillStyle: props.fillStyle,
+        size: props.size,
+        staticColor: props.staticColor,
+        onPress: (_event: unknown) => {
+          if (!props.isPending) {
+            setActionCount((count) => count + 1);
+          }
+        },
+      },
+      props.children,
+    );
   });
 
   return hc(
@@ -706,9 +690,6 @@ function SolidariaSpectrumButtonDemo() {
       get "data-comparison-color-scheme"() {
         return colorScheme();
       },
-      ref: (element: HTMLDivElement) => {
-        root = element;
-      },
       get "data-comparison-action-count"() {
         return String(actionCount());
       },
@@ -717,96 +698,15 @@ function SolidariaSpectrumButtonDemo() {
       },
     },
     [
-      hc("div", { class: "comparison-button-row" }, [
-        hc(
-          HeadlessButton,
-          {
-            get isDisabled() {
-              return demoProps().isDisabled;
-            },
-            class: comparisonSpectrumSkin.buttonClass,
-            style: (renderProps: ButtonRenderProps) =>
-              buttonPressStyle(renderProps, demoProps().children),
-            get "aria-disabled"() {
-              return demoProps().isPending ? "true" : undefined;
-            },
-            get "data-variant"() {
-              return demoProps().variant;
-            },
-            get "data-style"() {
-              return demoProps().fillStyle;
-            },
-            get "data-size"() {
-              return demoProps().size;
-            },
-            get "data-static-color"() {
-              return demoProps().staticColor;
-            },
-            get "data-pending-visible"() {
-              return showPendingSpinner() ? "true" : undefined;
-            },
-            onPress: (_event: unknown) => {
-              if (!demoProps().isPending) {
-                setActionCount((count) => count + 1);
-              }
-            },
+      hc(
+        SolidSpectrumProvider,
+        {
+          get colorScheme() {
+            return colorScheme();
           },
-          [
-            h(
-              "span",
-              {
-                class: comparisonSpectrumSkin.labelClass,
-                "data-slot": "label",
-                "data-rsp-slot": "text",
-                get style() {
-                  return showPendingSpinner() ? { visibility: "hidden" } : undefined;
-                },
-              },
-              () => demoProps().children,
-            ),
-            () =>
-              showPendingSpinner()
-                ? h(
-                    "div",
-                    { class: "comparison-spectrum-Button-pendingSpinner" },
-                    h(
-                      "div",
-                      {
-                        class: "comparison-spectrum-Button-progressCircle",
-                        role: "progressbar",
-                        "aria-label": "pending",
-                        "aria-valuemin": "0",
-                        "aria-valuemax": "100",
-                      },
-                      h("svg", { fill: "none", width: "100%", height: "100%" }, [
-                        h("circle", {
-                          cx: "50%",
-                          cy: "50%",
-                          r: "calc(50% - 0.0625rem)",
-                          class: "comparison-spectrum-Button-progressCircleTrackTransparent",
-                        }),
-                        h("circle", {
-                          cx: "50%",
-                          cy: "50%",
-                          r: "calc(50% - 0.0625rem)",
-                          class: "comparison-spectrum-Button-progressCircleTrack",
-                        }),
-                        h("circle", {
-                          cx: "50%",
-                          cy: "50%",
-                          r: "calc(50% - 0.0625rem)",
-                          pathLength: "100",
-                          "stroke-dasharray": "100 200",
-                          "stroke-linecap": "round",
-                          class: "comparison-spectrum-Button-progressCircleFill",
-                        }),
-                      ]),
-                    ),
-                  )
-                : null,
-          ],
-        ),
-      ]),
+        },
+        [hc("div", { class: "comparison-button-row" }, [renderedButton])],
+      ),
     ],
   );
 }
@@ -1015,29 +915,17 @@ function hSpectrumButton(
   label: string,
 ) {
   return hc(
-    HeadlessButton,
+    SolidSpectrumButton,
     {
       isDisabled: props.isDisabled,
-      class: comparisonSpectrumSkin.buttonClass,
-      style: (renderProps: ButtonRenderProps) => buttonPressStyle(renderProps, label),
-      "data-variant": props.variant,
-      "data-style": props.fillStyle,
-      "data-size": props.size ?? "M",
-      "data-static-color": props.staticColor,
+      variant: props.variant,
+      fillStyle: props.fillStyle,
+      size: props.size ?? "M",
+      staticColor: props.staticColor,
       onPress: props.onPress,
       onFocus: props.onFocus,
     },
-    [
-      h(
-        "span",
-        {
-          class: comparisonSpectrumSkin.labelClass,
-          "data-slot": "label",
-          "data-rsp-slot": "text",
-        },
-        label,
-      ),
-    ],
+    [label],
   );
 }
 

@@ -1,97 +1,149 @@
-import { type JSX, splitProps, mergeProps as solidMergeProps } from "solid-js";
+import {
+  children as resolveChildren,
+  type JSX,
+  createEffect,
+  createSignal,
+  mergeProps,
+  splitProps,
+} from "solid-js";
 import {
   Button as HeadlessButton,
   type ButtonRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import type { ButtonFillStyle, ButtonProps, ButtonSize, ButtonVariant } from "./types";
 import { useProviderProps } from "../provider";
+import {
+  s2Button,
+  s2ButtonGradient,
+  s2ButtonPendingIndicator,
+  s2ButtonText,
+  type S2ButtonRenderState,
+} from "./s2-button-styles";
 
-/**
- * Buttons allow users to perform an action or to navigate to another page.
- */
 export function Button(props: ButtonProps): JSX.Element {
   const providerProps = useProviderProps(props);
   const defaultProps: Partial<ButtonProps> = {
     variant: "primary",
     size: "M",
+    fillStyle: "fill",
   };
 
-  const merged = solidMergeProps(defaultProps, providerProps);
+  const merged = mergeProps(defaultProps, providerProps, props);
 
   const [local, headlessProps] = splitProps(merged, [
     "variant",
     "fillStyle",
-    "buttonStyle",
     "size",
-    "fullWidth",
     "staticColor",
-    "class",
+    "styles",
+    "UNSAFE_className",
+    "UNSAFE_style",
+    "children",
+    "isPending",
+    "onPress",
   ]);
 
-  const fillStyle = (): ButtonFillStyle => local.fillStyle ?? local.buttonStyle ?? "fill";
-  const variantClass = () => normalizeVariantClass(local.variant ?? "primary");
-  const sizeClass = () => normalizeSizeClass(local.size ?? "M");
+  const [isProgressVisible, setIsProgressVisible] = createSignal(false);
+  const resolvedChildren = resolveChildren(() => local.children);
 
-  const getClassName = (renderProps: ButtonRenderProps): string => {
-    const classList = [
-      "vui-button",
-      `vui-button--${fillStyle()}`,
-      `vui-button--${variantClass()}`,
-      `vui-button--${sizeClass()}`,
-    ];
-
-    if (renderProps.isPressed) {
-      classList.push("is-pressed");
+  createEffect(() => {
+    if (local.isPending) {
+      setIsProgressVisible(true);
+    } else {
+      setIsProgressVisible(false);
     }
+  });
 
-    if (local.fullWidth) {
-      classList.push("vui-button--full-width");
-    }
+  const variant = (): ButtonVariant => local.variant ?? "primary";
+  const fillStyle = (): ButtonFillStyle => local.fillStyle ?? "fill";
+  const size = (): ButtonSize => local.size ?? "M";
+  const isStaticColor = () => !!local.staticColor;
 
-    if (local.class) {
-      classList.push(local.class);
-    }
+  const getS2State = (renderProps: ButtonRenderProps): S2ButtonRenderState => ({
+    isHovered: renderProps.isHovered,
+    isPressed: renderProps.isPressed,
+    isFocused: renderProps.isFocused,
+    isFocusVisible: renderProps.isFocusVisible,
+    isDisabled: renderProps.isDisabled,
+    isPending: local.isPending,
+  });
 
-    return classList.join(" ");
-  };
+  const getClassName = (renderProps: ButtonRenderProps): string =>
+    [
+      local.UNSAFE_className,
+      s2Button(
+        {
+          ...getS2State(renderProps),
+          variant: variant(),
+          fillStyle: fillStyle(),
+          size: size(),
+          staticColor: local.staticColor,
+          isStaticColor: isStaticColor(),
+        },
+        local.styles,
+      ),
+    ]
+      .filter(Boolean)
+      .join(" ");
 
   return (
     <HeadlessButton
       {...headlessProps}
+      isPending={local.isPending}
+      isPendingFocusable
+      onPress={(event) => {
+        if (!local.isPending) {
+          local.onPress?.(event);
+        }
+      }}
       class={getClassName}
-      data-variant={local.variant}
+      style={local.UNSAFE_style}
+      data-variant={variant()}
       data-style={fillStyle()}
+      data-size={size()}
       data-static-color={local.staticColor || undefined}
     >
-      {props.children}
+      {(renderProps) => {
+        const state = () => getS2State(renderProps);
+        const content = () => resolvedChildren();
+        return (
+          <>
+            {variant() === "genai" || variant() === "premium" ? (
+              <span
+                class={s2ButtonGradient({
+                  ...state(),
+                  variant: variant() as Extract<ButtonVariant, "premium" | "genai">,
+                })}
+              />
+            ) : null}
+            {typeof content() === "string" ? (
+              <span
+                class={s2ButtonText({ isProgressVisible: isProgressVisible() })}
+                data-rsp-slot="text"
+              >
+                {content()}
+              </span>
+            ) : (
+              content()
+            )}
+            {local.isPending ? (
+              <span
+                class={s2ButtonPendingIndicator({
+                  isPending: local.isPending,
+                  isProgressVisible: isProgressVisible(),
+                })}
+              >
+                <span
+                  role="progressbar"
+                  aria-label="pending"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                />
+              </span>
+            ) : null}
+          </>
+        );
+      }}
     </HeadlessButton>
   );
-}
-
-function normalizeVariantClass(variant: ButtonVariant): string {
-  if (variant === "danger") {
-    return "negative";
-  }
-
-  if (variant === "success") {
-    return "positive";
-  }
-
-  return variant;
-}
-
-function normalizeSizeClass(size: ButtonSize): string {
-  if (size === "S" || size === "sm") {
-    return "sm";
-  }
-
-  if (size === "L" || size === "lg") {
-    return "lg";
-  }
-
-  if (size === "XL") {
-    return "xl";
-  }
-
-  return "md";
 }
