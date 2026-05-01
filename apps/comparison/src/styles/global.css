@@ -1462,13 +1462,14 @@ a {
   --skin-action-button-height: 32px;
   --skin-action-button-radius: 8px;
   --skin-action-button-border: #ffffff;
-  --skin-action-button-border-hover: #8f8f8f;
-  --skin-action-button-border-active: #bcbcbc;
+  --skin-action-button-border-hover: #ffffff;
+  --skin-action-button-border-active: #ffffff;
   --skin-action-button-bg: #2c2c2c;
-  --skin-action-button-bg-hover: #2c2c2c;
-  --skin-action-button-bg-active: #3b3b3b;
+  --skin-action-button-bg-hover: #323232;
+  --skin-action-button-bg-active: #323232;
   --skin-action-button-bg-selected: #3b3b3b;
   --skin-action-button-text: #dbdbdb;
+  --skin-action-button-text-hover: #f2f2f2;
   --skin-action-button-text-disabled: #444444;
   width: fit-content;
   max-inline-size: 100%;
@@ -1505,6 +1506,7 @@ a {
   --skin-action-button-bg-active: #e6e6e6;
   --skin-action-button-bg-selected: #e6e6e6;
   --skin-action-button-text: #292929;
+  --skin-action-button-text-hover: #292929;
   --skin-action-button-text-disabled: #c6c6c6;
   color: var(--skin-button-primary-text);
 }
@@ -2254,12 +2256,14 @@ a {
 .comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup > button:hover {
   background: var(--skin-action-button-bg-hover);
   border-color: var(--skin-action-button-border-hover);
+  color: var(--skin-action-button-text-hover);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton[data-pressed],
 .comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup > button:active {
   background: var(--skin-action-button-bg-active);
   border-color: var(--skin-action-button-border-active);
+  color: var(--skin-action-button-text-hover);
 }
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton[data-size="XS"] {
@@ -2296,6 +2300,14 @@ a {
   border-radius: 10px;
   font-size: 18px;
   line-height: 22px;
+}
+
+.comparison-spectrum-skin
+  .comparison-spectrum-ActionButton
+  .comparison-spectrum-Button-label[data-slot="label"] {
+  block-size: auto;
+  line-height: inherit;
+  padding: 0;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton[data-quiet] {
@@ -2351,10 +2363,11 @@ a {
 .comparison-spectrum-skin .comparison-spectrum-ActionButton[data-focus-visible],
 .comparison-spectrum-skin .comparison-spectrum-ActionButton:focus-visible,
 .comparison-spectrum-skin .comparison-spectrum-ActionButtonGroup > button:focus-visible {
-  box-shadow:
-    0 0 0 2px #000000,
-    0 0 0 4px var(--skin-button-focus-ring);
-  outline: none;
+  background: var(--skin-action-button-bg-hover);
+  box-shadow: none;
+  color: var(--skin-action-button-text-hover);
+  outline: 2px solid #4069fd;
+  outline-offset: 2px;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-ActionButton[data-disabled],

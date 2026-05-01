@@ -1,6 +1,13 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { frameworkPanel, styledSection } from "./comparison-page";
+import { frameworkCanvas, frameworkPanel, styledSection } from "./comparison-page";
 import { pinComparisonTheme } from "./visual-diff";
+import { clearPointer, expectPreparedScreenshotPair, expectScreenshotPair } from "./visual-diff";
+
+const actionButtonPairDiff = {
+  maxMismatchRatio: 0.12,
+  maxDimensionDelta: 4,
+  pixelThreshold: 64,
+};
 
 type ActionButtonCase = {
   id: string;
@@ -40,8 +47,12 @@ async function actionButtonFixtures(page: Page, params: Record<string, string | 
   const section = await styledSection(page);
   const reactPanel = await frameworkPanel(section, "React Spectrum stack");
   const solidPanel = await frameworkPanel(section, "Solidaria stack");
+  const reactCanvas = await frameworkCanvas(section, "React Spectrum stack");
+  const solidCanvas = await frameworkCanvas(section, "Solidaria stack");
 
   return {
+    reactCanvas,
+    solidCanvas,
     reactRoot: reactPanel.locator("[data-comparison-actionbutton-props]").first(),
     solidRoot: solidPanel.locator("[data-comparison-actionbutton-props]").first(),
     reactButton: reactPanel.getByRole("button").first(),
@@ -107,5 +118,86 @@ test.describe("comparison ActionButton visual parity", () => {
       "true",
     );
     await expect(fixtures.reactButton).toHaveAttribute("data-pending", "true");
+  });
+
+  for (const item of actionButtonCases) {
+    test(`ActionButton ${item.id} has committed pair screenshots`, async ({ page }) => {
+      const fixtures = await actionButtonFixtures(page, item.params);
+
+      await clearPointer(page);
+      await expectScreenshotPair(
+        page,
+        fixtures.reactCanvas,
+        fixtures.solidCanvas,
+        `ActionButton ${item.id}`,
+        `actionbutton-${item.id}`,
+        actionButtonPairDiff,
+      );
+    });
+  }
+
+  test("ActionButton hover state has committed pair screenshots", async ({ page }) => {
+    const fixtures = await actionButtonFixtures(page);
+
+    await expectPreparedScreenshotPair(
+      page,
+      fixtures.reactCanvas,
+      fixtures.solidCanvas,
+      "ActionButton hover",
+      "actionbutton-hover",
+      async () => {
+        await fixtures.reactButton.hover();
+        await expect(fixtures.reactButton).toHaveAttribute("data-hovered", "true");
+      },
+      async () => {
+        await fixtures.solidButton.hover();
+        await expect(fixtures.solidButton).toHaveAttribute("data-hovered", "true");
+      },
+      actionButtonPairDiff,
+    );
+  });
+
+  test("ActionButton focus-visible state has committed pair screenshots", async ({ page }) => {
+    const fixtures = await actionButtonFixtures(page);
+
+    await expectPreparedScreenshotPair(
+      page,
+      fixtures.reactCanvas,
+      fixtures.solidCanvas,
+      "ActionButton focus-visible",
+      "actionbutton-focus-visible",
+      async () => {
+        await fixtures.reactButton.focus();
+        await expect(fixtures.reactButton).toHaveAttribute("data-focus-visible", "true");
+      },
+      async () => {
+        await fixtures.solidButton.focus();
+        await expect(fixtures.solidButton).toHaveAttribute("data-focus-visible", "true");
+      },
+      actionButtonPairDiff,
+    );
+  });
+
+  test("ActionButton pressed state has committed pair screenshots", async ({ page }) => {
+    const fixtures = await actionButtonFixtures(page);
+
+    await expectPreparedScreenshotPair(
+      page,
+      fixtures.reactCanvas,
+      fixtures.solidCanvas,
+      "ActionButton pressed",
+      "actionbutton-pressed",
+      async () => {
+        await fixtures.reactButton.hover();
+        await page.mouse.down();
+        await expect(fixtures.reactButton).toHaveAttribute("data-pressed", "true");
+      },
+      async () => {
+        await fixtures.solidButton.hover();
+        await page.mouse.down();
+        await expect(fixtures.solidButton).toHaveAttribute("data-pressed", "true");
+      },
+      actionButtonPairDiff,
+    );
   });
 });

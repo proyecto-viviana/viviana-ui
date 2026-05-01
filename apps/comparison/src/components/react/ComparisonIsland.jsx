@@ -272,6 +272,7 @@ function ReactActionButtonDemo() {
   const colorScheme = useComparisonResolvedTheme();
   return renderReactSpectrumReference(
     /* @__PURE__ */ jsx("div", {
+      className: "comparison-button-row",
       "data-comparison-action-count": String(actionCount),
       "data-comparison-actionbutton-props": serializeActionButtonDemoProps(demoProps),
       "data-comparison-actionbutton-pending": demoProps.isPending ? "true" : void 0,

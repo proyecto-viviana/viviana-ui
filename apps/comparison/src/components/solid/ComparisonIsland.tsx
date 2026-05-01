@@ -841,7 +841,7 @@ function SolidariaSpectrumActionButtonDemo() {
   return hc(
     "div",
     {
-      class: comparisonSpectrumSkin.rootClass,
+      class: `${comparisonSpectrumSkin.rootClass} comparison-button-row`,
       get "data-comparison-color-scheme"() {
         return colorScheme();
       },

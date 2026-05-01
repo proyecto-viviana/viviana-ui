@@ -8,7 +8,7 @@ import {
 
 export type VisualStateKind = "static" | "overlay" | "interaction" | "keyboard";
 export type VisualStateSideStatus = "snapshotted" | "asserted" | "planned" | "missing" | "na";
-export type PairDiffStatus = "strict" | "planned" | "blocked" | "na";
+export type PairDiffStatus = "strict" | "asserted" | "planned" | "blocked" | "na";
 
 export interface VisualStateTarget {
   id: string;
@@ -198,8 +198,18 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
   actionbutton: [
     snapshottedDefaultState({
       slug: "actionbutton",
-      note: "ActionButton default screenshots are committed for both sides; computed S2 parity covers light/dark default, size, quiet, static-color, disabled, and pending states.",
+      note: "ActionButton default screenshots are committed for both sides; exact computed S2 parity covers light/dark default, size, quiet, static-color, disabled, and pending states.",
     }),
+    {
+      id: "styled.props.screenshot-matrix",
+      label: "Committed screenshot prop matrix",
+      kind: "static",
+      react: "snapshotted",
+      solid: "snapshotted",
+      pairDiff: "asserted",
+      spec: "e2e/actionbutton-visual.spec.ts",
+      note: "Committed React/Solid screenshots cover default, XS/S/M/L/XL sizes, quiet, staticColor black/white/auto, disabled, pending, hover, focus-visible, and pressed states with a dedicated text-raster drift threshold.",
+    },
     {
       id: "styled.props.computed-matrix",
       label: "Computed visual prop matrix",
@@ -247,7 +257,7 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       react: "planned",
       solid: "planned",
       pairDiff: "planned",
-      note: "ActionButton's S2 plan covers children, icon/avatar/badge content, XS/S/M/L/XL sizes, staticColor black/white/auto, quiet, disabled, pending, hover, pressed, focus-visible, light/dark themes, and pending spinner timing.",
+      note: "Remaining ActionButton plan covers icon/avatar/badge content, light-theme screenshot baselines, and investigation into S2 text raster metrics for stricter screenshot thresholds.",
     },
   ],
   actionbuttongroup: [
