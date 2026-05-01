@@ -1681,9 +1681,9 @@ a {
 
 .comparison-spectrum-skin[data-comparison-color-scheme="light"]
   .comparison-spectrum-Button[data-style="fill"][data-variant="accent"] {
-  background: rgba(59, 99, 251, 0.86);
-  border-color: #1f1f1f;
-  color: #e1e1e1;
+  background: #3b63fb;
+  border-color: #000000;
+  color: #ffffff;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="secondary"] {
@@ -1694,16 +1694,16 @@ a {
 
 .comparison-spectrum-skin[data-comparison-color-scheme="light"]
   .comparison-spectrum-Button[data-style="fill"][data-variant="secondary"] {
-  background: rgba(233, 233, 233, 0.86);
-  border-color: #c1c1c1;
+  background: #e9e9e9;
+  border-color: #dadada;
   color: #292929;
 }
 
 .comparison-spectrum-skin[data-comparison-color-scheme="light"]
   .comparison-spectrum-Button[data-style="fill"][data-variant="negative"] {
-  background: rgba(215, 50, 33, 0.945);
+  background: #d73220;
   border-color: #000000;
-  color: #f6f6f6;
+  color: #ffffff;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="fill"][data-variant="negative"] {
@@ -1755,9 +1755,9 @@ a {
 
 .comparison-spectrum-skin[data-comparison-color-scheme="light"]
   .comparison-spectrum-Button[data-style="outline"][data-variant="primary"] {
-  background: rgba(41, 41, 41, 0.14);
+  background: transparent;
   border-color: #292929;
-  color: #484848;
+  color: #292929;
 }
 
 .comparison-spectrum-skin
@@ -1768,7 +1768,7 @@ a {
 
 .comparison-spectrum-skin[data-comparison-color-scheme="light"]
   .comparison-spectrum-Button[data-style="outline"][data-variant="secondary"] {
-  background: rgba(233, 233, 233, 0.133);
+  background: transparent;
   border-color: #dadada;
   color: #292929;
 }
@@ -1782,16 +1782,16 @@ a {
 
 .comparison-spectrum-skin[data-comparison-color-scheme="light"]
   .comparison-spectrum-Button[data-style="outline"][data-variant="accent"] {
-  background: rgba(59, 99, 251, 0.133);
+  background: transparent;
   border-color: #000000;
-  color: #3e3e3e;
+  color: #292929;
 }
 
 .comparison-spectrum-skin[data-comparison-color-scheme="light"]
   .comparison-spectrum-Button[data-style="outline"][data-variant="negative"] {
-  background: rgba(215, 50, 32, 0.14);
+  background: transparent;
   border-color: #000000;
-  color: #464646;
+  color: #292929;
 }
 
 .comparison-spectrum-skin .comparison-spectrum-Button[data-style="outline"][data-variant="premium"],

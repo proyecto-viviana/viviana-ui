@@ -176,6 +176,7 @@ async function buttonComputedContract(button: Locator) {
       backgroundColor: styles.backgroundColor,
       color: styles.color,
       borderColor: styles.borderColor,
+      borderRadius: styles.borderRadius,
       borderWidth: styles.borderWidth,
       height: styles.height,
       padding: styles.padding,
@@ -183,6 +184,10 @@ async function buttonComputedContract(button: Locator) {
       textCenterDelta: centerDelta,
     };
   });
+}
+
+async function setComparisonTheme(page: Page, theme: "light" | "dark") {
+  await page.locator(`input[name="comparisonTheme"][value="${theme}"]`).check();
 }
 
 async function buttonGradientBackground(button: Locator) {
@@ -338,7 +343,7 @@ test.describe("comparison Button visual parity", () => {
   test("Button color scheme control drives React and Solid examples", async ({ page }) => {
     const fixtures = await buttonFixtures(page);
 
-    await page.locator('input[name="comparisonTheme"][value="light"]').check();
+    await setComparisonTheme(page, "light");
     await expect(fixtures.solidCanvas.locator("[data-comparison-color-scheme]")).toHaveAttribute(
       "data-comparison-color-scheme",
       "light",
@@ -361,7 +366,7 @@ test.describe("comparison Button visual parity", () => {
         },
       });
 
-    await page.locator('input[name="comparisonTheme"][value="dark"]').check();
+    await setComparisonTheme(page, "dark");
     await expect(fixtures.solidCanvas.locator("[data-comparison-color-scheme]")).toHaveAttribute(
       "data-comparison-color-scheme",
       "dark",
@@ -383,6 +388,30 @@ test.describe("comparison Button visual parity", () => {
           borderColor: "rgb(219, 219, 219)",
         },
       });
+  });
+
+  test("Button light theme variant styles match React Spectrum", async ({ page }) => {
+    const variants = ["primary", "secondary", "accent", "negative"] as const;
+    const fillStyles = ["fill", "outline"] as const;
+
+    for (const fillStyle of fillStyles) {
+      for (const variant of variants) {
+        const fixtures = await buttonFixtures(page, { variant, fillStyle });
+
+        await setComparisonTheme(page, "light");
+        await expect
+          .poll(async () => {
+            const react = await buttonComputedContract(fixtures.reactButton);
+            const solid = await buttonComputedContract(fixtures.solidButton);
+            return JSON.stringify({
+              react,
+              solid,
+              matches: JSON.stringify(react) === JSON.stringify(solid),
+            });
+          })
+          .toContain('"matches":true');
+      }
+    }
   });
 
   test("Button hover cursor and genai gradient match React Spectrum", async ({ page }) => {
