@@ -1,5 +1,6 @@
 import {
   actionButtonDemoDefaults,
+  actionButtonIconPlacementOptions,
   actionButtonSizeOptions,
   actionButtonStaticColorOptions,
 } from "./actionbutton-demo";
@@ -80,6 +81,18 @@ const buttonControls: ComponentControlGroup = {
       options: options(buttonSizeOptions),
     },
     {
+      name: "iconPlacement",
+      label: "iconPlacement",
+      kind: "radio",
+      defaultValue: buttonDemoDefaults.iconPlacement,
+      options: [
+        { value: "none", label: "none" },
+        { value: "start", label: "start" },
+        { value: "end", label: "end" },
+        { value: "only", label: "only" },
+      ],
+    },
+    {
       name: "isDisabled",
       label: "isDisabled",
       kind: "switch",
@@ -126,7 +139,7 @@ const buttonControls: ComponentControlGroup = {
     "excludeFromTabOrder",
     "preventFocusOnPress",
   ],
-  note: "Modeled from the S2 Button docs control surface. Callback, form, and accessibility props are tracked as API coverage rather than visual controls.",
+  note: "Modeled from the S2 Button docs control surface. Icon placement is exposed as a visual control so the comparison docs can show text, icon-leading, icon-trailing, and icon-only states. Callback, form, and accessibility props are tracked as API coverage rather than visual controls.",
 };
 
 const actionButtonControls: ComponentControlGroup = {
@@ -153,6 +166,13 @@ const actionButtonControls: ComponentControlGroup = {
       kind: "radio",
       defaultValue: "none",
       options: [{ value: "none", label: "none" }, ...options(actionButtonStaticColorOptions)],
+    },
+    {
+      name: "iconPlacement",
+      label: "iconPlacement",
+      kind: "radio",
+      defaultValue: actionButtonDemoDefaults.iconPlacement,
+      options: options(actionButtonIconPlacementOptions),
     },
     {
       name: "isQuiet",
@@ -197,7 +217,7 @@ const actionButtonControls: ComponentControlGroup = {
     "excludeFromTabOrder",
     "preventFocusOnPress",
   ],
-  note: "Modeled from the S2 ActionButton docs control surface. Icon, Avatar, and Badge content are tracked as visual content gaps until the comparison fixtures render those slots.",
+  note: "Modeled from the S2 ActionButton docs control surface. Icon-leading and icon-only content are exposed as visual controls; Avatar and Badge content remain tracked visual content gaps.",
 };
 
 export const componentControlGroups = {

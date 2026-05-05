@@ -93,12 +93,32 @@ export async function normalizedElementScreenshot(target: Locator) {
       htmlElement.style.insetInlineStart = "64px";
       htmlElement.style.margin = "0";
       htmlElement.style.zIndex = "2147483647";
+
+      const freezeStyle = document.createElement("style");
+      freezeStyle.setAttribute("data-comparison-screenshot-freeze", "progress-circle");
+      freezeStyle.textContent = `
+        [role="progressbar"] circle[stroke-dasharray] {
+          animation: none !important;
+          stroke-dashoffset: 0 !important;
+          transform: none !important;
+          transform-origin: center !important;
+          transition: none !important;
+        }
+      `;
+      htmlElement.append(freezeStyle);
     }, previousState);
 
+    await target.evaluate(() => new Promise(requestAnimationFrame));
     return await target.screenshot({ animations: "disabled" });
   } finally {
     await target.evaluate((element, state) => {
       const htmlElement = element as HTMLElement;
+
+      for (const freezeStyle of Array.from(
+        htmlElement.querySelectorAll('style[data-comparison-screenshot-freeze="progress-circle"]'),
+      )) {
+        freezeStyle.remove();
+      }
 
       if (state.className === null) {
         htmlElement.removeAttribute("class");

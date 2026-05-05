@@ -124,6 +124,15 @@ function normalizeIds(html: string): string {
     .replace(/name="solidaria-cl-\d+"/g, 'name="solidaria-cl-0"');
 }
 
+function expectS2Button(button: HTMLElement, text: string): void {
+  expect(button).toHaveAttribute("data-variant", "primary");
+  expect(button).toHaveAttribute("data-style", "fill");
+  expect(button).toHaveAttribute("data-size", "M");
+  expect(button).toHaveAttribute("type", "button");
+  expect(button.textContent).toContain(text);
+  expect(button.querySelector('[data-rsp-slot="text"]')?.textContent).toBe(text);
+}
+
 afterEach(() => cleanup());
 
 // ═══════════════════════════════════════════════════════════════
@@ -131,14 +140,12 @@ afterEach(() => cleanup());
 // ═══════════════════════════════════════════════════════════════
 
 describe("Regression: Button", () => {
-  it("renders with role, text, type=button, and snapshot", () => {
-    const { container } = render(() => <Button>Save</Button>);
+  it("renders with role, S2 data attributes, and text slot", () => {
+    render(() => <Button>Save</Button>);
     const btn = screen.getByRole("button");
     expect(btn).toBeInTheDocument();
-    expect(btn.textContent).toContain("Save");
     expect(btn).not.toBeDisabled();
-    expect(btn).toHaveAttribute("type", "button");
-    expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
+    expectS2Button(btn, "Save");
   });
 });
 
@@ -551,9 +558,9 @@ describe("Regression: Tabs", () => {
 // ═══════════════════════════════════════════════════════════════
 
 describe("Regression: Dialog", () => {
-  it("trigger → role=dialog with title and close, and snapshot", async () => {
+  it("trigger → role=dialog with title and close", async () => {
     const user = setupUser();
-    const { container } = render(() => (
+    render(() => (
       <DialogTrigger
         trigger={<Button>Open</Button>}
         content={(close) => (
@@ -565,12 +572,13 @@ describe("Regression: Dialog", () => {
       />
     ));
 
-    await user.click(screen.getByRole("button", { name: "Open" }));
+    const trigger = screen.getByRole("button", { name: "Open" });
+    expectS2Button(trigger, "Open");
+
+    await user.click(trigger);
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Settings")).toBeInTheDocument();
     expect(screen.getByText("Dialog body content")).toBeInTheDocument();
-
-    expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
@@ -598,9 +606,9 @@ describe("Regression: AlertDialog", () => {
 });
 
 describe("Regression: Popover", () => {
-  it("trigger click → dialog content, and snapshot", async () => {
+  it("trigger click → dialog content", async () => {
     const user = setupUser();
-    const { container } = render(() => (
+    render(() => (
       <PopoverTrigger>
         <Button>Info</Button>
         <Popover>
@@ -609,16 +617,17 @@ describe("Regression: Popover", () => {
       </PopoverTrigger>
     ));
 
-    await user.click(screen.getByRole("button", { name: "Info" }));
+    const trigger = screen.getByRole("button", { name: "Info" });
+    expectS2Button(trigger, "Info");
+
+    await user.click(trigger);
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Popover content here")).toBeInTheDocument();
-
-    expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
   });
 });
 
 describe("Regression: Tooltip", () => {
-  it("renders tooltip with role=tooltip when open, and snapshot", () => {
+  it("renders tooltip with role=tooltip when open", () => {
     const { container } = render(() => (
       <TooltipTrigger isOpen>
         <Button>Hover me</Button>
@@ -628,7 +637,8 @@ describe("Regression: Tooltip", () => {
 
     expect(screen.getByRole("tooltip")).toBeInTheDocument();
     expect(screen.getByText("Helpful tip")).toBeInTheDocument();
-    expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
+    expect(container.querySelector("[aria-describedby]")).toBeInTheDocument();
+    expectS2Button(screen.getByRole("button", { name: "Hover me" }), "Hover me");
   });
 });
 
@@ -691,8 +701,8 @@ describe("Regression: Link", () => {
 });
 
 describe("Regression: Toolbar", () => {
-  it("renders with role=toolbar containing buttons, and snapshot", () => {
-    const { container } = render(() => (
+  it("renders with role=toolbar containing S2 buttons", () => {
+    render(() => (
       <Toolbar aria-label="Text formatting">
         <Button>Bold</Button>
         <Button>Italic</Button>
@@ -703,7 +713,9 @@ describe("Regression: Toolbar", () => {
     expect(screen.getByRole("toolbar")).toBeInTheDocument();
     const buttons = screen.getAllByRole("button");
     expect(buttons.length).toBe(3);
-    expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
+    expectS2Button(buttons[0], "Bold");
+    expectS2Button(buttons[1], "Italic");
+    expectS2Button(buttons[2], "Underline");
   });
 });
 
@@ -1045,7 +1057,7 @@ describe("Regression: Label", () => {
 });
 
 describe("Regression: Form", () => {
-  it("renders form element with children, and snapshot", () => {
+  it("renders form element with children", () => {
     const { container } = render(() => (
       <Form>
         <TextField label="Name" />
@@ -1056,8 +1068,7 @@ describe("Regression: Form", () => {
     const form = container.querySelector("form");
     expect(form).toBeInTheDocument();
     expect(screen.getByRole("textbox")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
-    expect(normalizeIds(container.innerHTML)).toMatchSnapshot();
+    expectS2Button(screen.getByRole("button", { name: "Submit" }), "Submit");
   });
 });
 

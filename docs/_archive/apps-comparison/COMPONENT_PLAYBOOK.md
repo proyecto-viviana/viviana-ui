@@ -5,6 +5,11 @@ comparison entry complete.
 
 ## 1. Establish The Reference
 
+- Start from the real React Spectrum S2 component as the source of truth.
+- If the Solid side does not have that component yet, port it into
+  `@proyecto-viviana/solid-spectrum` across the full stack before comparing.
+- If the Solid side already has the component, compare it against the React
+  reference and close the gap.
 - Start from the official React Spectrum S2 catalogue order in
   `src/data/comparison-manifest.ts`.
 - The React side must import the real S2 component from `@react-spectrum/s2`.
@@ -29,6 +34,9 @@ Write the plan from the React Spectrum S2 docs and the live React reference:
 - List the visual states: default, hover, pressed, focus-visible, disabled,
   selected/checked/invalid/current, loading/pending, and open overlays when
   applicable.
+- For time-based states, trace the delayed visible phase and any derived
+  disabled-like styling or state normalization that the S2 source applies before
+  finalizing the component plan.
 - List the behavior states: value, selected keys, open/closed state, callbacks,
   focus movement, keyboard navigation, dismissal, validation, and controlled
   prop updates.
@@ -51,7 +59,8 @@ component complete because its default state matches.
 Examples:
 
 - Button: variants, fill/outline, sizes, staticColor, hover, pressed,
-  focus-visible, disabled, pending, delayed spinner, and light/dark theme.
+  focus-visible, disabled, pending, delayed spinner, derived disabled styling,
+  and light/dark theme.
 - DatePicker: closed field, open popover, selected date, calendar navigation,
   invalid/disabled states, outside click, Escape, keyboard flow, and focus
   return.

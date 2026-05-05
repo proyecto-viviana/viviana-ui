@@ -10,11 +10,13 @@ export const buttonVariantOptions = [
 export const buttonFillStyleOptions = ["fill", "outline"] as const;
 export const buttonSizeOptions = ["S", "M", "L", "XL"] as const;
 export const buttonStaticColorOptions = ["auto", "white", "black"] as const;
+export const buttonIconPlacementOptions = ["none", "start", "end", "only"] as const;
 
 export type ButtonDemoVariant = (typeof buttonVariantOptions)[number];
 export type ButtonDemoFillStyle = (typeof buttonFillStyleOptions)[number];
 export type ButtonDemoSize = (typeof buttonSizeOptions)[number];
 export type ButtonDemoStaticColor = (typeof buttonStaticColorOptions)[number];
+export type ButtonDemoIconPlacement = (typeof buttonIconPlacementOptions)[number];
 
 export interface ButtonDemoProps {
   children: string;
@@ -22,6 +24,7 @@ export interface ButtonDemoProps {
   fillStyle: ButtonDemoFillStyle;
   size: ButtonDemoSize;
   staticColor?: ButtonDemoStaticColor;
+  iconPlacement: ButtonDemoIconPlacement;
   isDisabled: boolean;
   isPending: boolean;
 }
@@ -32,6 +35,7 @@ export const buttonDemoDefaults: ButtonDemoProps = {
   fillStyle: "fill",
   size: "M",
   staticColor: undefined,
+  iconPlacement: "none",
   isDisabled: false,
   isPending: false,
 };
@@ -55,6 +59,7 @@ export function buttonDemoPropsFromSearch(search: string): ButtonDemoProps {
   const fillStyle = params.get("fillStyle");
   const size = params.get("size");
   const staticColor = params.get("staticColor");
+  const iconPlacement = params.get("iconPlacement");
 
   return {
     children: params.get("children") || buttonDemoDefaults.children,
@@ -64,6 +69,9 @@ export function buttonDemoPropsFromSearch(search: string): ButtonDemoProps {
       : buttonDemoDefaults.fillStyle,
     size: isOneOf(size, buttonSizeOptions) ? size : buttonDemoDefaults.size,
     staticColor: isOneOf(staticColor, buttonStaticColorOptions) ? staticColor : undefined,
+    iconPlacement: isOneOf(iconPlacement, buttonIconPlacementOptions)
+      ? iconPlacement
+      : buttonDemoDefaults.iconPlacement,
     isDisabled: booleanParam(params.get("isDisabled")),
     isPending: booleanParam(params.get("isPending")),
   };
@@ -84,6 +92,7 @@ export function serializeButtonDemoProps(props: ButtonDemoProps) {
     fillStyle: props.fillStyle,
     size: props.size,
     staticColor: props.staticColor ?? "none",
+    iconPlacement: props.iconPlacement,
     isDisabled: props.isDisabled,
     isPending: props.isPending,
   });

@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@solidjs/testing-library";
 import { Button } from "../src/button";
 import { setupUser } from "@proyecto-viviana/solid-spectrum-test-utils";
+import CrossIcon from "../src/icon/ui-icons/Cross";
 
 // setupUser is consolidated in solid-spectrum-test-utils.
 
@@ -177,6 +178,17 @@ describe("Button", () => {
 
     const button = screen.getByRole("button");
     expect(button).toHaveAttribute("aria-describedby", "test");
+  });
+
+  it("renders icon children with the icon slot", () => {
+    render(() => (
+      <Button aria-label="Dismiss">
+        <CrossIcon />
+      </Button>
+    ));
+
+    const button = screen.getByRole("button", { name: "Dismiss" });
+    expect(button.querySelector('[data-slot="icon"]')).toBeDefined();
   });
 
   it("does not respond when disabled", async () => {

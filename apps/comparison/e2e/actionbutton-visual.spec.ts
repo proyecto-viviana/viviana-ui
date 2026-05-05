@@ -27,7 +27,19 @@ const actionButtonCases: ActionButtonCase[] = [
   { id: "static-auto", params: { staticColor: "auto" } },
   { id: "disabled", params: { isDisabled: true } },
   { id: "pending", params: { isPending: true } },
+  { id: "icon-start", params: { iconPlacement: "start" } },
+  { id: "icon-only", params: { iconPlacement: "only" } },
+  { id: "icon-start-xl", params: { iconPlacement: "start", size: "XL" } },
+  { id: "icon-only-xl", params: { iconPlacement: "only", size: "XL" } },
 ];
+
+const actionButtonIconAlignmentCases = [
+  { iconPlacement: "start", size: "XS" },
+  { iconPlacement: "start", size: "M" },
+  { iconPlacement: "start", size: "XL" },
+  { iconPlacement: "only", size: "M" },
+  { iconPlacement: "only", size: "XL" },
+] as const;
 
 function actionButtonQuery(params: Record<string, string | boolean> = {}) {
   const search = new URLSearchParams();
@@ -90,6 +102,78 @@ async function actionButtonComputedContract(button: Locator) {
   });
 }
 
+async function actionButtonIconAlignmentContract(button: Locator) {
+  return button.evaluate((element) => {
+    const numberOrNull = (value: number | undefined | null) =>
+      value == null ? null : Number(value.toFixed(4));
+    const rootRect = element.getBoundingClientRect();
+    const rootCenterY = rootRect.top + rootRect.height / 2;
+    const svgs = Array.from(element.querySelectorAll("svg"));
+    const icon = svgs.find((svg) => {
+      const styles = window.getComputedStyle(svg);
+      return svg.closest('[role="progressbar"]') == null && styles.visibility !== "hidden";
+    });
+    const label = element.querySelector<HTMLElement>('[data-rsp-slot="text"], [data-slot="label"]');
+    const iconRect = icon?.getBoundingClientRect();
+    const labelRect = label?.getBoundingClientRect();
+    const iconCenterY = iconRect ? iconRect.top + iconRect.height / 2 : null;
+    const labelCenterY = labelRect ? labelRect.top + labelRect.height / 2 : null;
+    const gap = iconRect && labelRect ? labelRect.left - iconRect.right : null;
+
+    return {
+      rootHeight: Number(rootRect.height.toFixed(4)),
+      rootWidth: Number(rootRect.width.toFixed(4)),
+      iconWidth: numberOrNull(iconRect?.width),
+      iconHeight: numberOrNull(iconRect?.height),
+      iconCenterDelta: numberOrNull(iconCenterY == null ? null : iconCenterY - rootCenterY),
+      labelCenterDelta: numberOrNull(labelCenterY == null ? null : labelCenterY - rootCenterY),
+      iconLabelCenterDelta: numberOrNull(
+        iconCenterY == null || labelCenterY == null ? null : iconCenterY - labelCenterY,
+      ),
+      gap: numberOrNull(gap),
+      hasLabel: !!labelRect,
+    };
+  });
+}
+
+async function actionButtonPendingIconContract(button: Locator) {
+  return button.evaluate((element) => {
+    const numberOrNull = (value: number | undefined | null) =>
+      value == null ? null : Number(value.toFixed(4));
+    const rootRect = element.getBoundingClientRect();
+    const rootCenterY = rootRect.top + rootRect.height / 2;
+    const progress = element.querySelector<HTMLElement>('[role="progressbar"]');
+    const progressRect = progress?.getBoundingClientRect();
+    const progressCenterY = progressRect ? progressRect.top + progressRect.height / 2 : null;
+    const icon = Array.from(element.querySelectorAll("svg")).find(
+      (svg) => svg.closest('[role="progressbar"]') == null,
+    );
+    const label = element.querySelector<HTMLElement>('[data-rsp-slot="text"], [data-slot="label"]');
+
+    return {
+      rootHeight: Number(rootRect.height.toFixed(4)),
+      progressWidth: numberOrNull(progressRect?.width),
+      progressHeight: numberOrNull(progressRect?.height),
+      progressCenterDelta: numberOrNull(
+        progressCenterY == null ? null : progressCenterY - rootCenterY,
+      ),
+      iconVisibility: icon ? window.getComputedStyle(icon).visibility : null,
+      labelVisibility: label ? window.getComputedStyle(label).visibility : null,
+    };
+  });
+}
+
+function expectNear(
+  received: number | null,
+  expected: number | null,
+  tolerance: number,
+  label: string,
+) {
+  expect(received, `${label} should be present`).not.toBeNull();
+  expect(expected, `${label} reference should be present`).not.toBeNull();
+  expect(Math.abs((received ?? 0) - (expected ?? 0)), label).toBeLessThanOrEqual(tolerance);
+}
+
 test.describe("comparison ActionButton visual parity", () => {
   for (const colorScheme of ["light", "dark"] as const) {
     for (const matrixCase of actionButtonCases) {
@@ -126,6 +210,79 @@ test.describe("comparison ActionButton visual parity", () => {
       "true",
     );
     await expect(fixtures.reactButton).toHaveAttribute("data-pending", "true");
+  });
+
+  test("ActionButton icon geometry is aligned with React Spectrum", async ({ page }) => {
+    for (const item of actionButtonIconAlignmentCases) {
+      await test.step(`${item.iconPlacement} ${item.size}`, async () => {
+        const fixtures = await actionButtonFixtures(page, item);
+        const react = await actionButtonIconAlignmentContract(fixtures.reactButton);
+        const solid = await actionButtonIconAlignmentContract(fixtures.solidButton);
+
+        expectNear(solid.rootHeight, react.rootHeight, 0.5, "ActionButton root height");
+        expectNear(solid.iconWidth, react.iconWidth, 0.5, "ActionButton icon width");
+        expectNear(solid.iconHeight, react.iconHeight, 0.5, "ActionButton icon height");
+        expectNear(
+          solid.iconCenterDelta,
+          react.iconCenterDelta,
+          0.75,
+          "ActionButton icon vertical centerline",
+        );
+        expect(
+          Math.abs(solid.iconCenterDelta ?? 0),
+          "solid icon root centerline",
+        ).toBeLessThanOrEqual(1);
+
+        if (item.iconPlacement === "only") {
+          expect(solid.hasLabel).toBe(false);
+        } else {
+          expect(solid.hasLabel).toBe(true);
+          expectNear(
+            solid.labelCenterDelta,
+            react.labelCenterDelta,
+            0.75,
+            "ActionButton text vertical centerline",
+          );
+          expectNear(
+            solid.iconLabelCenterDelta,
+            react.iconLabelCenterDelta,
+            0.75,
+            "ActionButton icon-to-text centerline",
+          );
+          expectNear(solid.gap, react.gap, 1, "ActionButton icon text gap");
+        }
+      });
+    }
+  });
+
+  test("ActionButton pending indicator remains centered when icon content is present", async ({
+    page,
+  }) => {
+    const fixtures = await actionButtonFixtures(page, {
+      iconPlacement: "start",
+      isPending: true,
+    });
+    await expect(fixtures.reactButton.getByRole("progressbar", { name: "pending" })).toBeVisible();
+    await expect(fixtures.solidButton.getByRole("progressbar", { name: "pending" })).toBeVisible();
+
+    const react = await actionButtonPendingIconContract(fixtures.reactButton);
+    const solid = await actionButtonPendingIconContract(fixtures.solidButton);
+
+    expectNear(solid.rootHeight, react.rootHeight, 0.5, "pending ActionButton root height");
+    expectNear(solid.progressWidth, react.progressWidth, 0.5, "pending progress width");
+    expectNear(solid.progressHeight, react.progressHeight, 0.5, "pending progress height");
+    expectNear(
+      solid.progressCenterDelta,
+      react.progressCenterDelta,
+      0.75,
+      "pending progress vertical centerline",
+    );
+    expect(
+      Math.abs(solid.progressCenterDelta ?? 0),
+      "solid pending progress root centerline",
+    ).toBeLessThanOrEqual(1);
+    expect(solid.iconVisibility).toBe(react.iconVisibility);
+    expect(solid.labelVisibility).toBe(react.labelVisibility);
   });
 
   for (const item of actionButtonCases) {

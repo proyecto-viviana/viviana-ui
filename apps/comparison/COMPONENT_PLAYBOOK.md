@@ -6,21 +6,118 @@ first.
 
 ## Checklist
 
-1. Use the real React Spectrum S2 component as the React reference.
-2. Use `@proyecto-viviana/solid-spectrum` as the Solid side.
-3. Implement styling through the S2-compatible style system.
-4. Review the S2 source before implementing. Port real S2 wrapper structure,
-   slots, state logic, overlay behavior, and temporal behavior when it exists;
-   do not assume the component is only a headless reskin.
-5. Do not add or tune app-local Spectrum component CSS.
-6. If the Solid component is not migrated, mark it missing/gap.
-7. Match S2 props and TypeScript names in controls and fixtures.
-8. Cover light and dark themes.
-9. Cover component-specific states before screenshots.
-10. Compare DOM slots, state attributes, computed styles, geometry, behavior, and
+1. Start from the real React Spectrum S2 component as the source of truth.
+2. If the Solid side does not have that component yet, port it into
+   `@proyecto-viviana/solid-spectrum` across the full stack before comparing.
+3. If the Solid side already has the component, compare it against the React
+   reference and close the gap.
+4. Implement styling through the S2-compatible style system.
+5. Review the S2 source before implementing. Port real S2 wrapper structure,
+   slots, state logic, derived render-state, overlay behavior, and temporal
+   behavior when it exists; do not assume the component is only a headless
+   reskin. Trace helper hooks and delayed state transitions into the final style
+   call.
+6. Do not add or tune app-local Spectrum component CSS.
+7. If the Solid component is not migrated, mark it missing/gap.
+8. Match S2 props and TypeScript names in controls and fixtures.
+9. Cover light and dark themes.
+10. Cover component-specific states before screenshots. For time-based states,
+    verify the delayed visible phase and any derived disabled-like styling the
+    source uses to normalize variants.
+11. Compare DOM slots, state attributes, computed styles, geometry, behavior, and
     screenshots.
-11. Commit snapshots only after the React and Solid implementations are both the
+12. Commit snapshots only after the React and Solid implementations are both the
     intended references.
+
+## Validation Plan First
+
+Before touching component code, write the component-specific validation plan.
+This can live in the issue, PR notes, or the visual state matrix, but it must be
+specific enough that implementation assumptions are testable.
+
+Include:
+
+- React S2 component and source files reviewed.
+- Props, slots, wrapper structure, provider/context behavior, and generated style
+  declarations to port.
+- Static states to compare: default, variants, sizes, disabled/read-only,
+  validation, density, static color, and slot/content permutations.
+- Interaction states to compare: hover, focus-visible, pressed, selected/open,
+  keyboard navigation, dismissal, and focus return.
+- Temporal states to compare: pending/loading delays, spinner visibility,
+  press-scale transforms, overlay animation frames, and delayed state
+  normalization.
+- Geometry checks to run before screenshots: root box, slot boxes, icon box,
+  text box, centerline delta, baseline-sensitive text/icon alignment, and
+  overlay placement.
+- Which checks are behavior assertions, computed-style assertions,
+  Playwright CLI inspection artifacts, and committed Playwright test snapshots.
+
+Use this matrix shape before implementation. Expand rows until every risky prop,
+slot, state, or layout assumption has an explicit validation target:
+
+| Assumption        | React S2 reference to inspect                       | Solid surface to inspect   | Browser check                             | Committed guard                                |
+| ----------------- | --------------------------------------------------- | -------------------------- | ----------------------------------------- | ---------------------------------------------- |
+| Default geometry  | root/slot/icon/text boxes                           | root/slot/icon/text boxes  | Playwright snapshot plus box measurements | visual or computed Playwright spec             |
+| Interaction state | selected/pressed/open/focused attributes and styles | same attributes and styles | click/keyboard/hover flow in browser      | behavior assertion and screenshot where visual |
+| Temporal state    | delayed pending/loading/animation frame             | same delayed phase         | video/trace or timed snapshot             | Playwright assertion after delay               |
+
+Do not start coding from a generic component checklist alone. Name the actual
+React S2 source files, expected state attributes, target accessible roles, and
+the exact query/state URLs to open in Playwright. If a row cannot be tested yet,
+record why and mark it as a tracked gap in the visual state matrix.
+
+If the component contains icons, the plan must include explicit React-vs-Solid
+icon alignment checks. Do not rely on visual memory. Inspect the React Spectrum
+reference and the Solid implementation in the browser, capture both sides, and
+record the box/centerline/baseline measurements before accepting the state. The
+minimum icon matrix is start, end, icon-only, pending-with-icon, and each
+supported size that changes button height.
+
+## Button-Family Batch Plan
+
+Process button-family components in small batches, but sign off each component
+individually. Batch 1 covers single button-derived controls:
+`ActionButton`, `ToggleButton`, and `LinkButton`.
+
+| Assumption                                                                                                           | React S2 reference to inspect                                                                                                            | Solid surface to inspect                                                                                                                                      | Browser check                                                                                                                                                    | Committed guard                                                                                           |
+| -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| ActionButton text, icon-leading, icon-only, size, quiet, staticColor, disabled, and pending states match S2 geometry | `@react-spectrum/s2/src/ActionButton.tsx`, especially `btnStyles`, `IconContext`, `TextContext`, `usePendingState`, and `ProgressCircle` | `packages/solid-spectrum/src/button/ActionButton.tsx`, `s2-action-button-styles.ts`, comparison route `/components/actionbutton/?iconPlacement=start&size=XL` | Compare React/Solid root, icon, text, gap, progress, and centerline boxes in Playwright; inspect delayed pending with icon content after spinner becomes visible | `e2e/actionbutton-visual.spec.ts` computed, screenshot, icon geometry, and pending-with-icon tests        |
+| ToggleButton icon content and selected state use the same baseline and accessible pressed state                      | `@react-spectrum/s2/src/ToggleButton.tsx`, `btnStyles`, `ToggleButtonGroupContext`, `IconContext`, `TextContext`                         | `packages/solid-spectrum/src/button/ToggleButton.tsx`, route `/components/togglebutton/?iconPlacement=start&isSelected=true`                                  | Compare root/icon/text boxes, aria-pressed, and selected-state rendering for text+icon and icon-only                                                             | `e2e/single-button-controls-visual.spec.ts` screenshots, geometry assertions, and selected-state contract |
+| LinkButton preserves link semantics while using Button visual/icon treatment                                         | `@react-spectrum/s2/src/Button.tsx` `LinkButton`, `button`, `IconContext`, `TextContext`                                                 | `packages/solid-spectrum/src/button/LinkButton.tsx`, route `/components/linkbutton/?iconPlacement=only`                                                       | Compare anchor role/name/href, root/icon/text boxes, and icon-only accessible name                                                                               | `e2e/single-button-controls-visual.spec.ts` screenshots, geometry assertions, and href contract           |
+
+Batch 1 intentionally leaves group context and collection selection details to
+Batch 2 and Batch 3. Do not mix group fixes into single-control work unless a
+shared button primitive regression blocks the single-control matrix.
+
+## Playwright CLI Inspection
+
+Use Playwright CLI for exploratory browser validation before accepting a visual
+fix. The test suite is the committed guard; CLI inspection is how we catch
+layout details before the user has to point them out.
+
+Required loop for visual fixes:
+
+1. Start the comparison app.
+2. Open the component route with the intended query state.
+3. Take an accessibility/DOM snapshot.
+4. Capture React and Solid screenshots into `output/playwright/`.
+5. For alignment-sensitive states, capture geometry from both sides and compare
+   root, icon, text, and slot rectangles.
+6. Use video or tracing when the state is temporal, such as pressed, pending, or
+   overlay animation.
+7. Promote the useful assertion into `apps/comparison/e2e` before calling the
+   component fixed.
+
+Example artifacts:
+
+```bash
+export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
+export PWCLI="$CODEX_HOME/skills/playwright/scripts/playwright_cli.sh"
+"$PWCLI" open http://127.0.0.1:4321/components/button/?iconPlacement=start --headed
+"$PWCLI" snapshot
+"$PWCLI" screenshot --output output/playwright/button-icon-start.png
+```
 
 ## Screenshot Rule
 

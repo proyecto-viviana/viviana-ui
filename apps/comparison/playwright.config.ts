@@ -1,5 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
 
+if (process.env.NO_COLOR != null) {
+  // Playwright forces color in worker and web-server child processes. Dropping
+  // NO_COLOR here avoids Node warning that it will be ignored anyway.
+  delete process.env.NO_COLOR;
+}
+
 const port = Number(process.env.COMPARISON_PORT ?? 4322);
 const host = process.env.COMPARISON_HOST ?? "127.0.0.1";
 const baseURL = process.env.COMPARISON_BASE_URL ?? `http://${host}:${port}`;

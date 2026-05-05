@@ -51,9 +51,9 @@ describe("Wave 4 UI Components", () => {
       expect(getByRole("button")).toBeDefined();
     });
 
-    it("applies size class", () => {
+    it("applies size prop", () => {
       const { getByRole } = render(() => <ToggleButton size="sm">SM</ToggleButton>);
-      expect(getByRole("button").className).toContain("px-2");
+      expect(getByRole("button")).toHaveAttribute("data-size", "sm");
     });
   });
 
@@ -63,9 +63,9 @@ describe("Wave 4 UI Components", () => {
       expect(getByRole("button")).toBeDefined();
     });
 
-    it("renders quiet by default", () => {
-      const { getByRole } = render(() => <ActionButton>Quiet</ActionButton>);
-      expect(getByRole("button").className).toContain("bg-transparent");
+    it("accepts quiet mode", () => {
+      const { getByRole } = render(() => <ActionButton isQuiet>Quiet</ActionButton>);
+      expect(getByRole("button")).toHaveAttribute("data-quiet", "true");
     });
   });
 
@@ -238,30 +238,52 @@ describe("Wave 4 UI Components", () => {
   });
 });
 
-// Export test to verify index exports
-describe("Wave 4 UI index exports", () => {
-  it("exports all Wave 4 components", () => {
-    expect(indexExports.Heading).toBeDefined();
-    expect(indexExports.ToggleButton).toBeDefined();
-    expect(indexExports.ActionButton).toBeDefined();
-    expect(indexExports.ClearButton).toBeDefined();
-    expect(indexExports.FieldButton).toBeDefined();
-    expect(indexExports.LogicButton).toBeDefined();
-    expect(indexExports.ProgressCircle).toBeDefined();
-    expect(indexExports.Field).toBeDefined();
-    expect(indexExports.HelpText).toBeDefined();
-    expect(indexExports.Overlay).toBeDefined();
-    expect(indexExports.Content).toBeDefined();
-    expect(indexExports.ViewHeader).toBeDefined();
-    expect(indexExports.ViewFooter).toBeDefined();
-    expect(indexExports.Illustration).toBeDefined();
-    expect(indexExports.UIIcon).toBeDefined();
-    expect(indexExports.Switch).toBeDefined();
-    expect(indexExports.AlertDialog).toBeDefined();
-    expect(indexExports.ActionMenu).toBeDefined();
-    expect(indexExports.SubmenuTrigger).toBeDefined();
-    expect(indexExports.RangeSlider).toBeDefined();
-    expect(indexExports.StyledModal).toBeDefined();
-    expect(indexExports.Tray).toBeDefined();
+describe("S2 public index exports", () => {
+  const exportsByName = indexExports as Record<string, unknown>;
+
+  it("exports the S2-facing root surface", () => {
+    for (const name of [
+      "Provider",
+      "Button",
+      "ActionButton",
+      "ActionButtonGroup",
+      "ButtonGroup",
+      "CardView",
+      "ToggleButton",
+      "ToggleButtonGroup",
+      "ProgressCircle",
+      "Switch",
+      "ActionMenu",
+      "SubmenuTrigger",
+      "RangeSlider",
+      "SegmentedControl",
+      "SelectBoxGroup",
+      "TableView",
+      "Tabs",
+      "Tooltip",
+      "ToastQueue",
+      "createIcon",
+    ]) {
+      expect(exportsByName[name]).toBeDefined();
+    }
+  });
+
+  it("keeps legacy internal helpers out of the root barrel", () => {
+    for (const name of [
+      "ClearButton",
+      "FieldButton",
+      "LogicButton",
+      "Field",
+      "HelpText",
+      "Overlay",
+      "ViewHeader",
+      "ViewFooter",
+      "Illustration",
+      "UIIcon",
+      "StyledModal",
+      "Tray",
+    ]) {
+      expect(exportsByName[name]).toBeUndefined();
+    }
   });
 });

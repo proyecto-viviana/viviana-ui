@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import {
   comparisonContractVersion,
   getComparisonReferenceKind,
@@ -8,23 +8,7 @@ import {
   type ComparisonEntry,
   type ComparisonLayerId,
 } from "../src/data/comparison-manifest";
-
-async function frameworkCard(
-  section: Locator,
-  framework: "React Spectrum stack" | "Solidaria stack",
-) {
-  const card = section.locator(".framework-card").filter({ hasText: framework });
-  await expect(card).toHaveCount(1);
-  return card;
-}
-
-async function styledSection(page: Page) {
-  const section = page.locator(".layer-block").filter({
-    has: page.getByRole("heading", { name: "Styled Layer" }),
-  });
-  await expect(section).toHaveCount(1);
-  return section;
-}
+import { frameworkPanel, styledSection } from "./comparison-page";
 
 function liveOnBothSides(entry: ComparisonEntry, layer: ComparisonLayerId) {
   return entry.layers[layer].react === "live" && entry.layers[layer].solid === "live";
@@ -39,8 +23,8 @@ test.describe("comparison styled reference contract", () => {
       await page.waitForLoadState("networkidle");
 
       const section = await styledSection(page);
-      const reactCard = await frameworkCard(section, "React Spectrum stack");
-      const solidCard = await frameworkCard(section, "Solidaria stack");
+      const reactCard = await frameworkPanel(section, "React Spectrum stack");
+      const solidCard = await frameworkPanel(section, "Solidaria stack");
 
       const reactFrame = reactCard.locator(".comparison-reference-frame");
       const solidFrame = solidCard.locator(".comparison-reference-frame");

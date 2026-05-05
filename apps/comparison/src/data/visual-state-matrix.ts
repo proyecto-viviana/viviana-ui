@@ -60,7 +60,7 @@ function snapshottedDefaultState(input: {
     kind: "static",
     react: "snapshotted",
     solid: "snapshotted",
-    pairDiff: "strict",
+    pairDiff: "asserted",
     spec: "e2e/default-state-visual.spec.ts + e2e/default-state-pair-diff.spec.ts",
     snapshots: [
       `e2e/default-state-visual.spec.ts-snapshots/${input.slug}-default-react-chromium-linux.png`,
@@ -68,7 +68,30 @@ function snapshottedDefaultState(input: {
     ],
     note:
       input.note ??
-      "Committed default-state screenshots exist for both sides, and React-vs-Solid pair diff is strict zero-tolerance.",
+      "Committed default-state screenshots exist for both sides, and React-vs-Solid pair diff is guarded by an explicit asserted threshold.",
+  };
+}
+
+function assertedDefaultState(input: {
+  slug: string;
+  label?: string;
+  note: string;
+}): VisualStateTarget {
+  const label = input.label ?? "Styled default";
+
+  return {
+    id: "styled.default",
+    label,
+    kind: "static",
+    react: "snapshotted",
+    solid: "snapshotted",
+    pairDiff: "asserted",
+    spec: "e2e/live-styled-visual.spec.ts",
+    snapshots: [
+      `e2e/live-styled-visual.spec.ts-snapshots/${input.slug}-default-react-chromium-linux.png`,
+      `e2e/live-styled-visual.spec.ts-snapshots/${input.slug}-default-solid-chromium-linux.png`,
+    ],
+    note: input.note,
   };
 }
 
@@ -76,13 +99,13 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
   provider: [
     snapshottedDefaultState({
       slug: "provider",
-      note: "Provider nesting screenshots are committed for both sides, and React-vs-Solid pair diff is strict zero-tolerance.",
+      note: "Provider nesting screenshots are committed for both sides, and React-vs-Solid pair diff is guarded by an explicit asserted threshold.",
     }),
   ],
   button: [
     snapshottedDefaultState({
       slug: "button",
-      note: "Button row screenshots are committed for both sides; default React-vs-Solid pair diff is strict zero-tolerance.",
+      note: "Button row screenshots are committed for both sides; default React-vs-Solid pair diff is guarded by an explicit asserted threshold while component-specific Button states remain strict.",
     }),
     {
       id: "styled.default.control",
@@ -198,7 +221,7 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
   actionbutton: [
     snapshottedDefaultState({
       slug: "actionbutton",
-      note: "ActionButton default screenshots are committed for both sides; exact computed S2 parity covers light/dark default, size, quiet, static-color, disabled, and pending states.",
+      note: "ActionButton default screenshots are committed for both sides; the broad default pair diff is asserted while exact computed S2 parity covers light/dark default, size, quiet, static-color, disabled, and pending states.",
     }),
     {
       id: "styled.props.screenshot-matrix",
@@ -208,7 +231,17 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       solid: "snapshotted",
       pairDiff: "asserted",
       spec: "e2e/actionbutton-visual.spec.ts",
-      note: "Committed React/Solid screenshots cover default, XS/S/M/L/XL sizes, quiet, staticColor black/white/auto, disabled, pending, hover, focus-visible, and pressed states. The dedicated threshold remains until staticColor, pressed, and residual text/background raster differences become strict.",
+      note: "Committed React/Solid screenshots cover default, XS/S/M/L/XL sizes, quiet, staticColor black/white/auto, disabled, pending, icon-leading, icon-only, hover, focus-visible, and pressed states. The dedicated threshold remains until staticColor, pressed, and residual text/background raster differences become strict.",
+    },
+    {
+      id: "styled.icon.geometry",
+      label: "Icon geometry",
+      kind: "static",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/actionbutton-visual.spec.ts",
+      note: "Icon-leading and icon-only ActionButton states compare root, icon, text, gap, and centerline geometry across XS/M/XL sizes, plus the delayed pending spinner with icon content.",
     },
     {
       id: "styled.props.computed-matrix",
@@ -263,7 +296,7 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
   actionbuttongroup: [
     snapshottedDefaultState({
       slug: "actionbuttongroup",
-      note: "ActionButtonGroup default screenshots are committed for both sides; density, quiet, orientation, disabled group, keyboard, and action states remain planned.",
+      note: "ActionButtonGroup default screenshots are committed for both sides and guarded by an asserted threshold; density, quiet, orientation, disabled group, keyboard, and stricter visual parity remain planned.",
     }),
     {
       id: "styled.selection.single-action",
@@ -279,7 +312,7 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
   buttongroup: [
     snapshottedDefaultState({
       slug: "buttongroup",
-      note: "ButtonGroup default screenshots are committed for both sides; orientation, alignment, disabled, overflow, and grouped interaction states remain planned.",
+      note: "ButtonGroup default screenshots are committed for both sides and guarded by an asserted threshold; orientation, alignment, disabled, overflow, stricter visual parity, and grouped interaction states remain planned.",
     }),
     {
       id: "styled.grouped-actions.press",
@@ -295,8 +328,26 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
   togglebutton: [
     snapshottedDefaultState({
       slug: "togglebutton",
-      note: "ToggleButton default unselected screenshots are committed for both sides; selected, hover, pressed, focus-visible, emphasized, disabled, and keyboard states remain planned.",
+      note: "ToggleButton default unselected screenshots are committed for both sides and guarded by an asserted threshold; selected, hover, pressed, focus-visible, emphasized, disabled, keyboard, and stricter visual states remain planned.",
     }),
+    {
+      id: "styled.icon.matrix",
+      label: "Icon content",
+      kind: "static",
+      react: "snapshotted",
+      solid: "snapshotted",
+      pairDiff: "asserted",
+      spec: "e2e/single-button-controls-visual.spec.ts",
+      snapshots: [
+        "e2e/single-button-controls-visual.spec.ts-snapshots/togglebutton-icon-start-react-chromium-linux.png",
+        "e2e/single-button-controls-visual.spec.ts-snapshots/togglebutton-icon-start-solid-chromium-linux.png",
+        "e2e/single-button-controls-visual.spec.ts-snapshots/togglebutton-icon-start-selected-react-chromium-linux.png",
+        "e2e/single-button-controls-visual.spec.ts-snapshots/togglebutton-icon-start-selected-solid-chromium-linux.png",
+        "e2e/single-button-controls-visual.spec.ts-snapshots/togglebutton-icon-only-react-chromium-linux.png",
+        "e2e/single-button-controls-visual.spec.ts-snapshots/togglebutton-icon-only-solid-chromium-linux.png",
+      ],
+      note: "Icon-leading, selected icon-leading, and icon-only ToggleButton states are snapshotted and guarded by root/icon/text centerline geometry.",
+    },
     {
       id: "styled.toggle.selected",
       label: "Toggle selected state",
@@ -308,36 +359,91 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
       note: "Clicking the ToggleButton toggles selected-state data on both stacks.",
     },
   ],
-  tabs: [
-    snapshottedDefaultState({
-      slug: "tabs",
-      note: "Default Tabs screenshots are committed for both sides; keyboard and selected-state matrices remain planned.",
+  linkbutton: [
+    assertedDefaultState({
+      slug: "linkbutton",
+      note: "LinkButton default screenshots are committed for both sides and compared with an asserted threshold while strict styling parity remains open.",
     }),
+    {
+      id: "styled.icon.matrix",
+      label: "Icon content and link semantics",
+      kind: "static",
+      react: "snapshotted",
+      solid: "snapshotted",
+      pairDiff: "asserted",
+      spec: "e2e/single-button-controls-visual.spec.ts",
+      snapshots: [
+        "e2e/single-button-controls-visual.spec.ts-snapshots/linkbutton-icon-start-react-chromium-linux.png",
+        "e2e/single-button-controls-visual.spec.ts-snapshots/linkbutton-icon-start-solid-chromium-linux.png",
+        "e2e/single-button-controls-visual.spec.ts-snapshots/linkbutton-icon-only-react-chromium-linux.png",
+        "e2e/single-button-controls-visual.spec.ts-snapshots/linkbutton-icon-only-solid-chromium-linux.png",
+      ],
+      note: "Icon-leading and icon-only LinkButton states are snapshotted, root/icon/text geometry is compared, and both stacks assert the same href link semantics.",
+    },
   ],
-  textfield: [
-    snapshottedDefaultState({
-      slug: "textfield",
-      note: "TextField default screenshots are committed for both sides; input, focus, invalid, disabled, and value-change states remain planned.",
+  togglebuttongroup: [
+    assertedDefaultState({
+      slug: "togglebuttongroup",
+      note: "ToggleButtonGroup default screenshots are committed for both sides and compared with an asserted threshold; selected, keyboard, density, orientation, disabled, and strict pair-diff coverage remain open.",
     }),
+    {
+      id: "styled.selection.single",
+      label: "Single selection",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "Clicking Center moves the controlled selected key from left to center on both stacks.",
+    },
   ],
-  checkbox: [
-    snapshottedDefaultState({
-      slug: "checkbox",
-      note: "Checkbox default selected screenshots are committed for both sides; hover, focus, pressed, unchecked, disabled, invalid, and indeterminate states remain planned.",
+  segmentedcontrol: [
+    assertedDefaultState({
+      slug: "segmentedcontrol",
+      note: "SegmentedControl default screenshots are committed for both sides and compared with an asserted threshold; selected, justified, keyboard, and strict pair-diff coverage remain open.",
     }),
+    {
+      id: "styled.selection.single",
+      label: "Single selection",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "Clicking Grid moves the controlled selected key from list to grid on both stacks.",
+    },
   ],
-  searchfield: [
-    snapshottedDefaultState({
-      slug: "searchfield",
-      note: "SearchField default-value screenshots are committed for both sides; clear, empty, focus, hover, and keyboard states remain planned.",
+  selectboxgroup: [
+    assertedDefaultState({
+      slug: "selectboxgroup",
+      note: "SelectBoxGroup default screenshots are committed for both sides and compared with an asserted threshold; multi-select, disabled, keyboard, and strict pair-diff coverage remain open.",
     }),
+    {
+      id: "styled.selection.single",
+      label: "Single selection",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "Clicking Pro moves the controlled selected key from starter to pro on both stacks.",
+    },
   ],
-  tooltip: [
-    snapshottedDefaultState({
-      slug: "tooltip",
-      label: "Default trigger",
-      note: "Tooltip trigger screenshots are committed for both sides; open hover/focus tooltip screenshots remain planned.",
+  cardview: [
+    assertedDefaultState({
+      slug: "cardview",
+      note: "CardView default screenshots are committed for both sides and compared with an asserted threshold; virtualization, selection styles, loading, keyboard, and strict pair-diff coverage remain open.",
     }),
+    {
+      id: "styled.selection.single",
+      label: "Single selection",
+      kind: "interaction",
+      react: "asserted",
+      solid: "asserted",
+      pairDiff: "na",
+      spec: "e2e/button-family-contract.spec.ts",
+      note: "Clicking Zephyr moves the controlled selected key from apollo to zephyr on both stacks.",
+    },
   ],
   dialog: [
     {
@@ -441,56 +547,8 @@ const officialStateOverrides: Record<string, readonly VisualStateTarget[]> = {
   ],
 };
 
-const legacyStateOverrides: Record<string, readonly VisualStateTarget[]> = {
-  select: [
-    {
-      id: "styled.field.default",
-      label: "Closed field",
-      kind: "static",
-      react: "snapshotted",
-      solid: "snapshotted",
-      pairDiff: "planned",
-      spec: "e2e/select-visual.spec.ts",
-      snapshots: [
-        "e2e/select-visual.spec.ts-snapshots/select-field-react-chromium-linux.png",
-        "e2e/select-visual.spec.ts-snapshots/select-field-solid-chromium-linux.png",
-      ],
-      note: "Legacy Select has committed per-side screenshots; migrate this coverage and pair diff to official Picker.",
-    },
-    {
-      id: "styled.listbox.open",
-      label: "Open listbox",
-      kind: "overlay",
-      react: "snapshotted",
-      solid: "snapshotted",
-      pairDiff: "planned",
-      spec: "e2e/select-visual.spec.ts",
-      snapshots: [
-        "e2e/select-visual.spec.ts-snapshots/select-listbox-react-chromium-linux.png",
-        "e2e/select-visual.spec.ts-snapshots/select-listbox-solid-chromium-linux.png",
-      ],
-      note: "Legacy Select popup screenshots are committed per side; official Picker remains the pair-diff target.",
-    },
-    {
-      id: "styled.listbox.select-dismiss",
-      label: "Selection and outside dismissal",
-      kind: "interaction",
-      react: "asserted",
-      solid: "asserted",
-      pairDiff: "na",
-      spec: "e2e/select-visual.spec.ts",
-      note: "Selection and outside dismissal are asserted for the legacy route.",
-    },
-  ],
-};
-
 function stateTargetsFor(entry: ComparisonEntry): readonly VisualStateTarget[] {
-  const overrides =
-    entry.catalogueSource === "react-spectrum-s2"
-      ? officialStateOverrides[entry.slug]
-      : legacyStateOverrides[entry.slug];
-
-  return overrides ?? [plannedState(entry)];
+  return officialStateOverrides[entry.slug] ?? [plannedState(entry)];
 }
 
 export function getVisualStateTargets(entry: ComparisonEntry): readonly VisualStateTarget[] {

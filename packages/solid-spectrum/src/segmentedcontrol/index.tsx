@@ -1,0 +1,348 @@
+import {
+  children as resolveChildren,
+  createContext,
+  type JSX,
+  mergeProps,
+  onMount,
+  splitProps,
+  useContext,
+} from "solid-js";
+import {
+  ToggleButton as HeadlessToggleButton,
+  ToggleButtonGroup as HeadlessToggleButtonGroup,
+  useToggleButtonGroupStateContext,
+  type ToggleButtonProps as HeadlessToggleButtonProps,
+  type ToggleButtonGroupProps as HeadlessToggleButtonGroupProps,
+  type ToggleButtonRenderProps,
+} from "@proyecto-viviana/solidaria-components";
+import type { Key } from "@proyecto-viviana/solid-stately";
+import type { StyleString } from "../s2-style";
+import { fontRelative, focusRing, style } from "../s2-style";
+import { mergeStyles } from "../s2-style/runtime";
+import { IconContext } from "../icon/spectrum-icon";
+import { centerBaseline } from "../icon/center-baseline";
+import { useProviderProps } from "../provider";
+
+export interface SegmentedControlProps extends Omit<
+  HeadlessToggleButtonGroupProps,
+  | "children"
+  | "class"
+  | "style"
+  | "selectionMode"
+  | "selectedKeys"
+  | "defaultSelectedKeys"
+  | "onSelectionChange"
+  | "orientation"
+> {
+  /** The content to display in the segmented control. */
+  children?: JSX.Element;
+  /** Whether the items should divide the container width equally. */
+  isJustified?: boolean;
+  /** The id of the currently selected item. */
+  selectedKey?: Key | null;
+  /** The id of the initially selected item. */
+  defaultSelectedKey?: Key;
+  /** Handler that is called when the selection changes. */
+  onSelectionChange?: (id: Key) => void;
+  /** Spectrum-defined generated classes. */
+  styles?: StyleString;
+  /** Additional CSS class name. Use only as a last resort. */
+  UNSAFE_className?: string;
+  /** Additional inline styles. Use only as a last resort. */
+  UNSAFE_style?: JSX.CSSProperties;
+  /** Backward-compatible class alias. Prefer UNSAFE_className for S2 parity. */
+  class?: string;
+}
+
+export interface SegmentedControlItemProps extends Omit<
+  HeadlessToggleButtonProps,
+  "children" | "class" | "style" | "isSelected" | "defaultSelected" | "onChange"
+> {
+  /** The id of the item, matching the value used in SegmentedControl's selectedKey prop. */
+  id: Key;
+  /** The content to display in the segmented control item. */
+  children?: JSX.Element;
+  /** Spectrum-defined generated classes. */
+  styles?: StyleString;
+  /** Additional CSS class name. Use only as a last resort. */
+  UNSAFE_className?: string;
+  /** Additional inline styles. Use only as a last resort. */
+  UNSAFE_style?: JSX.CSSProperties;
+  /** Backward-compatible class alias. Prefer UNSAFE_className for S2 parity. */
+  class?: string;
+}
+
+interface InternalSegmentedControlContextValue {
+  register?: (id: Key) => void;
+  isJustified?: boolean;
+}
+
+const InternalSegmentedControlContext = createContext<InternalSegmentedControlContextValue>({});
+
+const segmentedControl = style({
+  display: "flex",
+  gap: 4,
+  backgroundColor: "[#e8e8e8]",
+  borderRadius: "default",
+  width: "fit",
+});
+
+const segmentedControlItem = style<ToggleButtonRenderProps & { isJustified?: boolean }>({
+  ...focusRing(),
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  position: "relative",
+  minWidth: 0,
+  height: 32,
+  paddingX: 12,
+  borderStyle: "none",
+  borderRadius: "default",
+  backgroundColor: "transparent",
+  color: {
+    default: "neutral-subdued",
+    isSelected: "neutral",
+    isDisabled: "disabled",
+  },
+  cursor: {
+    default: "default",
+    isDisabled: "not-allowed",
+  },
+  flexGrow: {
+    isJustified: 1,
+  },
+  flexBasis: {
+    isJustified: 0,
+  },
+  flexShrink: 0,
+  whiteSpace: "nowrap",
+  userSelect: "none",
+  forcedColorAdjust: "none",
+  zIndex: {
+    default: 1,
+    isSelected: 0,
+  },
+  "--iconPrimary": {
+    type: "fill",
+    value: "currentColor",
+  },
+});
+
+const selectedBackground = style<ToggleButtonRenderProps>({
+  position: "absolute",
+  inset: 0,
+  boxSizing: "border-box",
+  borderStyle: "solid",
+  borderWidth: 2,
+  borderColor: {
+    default: "[#222222]",
+    isDisabled: "disabled",
+  },
+  borderRadius: "lg",
+  backgroundColor: "[#ffffff]",
+  opacity: {
+    default: 0,
+    isSelected: 1,
+  },
+  pointerEvents: "none",
+});
+
+const itemContent = style({
+  position: "relative",
+  zIndex: 1,
+  display: "flex",
+  gap: "text-to-visual",
+  alignItems: "center",
+  minWidth: 0,
+  transition: "default",
+});
+
+const itemText = style({
+  order: 1,
+  truncate: true,
+});
+
+/**
+ * A SegmentedControl is a mutually exclusive group of buttons used for view switching.
+ */
+export function SegmentedControl(props: SegmentedControlProps): JSX.Element {
+  const providerProps = useProviderProps(props);
+  const merged = mergeProps(providerProps, props);
+  const [local, headlessProps] = splitProps(merged, [
+    "children",
+    "isJustified",
+    "selectedKey",
+    "defaultSelectedKey",
+    "onSelectionChange",
+    "styles",
+    "UNSAFE_className",
+    "UNSAFE_style",
+    "class",
+  ]);
+
+  const selectedKeys = () => (local.selectedKey != null ? [local.selectedKey] : undefined);
+  const defaultSelectedKeys = () =>
+    local.defaultSelectedKey != null ? [local.defaultSelectedKey] : undefined;
+  const className = () =>
+    [
+      local.UNSAFE_className,
+      local.class,
+      mergeStyles(segmentedControl.toString() as StyleString, local.styles),
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+  return (
+    <HeadlessToggleButtonGroup
+      {...headlessProps}
+      selectionMode="single"
+      disallowEmptySelection
+      orientation="horizontal"
+      selectedKeys={selectedKeys()}
+      defaultSelectedKeys={defaultSelectedKeys()}
+      onSelectionChange={(keys) => {
+        const firstKey = keys.values().next().value;
+        if (firstKey != null) {
+          local.onSelectionChange?.(firstKey);
+        }
+      }}
+      class={className()}
+      style={local.UNSAFE_style}
+      data-justified={local.isJustified ? "true" : undefined}
+      data-disabled={headlessProps.isDisabled ? "true" : undefined}
+    >
+      {() => (
+        <DefaultSelectionTracker
+          defaultSelectedKey={local.defaultSelectedKey}
+          selectedKey={local.selectedKey}
+          isJustified={local.isJustified}
+        >
+          {local.children}
+        </DefaultSelectionTracker>
+      )}
+    </HeadlessToggleButtonGroup>
+  );
+}
+
+function DefaultSelectionTracker(props: {
+  children?: JSX.Element;
+  defaultSelectedKey?: Key;
+  selectedKey?: Key | null;
+  isJustified?: boolean;
+}): JSX.Element {
+  const state = useToggleButtonGroupStateContext();
+  let isRegistered = props.defaultSelectedKey != null || props.selectedKey != null;
+
+  const contextValue: InternalSegmentedControlContextValue = {
+    register(id: Key) {
+      if (!state || isRegistered) {
+        return;
+      }
+      isRegistered = true;
+      state.toggleKey(id);
+    },
+    get isJustified() {
+      return props.isJustified;
+    },
+  };
+
+  return (
+    <InternalSegmentedControlContext.Provider value={contextValue}>
+      {props.children}
+    </InternalSegmentedControlContext.Provider>
+  );
+}
+
+/**
+ * A SegmentedControlItem represents an option within a SegmentedControl.
+ */
+export function SegmentedControlItem(props: SegmentedControlItemProps): JSX.Element {
+  const context = useContext(InternalSegmentedControlContext);
+  const [local, headlessProps] = splitProps(props, [
+    "children",
+    "styles",
+    "UNSAFE_className",
+    "UNSAFE_style",
+    "class",
+    "id",
+  ]);
+  let buttonElement: HTMLButtonElement | undefined;
+
+  onMount(() => context.register?.(local.id));
+
+  const getClassName = (renderProps: ToggleButtonRenderProps): string =>
+    [
+      local.UNSAFE_className,
+      local.class,
+      mergeStyles(
+        segmentedControlItem({
+          ...renderProps,
+          isJustified: context.isJustified,
+        }),
+        local.styles,
+      ),
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+  const getStyle = (renderProps: ToggleButtonRenderProps): JSX.CSSProperties => {
+    const style = { ...(local.UNSAFE_style ?? {}) } as JSX.CSSProperties;
+    const styleRecord = style as Record<string, string | number | undefined>;
+    const willChange = styleRecord["will-change"] ?? "";
+    styleRecord["will-change"] = `${willChange} transform`.trim();
+
+    if (renderProps.isPressed && buttonElement) {
+      const { width = 0, height = 0 } = buttonElement.getBoundingClientRect() ?? {};
+      const perspective = Math.max(height, width / 3, 24);
+      const transform = style.transform ?? "";
+      style.transform = `${transform} perspective(${perspective}px) translate3d(0, 0, -2px)`.trim();
+    }
+
+    return style;
+  };
+
+  function SegmentContent(renderProps: ToggleButtonRenderProps) {
+    const resolvedChildren = resolveChildren(() => local.children);
+    const content = () => resolvedChildren();
+    const iconContextValue = {
+      slot: "icon",
+      render: centerBaseline({ slot: "icon", styles: style({ order: 0, flexShrink: 0 }) }),
+      styles: style({
+        size: fontRelative(20),
+        flexShrink: 0,
+      }),
+    };
+
+    return (
+      <>
+        <span class={selectedBackground(renderProps)} aria-hidden="true" />
+        <IconContext.Provider value={iconContextValue}>
+          <span class={itemContent}>
+            {typeof content() === "string" ? (
+              <span class={itemText} data-rsp-slot="text">
+                {content()}
+              </span>
+            ) : (
+              content()
+            )}
+          </span>
+        </IconContext.Provider>
+      </>
+    );
+  }
+
+  return (
+    <HeadlessToggleButton
+      {...headlessProps}
+      id={local.id}
+      ref={(element: HTMLButtonElement) => {
+        buttonElement = element;
+      }}
+      class={getClassName}
+      style={getStyle}
+      data-segmented-control-item=""
+    >
+      {(renderProps) => <SegmentContent {...renderProps} />}
+    </HeadlessToggleButton>
+  );
+}

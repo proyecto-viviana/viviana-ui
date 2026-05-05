@@ -111,6 +111,29 @@ const buttonMatrixCases: ButtonMatrixCase[] = [
   },
   { id: "disabled", label: "Button disabled", params: { isDisabled: true } },
   { id: "pending", label: "Button pending", params: { isPending: true } },
+  { id: "icon-start", label: "Button icon start", params: { iconPlacement: "start" } },
+  { id: "icon-end", label: "Button icon end", params: { iconPlacement: "end" } },
+  { id: "icon-only", label: "Button icon only", params: { iconPlacement: "only" } },
+  {
+    id: "icon-start-xl",
+    label: "Button icon start XL",
+    params: { iconPlacement: "start", size: "XL" },
+  },
+  {
+    id: "icon-end-xl",
+    label: "Button icon end XL",
+    params: { iconPlacement: "end", size: "XL" },
+  },
+  {
+    id: "icon-only-xl",
+    label: "Button icon only XL",
+    params: { iconPlacement: "only", size: "XL" },
+  },
+  {
+    id: "icon-start-pending",
+    label: "Button icon start pending",
+    params: { iconPlacement: "start", isPending: true },
+  },
 ];
 
 async function frameworkCard(
@@ -154,6 +177,8 @@ async function buttonFixtures(page: Page, params: Record<string, string | boolea
     solidRow: solidCard.locator(".comparison-button-row"),
     reactButton: reactCard.getByRole("button", { name: "Save" }),
     solidButton: solidCard.getByRole("button", { name: "Save" }),
+    reactButtonElement: reactCard.locator("button").first(),
+    solidButtonElement: solidCard.locator("button").first(),
   };
 }
 
@@ -245,6 +270,118 @@ async function buttonFullContract(button: Locator) {
     button: await buttonComputedContract(button),
     gradient: await buttonGradientContract(button),
   };
+}
+
+async function buttonPendingVisualContract(button: Locator) {
+  const contract = await buttonFullContract(button);
+
+  return {
+    backgroundColor: contract.button.backgroundColor,
+    color: contract.button.color,
+    borderColor: contract.button.borderColor,
+    borderWidth: contract.button.borderWidth,
+    gradientBackground: contract.gradient?.backgroundImage ?? null,
+  };
+}
+
+type ButtonIconPlacement = "start" | "end" | "only";
+type ButtonIconAlignmentCase = {
+  iconPlacement: ButtonIconPlacement;
+  size: "S" | "M" | "L" | "XL";
+};
+
+const buttonIconAlignmentCases: ButtonIconAlignmentCase[] = [
+  { iconPlacement: "start", size: "S" },
+  { iconPlacement: "start", size: "M" },
+  { iconPlacement: "start", size: "L" },
+  { iconPlacement: "start", size: "XL" },
+  { iconPlacement: "end", size: "S" },
+  { iconPlacement: "end", size: "M" },
+  { iconPlacement: "end", size: "L" },
+  { iconPlacement: "end", size: "XL" },
+  { iconPlacement: "only", size: "S" },
+  { iconPlacement: "only", size: "M" },
+  { iconPlacement: "only", size: "L" },
+  { iconPlacement: "only", size: "XL" },
+];
+
+function expectNear(
+  actual: number | null,
+  expected: number | null,
+  tolerance: number,
+  label: string,
+) {
+  expect(actual, `${label} actual value`).not.toBeNull();
+  expect(expected, `${label} expected value`).not.toBeNull();
+  expect(Math.abs((actual ?? 0) - (expected ?? 0)), label).toBeLessThanOrEqual(tolerance);
+}
+
+async function buttonIconAlignmentContract(button: Locator) {
+  return button.evaluate((element) => {
+    const numberOrNull = (value: number | undefined | null) =>
+      value == null ? null : Number(value.toFixed(4));
+    const rootRect = element.getBoundingClientRect();
+    const rootCenterY = rootRect.top + rootRect.height / 2;
+    const svgs = Array.from(element.querySelectorAll("svg"));
+    const icon = svgs.find((svg) => {
+      const styles = window.getComputedStyle(svg);
+      return svg.closest('[role="progressbar"]') == null && styles.visibility !== "hidden";
+    });
+    const label = element.querySelector<HTMLElement>('[data-rsp-slot="text"], [data-slot="label"]');
+    const iconRect = icon?.getBoundingClientRect();
+    const labelRect = label?.getBoundingClientRect();
+    const iconCenterY = iconRect ? iconRect.top + iconRect.height / 2 : null;
+    const labelCenterY = labelRect ? labelRect.top + labelRect.height / 2 : null;
+    const order =
+      iconRect && labelRect ? (iconRect.left < labelRect.left ? "start" : "end") : "only";
+    const gap =
+      iconRect && labelRect
+        ? order === "start"
+          ? labelRect.left - iconRect.right
+          : iconRect.left - labelRect.right
+        : null;
+
+    return {
+      rootHeight: Number(rootRect.height.toFixed(4)),
+      rootWidth: Number(rootRect.width.toFixed(4)),
+      order,
+      iconWidth: numberOrNull(iconRect?.width),
+      iconHeight: numberOrNull(iconRect?.height),
+      iconCenterDelta: numberOrNull(iconCenterY == null ? null : iconCenterY - rootCenterY),
+      labelCenterDelta: numberOrNull(labelCenterY == null ? null : labelCenterY - rootCenterY),
+      iconLabelCenterDelta: numberOrNull(
+        iconCenterY == null || labelCenterY == null ? null : iconCenterY - labelCenterY,
+      ),
+      gap: numberOrNull(gap),
+    };
+  });
+}
+
+async function buttonPendingAlignmentContract(button: Locator) {
+  return button.evaluate((element) => {
+    const numberOrNull = (value: number | undefined | null) =>
+      value == null ? null : Number(value.toFixed(4));
+    const rootRect = element.getBoundingClientRect();
+    const rootCenterY = rootRect.top + rootRect.height / 2;
+    const progress = element.querySelector<HTMLElement>('[role="progressbar"]');
+    const progressRect = progress?.getBoundingClientRect();
+    const progressCenterY = progressRect ? progressRect.top + progressRect.height / 2 : null;
+    const icon = Array.from(element.querySelectorAll("svg")).find(
+      (svg) => svg.closest('[role="progressbar"]') == null,
+    );
+    const label = element.querySelector<HTMLElement>('[data-rsp-slot="text"], [data-slot="label"]');
+
+    return {
+      rootHeight: Number(rootRect.height.toFixed(4)),
+      progressWidth: numberOrNull(progressRect?.width),
+      progressHeight: numberOrNull(progressRect?.height),
+      progressCenterDelta: numberOrNull(
+        progressCenterY == null ? null : progressCenterY - rootCenterY,
+      ),
+      iconVisibility: icon ? window.getComputedStyle(icon).visibility : null,
+      labelVisibility: label ? window.getComputedStyle(label).visibility : null,
+    };
+  });
 }
 
 async function expectButtonParitySettled(reactButton: Locator, solidButton: Locator) {
@@ -377,6 +514,7 @@ test.describe("comparison Button visual parity", () => {
       fillStyle: "outline",
       size: "L",
       staticColor: "white",
+      iconPlacement: "none",
       isDisabled: false,
       isPending: false,
     });
@@ -565,6 +703,112 @@ test.describe("comparison Button visual parity", () => {
           }
         }
       }
+    }
+  });
+
+  test("Button pending styles normalize variant color across variants", async ({ page }) => {
+    const variants = ["primary", "secondary", "accent", "negative", "premium", "genai"] as const;
+    const fillStyles = ["fill", "outline"] as const;
+    let fillPendingBaseline: Awaited<ReturnType<typeof buttonPendingVisualContract>> | undefined;
+    let outlinePendingBaseline: Awaited<ReturnType<typeof buttonPendingVisualContract>> | undefined;
+
+    for (const fillStyle of fillStyles) {
+      for (const variant of variants) {
+        const fixtures = await buttonFixtures(page, { variant, fillStyle, isPending: true });
+
+        await expect(fixtures.reactRow.getByRole("progressbar", { name: "pending" })).toBeVisible();
+        await expect(fixtures.solidRow.getByRole("progressbar", { name: "pending" })).toBeVisible();
+        await expectButtonParitySettled(fixtures.reactButtonElement, fixtures.solidButtonElement);
+
+        const solidPending = await buttonPendingVisualContract(fixtures.solidButtonElement);
+        const shouldUseOutlineBaseline =
+          fillStyle === "outline" && variant !== "premium" && variant !== "genai";
+
+        if (shouldUseOutlineBaseline) {
+          outlinePendingBaseline ??= solidPending;
+          expect(solidPending).toEqual(outlinePendingBaseline);
+        } else {
+          fillPendingBaseline ??= solidPending;
+          expect(solidPending).toEqual(fillPendingBaseline);
+        }
+      }
+    }
+  });
+
+  test("Button icon geometry is aligned with React Spectrum across placements and sizes", async ({
+    page,
+  }) => {
+    for (const item of buttonIconAlignmentCases) {
+      await test.step(`${item.iconPlacement} ${item.size}`, async () => {
+        const fixtures = await buttonFixtures(page, item);
+        const react = await buttonIconAlignmentContract(fixtures.reactButtonElement);
+        const solid = await buttonIconAlignmentContract(fixtures.solidButtonElement);
+
+        expect(solid.order).toBe(react.order);
+        expectNear(solid.rootHeight, react.rootHeight, 0.5, "button root height");
+        expectNear(solid.iconWidth, react.iconWidth, 0.5, "icon width");
+        expectNear(solid.iconHeight, react.iconHeight, 0.5, "icon height");
+        expectNear(solid.iconCenterDelta, react.iconCenterDelta, 0.75, "icon vertical centerline");
+        expect(
+          Math.abs(solid.iconCenterDelta ?? 0),
+          "solid icon root centerline",
+        ).toBeLessThanOrEqual(1);
+
+        if (item.iconPlacement === "only") {
+          expect(solid.labelCenterDelta).toBeNull();
+          expect(solid.gap).toBeNull();
+        } else {
+          expectNear(
+            solid.labelCenterDelta,
+            react.labelCenterDelta,
+            0.75,
+            "text vertical centerline",
+          );
+          expectNear(
+            solid.iconLabelCenterDelta,
+            react.iconLabelCenterDelta,
+            0.75,
+            "icon-to-text vertical centerline",
+          );
+          expectNear(solid.gap, react.gap, 1, "icon text gap");
+        }
+      });
+    }
+  });
+
+  test("Button pending indicator remains centered when icon content is present", async ({
+    page,
+  }) => {
+    for (const item of [
+      { iconPlacement: "start", size: "M" },
+      { iconPlacement: "end", size: "M" },
+      { iconPlacement: "only", size: "M" },
+      { iconPlacement: "start", size: "XL" },
+    ] satisfies ButtonIconAlignmentCase[]) {
+      await test.step(`${item.iconPlacement} ${item.size}`, async () => {
+        const fixtures = await buttonFixtures(page, { ...item, isPending: true });
+        await expect(fixtures.reactRow.getByRole("progressbar", { name: "pending" })).toBeVisible();
+        await expect(fixtures.solidRow.getByRole("progressbar", { name: "pending" })).toBeVisible();
+
+        const react = await buttonPendingAlignmentContract(fixtures.reactButtonElement);
+        const solid = await buttonPendingAlignmentContract(fixtures.solidButtonElement);
+
+        expectNear(solid.rootHeight, react.rootHeight, 0.5, "pending button root height");
+        expectNear(solid.progressWidth, react.progressWidth, 0.5, "pending progress width");
+        expectNear(solid.progressHeight, react.progressHeight, 0.5, "pending progress height");
+        expectNear(
+          solid.progressCenterDelta,
+          react.progressCenterDelta,
+          0.75,
+          "pending progress vertical centerline",
+        );
+        expect(
+          Math.abs(solid.progressCenterDelta ?? 0),
+          "solid pending progress root centerline",
+        ).toBeLessThanOrEqual(1);
+        expect(solid.iconVisibility).toBe(react.iconVisibility);
+        expect(solid.labelVisibility).toBe(react.labelVisibility);
+      });
     }
   });
 

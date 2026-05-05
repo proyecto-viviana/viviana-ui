@@ -1,7 +1,6 @@
 import {
   children as resolveChildren,
   type JSX,
-  createEffect,
   createSignal,
   mergeProps,
   splitProps,
@@ -11,6 +10,8 @@ import {
   type ButtonRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import type { ButtonFillStyle, ButtonProps, ButtonSize, ButtonVariant } from "./types";
+import { fontRelative, style } from "../s2-style";
+import { mergeStyles } from "../s2-style/runtime";
 import { useProviderProps } from "../provider";
 import {
   s2Button,
@@ -19,16 +20,30 @@ import {
   s2ButtonText,
   type S2ButtonRenderState,
 } from "./s2-button-styles";
+import { s2ProgressCircleIndeterminateAnimation } from "./s2-progress-circle-animation";
+import { useButtonGroupContext } from "./group-context";
+import { createPendingState } from "./pending-state";
+import { IconContext } from "../icon/spectrum-icon";
+import { centerBaseline } from "../icon/center-baseline";
 
 export function Button(props: ButtonProps): JSX.Element {
   const providerProps = useProviderProps(props);
+  const groupContext = useButtonGroupContext();
   const defaultProps: Partial<ButtonProps> = {
     variant: "primary",
     size: "M",
     fillStyle: "fill",
   };
+  const groupProps: Partial<ButtonProps> = {
+    get size() {
+      return groupContext?.size;
+    },
+    get isDisabled() {
+      return groupContext?.isDisabled;
+    },
+  };
 
-  const merged = mergeProps(defaultProps, providerProps, props);
+  const merged = mergeProps(defaultProps, providerProps, groupProps, props);
 
   const [local, headlessProps] = splitProps(merged, [
     "variant",
@@ -45,19 +60,11 @@ export function Button(props: ButtonProps): JSX.Element {
     "onHoverChange",
   ]);
 
-  const [isProgressVisible, setIsProgressVisible] = createSignal(!!local.isPending);
+  const { isProgressVisible } = createPendingState(() => local.isPending);
   const [isHovered, setIsHovered] = createSignal(false);
   const [isPressed, setIsPressed] = createSignal(false);
-  const resolvedChildren = resolveChildren(() => local.children);
+  const mergedStyles = () => mergeStyles(groupContext?.styles, local.styles);
   let buttonElement: HTMLButtonElement | undefined;
-
-  createEffect(() => {
-    if (local.isPending) {
-      setIsProgressVisible(true);
-    } else {
-      setIsProgressVisible(false);
-    }
-  });
 
   const variant = (): ButtonVariant => local.variant ?? "primary";
   const fillStyle = (): ButtonFillStyle => local.fillStyle ?? "fill";
@@ -80,7 +87,7 @@ export function Button(props: ButtonProps): JSX.Element {
     isPressed: renderProps.isPressed,
     isFocused: renderProps.isFocused,
     isFocusVisible: renderProps.isFocusVisible,
-    isDisabled: renderProps.isDisabled,
+    isDisabled: renderProps.isDisabled || isProgressVisible(),
     isPending: local.isPending,
   });
 
@@ -96,7 +103,7 @@ export function Button(props: ButtonProps): JSX.Element {
           staticColor: local.staticColor,
           isStaticColor: isStaticColor(),
         },
-        local.styles,
+        mergedStyles(),
       ),
     ]
       .filter(Boolean)
@@ -105,7 +112,7 @@ export function Button(props: ButtonProps): JSX.Element {
   const getGradientState = (): S2ButtonRenderState => ({
     isHovered: isHovered(),
     isPressed: isPressed(),
-    isDisabled: isDisabled() || local.isPending,
+    isDisabled: isDisabled() || isProgressVisible(),
     isPending: local.isPending,
   });
 
@@ -124,6 +131,102 @@ export function Button(props: ButtonProps): JSX.Element {
 
     return style;
   };
+
+  function ButtonContent() {
+    const iconContextValue = {
+      slot: "icon",
+      render: centerBaseline({
+        slot: "icon",
+        styles: () =>
+          style({
+            order: 0,
+            visibility: {
+              isProgressVisible: "hidden",
+            },
+          })({ isProgressVisible: isProgressVisible() }),
+      }),
+      styles: () =>
+        style({
+          size: fontRelative(20),
+          marginStart: "--iconMargin",
+          flexShrink: 0,
+        }),
+    };
+
+    function ResolvedContent() {
+      const resolvedChildren = resolveChildren(() => local.children);
+      const content = () => resolvedChildren();
+
+      return typeof content() === "string" ? (
+        <span
+          class={`${s2ButtonText({ isProgressVisible: isProgressVisible() })} ${style({ order: 1 })}`}
+          data-rsp-slot="text"
+        >
+          {content()}
+        </span>
+      ) : (
+        content()
+      );
+    }
+
+    return (
+      <>
+        {variant() === "genai" || variant() === "premium" ? (
+          <span
+            class={s2ButtonGradient({
+              ...getGradientState(),
+              variant: variant() as Extract<ButtonVariant, "premium" | "genai">,
+            })}
+          />
+        ) : null}
+        <IconContext.Provider value={iconContextValue}>
+          <ResolvedContent />
+          {local.isPending ? (
+            <div
+              class={s2ButtonPendingIndicator({
+                isPending: local.isPending,
+                isProgressVisible: isProgressVisible(),
+              })}
+            >
+              <div
+                class={pendingCircleClass()}
+                role="progressbar"
+                data-rac=""
+                aria-label="pending"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <svg fill="none" width="100%" height="100%">
+                  <circle
+                    cx="50%"
+                    cy="50%"
+                    r="calc(50% - 0.0625rem)"
+                    class="  VRWHrbc13 VlUG8Hlc13 _V7m7Gv13"
+                  />
+                  <circle
+                    cx="50%"
+                    cy="50%"
+                    r="calc(50% - 0.0625rem)"
+                    class="  Vf13 Vla13 _V7m7Gv13 _Vlai5a013"
+                  />
+                  <circle
+                    cx="50%"
+                    cy="50%"
+                    r="calc(50% - 0.0625rem)"
+                    class="  Vh13 VlUG8Hlc13 _Sa13 _0d13 _V7m7Gv13"
+                    style={{ animation: s2ProgressCircleIndeterminateAnimation }}
+                    pathLength="100"
+                    stroke-dasharray="100 200"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+            </div>
+          ) : null}
+        </IconContext.Provider>
+      </>
+    );
+  }
 
   return (
     <HeadlessButton
@@ -153,72 +256,7 @@ export function Button(props: ButtonProps): JSX.Element {
       data-size={size()}
       data-static-color={local.staticColor || undefined}
     >
-      {() => {
-        const content = () => resolvedChildren();
-        return (
-          <>
-            {variant() === "genai" || variant() === "premium" ? (
-              <span
-                class={s2ButtonGradient({
-                  ...getGradientState(),
-                  variant: variant() as Extract<ButtonVariant, "premium" | "genai">,
-                })}
-              />
-            ) : null}
-            {typeof content() === "string" ? (
-              <span
-                class={s2ButtonText({ isProgressVisible: isProgressVisible() })}
-                data-rsp-slot="text"
-              >
-                {content()}
-              </span>
-            ) : (
-              content()
-            )}
-            {local.isPending ? (
-              <div
-                class={s2ButtonPendingIndicator({
-                  isPending: local.isPending,
-                  isProgressVisible: isProgressVisible(),
-                })}
-              >
-                <div
-                  class={pendingCircleClass()}
-                  role="progressbar"
-                  data-rac=""
-                  aria-label="pending"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                >
-                  <svg fill="none" width="100%" height="100%">
-                    <circle
-                      cx="50%"
-                      cy="50%"
-                      r="calc(50% - 0.0625rem)"
-                      class="  VRWHrbc13 VlUG8Hlc13 _V7m7Gv13"
-                    />
-                    <circle
-                      cx="50%"
-                      cy="50%"
-                      r="calc(50% - 0.0625rem)"
-                      class="  Vf13 Vla13 _V7m7Gv13 _Vlai5a013"
-                    />
-                    <circle
-                      cx="50%"
-                      cy="50%"
-                      r="calc(50% - 0.0625rem)"
-                      class="  Vh13 VlUG8Hlc13 _Sa13 _0d13 _V7m7Gv13"
-                      pathLength="100"
-                      stroke-dasharray="100 200"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-            ) : null}
-          </>
-        );
-      }}
+      <ButtonContent />
     </HeadlessButton>
   );
 }

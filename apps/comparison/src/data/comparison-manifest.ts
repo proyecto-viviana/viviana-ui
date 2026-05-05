@@ -9,7 +9,7 @@ export type ComponentStatus = "parity" | "composition" | "tracked-gap";
 export type ComparisonSlug = string;
 export type ParityStatus = "matched" | "partial" | "gap";
 export type DemoStatus = "live" | "tracked" | "missing" | "na";
-export type CatalogueSource = "react-spectrum-s2" | "legacy-solidaria";
+export type CatalogueSource = "react-spectrum-s2";
 
 export interface LayerTrack {
   label: string;
@@ -22,7 +22,7 @@ export interface LayerTrack {
 export interface ComparisonEntry {
   slug: ComparisonSlug;
   title: string;
-  category: ReactSpectrumCatalogueCategory | "Legacy";
+  category: ReactSpectrumCatalogueCategory;
   componentStatus: ComponentStatus;
   summary: string;
   parity: ParityStatus;
@@ -96,30 +96,6 @@ function createGapEntry(input: {
         "State coverage must be component-specific rather than blindly canonical.",
       ),
     },
-  };
-}
-
-function legacyEntry(input: {
-  slug: string;
-  title: string;
-  category: string;
-  summary: string;
-  parity?: ParityStatus;
-  componentStatus?: ComponentStatus;
-  gapSummary: string[];
-  layers: Record<ComparisonLayerId, LayerTrack>;
-}): ComparisonEntry {
-  return {
-    slug: input.slug,
-    title: input.title,
-    category: "Legacy",
-    componentStatus: input.componentStatus ?? "tracked-gap",
-    summary: input.summary,
-    parity: input.parity ?? "partial",
-    priority: "live",
-    catalogueSource: "legacy-solidaria",
-    gapSummary: input.gapSummary,
-    layers: input.layers,
   };
 }
 
@@ -249,10 +225,10 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     layers: {
       styled: layerTrack(
         "Styled Button",
-        "React Spectrum Button vs solidaria-components Button using the comparison Spectrum skin adapter.",
+        "React Spectrum Button vs Solid Spectrum Button.",
         "live",
         "live",
-        "Solid keeps behavior in solidaria-components and maps stable classes, data states, slots, variant attributes, and CSS variables to the comparison skin.",
+        "Solid renders @proyecto-viviana/solid-spectrum Button with S2-derived generated styles and solidaria-components behavior.",
       ),
       components: layerTrack(
         "Component Button",
@@ -282,12 +258,10 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     slug: "actionbutton",
     title: "ActionButton",
     category: "Components",
-    summary:
-      "Task-oriented ActionButton reference mounted with React Spectrum and the Solid Spectrum skin.",
-    styledSummary:
-      "React Spectrum ActionButton vs Solid action button behavior with Spectrum-shaped styling.",
+    summary: "Task-oriented ActionButton reference mounted with React Spectrum and Solid Spectrum.",
+    styledSummary: "React Spectrum ActionButton vs Solid Spectrum ActionButton.",
     styledNote:
-      "React uses @react-spectrum/s2 ActionButton directly; Solid uses solidaria button behavior under the comparison Spectrum skin.",
+      "React uses @react-spectrum/s2 ActionButton directly; Solid uses @proyecto-viviana/solid-spectrum ActionButton with S2-derived styles.",
   }),
 
   actionbuttongroup: styledLiveOfficialEntry({
@@ -295,10 +269,9 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     title: "ActionButtonGroup",
     category: "Components",
     summary: "Related action collection with single selection and action tracking on both stacks.",
-    styledSummary:
-      "React Spectrum ActionButtonGroup vs Solid action group behavior with the comparison Spectrum skin.",
+    styledSummary: "React Spectrum ActionButtonGroup vs Solid Spectrum ActionButtonGroup.",
     styledNote:
-      "React uses @react-spectrum/s2 ActionButtonGroup and ActionButton directly; Solid uses solidaria collection behavior under the comparison Spectrum skin.",
+      "React uses @react-spectrum/s2 ActionButtonGroup and ActionButton directly; Solid uses @proyecto-viviana/solid-spectrum ActionButtonGroup and ActionButton.",
   }),
 
   buttongroup: styledLiveOfficialEntry({
@@ -306,9 +279,19 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     title: "ButtonGroup",
     category: "Components",
     summary: "Grouped related buttons mounted on both stacks for layout and overflow parity work.",
-    styledSummary: "React Spectrum ButtonGroup vs Solid grouped Spectrum-skinned buttons.",
+    styledSummary: "React Spectrum ButtonGroup vs Solid Spectrum ButtonGroup.",
     styledNote:
-      "React uses @react-spectrum/s2 ButtonGroup directly; Solid uses the Solid Spectrum grouping wrapper with Spectrum-skinned buttons.",
+      "React uses @react-spectrum/s2 ButtonGroup directly; Solid uses @proyecto-viviana/solid-spectrum ButtonGroup and Button.",
+  }),
+
+  linkbutton: styledLiveOfficialEntry({
+    slug: "linkbutton",
+    title: "LinkButton",
+    category: "Components",
+    summary: "Navigation link rendered with S2 Button visual treatment on both stacks.",
+    styledSummary: "React Spectrum LinkButton vs Solid Spectrum LinkButton.",
+    styledNote:
+      "React uses @react-spectrum/s2 LinkButton directly; Solid uses @proyecto-viviana/solid-spectrum LinkButton with S2-derived button styles and solidaria-components link behavior.",
   }),
 
   togglebutton: styledLiveOfficialEntry({
@@ -316,10 +299,50 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     title: "ToggleButton",
     category: "Components",
     summary: "Selectable action button mounted on both stacks with controlled selected-state data.",
-    styledSummary:
-      "React Spectrum ToggleButton vs Solid toggle button behavior with Spectrum-shaped styling.",
+    styledSummary: "React Spectrum ToggleButton vs Solid Spectrum ToggleButton.",
     styledNote:
-      "React uses @react-spectrum/s2 ToggleButton directly; Solid uses solidaria toggle behavior under the comparison Spectrum skin.",
+      "React uses @react-spectrum/s2 ToggleButton directly; Solid uses @proyecto-viviana/solid-spectrum ToggleButton with S2-derived styles.",
+  }),
+
+  togglebuttongroup: styledLiveOfficialEntry({
+    slug: "togglebuttongroup",
+    title: "ToggleButtonGroup",
+    category: "Components",
+    summary:
+      "Related selectable ToggleButtons mounted on both stacks with controlled single-selection state.",
+    styledSummary: "React Spectrum ToggleButtonGroup vs Solid Spectrum ToggleButtonGroup.",
+    styledNote:
+      "React uses @react-spectrum/s2 ToggleButtonGroup and ToggleButton directly; Solid uses @proyecto-viviana/solid-spectrum ToggleButtonGroup and ToggleButton with S2-derived group styles.",
+  }),
+
+  segmentedcontrol: styledLiveOfficialEntry({
+    slug: "segmentedcontrol",
+    title: "SegmentedControl",
+    category: "Components",
+    summary: "Mutually exclusive view-switching control mounted on both stacks.",
+    styledSummary: "React Spectrum SegmentedControl vs Solid Spectrum SegmentedControl.",
+    styledNote:
+      "React uses @react-spectrum/s2 SegmentedControl and SegmentedControlItem directly; Solid uses @proyecto-viviana/solid-spectrum SegmentedControl and SegmentedControlItem over the shared headless toggle group semantics.",
+  }),
+
+  selectboxgroup: styledLiveOfficialEntry({
+    slug: "selectboxgroup",
+    title: "SelectBoxGroup",
+    category: "Components",
+    summary: "Selectable card list mounted on both stacks with controlled single selection.",
+    styledSummary: "React Spectrum SelectBoxGroup vs Solid Spectrum SelectBoxGroup.",
+    styledNote:
+      "React uses @react-spectrum/s2 SelectBoxGroup and SelectBox directly; Solid uses @proyecto-viviana/solid-spectrum SelectBoxGroup and SelectBox over the shared headless ListBox semantics.",
+  }),
+
+  cardview: styledLiveOfficialEntry({
+    slug: "cardview",
+    title: "CardView",
+    category: "Components",
+    summary: "Selectable card collection mounted on both stacks with controlled single selection.",
+    styledSummary: "React Spectrum CardView vs Solid Spectrum CardView.",
+    styledNote:
+      "React uses @react-spectrum/s2 CardView and Card directly; Solid uses @proyecto-viviana/solid-spectrum CardView and Card over the shared headless GridList semantics.",
   }),
 
   tabs: {
@@ -335,16 +358,17 @@ const entryOverrides: Record<string, ComparisonEntry> = {
     parity: "partial",
     priority: "live",
     gapSummary: [
-      "React and Solid styled tab demos are both mounted directly in the comparison app.",
-      "State matrix and visual baselines still need expansion.",
+      "React styled tab demo is mounted from @react-spectrum/s2.",
+      "Solid styled tab wiring was removed from the comparison app until it renders the real solid-spectrum component again.",
+      "State matrix and visual baselines still need expansion after Solid wiring returns.",
     ],
     layers: {
       styled: layerTrack(
         "Styled Tabs",
         "React Spectrum Tabs vs Solid Spectrum Tabs.",
         "live",
-        "live",
-        "React and Solid styled tab demos are both mounted directly in the comparison app.",
+        "missing",
+        "Solid styled Tabs are not live until the route imports and renders @proyecto-viviana/solid-spectrum Tabs.",
       ),
       components: layerTrack(
         "Component Tabs",
@@ -395,7 +419,10 @@ const entryOverrides: Record<string, ComparisonEntry> = {
         parity: "partial",
         priority: "live",
         gapSummary: [
-          "Initial live island added for comparison coverage.",
+          title === "Toast"
+            ? "React Spectrum Toast reference remains tracked."
+            : "React styled island remains mounted from @react-spectrum/s2.",
+          "Solid styled wiring was removed from the comparison app until it renders the real solid-spectrum component again.",
           "Detailed state matrices and strict visual assertions remain incomplete.",
         ],
         layers: {
@@ -403,10 +430,10 @@ const entryOverrides: Record<string, ComparisonEntry> = {
             `Styled ${title}`,
             `React Spectrum ${title} vs Solid styled implementation.`,
             title === "Toast" ? "tracked" : "live",
-            "live",
+            "missing",
             title === "Toast"
-              ? "React Spectrum Toast reference remains tracked while Solid styled toast is live."
-              : "Both runtime islands are mounted for parity review.",
+              ? "Solid styled Toast is not live until the route imports and renders @proyecto-viviana/solid-spectrum Toast."
+              : `Solid styled ${title} is not live until the route imports and renders the real solid-spectrum component.`,
           ),
           components: layerTrack(
             `Component ${title}`,
@@ -435,132 +462,6 @@ const entryOverrides: Record<string, ComparisonEntry> = {
   ),
 };
 
-const legacyEntries: ComparisonEntry[] = [
-  legacyEntry({
-    slug: "select",
-    title: "Select",
-    category: "Legacy",
-    summary:
-      "Legacy Solidaria Select route retained while official React Spectrum Picker coverage is added.",
-    gapSummary: [
-      "React Spectrum S2 calls this surface Picker.",
-      "Migrate this route into the official Picker entry before treating it as complete.",
-    ],
-    layers: createLegacyLiveLayers("Select"),
-  }),
-  legacyEntry({
-    slug: "radio",
-    title: "Radio",
-    category: "Legacy",
-    summary: "Legacy route retained while official React Spectrum RadioGroup coverage is added.",
-    gapSummary: [
-      "React Spectrum S2 exposes RadioGroup as the catalogue component.",
-      "Migrate the current demo into the official RadioGroup entry.",
-    ],
-    layers: createLegacyLiveLayers("Radio"),
-  }),
-  legacyEntry({
-    slug: "table",
-    title: "Table",
-    category: "Legacy",
-    summary: "Legacy route retained while official React Spectrum TableView coverage is added.",
-    gapSummary: [
-      "React Spectrum S2 exposes TableView as the catalogue component.",
-      "Migrate collection fixtures into the official TableView entry.",
-    ],
-    layers: createLegacyTrackedLayers("Table"),
-  }),
-  legacyEntry({
-    slug: "tree",
-    title: "Tree",
-    category: "Legacy",
-    summary: "Legacy route retained while official React Spectrum TreeView coverage is added.",
-    gapSummary: [
-      "React Spectrum S2 exposes TreeView as the catalogue component.",
-      "Migrate hierarchical fixtures into the official TreeView entry.",
-    ],
-    layers: createLegacyTrackedLayers("Tree"),
-  }),
-  legacyEntry({
-    slug: "toolbar",
-    title: "Toolbar",
-    category: "Legacy",
-    summary:
-      "Legacy route retained for lower-layer toolbar behavior while official ActionButtonGroup coverage is expanded.",
-    gapSummary: [
-      "React Spectrum S2 exposes ActionButtonGroup, not Toolbar, as the styled catalogue surface.",
-      "Keep this route for lower-layer parity until ActionButtonGroup is complete.",
-    ],
-    layers: createLegacyLiveLayers("Toolbar"),
-  }),
-];
-
-function createLegacyLiveLayers(title: string): Record<ComparisonLayerId, LayerTrack> {
-  return {
-    styled: layerTrack(
-      `Styled ${title}`,
-      `Existing ${title} comparison island.`,
-      "live",
-      "live",
-      "Legacy live route retained for continuity while official S2 catalogue routes are filled.",
-    ),
-    components: layerTrack(
-      `Component ${title}`,
-      "Component-layer parity target.",
-      "live",
-      "tracked",
-      "Tracked until the official S2 catalogue component owns this surface.",
-    ),
-    headless: layerTrack(
-      `Headless ${title}`,
-      "ARIA behavior hooks below the component layer.",
-      "tracked",
-      "tracked",
-      "Tracked.",
-    ),
-    state: layerTrack(
-      `${title} State`,
-      "State-layer parity where a dedicated state primitive exists.",
-      "tracked",
-      "tracked",
-      "Tracked.",
-    ),
-  };
-}
-
-function createLegacyTrackedLayers(title: string): Record<ComparisonLayerId, LayerTrack> {
-  return {
-    styled: layerTrack(
-      `Styled ${title}`,
-      `Legacy ${title} comparison placeholder.`,
-      "tracked",
-      "tracked",
-      "Tracked until the official S2 catalogue component owns this surface.",
-    ),
-    components: layerTrack(
-      `Component ${title}`,
-      "Component-layer parity target.",
-      "tracked",
-      "tracked",
-      "Tracked.",
-    ),
-    headless: layerTrack(
-      `Headless ${title}`,
-      "ARIA behavior hooks below the component layer.",
-      "tracked",
-      "tracked",
-      "Tracked.",
-    ),
-    state: layerTrack(
-      `${title} State`,
-      "State-layer parity where a dedicated state primitive exists.",
-      "tracked",
-      "tracked",
-      "Tracked.",
-    ),
-  };
-}
-
 const officialEntries = reactSpectrumCatalogue.map((catalogueEntry) => {
   const baseEntry = createGapEntry({
     slug: catalogueEntry.slug,
@@ -572,7 +473,7 @@ const officialEntries = reactSpectrumCatalogue.map((catalogueEntry) => {
   return entryOverrides[catalogueEntry.slug] ?? baseEntry;
 });
 
-export const comparisonEntries: ComparisonEntry[] = [...officialEntries, ...legacyEntries];
+export const comparisonEntries: ComparisonEntry[] = officialEntries;
 
 export const officialComparisonEntries = comparisonEntries.filter(
   (entry) => entry.catalogueSource === "react-spectrum-s2",

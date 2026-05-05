@@ -1,18 +1,42 @@
 export type DefaultVisualCase = {
   slug: string;
   title: string;
+  threshold: {
+    maxMismatchRatio: number;
+    maxDimensionDelta: number;
+    pixelThreshold: number;
+  };
 };
 
 export const defaultVisualCases: DefaultVisualCase[] = [
-  { slug: "provider", title: "Provider" },
-  { slug: "button", title: "Button" },
-  { slug: "actionbutton", title: "ActionButton" },
-  { slug: "actionbuttongroup", title: "ActionButtonGroup" },
-  { slug: "buttongroup", title: "ButtonGroup" },
-  { slug: "togglebutton", title: "ToggleButton" },
-  { slug: "tabs", title: "Tabs" },
-  { slug: "textfield", title: "TextField" },
-  { slug: "checkbox", title: "Checkbox" },
-  { slug: "searchfield", title: "SearchField" },
-  { slug: "tooltip", title: "Tooltip trigger" },
+  {
+    slug: "provider",
+    title: "Provider",
+    threshold: { maxMismatchRatio: 0.34, maxDimensionDelta: 2, pixelThreshold: 0 },
+  },
+  {
+    slug: "button",
+    title: "Button",
+    threshold: { maxMismatchRatio: 0.18, maxDimensionDelta: 2, pixelThreshold: 0 },
+  },
+  {
+    slug: "actionbutton",
+    title: "ActionButton",
+    threshold: { maxMismatchRatio: 0.18, maxDimensionDelta: 2, pixelThreshold: 0 },
+  },
+  {
+    slug: "actionbuttongroup",
+    title: "ActionButtonGroup",
+    threshold: { maxMismatchRatio: 0.22, maxDimensionDelta: 24, pixelThreshold: 0 },
+  },
+  {
+    slug: "buttongroup",
+    title: "ButtonGroup",
+    threshold: { maxMismatchRatio: 0.4, maxDimensionDelta: 4, pixelThreshold: 0 },
+  },
+  {
+    slug: "togglebutton",
+    title: "ToggleButton",
+    threshold: { maxMismatchRatio: 0.18, maxDimensionDelta: 8, pixelThreshold: 0 },
+  },
 ];

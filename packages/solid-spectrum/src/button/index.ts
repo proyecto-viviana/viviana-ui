@@ -1,9 +1,12 @@
 export { Button } from "./Button";
 export type { ButtonFillStyle, ButtonProps, ButtonSize, ButtonVariant, StaticColor } from "./types";
+export { LinkButton } from "./LinkButton";
+export type { LinkButtonProps } from "./LinkButton";
 export { ToggleButton } from "./ToggleButton";
 export type { ToggleButtonProps, ToggleButtonSize } from "./ToggleButton";
 export { ActionButton } from "./ActionButton";
 export type { ActionButtonProps, ActionButtonSize } from "./ActionButton";
+export type { ActionButtonDensity, ActionButtonOrientation } from "./group-context";
 export { ClearButton } from "./ClearButton";
 export type { ClearButtonProps, ClearButtonSize } from "./ClearButton";
 export { FieldButton } from "./FieldButton";

@@ -5,7 +5,6 @@ export const comparisonContractVersion = "spectrum-reference-v1";
 export type ComparisonFramework = "react" | "solid";
 export type ComparisonReferenceKind =
   | "react-spectrum"
-  | "spectrum-skin"
   | "solid-spectrum"
   | "react-aria-components"
   | "solidaria-components"
@@ -51,33 +50,13 @@ export const comparisonActionItems = [
   { id: "underline", label: "Underline" },
 ] as const;
 
-export const comparisonSpectrumSkin = {
-  rootClass: "comparison-spectrum-skin",
-  actionButtonClass: "solidaria-Button comparison-spectrum-ActionButton",
-  actionButtonGroupClass: "solidaria-ActionButtonGroup comparison-spectrum-ActionButtonGroup",
-  buttonGroupClass: "solidaria-ButtonGroup comparison-spectrum-ButtonGroup",
-  toggleButtonClass:
-    "solidaria-ToggleButton comparison-spectrum-ActionButton comparison-spectrum-ToggleButton",
-  labelClass: "comparison-spectrum-Button-label",
-  dialogClass: "solidaria-Dialog comparison-spectrum-Dialog",
-  dialogTitleClass: "solidaria-Heading comparison-spectrum-Dialog-title",
-  dialogBodyClass: "comparison-spectrum-Dialog-body",
-  fieldRootClass: "solidaria-TextField comparison-spectrum-Field",
-  fieldLabelClass: "solidaria-Label comparison-spectrum-Field-label",
-  fieldInputClass: "solidaria-Input comparison-spectrum-Field-input",
-  selectRootClass: "solidaria-Select comparison-spectrum-Select",
-  selectTriggerClass:
-    "solidaria-Select-trigger comparison-spectrum-Field-input comparison-spectrum-Select-trigger",
-  selectValueClass: "solidaria-Select-value comparison-spectrum-Select-value",
-  selectListBoxClass: "solidaria-Select-listbox comparison-spectrum-Select-listbox",
-  selectOptionClass: "solidaria-Select-option comparison-spectrum-Select-option",
-} as const;
-
 const nativeSolidSpectrumStyledSlugs = new Set<ComparisonSlug>([
   "provider",
   "button",
-  "tabs",
-  "toast",
+  "actionbutton",
+  "actionbuttongroup",
+  "buttongroup",
+  "togglebutton",
 ]);
 
 export function getComparisonReferenceKind(
@@ -90,7 +69,7 @@ export function getComparisonReferenceKind(
       return "react-spectrum";
     }
 
-    return nativeSolidSpectrumStyledSlugs.has(componentSlug) ? "solid-spectrum" : "spectrum-skin";
+    return nativeSolidSpectrumStyledSlugs.has(componentSlug) ? "solid-spectrum" : "unwired";
   }
 
   if (layer === "components") {

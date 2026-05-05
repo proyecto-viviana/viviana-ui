@@ -5,6 +5,9 @@ import {
   type ButtonRenderProps,
 } from "@proyecto-viviana/solidaria-components";
 import { useProviderProps } from "../provider";
+import { IconContext } from "../icon/spectrum-icon";
+import { centerBaseline } from "../icon/center-baseline";
+import CrossIcon from "../icon/ui-icons/Cross";
 
 export type ClearButtonSize = "sm" | "md" | "lg";
 
@@ -18,10 +21,10 @@ export interface ClearButtonProps extends Omit<
   class?: string;
 }
 
-const sizeStyles: Record<ClearButtonSize, { button: string; icon: string }> = {
-  sm: { button: "w-5 h-5", icon: "w-3 h-3" },
-  md: { button: "w-6 h-6", icon: "w-4 h-4" },
-  lg: { button: "w-8 h-8", icon: "w-5 h-5" },
+const sizeStyles: Record<ClearButtonSize, { button: string; icon: JSX.CSSProperties }> = {
+  sm: { button: "w-5 h-5", icon: { width: "0.75rem", height: "0.75rem" } },
+  md: { button: "w-6 h-6", icon: { width: "1rem", height: "1rem" } },
+  lg: { button: "w-8 h-8", icon: { width: "1.25rem", height: "1.25rem" } },
 };
 
 /**
@@ -59,15 +62,9 @@ export function ClearButton(props: ClearButtonProps): JSX.Element {
       aria-label={headlessProps["aria-label"] ?? "Clear"}
       class={getClassName}
     >
-      <svg
-        class={size().icon}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-      </svg>
+      <IconContext.Provider value={{ slot: "icon", render: centerBaseline({ slot: "icon" }) }}>
+        <CrossIcon style={size().icon} />
+      </IconContext.Provider>
     </HeadlessButton>
   );
 }

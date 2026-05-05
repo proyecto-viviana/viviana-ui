@@ -25,6 +25,17 @@ import {
 } from "./utils";
 import { useToggleButtonGroupStateContext } from "./ToggleButtonGroup";
 
+type RefLike<T> = ((el: T) => void) | { current?: T | null } | undefined;
+
+function assignRef<T>(ref: RefLike<T>, el: T): void {
+  if (!ref) return;
+  if (typeof ref === "function") {
+    ref(el);
+  } else {
+    ref.current = el;
+  }
+}
+
 export interface ToggleButtonRenderProps {
   isHovered: boolean;
   isPressed: boolean;
@@ -42,6 +53,8 @@ export interface ToggleButtonProps extends Omit<AriaToggleButtonProps, "children
   children?: RenderChildren<ToggleButtonRenderProps>;
   class?: ClassNameOrFunction<ToggleButtonRenderProps>;
   style?: StyleOrFunction<ToggleButtonRenderProps>;
+  /** Ref for the underlying button element. */
+  ref?: RefLike<HTMLButtonElement>;
 }
 
 export const ToggleButtonContext = createContext<ToggleButtonProps | null>(null);
@@ -61,6 +74,7 @@ export function ToggleButton(props: ToggleButtonProps): JSX.Element {
     "children",
     "class",
     "style",
+    "ref",
     "slot",
     "toggleKey",
     "id",
@@ -135,6 +149,7 @@ export function ToggleButton(props: ToggleButtonProps): JSX.Element {
       {...cleanHoverProps()}
       class={renderProps.class()}
       style={renderProps.style()}
+      ref={(el) => assignRef(local.ref, el)}
       slot={local.slot}
       data-pressed={toggleAria.isPressed() || undefined}
       data-hovered={isHovered() || undefined}

@@ -1,6 +1,10 @@
 import type { Component, JSX } from "solid-js";
 import { Icon as HeadlessIcon, type IconRenderProps } from "@proyecto-viviana/solidaria-components";
 import type { PressEvent } from "@proyecto-viviana/solidaria";
+export { IconContext, createIcon } from "./spectrum-icon";
+export type { IconContextValue, SpectrumIconProps } from "./spectrum-icon";
+export * from "./ui-icons";
+export * as s2wfIcons from "./s2wf-icons";
 
 export interface IconProps {
   /** The icon component to render (should accept size and color props) */

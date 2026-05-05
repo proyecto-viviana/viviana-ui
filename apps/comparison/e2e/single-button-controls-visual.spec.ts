@@ -1,0 +1,211 @@
+import { expect, test, type Locator, type Page } from "@playwright/test";
+import { frameworkCanvas, frameworkPanel, styledSection } from "./comparison-page";
+import { clearPointer, expectScreenshotPair, pinComparisonTheme } from "./visual-diff";
+
+type SingleControlCase = {
+  slug: "linkbutton" | "togglebutton";
+  title: string;
+  id: string;
+  role: "link" | "button";
+  name: string;
+  query: string;
+  iconPlacement?: "start" | "only";
+  threshold: {
+    maxMismatchRatio: number;
+    maxDimensionDelta: number;
+    pixelThreshold: number;
+  };
+};
+
+const singleControlCases: SingleControlCase[] = [
+  {
+    slug: "linkbutton",
+    title: "LinkButton icon start",
+    id: "linkbutton-icon-start",
+    role: "link",
+    name: "Open docs",
+    query: "?iconPlacement=start",
+    iconPlacement: "start",
+    threshold: { maxMismatchRatio: 0.08, maxDimensionDelta: 8, pixelThreshold: 64 },
+  },
+  {
+    slug: "linkbutton",
+    title: "LinkButton icon only",
+    id: "linkbutton-icon-only",
+    role: "link",
+    name: "Open docs",
+    query: "?iconPlacement=only",
+    iconPlacement: "only",
+    threshold: { maxMismatchRatio: 0.08, maxDimensionDelta: 8, pixelThreshold: 64 },
+  },
+  {
+    slug: "togglebutton",
+    title: "ToggleButton icon start",
+    id: "togglebutton-icon-start",
+    role: "button",
+    name: "Pin",
+    query: "?iconPlacement=start",
+    iconPlacement: "start",
+    threshold: { maxMismatchRatio: 0.16, maxDimensionDelta: 8, pixelThreshold: 64 },
+  },
+  {
+    slug: "togglebutton",
+    title: "ToggleButton icon start selected",
+    id: "togglebutton-icon-start-selected",
+    role: "button",
+    name: "Pin",
+    query: "?iconPlacement=start&isSelected=true",
+    iconPlacement: "start",
+    threshold: { maxMismatchRatio: 0.16, maxDimensionDelta: 8, pixelThreshold: 64 },
+  },
+  {
+    slug: "togglebutton",
+    title: "ToggleButton icon only",
+    id: "togglebutton-icon-only",
+    role: "button",
+    name: "Pin",
+    query: "?iconPlacement=only",
+    iconPlacement: "only",
+    threshold: { maxMismatchRatio: 0.16, maxDimensionDelta: 8, pixelThreshold: 64 },
+  },
+];
+
+async function singleControlFixtures(page: Page, item: SingleControlCase) {
+  await pinComparisonTheme(page, "dark");
+  await page.goto(`/components/${item.slug}/${item.query}`);
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("astro-island")).toHaveCount(0);
+
+  const section = await styledSection(page);
+  const reactPanel = await frameworkPanel(section, "React Spectrum stack");
+  const solidPanel = await frameworkPanel(section, "Solidaria stack");
+  const reactCanvas = await frameworkCanvas(section, "React Spectrum stack");
+  const solidCanvas = await frameworkCanvas(section, "Solidaria stack");
+
+  return {
+    reactCanvas,
+    solidCanvas,
+    reactControl: reactPanel.getByRole(item.role, { name: item.name }).first(),
+    solidControl: solidPanel.getByRole(item.role, { name: item.name }).first(),
+  };
+}
+
+async function iconAlignmentContract(control: Locator) {
+  return control.evaluate((element) => {
+    const numberOrNull = (value: number | undefined | null) =>
+      value == null ? null : Number(value.toFixed(4));
+    const rootRect = element.getBoundingClientRect();
+    const rootCenterY = rootRect.top + rootRect.height / 2;
+    const icon = Array.from(element.querySelectorAll("svg")).find(
+      (svg) => window.getComputedStyle(svg).visibility !== "hidden",
+    );
+    const label = element.querySelector<HTMLElement>('[data-rsp-slot="text"], [data-slot="label"]');
+    const iconRect = icon?.getBoundingClientRect();
+    const labelRect = label?.getBoundingClientRect();
+    const iconCenterY = iconRect ? iconRect.top + iconRect.height / 2 : null;
+    const labelCenterY = labelRect ? labelRect.top + labelRect.height / 2 : null;
+    const gap = iconRect && labelRect ? labelRect.left - iconRect.right : null;
+
+    return {
+      rootHeight: Number(rootRect.height.toFixed(4)),
+      rootWidth: Number(rootRect.width.toFixed(4)),
+      iconWidth: numberOrNull(iconRect?.width),
+      iconHeight: numberOrNull(iconRect?.height),
+      iconCenterDelta: numberOrNull(iconCenterY == null ? null : iconCenterY - rootCenterY),
+      labelCenterDelta: numberOrNull(labelCenterY == null ? null : labelCenterY - rootCenterY),
+      iconLabelCenterDelta: numberOrNull(
+        iconCenterY == null || labelCenterY == null ? null : iconCenterY - labelCenterY,
+      ),
+      gap: numberOrNull(gap),
+      hasLabel: !!labelRect,
+    };
+  });
+}
+
+function expectNear(
+  received: number | null,
+  expected: number | null,
+  tolerance: number,
+  label: string,
+) {
+  expect(received, `${label} should be present`).not.toBeNull();
+  expect(expected, `${label} reference should be present`).not.toBeNull();
+  expect(Math.abs((received ?? 0) - (expected ?? 0)), label).toBeLessThanOrEqual(tolerance);
+}
+
+test.describe("comparison single button-derived visual parity", () => {
+  for (const item of singleControlCases) {
+    test(`${item.title} has committed pair screenshots`, async ({ page }) => {
+      const fixtures = await singleControlFixtures(page, item);
+
+      await clearPointer(page);
+      await expectScreenshotPair(
+        page,
+        fixtures.reactCanvas,
+        fixtures.solidCanvas,
+        item.title,
+        item.id,
+        item.threshold,
+      );
+    });
+
+    test(`${item.title} icon geometry matches React Spectrum`, async ({ page }) => {
+      const fixtures = await singleControlFixtures(page, item);
+      const react = await iconAlignmentContract(fixtures.reactControl);
+      const solid = await iconAlignmentContract(fixtures.solidControl);
+
+      expectNear(solid.rootHeight, react.rootHeight, 0.5, `${item.title} root height`);
+      expectNear(solid.iconWidth, react.iconWidth, 0.5, `${item.title} icon width`);
+      expectNear(solid.iconHeight, react.iconHeight, 0.5, `${item.title} icon height`);
+      expectNear(
+        solid.iconCenterDelta,
+        react.iconCenterDelta,
+        0.75,
+        `${item.title} icon vertical centerline`,
+      );
+      expect(
+        Math.abs(solid.iconCenterDelta ?? 0),
+        `${item.title} solid icon root centerline`,
+      ).toBeLessThanOrEqual(1);
+
+      if (item.iconPlacement === "only") {
+        expect(solid.hasLabel).toBe(false);
+      } else {
+        expect(solid.hasLabel).toBe(true);
+        expectNear(
+          solid.labelCenterDelta,
+          react.labelCenterDelta,
+          0.75,
+          `${item.title} text vertical centerline`,
+        );
+        expectNear(
+          solid.iconLabelCenterDelta,
+          react.iconLabelCenterDelta,
+          0.75,
+          `${item.title} icon-to-text centerline`,
+        );
+        expectNear(solid.gap, react.gap, 1, `${item.title} icon text gap`);
+      }
+    });
+  }
+
+  test("LinkButton preserves link semantics on both stacks", async ({ page }) => {
+    const fixtures = await singleControlFixtures(page, singleControlCases[0]);
+
+    await expect(fixtures.reactControl).toHaveAttribute("href", "https://example.com/docs");
+    await expect(fixtures.solidControl).toHaveAttribute("href", "https://example.com/docs");
+  });
+
+  test("ToggleButton selected URL state is reflected on both stacks", async ({ page }) => {
+    const selectedCase = singleControlCases.find(
+      (item) => item.id === "togglebutton-icon-start-selected",
+    );
+    if (!selectedCase) {
+      throw new Error("Missing selected ToggleButton case");
+    }
+
+    const fixtures = await singleControlFixtures(page, selectedCase);
+    await expect(fixtures.reactControl).toHaveAttribute("aria-pressed", "true");
+    await expect(fixtures.solidControl).toHaveAttribute("aria-pressed", "true");
+  });
+});

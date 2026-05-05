@@ -4,6 +4,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@solidjs/testing-library";
 import { Link } from "../src/link";
+import { LinkButton } from "../src/button/LinkButton";
 import { setupUser } from "@proyecto-viviana/solid-spectrum-test-utils";
 
 describe("Link (solid-spectrum)", () => {
@@ -123,5 +124,49 @@ describe("Link (solid-spectrum)", () => {
     render(() => <Link aria-current="page">Test</Link>);
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute("aria-current", "page");
+  });
+});
+
+describe("LinkButton (solid-spectrum)", () => {
+  it("renders an anchor with S2 button data attributes and text slot", () => {
+    render(() => <LinkButton href="https://example.com">Open docs</LinkButton>);
+
+    const link = screen.getByRole("link", { name: "Open docs" });
+    expect(link.tagName).toBe("A");
+    expect(link).toHaveAttribute("href", "https://example.com");
+    expect(link).toHaveAttribute("data-variant", "primary");
+    expect(link).toHaveAttribute("data-style", "fill");
+    expect(link).toHaveAttribute("data-size", "M");
+    expect(link.querySelector('[data-rsp-slot="text"]')?.textContent).toBe("Open docs");
+  });
+
+  it("supports S2 button visual props", () => {
+    render(() => (
+      <LinkButton href="/billing" variant="accent" fillStyle="outline" size="XL">
+        Billing
+      </LinkButton>
+    ));
+
+    const link = screen.getByRole("link", { name: "Billing" });
+    expect(link).toHaveAttribute("data-variant", "accent");
+    expect(link).toHaveAttribute("data-style", "outline");
+    expect(link).toHaveAttribute("data-size", "XL");
+  });
+
+  it("does not call onPress while disabled", async () => {
+    const user = setupUser();
+    const onPress = vi.fn();
+
+    render(() => (
+      <LinkButton href="/settings" isDisabled onPress={onPress}>
+        Settings
+      </LinkButton>
+    ));
+
+    const link = screen.getByText("Settings").closest("[data-disabled]");
+    expect(link).toHaveAttribute("aria-disabled", "true");
+
+    await user.click(link!);
+    expect(onPress).not.toHaveBeenCalled();
   });
 });

@@ -21,6 +21,33 @@ async function frameworkCard(section: Locator, framework: Framework) {
   return card;
 }
 
+async function expectPendingSpinnerAnimated(card: Locator) {
+  const progress = card.getByRole("progressbar", { name: "pending" });
+  await expect(progress).toBeVisible();
+
+  const fillCircle = progress.locator("circle[stroke-dasharray]").first();
+  await expect(fillCircle).toHaveCount(1);
+  await expect
+    .poll(async () =>
+      fillCircle.evaluate((element) => {
+        const styles = window.getComputedStyle(element);
+        return styles.animationName === "none"
+          ? "none"
+          : `${styles.animationDuration};${styles.animationIterationCount}`;
+      }),
+    )
+    .toBe("1s, 1s;infinite, infinite");
+}
+
+async function selectBoxOption(card: Locator, name: string) {
+  const option = card.getByRole("option", { name: new RegExp(`^${name}\\b`) });
+  if ((await option.count()) > 0) {
+    return option.first();
+  }
+
+  return card.locator("[data-select-box]").filter({ hasText: name }).first();
+}
+
 async function buttonFamilyCards(page: Page, slug: string, query = "") {
   await page.addInitScript(() => {
     window.localStorage.setItem("solid-spectrum-theme", "dark");
@@ -55,7 +82,7 @@ test.describe("comparison button-family behavior contracts", () => {
       const root = card.locator("[data-comparison-action-count]").first();
       const button = card.locator("button").first();
       await expect(root).toHaveAttribute("data-comparison-action-count", "0");
-      await expect(card.getByRole("progressbar", { name: "pending" })).toBeVisible();
+      await expectPendingSpinnerAnimated(card);
       await button.focus();
       await expect(button).toBeFocused();
       await button.click({ force: true });
@@ -108,8 +135,9 @@ test.describe("comparison button-family behavior contracts", () => {
 
     for (const card of [cards.react, cards.solid]) {
       const root = card.locator("[data-comparison-action-count]").first();
-      const button = card.getByRole("button", { name: "Inspect" });
+      const button = card.locator("button").first();
       await expect(root).toHaveAttribute("data-comparison-action-count", "0");
+      await expectPendingSpinnerAnimated(card);
       await button.focus();
       await expect(button).toBeFocused();
       await button.click({ force: true });
@@ -152,6 +180,56 @@ test.describe("comparison button-family behavior contracts", () => {
       await expect(root).toHaveAttribute("data-comparison-selected", "true");
       await card.getByRole("button", { name: "Pin" }).click();
       await expect(root).toHaveAttribute("data-comparison-selected", "false");
+    }
+  });
+
+  test("ToggleButtonGroup changes selected key on both stacks", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "togglebuttongroup");
+
+    for (const card of [cards.react, cards.solid]) {
+      const root = card.locator("[data-comparison-selected-keys]").first();
+      await expect(root).toHaveAttribute("data-comparison-selected-keys", "left");
+      await card.getByRole("radio", { name: "Center" }).click();
+      await expect(root).toHaveAttribute("data-comparison-selected-keys", "center");
+      await expect(card.getByRole("radio", { name: "Center" })).toBeChecked();
+    }
+  });
+
+  test("SegmentedControl changes selected key on both stacks", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "segmentedcontrol");
+
+    for (const card of [cards.react, cards.solid]) {
+      const root = card.locator("[data-comparison-selected-key]").first();
+      await expect(root).toHaveAttribute("data-comparison-selected-key", "list");
+      await card.getByRole("radio", { name: "Grid" }).click();
+      await expect(root).toHaveAttribute("data-comparison-selected-key", "grid");
+      await expect(card.getByRole("radio", { name: "Grid" })).toBeChecked();
+    }
+  });
+
+  test("SelectBoxGroup changes selected key on both stacks", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "selectboxgroup");
+
+    for (const card of [cards.react, cards.solid]) {
+      const root = card.locator("[data-comparison-selected-keys]").first();
+      await expect(root).toHaveAttribute("data-comparison-selected-keys", "starter");
+      await (await selectBoxOption(card, "Pro")).click();
+      await expect(root).toHaveAttribute("data-comparison-selected-keys", "pro");
+    }
+  });
+
+  test("CardView changes selected key on both stacks", async ({ page }) => {
+    const cards = await buttonFamilyCards(page, "cardview");
+
+    for (const card of [cards.react, cards.solid]) {
+      const root = card.locator("[data-comparison-selected-keys]").first();
+      await expect(root).toHaveAttribute("data-comparison-selected-keys", "apollo");
+      await card.getByRole("row", { name: "Zephyr Queued" }).click();
+      await expect(root).toHaveAttribute("data-comparison-selected-keys", "zephyr");
+      await expect(card.getByRole("row", { name: "Zephyr Queued" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
     }
   });
 });
